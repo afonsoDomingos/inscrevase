@@ -304,80 +304,112 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                     <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Personalização</h2>
 
-                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor Principal</label>
-                                            <div style={{ display: 'flex', gap: '10px' }}>
-                                                {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
-                                                    <motion.button
-                                                        key={color}
-                                                        onClick={() => setTheme({ ...theme, primaryColor: color })}
-                                                        style={{
-                                                            width: '40px',
-                                                            height: '40px',
-                                                            borderRadius: '50%',
-                                                            background: color,
-                                                            border: theme.primaryColor === color ? '3px solid #000' : '3px solid transparent',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                        whileHover={{ scale: 1.1 }}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem', alignItems: 'start' }}>
+                                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor Principal</label>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
+                                                        <motion.button
+                                                            key={color}
+                                                            onClick={() => setTheme({ ...theme, primaryColor: color })}
+                                                            style={{
+                                                                width: '40px',
+                                                                height: '40px',
+                                                                borderRadius: '50%',
+                                                                background: color,
+                                                                border: theme.primaryColor === color ? '3px solid #000' : '3px solid transparent',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                            whileHover={{ scale: 1.1 }}
+                                                        />
+                                                    ))}
+                                                    <input
+                                                        type="color"
+                                                        value={theme.primaryColor}
+                                                        onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
+                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
                                                     />
-                                                ))}
-                                                <input
-                                                    type="color"
-                                                    value={theme.primaryColor}
-                                                    onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
-                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor de Fundo</label>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <input
+                                                        type="color"
+                                                        value={theme.backgroundColor}
+                                                        onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
+                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                                                    />
+                                                    <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor de Fundo</label>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <input
-                                                    type="color"
-                                                    value={theme.backgroundColor}
-                                                    onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
-                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                />
-                                                <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
+                                        {/* Live Preview */}
+                                        <div style={{
+                                            background: theme.backgroundColor,
+                                            borderRadius: '16px',
+                                            padding: '1.5rem',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                            border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.1)' : '#eee'}`,
+                                            color: theme.style === 'luxury' ? '#fff' : '#000',
+                                            marginTop: '0'
+                                        }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
+                                                Pré-visualização
                                             </div>
+                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', lineHeight: 1.2 }}>
+                                                {title || 'Título do Evento'}
+                                            </h3>
+                                            <button style={{
+                                                width: '100%',
+                                                padding: '0.8rem',
+                                                borderRadius: '8px',
+                                                background: `linear-gradient(45deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
+                                                color: '#000',
+                                                border: 'none',
+                                                fontWeight: 700,
+                                                fontSize: '0.8rem'
+                                            }}>
+                                                Inscrever-se Agora
+                                            </button>
                                         </div>
+                                    </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Estilo Visual</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                                <div
-                                                    onClick={() => setTheme({ ...theme, style: 'luxury', backgroundColor: '#050505' })}
-                                                    style={{
-                                                        padding: '1.5rem',
-                                                        borderRadius: '12px',
-                                                        border: theme.style === 'luxury' ? '2px solid #FFD700' : '1px solid #ddd',
-                                                        background: '#000',
-                                                        color: '#fff',
-                                                        cursor: 'pointer',
-                                                        textAlign: 'center'
-                                                    }}
-                                                >
-                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Luxo (Dark)</div>
-                                                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Premium e elegante</div>
-                                                </div>
-                                                <div
-                                                    onClick={() => setTheme({ ...theme, style: 'minimalist', backgroundColor: '#FFFFFF' })}
-                                                    style={{
-                                                        padding: '1.5rem',
-                                                        borderRadius: '12px',
-                                                        border: theme.style === 'minimalist' ? '2px solid #3182ce' : '1px solid #ddd',
-                                                        background: '#fff',
-                                                        color: '#000',
-                                                        cursor: 'pointer',
-                                                        textAlign: 'center'
-                                                    }}
-                                                >
-                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Minimalista</div>
-                                                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Limpo e direto</div>
-                                                </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Estilo Visual</label>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div
+                                                onClick={() => setTheme({ ...theme, style: 'luxury', backgroundColor: '#050505' })}
+                                                style={{
+                                                    padding: '1.5rem',
+                                                    borderRadius: '12px',
+                                                    border: theme.style === 'luxury' ? '2px solid #FFD700' : '1px solid #ddd',
+                                                    background: '#000',
+                                                    color: '#fff',
+                                                    cursor: 'pointer',
+                                                    textAlign: 'center'
+                                                }}
+                                            >
+                                                <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Luxo (Dark)</div>
+                                                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Premium e elegante</div>
+                                            </div>
+                                            <div
+                                                onClick={() => setTheme({ ...theme, style: 'minimalist', backgroundColor: '#FFFFFF' })}
+                                                style={{
+                                                    padding: '1.5rem',
+                                                    borderRadius: '12px',
+                                                    border: theme.style === 'minimalist' ? '2px solid #3182ce' : '1px solid #ddd',
+                                                    background: '#fff',
+                                                    color: '#000',
+                                                    cursor: 'pointer',
+                                                    textAlign: 'center'
+                                                }}
+                                            >
+                                                <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Minimalista</div>
+                                                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Limpo e direto</div>
                                             </div>
                                         </div>
                                     </div>
@@ -422,7 +454,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         </AnimatePresence>
                     </div>
                 </motion.div>
-            </div>
-        </AnimatePresence>
+            </div >
+        </AnimatePresence >
     );
 }

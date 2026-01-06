@@ -34,10 +34,18 @@ const createForm = async (req, res) => {
     }
 };
 
+const Submission = require('../models/Submission');
+
 const getMyForms = async (req, res) => {
     try {
-        const forms = await Form.find({ creator: req.user.id }).sort('-createdAt');
-        res.json(forms);
+        const forms = await Form.find({ creator: req.user.id }).sort('-createdAt').lean();
+
+        const formsWithCounts = await Promise.all(forms.map(async (form) => {
+            const count = await Submission.countDocuments({ form: form._id });
+            return { ...form, submissionCount: count };
+        }));
+
+        res.json(formsWithCounts);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }

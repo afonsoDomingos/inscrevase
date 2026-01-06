@@ -299,7 +299,7 @@ export default function MentorDashboard() {
                                                         {form.active ? 'Ativo' : 'Inativo'}
                                                     </button>
                                                 </td>
-                                                <td style={{ padding: '1rem', fontWeight: 600 }}>0</td>
+                                                <td style={{ padding: '1rem', fontWeight: 600 }}>{form.submissionCount || 0}</td>
                                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                                         <button onClick={() => setThemeModalData({ isOpen: true, form })} title="Personalizar Tema" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>

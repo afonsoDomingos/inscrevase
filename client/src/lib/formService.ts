@@ -42,6 +42,7 @@ export interface FormModel {
         style: 'luxury' | 'minimalist';
     };
     createdAt: string;
+    submissionCount?: number;
 }
 
 export const formService = {

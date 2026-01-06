@@ -66,7 +66,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             if (form.whatsappConfig?.phoneNumber) {
                 setTimeout(() => {
                     const message = encodeURIComponent(form.whatsappConfig?.message || 'Olá, acabei de me inscrever!');
-                    window.location.href = `https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`;
+                    window.open(`https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`, '_blank');
                 }, 3000);
             }
         } catch (err: unknown) {
