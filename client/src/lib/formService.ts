@@ -71,6 +71,21 @@ export const formService = {
         return result.url;
     },
 
+    async createForm(data: Partial<FormModel>): Promise<FormModel> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/forms`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Falha ao criar formulário');
+        return result;
+    },
+
     async deleteForm(id: string): Promise<void> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/forms/${id}`, {

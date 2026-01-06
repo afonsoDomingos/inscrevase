@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import Navbar from '@/components/Navbar';
+import CreateEventModal from '@/components/mentor/CreateEventModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -29,29 +30,30 @@ export default function MentorDashboard() {
     const [forms, setForms] = useState<FormModel[]>([]);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const loadDashboard = useCallback(async () => {
+        try {
+            const currentUser = authService.getCurrentUser();
+            setUser(currentUser);
+
+            const [statsData, formsData] = await Promise.all([
+                dashboardService.getMentorStats(),
+                formService.getMyForms()
+            ]);
+
+            setStats(statsData);
+            setForms(formsData);
+        } catch (error: unknown) {
+            console.error("Dashboard error:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const loadDashboard = async () => {
-            try {
-                const currentUser = authService.getCurrentUser();
-                setUser(currentUser);
-
-                const [statsData, formsData] = await Promise.all([
-                    dashboardService.getMentorStats(),
-                    formService.getMyForms()
-                ]);
-
-                setStats(statsData);
-                setForms(formsData);
-            } catch (error: unknown) {
-                console.error("Dashboard error:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         loadDashboard();
-    }, []);
+    }, [loadDashboard]);
 
     const copyToClipboard = (slug: string) => {
         const url = `${window.location.origin}/f/${slug}`;
@@ -62,11 +64,21 @@ export default function MentorDashboard() {
     const handleToggleStatus = async (form: FormModel) => {
         try {
             await formService.toggleFormStatus(form._id, !form.active);
-            const updatedForms = await formService.getMyForms();
-            setForms(updatedForms);
+            await loadDashboard();
         } catch (error: unknown) {
             console.error(error);
             alert('Erro ao atualizar status');
+        }
+    };
+
+    const handleDeleteForm = async (id: string) => {
+        if (!confirm('Tem certeza que deseja excluir este evento?')) return;
+        try {
+            await formService.deleteForm(id);
+            await loadDashboard();
+        } catch (error: unknown) {
+            console.error(error);
+            alert('Erro ao excluir formulário');
         }
     };
 
@@ -106,6 +118,7 @@ export default function MentorDashboard() {
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <button
+                            onClick={() => setIsModalOpen(true)}
                             className="btn-primary"
                             style={{ padding: '0.8rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
@@ -211,7 +224,7 @@ export default function MentorDashboard() {
                                     <div className="luxury-card" style={{ background: '#fff', border: 'none', textAlign: 'center', padding: '4rem' }}>
                                         <FileText size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
                                         <h4 style={{ color: '#999', marginBottom: '1rem' }}>Nenhum evento criado ainda</h4>
-                                        <button className="btn-primary" style={{ padding: '0.8rem 2rem' }}>Criar Meu Primeiro Evento</button>
+                                        <button onClick={() => setIsModalOpen(true)} className="btn-primary" style={{ padding: '0.8rem 2rem' }}>Criar Meu Primeiro Evento</button>
                                     </div>
                                 )}
                             </div>
@@ -259,7 +272,7 @@ export default function MentorDashboard() {
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                                         <button onClick={() => copyToClipboard(form.slug)} title="Copiar Link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>
                                                         <button title="Ver Submissões" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
-                                                        <button title="Excluir" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}><Trash2 size={18} /></button>
+                                                        <button onClick={() => handleDeleteForm(form._id)} title="Excluir" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}><Trash2 size={18} /></button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -280,6 +293,12 @@ export default function MentorDashboard() {
                     )}
                 </AnimatePresence>
             </div>
+
+            <CreateEventModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={loadDashboard}
+            />
         </main>
     );
 }

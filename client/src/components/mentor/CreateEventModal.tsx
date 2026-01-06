@@ -1,0 +1,329 @@
+"use client";
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle } from 'lucide-react';
+import { formService, FormModel } from '@/lib/formService';
+import Image from 'next/image';
+
+interface CreateEventModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess: () => void;
+}
+
+export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateEventModalProps) {
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    // Form State
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [coverImage, setCoverImage] = useState<string>('');
+    const [uploadingImage, setUploadingImage] = useState(false);
+
+    const [fields, setFields] = useState([
+        { id: '1', label: 'Nome Completo', type: 'text', required: true },
+        { id: '2', label: 'Email', type: 'email', required: true }
+    ]);
+
+    const [whatsappConfig, setWhatsappConfig] = useState({
+        phoneNumber: '',
+        message: 'Olá! Gostaria de confirmar minha inscrição.'
+    });
+
+    const handleAddField = () => {
+        const newId = (fields.length + 1).toString();
+        setFields([...fields, { id: newId, label: '', type: 'text', required: true }]);
+    };
+
+    const handleRemoveField = (id: string) => {
+        setFields(fields.filter(f => f.id !== id));
+    };
+
+    const handleFieldChange = (id: string, key: string, value: string | boolean) => {
+        setFields(fields.map(f => f.id === id ? { ...f, [key]: value } as typeof f : f));
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setUploadingImage(true);
+            try {
+                const url = await formService.uploadFile(e.target.files[0], 'covers');
+                setCoverImage(url);
+            } catch (err) {
+                alert('Erro no upload da imagem');
+            } finally {
+                setUploadingImage(false);
+            }
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!title || !description) {
+            alert('Por favor, preencha o título e a descrição.');
+            setStep(1);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await formService.createForm({
+                title,
+                description,
+                fields,
+                coverImage,
+                whatsappConfig,
+                active: true
+            });
+            onSuccess();
+            onClose();
+        } catch (err: unknown) {
+            const error = err as Error;
+            alert(error.message || 'Erro ao criar evento');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <AnimatePresence>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={onClose}
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
+                />
+
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    style={{
+                        position: 'relative',
+                        width: '100%',
+                        maxWidth: '900px',
+                        background: '#fff',
+                        borderRadius: '30px',
+                        overflow: 'hidden',
+                        display: 'grid',
+                        gridTemplateColumns: '280px 1fr',
+                        height: '85vh',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                    }}
+                >
+                    {/* Sidebar */}
+                    <div style={{ background: '#000', padding: '3rem 2rem', color: '#fff' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
+                            <Layout size={24} />
+                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>Novo Evento</span>
+                        </div>
+
+                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                            {[
+                                { id: 1, label: 'Informações', icon: <Info size={18} /> },
+                                { id: 2, label: 'Formulário', icon: <Plus size={18} /> },
+                                { id: 3, label: 'Comunicação', icon: <MessageCircle size={18} /> },
+                            ].map((s) => (
+                                <button
+                                    key={s.id}
+                                    onClick={() => setStep(s.id)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '1rem',
+                                        borderRadius: '12px',
+                                        border: 'none',
+                                        background: step === s.id ? '#FFD70015' : 'transparent',
+                                        color: step === s.id ? '#FFD700' : '#666',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {s.icon}
+                                    {s.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
+                            <button
+                                onClick={step === 3 ? handleSubmit : () => setStep(step + 1)}
+                                disabled={loading}
+                                className="btn-primary"
+                                style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            >
+                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 3 ? <><Save size={18} /> Publicar</> : 'Próximo')}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div style={{ padding: '3rem', overflowY: 'auto', background: '#f8f9fa' }}>
+                        <button
+                            onClick={onClose}
+                            style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                            <X size={18} />
+                        </button>
+
+                        <AnimatePresence mode="wait">
+                            {step === 1 && (
+                                <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Informações Básicas</h2>
+
+                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Título do Evento</label>
+                                            <input
+                                                type="text"
+                                                value={title}
+                                                onChange={(e) => setTitle(e.target.value)}
+                                                placeholder="Ex: Masterclass de Vendas"
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Descrição</label>
+                                            <textarea
+                                                value={description}
+                                                onChange={(e) => setDescription(e.target.value)}
+                                                rows={4}
+                                                placeholder="Descreva o que os alunos vão aprender..."
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Imagem de Capa (Opcional)</label>
+                                            <div style={{
+                                                width: '100%',
+                                                height: '180px',
+                                                background: '#eee',
+                                                borderRadius: '20px',
+                                                border: '2px dashed #ccc',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <input type="file" onChange={handleImageUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                {uploadingImage ? <Loader2 className="animate-spin" /> : (
+                                                    coverImage ? <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} /> : (
+                                                        <>
+                                                            <ImageIcon size={32} color="#aaa" />
+                                                            <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>Clique para subir imagem (1200x600)</span>
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {step === 2 && (
+                                <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Campos do Formulário</h2>
+                                        <button
+                                            onClick={handleAddField}
+                                            style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                                        >
+                                            <Plus size={16} /> Adicionar Campo
+                                        </button>
+                                    </div>
+
+                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                        {fields.map((field) => (
+                                            <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'grid', gridTemplateColumns: '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
+                                                <input
+                                                    type="text"
+                                                    value={field.label}
+                                                    onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
+                                                    placeholder="Rótulo (ex: Profissão)"
+                                                    style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
+                                                />
+                                                <select
+                                                    value={field.type}
+                                                    onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
+                                                    style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
+                                                >
+                                                    <option value="text">Texto</option>
+                                                    <option value="email">Email</option>
+                                                    <option value="number">Número</option>
+                                                    <option value="tel">Telefone/WhatsApp</option>
+                                                    <option value="select">Seleção</option>
+                                                </select>
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={field.required}
+                                                        onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
+                                                    /> Obrigat.
+                                                </label>
+                                                <button
+                                                    onClick={() => handleRemoveField(field.id)}
+                                                    style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {step === 3 && (
+                                <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>WhatsApp & Conclusão</h2>
+
+                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
+                                            <div style={{ color: '#319795' }}><CheckCircle size={24} /></div>
+                                            <p style={{ color: '#2c7a7b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                                                Após a inscrição, o aluno será redirecionado para o seu WhatsApp para facilitar o contato direto.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Seu Número WhatsApp</label>
+                                            <input
+                                                type="text"
+                                                value={whatsappConfig.phoneNumber}
+                                                onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
+                                                placeholder="Ex: 258840000000"
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Mensagem Automática</label>
+                                            <textarea
+                                                value={whatsappConfig.message}
+                                                onChange={(e) => setWhatsappConfig({ ...whatsappConfig, message: e.target.value })}
+                                                rows={3}
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </motion.div>
+            </div>
+        </AnimatePresence>
+    );
+}
