@@ -220,9 +220,8 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                     >
                         {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Salvar Alterações</>}
                     </button>
+                </motion.div>
             </div>
-        </motion.div>
-            </div >
-        </AnimatePresence >
+        </AnimatePresence>
     );
 }
