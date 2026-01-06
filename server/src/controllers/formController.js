@@ -3,7 +3,7 @@ const slugify = require('slugify');
 
 const createForm = async (req, res) => {
     try {
-        const { title, description, logo, coverImage, videoUrl, fields, theme, whatsappConfig } = req.body;
+        const { title, description, logo, coverImage, videoUrl, fields, theme, whatsappConfig, eventDate, paymentConfig } = req.body;
 
         // Generate slug from title or random string
         let slug = slugify(title, { lower: true, strict: true });
@@ -24,7 +24,9 @@ const createForm = async (req, res) => {
             videoUrl,
             fields,
             theme,
-            whatsappConfig
+            eventDate: eventDate || undefined, // Handle empty string to avoid CastError
+            whatsappConfig,
+            paymentConfig
         });
 
         await form.save();
