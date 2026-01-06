@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign } from 'lucide-react';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 
@@ -38,6 +38,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [whatsappConfig, setWhatsappConfig] = useState({
         phoneNumber: '',
         message: 'Olá! Gostaria de confirmar minha inscrição.'
+    });
+
+    const [paymentConfig, setPaymentConfig] = useState({
+        enabled: false,
+        price: 0,
+        currency: 'MZN',
+        mpesaNumber: '',
+        emolaNumber: '',
+        bankAccount: '',
+        accountHolder: '',
+        instructions: '',
+        requireProof: false
     });
 
     const handleAddField = () => {
@@ -86,8 +98,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     ...theme,
                     style: theme.style as "luxury" | "minimalist",
                     backgroundColor: theme.backgroundColor,
-                    fontFamily: 'Inter'
+                    fontFamily: theme.fontFamily // Use theme.fontFamily directly
                 },
+                paymentConfig,
                 active: true
             });
             onSuccess();
@@ -142,7 +155,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 { id: 1, label: 'Informações', icon: <Info size={18} /> },
                                 { id: 2, label: 'Formulário', icon: <Plus size={18} /> },
                                 { id: 3, label: 'Design', icon: <Palette size={18} /> },
-                                { id: 4, label: 'Comunicação', icon: <MessageCircle size={18} /> },
+                                { id: 4, label: 'Pagamento', icon: <DollarSign size={18} /> },
+                                { id: 5, label: 'Comunicação', icon: <MessageCircle size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -170,12 +184,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                         <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
                             <button
-                                onClick={step === 4 ? handleSubmit : () => setStep(step + 1)}
+                                onClick={step === 5 ? handleSubmit : () => setStep(step + 1)}
                                 disabled={loading}
                                 className="btn-primary"
                                 style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                             >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 4 ? <><Save size={18} /> Publicar</> : 'Próximo')}
+                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> Publicar</> : 'Próximo')}
                             </button>
                         </div>
                     </div>
@@ -416,7 +430,76 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 </motion.div>
                             )}
 
+
                             {step === 4 && (
+                                <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração de Pagamento</h2>
+
+                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={paymentConfig.enabled}
+                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
+                                                style={{ width: '20px', height: '20px' }}
+                                            />
+                                            Este é um evento pago?
+                                        </label>
+
+                                        {paymentConfig.enabled && (
+                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Valor (Preço)</label>
+                                                        <input
+                                                            type="number"
+                                                            value={paymentConfig.price}
+                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, price: parseFloat(e.target.value) })}
+                                                            placeholder="Ex: 500"
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Moeda</label>
+                                                        <select
+                                                            value={paymentConfig.currency}
+                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
+                                                        >
+                                                            <option value="MZN">Metical (MZN)</option>
+                                                            <option value="USD">Dólar (USD)</option>
+                                                            <option value="EUR">Euro (EUR)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Instruções de Pagamento</label>
+                                                    <textarea
+                                                        value={paymentConfig.instructions}
+                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
+                                                        rows={4}
+                                                        placeholder="Ex: Pagamento via M-Pesa para 841234567 (Nome)..."
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
+                                                    />
+                                                </div>
+
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 600, padding: '1rem', background: '#f8f9fa', borderRadius: '12px' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={paymentConfig.requireProof}
+                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, requireProof: e.target.checked })}
+                                                        style={{ width: '18px', height: '18px' }}
+                                                    />
+                                                    Exigir comprovativo de pagamento na inscrição?
+                                                </label>
+                                            </motion.div>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {step === 5 && (
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                     <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>WhatsApp & Conclusão</h2>
 

@@ -41,6 +41,17 @@ export interface FormModel {
         fontFamily: string;
         style: 'luxury' | 'minimalist';
     };
+    paymentConfig?: {
+        enabled: boolean;
+        price?: number;
+        currency?: string;
+        mpesaNumber?: string;
+        emolaNumber?: string;
+        bankAccount?: string;
+        accountHolder?: string;
+        instructions?: string;
+        requireProof: boolean;
+    };
     createdAt: string;
     submissionCount?: number;
 }

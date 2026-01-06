@@ -6,7 +6,11 @@ import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
-export default function SubmissionManagement() {
+interface SubmissionManagementProps {
+    formId?: string | null;
+}
+
+export default function SubmissionManagement({ formId }: SubmissionManagementProps) {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
@@ -64,10 +68,11 @@ export default function SubmissionManagement() {
     };
 
     const filteredSubmissions = submissions.filter(s => {
+        const matchesForm = formId ? s.form._id === formId : true;
         const matchesStatus = filterStatus === 'all' || s.status === filterStatus;
         const identifier = String(getMainIdentifier(s.data)).toLowerCase();
         const matchesSearch = identifier.includes(searchTerm.toLowerCase()) || s.form.title.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesStatus && matchesSearch;
+        return matchesForm && matchesStatus && matchesSearch;
     });
 
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Carregando inscrições...</div>;

@@ -213,13 +213,24 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                             )}
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>
-                                        <div style={{ color: primaryColor }}><ShieldCheck size={24} /></div>
-                                        <div>
-                                            <div style={{ fontSize: '0.9rem', color: '#666' }}>Pagamento Seguro</div>
-                                            <div style={{ fontWeight: 600 }}>Via Comprovativo Digital</div>
+                                    {form.paymentConfig?.enabled && (
+                                        <div style={{ display: 'grid', gap: '1rem', background: cardBg, padding: '1.5rem', borderRadius: '20px', border: `1px solid ${primaryColor}40` }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ color: primaryColor }}><ShieldCheck size={24} /></div>
+                                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: textColor, textTransform: 'uppercase', letterSpacing: '1px' }}>Evento Pago</div>
+                                            </div>
+
+                                            <div style={{ fontSize: '2rem', fontWeight: 800, color: primaryColor }}>
+                                                {form.paymentConfig.price} <span style={{ fontSize: '1rem' }}>{form.paymentConfig.currency}</span>
+                                            </div>
+
+                                            {form.paymentConfig.instructions && (
+                                                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '12px', fontSize: '0.9rem', lineHeight: '1.6', color: secondaryTextColor, whiteSpace: 'pre-wrap' }}>
+                                                    {form.paymentConfig.instructions}
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             </motion.div>
 
@@ -261,38 +272,40 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                         </div>
                                     ))}
 
-                                    <div style={{ marginTop: '1rem' }}>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#aaa', marginBottom: '0.8rem' }}>
-                                            Anexar Comprovativo de Pagamento <span style={{ color: '#FFD700' }}>*</span>
-                                        </label>
+                                    {form.paymentConfig?.requireProof && (
+                                        <div style={{ marginTop: '1rem' }}>
+                                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#aaa', marginBottom: '0.8rem' }}>
+                                                Anexar Comprovativo de Pagamento <span style={{ color: '#FFD700' }}>*</span>
+                                            </label>
 
-                                        <label style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: '2rem',
-                                            background: 'rgba(255,215,0,0.03)',
-                                            border: '2px dashed rgba(255,215,0,0.2)',
-                                            borderRadius: '20px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s'
-                                        }}>
-                                            <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} required />
-                                            {filePreview ? (
-                                                <div style={{ textAlign: 'center' }}>
-                                                    <Image src={filePreview} alt="Comprovativo" width={100} height={100} style={{ borderRadius: '10px', marginBottom: '10px' }} />
-                                                    <div style={{ color: '#FFD700', fontSize: '0.8rem' }}>{file?.name}</div>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <Upload size={32} color={primaryColor} style={{ marginBottom: '0.5rem' }} />
-                                                    <div style={{ fontWeight: 600, fontSize: '0.9rem', color: textColor }}>Clique para enviar imagem ou PDF</div>
-                                                    <div style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '4px' }}>Tamanho máx: 5MB</div>
-                                                </>
-                                            )}
-                                        </label>
-                                    </div>
+                                            <label style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                padding: '2rem',
+                                                background: 'rgba(255,215,0,0.03)',
+                                                border: '2px dashed rgba(255,215,0,0.2)',
+                                                borderRadius: '20px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s'
+                                            }}>
+                                                <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} required />
+                                                {filePreview ? (
+                                                    <div style={{ textAlign: 'center' }}>
+                                                        <Image src={filePreview} alt="Comprovativo" width={100} height={100} style={{ borderRadius: '10px', marginBottom: '10px' }} />
+                                                        <div style={{ color: '#FFD700', fontSize: '0.8rem' }}>{file?.name}</div>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <Upload size={32} color={primaryColor} style={{ marginBottom: '0.5rem' }} />
+                                                        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: textColor }}>Clique para enviar imagem ou PDF</div>
+                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '4px' }}>Tamanho máx: 5MB</div>
+                                                    </>
+                                                )}
+                                            </label>
+                                        </div>
+                                    )}
 
                                     <button
                                         type="submit"

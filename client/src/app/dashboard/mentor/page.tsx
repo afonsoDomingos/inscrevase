@@ -40,6 +40,7 @@ export default function MentorDashboard() {
     const [loading, setLoading] = useState(true);
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
     const [themeModalData, setThemeModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
 
     const loadDashboard = useCallback(async () => {
@@ -304,7 +305,7 @@ export default function MentorDashboard() {
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                                         <button onClick={() => setThemeModalData({ isOpen: true, form })} title="Personalizar Tema" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>
                                                         <button onClick={() => copyToClipboard(form.slug)} title="Copiar Link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>
-                                                        <button title="Ver Submissões" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
+                                                        <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title="Ver Submissões" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
                                                         <button onClick={() => handleDeleteForm(form._id)} title="Excluir" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}><Trash2 size={18} /></button>
                                                     </div>
                                                 </td>
@@ -317,8 +318,13 @@ export default function MentorDashboard() {
                     )}
 
                     {activeTab === 'submissions' && (
-                        <motion.div key="submissions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <SubmissionManagement />
+                        <motion.div
+                            key="submissions"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <SubmissionManagement formId={selectedSubmissionFormId} />
                         </motion.div>
                     )}
                     {activeTab === 'settings' && (

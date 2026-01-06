@@ -36,6 +36,17 @@ const FormSchema = new mongoose.Schema({
         phoneNumber: { type: String },
         message: { type: String }
     },
+    paymentConfig: {
+        enabled: { type: Boolean, default: false },
+        price: { type: Number },
+        currency: { type: String, default: 'MZN' },
+        mpesaNumber: { type: String },
+        emolaNumber: { type: String },
+        bankAccount: { type: String },
+        accountHolder: { type: String },
+        instructions: { type: String },
+        requireProof: { type: Boolean, default: false }
+    },
     active: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });
