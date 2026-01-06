@@ -126,7 +126,7 @@ export default function AnalyticsCharts() {
                 ) : (
                     <div style={{ textAlign: 'center', padding: '2rem', color: '#999', border: '2px dashed #eee', borderRadius: '12px' }}>
                         <p>Ainda não há dados geográficos suficientes.</p>
-                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Certifique-se de que seus formulários perguntam a "Província" ou "Cidade".</p>
+                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Certifique-se de que seus formulários perguntam a &quot;Província&quot; ou &quot;Cidade&quot;.</p>
                     </div>
                 )}
             </div>

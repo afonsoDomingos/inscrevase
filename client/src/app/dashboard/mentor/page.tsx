@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
-import Navbar from '@/components/Navbar';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
@@ -24,12 +23,10 @@ import {
     LogOut,
     Loader2,
     LayoutDashboard,
-    Database,
     Settings,
     Copy,
     Trash2,
     User as UserIcon,
-    ChevronRight,
     Palette,
     DollarSign,
     PieChart
