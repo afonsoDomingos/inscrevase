@@ -9,6 +9,7 @@ import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
+import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -24,7 +25,8 @@ import {
     Copy,
     Trash2,
     User as UserIcon,
-    ChevronRight
+    ChevronRight,
+    Palette
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -38,6 +40,7 @@ export default function MentorDashboard() {
     const [loading, setLoading] = useState(true);
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [themeModalData, setThemeModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
 
     const loadDashboard = useCallback(async () => {
         try {
@@ -299,6 +302,7 @@ export default function MentorDashboard() {
                                                 <td style={{ padding: '1rem', fontWeight: 600 }}>0</td>
                                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                                        <button onClick={() => setThemeModalData({ isOpen: true, form })} title="Personalizar Tema" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>
                                                         <button onClick={() => copyToClipboard(form.slug)} title="Copiar Link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>
                                                         <button title="Ver Submissões" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
                                                         <button onClick={() => handleDeleteForm(form._id)} title="Excluir" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}><Trash2 size={18} /></button>
@@ -337,6 +341,15 @@ export default function MentorDashboard() {
                 user={user}
                 onSuccess={loadDashboard}
             />
+
+            {themeModalData.form && (
+                <EditEventThemeModal
+                    isOpen={themeModalData.isOpen}
+                    onClose={() => setThemeModalData({ isOpen: false, form: null })}
+                    form={themeModalData.form}
+                    onSuccess={loadDashboard}
+                />
+            )}
         </main>
     );
 }

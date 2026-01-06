@@ -2,11 +2,18 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn } from 'lucide-react';
-import { useState } from 'react';
+import { Menu, X, LogIn, LayoutDashboard } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    setIsLoggedIn(!!token);
+  }, []);
 
   return (
     <nav className="navbar">
@@ -26,10 +33,21 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="nav-links">
-          <Link href="/entrar" className="btn-luxury-icon" title="Acesso Elite">
-            <LogIn size={20} color="#FFD700" />
-          </Link>
-          <Link href="/comecar" className="btn-primary">Criar Evento</Link>
+          {isLoggedIn ? (
+            <>
+              <Link href="/dashboard/mentor" className="btn-luxury-icon" title="Dashboard">
+                <LayoutDashboard size={20} color="#FFD700" />
+              </Link>
+              <Link href="/dashboard/mentor" className="btn-primary">Criar Evento</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/entrar" className="btn-luxury-icon" title="Acesso Elite">
+                <LogIn size={20} color="#FFD700" />
+              </Link>
+              <Link href="/entrar" className="btn-primary">Começar Agora</Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -41,8 +59,17 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="mobile-menu">
-          <Link href="/entrar" onClick={() => setIsOpen(false)}>Entrar</Link>
-          <Link href="/comecar" className="btn-primary" onClick={() => setIsOpen(false)}>Criar Evento</Link>
+          {isLoggedIn ? (
+            <>
+              <Link href="/dashboard/mentor" onClick={() => setIsOpen(false)}>Meu Painel</Link>
+              <Link href="/dashboard/mentor" className="btn-primary" onClick={() => setIsOpen(false)}>Criar Evento</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/entrar" onClick={() => setIsOpen(false)}>Entrar</Link>
+              <Link href="/entrar" className="btn-primary" onClick={() => setIsOpen(false)}>Começar Agora</Link>
+            </>
+          )}
         </div>
       )}
 

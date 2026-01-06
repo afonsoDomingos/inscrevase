@@ -130,5 +130,20 @@ export const formService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar seus formulários');
         return response.json();
+    },
+
+    async updateForm(id: string, data: Partial<FormModel>): Promise<FormModel> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/forms/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Falha ao atualizar formulário');
+        return result;
     }
 };

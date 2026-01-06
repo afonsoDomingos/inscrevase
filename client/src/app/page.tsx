@@ -4,6 +4,15 @@ import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Palette, Zap, ShieldCheck, BarChart3 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+
+const galleryImages = [
+  "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1475721027767-96a6f6424ca1?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1560523159-4a9692d222ef?auto=format&fit=crop&q=80&w=800",
+];
 
 export default function Home() {
   const fadeIn = {
@@ -62,9 +71,39 @@ export default function Home() {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="flex gap-4 justify-center"
           >
-            <Link href="/comecar" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Link href="/entrar" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
               Começar Agora <ArrowRight size={20} />
             </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Infinite Gallery Section */}
+      <section style={{ overflow: 'hidden', padding: '0 0 4rem 0', background: '#fff' }}>
+        <p style={{ textAlign: 'center', color: '#999', fontSize: '0.9rem', marginBottom: '2rem', letterSpacing: '2px', textTransform: 'uppercase' }}>
+          Junte-se a milhares de eventos de sucesso
+        </p>
+        <div style={{ display: 'flex', width: '100%', overflow: 'hidden' }}>
+          <motion.div
+            initial={{ x: 0 }}
+            animate={{ x: "-50%" }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
+            style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
+          >
+            {[...galleryImages, ...galleryImages].map((src, i) => (
+              <div key={i} style={{
+                position: 'relative',
+                width: '350px',
+                height: '220px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                flexShrink: 0,
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+              }}>
+                <Image src={src} alt="Evento" fill style={{ objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
