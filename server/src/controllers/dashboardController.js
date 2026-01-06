@@ -39,25 +39,44 @@ exports.getMentorStats = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // 1. Count forms created by mentor
-        const totalForms = await Form.countDocuments({ creator: userId });
-
-        // 2. Count total submissions for all mentor's forms
-        const myForms = await Form.find({ creator: userId }).select('_id');
+        // 1. Get my forms to extract IDs and potential prices
+        const myForms = await Form.find({ creator: userId });
         const formIds = myForms.map(f => f._id);
+        const formsMap = {};
+        myForms.forEach(f => {
+            formsMap[f._id.toString()] = f;
+        });
 
+        // 2. Stats
+        const totalForms = myForms.length;
         const totalSubmissions = await Submission.countDocuments({ form: { $in: formIds } });
         const approvedSubmissions = await Submission.countDocuments({
             form: { $in: formIds },
             status: 'approved'
         });
 
+        // 3. Revenue
+        const approvedSubs = await Submission.find({
+            form: { $in: formIds },
+            status: 'approved'
+        });
+
+        let revenue = 0;
+        approvedSubs.forEach(sub => {
+            const form = formsMap[sub.form.toString()];
+            if (form && form.paymentConfig && form.paymentConfig.enabled) {
+                revenue += (form.paymentConfig.price || 0);
+            }
+        });
+
         res.json({
             forms: totalForms,
             submissions: totalSubmissions,
-            approved: approvedSubmissions
+            approved: approvedSubmissions,
+            revenue: revenue
         });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Error fetching mentor stats' });
     }
 };

@@ -1,19 +1,20 @@
 /* eslint-disable */
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign } from 'lucide-react';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 
-interface CreateEventModalProps {
+interface EditEventModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    form: FormModel;
 }
 
-export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateEventModalProps) {
+export default function EditEventModal({ isOpen, onClose, onSuccess, form }: EditEventModalProps) {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
@@ -32,10 +33,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [coverImage, setCoverImage] = useState<string>('');
     const [uploadingImage, setUploadingImage] = useState(false);
 
-    const [fields, setFields] = useState([
-        { id: '1', label: 'Nome Completo', type: 'text', required: true },
-        { id: '2', label: 'Email', type: 'email', required: true }
-    ]);
+    const [fields, setFields] = useState<any[]>([]);
 
     const [whatsappConfig, setWhatsappConfig] = useState({
         phoneNumber: '',
@@ -53,6 +51,40 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         instructions: '',
         requireProof: false
     });
+
+    useEffect(() => {
+        if (form) {
+            setTitle(form.title || '');
+            setDescription(form.description || '');
+            setEventDate(form.eventDate ? new Date(form.eventDate).toISOString().substring(0, 10) : '');
+            setCoverImage(form.coverImage || '');
+            setFields(form.fields || []);
+            if (form.whatsappConfig) {
+                setWhatsappConfig(form.whatsappConfig);
+            }
+            if (form.paymentConfig) {
+                setPaymentConfig({
+                    enabled: form.paymentConfig.enabled || false,
+                    price: form.paymentConfig.price || 0,
+                    currency: form.paymentConfig.currency || 'MZN',
+                    mpesaNumber: form.paymentConfig.mpesaNumber || '',
+                    emolaNumber: form.paymentConfig.emolaNumber || '',
+                    bankAccount: form.paymentConfig.bankAccount || '',
+                    accountHolder: form.paymentConfig.accountHolder || '',
+                    instructions: form.paymentConfig.instructions || '',
+                    requireProof: form.paymentConfig.requireProof || false
+                });
+            }
+            if (form.theme) {
+                setTheme({
+                    primaryColor: form.theme.primaryColor || '#FFD700',
+                    style: form.theme.style || 'luxury',
+                    backgroundColor: form.theme.backgroundColor || '#050505',
+                    fontFamily: form.theme.fontFamily || 'Inter'
+                });
+            }
+        }
+    }, [form]);
 
     const handleAddField = () => {
         const newId = (fields.length + 1).toString();
@@ -98,7 +130,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
         setLoading(true);
         try {
-            await formService.createForm({
+            await formService.updateForm(form._id, {
                 title,
                 description,
                 eventDate,
@@ -109,16 +141,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     ...theme,
                     style: theme.style as "luxury" | "minimalist",
                     backgroundColor: theme.backgroundColor,
-                    fontFamily: theme.fontFamily // Use theme.fontFamily directly
+                    fontFamily: theme.fontFamily
                 },
                 paymentConfig,
-                active: true
+                active: form.active
             });
             onSuccess();
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || 'Erro ao criar evento');
+            alert(error.message || 'Erro ao atualizar evento');
         } finally {
             setLoading(false);
         }
@@ -158,7 +190,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     <div style={{ background: '#000', padding: '3rem 2rem', color: '#fff' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
                             <Layout size={24} />
-                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>Novo Evento</span>
+                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>Editar Evento</span>
                         </div>
 
                         <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -195,12 +227,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                         <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
                             <button
-                                onClick={step === 5 ? handleSubmit : () => setStep(step + 1)}
+                                onClick={handleSubmit}
                                 disabled={loading}
                                 className="btn-primary"
                                 style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                             >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> Publicar</> : 'Próximo')}
+                                {loading ? <Loader2 className="animate-spin" size={20} /> : <><Save size={18} /> Salvar Alterações</>}
                             </button>
                         </div>
                     </div>

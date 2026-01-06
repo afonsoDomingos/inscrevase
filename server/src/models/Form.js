@@ -26,6 +26,7 @@ const FormSchema = new mongoose.Schema({
     coverImage: { type: String },
     videoUrl: { type: String },
     fields: [FormFieldSchema],
+    eventDate: { type: Date },
     theme: {
         primaryColor: { type: String, default: '#FFD700' }, // Gold
         backgroundColor: { type: String, default: '#FFFFFF' }, // White

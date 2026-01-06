@@ -9,6 +9,9 @@ import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
+import EditEventModal from '@/components/mentor/EditEventModal';
+import { Pencil } from 'lucide-react';
+
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -26,7 +29,8 @@ import {
     Trash2,
     User as UserIcon,
     ChevronRight,
-    Palette
+    Palette,
+    DollarSign
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -38,6 +42,7 @@ export default function MentorDashboard() {
     const [forms, setForms] = useState<FormModel[]>([]);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
+    const [editModalData, setEditModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
@@ -45,14 +50,13 @@ export default function MentorDashboard() {
 
     const loadDashboard = useCallback(async () => {
         try {
-            const currentUser = authService.getCurrentUser();
-            setUser(currentUser);
-
-            const [statsData, formsData] = await Promise.all([
+            const [userProfile, statsData, formsData] = await Promise.all([
+                authService.getProfile(),
                 dashboardService.getMentorStats(),
                 formService.getMyForms()
             ]);
 
+            setUser(userProfile);
             setStats(statsData);
             setForms(formsData);
         } catch (error: unknown) {
@@ -107,6 +111,7 @@ export default function MentorDashboard() {
         { label: 'Eventos Ativos', value: stats?.forms || 0, icon: <FileText size={20} />, color: '#FFD700' },
         { label: 'Total Inscritos', value: stats?.submissions || 0, icon: <Users size={20} />, color: '#3182ce' },
         { label: 'Inscrições Aprovadas', value: stats?.approved || 0, icon: <CheckCircle size={20} />, color: '#38a169' },
+        { label: 'Faturamento Estimado', value: stats?.revenue ? new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' }).format(stats.revenue) : '0 MZN', icon: <DollarSign size={20} />, color: '#48bb78' },
         { label: 'Conversão', value: stats?.submissions ? `${Math.round((stats.approved / stats.submissions) * 100)}%` : '0%', icon: <TrendingUp size={20} />, color: '#805ad5' },
     ];
 
@@ -303,6 +308,7 @@ export default function MentorDashboard() {
                                                 <td style={{ padding: '1rem', fontWeight: 600 }}>{form.submissionCount || 0}</td>
                                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                                        <button onClick={() => setEditModalData({ isOpen: true, form })} title="Editar Evento" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}><Pencil size={18} /></button>
                                                         <button onClick={() => setThemeModalData({ isOpen: true, form })} title="Personalizar Tema" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>
                                                         <button onClick={() => copyToClipboard(form.slug)} title="Copiar Link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>
                                                         <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title="Ver Submissões" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
@@ -353,6 +359,15 @@ export default function MentorDashboard() {
                     isOpen={themeModalData.isOpen}
                     onClose={() => setThemeModalData({ isOpen: false, form: null })}
                     form={themeModalData.form}
+                    onSuccess={loadDashboard}
+                />
+            )}
+
+            {editModalData.form && (
+                <EditEventModal
+                    isOpen={editModalData.isOpen}
+                    onClose={() => setEditModalData({ isOpen: false, form: null })}
+                    form={editModalData.form}
                     onSuccess={loadDashboard}
                 />
             )}

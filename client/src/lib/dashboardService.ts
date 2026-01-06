@@ -3,10 +3,11 @@ import Cookies from 'js-cookie';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface AdminStats {
-    mentors: number;
+    mentors?: number;
     forms: number;
     submissions: number;
     approved: number;
+    revenue?: number;
 }
 
 export interface RecentForm {

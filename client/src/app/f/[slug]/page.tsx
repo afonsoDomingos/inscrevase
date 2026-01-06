@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Award, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
+import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
@@ -170,6 +170,15 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 <div style={{ color: '#888', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2.5rem' }}>
                                     {form.description}
                                 </div>
+
+                                {form.eventDate && (
+                                    <div style={{ marginBottom: '2rem', padding: '1rem', background: cardBg, borderRadius: '12px', border: `1px solid ${primaryColor}40`, display: 'inline-block' }}>
+                                        <div style={{ fontSize: '0.8rem', color: secondaryTextColor, textTransform: 'uppercase', letterSpacing: '1px' }}>Data do Evento</div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 700, color: textColor }}>
+                                            {new Date(form.eventDate).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div style={{ display: 'grid', gap: '1.2rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>

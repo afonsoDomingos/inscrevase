@@ -29,6 +29,7 @@ export interface FormModel {
         required: boolean;
         options?: string[];
     }[];
+    eventDate?: string;
     coverImage?: string;
     logo?: string;
     whatsappConfig?: {

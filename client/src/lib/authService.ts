@@ -109,5 +109,19 @@ export const authService = {
         }
 
         return result.user;
+    },
+
+    async getProfile(): Promise<UserData> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const user = await response.json();
+        if (!response.ok) throw new Error('Falha ao buscar perfil');
+
+        // Update local storage to keep it fresh
+        localStorage.setItem('user', JSON.stringify(user));
+
+        return user;
     }
 };

@@ -7,11 +7,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 const galleryImages = [
+  "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800",
   "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1475721027767-96a6f6424ca1?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1560523159-4a9692d222ef?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1561489413-985b06da5bee?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800"
 ];
 
 export default function Home() {
@@ -80,18 +81,42 @@ export default function Home() {
 
       {/* Infinite Gallery Section */}
       <section style={{ overflow: 'hidden', padding: '0 0 4rem 0', background: '#fff' }}>
-        <p style={{ textAlign: 'center', color: '#999', fontSize: '0.9rem', marginBottom: '2rem', letterSpacing: '2px', textTransform: 'uppercase' }}>
-          Junte-se a milhares de eventos de sucesso
+        <p style={{ textAlign: 'center', color: '#999', fontSize: '0.8rem', fontWeight: 700, marginBottom: '2rem', letterSpacing: '3px', textTransform: 'uppercase' }}>
+          A escolha dos melhores mentores do mercado
         </p>
-        <div style={{ display: 'flex', width: '100%', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', overflow: 'hidden' }}>
+          {/* Row 1: Left Scroll */}
           <motion.div
             initial={{ x: 0 }}
             animate={{ x: "-50%" }}
-            transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
             style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
           >
             {[...galleryImages, ...galleryImages].map((src, i) => (
-              <div key={i} style={{
+              <div key={`row1-${i}`} style={{
+                position: 'relative',
+                width: '350px',
+                height: '220px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                flexShrink: 0,
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+              }}>
+                <Image src={src} alt="Evento" fill style={{ objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Row 2: Right Scroll (Reverse) */}
+          <motion.div
+            initial={{ x: "-50%" }}
+            animate={{ x: 0 }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 45 }}
+            style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
+          >
+            {[...galleryImages, ...galleryImages].map((src, i) => (
+              <div key={`row2-${i}`} style={{
                 position: 'relative',
                 width: '350px',
                 height: '220px',
