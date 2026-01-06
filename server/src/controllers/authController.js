@@ -73,7 +73,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -83,6 +83,10 @@ const updateByAdmin = async (req, res) => {
         if (status) user.status = status;
         if (plan) user.plan = plan;
         if (businessName) user.businessName = businessName;
+        if (bio) user.bio = bio;
+        if (profilePhoto) user.profilePhoto = profilePhoto;
+        if (whatsapp) user.whatsapp = whatsapp;
+        if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks };
 
         await user.save();
         res.json({ message: 'User updated successfully', user });

@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
+import EditUserModal from './EditUserModal';
 
 export default function UsersList() {
     const [users, setUsers] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [editingUser, setEditingUser] = useState<UserData | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         loadUsers();
@@ -128,6 +131,16 @@ export default function UsersList() {
                                             {user.status === 'active' ? <UserX size={18} /> : <UserCheck size={18} />}
                                         </button>
                                         <button
+                                            onClick={() => {
+                                                setEditingUser(user);
+                                                setIsEditModalOpen(true);
+                                            }}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}
+                                            title="Editar"
+                                        >
+                                            <Pencil size={18} />
+                                        </button>
+                                        <button
                                             onClick={() => handleDelete(user.id || user._id || '')}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
                                         >
@@ -140,6 +153,15 @@ export default function UsersList() {
                     </tbody>
                 </table>
             </div>
+            <EditUserModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                user={editingUser}
+                onSuccess={() => {
+                    loadUsers();
+                    setIsEditModalOpen(false);
+                }}
+            />
         </div>
     );
 }
