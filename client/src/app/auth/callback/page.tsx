@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { Loader2 } from 'lucide-react';
 import { authService } from '@/lib/authService';
 
-export default function AuthCallback() {
+function CallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -37,5 +37,17 @@ export default function AuthCallback() {
             <Loader2 className="animate-spin" size={48} color="#FFD700" style={{ marginBottom: '1rem' }} />
             <h2 style={{ fontSize: '1.2rem', fontWeight: 600 }}>Autenticando com Google...</h2>
         </div>
+    );
+}
+
+export default function AuthCallback() {
+    return (
+        <Suspense fallback={
+            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#fff' }}>
+                <Loader2 className="animate-spin" size={48} color="#FFD700" />
+            </div>
+        }>
+            <CallbackContent />
+        </Suspense>
     );
 }
