@@ -19,7 +19,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     // Theme State
     const [theme, setTheme] = useState({
         primaryColor: '#FFD700',
-        style: 'luxury'
+        style: 'luxury',
+        backgroundColor: '#050505',
+        fontFamily: 'Inter'
     });
 
     // Form State
@@ -83,7 +85,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 theme: {
                     ...theme,
                     style: theme.style as "luxury" | "minimalist",
-                    backgroundColor: theme.style === 'luxury' ? '#050505' : '#FFFFFF',
+                    backgroundColor: theme.backgroundColor,
                     fontFamily: 'Inter'
                 },
                 active: true
@@ -331,33 +333,50 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         </div>
 
                                         <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor de Fundo</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <input
+                                                    type="color"
+                                                    value={theme.backgroundColor}
+                                                    onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
+                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                                                />
+                                                <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
+                                            </div>
+                                        </div>
+
+                                        <div>
                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Estilo Visual</label>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                 <div
-                                                    onClick={() => setTheme({ ...theme, style: 'luxury' })}
+                                                    onClick={() => setTheme({ ...theme, style: 'luxury', backgroundColor: '#050505' })}
                                                     style={{
-                                                        border: theme.style === 'luxury' ? '2px solid #000' : '1px solid #ddd',
+                                                        padding: '1.5rem',
                                                         borderRadius: '12px',
-                                                        padding: '1rem',
+                                                        border: theme.style === 'luxury' ? '2px solid #FFD700' : '1px solid #ddd',
+                                                        background: '#000',
+                                                        color: '#fff',
                                                         cursor: 'pointer',
-                                                        background: theme.style === 'luxury' ? '#f0f0f0' : '#fff'
+                                                        textAlign: 'center'
                                                     }}
                                                 >
                                                     <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Luxo (Dark)</div>
-                                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>Fundo escuro, detalhes dourados, ideal para eventos premium.</div>
+                                                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Premium e elegante</div>
                                                 </div>
                                                 <div
-                                                    onClick={() => setTheme({ ...theme, style: 'minimalist' })}
+                                                    onClick={() => setTheme({ ...theme, style: 'minimalist', backgroundColor: '#FFFFFF' })}
                                                     style={{
-                                                        border: theme.style === 'minimalist' ? '2px solid #000' : '1px solid #ddd',
+                                                        padding: '1.5rem',
                                                         borderRadius: '12px',
-                                                        padding: '1rem',
+                                                        border: theme.style === 'minimalist' ? '2px solid #3182ce' : '1px solid #ddd',
+                                                        background: '#fff',
+                                                        color: '#000',
                                                         cursor: 'pointer',
-                                                        background: theme.style === 'minimalist' ? '#f0f0f0' : '#fff'
+                                                        textAlign: 'center'
                                                     }}
                                                 >
-                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Minimalista (Light)</div>
-                                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>Fundo claro, clean, foco no conteúdo.</div>
+                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Minimalista</div>
+                                                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Limpo e direto</div>
                                                 </div>
                                             </div>
                                         </div>

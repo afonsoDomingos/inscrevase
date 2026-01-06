@@ -7,6 +7,8 @@ import { formService, FormModel } from '@/lib/formService';
 import Navbar from '@/components/Navbar';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
+import SubmissionManagement from '@/components/mentor/SubmissionManagement';
+import MentorSettings from '@/components/mentor/MentorSettings';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -312,10 +314,12 @@ export default function MentorDashboard() {
 
                     {activeTab === 'submissions' && (
                         <motion.div key="submissions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div className="luxury-card" style={{ background: '#fff', border: 'none', textAlign: 'center', padding: '4rem' }}>
-                                <Users size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
-                                <h4 style={{ color: '#999' }}>A funcionalidade de listagem de alunos está sendo preparada.</h4>
-                            </div>
+                            <SubmissionManagement />
+                        </motion.div>
+                    )}
+                    {activeTab === 'settings' && (
+                        <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <MentorSettings user={user} onUpdate={loadDashboard} />
                         </motion.div>
                     )}
                 </AnimatePresence>

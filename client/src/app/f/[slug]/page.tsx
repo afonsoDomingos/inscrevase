@@ -129,7 +129,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                             >
                                 <CheckCircle size={80} color={primaryColor} />
                             </motion.div>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>Inscrição Confirmada!</h2>
+                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: textColor }}>Inscrição Confirmada!</h2>
                             <p style={{ color: '#aaa', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
                                 Seus dados foram enviados com sucesso. Você será redirecionado para o WhatsApp do mentor em instantes...
                             </p>
@@ -163,7 +163,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 )}
 
                                 <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>Inscrições Abertas</span>
-                                <h1 style={{ fontSize: '3rem', fontWeight: 900, marginTop: '0.5rem', marginBottom: '1.5rem', lineHeight: '1.1' }}>
+                                <h1 style={{ fontSize: '3rem', fontWeight: 900, marginTop: '0.5rem', marginBottom: '1.5rem', lineHeight: '1.1', color: textColor }}>
                                     {form.title}
                                 </h1>
 
@@ -231,7 +231,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 className="luxury-card"
                                 style={{ background: cardBg, backdropFilter: 'blur(10px)', border: `1px solid ${borderColor}`, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}
                             >
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>Preencha seus dados</h3>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', color: textColor }}>Preencha seus dados</h3>
 
                                 <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.5rem' }}>
                                     {form.fields.map((field) => (
