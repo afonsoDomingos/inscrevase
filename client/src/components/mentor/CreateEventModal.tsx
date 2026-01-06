@@ -96,6 +96,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             return;
         }
 
+        // Validate Fields
+        const hasEmptyFields = fields.some(f => !f.label.trim());
+        if (hasEmptyFields) {
+            alert('Todos os campos do formulário precisam ter um nome (rótulo).');
+            setStep(2);
+            return;
+        }
+
         setLoading(true);
         try {
             await formService.createForm({
