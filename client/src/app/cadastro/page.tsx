@@ -27,8 +27,9 @@ export default function Register() {
         try {
             await authService.register(formData);
             router.push('/dashboard/mentor');
-        } catch (err: any) {
-            setError(err.message || 'Erro ao criar conta. Tente novamente.');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.';
+            setError(message);
         } finally {
             setLoading(false);
         }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,7 +13,14 @@ export default function Navbar() {
       <div className="nav-container">
         <Link href="/" className="logo-container">
           <div className="nav-logo-wrapper">
-            <img src="/logo.png" alt="Inscreva-se" className="nav-logo" />
+            <Image
+              src="/logo.png"
+              alt="Inscreva-se"
+              className="nav-logo"
+              width={80}
+              height={80}
+              priority
+            />
           </div>
         </Link>
 

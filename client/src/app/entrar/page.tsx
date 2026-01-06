@@ -30,8 +30,9 @@ export default function Login() {
             } else {
                 router.push('/dashboard/mentor');
             }
-        } catch (err: any) {
-            setError(err.message || 'Credenciais inválidas. Tente novamente.');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Credenciais inválidas. Tente novamente.';
+            setError(message);
         } finally {
             setLoading(false);
         }

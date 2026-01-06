@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { authService } from '@/lib/authService';
+import { authService, UserData } from '@/lib/authService';
 import Navbar from '@/components/Navbar';
 import { motion } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut } from 'lucide-react';
 
 export default function AdminDashboard() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<UserData | null>(null);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();

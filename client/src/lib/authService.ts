@@ -2,8 +2,28 @@ import Cookies from 'js-cookie';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+export interface UserData {
+    id: string;
+    name: string;
+    email: string;
+    role: 'admin' | 'mentor' | 'SuperAdmin';
+    businessName?: string;
+}
+
+export interface RegisterData {
+    name: string;
+    email: string;
+    password: string;
+    businessName: string;
+}
+
+export interface AuthResponse {
+    token: string;
+    user: UserData;
+}
+
 export const authService = {
-    async login(email: any, password: any) {
+    async login(email: string, password: string): Promise<AuthResponse> {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -17,10 +37,10 @@ export const authService = {
         Cookies.set('token', data.token, { expires: 1 });
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        return data;
+        return data as AuthResponse;
     },
 
-    async register(userData: any) {
+    async register(userData: RegisterData): Promise<AuthResponse> {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -33,7 +53,7 @@ export const authService = {
         Cookies.set('token', data.token, { expires: 1 });
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        return data;
+        return data as AuthResponse;
     },
 
     logout() {
@@ -42,9 +62,13 @@ export const authService = {
         window.location.href = '/entrar';
     },
 
-    getCurrentUser() {
-        const user = localStorage.getItem('user');
-        return user ? JSON.parse(user) : null;
+    getCurrentUser(): UserData | null {
+        try {
+            const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+            return user ? JSON.parse(user) : null;
+        } catch {
+            return null;
+        }
     },
 
     getToken() {
