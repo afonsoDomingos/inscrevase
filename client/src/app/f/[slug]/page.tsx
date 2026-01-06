@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Calendar, MapPin, Award } from 'lucide-react';
+import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Award } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
@@ -13,7 +13,7 @@ export default function PublicForm({ params }: { params: Promise<{ slug: string 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [formData, setFormData] = useState<Record<string, any>>({});
+    const [formData, setFormData] = useState<Record<string, string>>({});
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
 
@@ -69,8 +69,9 @@ export default function PublicForm({ params }: { params: Promise<{ slug: string 
                     window.location.href = `https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`;
                 }, 3000);
             }
-        } catch (err: any) {
-            alert(err.message || 'Erro ao enviar inscrição');
+        } catch (err: unknown) {
+            const error = err as Error;
+            alert(error.message || 'Erro ao enviar inscrição');
         } finally {
             setSubmitting(false);
         }

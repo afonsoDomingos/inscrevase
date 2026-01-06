@@ -46,7 +46,7 @@ export const formService = {
         return response.json();
     },
 
-    async submitForm(data: { formId: string; data: any; paymentProof?: string }): Promise<any> {
+    async submitForm(data: { formId: string; data: Record<string, string>; paymentProof?: string }): Promise<Record<string, unknown>> {
         const response = await fetch(`${API_URL}/submissions/submit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
