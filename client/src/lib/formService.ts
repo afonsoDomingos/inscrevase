@@ -14,6 +14,19 @@ export interface FormModel {
         email: string;
         businessName?: string;
     };
+    fields: {
+        id: string;
+        label: string;
+        type: 'text' | 'email' | 'number' | 'tel' | 'file' | 'select';
+        required: boolean;
+        options?: string[];
+    }[];
+    coverImage?: string;
+    logo?: string;
+    whatsappConfig?: {
+        phoneNumber: string;
+        message: string;
+    };
     createdAt: string;
 }
 
@@ -25,6 +38,37 @@ export const formService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar formulários');
         return response.json();
+    },
+
+    async getFormBySlug(slug: string): Promise<FormModel> {
+        const response = await fetch(`${API_URL}/forms/${slug}`);
+        if (!response.ok) throw new Error('Formulário não encontrado');
+        return response.json();
+    },
+
+    async submitForm(data: { formId: string; data: any; paymentProof?: string }): Promise<any> {
+        const response = await fetch(`${API_URL}/submissions/submit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Erro ao enviar inscrição');
+        return result;
+    },
+
+    async uploadFile(file: File, folder: string = 'submissions'): Promise<string> {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', folder);
+
+        const response = await fetch(`${API_URL}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error('Erro no upload do arquivo');
+        return result.url;
     },
 
     async deleteForm(id: string): Promise<void> {
