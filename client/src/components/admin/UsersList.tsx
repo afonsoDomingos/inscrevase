@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Trash2, Shield, UserX, UserCheck, MoreVertical, Search, Edit2 } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function UsersList() {
@@ -19,8 +19,8 @@ export default function UsersList() {
         try {
             const data = await userService.getAllUsers();
             setUsers(data);
-        } catch (err) {
-            console.error(err);
+        } catch (error: unknown) {
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -31,7 +31,8 @@ export default function UsersList() {
             const newStatus = user.status === 'active' ? 'blocked' : 'active';
             await userService.updateUser(user.id || (user as any)._id, { status: newStatus });
             loadUsers();
-        } catch (err) {
+        } catch (error: unknown) {
+            console.error(error);
             alert('Erro ao atualizar status');
         }
     };
@@ -41,7 +42,8 @@ export default function UsersList() {
         try {
             await userService.deleteUser(id);
             loadUsers();
-        } catch (err) {
+        } catch (error: unknown) {
+            console.error(error);
             alert('Erro ao excluir usuário');
         }
     };

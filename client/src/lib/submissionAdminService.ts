@@ -9,7 +9,7 @@ export interface SubmissionModel {
         title: string;
         slug: string;
     };
-    data: any;
+    data: Record<string, unknown>;
     status: 'pending' | 'approved' | 'rejected';
     paymentProof?: string;
     submittedAt: string;

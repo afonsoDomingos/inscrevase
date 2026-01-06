@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, FileText, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function SubmissionList() {
@@ -18,8 +18,8 @@ export default function SubmissionList() {
         try {
             const data = await submissionAdminService.getAllSubmissions();
             setSubmissions(data);
-        } catch (err) {
-            console.error(err);
+        } catch (error: unknown) {
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -29,7 +29,8 @@ export default function SubmissionList() {
         try {
             await submissionAdminService.updateStatus(id, status);
             loadSubmissions();
-        } catch (err) {
+        } catch (error: unknown) {
+            console.error(error);
             alert('Erro ao atualizar status');
         }
     };
@@ -78,8 +79,8 @@ export default function SubmissionList() {
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem' }}>
-                                    <div style={{ fontWeight: 600 }}>{sub.data.nome || sub.data.name || 'Sem Nome'}</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{sub.data.email || 'Sem Email'}</div>
+                                    <div style={{ fontWeight: 600 }}>{String(sub.data['nome'] || sub.data['name'] || 'Sem Nome')}</div>
+                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{String(sub.data['email'] || 'Sem Email')}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{sub.form?.title || 'Form Removido'}</div>

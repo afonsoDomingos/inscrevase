@@ -46,8 +46,8 @@ export default function MentorDashboard() {
 
                 setStats(statsData);
                 setForms(formsData);
-            } catch (err) {
-                console.error("Dashboard error:", err);
+            } catch (error: unknown) {
+                console.error("Dashboard error:", error);
             } finally {
                 setLoading(false);
             }
@@ -67,7 +67,8 @@ export default function MentorDashboard() {
             await formService.toggleFormStatus(form._id, !form.active);
             const updatedForms = await formService.getMyForms();
             setForms(updatedForms);
-        } catch (err) {
+        } catch (error: unknown) {
+            console.error(error);
             alert('Erro ao atualizar status');
         }
     };
