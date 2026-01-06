@@ -109,7 +109,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
 
     return (
-        <main style={{ background: bgColor, minHeight: '100vh', color: textColor }}>
+        <main style={{ background: bgColor, minHeight: '100vh', color: textColor, fontFamily: form.theme?.fontFamily || 'Inter' }}>
             <Navbar />
 
             <AnimatePresence>
@@ -136,8 +136,8 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
 
                             <button
                                 onClick={() => {
-                                    const message = encodeURIComponent(form.whatsappConfig?.message || 'Olá!');
-                                    window.location.href = `https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`;
+                                    const message = encodeURIComponent(form.whatsappConfig?.message || 'Olá, acabei de me inscrever!');
+                                    window.open(`https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`, '_blank');
                                 }}
                                 className="btn-primary"
                                 style={{ width: '100%', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: primaryColor, color: isDark ? '#000' : '#fff' }}
@@ -148,7 +148,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                     </motion.div>
                 ) : (
                     <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', paddingTop: '100px', paddingBottom: '100px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1fr', gap: '4rem', alignItems: 'start' }}>
 
                             {/* Left Side: Info */}
                             <motion.div
@@ -159,6 +159,12 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 {form.coverImage && (
                                     <div style={{ position: 'relative', width: '100%', height: '300px', borderRadius: '24px', overflow: 'hidden', marginBottom: '2rem', border: '1px solid #333' }}>
                                         <Image src={form.coverImage} alt={form.title} fill style={{ objectFit: 'cover' }} />
+                                    </div>
+                                )}
+
+                                {form.logo && (
+                                    <div style={{ position: 'relative', width: '150px', height: '80px', marginBottom: '1.5rem' }}>
+                                        <Image src={form.logo} alt="Event Logo" fill style={{ objectFit: 'contain', objectPosition: 'left' }} />
                                     </div>
                                 )}
 

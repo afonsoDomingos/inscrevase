@@ -81,9 +81,7 @@ export default function Home() {
 
       {/* Infinite Gallery Section */}
       <section style={{ overflow: 'hidden', padding: '0 0 4rem 0', background: '#fff' }}>
-        <p style={{ textAlign: 'center', color: '#999', fontSize: '0.8rem', fontWeight: 700, marginBottom: '2rem', letterSpacing: '3px', textTransform: 'uppercase' }}>
-          A escolha dos melhores mentores do mercado
-        </p>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', overflow: 'hidden' }}>
           {/* Row 1: Left Scroll */}
           <motion.div
@@ -134,9 +132,12 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="section" style={{ background: '#fafafa' }}>
+      <section className="section" style={{
+        background: 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, rgba(250, 250, 250, 1) 70%)',
+        position: 'relative'
+      }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
             <h2 style={{ fontSize: '3rem' }}>Funcionalidades <span className="gold-text">Premium</span></h2>
             <p style={{ color: '#666', maxWidth: '600px', margin: '1rem auto' }}>
               Tudo o que você precisa para gerir suas inscrições com profissionalismo moçambicano.
@@ -210,12 +211,32 @@ export default function Home() {
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
     <motion.div
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -10 }}
       className="luxury-card"
+      style={{
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '3rem 2rem'
+      }}
     >
-      <div style={{ marginBottom: '1.5rem' }}>{icon}</div>
-      <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h3>
-      <p style={{ color: '#666', lineHeight: 1.6 }}>{description}</p>
+      <div style={{
+        marginBottom: '1.5rem',
+        background: 'rgba(255, 215, 0, 0.08)',
+        padding: '1.2rem',
+        borderRadius: '50%',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid rgba(255, 215, 0, 0.2)'
+      }}>
+        <div style={{ transform: 'scale(1.2)' }}>
+          {icon}
+        </div>
+      </div>
+      <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>{title}</h3>
+      <p style={{ color: '#666', lineHeight: 1.6, fontSize: '0.95rem' }}>{description}</p>
     </motion.div>
   );
 }

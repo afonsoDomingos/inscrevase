@@ -21,6 +21,11 @@ export interface RecentForm {
     createdAt: string;
 }
 
+export interface AnalyticsData {
+    dailyStats: { date: string; count: number; revenue: number }[];
+    geoStats: { name: string; value: number }[];
+}
+
 export const dashboardService = {
     async getAdminStats(): Promise<AdminStats> {
         const token = Cookies.get('token');
@@ -46,6 +51,15 @@ export const dashboardService = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Falha ao buscar estatísticas do mentor');
+        return response.json();
+    },
+
+    async getAnalytics(): Promise<AnalyticsData> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/dashboard/mentor/analytics`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar dados analíticos');
         return response.json();
     }
 };

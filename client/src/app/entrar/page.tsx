@@ -132,6 +132,35 @@ export default function Login() {
                             <>Entrar na Plataforma <ArrowRight size={18} /></>
                         )}
                     </motion.button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0' }}>
+                        <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
+                        <span style={{ padding: '0 10px', color: '#888', fontSize: '0.8rem' }}>OU</span>
+                        <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
+                        style={{
+                            width: '100%',
+                            padding: '1rem',
+                            background: '#fff',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            color: '#333',
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20" />
+                        Continuar com Google
+                    </button>
                 </form>
 
                 <p style={{ marginTop: '2.5rem', textAlign: 'center', color: '#666', fontSize: '0.95rem' }}>

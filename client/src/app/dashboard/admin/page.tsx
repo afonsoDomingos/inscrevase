@@ -61,11 +61,97 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <main style={{ background: '#f8f9fa', minHeight: '100vh', paddingTop: '100px', paddingBottom: '50px' }}>
-            <Navbar />
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
+            {/* Sidebar */}
+            <aside style={{
+                width: '280px',
+                background: '#1a1a1a',
+                color: '#fff',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'fixed',
+                height: '100vh',
+                left: 0,
+                top: 0,
+                zIndex: 1000,
+                boxShadow: '4px 0 20px rgba(0,0,0,0.1)'
+            }}>
+                <div style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
+                    <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
+                        Inscreva<span className="gold-text">.se</span>
+                    </h2>
+                </div>
 
-            <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                <nav style={{ padding: '2rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {menuItems.map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id as Tab)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '1rem',
+                                width: '100%',
+                                borderRadius: '12px',
+                                border: 'none',
+                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                color: activeTab === item.id ? '#000' : '#888',
+                                fontWeight: activeTab === item.id ? 700 : 500,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                textAlign: 'left',
+                                fontSize: '0.95rem'
+                            }}
+                        >
+                            {activeTab === item.id && (
+                                <motion.div
+                                    layoutId="active-indicator"
+                                    style={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        width: '4px',
+                                        height: '24px',
+                                        background: '#FFD700',
+                                        borderTopRightRadius: '4px',
+                                        borderBottomRightRadius: '4px'
+                                    }}
+                                />
+                            )}
+                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7 }}>{item.icon}</div>
+                            {item.label}
+                        </button>
+                    ))}
+                </nav>
+
+                <div style={{ padding: '2rem' }}>
+                    <button
+                        onClick={() => authService.logout()}
+                        style={{
+                            width: '100%',
+                            padding: '1rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            color: '#e53e3e',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <LogOut size={18} /> Sair
+                    </button>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main style={{ marginLeft: '280px', flex: 1, padding: '2.5rem', minHeight: '100vh', maxWidth: 'calc(100vw - 280px)' }}>
+                {/* Header */}
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.5rem' }}>
                             <ShieldAlert size={18} />
@@ -74,45 +160,12 @@ export default function AdminDashboard() {
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            style={{ fontSize: '2.2rem', fontWeight: 800 }}
+                            style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
                         >
                             Olá, <span className="gold-text">{user.name.split(' ')[0]}</span>
                         </motion.h1>
                     </div>
-
-                    <button
-                        onClick={() => authService.logout()}
-                        style={{ background: '#fff', border: '1px solid #ddd', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, transition: 'all 0.3s' }}
-                    >
-                        <LogOut size={18} /> Sair
-                    </button>
                 </header>
-
-                {/* Tabs Navigation */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '2.5rem', borderBottom: '1px solid #eee', paddingBottom: '10px', overflowX: 'auto' }}>
-                    {menuItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id as Tab)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '0.8rem 1.5rem',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: activeTab === item.id ? '#000' : 'transparent',
-                                color: activeTab === item.id ? '#FFD700' : '#666',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)'
-                            }}
-                        >
-                            {item.icon}
-                            {item.label}
-                        </button>
-                    ))}
-                </div>
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
@@ -122,35 +175,35 @@ export default function AdminDashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                         >
-                            <div className="grid">
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
                                 {cards.map((card, index) => (
                                     <motion.div
                                         key={index}
                                         whileHover={{ y: -5 }}
                                         onClick={() => setActiveTab(card.tab as Tab)}
                                         className="luxury-card"
-                                        style={{ background: '#fff', padding: '1.5rem', border: 'none', cursor: 'pointer' }}
+                                        style={{ background: '#fff', padding: '1.8rem', border: 'none', borderTop: `1px solid ${card.color}40`, cursor: 'pointer' }}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
                                             <div style={{ background: `${card.color}15`, color: card.color, padding: '0.8rem', borderRadius: '12px' }}>
                                                 {card.icon}
                                             </div>
-                                            <span style={{ color: '#666', fontWeight: 500 }}>{card.label}</span>
+                                            <span style={{ color: '#666', fontWeight: 500, fontSize: '0.95rem' }}>{card.label}</span>
                                         </div>
-                                        <h2 style={{ fontSize: '2.2rem', fontWeight: 800 }}>{card.value}</h2>
+                                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{card.value}</h2>
                                     </motion.div>
                                 ))}
                             </div>
 
                             <div style={{ marginTop: '2.5rem' }}>
-                                <div className="luxury-card" style={{ background: '#000', color: '#fff', padding: '2.5rem', textAlign: 'center' }}>
-                                    <h2 className="gold-text" style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Modo Super Administrador Ativo</h2>
-                                    <p style={{ color: '#aaa', maxWidth: '600px', margin: '0 auto 1.5rem' }}>
+                                <div className="luxury-card" style={{ background: '#000', color: '#fff', padding: '3rem', textAlign: 'center', border: '1px solid #333' }}>
+                                    <h2 className="gold-text" style={{ fontSize: '2rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>Modo Super Administrador Ativo</h2>
+                                    <p style={{ color: '#aaa', maxWidth: '600px', margin: '0 auto 2rem', fontSize: '1.1rem', lineHeight: 1.6 }}>
                                         Você tem controle total sobre todos os mentores, formulários de inscrição e pagamentos realizados na plataforma Inscreva-se.
                                     </p>
-                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                                        <button onClick={() => setActiveTab('users')} className="btn-primary" style={{ padding: '0.8rem 1.5rem', fontSize: '0.9rem' }}>Gerenciar Usuários</button>
-                                        <button onClick={() => setActiveTab('forms')} style={{ background: 'transparent', border: '1px solid #FFD700', color: '#FFD700', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Ver Atividades</button>
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
+                                        <button onClick={() => setActiveTab('users')} className="btn-primary" style={{ padding: '0.9rem 2rem', fontSize: '0.9rem' }}>Gerenciar Usuários</button>
+                                        <button onClick={() => setActiveTab('forms')} style={{ background: 'transparent', border: '1px solid #FFD700', color: '#FFD700', padding: '0.9rem 2rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>Ver Atividades</button>
                                     </div>
                                 </div>
                             </div>
@@ -175,7 +228,7 @@ export default function AdminDashboard() {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-        </main>
+            </main>
+        </div>
     );
 }

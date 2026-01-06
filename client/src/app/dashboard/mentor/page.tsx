@@ -13,6 +13,7 @@ import EditEventModal from '@/components/mentor/EditEventModal';
 import { Pencil } from 'lucide-react';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
+import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -30,11 +31,12 @@ import {
     User as UserIcon,
     ChevronRight,
     Palette,
-    DollarSign
+    DollarSign,
+    PieChart
 } from 'lucide-react';
 import Image from 'next/image';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'settings';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings';
 
 export default function MentorDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
@@ -116,21 +118,113 @@ export default function MentorDashboard() {
     ];
 
     return (
-        <main style={{ background: '#f8f9fa', minHeight: '100vh', paddingTop: '100px', paddingBottom: '50px' }}>
-            <Navbar />
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
+            {/* Sidebar */}
+            <aside style={{
+                width: '280px',
+                background: '#1a1a1a',
+                color: '#fff',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'fixed',
+                height: '100vh',
+                left: 0,
+                top: 0,
+                zIndex: 1000,
+                boxShadow: '4px 0 20px rgba(0,0,0,0.1)'
+            }}>
+                <div style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
+                    <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
+                        Inscreva<span className="gold-text">.se</span>
+                    </h2>
+                </div>
 
-            <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                <nav style={{ padding: '2rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {[
+                        { id: 'overview', label: 'Visão Geral', icon: <LayoutDashboard size={20} /> },
+                        { id: 'forms', label: 'Meus Eventos', icon: <FileText size={20} /> },
+                        { id: 'submissions', label: 'Inscritos', icon: <Users size={20} /> },
+                        { id: 'reports', label: 'Relatórios', icon: <PieChart size={20} /> },
+                        { id: 'settings', label: 'Minha Conta', icon: <Settings size={20} /> },
+                    ].map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id as Tab)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '1rem',
+                                width: '100%',
+                                borderRadius: '12px',
+                                border: 'none',
+                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                color: activeTab === item.id ? '#000' : '#888',
+                                fontWeight: activeTab === item.id ? 700 : 500,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                textAlign: 'left',
+                                fontSize: '0.95rem'
+                            }}
+                        >
+                            {activeTab === item.id && (
+                                <motion.div
+                                    layoutId="active-indicator"
+                                    style={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        width: '4px',
+                                        height: '24px',
+                                        background: '#FFD700',
+                                        borderTopRightRadius: '4px',
+                                        borderBottomRightRadius: '4px'
+                                    }}
+                                />
+                            )}
+                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7 }}>{item.icon}</div>
+                            {item.label}
+                        </button>
+                    ))}
+                </nav>
+
+                <div style={{ padding: '2rem' }}>
+                    <button
+                        onClick={() => authService.logout()}
+                        style={{
+                            width: '100%',
+                            padding: '1rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            color: '#e53e3e',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <LogOut size={18} /> Sair
+                    </button>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main style={{ marginLeft: '280px', flex: 1, padding: '2.5rem', minHeight: '100vh', maxWidth: 'calc(100vw - 280px)' }}>
+                {/* Header */}
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div
                             onClick={() => setIsProfileModalOpen(true)}
-                            style={{ position: 'relative', width: '60px', height: '60px', borderRadius: '50%', overflow: 'hidden', background: '#000', border: '2px solid #FFD700', cursor: 'pointer' }}
+                            style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
                         >
                             {user.profilePhoto ? (
                                 <Image src={user.profilePhoto} alt={user.name} fill style={{ objectFit: 'cover' }} />
                             ) : (
-                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700' }}>
-                                    <UserIcon size={30} />
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: '#000' }}>
+                                    <UserIcon size={32} />
                                 </div>
                             )}
                         </div>
@@ -138,15 +232,12 @@ export default function MentorDashboard() {
                             <motion.h1
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
-                                style={{ fontSize: '2rem', fontWeight: 800 }}
+                                style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
                             >
-                                Painel do <span className="gold-text">Mentor</span>
+                                Olá, <span className="gold-text">{user.name.split(' ')[0]}</span>
                             </motion.h1>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <p style={{ color: '#666' }}>Olá, {user.name.split(' ')[0]}</p>
-                                <button onClick={() => setIsProfileModalOpen(true)} style={{ background: 'none', border: 'none', color: '#FFD700', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                    Editar Perfil <ChevronRight size={12} />
-                                </button>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+                                <p style={{ color: '#666', fontSize: '0.9rem' }}>Bem-vindo de volta ao seu painel</p>
                             </div>
                         </div>
                     </div>
@@ -155,105 +246,91 @@ export default function MentorDashboard() {
                         <button
                             onClick={() => setIsEventModalOpen(true)}
                             className="btn-primary"
-                            style={{ padding: '0.8rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            style={{ padding: '0.9rem 2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', borderRadius: '50px' }}
                         >
-                            <Plus size={18} /> Criar Evento
-                        </button>
-                        <button
-                            onClick={() => authService.logout()}
-                            style={{ background: '#fff', border: '1px solid #ddd', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
-                        >
-                            <LogOut size={18} /> Sair
+                            <Plus size={20} /> Criar Novo Evento
                         </button>
                     </div>
                 </header>
 
-                {/* Tabs Navigation */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '2rem', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-                    {[
-                        { id: 'overview', label: 'Início', icon: <LayoutDashboard size={18} /> },
-                        { id: 'forms', label: 'Meus Eventos', icon: <FileText size={18} /> },
-                        { id: 'submissions', label: 'Alunos Inscritos', icon: <Database size={18} /> },
-                        { id: 'settings', label: 'Configurações', icon: <Settings size={18} /> },
-                    ].map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id as Tab)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '0.7rem 1.2rem',
-                                borderRadius: '10px',
-                                border: 'none',
-                                background: activeTab === item.id ? '#000' : 'transparent',
-                                color: activeTab === item.id ? '#FFD700' : '#666',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            {item.icon}
-                            {item.label}
-                        </button>
-                    ))}
-                </div>
-
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div className="grid">
-                                {cards.map((card, index) => (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+                                {cards.slice(0, 3).map((card, index) => (
                                     <motion.div
                                         key={index}
                                         whileHover={{ y: -5 }}
                                         className="luxury-card"
-                                        style={{ background: '#fff', padding: '1.5rem', border: 'none' }}
+                                        style={{ background: '#fff', padding: '1.8rem', border: 'none', borderTop: `1px solid ${card.color}40` }}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '0.6rem', borderRadius: '10px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '0.8rem', borderRadius: '12px' }}>
                                                 {card.icon}
                                             </div>
-                                            <span style={{ color: '#666', fontWeight: 500, fontSize: '0.9rem' }}>{card.label}</span>
+                                            <span style={{ color: '#666', fontWeight: 500, fontSize: '0.95rem' }}>{card.label}</span>
                                         </div>
-                                        <h2 style={{ fontSize: '2rem', fontWeight: 800 }}>{card.value}</h2>
+                                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{card.value}</h2>
+                                    </motion.div>
+                                ))}
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                {cards.slice(3).map((card, index) => (
+                                    <motion.div
+                                        key={index + 3}
+                                        whileHover={{ y: -5 }}
+                                        className="luxury-card"
+                                        style={{ background: '#fff', padding: '1.8rem', border: 'none', borderTop: `1px solid ${card.color}40` }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '0.8rem', borderRadius: '12px' }}>
+                                                {card.icon}
+                                            </div>
+                                            <span style={{ color: '#666', fontWeight: 500, fontSize: '0.95rem' }}>{card.label}</span>
+                                        </div>
+                                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{card.value}</h2>
                                     </motion.div>
                                 ))}
                             </div>
 
-                            <div style={{ marginTop: '2.5rem' }}>
+                            <div style={{ marginTop: '4rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Eventos Recentes</h3>
-                                    <button onClick={() => setActiveTab('forms')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}>Ver todos</button>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>Eventos Recentes</h3>
+                                    <button onClick={() => setActiveTab('forms')} style={{ background: 'none', border: 'none', color: '#FFD700', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>Ver todos</button>
                                 </div>
 
                                 {forms.length > 0 ? (
-                                    <div className="grid">
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         {forms.slice(0, 3).map((form) => (
-                                            <div key={form._id} className="luxury-card" style={{ background: '#fff', border: 'none' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                                    <h4 style={{ fontWeight: 700, fontSize: '1.1rem' }}>{form.title}</h4>
-                                                    <span style={{
-                                                        padding: '0.2rem 0.5rem',
-                                                        borderRadius: '6px',
-                                                        fontSize: '0.65rem',
-                                                        fontWeight: 800,
-                                                        background: form.active ? '#38a16915' : '#eee',
-                                                        color: form.active ? '#38a169' : '#888'
-                                                    }}>
-                                                        {form.active ? 'ATIVO' : 'RASCUNHO'}
-                                                    </span>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-                                                    <button onClick={() => copyToClipboard(form.slug)} style={{ flex: 1, padding: '0.5rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
-                                                        <Copy size={14} /> Link
-                                                    </button>
-                                                    <button
-                                                        onClick={() => window.open(`/f/${form.slug}`, '_blank')}
-                                                        style={{ flex: 1, padding: '0.5rem', background: '#000', color: '#FFD700', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
-                                                    >
-                                                        Visualizar
-                                                    </button>
+                                            <div key={form._id} className="luxury-card" style={{ background: '#fff', border: 'none', padding: '0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+                                                <div style={{ height: '4px', width: '100%', background: 'var(--gold-gradient)' }}></div>
+                                                <div style={{ padding: '2rem' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+                                                        <h4 style={{ fontWeight: 700, fontSize: '1.3rem', fontFamily: 'var(--font-playfair)', maxWidth: '80%' }}>{form.title}</h4>
+                                                        <span style={{
+                                                            padding: '0.4rem 0.8rem',
+                                                            borderRadius: '4px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            background: form.active ? '#38a16915' : '#eee',
+                                                            color: form.active ? '#38a169' : '#888',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px'
+                                                        }}>
+                                                            {form.active ? 'ATIVO' : 'RASCUNHO'}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                                        <button onClick={() => copyToClipboard(form.slug)} style={{ flex: 1, padding: '1rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>
+                                                            <Copy size={16} /> Link
+                                                        </button>
+                                                        <button
+                                                            onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                                                            style={{ flex: 3, padding: '1rem', background: '#000', color: '#FFD700', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}
+                                                        >
+                                                            Visualizar
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -333,44 +410,59 @@ export default function MentorDashboard() {
                             <SubmissionManagement formId={selectedSubmissionFormId} />
                         </motion.div>
                     )}
+
+                    {activeTab === 'reports' && (
+                        <motion.div
+                            key="reports"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-playfair)' }}>
+                                Análise de Performance
+                            </h2>
+                            <AnalyticsCharts />
+                        </motion.div>
+                    )}
+
                     {activeTab === 'settings' && (
                         <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <MentorSettings user={user} onUpdate={loadDashboard} />
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
 
-            <CreateEventModal
-                isOpen={isEventModalOpen}
-                onClose={() => setIsEventModalOpen(false)}
-                onSuccess={loadDashboard}
-            />
-
-            <ProfileModal
-                isOpen={isProfileModalOpen}
-                onClose={() => setIsProfileModalOpen(false)}
-                user={user}
-                onSuccess={loadDashboard}
-            />
-
-            {themeModalData.form && (
-                <EditEventThemeModal
-                    isOpen={themeModalData.isOpen}
-                    onClose={() => setThemeModalData({ isOpen: false, form: null })}
-                    form={themeModalData.form}
+                <CreateEventModal
+                    isOpen={isEventModalOpen}
+                    onClose={() => setIsEventModalOpen(false)}
                     onSuccess={loadDashboard}
                 />
-            )}
 
-            {editModalData.form && (
-                <EditEventModal
-                    isOpen={editModalData.isOpen}
-                    onClose={() => setEditModalData({ isOpen: false, form: null })}
-                    form={editModalData.form}
+                <ProfileModal
+                    isOpen={isProfileModalOpen}
+                    onClose={() => setIsProfileModalOpen(false)}
+                    user={user}
                     onSuccess={loadDashboard}
                 />
-            )}
-        </main>
+
+                {themeModalData.form && (
+                    <EditEventThemeModal
+                        isOpen={themeModalData.isOpen}
+                        onClose={() => setThemeModalData({ isOpen: false, form: null })}
+                        form={themeModalData.form}
+                        onSuccess={loadDashboard}
+                    />
+                )}
+
+                {editModalData.form && (
+                    <EditEventModal
+                        isOpen={editModalData.isOpen}
+                        onClose={() => setEditModalData({ isOpen: false, form: null })}
+                        form={editModalData.form}
+                        onSuccess={loadDashboard}
+                    />
+                )}
+            </main>
+        </div>
     );
 }
