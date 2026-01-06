@@ -95,8 +95,20 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
         );
     }
 
+    // Default to luxury/dark if no theme is set (legacy compatibility)
+    const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';
+
+    const primaryColor = form.theme?.primaryColor || '#FFD700';
+    const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
+    const isDark = isLuxury;
+
+    const textColor = isDark ? '#fff' : '#111';
+    const secondaryTextColor = isDark ? '#aaa' : '#666';
+    const cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#fff';
+    const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
+
     return (
-        <main style={{ background: '#050505', minHeight: '100vh', color: '#fff' }}>
+        <main style={{ background: bgColor, minHeight: '100vh', color: textColor }}>
             <Navbar />
 
             <AnimatePresence>
@@ -114,7 +126,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 transition={{ type: 'spring', damping: 10 }}
                                 style={{ color: '#31c48d', marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}
                             >
-                                <CheckCircle size={80} />
+                                <CheckCircle size={80} color={primaryColor} />
                             </motion.div>
                             <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>Inscrição Confirmada!</h2>
                             <p style={{ color: '#aaa', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
@@ -127,7 +139,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     window.location.href = `https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`;
                                 }}
                                 className="btn-primary"
-                                style={{ width: '100%', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                style={{ width: '100%', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: primaryColor, color: isDark ? '#000' : '#fff' }}
                             >
                                 <MessageCircle size={20} /> Falar com Mentor no WhatsApp
                             </button>
@@ -149,7 +161,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     </div>
                                 )}
 
-                                <span style={{ color: '#FFD700', fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>Inscrições Abertas</span>
+                                <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>Inscrições Abertas</span>
                                 <h1 style={{ fontSize: '3rem', fontWeight: 900, marginTop: '0.5rem', marginBottom: '1.5rem', lineHeight: '1.1' }}>
                                     {form.title}
                                 </h1>
@@ -159,15 +171,24 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 </div>
 
                                 <div style={{ display: 'grid', gap: '1.2rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#111', padding: '1rem', borderRadius: '15px' }}>
-                                        <div style={{ color: '#FFD700' }}><Award size={24} /></div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>
+                                        <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: `2px solid ${primaryColor}` }}>
+                                            {form.creator.profilePhoto ? (
+                                                <Image src={form.creator.profilePhoto} alt={form.creator.name} fill style={{ objectFit: 'cover' }} />
+                                            ) : (
+                                                <div style={{ width: '100%', height: '100%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>
+                                                    {form.creator.name.charAt(0)}
+                                                </div>
+                                            )}
+                                        </div>
                                         <div>
-                                            <div style={{ fontSize: '0.9rem', color: '#666' }}>Mentor Responsável</div>
+                                            <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>Mentor Responsável</div>
                                             <div style={{ fontWeight: 600 }}>{form.creator.name}</div>
+                                            {form.creator.bio && <div style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '2px' }}>{form.creator.bio}</div>}
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#111', padding: '1rem', borderRadius: '15px' }}>
-                                        <div style={{ color: '#FFD700' }}><ShieldCheck size={24} /></div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>
+                                        <div style={{ color: primaryColor }}><ShieldCheck size={24} /></div>
                                         <div>
                                             <div style={{ fontSize: '0.9rem', color: '#666' }}>Pagamento Seguro</div>
                                             <div style={{ fontWeight: 600 }}>Via Comprovativo Digital</div>
@@ -182,15 +203,15 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ delay: 0.3 }}
                                 className="luxury-card"
-                                style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', padding: '2.5rem', borderRadius: '30px' }}
+                                style={{ background: cardBg, backdropFilter: 'blur(10px)', border: `1px solid ${borderColor}`, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}
                             >
                                 <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>Preencha seus dados</h3>
 
                                 <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.5rem' }}>
                                     {form.fields.map((field) => (
                                         <div key={field.id}>
-                                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#aaa', marginBottom: '0.6rem' }}>
-                                                {field.label} {field.required && <span style={{ color: '#FFD700' }}>*</span>}
+                                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: secondaryTextColor, marginBottom: '0.6rem' }}>
+                                                {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                             </label>
 
                                             {field.type === 'select' ? (
@@ -239,9 +260,9 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <Upload size={32} color="#FFD700" style={{ marginBottom: '0.5rem' }} />
-                                                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Clique para enviar imagem ou PDF</div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Tamanho máx: 5MB</div>
+                                                    <Upload size={32} color={primaryColor} style={{ marginBottom: '0.5rem' }} />
+                                                    <div style={{ fontWeight: 600, fontSize: '0.9rem', color: textColor }}>Clique para enviar imagem ou PDF</div>
+                                                    <div style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '4px' }}>Tamanho máx: 5MB</div>
                                                 </>
                                             )}
                                         </label>
@@ -251,7 +272,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                         type="submit"
                                         disabled={submitting}
                                         className="btn-primary"
-                                        style={{ marginTop: '1.5rem', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '1rem' }}
+                                        style={{ marginTop: '1.5rem', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '1rem', background: primaryColor, color: isDark ? '#000' : '#fff', border: 'none', borderRadius: '12px' }}
                                     >
                                         {submitting ? (
                                             <><Loader2 className="animate-spin" size={20} /> Processando...</>

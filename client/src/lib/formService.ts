@@ -13,6 +13,8 @@ export interface FormModel {
         name: string;
         email: string;
         businessName?: string;
+        profilePhoto?: string;
+        bio?: string;
     };
     fields: {
         id: string;
@@ -26,6 +28,12 @@ export interface FormModel {
     whatsappConfig?: {
         phoneNumber: string;
         message: string;
+    };
+    theme?: {
+        primaryColor: string;
+        backgroundColor: string;
+        fontFamily: string;
+        style: 'luxury' | 'minimalist';
     };
     createdAt: string;
 }

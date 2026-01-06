@@ -6,6 +6,7 @@ import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import Navbar from '@/components/Navbar';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
+import ProfileModal from '@/components/mentor/ProfileModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -19,8 +20,11 @@ import {
     Database,
     Settings,
     Copy,
-    Trash2
+    Trash2,
+    User as UserIcon,
+    ChevronRight
 } from 'lucide-react';
+import Image from 'next/image';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'settings';
 
@@ -30,7 +34,8 @@ export default function MentorDashboard() {
     const [forms, setForms] = useState<FormModel[]>([]);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     const loadDashboard = useCallback(async () => {
         try {
@@ -105,20 +110,39 @@ export default function MentorDashboard() {
 
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                    <div>
-                        <motion.h1
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            style={{ fontSize: '2.2rem', fontWeight: 800 }}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div
+                            onClick={() => setIsProfileModalOpen(true)}
+                            style={{ position: 'relative', width: '60px', height: '60px', borderRadius: '50%', overflow: 'hidden', background: '#000', border: '2px solid #FFD700', cursor: 'pointer' }}
                         >
-                            Painel do <span className="gold-text">Mentor</span>
-                        </motion.h1>
-                        <p style={{ color: '#666' }}>Bem-vindo de volta, {user.name.split(' ')[0]}</p>
+                            {user.profilePhoto ? (
+                                <Image src={user.profilePhoto} alt={user.name} fill style={{ objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700' }}>
+                                    <UserIcon size={30} />
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <motion.h1
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                style={{ fontSize: '2rem', fontWeight: 800 }}
+                            >
+                                Painel do <span className="gold-text">Mentor</span>
+                            </motion.h1>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <p style={{ color: '#666' }}>Olá, {user.name.split(' ')[0]}</p>
+                                <button onClick={() => setIsProfileModalOpen(true)} style={{ background: 'none', border: 'none', color: '#FFD700', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                    Editar Perfil <ChevronRight size={12} />
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <button
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={() => setIsEventModalOpen(true)}
                             className="btn-primary"
                             style={{ padding: '0.8rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
@@ -227,7 +251,7 @@ export default function MentorDashboard() {
                                     <div className="luxury-card" style={{ background: '#fff', border: 'none', textAlign: 'center', padding: '4rem' }}>
                                         <FileText size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
                                         <h4 style={{ color: '#999', marginBottom: '1rem' }}>Nenhum evento criado ainda</h4>
-                                        <button onClick={() => setIsModalOpen(true)} className="btn-primary" style={{ padding: '0.8rem 2rem' }}>Criar Meu Primeiro Evento</button>
+                                        <button onClick={() => setIsEventModalOpen(true)} className="btn-primary" style={{ padding: '0.8rem 2rem' }}>Criar Meu Primeiro Evento</button>
                                     </div>
                                 )}
                             </div>
@@ -298,8 +322,15 @@ export default function MentorDashboard() {
             </div>
 
             <CreateEventModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isEventModalOpen}
+                onClose={() => setIsEventModalOpen(false)}
+                onSuccess={loadDashboard}
+            />
+
+            <ProfileModal
+                isOpen={isProfileModalOpen}
+                onClose={() => setIsProfileModalOpen(false)}
+                user={user}
                 onSuccess={loadDashboard}
             />
         </main>

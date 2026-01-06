@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette } from 'lucide-react';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 
@@ -15,6 +15,12 @@ interface CreateEventModalProps {
 export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateEventModalProps) {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+
+    // Theme State
+    const [theme, setTheme] = useState({
+        primaryColor: '#FFD700',
+        style: 'luxury'
+    });
 
     // Form State
     const [title, setTitle] = useState('');
@@ -71,9 +77,15 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             await formService.createForm({
                 title,
                 description,
-                fields,
+                fields: fields as FormModel['fields'],
                 coverImage,
                 whatsappConfig,
+                theme: {
+                    ...theme,
+                    style: theme.style as "luxury" | "minimalist",
+                    backgroundColor: theme.style === 'luxury' ? '#000000' : '#FFFFFF',
+                    fontFamily: 'Inter'
+                },
                 active: true
             });
             onSuccess();
@@ -127,7 +139,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             {[
                                 { id: 1, label: 'Informações', icon: <Info size={18} /> },
                                 { id: 2, label: 'Formulário', icon: <Plus size={18} /> },
-                                { id: 3, label: 'Comunicação', icon: <MessageCircle size={18} /> },
+                                { id: 3, label: 'Design', icon: <Palette size={18} /> },
+                                { id: 4, label: 'Comunicação', icon: <MessageCircle size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -155,12 +168,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                         <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
                             <button
-                                onClick={step === 3 ? handleSubmit : () => setStep(step + 1)}
+                                onClick={step === 4 ? handleSubmit : () => setStep(step + 1)}
                                 disabled={loading}
                                 className="btn-primary"
                                 style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                             >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 3 ? <><Save size={18} /> Publicar</> : 'Próximo')}
+                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 4 ? <><Save size={18} /> Publicar</> : 'Próximo')}
                             </button>
                         </div>
                     </div>
@@ -286,6 +299,73 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             )}
 
                             {step === 3 && (
+                                <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Personalização</h2>
+
+                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor Principal</label>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
+                                                    <motion.button
+                                                        key={color}
+                                                        onClick={() => setTheme({ ...theme, primaryColor: color })}
+                                                        style={{
+                                                            width: '40px',
+                                                            height: '40px',
+                                                            borderRadius: '50%',
+                                                            background: color,
+                                                            border: theme.primaryColor === color ? '3px solid #000' : '3px solid transparent',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        whileHover={{ scale: 1.1 }}
+                                                    />
+                                                ))}
+                                                <input
+                                                    type="color"
+                                                    value={theme.primaryColor}
+                                                    onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
+                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Estilo Visual</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div
+                                                    onClick={() => setTheme({ ...theme, style: 'luxury' })}
+                                                    style={{
+                                                        border: theme.style === 'luxury' ? '2px solid #000' : '1px solid #ddd',
+                                                        borderRadius: '12px',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        background: theme.style === 'luxury' ? '#f0f0f0' : '#fff'
+                                                    }}
+                                                >
+                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Luxo (Dark)</div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>Fundo escuro, detalhes dourados, ideal para eventos premium.</div>
+                                                </div>
+                                                <div
+                                                    onClick={() => setTheme({ ...theme, style: 'minimalist' })}
+                                                    style={{
+                                                        border: theme.style === 'minimalist' ? '2px solid #000' : '1px solid #ddd',
+                                                        borderRadius: '12px',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        background: theme.style === 'minimalist' ? '#f0f0f0' : '#fff'
+                                                    }}
+                                                >
+                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Minimalista (Light)</div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>Fundo claro, clean, foco no conteúdo.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {step === 4 && (
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                     <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>WhatsApp & Conclusão</h2>
 

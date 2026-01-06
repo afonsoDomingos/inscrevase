@@ -9,6 +9,9 @@ export interface UserData {
     email: string;
     role: 'admin' | 'mentor' | 'SuperAdmin';
     businessName?: string;
+    bio?: string;
+    profilePhoto?: string;
+    whatsapp?: string;
     status?: 'active' | 'blocked';
     plan?: 'free' | 'premium';
     createdAt?: string;
@@ -77,5 +80,28 @@ export const authService = {
 
     getToken() {
         return Cookies.get('token');
+    },
+
+    async updateProfile(data: Partial<UserData>): Promise<UserData> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Erro ao atualizar perfil');
+
+        // Update local storage
+        const currentUser = this.getCurrentUser();
+        if (currentUser) {
+            const updatedUser = { ...currentUser, ...result.user };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+
+        return result.user;
     }
 };

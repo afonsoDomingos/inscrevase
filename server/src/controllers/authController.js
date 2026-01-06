@@ -42,6 +42,25 @@ const getProfile = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    try {
+        const { name, businessName, bio, profilePhoto, whatsapp } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (name) user.name = name;
+        if (businessName) user.businessName = businessName;
+        if (bio) user.bio = bio;
+        if (profilePhoto) user.profilePhoto = profilePhoto;
+        if (whatsapp) user.whatsapp = whatsapp;
+
+        await user.save();
+        res.json({ message: 'Profile updated successfully', user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 const getUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ createdAt: -1 });
@@ -88,4 +107,4 @@ const deleteByAdmin = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, getUsers, updateByAdmin, deleteByAdmin };
+module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin };

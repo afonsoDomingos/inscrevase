@@ -33,9 +33,8 @@ const FormSchema = new mongoose.Schema({
         style: { type: String, enum: ['luxury', 'minimalist'], default: 'luxury' }
     },
     whatsappConfig: {
-        enabled: { type: Boolean, default: true },
-        buttonText: { type: String, default: 'Participar na Comunidade' },
-        link: { type: String }
+        phoneNumber: { type: String },
+        message: { type: String }
     },
     active: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
