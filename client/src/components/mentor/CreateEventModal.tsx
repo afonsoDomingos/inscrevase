@@ -83,7 +83,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 theme: {
                     ...theme,
                     style: theme.style as "luxury" | "minimalist",
-                    backgroundColor: theme.style === 'luxury' ? '#000000' : '#FFFFFF',
+                    backgroundColor: theme.style === 'luxury' ? '#050505' : '#FFFFFF',
                     fontFamily: 'Inter'
                 },
                 active: true

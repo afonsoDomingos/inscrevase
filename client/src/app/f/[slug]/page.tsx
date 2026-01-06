@@ -99,7 +99,10 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';
 
     const primaryColor = form.theme?.primaryColor || '#FFD700';
-    const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
+    let bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
+    // Upgrade legacy pure black to rich dark
+    if (isLuxury && bgColor === '#000000') bgColor = '#050505';
+
     const isDark = isLuxury;
 
     const textColor = isDark ? '#fff' : '#111';
@@ -107,8 +110,15 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#fff';
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
 
+    // Add subtle gradient for depth in luxury mode
+    const pageStyle = {
+        background: isLuxury ? `radial-gradient(circle at 50% 0%, #1a1a1a 0%, ${bgColor} 100%)` : bgColor,
+        minHeight: '100vh',
+        color: textColor
+    };
+
     return (
-        <main style={{ background: bgColor, minHeight: '100vh', color: textColor }}>
+        <main style={pageStyle}>
             <Navbar />
 
             <AnimatePresence>
