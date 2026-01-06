@@ -12,6 +12,12 @@ export interface UserData {
     bio?: string;
     profilePhoto?: string;
     whatsapp?: string;
+    socialLinks?: {
+        instagram?: string;
+        linkedin?: string;
+        facebook?: string;
+        website?: string;
+    };
     status?: 'active' | 'blocked';
     plan?: 'free' | 'premium';
     createdAt?: string;

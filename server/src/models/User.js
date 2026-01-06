@@ -10,6 +10,12 @@ const UserSchema = new mongoose.Schema({
     whatsapp: { type: String },
     businessName: { type: String },
     bio: { type: String },
+    socialLinks: {
+        instagram: { type: String },
+        linkedin: { type: String },
+        facebook: { type: String },
+        website: { type: String }
+    },
     plan: { type: String, enum: ['free', 'premium'], default: 'free' },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
     createdAt: { type: Date, default: Date.now }

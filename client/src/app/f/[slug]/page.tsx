@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Award } from 'lucide-react';
+import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Award, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
@@ -185,6 +185,31 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                             <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>Mentor Responsável</div>
                                             <div style={{ fontWeight: 600 }}>{form.creator.name}</div>
                                             {form.creator.bio && <div style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '2px' }}>{form.creator.bio}</div>}
+
+                                            {form.creator.socialLinks && (
+                                                <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                                                    {form.creator.socialLinks.instagram && (
+                                                        <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                            <Instagram size={16} />
+                                                        </a>
+                                                    )}
+                                                    {form.creator.socialLinks.linkedin && (
+                                                        <a href={form.creator.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                            <Linkedin size={16} />
+                                                        </a>
+                                                    )}
+                                                    {form.creator.socialLinks.facebook && (
+                                                        <a href={form.creator.socialLinks.facebook} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                            <Facebook size={16} />
+                                                        </a>
+                                                    )}
+                                                    {form.creator.socialLinks.website && (
+                                                        <a href={form.creator.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                            <Globe size={16} />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>

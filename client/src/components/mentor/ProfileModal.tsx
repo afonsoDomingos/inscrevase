@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon } from 'lucide-react';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService';
 import Image from 'next/image';
@@ -24,6 +24,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
     const [bio, setBio] = useState(user.bio || '');
     const [whatsapp, setWhatsapp] = useState(user.whatsapp || '');
     const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || '');
+    const [socialLinks, setSocialLinks] = useState(user.socialLinks || {});
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -48,7 +49,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                 businessName,
                 bio,
                 whatsapp,
-                profilePhoto
+                profilePhoto,
+                socialLinks
             });
             onSuccess();
             onClose();
@@ -147,6 +149,67 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                 onChange={(e) => setBusinessName(e.target.value)}
                                 placeholder="Ex: Master Mentoria"
                             />
+                        </div>
+
+                        {/* Social Links Section */}
+                        <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px' }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#666', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <Globe size={14} /> Redes Sociais (Opcional)
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Instagram size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.instagram || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
+                                            placeholder="Instagram URL"
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Linkedin size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.linkedin || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
+                                            placeholder="LinkedIn URL"
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Facebook size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.facebook || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, facebook: e.target.value })}
+                                            placeholder="Facebook URL"
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Globe size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.website || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
+                                            placeholder="Website Pessoal"
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

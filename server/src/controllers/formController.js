@@ -46,7 +46,7 @@ const getMyForms = async (req, res) => {
 const getFormBySlug = async (req, res) => {
     try {
         const form = await Form.findOne({ slug: req.params.slug, active: true })
-            .populate('creator', 'name profilePhoto bio');
+            .populate('creator', 'name profilePhoto bio socialLinks');
         if (!form) return res.status(404).json({ message: 'Form not found' });
         res.json(form);
     } catch (err) {

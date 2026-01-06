@@ -15,6 +15,12 @@ export interface FormModel {
         businessName?: string;
         profilePhoto?: string;
         bio?: string;
+        socialLinks?: {
+            instagram?: string;
+            linkedin?: string;
+            facebook?: string;
+            website?: string;
+        };
     };
     fields: {
         id: string;
