@@ -34,3 +34,30 @@ exports.getRecentForms = async (req, res) => {
         res.status(500).json({ message: 'Error fetching recent forms' });
     }
 };
+
+exports.getMentorStats = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // 1. Count forms created by mentor
+        const totalForms = await Form.countDocuments({ creator: userId });
+
+        // 2. Count total submissions for all mentor's forms
+        const myForms = await Form.find({ creator: userId }).select('_id');
+        const formIds = myForms.map(f => f._id);
+
+        const totalSubmissions = await Submission.countDocuments({ form: { $in: formIds } });
+        const approvedSubmissions = await Submission.countDocuments({
+            form: { $in: formIds },
+            status: 'approved'
+        });
+
+        res.json({
+            forms: totalForms,
+            submissions: totalSubmissions,
+            approved: approvedSubmissions
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching mentor stats' });
+    }
+};

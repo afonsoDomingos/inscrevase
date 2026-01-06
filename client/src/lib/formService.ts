@@ -48,5 +48,14 @@ export const formService = {
         });
         if (!response.ok) throw new Error('Falha ao atualizar status do formulário');
         return response.json();
+    },
+
+    async getMyForms(): Promise<FormModel[]> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/forms/my-forms`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar seus formulários');
+        return response.json();
     }
 };

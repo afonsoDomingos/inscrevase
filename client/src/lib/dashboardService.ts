@@ -37,5 +37,14 @@ export const dashboardService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar formulários recentes');
         return response.json();
+    },
+
+    async getMentorStats(): Promise<AdminStats> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/dashboard/mentor/stats`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar estatísticas do mentor');
+        return response.json();
     }
 };

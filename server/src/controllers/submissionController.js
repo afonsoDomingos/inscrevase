@@ -71,4 +71,20 @@ const getAllSubmissionsAdmin = async (req, res) => {
     }
 };
 
-module.exports = { submitForm, getFormSubmissions, updateStatus, getAllSubmissionsAdmin };
+const getMySubmissions = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const myForms = await Form.find({ creator: userId }).select('_id');
+        const formIds = myForms.map(f => f._id);
+
+        const submissions = await Submission.find({ form: { $in: formIds } })
+            .populate('form', 'title slug')
+            .sort('-submittedAt');
+
+        res.json(submissions);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { submitForm, getFormSubmissions, updateStatus, getAllSubmissionsAdmin, getMySubmissions };
