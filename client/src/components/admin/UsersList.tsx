@@ -29,7 +29,7 @@ export default function UsersList() {
     const handleToggleStatus = async (user: UserData) => {
         try {
             const newStatus = user.status === 'active' ? 'blocked' : 'active';
-            await userService.updateUser(user.id || (user as any)._id, { status: newStatus });
+            await userService.updateUser(user.id || user._id || '', { status: newStatus });
             loadUsers();
         } catch (error: unknown) {
             console.error(error);
@@ -86,7 +86,7 @@ export default function UsersList() {
                         {filteredUsers.map((user) => (
                             <motion.tr
                                 layout
-                                key={user.id || (user as any)._id}
+                                key={user.id || user._id}
                                 style={{ borderBottom: '1px solid #f9f9f9' }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -128,7 +128,7 @@ export default function UsersList() {
                                             {user.status === 'active' ? <UserX size={18} /> : <UserCheck size={18} />}
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(user.id || (user as any)._id)}
+                                            onClick={() => handleDelete(user.id || user._id || '')}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
                                         >
                                             <Trash2 size={18} />

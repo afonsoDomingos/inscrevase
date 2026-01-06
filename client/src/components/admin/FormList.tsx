@@ -29,7 +29,8 @@ export default function FormList() {
         try {
             await formService.toggleFormStatus(form._id, !form.active);
             loadForms();
-        } catch (err) {
+        } catch (error: unknown) {
+            console.error(error);
             alert('Erro ao atualizar status do formulário');
         }
     };
@@ -39,7 +40,8 @@ export default function FormList() {
         try {
             await formService.deleteForm(id);
             loadForms();
-        } catch (err) {
+        } catch (error: unknown) {
+            console.error(error);
             alert('Erro ao excluir formulário');
         }
     };

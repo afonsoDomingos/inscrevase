@@ -4,6 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface UserData {
     id: string;
+    _id?: string;
     name: string;
     email: string;
     role: 'admin' | 'mentor' | 'SuperAdmin';

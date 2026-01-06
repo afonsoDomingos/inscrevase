@@ -16,12 +16,9 @@ import {
     Loader2,
     LayoutDashboard,
     Database,
-    ExternalLink,
     Settings,
     Copy,
-    Trash2,
-    Eye,
-    EyeOff
+    Trash2
 } from 'lucide-react';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'settings';
