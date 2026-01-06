@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const authService = {
-    async login(email, password) {
+    async login(email: any, password: any) {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -20,7 +20,7 @@ export const authService = {
         return data;
     },
 
-    async register(userData) {
+    async register(userData: any) {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
