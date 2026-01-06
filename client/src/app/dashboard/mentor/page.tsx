@@ -213,8 +213,11 @@ export default function MentorDashboard() {
                                                     <button onClick={() => copyToClipboard(form.slug)} style={{ flex: 1, padding: '0.5rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
                                                         <Copy size={14} /> Link
                                                     </button>
-                                                    <button style={{ flex: 1, padding: '0.5rem', background: '#000', color: '#FFD700', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}>
-                                                        Gerenciar
+                                                    <button
+                                                        onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                                                        style={{ flex: 1, padding: '0.5rem', background: '#000', color: '#FFD700', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+                                                    >
+                                                        Visualizar
                                                     </button>
                                                 </div>
                                             </div>

@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Award } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
-export default function PublicForm({ params }: { params: Promise<{ slug: string }> }) {
-    const resolvedParams = use(params);
+export default function PublicForm({ params }: { params: { slug: string } }) {
+    const { slug } = params;
     const [form, setForm] = useState<FormModel | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -20,7 +20,7 @@ export default function PublicForm({ params }: { params: Promise<{ slug: string 
     useEffect(() => {
         const loadForm = async () => {
             try {
-                const data = await formService.getFormBySlug(resolvedParams.slug);
+                const data = await formService.getFormBySlug(slug);
                 setForm(data);
             } catch (err) {
                 console.error(err);
@@ -29,7 +29,7 @@ export default function PublicForm({ params }: { params: Promise<{ slug: string 
             }
         };
         loadForm();
-    }, [resolvedParams.slug]);
+    }, [slug]);
 
     const handleInputChange = (id: string, value: string) => {
         setFormData(prev => ({ ...prev, [id]: value }));
