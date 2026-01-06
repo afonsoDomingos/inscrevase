@@ -86,4 +86,15 @@ const deleteForm = async (req, res) => {
     }
 };
 
-module.exports = { createForm, getMyForms, getFormBySlug, updateForm, deleteForm };
+const getAllFormsAdmin = async (req, res) => {
+    try {
+        const forms = await Form.find()
+            .populate('creator', 'name email businessName')
+            .sort('-createdAt');
+        res.json(forms);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { createForm, getMyForms, getFormBySlug, updateForm, deleteForm, getAllFormsAdmin };

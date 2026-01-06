@@ -59,4 +59,16 @@ const updateStatus = async (req, res) => {
     }
 };
 
-module.exports = { submitForm, getFormSubmissions, updateStatus };
+const getAllSubmissionsAdmin = async (req, res) => {
+    try {
+        const submissions = await Submission.find()
+            .populate('form', 'title slug')
+            .sort('-submittedAt')
+            .limit(100);
+        res.json(submissions);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { submitForm, getFormSubmissions, updateStatus, getAllSubmissionsAdmin };

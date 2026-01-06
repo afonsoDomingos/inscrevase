@@ -8,6 +8,9 @@ export interface UserData {
     email: string;
     role: 'admin' | 'mentor' | 'SuperAdmin';
     businessName?: string;
+    status?: 'active' | 'blocked';
+    plan?: 'free' | 'premium';
+    createdAt?: string;
 }
 
 export interface RegisterData {

@@ -4,13 +4,18 @@ import { useEffect, useState } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats, RecentForm } from '@/lib/dashboardService';
 import Navbar from '@/components/Navbar';
-import { motion } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, ExternalLink } from 'lucide-react';
+import UsersList from '@/components/admin/UsersList';
+import FormList from '@/components/admin/FormList';
+import SubmissionList from '@/components/admin/SubmissionList';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert } from 'lucide-react';
+
+type Tab = 'overview' | 'users' | 'forms' | 'submissions';
 
 export default function AdminDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
-    const [recentForms, setRecentForms] = useState<RecentForm[]>([]);
+    const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -19,13 +24,8 @@ export default function AdminDashboard() {
                 const currentUser = authService.getCurrentUser();
                 setUser(currentUser);
 
-                const [statsData, formsData] = await Promise.all([
-                    dashboardService.getAdminStats(),
-                    dashboardService.getRecentForms()
-                ]);
-
+                const statsData = await dashboardService.getAdminStats();
                 setStats(statsData);
-                setRecentForms(formsData);
             } catch (err) {
                 console.error("Dashboard error:", err);
             } finally {
@@ -47,104 +47,134 @@ export default function AdminDashboard() {
     if (!user) return null;
 
     const cards = [
-        { label: 'Mentores Ativos', value: stats?.mentors || 0, icon: <Users size={24} />, color: '#FFD700' },
-        { label: 'Formulários Criados', value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce' },
-        { label: 'Total Inscrições', value: stats?.submissions || 0, icon: <TrendingUp size={24} />, color: '#805ad5' },
-        { label: 'Inscrições Aprovadas', value: stats?.approved || 0, icon: <CheckCircle size={24} />, color: '#38a169' },
+        { label: 'Mentores Ativos', value: stats?.mentors || 0, icon: <Users size={24} />, color: '#FFD700', tab: 'users' },
+        { label: 'Formulários Criados', value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce', tab: 'forms' },
+        { label: 'Total Inscrições', value: stats?.submissions || 0, icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
+        { label: 'Inscrições Aprovadas', value: stats?.approved || 0, icon: <CheckCircle size={24} />, color: '#38a169', tab: 'submissions' },
+    ];
+
+    const menuItems = [
+        { id: 'overview', label: 'Visão Geral', icon: <LayoutDashboard size={20} /> },
+        { id: 'users', label: 'Usuários', icon: <Users size={20} /> },
+        { id: 'forms', label: 'Eventos/Formulários', icon: <FileText size={20} /> },
+        { id: 'submissions', label: 'Inscrições', icon: <Database size={20} /> },
     ];
 
     return (
-        <main style={{ background: '#f8f9fa', minHeight: '100vh', paddingTop: '100px' }}>
+        <main style={{ background: '#f8f9fa', minHeight: '100vh', paddingTop: '100px', paddingBottom: '50px' }}>
             <Navbar />
 
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                     <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+                            <ShieldAlert size={18} />
+                            <span style={{ fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{user.role} Dashboard</span>
+                        </div>
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}
+                            style={{ fontSize: '2.2rem', fontWeight: 800 }}
                         >
-                            Olá, <span className="gold-text">{user.name}</span>
+                            Olá, <span className="gold-text">{user.name.split(' ')[0]}</span>
                         </motion.h1>
-                        <p style={{ color: '#666' }}>Bem-vindo ao centro de comando da Inscreva-se</p>
                     </div>
 
                     <button
                         onClick={() => authService.logout()}
-                        style={{ background: '#fff', border: '1px solid #ddd', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
+                        style={{ background: '#fff', border: '1px solid #ddd', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, transition: 'all 0.3s' }}
                     >
                         <LogOut size={18} /> Sair
                     </button>
                 </header>
 
-                <div className="grid">
-                    {cards.map((card, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="luxury-card"
-                            style={{ background: '#fff', padding: '1.5rem', border: 'none' }}
+                {/* Tabs Navigation */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '2.5rem', borderBottom: '1px solid #eee', paddingBottom: '10px', overflowX: 'auto' }}>
+                    {menuItems.map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id as Tab)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '0.8rem 1.5rem',
+                                borderRadius: '12px',
+                                border: 'none',
+                                background: activeTab === item.id ? '#000' : 'transparent',
+                                color: activeTab === item.id ? '#FFD700' : '#666',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)'
+                            }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                                <div style={{ background: `${card.color}15`, color: card.color, padding: '0.8rem', borderRadius: '12px' }}>
-                                    {card.icon}
-                                </div>
-                                <span style={{ color: '#666', fontWeight: 500 }}>{card.label}</span>
-                            </div>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 800 }}>{card.value}</h2>
-                        </motion.div>
+                            {item.icon}
+                            {item.label}
+                        </button>
                     ))}
                 </div>
 
-                <div style={{ marginTop: '3rem' }}>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="luxury-card"
-                        style={{ background: '#fff', border: 'none' }}
-                    >
-                        <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', fontWeight: 700 }}>Formulários Recentes</h3>
-                        {recentForms.length > 0 ? (
-                            <div style={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                    <thead>
-                                        <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                                            <th style={{ padding: '1rem 0', color: '#666' }}>Título</th>
-                                            <th style={{ padding: '1rem 0', color: '#666' }}>Criador</th>
-                                            <th style={{ padding: '1rem 0', color: '#666' }}>Data</th>
-                                            <th style={{ padding: '1rem 0', color: '#666' }}>Ação</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {recentForms.map((form) => (
-                                            <tr key={form._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                                                <td style={{ padding: '1rem 0', fontWeight: 600 }}>{form.title}</td>
-                                                <td style={{ padding: '1rem 0' }}>{form.creator?.name || '---'}</td>
-                                                <td style={{ padding: '1rem 0', color: '#888' }}>
-                                                    {new Date(form.createdAt).toLocaleDateString('pt-BR')}
-                                                </td>
-                                                <td style={{ padding: '1rem 0' }}>
-                                                    <a href={`/f/${form.slug}`} target="_blank" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none', fontWeight: 500 }}>
-                                                        Ver <ExternalLink size={14} />
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                <AnimatePresence mode="wait">
+                    {activeTab === 'overview' && (
+                        <motion.div
+                            key="overview"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <div className="grid">
+                                {cards.map((card, index) => (
+                                    <motion.div
+                                        key={index}
+                                        whileHover={{ y: -5 }}
+                                        onClick={() => setActiveTab(card.tab as Tab)}
+                                        className="luxury-card"
+                                        style={{ background: '#fff', padding: '1.5rem', border: 'none', cursor: 'pointer' }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '0.8rem', borderRadius: '12px' }}>
+                                                {card.icon}
+                                            </div>
+                                            <span style={{ color: '#666', fontWeight: 500 }}>{card.label}</span>
+                                        </div>
+                                        <h2 style={{ fontSize: '2.2rem', fontWeight: 800 }}>{card.value}</h2>
+                                    </motion.div>
+                                ))}
                             </div>
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-                                <FileText size={48} style={{ color: '#ddd', marginBottom: '1rem' }} />
-                                <h3 style={{ color: '#999' }}>Nenhum formulário criado ainda</h3>
+
+                            <div style={{ marginTop: '2.5rem' }}>
+                                <div className="luxury-card" style={{ background: '#000', color: '#fff', padding: '2.5rem', textAlign: 'center' }}>
+                                    <h2 className="gold-text" style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Modo Super Administrador Ativo</h2>
+                                    <p style={{ color: '#aaa', maxWidth: '600px', margin: '0 auto 1.5rem' }}>
+                                        Você tem controle total sobre todos os mentores, formulários de inscrição e pagamentos realizados na plataforma Inscreva-se.
+                                    </p>
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                                        <button onClick={() => setActiveTab('users')} className="btn-primary" style={{ padding: '0.8rem 1.5rem', fontSize: '0.9rem' }}>Gerenciar Usuários</button>
+                                        <button onClick={() => setActiveTab('forms')} style={{ background: 'transparent', border: '1px solid #FFD700', color: '#FFD700', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Ver Atividades</button>
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                    </motion.div>
-                </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'users' && (
+                        <motion.div key="users" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <UsersList />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'forms' && (
+                        <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <FormList />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'submissions' && (
+                        <motion.div key="submissions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <SubmissionList />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </main>
     );

@@ -42,4 +42,50 @@ const getProfile = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile };
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password').sort({ createdAt: -1 });
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const updateByAdmin = async (req, res) => {
+    try {
+        const { name, email, role, status, plan, businessName } = req.body;
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (role) user.role = role;
+        if (status) user.status = status;
+        if (plan) user.plan = plan;
+        if (businessName) user.businessName = businessName;
+
+        await user.save();
+        res.json({ message: 'User updated successfully', user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const deleteByAdmin = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Prevent deleting yourself
+        if (user._id.toString() === req.user.id) {
+            return res.status(400).json({ message: 'Cannot delete your own account' });
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ message: 'User deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, getUsers, updateByAdmin, deleteByAdmin };
