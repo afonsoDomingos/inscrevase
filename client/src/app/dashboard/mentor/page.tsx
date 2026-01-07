@@ -330,7 +330,7 @@ export default function MentorDashboard() {
                                                                     style={{
                                                                         width: `${Math.min(100, Math.round(((form.submissionCount || 0) / form.capacity) * 100))}%`,
                                                                         height: '100%',
-                                                                        background: 'var(--gold-gradient)',
+                                                                        background: 'var(--gold-gradient, linear-gradient(to right, #FFD700, #FDB931))',
                                                                         borderRadius: '4px',
                                                                         transition: 'width 1s ease'
                                                                     }}
