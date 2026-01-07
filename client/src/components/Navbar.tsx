@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Menu, X, LogIn, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +34,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="nav-links">
+          <LanguageSwitcher />
           {isLoggedIn ? (
             <>
               <Link href="/dashboard/mentor" className="btn-luxury-icon" title="Dashboard">
@@ -59,6 +61,9 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="mobile-menu">
+          <div style={{ padding: '0 0.5rem' }}>
+            <LanguageSwitcher />
+          </div>
           {isLoggedIn ? (
             <>
               <Link href="/dashboard/mentor" onClick={() => setIsOpen(false)}>Meu Painel</Link>
