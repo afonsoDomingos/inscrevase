@@ -69,8 +69,8 @@ exports.updateForm = async (req, res) => {
         let form = await Form.findById(req.params.id);
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
-        // Ensure user owns the form
-        if (form.creator.toString() !== req.user.id) {
+        // Ensure user owns the form OR is an admin
+        if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
@@ -116,7 +116,7 @@ exports.deleteForm = async (req, res) => {
         const form = await Form.findById(req.params.id);
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
-        if (form.creator.toString() !== req.user.id) {
+        if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
