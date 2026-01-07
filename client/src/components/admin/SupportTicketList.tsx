@@ -169,6 +169,7 @@ export default function SupportTicketList() {
                         loadTickets(); // Reload to get updated data
                     }}
                     mode="admin"
+                    initialTicket={selectedTicket}
                 />
             )}
         </div>

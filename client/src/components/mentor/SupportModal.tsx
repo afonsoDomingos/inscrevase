@@ -11,9 +11,10 @@ interface SupportModalProps {
     isOpen: boolean;
     onClose: () => void;
     mode?: 'user' | 'admin';
+    initialTicket?: Ticket | null;
 }
 
-export default function SupportModal({ isOpen, onClose, mode = 'user' }: SupportModalProps) {
+export default function SupportModal({ isOpen, onClose, mode = 'user', initialTicket }: SupportModalProps) {
     const [view, setView] = useState<'list' | 'new' | 'chat'>('list');
     const [loading, setLoading] = useState(false);
     const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -33,11 +34,19 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
     useEffect(() => {
         if (isOpen) {
             loadTickets();
+
+            // If initialTicket is provided, set it as selected and switch to chat view
+            if (initialTicket) {
+                setSelectedTicket(initialTicket);
+                setView('chat');
+            } else {
+                setView('list');
+            }
         }
-    }, [isOpen]);
+    }, [isOpen, initialTicket]);
 
     useEffect(() => {
-        if (view === 'chat') {
+        if (view === 'chat' && selectedTicket) {
             scrollToBottom();
         }
     }, [view, selectedTicket?.messages]);
