@@ -24,7 +24,6 @@ import {
     ArrowRight,
     FileText,
     Users,
-    TrendingUp,
     CheckCircle,
     LogOut,
     Loader2,
