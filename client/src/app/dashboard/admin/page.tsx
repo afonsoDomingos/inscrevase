@@ -10,6 +10,7 @@ import SupportTicketList from '@/components/admin/SupportTicketList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy } from 'lucide-react';
+import { supportService } from '@/lib/supportService';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support';
 
@@ -19,6 +20,7 @@ export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -36,7 +38,21 @@ export default function AdminDashboard() {
         };
 
         loadDashboard();
+        loadUnreadCount();
+
+        // Poll for unread count every 30 seconds
+        const interval = setInterval(loadUnreadCount, 30000);
+        return () => clearInterval(interval);
     }, []);
+
+    const loadUnreadCount = async () => {
+        try {
+            const data = await supportService.getUnreadCount();
+            setUnreadCount(data.unreadCount);
+        } catch (error) {
+            console.error('Error loading unread count:', error);
+        }
+    };
 
     if (loading) {
         return (
@@ -104,7 +120,8 @@ export default function AdminDashboard() {
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
                                 textAlign: 'left',
-                                fontSize: '0.95rem'
+                                fontSize: '0.95rem',
+                                position: 'relative'
                             }}
                         >
                             {activeTab === item.id && (
@@ -123,6 +140,23 @@ export default function AdminDashboard() {
                             )}
                             <div style={{ opacity: activeTab === item.id ? 1 : 0.7 }}>{item.icon}</div>
                             {item.label}
+                            {item.id === 'support' && unreadCount > 0 && (
+                                <span style={{
+                                    marginLeft: 'auto',
+                                    background: '#ef4444',
+                                    color: '#fff',
+                                    borderRadius: '50%',
+                                    width: '20px',
+                                    height: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700
+                                }}>
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
                         </button>
                     ))}
                 </nav>
