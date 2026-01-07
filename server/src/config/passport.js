@@ -6,13 +6,10 @@ passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     // Force HTTPS if not localhost
-    callbackURL: (() => {
-        let url = process.env.BACKEND_URL || 'http://localhost:5000';
-        if (url.includes('onrender.com') && url.startsWith('http:')) {
-            url = url.replace('http:', 'https:');
-        }
-        return `${url}/api/auth/google/callback`;
-    })(),
+    // Hardcode for Render to ensure HTTPS match
+    callbackURL: process.env.NODE_ENV === 'production'
+        ? 'https://inscrevase.onrender.com/api/auth/google/callback'
+        : 'http://localhost:5000/api/auth/google/callback',
     proxy: true
 },
     async (accessToken, refreshToken, profile, done) => {
