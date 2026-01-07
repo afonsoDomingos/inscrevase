@@ -1,6 +1,8 @@
 const Form = require('../models/Form');
 const slugify = require('slugify');
 
+const Submission = require('../models/Submission');
+
 exports.createForm = async (req, res) => {
     try {
         const { title, description, fields, theme, active, eventDate, paymentConfig } = req.body; // Extract only needed fields
@@ -45,8 +47,14 @@ exports.createForm = async (req, res) => {
 
 exports.getMyForms = async (req, res) => {
     try {
-        const forms = await Form.find({ creator: req.user.id }).sort({ createdAt: -1 });
-        res.json(forms);
+        const forms = await Form.find({ creator: req.user.id }).sort({ createdAt: -1 }).lean();
+
+        const formsWithCount = await Promise.all(forms.map(async (form) => {
+            const count = await Submission.countDocuments({ form: form._id });
+            return { ...form, submissionCount: count };
+        }));
+
+        res.json(formsWithCount);
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
