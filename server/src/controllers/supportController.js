@@ -36,7 +36,10 @@ exports.addMessage = async (req, res) => {
     try {
         const { content, attachment } = req.body;
         const { id } = req.params;
-        const role = req.user.role === 'admin' ? 'admin' : 'user';
+
+        // Check if user is admin or SuperAdmin
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+        const role = isAdmin ? 'admin' : 'user';
 
         const ticket = await SupportTicket.findById(id);
         if (!ticket) return res.status(404).json({ message: 'Ticket não encontrado' });
@@ -44,7 +47,9 @@ exports.addMessage = async (req, res) => {
         // Handle both ObjectId and populated user object
         const ticketUserId = ticket.user._id ? ticket.user._id.toString() : ticket.user.toString();
 
-        if (ticketUserId !== req.user.id && req.user.role !== 'admin') {
+        // Allow if user owns the ticket OR if user is admin/SuperAdmin
+        if (ticketUserId !== req.user.id && !isAdmin) {
+            console.log('Authorization failed:', { ticketUserId, userId: req.user.id, userRole: req.user.role });
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
@@ -59,6 +64,7 @@ exports.addMessage = async (req, res) => {
 
         res.status(200).json(ticket);
     } catch (error) {
+        console.error('Error in addMessage:', error);
         res.status(500).json({ message: 'Erro ao responder', error: error.message });
     }
 };
