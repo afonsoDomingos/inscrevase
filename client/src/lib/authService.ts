@@ -12,6 +12,7 @@ export interface UserData {
     bio?: string;
     profilePhoto?: string;
     whatsapp?: string;
+    country?: string;
     socialLinks?: {
         instagram?: string;
         linkedin?: string;
@@ -28,6 +29,7 @@ export interface RegisterData {
     email: string;
     password: string;
     businessName: string;
+    country?: string;
 }
 
 export interface AuthResponse {

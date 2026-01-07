@@ -2,55 +2,62 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // Force HTTPS if not localhost
-    // Hardcode for Render to ensure HTTPS match
-    callbackURL: process.env.NODE_ENV === 'production'
-        ? 'https://inscrevase.onrender.com/api/auth/google/callback'
-        : 'http://localhost:5000/api/auth/google/callback',
-    proxy: true
-},
-    async (accessToken, refreshToken, profile, done) => {
-        try {
-            // Did we find a user with this googleId?
-            let user = await User.findOne({ googleId: profile.id });
-            if (user) {
-                return done(null, user);
-            }
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
-            // Check if user exists with this email
-            const email = profile.emails[0].value;
-            user = await User.findOne({ email });
-
-            if (user) {
-                // Link googleId to existing user
-                user.googleId = profile.id;
-                if (!user.profilePhoto) {
-                    user.profilePhoto = profile.photos[0].value;
+if (googleClientId && googleClientSecret) {
+    passport.use(new GoogleStrategy({
+        clientID: googleClientId,
+        clientSecret: googleClientSecret,
+        // Force HTTPS if not localhost
+        // Hardcode for Render to ensure HTTPS match
+        callbackURL: process.env.NODE_ENV === 'production'
+            ? 'https://inscrevase.onrender.com/api/auth/google/callback'
+            : 'http://localhost:5000/api/auth/google/callback',
+        proxy: true
+    },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                // Did we find a user with this googleId?
+                let user = await User.findOne({ googleId: profile.id });
+                if (user) {
+                    return done(null, user);
                 }
+
+                // Check if user exists with this email
+                const email = profile.emails[0].value;
+                user = await User.findOne({ email });
+
+                if (user) {
+                    // Link googleId to existing user
+                    user.googleId = profile.id;
+                    if (!user.profilePhoto) {
+                        user.profilePhoto = profile.photos[0].value;
+                    }
+                    await user.save();
+                    return done(null, user);
+                }
+
+                // Create new user
+                user = new User({
+                    name: profile.displayName,
+                    email: email,
+                    googleId: profile.id,
+                    profilePhoto: profile.photos[0].value,
+                    role: 'mentor', // Default role for Google Signups
+                    password: '' // No password
+                });
+
                 await user.save();
-                return done(null, user);
+                done(null, user);
+
+            } catch (err) {
+                console.error("Google Auth Error:", err);
+                done(err, null);
             }
-
-            // Create new user
-            user = new User({
-                name: profile.displayName,
-                email: email,
-                googleId: profile.id,
-                profilePhoto: profile.photos[0].value,
-                role: 'mentor', // Default role for Google Signups
-                password: '' // No password
-            });
-
-            await user.save();
-            done(null, user);
-
-        } catch (err) {
-            console.error("Google Auth Error:", err);
-            done(err, null);
-        }
-    }));
+        }));
+} else {
+    console.warn("⚠️ Google OAuth credentials missing. Google login will not work.");
+}
 
 module.exports = passport;

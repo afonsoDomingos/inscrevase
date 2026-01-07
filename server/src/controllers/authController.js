@@ -3,11 +3,11 @@ const User = require('../models/User');
 
 const register = async (req, res) => {
     try {
-        const { name, email, password, businessName } = req.body;
+        const { name, email, password, businessName, country } = req.body;
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ message: 'User already exists' });
 
-        user = new User({ name, email, password, businessName, role: 'mentor' });
+        user = new User({ name, email, password, businessName, country, role: 'mentor' });
         await user.save();
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -44,12 +44,13 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const { name, businessName, bio, profilePhoto, whatsapp, socialLinks } = req.body;
+        const { name, businessName, bio, profilePhoto, whatsapp, socialLinks, country } = req.body;
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         if (name) user.name = name;
         if (businessName) user.businessName = businessName;
+        if (country) user.country = country;
         if (bio) user.bio = bio;
         if (profilePhoto) user.profilePhoto = profilePhoto;
         if (whatsapp) user.whatsapp = whatsapp;
@@ -73,7 +74,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -83,6 +84,7 @@ const updateByAdmin = async (req, res) => {
         if (status) user.status = status;
         if (plan) user.plan = plan;
         if (businessName) user.businessName = businessName;
+        if (country) user.country = country;
         if (bio) user.bio = bio;
         if (profilePhoto) user.profilePhoto = profilePhoto;
         if (whatsapp) user.whatsapp = whatsapp;

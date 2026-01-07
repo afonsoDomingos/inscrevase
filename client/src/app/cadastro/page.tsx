@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Briefcase, ArrowRight, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe } from 'lucide-react';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,8 @@ export default function Register() {
         name: '',
         email: '',
         password: '',
-        businessName: ''
+        businessName: '',
+        country: ''
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -116,6 +117,61 @@ export default function Register() {
                             </div>
                         </motion.div>
                     </div>
+
+                    <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.35 }}
+                        className="input-group"
+                    >
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>País</label>
+                        <div style={{ position: 'relative' }}>
+                            <Globe size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+                            <select
+                                value={formData.country}
+                                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                                className="input-luxury"
+                                style={{ paddingLeft: '2.5rem', fontSize: '0.9rem', width: '100%', cursor: 'pointer' }}
+                                required
+                                disabled={loading}
+                            >
+                                <option value="">Selecione seu país</option>
+                                <optgroup label="CPLP (Língua Portuguesa)">
+                                    <option value="Angola">Angola</option>
+                                    <option value="Brasil">Brasil</option>
+                                    <option value="Cabo Verde">Cabo Verde</option>
+                                    <option value="Guiné-Bissau">Guiné-Bissau</option>
+                                    <option value="Moçambique">Moçambique</option>
+                                    <option value="Portugal">Portugal</option>
+                                    <option value="São Tomé e Príncipe">São Tomé e Príncipe</option>
+                                    <option value="Timor-Leste">Timor-Leste</option>
+                                </optgroup>
+                                <optgroup label="Outros (Língua Inglesa/Mundo)">
+                                    <option value="África do Sul">África do Sul</option>
+                                    <option value="Alemanha">Alemanha</option>
+                                    <option value="Austrália">Austrália</option>
+                                    <option value="Canadá">Canadá</option>
+                                    <option value="China">China</option>
+                                    <option value="Emirados Árabes Unidos">Emirados Árabes Unidos</option>
+                                    <option value="Espanha">Espanha</option>
+                                    <option value="Estados Unidos">Estados Unidos</option>
+                                    <option value="França">França</option>
+                                    <option value="Gana">Gana</option>
+                                    <option value="Índia">Índia</option>
+                                    <option value="Irlanda">Irlanda</option>
+                                    <option value="Itália">Itália</option>
+                                    <option value="Japão">Japão</option>
+                                    <option value="Nigéria">Nigéria</option>
+                                    <option value="Nova Zelândia">Nova Zelândia</option>
+                                    <option value="Quênia">Quênia</option>
+                                    <option value="Reino Unido">Reino Unido</option>
+                                    <option value="Suíça">Suíça</option>
+                                    <option value="Zâmbia">Zâmbia</option>
+                                    <option value="Zimbábue">Zimbábue</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </motion.div>
 
                     <motion.div
                         initial={{ y: 10, opacity: 0 }}

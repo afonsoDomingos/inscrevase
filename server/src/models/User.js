@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
     profilePhoto: { type: String },
     whatsapp: { type: String },
     businessName: { type: String },
+    country: { type: String },
     bio: { type: String },
     socialLinks: {
         instagram: { type: String },
