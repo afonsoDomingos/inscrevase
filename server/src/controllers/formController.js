@@ -24,7 +24,7 @@ exports.createForm = async (req, res) => {
         }
 
         const newForm = new Form({
-            user: req.user.id,
+            creator: req.user.id,
             title,
             description,
             slug,
@@ -45,7 +45,7 @@ exports.createForm = async (req, res) => {
 
 exports.getMyForms = async (req, res) => {
     try {
-        const forms = await Form.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const forms = await Form.find({ creator: req.user.id }).sort({ createdAt: -1 });
         res.json(forms);
     } catch (err) {
         console.error(err);
@@ -70,7 +70,7 @@ exports.updateForm = async (req, res) => {
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         // Ensure user owns the form
-        if (form.user.toString() !== req.user.id) {
+        if (form.creator.toString() !== req.user.id) {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
@@ -116,7 +116,7 @@ exports.deleteForm = async (req, res) => {
         const form = await Form.findById(req.params.id);
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
-        if (form.user.toString() !== req.user.id) {
+        if (form.creator.toString() !== req.user.id) {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
@@ -133,7 +133,7 @@ exports.deleteForm = async (req, res) => {
 
 exports.getAllFormsAdmin = async (req, res) => {
     try {
-        const forms = await Form.find().populate('user', 'name email').sort({ createdAt: -1 });
+        const forms = await Form.find().populate('creator', 'name email').sort({ createdAt: -1 });
         res.json(forms);
     } catch (err) {
         console.error(err);
