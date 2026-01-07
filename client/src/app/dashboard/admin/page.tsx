@@ -202,6 +202,41 @@ export default function AdminDashboard() {
                             Olá, <span className="gold-text">{user.name.split(' ')[0]}</span>
                         </motion.h1>
                     </div>
+
+                    <a
+                        href="/"
+                        style={{
+                            padding: '0.9rem 2rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.8rem',
+                            textTransform: 'uppercase',
+                            fontSize: '0.85rem',
+                            letterSpacing: '1px',
+                            borderRadius: '50px',
+                            background: '#fff',
+                            border: '2px solid #FFD700',
+                            color: '#000',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            transition: 'all 0.3s'
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = '#FFD700';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = '#fff';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                        Ir para Home
+                    </a>
                 </header>
 
                 <AnimatePresence mode="wait">
