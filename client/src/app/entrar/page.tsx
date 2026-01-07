@@ -48,16 +48,16 @@ export default function Login() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="luxury-card"
-                style={{ maxWidth: '450px', width: '100%', marginTop: '80px' }}
+                style={{ maxWidth: '400px', width: '100%', marginTop: '60px' }}
             >
-                <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <motion.img
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
                         src="/logo.png"
                         alt="Logo"
-                        style={{ height: '80px', marginBottom: '1.5rem' }}
+                        style={{ height: '60px', marginBottom: '1rem' }}
                         className="float-anim"
                     />
                     <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Bem-vindo de volta</h1>
