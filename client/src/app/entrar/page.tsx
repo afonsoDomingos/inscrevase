@@ -48,7 +48,7 @@ export default function Login() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="luxury-card"
-                style={{ maxWidth: '400px', width: '100%', marginTop: '60px' }}
+                style={{ maxWidth: '500px', width: '100%', marginTop: '60px' }}
             >
                 {/* Navigation Tabs */}
                 <div style={{ display: 'flex', marginBottom: '2rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>

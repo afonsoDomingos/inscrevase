@@ -45,7 +45,7 @@ export default function Register() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="luxury-card"
-                style={{ maxWidth: '600px', width: '100%', marginTop: '60px', marginBottom: '40px' }}
+                style={{ maxWidth: '500px', width: '100%', marginTop: '60px', marginBottom: '40px' }}
             >
                 {/* Navigation Tabs */}
                 <div style={{ display: 'flex', marginBottom: '2rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>

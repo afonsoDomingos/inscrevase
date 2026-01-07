@@ -3,67 +3,51 @@
 import { motion } from "framer-motion";
 
 export default function Template({ children }: { children: React.ReactNode }) {
-    // Variantes para as colunas da cortina
-    const columnVariants = {
-        initial: {
-            height: "100vh",
-        },
-        animate: {
-            height: "0vh",
-            transition: {
-                duration: 0.7,
-                ease: [0.87, 0, 0.13, 1], // Ease "ExpoInOut" customizado
-            },
-        },
-    };
-
     return (
         <div style={{ position: 'relative' }}>
-            {/* Transition Overlay (Cortina Fatiada) */}
-            <div
+            {/* Left Gate - Abre para a esquerda */}
+            <motion.div
+                initial={{ x: "0%" }}
+                animate={{ x: "-100%" }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                     position: 'fixed',
                     top: 0,
                     left: 0,
-                    width: '100vw',
+                    width: '50.1vw', // Leve sobreposição
                     height: '100vh',
-                    display: 'flex',
+                    background: '#050505',
                     zIndex: 9999,
-                    pointerEvents: 'none', // Permite clicar através depois que a animação termina (embora height 0 resolva, é bom garantir)
+                    borderRight: '1px solid #D4AF37', // Linha Dourada
+                    boxShadow: '10px 0 40px rgba(0,0,0,0.8)',
+                    pointerEvents: 'none'
                 }}
-            >
-                {[...Array(5)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        variants={columnVariants}
-                        initial="initial"
-                        animate="animate"
-                        style={{
-                            width: '20%',
-                            backgroundColor: '#0a0a0a', // Fundo Luxuoso Escuro
-                            borderRight: i < 4 ? '1px solid rgba(212, 175, 55, 0.1)' : 'none', // Linha Dourada Sutil
-                            position: 'relative',
-                        }}
-                        transition={{ delay: i * 0.05 }} // Efeito cascata rápido
-                    >
-                        {/* Detalhe dourado na ponta inferior da cortina */}
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: '4px',
-                            background: 'linear-gradient(90deg, #D4AF37, #FUD700)'
-                        }} />
-                    </motion.div>
-                ))}
-            </div>
+            />
 
-            {/* Conteúdo da Página - Aparece suavemente enquanto a cortina sobe */}
+            {/* Right Gate - Abre para a direita */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
+                initial={{ x: "0%" }}
+                animate={{ x: "100%" }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    right: 0,
+                    width: '50.1vw', // Leve sobreposição
+                    height: '100vh',
+                    background: '#050505',
+                    zIndex: 9999,
+                    borderLeft: '1px solid #D4AF37', // Linha Dourada
+                    boxShadow: '-10px 0 40px rgba(0,0,0,0.8)',
+                    pointerEvents: 'none'
+                }}
+            />
+
+            {/* Conteúdo - Blur Reveal */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
                 {children}
             </motion.div>
