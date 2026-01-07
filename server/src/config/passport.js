@@ -5,7 +5,14 @@ const User = require('../models/User');
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/google/callback`,
+    // Force HTTPS if not localhost
+    callbackURL: (() => {
+        let url = process.env.BACKEND_URL || 'http://localhost:5000';
+        if (url.includes('onrender.com') && url.startsWith('http:')) {
+            url = url.replace('http:', 'https:');
+        }
+        return `${url}/api/auth/google/callback`;
+    })(),
     proxy: true
 },
     async (accessToken, refreshToken, profile, done) => {
