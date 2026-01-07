@@ -11,7 +11,7 @@ import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
-import { Pencil, HelpCircle } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
@@ -31,7 +31,8 @@ import {
     User as UserIcon,
     Palette,
     DollarSign,
-    PieChart
+    PieChart,
+    LifeBuoy
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -187,7 +188,30 @@ export default function MentorDashboard() {
                     ))}
                 </nav>
 
-                <div style={{ padding: '2rem' }}>
+                <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <button
+                        onClick={() => setIsSupportOpen(true)}
+                        style={{
+                            width: '100%',
+                            padding: '1rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #FFD700',
+                            borderRadius: '12px',
+                            color: '#FFD700',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = '#333'}
+                        onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
+                    >
+                        <LifeBuoy size={18} /> Suporte
+                    </button>
+
                     <button
                         onClick={() => authService.logout()}
                         style={{
@@ -491,32 +515,6 @@ export default function MentorDashboard() {
                         onSuccess={loadDashboard}
                     />
                 )}
-                <button
-                    onClick={() => setIsSupportOpen(true)}
-                    style={{
-                        position: 'fixed',
-                        bottom: '2rem',
-                        right: '2rem',
-                        width: '60px',
-                        height: '60px',
-                        borderRadius: '50%',
-                        background: '#000',
-                        color: '#FFD700',
-                        border: '2px solid #FFD700',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                        zIndex: 2000,
-                        transition: 'transform 0.2s'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                    title="Suporte / Ajuda"
-                >
-                    <HelpCircle size={28} />
-                </button>
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
             </main>
