@@ -30,6 +30,7 @@ const FormSchema = new mongoose.Schema({
     theme: {
         primaryColor: { type: String, default: '#FFD700' }, // Gold
         backgroundColor: { type: String, default: '#FFFFFF' }, // White
+        backgroundImage: { type: String },
         fontFamily: { type: String, default: 'Playfair Display' },
         style: { type: String, enum: ['luxury', 'minimalist'], default: 'luxury' }
     },

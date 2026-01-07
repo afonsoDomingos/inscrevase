@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Sparkles } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useTranslate } from '@/context/LanguageContext';
 
 interface Message {
@@ -11,6 +12,8 @@ interface Message {
     sender: 'user' | 'aura';
     timestamp: Date;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function AuraConcierge() {
     const { t, locale } = useTranslate();
@@ -57,9 +60,10 @@ export default function AuraConcierge() {
         setIsTyping(true);
 
         try {
+            console.log('Aura attempting to call:', `${API_URL}/ai/chat`);
             // Placeholder for AI API call
             // We'll implement the actual backend next
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ai/chat`, {
+            const response = await fetch(`${API_URL}/ai/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMsg.text, locale })
@@ -159,11 +163,30 @@ export default function AuraConcierge() {
                                         background: msg.sender === 'user' ? '#000' : '#fff',
                                         color: msg.sender === 'user' ? '#fff' : '#000',
                                         fontSize: '0.9rem',
-                                        lineHeight: '1.5',
+                                        lineHeight: '1.6',
                                         boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
-                                        border: msg.sender === 'aura' ? '1px solid #eee' : 'none'
+                                        border: msg.sender === 'aura' ? '1px solid #eee' : 'none',
                                     }}>
-                                        {msg.text}
+                                        {msg.sender === 'aura' ? (
+                                            <div className="aura-markdown">
+                                                <ReactMarkdown
+                                                    components={{
+                                                        p: ({ children }) => <p style={{ marginBottom: '0.8rem' }}>{children}</p>,
+                                                        h1: ({ children }) => <h1 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '1rem 0 0.5rem', color: '#D4AF37' }}>{children}</h1>,
+                                                        h2: ({ children }) => <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '1rem 0 0.5rem', color: '#D4AF37' }}>{children}</h2>,
+                                                        h3: ({ children }) => <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: '1rem 0 0.5rem', color: '#D4AF37' }}>{children}</h3>,
+                                                        ul: ({ children }) => <ul style={{ paddingLeft: '1.2rem', marginBottom: '0.8rem' }}>{children}</ul>,
+                                                        li: ({ children }) => <li style={{ marginBottom: '0.4rem' }}>{children}</li>,
+                                                        strong: ({ children }) => <strong style={{ color: msg.sender === 'aura' ? '#D4AF37' : 'inherit', fontWeight: 700 }}>{children}</strong>,
+                                                        hr: () => <hr style={{ border: 'none', borderTop: '1px solid rgba(212, 175, 55, 0.2)', margin: '1rem 0' }} />
+                                                    }}
+                                                >
+                                                    {msg.text}
+                                                </ReactMarkdown>
+                                            </div>
+                                        ) : (
+                                            msg.text
+                                        )}
                                     </div>
                                     <div style={{ fontSize: '0.65rem', color: '#999', marginTop: '4px', textAlign: msg.sender === 'user' ? 'right' : 'left' }}>
                                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

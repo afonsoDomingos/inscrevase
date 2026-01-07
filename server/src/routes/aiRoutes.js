@@ -5,59 +5,78 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 // Aura's Identity and Rules
 const AURA_SYSTEM_PROMPT = `
 You are Aura, the Digital Luxury Concierge for the "Inscreva-se" platform. 
-Your tone is sophisticated, elegant, and professional.
+Your tone is sophisticated, elite, and extremely concise.
 
-Core Rules:
+Strict Rules:
 1. Speak in the language requested by the 'locale' parameter (pt or en).
-2. If locale is 'pt', your tone is warm, elite, and helpful. 
-3. If locale is 'en', your tone is refined, high-end British, and efficient.
-4. You help mentors create luxury branding for their events.
-5. You generate 'Hype' for social media (Instagram/WhatsApp).
-6. You provide guidance on how to attract premium participants.
-7. You are NOT just a support bot; you are a consultant for elite events.
+2. BE EXTREMELY BRIEF. Maximum 3-4 short paragraphs per response.
+3. Prioritize bullet points for advice.
+4. NO long-winded greetings or filler text. Get straight to the value.
+5. You help mentors with luxury branding, social media Hype, and attracting premium participants.
+6. You are a high-end consultant, not a chatty assistant. Brevity is luxury.
 
 Knowledge about Inscreva-se:
-- It's a platform for luxury/premium event registration.
-- Mentors can create custom forms, themes, and manage submissions.
-- It supports payments and WhatsApp integration.
+- Luxury event registration platform.
+- Custom forms/themes, payments, and WhatsApp integration.
 
-When generating advice, always focus on EXCLUSIVITY, SCARCITY, and HIGH VALUE.
+Focus: EXCLUSIVITY, SCARCITY, and HIGH VALUE. Use markdown (bold, headers) for clean, fast reading.
 `;
+
+router.get('/health', (req, res) => {
+    res.json({ status: 'Aura is breathing', model: 'gemini-1.5-flash' });
+});
 
 router.post('/chat', async (req, res) => {
     const { message, locale } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
 
-    console.log("Aura Chat Request Received. Locale:", locale);
-    console.log("Using API Key (first 5 chars):", apiKey ? apiKey.substring(0, 5) : "MISSING");
+    console.log("--- Aura Chat Debug ---");
+    console.log("Locale:", locale);
+    console.log("API Key length:", apiKey ? apiKey.length : 0);
+    console.log("API Key start:", apiKey ? apiKey.substring(0, 7) : "N/A");
 
     if (!apiKey) {
-        // Fallback if API key is not set
-        const fallback = locale === 'en'
-            ? "I would love to assist you, but my digital connections are currently being refined. Please ensure the Gemini API Key is configured."
-            : "Eu adoraria ajudá-lo, mas minhas conexões digitais estão sendo refinadas no momento. Por favor, verifique se a Gemini API Key está configurada.";
-        return res.json({ reply: fallback });
+        return res.json({ reply: locale === 'en' ? "API Key missing." : "Chave API ausente." });
     }
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        // Using gemini-1.5-pro as it's sometimes more strictly available than flash in certain regions
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        const prompt = `${AURA_SYSTEM_PROMPT}\n\nLocale: ${locale}\nUser Message: ${message}\n\nAura's Response:`;
+        // Try these models in order based on what's available in the key
+        const modelsToTry = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro"];
+        let text = "";
+        let attemptSuccess = false;
 
-        console.log("Sending prompt to Gemini...");
+        const formattedPrompt = `${AURA_SYSTEM_PROMPT}\n\nLocale: ${locale}\nUser Message: ${message}\n\nAura's Response:`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        for (const modelName of modelsToTry) {
+            try {
+                console.log(`Attempting Aura with model: ${modelName}`);
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const result = await model.generateContent(formattedPrompt);
+                const response = await result.response;
+                text = response.text();
+                attemptSuccess = true;
+                console.log(`Success with model: ${modelName}! Response length:`, text.length);
+                break;
+            } catch (e) {
+                console.error(`Model ${modelName} failed:`, e.message);
+                // If it's a 404, we continue. If it's something else (like quota), we might want to stop, 
+                // but for now let's just try all.
+            }
+        }
 
-        console.log("Gemini Response received.");
+        if (!attemptSuccess) {
+            throw new Error("Aura could not connect to any AI models. Please check API Key permissions.");
+        }
 
         res.json({ reply: text });
     } catch (error) {
-        console.error("Aura AI Error Details:", error);
-        res.status(500).json({ error: "Aura is resting." });
+        console.error("CRITICAL AURA ERROR:", error);
+        res.status(500).json({
+            error: "Aura is resting.",
+            details: error.message
+        });
     }
 });
 

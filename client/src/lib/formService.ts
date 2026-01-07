@@ -40,6 +40,7 @@ export interface FormModel {
     theme?: {
         primaryColor: string;
         backgroundColor: string;
+        backgroundImage?: string;
         fontFamily: string;
         style: 'luxury' | 'minimalist';
     };

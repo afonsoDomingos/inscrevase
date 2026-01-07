@@ -5,7 +5,6 @@ import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
 import Image from 'next/image';
-import Navbar from '@/components/Navbar';
 import { useTranslate } from '@/context/LanguageContext';
 
 export default function PublicForm({ params }: { params: { slug: string } }) {
@@ -101,9 +100,9 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';
 
     const primaryColor = form.theme?.primaryColor || '#FFD700';
-    // Force deep black/dark for luxury to match user preference
-    const bgColor = isLuxury ? '#050505' : (form.theme?.backgroundColor || '#FFFFFF');
-    const isDark = isLuxury;
+    const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
+    const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : 'none';
+    const isDark = isLuxury || (bgColor.startsWith('#') && parseInt(bgColor.slice(1), 16) < 0x888888);
 
     const textColor = isDark ? '#fff' : '#111';
     const secondaryTextColor = isDark ? '#aaa' : '#666';
@@ -111,8 +110,16 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
 
     return (
-        <main style={{ background: bgColor, minHeight: '100vh', color: textColor, fontFamily: form.theme?.fontFamily || 'Inter' }}>
-            <Navbar />
+        <main style={{
+            backgroundColor: bgColor,
+            backgroundImage: bgImage,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            minHeight: '100vh',
+            color: textColor,
+            fontFamily: form.theme?.fontFamily || 'Inter'
+        }}>
 
             <AnimatePresence>
                 {success ? (

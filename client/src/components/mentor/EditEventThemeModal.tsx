@@ -34,6 +34,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
         primaryColor: '#FFD700',
         style: 'luxury',
         backgroundColor: '#050505',
+        backgroundImage: '',
         fontFamily: 'Inter'
     });
 
@@ -47,6 +48,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                     primaryColor: form.theme.primaryColor || '#FFD700',
                     style: form.theme.style || 'luxury',
                     backgroundColor: form.theme.backgroundColor || (form.theme.style === 'minimalist' ? '#FFFFFF' : '#050505'),
+                    backgroundImage: form.theme.backgroundImage || '',
                     fontFamily: form.theme.fontFamily || 'Inter'
                 });
             }
@@ -63,7 +65,8 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                 const url = await formService.uploadFile(file, type === 'cover' ? 'covers' : 'logos');
 
                 if (type === 'cover') setCoverImage(url);
-                else setLogo(url);
+                else if (type === 'logo') setLogo(url);
+                else if (type === 'background') setTheme(prev => ({ ...prev, backgroundImage: url }));
 
             } catch (error) {
                 console.error("Upload failed", error);
@@ -262,6 +265,38 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
                                         </div>
                                     </div>
+
+                                    <div>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.theme.backgroundImage') || 'Imagem de Fundo'}</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{
+                                                position: 'relative',
+                                                width: '40px',
+                                                height: '40px',
+                                                borderRadius: '8px',
+                                                border: '1px solid #ddd',
+                                                overflow: 'hidden',
+                                                background: theme.backgroundImage ? `url(${theme.backgroundImage}) center/cover` : '#f0f0f0',
+                                                cursor: 'pointer'
+                                            }}>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleFileUpload(e, 'background' as any)}
+                                                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
+                                                />
+                                                {!theme.backgroundImage && <ImageIcon size={16} color="#999" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />}
+                                            </div>
+                                            {theme.backgroundImage && (
+                                                <button
+                                                    onClick={() => setTheme({ ...theme, backgroundImage: '' })}
+                                                    style={{ background: 'none', border: 'none', color: '#e53e3e', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                >
+                                                    Remover
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </section>
 
@@ -296,7 +331,10 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                             </div>
 
                             <div style={{
-                                background: theme.backgroundColor,
+                                backgroundColor: theme.backgroundColor,
+                                backgroundImage: theme.backgroundImage ? `url(${theme.backgroundImage})` : 'none',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
                                 borderRadius: '16px',
                                 overflow: 'hidden',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
