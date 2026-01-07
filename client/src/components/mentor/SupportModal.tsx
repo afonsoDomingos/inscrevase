@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy } from 'lucide-react';
+import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supportService, Ticket } from '@/lib/supportService';
 
@@ -25,7 +25,10 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
 
     // Chat State
     const [reply, setReply] = useState('');
+    const [attachment, setAttachment] = useState<string | null>(null);
+    const [uploadingFile, setUploadingFile] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -66,10 +69,11 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
 
         setLoading(true);
         try {
-            await supportService.createTicket(subject, initialMessage);
+            await supportService.createTicket(subject, initialMessage, attachment || undefined);
             toast.success('Ticket criado com sucesso!');
             setSubject('');
             setInitialMessage('');
+            setAttachment(null);
             await loadTickets();
             setView('list');
         } catch (error) {
@@ -84,14 +88,53 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
         if (!reply || !selectedTicket) return;
 
         try {
-            const updatedTicket = await supportService.addMessage(selectedTicket._id, reply);
+            const updatedTicket = await supportService.addMessage(selectedTicket._id, reply, attachment || undefined);
             setSelectedTicket(updatedTicket);
             setReply('');
+            setAttachment(null);
             // Update in list as well
             setTickets(tickets.map(t => t._id === updatedTicket._id ? updatedTicket : t));
         } catch (error) {
             console.error(error);
             toast.error('Erro ao enviar resposta');
+        }
+    };
+
+    const handleFileUpload = async (file: File) => {
+        if (!file) return;
+
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+            toast.error('Arquivo muito grande. Máximo: 10MB');
+            return;
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error('Tipo de arquivo não permitido. Use imagens (JPEG, PNG, GIF, WEBP) ou PDF');
+            return;
+        }
+
+        setUploadingFile(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Erro no upload');
+
+            const data = await response.json();
+            setAttachment(data.url);
+            toast.success('Arquivo anexado com sucesso!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao fazer upload do arquivo');
+        } finally {
+            setUploadingFile(false);
         }
     };
 
@@ -237,6 +280,51 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
                                             />
                                         </div>
+
+                                        {/* File Attachment */}
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Anexo (Opcional)</label>
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept="image/*,.pdf"
+                                                onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                                                style={{ display: 'none' }}
+                                            />
+
+                                            {attachment ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f8f9fa' }}>
+                                                    {attachment.endsWith('.pdf') ? (
+                                                        <FileText size={24} color="#ef4444" />
+                                                    ) : (
+                                                        <ImageIcon size={24} color="#10b981" />
+                                                    )}
+                                                    <span style={{ flex: 1, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {attachment.split('/').pop()}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => setAttachment(null)}
+                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}
+                                                    >
+                                                        <X size={18} />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => fileInputRef.current?.click()}
+                                                    disabled={uploadingFile}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px dashed #ddd', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#666' }}
+                                                >
+                                                    {uploadingFile ? (
+                                                        <><Loader2 className="animate-spin" size={18} /> Enviando...</>
+                                                    ) : (
+                                                        <><Paperclip size={18} /> Anexar imagem ou PDF</>
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
+
                                         <button
                                             onClick={handleCreateTicket}
                                             disabled={loading}
@@ -280,6 +368,30 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
                                                     }}
                                                 >
                                                     <p style={{ lineHeight: 1.5, fontSize: '0.95rem' }}>{msg.content}</p>
+
+                                                    {msg.attachment && (
+                                                        <div style={{ marginTop: '0.75rem' }}>
+                                                            {msg.attachment.endsWith('.pdf') ? (
+                                                                <a
+                                                                    href={msg.attachment}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', background: myMsg ? 'rgba(255,255,255,0.1)' : '#f8f9fa', color: myMsg ? '#fff' : '#000', textDecoration: 'none' }}
+                                                                >
+                                                                    <FileText size={20} />
+                                                                    <span style={{ fontSize: '0.85rem' }}>Ver PDF</span>
+                                                                </a>
+                                                            ) : (
+                                                                <img
+                                                                    src={msg.attachment}
+                                                                    alt="Anexo"
+                                                                    style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '0.5rem', cursor: 'pointer' }}
+                                                                    onClick={() => msg.attachment && window.open(msg.attachment, '_blank')}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
+
                                                     <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '8px', textAlign: 'right' }}>
                                                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </div>
@@ -290,21 +402,58 @@ export default function SupportModal({ isOpen, onClose, mode = 'user' }: Support
                                     </div>
 
                                     {/* Input */}
-                                    <div style={{ padding: '1.5rem', background: '#fff', borderTop: '1px solid #eee', display: 'flex', gap: '10px' }}>
+                                    <div style={{ padding: '1.5rem', background: '#fff', borderTop: '1px solid #eee' }}>
                                         <input
-                                            type="text"
-                                            value={reply}
-                                            onChange={(e) => setReply(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleReply()}
-                                            placeholder="Digite sua resposta..."
-                                            style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*,.pdf"
+                                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                                            style={{ display: 'none' }}
                                         />
-                                        <button
-                                            onClick={handleReply}
-                                            style={{ background: '#000', color: '#fff', border: 'none', width: '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                        >
-                                            <Send size={20} />
-                                        </button>
+
+                                        {attachment && (
+                                            <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd', background: '#f8f9fa' }}>
+                                                {attachment.endsWith('.pdf') ? (
+                                                    <FileText size={20} color="#ef4444" />
+                                                ) : (
+                                                    <ImageIcon size={20} color="#10b981" />
+                                                )}
+                                                <span style={{ flex: 1, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {attachment.split('/').pop()}
+                                                </span>
+                                                <button
+                                                    onClick={() => setAttachment(null)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                disabled={uploadingFile}
+                                                style={{ background: '#f8f9fa', color: '#666', border: '1px solid #ddd', width: '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                            >
+                                                {uploadingFile ? <Loader2 className="animate-spin" size={20} /> : <Paperclip size={20} />}
+                                            </button>
+                                            <input
+                                                type="text"
+                                                value={reply}
+                                                onChange={(e) => setReply(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleReply()}
+                                                placeholder="Digite sua resposta..."
+                                                style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            />
+                                            <button
+                                                onClick={handleReply}
+                                                style={{ background: '#000', color: '#fff', border: 'none', width: '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                            >
+                                                <Send size={20} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )}
