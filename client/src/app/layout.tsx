@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from 'sonner';
 import { LanguageProvider } from '@/context/LanguageContext';
 import ScrollToTop from '@/components/ScrollToTop';
+import AuraConcierge from '@/components/AuraConcierge';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
@@ -28,6 +29,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
           <ScrollToTop />
+          <AuraConcierge />
         </LanguageProvider>
         <Toaster position="top-center" richColors theme="light" />
       </body>

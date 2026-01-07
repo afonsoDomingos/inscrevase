@@ -362,5 +362,14 @@
         "termsAgreement": "Ao clicar em finalizar, você concorda com nossos termos de privacidade.",
         "poweredBy": "Powered by Inscreva-se",
         "allRightsReserved": "Todos os direitos reservados."
+    },
+    "aura": {
+        "welcome": "Olá, eu sou a Aura. Sua concierge digital de luxo. Como posso elevar o seu evento hoje?",
+        "placeholder": "Fale com a Aura...",
+        "tooltip": "Falar com Aura AI",
+        "brandingTitle": "Consultoria de Branding",
+        "hypeTitle": "Gerador de Hype",
+        "globalGuideTitle": "Guia Global",
+        "error": "Desculpe, tive um soluço digital. Pode repetir?"
     }
 }

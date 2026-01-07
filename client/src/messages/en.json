@@ -362,5 +362,14 @@
         "termsAgreement": "By clicking finish, you agree to our privacy terms.",
         "poweredBy": "Powered by Inscreva-se",
         "allRightsReserved": "All rights reserved."
+    },
+    "aura": {
+        "welcome": "Hello, I am Aura. Your digital luxury concierge. How can I elevate your event today?",
+        "placeholder": "Talk to Aura...",
+        "tooltip": "Talk to Aura AI",
+        "brandingTitle": "Branding Consulting",
+        "hypeTitle": "Hype Generator",
+        "globalGuideTitle": "Global Guide",
+        "error": "Sorry, I had a digital hiccup. Could you repeat that?"
     }
 }
