@@ -10,7 +10,8 @@ import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
-import { Pencil } from 'lucide-react';
+import SupportModal from '@/components/mentor/SupportModal';
+import { Pencil, HelpCircle } from 'lucide-react';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
@@ -43,6 +44,7 @@ export default function MentorDashboard() {
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
     const [editModalData, setEditModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
+    const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
@@ -489,6 +491,34 @@ export default function MentorDashboard() {
                         onSuccess={loadDashboard}
                     />
                 )}
+                <button
+                    onClick={() => setIsSupportOpen(true)}
+                    style={{
+                        position: 'fixed',
+                        bottom: '2rem',
+                        right: '2rem',
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        background: '#000',
+                        color: '#FFD700',
+                        border: '2px solid #FFD700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                        zIndex: 2000,
+                        transition: 'transform 0.2s'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Suporte / Ajuda"
+                >
+                    <HelpCircle size={28} />
+                </button>
+
+                <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
             </main>
         </div>
     );

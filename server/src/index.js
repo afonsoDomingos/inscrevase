@@ -17,6 +17,7 @@ app.use('/api/forms', require('./routes/formRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/support', require('./routes/supportRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {

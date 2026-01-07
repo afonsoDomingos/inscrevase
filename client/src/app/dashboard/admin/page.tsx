@@ -6,8 +6,9 @@ import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import UsersList from '@/components/admin/UsersList';
 import FormList from '@/components/admin/FormList';
 import SubmissionList from '@/components/admin/SubmissionList';
+import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle } from 'lucide-react';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions';
 
@@ -16,6 +17,7 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
+    const [isSupportOpen, setIsSupportOpen] = useState(false);
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -227,6 +229,34 @@ export default function AdminDashboard() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+                <button
+                    onClick={() => setIsSupportOpen(true)}
+                    style={{
+                        position: 'fixed',
+                        bottom: '2rem',
+                        right: '2rem',
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        background: '#000',
+                        color: '#FFD700',
+                        border: '2px solid #FFD700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                        zIndex: 2000,
+                        transition: 'transform 0.2s'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Central de Suporte"
+                >
+                    <HelpCircle size={28} />
+                </button>
+
+                <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="admin" />
             </main>
         </div>
     );
