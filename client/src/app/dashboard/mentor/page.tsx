@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
+import { toast } from 'sonner';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
@@ -72,7 +73,7 @@ export default function MentorDashboard() {
     const copyToClipboard = (slug: string) => {
         const url = `${window.location.origin}/f/${slug}`;
         navigator.clipboard.writeText(url);
-        alert('Link copiado para a área de transferência!');
+        toast.success('Link copiado para a área de transferência!');
     };
 
     const handleToggleStatus = async (form: FormModel) => {
@@ -81,7 +82,7 @@ export default function MentorDashboard() {
             await loadDashboard();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao atualizar status');
+            toast.error('Erro ao atualizar status');
         }
     };
 
@@ -92,7 +93,7 @@ export default function MentorDashboard() {
             await loadDashboard();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao excluir formulário');
+            toast.error('Erro ao excluir formulário');
         }
     };
 
