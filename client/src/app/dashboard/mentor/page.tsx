@@ -12,6 +12,7 @@ import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
 import { Pencil } from 'lucide-react';
+import { supportService } from '@/lib/supportService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
@@ -50,6 +51,7 @@ export default function MentorDashboard() {
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
     const [themeModalData, setThemeModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const loadDashboard = useCallback(async () => {
         try {
@@ -71,6 +73,11 @@ export default function MentorDashboard() {
 
     useEffect(() => {
         loadDashboard();
+        loadUnreadCount();
+
+        // Poll for unread count every 30 seconds
+        const interval = setInterval(loadUnreadCount, 30000);
+        return () => clearInterval(interval);
     }, [loadDashboard]);
 
     const copyToClipboard = (slug: string) => {
@@ -97,6 +104,15 @@ export default function MentorDashboard() {
         } catch (error: unknown) {
             console.error(error);
             toast.error('Erro ao excluir formulário');
+        }
+    };
+
+    const loadUnreadCount = async () => {
+        try {
+            const data = await supportService.getUnreadCount();
+            setUnreadCount(data.unreadCount);
+        } catch (error) {
+            console.error('Error loading unread count:', error);
         }
     };
 
@@ -204,12 +220,33 @@ export default function MentorDashboard() {
                             justifyContent: 'center',
                             gap: '10px',
                             fontWeight: 600,
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            position: 'relative'
                         }}
                         onMouseOver={(e) => e.currentTarget.style.background = '#333'}
                         onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
                     >
                         <LifeBuoy size={18} /> Suporte
+                        {unreadCount > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                right: '-8px',
+                                background: '#ef4444',
+                                color: '#fff',
+                                borderRadius: '50%',
+                                width: '24px',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                border: '2px solid #1a1a1a'
+                            }}>
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
                     </button>
 
                     <button

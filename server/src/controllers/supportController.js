@@ -68,3 +68,27 @@ exports.addMessage = async (req, res) => {
         res.status(500).json({ message: 'Erro ao responder', error: error.message });
     }
 };
+
+exports.getUnreadCount = async (req, res) => {
+    try {
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+
+        let unreadCount = 0;
+
+        if (isAdmin) {
+            // For admin: count tickets with status 'open' (waiting for admin response)
+            unreadCount = await SupportTicket.countDocuments({ status: 'open' });
+        } else {
+            // For user: count tickets with status 'answered' (admin replied)
+            unreadCount = await SupportTicket.countDocuments({
+                user: req.user.id,
+                status: 'answered'
+            });
+        }
+
+        res.status(200).json({ unreadCount });
+    } catch (error) {
+        console.error('Error in getUnreadCount:', error);
+        res.status(500).json({ message: 'Erro ao buscar notificações', error: error.message });
+    }
+};

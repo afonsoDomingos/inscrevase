@@ -66,5 +66,13 @@ export const supportService = {
         });
         if (!response.ok) throw new Error('Erro ao enviar mensagem');
         return response.json();
+    },
+
+    getUnreadCount: async (): Promise<{ unreadCount: number }> => {
+        const response = await fetch(`${API_URL}/support/unread-count`, {
+            headers: getHeaders()
+        });
+        if (!response.ok) throw new Error('Erro ao buscar notificações');
+        return response.json();
     }
 }
