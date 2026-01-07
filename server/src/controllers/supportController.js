@@ -2,11 +2,11 @@ const SupportTicket = require('../models/SupportTicket');
 
 exports.createTicket = async (req, res) => {
     try {
-        const { subject, message } = req.body;
+        const { subject, message, attachment } = req.body;
         const ticket = await SupportTicket.create({
             user: req.user.id,
             subject,
-            messages: [{ sender: 'user', content: message }]
+            messages: [{ sender: 'user', content: message, attachment: attachment || null }]
         });
         res.status(201).json(ticket);
     } catch (error) {
@@ -34,7 +34,7 @@ exports.getAllTickets = async (req, res) => {
 
 exports.addMessage = async (req, res) => {
     try {
-        const { content } = req.body;
+        const { content, attachment } = req.body;
         const { id } = req.params;
         const role = req.user.role === 'admin' ? 'admin' : 'user';
 
@@ -48,7 +48,7 @@ exports.addMessage = async (req, res) => {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
-        ticket.messages.push({ sender: role, content });
+        ticket.messages.push({ sender: role, content, attachment: attachment || null });
         if (role === 'admin') ticket.status = 'answered';
         else ticket.status = 'open';
 

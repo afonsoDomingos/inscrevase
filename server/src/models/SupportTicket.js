@@ -18,6 +18,10 @@ const supportTicketSchema = new mongoose.Schema({
     messages: [{
         sender: { type: String, enum: ['user', 'admin'], required: true },
         content: { type: String, required: true },
+        attachment: {
+            type: String,
+            default: null
+        },
         createdAt: { type: Date, default: Date.now }
     }],
     createdAt: {

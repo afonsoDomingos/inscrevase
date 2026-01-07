@@ -6,6 +6,7 @@ export interface Message {
     _id: string;
     sender: 'user' | 'admin';
     content: string;
+    attachment?: string | null;
     createdAt: string;
 }
 
@@ -31,11 +32,11 @@ const getHeaders = () => {
 };
 
 export const supportService = {
-    createTicket: async (subject: string, message: string) => {
+    createTicket: async (subject: string, message: string, attachment?: string) => {
         const response = await fetch(`${API_URL}/support`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ subject, message })
+            body: JSON.stringify({ subject, message, attachment })
         });
         if (!response.ok) throw new Error('Erro ao criar ticket');
         return response.json();
@@ -57,11 +58,11 @@ export const supportService = {
         return response.json();
     },
 
-    addMessage: async (id: string, content: string) => {
+    addMessage: async (id: string, content: string, attachment?: string) => {
         const response = await fetch(`${API_URL}/support/${id}/message`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ content })
+            body: JSON.stringify({ content, attachment })
         });
         if (!response.ok) throw new Error('Erro ao enviar mensagem');
         return response.json();

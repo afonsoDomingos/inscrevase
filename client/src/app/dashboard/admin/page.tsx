@@ -6,11 +6,12 @@ import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import UsersList from '@/components/admin/UsersList';
 import FormList from '@/components/admin/FormList';
 import SubmissionList from '@/components/admin/SubmissionList';
+import SupportTicketList from '@/components/admin/SupportTicketList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy } from 'lucide-react';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support';
 
 export default function AdminDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
@@ -59,6 +60,7 @@ export default function AdminDashboard() {
         { id: 'users', label: 'Usuários', icon: <Users size={20} /> },
         { id: 'forms', label: 'Eventos/Formulários', icon: <FileText size={20} /> },
         { id: 'submissions', label: 'Inscrições', icon: <Database size={20} /> },
+        { id: 'support', label: 'Suporte', icon: <LifeBuoy size={20} /> },
     ];
 
     return (
@@ -226,6 +228,12 @@ export default function AdminDashboard() {
                     {activeTab === 'submissions' && (
                         <motion.div key="submissions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <SubmissionList />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'support' && (
+                        <motion.div key="support" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <SupportTicketList />
                         </motion.div>
                     )}
                 </AnimatePresence>
