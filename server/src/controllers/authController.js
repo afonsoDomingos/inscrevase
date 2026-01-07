@@ -74,7 +74,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -89,6 +89,11 @@ const updateByAdmin = async (req, res) => {
         if (profilePhoto) user.profilePhoto = profilePhoto;
         if (whatsapp) user.whatsapp = whatsapp;
         if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks };
+
+        // Update password if provided
+        if (password && password.trim() !== '') {
+            user.password = password;
+        }
 
         await user.save();
         res.json({ message: 'User updated successfully', user });

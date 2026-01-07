@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield } from 'lucide-react';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield, Lock } from 'lucide-react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService'; // For uploading images if admin wants to change user photo
@@ -29,6 +29,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     const [bio, setBio] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [profilePhoto, setProfilePhoto] = useState('');
+    const [password, setPassword] = useState(''); // New state for password reset
     const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -41,6 +42,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
             setBio(user.bio || '');
             setWhatsapp(user.whatsapp || '');
             setProfilePhoto(user.profilePhoto || '');
+            setPassword(''); // Reset password field
             setSocialLinks(user.socialLinks || {});
         }
     }, [user]);
@@ -75,7 +77,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 bio,
                 whatsapp,
                 profilePhoto,
-                socialLinks
+                socialLinks,
+                password // Include password in update
             });
             onSuccess();
             onClose();
@@ -105,7 +108,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '650px',
+                        maxWidth: '800px', // Wider layout for desktop
                         maxHeight: '90vh',
                         background: '#fff',
                         borderRadius: '30px',
@@ -205,41 +208,49 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                 </div>
                             </div>
 
-                            <div className="input-group">
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <User size={14} /> Nome Completo
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input-luxury"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
-                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+                                <div className="input-group">
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                        <User size={14} /> Nome Completo
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="input-luxury"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="input-group">
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <Briefcase size={14} /> Nome do Negócio/Marca
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input-luxury"
-                                    value={businessName}
-                                    onChange={(e) => setBusinessName(e.target.value)}
-                                />
-                            </div>
+                                <div className="input-group">
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                        <Briefcase size={14} /> Nome do Negócio/Marca
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="input-luxury"
+                                        value={businessName}
+                                        onChange={(e) => setBusinessName(e.target.value)}
+                                        placeholder="Ex: Consultoria X"
+                                    />
+                                </div>
 
-                            <div className="input-group">
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <Phone size={14} /> WhatsApp Corporativo
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input-luxury"
-                                    value={whatsapp}
-                                    onChange={(e) => setWhatsapp(e.target.value)}
-                                />
+                                <div className="input-group">
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                        <Phone size={14} /> WhatsApp Corporativo
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="input-luxury"
+                                        value={whatsapp}
+                                        onChange={(e) => setWhatsapp(e.target.value)}
+                                        placeholder="+258 84 123 4567"
+                                    />
+                                </div>
+
+                                <div className="input-group" style={{ gridColumn: 'span 1' }}> {/* On large screens could span 2, but 3 items... logic checks out for auto-fit */}
+                                    {/* Actually bio usually spans full width */}
+                                </div>
                             </div>
 
                             <div className="input-group">
@@ -253,6 +264,26 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                     rows={3}
                                     style={{ resize: 'none' }}
                                 />
+                            </div>
+
+                            {/* Security Section */}
+                            <div style={{ background: '#fff5f5', padding: '1rem', borderRadius: '12px', border: '1px solid #fed7d7' }}>
+                                <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#e53e3e', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <Lock size={14} /> Segurança (Redefinir Senha)
+                                </div>
+                                <div className="input-group">
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block', color: '#c53030' }}>Nova Senha</label>
+                                    <input
+                                        type="text"
+                                        className="input-luxury"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="Digite para redefinir..."
+                                        style={{ borderColor: '#fed7d7' }}
+                                        autoComplete="new-password"
+                                    />
+                                    <p style={{ fontSize: '0.7rem', color: '#e53e3e', marginTop: '4px' }}>Deixe em branco para manter a senha atual.</p>
+                                </div>
                             </div>
 
                             {/* Social Links Section */}

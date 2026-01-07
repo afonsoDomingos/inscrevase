@@ -13,6 +13,7 @@ export interface UserData {
     profilePhoto?: string;
     whatsapp?: string;
     country?: string;
+    password?: string;
     socialLinks?: {
         instagram?: string;
         linkedin?: string;
