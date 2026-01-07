@@ -9,12 +9,15 @@ import SubmissionList from '@/components/admin/SubmissionList';
 import SupportTicketList from '@/components/admin/SupportTicketList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
+import Link from 'next/link';
+import { useTranslate } from '@/context/LanguageContext';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support';
 
 export default function AdminDashboard() {
+    const { t } = useTranslate();
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -65,18 +68,18 @@ export default function AdminDashboard() {
     if (!user) return null;
 
     const cards = [
-        { label: 'Mentores Ativos', value: stats?.mentors || 0, icon: <Users size={24} />, color: '#FFD700', tab: 'users' },
-        { label: 'Formulários Criados', value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce', tab: 'forms' },
-        { label: 'Total Inscrições', value: stats?.submissions || 0, icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
-        { label: 'Inscrições Aprovadas', value: stats?.approved || 0, icon: <CheckCircle size={24} />, color: '#38a169', tab: 'submissions' },
+        { label: t('dashboard.activeMentors'), value: stats?.mentors || 0, icon: <Users size={24} />, color: '#FFD700', tab: 'users' },
+        { label: t('dashboard.createdForms'), value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce', tab: 'forms' },
+        { label: t('dashboard.totalSubscriptions'), value: stats?.submissions || 0, icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
+        { label: t('dashboard.approvedSubscriptions'), value: stats?.approved || 0, icon: <CheckCircle size={24} />, color: '#38a169', tab: 'submissions' },
     ];
 
     const menuItems = [
-        { id: 'overview', label: 'Visão Geral', icon: <LayoutDashboard size={20} /> },
-        { id: 'users', label: 'Usuários', icon: <Users size={20} /> },
-        { id: 'forms', label: 'Eventos/Formulários', icon: <FileText size={20} /> },
-        { id: 'submissions', label: 'Inscrições', icon: <Database size={20} /> },
-        { id: 'support', label: 'Suporte', icon: <LifeBuoy size={20} /> },
+        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
+        { id: 'users', label: t('dashboard.users'), icon: <Users size={20} /> },
+        { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
+        { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
+        { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ];
 
     return (
@@ -180,7 +183,7 @@ export default function AdminDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <LogOut size={18} /> Sair
+                        <LogOut size={18} /> {t('common.logout')}
                     </button>
                 </div>
             </aside>
@@ -199,11 +202,11 @@ export default function AdminDashboard() {
                             animate={{ x: 0, opacity: 1 }}
                             style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
                         >
-                            Olá, <span className="gold-text">{user.name.split(' ')[0]}</span>
+                            {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name.split(' ')[0]}</span>
                         </motion.h1>
                     </div>
 
-                    <a
+                    <Link
                         href="/"
                         style={{
                             padding: '0.9rem 2rem',
@@ -231,12 +234,8 @@ export default function AdminDashboard() {
                             e.currentTarget.style.transform = 'translateY(0)';
                         }}
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                            <polyline points="9 22 9 12 15 12 15 22" />
-                        </svg>
-                        Ir para Home
-                    </a>
+                        <ArrowRight size={18} /> {t('nav.home')}
+                    </Link>
                 </header>
 
                 <AnimatePresence mode="wait">

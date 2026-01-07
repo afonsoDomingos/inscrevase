@@ -1,33 +1,22 @@
 "use client";
 
-import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
 import { Globe } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function LanguageSwitcher() {
-    const locale = useLocale();
-    const router = useRouter();
-    const pathname = usePathname();
+    const { locale, setLocale } = useTranslate();
     const [isOpen, setIsOpen] = useState(false);
 
-    const switchLanguage = (newLocale: string) => {
-        // Remove current locale from pathname if it exists
-        const pathnameWithoutLocale = pathname.replace(/^\/(pt|en)/, '');
-
-        // Build new path with new locale
-        const newPath = newLocale === 'pt'
-            ? pathnameWithoutLocale || '/'
-            : `/${newLocale}${pathnameWithoutLocale || '/'}`;
-
-        router.push(newPath);
+    const switchLanguage = (newLocale: 'pt' | 'en') => {
+        setLocale(newLocale);
         setIsOpen(false);
     };
 
     const languages = [
         { code: 'pt', name: 'Português', flag: '🇵🇹' },
         { code: 'en', name: 'English', flag: '🇬🇧' }
-    ];
+    ] as const;
 
     const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
 
@@ -39,18 +28,24 @@ export default function LanguageSwitcher() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    padding: '0.5rem 0.8rem',
+                    background: '#f8f9fa',
+                    border: '1px solid #eee',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: '#333',
                     cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    fontWeight: 500,
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
                     transition: 'all 0.2s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
-                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+                onMouseOver={(e) => {
+                    e.currentTarget.style.background = '#eee';
+                    e.currentTarget.style.borderColor = '#ddd';
+                }}
+                onMouseOut={(e) => {
+                    e.currentTarget.style.background = '#f8f9fa';
+                    e.currentTarget.style.borderColor = '#eee';
+                }}
             >
                 <Globe size={18} />
                 <span>{currentLanguage.flag}</span>

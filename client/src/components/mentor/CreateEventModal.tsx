@@ -7,6 +7,7 @@ import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface CreateEventModalProps {
     isOpen: boolean;
@@ -23,6 +24,7 @@ interface Field {
 }
 
 export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateEventModalProps) {
+    const { t } = useTranslate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
@@ -43,8 +45,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [uploadingImage, setUploadingImage] = useState(false);
 
     const [fields, setFields] = useState<Field[]>([
-        { id: '1', label: 'Nome Completo', type: 'text', required: true },
-        { id: '2', label: 'Email', type: 'email', required: true }
+        { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+        { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
     ]);
 
     const [whatsappConfig, setWhatsappConfig] = useState({
@@ -95,7 +97,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 setCoverImage(url);
             } catch (err: unknown) {
                 console.error(err);
-                alert('Erro no upload da imagem');
+                alert(t('common.error'));
             } finally {
                 setUploadingImage(false);
             }
@@ -104,7 +106,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
     const handleSubmit = async () => {
         if (!title || !description) {
-            alert('Por favor, preencha o título e a descrição.');
+            alert(t('events.fillTitleDescAlert'));
             setStep(1);
             return;
         }
@@ -112,7 +114,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         // Validate Fields
         const hasEmptyFields = fields.some(f => !f.label.trim());
         if (hasEmptyFields) {
-            alert('Todos os campos do formulário precisam ter um nome (rótulo).');
+            alert(t('events.emptyFieldsAlert'));
             setStep(2);
             return;
         }
@@ -140,7 +142,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            toast.error(error.message || 'Erro ao criar evento');
+            toast.error(error.message || t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -180,16 +182,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     <div style={{ background: '#000', padding: '3rem 2rem', color: '#fff' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
                             <Layout size={24} />
-                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>Novo Evento</span>
+                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>{t('events.newTitle')}</span>
                         </div>
 
                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                             {[
-                                { id: 1, label: 'Informações', icon: <Info size={18} /> },
-                                { id: 2, label: 'Formulário', icon: <Plus size={18} /> },
-                                { id: 3, label: 'Design', icon: <Palette size={18} /> },
-                                { id: 4, label: 'Pagamento', icon: <DollarSign size={18} /> },
-                                { id: 5, label: 'Comunicação', icon: <MessageCircle size={18} /> },
+                                { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
+                                { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
+                                { id: 3, label: t('events.steps.design'), icon: <Palette size={18} /> },
+                                { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} /> },
+                                { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -222,7 +224,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 className="btn-primary"
                                 style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                             >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> Publicar</> : 'Próximo')}
+                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
                             </button>
                         </div>
                     </div>
@@ -239,22 +241,22 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         <AnimatePresence mode="wait">
                             {step === 1 && (
                                 <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Informações Básicas</h2>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.basicInfo')}</h2>
 
                                     <div style={{ display: 'grid', gap: '1.5rem' }}>
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Título do Evento</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventName')}</label>
                                             <input
                                                 type="text"
                                                 value={title}
                                                 onChange={(e) => setTitle(e.target.value)}
-                                                placeholder="Ex: Masterclass de Vendas"
+                                                placeholder={t('events.namePlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Data do Evento</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventDate')}</label>
                                             <input
                                                 type="date"
                                                 value={eventDate}
@@ -264,30 +266,30 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Meta de Inscritos (Opcional)</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.capacityLabel')}</label>
                                             <input
                                                 type="number"
                                                 value={capacity}
                                                 onChange={(e) => setCapacity(e.target.value)}
-                                                placeholder="Ex: 50"
+                                                placeholder={t('events.capacityPlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
-                                            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>Defina um objetivo para acompanhar o progresso das inscrições.</p>
+                                            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.capacityHelp')}</p>
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Descrição</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.description')}</label>
                                             <textarea
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 rows={4}
-                                                placeholder="Descreva o que os alunos vão aprender..."
+                                                placeholder={t('events.descriptionPlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
                                             />
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Imagem de Capa (Opcional)</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.coverImageLabel')}</label>
                                             <div style={{
                                                 width: '100%',
                                                 height: '180px',
@@ -307,7 +309,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     coverImage ? <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} /> : (
                                                         <>
                                                             <ImageIcon size={32} color="#aaa" />
-                                                            <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>Clique para subir imagem (1200x600)</span>
+                                                            <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
                                                         </>
                                                     )
                                                 )}
@@ -320,12 +322,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             {step === 2 && (
                                 <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Campos do Formulário</h2>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
                                         <button
                                             onClick={handleAddField}
                                             style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
                                         >
-                                            <Plus size={16} /> Adicionar Campo
+                                            <Plus size={16} /> {t('events.addField')}
                                         </button>
                                     </div>
 
@@ -337,7 +339,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         type="text"
                                                         value={field.label}
                                                         onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
-                                                        placeholder="Rótulo (ex: Profissão)"
+                                                        placeholder={t('events.fieldLabel')}
                                                         style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
                                                     />
                                                     <select
@@ -345,18 +347,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
                                                         style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
                                                     >
-                                                        <option value="text">Texto</option>
-                                                        <option value="email">Email</option>
-                                                        <option value="number">Número</option>
-                                                        <option value="phone">Telefone/WhatsApp</option>
-                                                        <option value="select">Seleção (Dropdown)</option>
+                                                        <option value="text">{t('events.typeText')}</option>
+                                                        <option value="email">{t('events.typeEmail')}</option>
+                                                        <option value="number">{t('events.typeNumber')}</option>
+                                                        <option value="phone">{t('events.typePhone')}</option>
+                                                        <option value="select">{t('events.typeSelect')}</option>
                                                     </select>
                                                     <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
                                                         <input
                                                             type="checkbox"
                                                             checked={field.required}
                                                             onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
-                                                        /> Obrigat.
+                                                        /> {t('events.requiredField')}
                                                     </label>
                                                     <button
                                                         onClick={() => handleRemoveField(field.id)}
@@ -372,7 +374,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         type="text"
                                                         value={field.options?.join(', ') || ''}
                                                         onChange={(e) => handleFieldChange(field.id, 'options', e.target.value.split(',').map(s => s.trim()))}
-                                                        placeholder="Opções separadas por vírgula (ex: Manhã, Tarde, Noite)"
+                                                        placeholder={t('events.optionsPlaceholder')}
                                                         style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px dashed #ccc', fontSize: '0.85rem', background: '#f9f9f9' }}
                                                     />
                                                 )}
@@ -384,12 +386,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                             {step === 3 && (
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Personalização</h2>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.customization')}</h2>
 
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem', alignItems: 'start' }}>
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor Principal</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.primaryColor')}</label>
                                                 <div style={{ display: 'flex', gap: '10px' }}>
                                                     {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
                                                         <motion.button
@@ -416,7 +418,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             </div>
 
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor de Fundo</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.backgroundColor')}</label>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                     <input
                                                         type="color"
@@ -440,10 +442,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             marginTop: '0'
                                         }}>
                                             <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
-                                                Pré-visualização
+                                                {t('events.preview')}
                                             </div>
                                             <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', lineHeight: 1.2 }}>
-                                                {title || 'Título do Evento'}
+                                                {title || t('events.title')}
                                             </h3>
                                             <button style={{
                                                 width: '100%',
@@ -455,13 +457,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 fontWeight: 700,
                                                 fontSize: '0.8rem'
                                             }}>
-                                                Inscrever-se Agora
+                                                {t('events.registerNow')}
                                             </button>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Estilo Visual</label>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.visualStyle')}</label>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                             <div
                                                 onClick={() => setTheme({ ...theme, style: 'luxury', backgroundColor: '#050505' })}
@@ -475,8 +477,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     textAlign: 'center'
                                                 }}
                                             >
-                                                <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Luxo (Dark)</div>
-                                                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Premium e elegante</div>
+                                                <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>{t('events.luxuryStyle')}</div>
+                                                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('events.luxuryHelp')}</div>
                                             </div>
                                             <div
                                                 onClick={() => setTheme({ ...theme, style: 'minimalist', backgroundColor: '#FFFFFF' })}
@@ -490,8 +492,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     textAlign: 'center'
                                                 }}
                                             >
-                                                <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Minimalista</div>
-                                                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Limpo e direto</div>
+                                                <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>{t('events.minimalistStyle')}</div>
+                                                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('events.minimalistHelp')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -501,7 +503,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                             {step === 4 && (
                                 <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração de Pagamento</h2>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.paymentConfig')}</h2>
 
                                     <div style={{ display: 'grid', gap: '1.5rem' }}>
                                         <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
@@ -511,24 +513,24 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
                                                 style={{ width: '20px', height: '20px' }}
                                             />
-                                            Este é um evento pago?
+                                            {t('events.isPaidEvent')}
                                         </label>
 
                                         {paymentConfig.enabled && (
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                     <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Valor (Preço)</label>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.priceLabel')}</label>
                                                         <input
                                                             type="number"
                                                             value={paymentConfig.price}
                                                             onChange={(e) => setPaymentConfig({ ...paymentConfig, price: parseFloat(e.target.value) })}
-                                                            placeholder="Ex: 500"
+                                                            placeholder={t('events.pricePlaceholder')}
                                                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Moeda</label>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currencyLabel')}</label>
                                                         <select
                                                             value={paymentConfig.currency}
                                                             onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
@@ -542,12 +544,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 </div>
 
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Instruções de Pagamento</label>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.paymentInstructions')}</label>
                                                     <textarea
                                                         value={paymentConfig.instructions}
                                                         onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
                                                         rows={4}
-                                                        placeholder="Ex: Pagamento via M-Pesa para 841234567 (Nome)..."
+                                                        placeholder={t('events.instructionsPlaceholder')}
                                                         style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
                                                     />
                                                 </div>
@@ -559,7 +561,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         onChange={(e) => setPaymentConfig({ ...paymentConfig, requireProof: e.target.checked })}
                                                         style={{ width: '18px', height: '18px' }}
                                                     />
-                                                    Exigir comprovativo de pagamento na inscrição?
+                                                    {t('events.requireProof')}
                                                 </label>
                                             </motion.div>
                                         )}
@@ -569,29 +571,29 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                             {step === 5 && (
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>WhatsApp & Conclusão</h2>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.whatsappConclusion')}</h2>
 
                                     <div style={{ display: 'grid', gap: '1.5rem' }}>
                                         <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
                                             <div style={{ color: '#319795' }}><CheckCircle size={24} /></div>
                                             <p style={{ color: '#2c7a7b', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                                                Após a inscrição, o aluno será redirecionado para o seu WhatsApp para facilitar o contato direto.
+                                                {t('events.whatsappHelp')}
                                             </p>
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Seu Número WhatsApp</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappNumber')}</label>
                                             <input
                                                 type="text"
                                                 value={whatsappConfig.phoneNumber}
                                                 onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
-                                                placeholder="Ex: 258840000000"
+                                                placeholder={t('events.whatsappNumberPlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Mensagem Automática</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappMessage')}</label>
                                             <textarea
                                                 value={whatsappConfig.message}
                                                 onChange={(e) => setWhatsappConfig({ ...whatsappConfig, message: e.target.value })}

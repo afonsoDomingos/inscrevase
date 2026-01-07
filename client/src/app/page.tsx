@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Palette, Zap, ShieldCheck, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslate } from "@/context/LanguageContext";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -16,6 +17,7 @@ const galleryImages = [
 ];
 
 export default function Home() {
+  const { t } = useTranslate();
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -40,7 +42,7 @@ export default function Home() {
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: 'block' }}
             >
-              Transforme seus eventos com
+              {t('landing.hero.title1')}
             </motion.span>
             <motion.span
               initial={{ y: 50, opacity: 0 }}
@@ -49,7 +51,7 @@ export default function Home() {
               style={{ display: 'block' }}
               className="gold-text luxury-shimmer"
             >
-              Elegância e Exclusividade
+              {t('landing.hero.title2')}
             </motion.span>
             <motion.span
               initial={{ y: 50, opacity: 0 }}
@@ -57,15 +59,14 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: 'block', fontSize: '2.5rem', marginTop: '1rem', fontWeight: 400 }}
             >
-              na <span style={{ fontWeight: 800 }}>Inscreva-se</span>
+              {t('landing.hero.title3').split(' ')[0]} <span style={{ fontWeight: 800 }}>{t('landing.hero.title3').split(' ')[1]}</span>
             </motion.span>
           </motion.h1>
           <motion.p
             {...fadeIn}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            A plataforma de inscrições desenhada para mentores e palestrantes que prezam
-            pelo branding de luxo e a melhor experiência para seus clientes.
+            {t('landing.hero.description')}
           </motion.p>
           <motion.div
             {...fadeIn}
@@ -73,7 +74,7 @@ export default function Home() {
             className="flex gap-4 justify-center"
           >
             <Link href="/entrar" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-              Começar Agora <ArrowRight size={20} />
+              {t('common.getStarted')} <ArrowRight size={20} />
             </Link>
           </motion.div>
         </div>
@@ -91,7 +92,7 @@ export default function Home() {
             style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
           >
             {[...galleryImages, ...galleryImages].map((src, i) => (
-              <div key={`row1-${i}`} style={{
+              <div key={`row1 - ${i} `} style={{
                 position: 'relative',
                 width: '350px',
                 height: '220px',
@@ -114,7 +115,7 @@ export default function Home() {
             style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
           >
             {[...galleryImages, ...galleryImages].map((src, i) => (
-              <div key={`row2-${i}`} style={{
+              <div key={`row2 - ${i} `} style={{
                 position: 'relative',
                 width: '350px',
                 height: '220px',
@@ -138,42 +139,42 @@ export default function Home() {
       }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-            <h2 style={{ fontSize: '3rem' }}>Funcionalidades <span className="gold-text">Premium</span></h2>
+            <h2 style={{ fontSize: '3rem' }}>{t('landing.features.title')} <span className="gold-text">{t('landing.features.titleHighlight')}</span></h2>
             <p style={{ color: '#666', maxWidth: '600px', margin: '1rem auto' }}>
-              Tudo o que você precisa para gerir suas inscrições com profissionalismo moçambicano.
+              {t('landing.features.subtitle')}
             </p>
           </div>
 
           <div className="grid">
             <FeatureCard
               icon={<Palette className="gold-text" />}
-              title="Branding Personalizado"
-              description="Ajuste cores, fontes e logo para que o formulário tenha a cara do seu negócio."
+              title={t('landing.features.f1.title')}
+              description={t('landing.features.f1.description')}
             />
             <FeatureCard
               icon={<CheckCircle className="gold-text" />}
-              title="Validação de Pagamentos"
-              description="Upload de comprovativos (M-Pesa, E-Mola, Banco) com aprovação manual ou automática."
+              title={t('landing.features.f2.title')}
+              description={t('landing.features.f2.description')}
             />
             <FeatureCard
               icon={<Zap className="gold-text" />}
-              title="Integração WhatsApp"
-              description="Botão nativo para levar seus inscritos direto para sua comunidade ou suporte."
+              title={t('landing.features.f3.title')}
+              description={t('landing.features.f3.description')}
             />
             <FeatureCard
               icon={<BarChart3 className="gold-text" />}
-              title="Dashboard Analítico"
-              description="Acompanhe vendas, conversões e exporte dados para Excel com um clique."
+              title={t('landing.features.f4.title')}
+              description={t('landing.features.f4.description')}
             />
             <FeatureCard
               icon={<ShieldCheck className="gold-text" />}
-              title="Segurança Máxima"
-              description="Dados protegidos e conformidade com as melhores práticas de privacidade."
+              title={t('landing.features.f5.title')}
+              description={t('landing.features.f5.description')}
             />
             <FeatureCard
               icon={<Palette className="gold-text" />}
-              title="Temas de Luxo"
-              description="Escolha entre designs Minimalistas ou Luxo Clássico pré-configurados."
+              title={t('landing.features.f6.title')}
+              description={t('landing.features.f6.description')}
             />
           </div>
         </div>
@@ -183,12 +184,12 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <div className="luxury-card" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
-            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>Pronto para elevar o nível dos seus eventos?</h2>
+            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{t('landing.cta.title')}</h2>
             <p style={{ color: '#666', marginBottom: '3rem', fontSize: '1.1rem' }}>
-              Junte-se aos melhores mentores de Moçambique e comece hoje mesmo.
+              {t('landing.cta.description')}
             </p>
             <Link href="/cadastro" className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.1rem' }}>
-              Criar minha conta gratuita
+              {t('landing.cta.button')}
             </Link>
           </div>
         </div>
@@ -200,7 +201,7 @@ export default function Home() {
             Inscreva<span className="gold-text">.se</span>
           </p>
           <p style={{ color: '#999', fontSize: '0.9rem' }}>
-            &copy; {new Date().getFullYear()} Inscreva-se Moçambique. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} Inscreva-se. {t('landing.footer.rights')}
           </p>
         </div>
       </footer>

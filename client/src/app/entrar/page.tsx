@@ -9,8 +9,10 @@ import { Mail, Lock, ArrowRight, Loader2, UserPlus, LogIn, Eye, EyeOff } from 'l
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function Login() {
+    const { t } = useTranslate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +28,7 @@ export default function Login() {
         try {
             const data = await authService.login(email, password);
             console.log('Login successful:', data);
-            toast.success('Login realizado com sucesso! Bem-vindo.');
+            toast.success(t('auth.loginSuccess'));
 
             // Redirect based on role
             if (data.user.role === 'SuperAdmin' || data.user.role === 'admin') {
@@ -72,7 +74,7 @@ export default function Login() {
                             cursor: 'default'
                         }}
                     >
-                        <LogIn size={16} /> Entrar
+                        <LogIn size={16} /> {t('auth.signIn')}
                     </div>
                     <Link
                         href="/cadastro"
@@ -92,7 +94,7 @@ export default function Login() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <UserPlus size={16} /> Criar Conta
+                        <UserPlus size={16} /> {t('auth.signUp')}
                     </Link>
                 </div>
 
@@ -106,8 +108,8 @@ export default function Login() {
                         style={{ height: '60px', marginBottom: '1rem' }}
                         className="float-anim"
                     />
-                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Bem-vindo de volta</h1>
-                    <p style={{ color: '#666' }}>Acesse sua conta exclusiva</p>
+                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{t('auth.loginTitle')}</h1>
+                    <p style={{ color: '#666' }}>{t('auth.loginSubtitle')}</p>
                 </div>
 
                 {error && (
@@ -127,14 +129,14 @@ export default function Login() {
                         transition={{ delay: 0.3 }}
                         className="input-group"
                     >
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Email</label>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>{t('auth.email')}</label>
                         <div style={{ position: 'relative' }}>
                             <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="seu@email.com"
+                                placeholder={t('auth.emailPlaceholder')}
                                 className="input-luxury"
                                 style={{ paddingLeft: '3rem' }}
                                 required
@@ -149,14 +151,14 @@ export default function Login() {
                         transition={{ delay: 0.4 }}
                         className="input-group"
                     >
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Senha</label>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>{t('auth.password')}</label>
                         <div style={{ position: 'relative' }}>
                             <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                             <input
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
+                                placeholder={t('auth.passwordPlaceholder')}
                                 className="input-luxury"
                                 style={{ paddingLeft: '3rem', paddingRight: '3rem' }}
                                 required
@@ -194,7 +196,7 @@ export default function Login() {
                         {loading ? (
                             <Loader2 className="animate-spin" size={20} />
                         ) : (
-                            <>Entrar na Plataforma <ArrowRight size={18} /></>
+                            <>{t('auth.loginButton')} <ArrowRight size={18} /></>
                         )}
                     </motion.button>
 
@@ -224,12 +226,12 @@ export default function Login() {
                         }}
                     >
                         <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} />
-                        Continuar com Google
+                        {t('auth.continueWithGoogle')}
                     </button>
                 </form>
 
                 <p style={{ marginTop: '2.5rem', textAlign: 'center', color: '#666', fontSize: '0.95rem' }}>
-                    Ainda não faz parte? <Link href="/cadastro" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Criar conta premium</Link>
+                    {t('auth.noAccountYet')} <Link href="/cadastro" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>{t('auth.registerNow')}</Link>
                 </p>
             </motion.div>
         </main>

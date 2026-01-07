@@ -6,12 +6,14 @@ import { submissionService, SubmissionModel } from '@/lib/submissionService';
 import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface SubmissionManagementProps {
     formId?: string | null;
 }
 
 export default function SubmissionManagement({ formId }: SubmissionManagementProps) {
+    const { t } = useTranslate();
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
@@ -39,7 +41,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             // Optimistic update
             setSubmissions(prev => prev.map(s => s._id === id ? { ...s, status } : s));
         } catch (error) {
-            alert('Erro ao atualizar status');
+            alert(t('common.updateStatusError'));
         }
     };
 
@@ -48,7 +50,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
         const keys = Object.keys(data);
         const nameKey = keys.find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
         if (nameKey) return data[nameKey];
-        return data[keys[0]] || 'Sem identificação'; // Fallback
+        return data[keys[0]] || t('events.noIdentification');
     };
 
     const getEmailIdentifier = (data: Record<string, any>) => {
@@ -76,7 +78,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
         return matchesForm && matchesStatus && matchesSearch;
     });
 
-    if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Carregando inscrições...</div>;
+    if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>{t('events.loading')}</div>;
 
     return (
         <div>
@@ -86,7 +88,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                     <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                     <input
                         type="text"
-                        placeholder="Buscar por nome ou evento..."
+                        placeholder={t('events.submissions.searchPlaceholder')}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         className="input-luxury"
@@ -109,7 +111,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 textTransform: 'capitalize'
                             }}
                         >
-                            {status === 'all' ? 'Todos' : status === 'pending' ? 'Pendentes' : status === 'approved' ? 'Aprovados' : 'Rejeitados'}
+                            {status === 'all' ? t('events.submissions.all') : status === 'pending' ? t('events.submissions.pending') : status === 'approved' ? t('events.submissions.approved') : t('events.submissions.rejected')}
                         </button>
                     ))}
                 </div>
@@ -119,18 +121,18 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                 {filteredSubmissions.length === 0 ? (
                     <div style={{ padding: '4rem', textAlign: 'center', color: '#999' }}>
                         <FileText size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-                        <p>Nenhuma inscrição encontrada.</p>
+                        <p>{t('events.submissions.noSubmissions')}</p>
                     </div>
                 ) : (
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.85rem', color: '#666' }}>
-                                <th style={{ padding: '1rem' }}>Inscrito</th>
-                                <th style={{ padding: '1rem' }}>Evento</th>
-                                <th style={{ padding: '1rem' }}>Data</th>
-                                <th style={{ padding: '1rem' }}>Comprovativo</th>
-                                <th style={{ padding: '1rem' }}>Status</th>
-                                <th style={{ padding: '1rem', textAlign: 'right' }}>Ações</th>
+                                <th style={{ padding: '1rem' }}>{t('events.submissions.registrant')}</th>
+                                <th style={{ padding: '1rem' }}>{t('events.submissions.event')}</th>
+                                <th style={{ padding: '1rem' }}>{t('events.submissions.date')}</th>
+                                <th style={{ padding: '1rem' }}>{t('events.submissions.proof')}</th>
+                                <th style={{ padding: '1rem' }}>{t('events.submissions.status')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -154,10 +156,10 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                 onClick={() => setSelectedProof(submission.paymentProof!)}
                                                 style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '0.8rem' }}
                                             >
-                                                <Eye size={14} /> Ver
+                                                <Eye size={14} /> {t('events.submissions.view')}
                                             </button>
                                         ) : (
-                                            <span style={{ color: '#999', fontSize: '0.8rem' }}>Sem anexo</span>
+                                            <span style={{ color: '#999', fontSize: '0.8rem' }}>{t('events.submissions.noAttachment')}</span>
                                         )}
                                     </td>
                                     <td style={{ padding: '1rem' }}>
@@ -169,14 +171,14 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             background: submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
                                             color: submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
                                         }}>
-                                            {submission.status === 'approved' ? 'APROVADO' : submission.status === 'rejected' ? 'REJEITADO' : 'PENDENTE'}
+                                            {submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                         </span>
                                     </td>
                                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                             <button
                                                 onClick={() => handleUpdateStatus(submission._id, 'approved')}
-                                                title="Aprovar"
+                                                title={t('events.submissions.approveTooltip')}
                                                 disabled={submission.status === 'approved'}
                                                 style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: submission.status === 'approved' ? '#eee' : '#38a169', color: '#fff', cursor: submission.status === 'approved' ? 'default' : 'pointer' }}
                                             >
@@ -184,7 +186,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             </button>
                                             <button
                                                 onClick={() => handleUpdateStatus(submission._id, 'rejected')}
-                                                title="Rejeitar"
+                                                title={t('events.submissions.rejectTooltip')}
                                                 disabled={submission.status === 'rejected'}
                                                 style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: submission.status === 'rejected' ? '#eee' : '#e53e3e', color: '#fff', cursor: submission.status === 'rejected' ? 'default' : 'pointer' }}
                                             >
@@ -213,7 +215,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                             style={{ position: 'relative', width: '100%', maxWidth: '800px', maxHeight: '90vh', background: '#fff', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column' }}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Comprovativo de Pagamento</h3>
+                                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('events.submissions.proofTitle')}</h3>
                                 <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><XCircle size={24} /></button>
                             </div>
 
@@ -229,7 +231,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
                             <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
                                 <a href={selectedProof} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                                    <Download size={16} /> Baixar Original
+                                    <Download size={16} /> {t('events.submissions.downloadOriginal')}
                                 </a>
                             </div>
                         </motion.div>

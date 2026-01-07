@@ -7,8 +7,10 @@ import {
     BarChart, Bar, Cell
 } from 'recharts';
 import { Loader2, TrendingUp, MapPin } from 'lucide-react';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function AnalyticsCharts() {
+    const { t } = useTranslate();
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -30,7 +32,7 @@ export default function AnalyticsCharts() {
         return (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#888' }}>
                 <Loader2 className="animate-spin" style={{ margin: '0 auto', marginBottom: '1rem' }} />
-                Carregando dados analíticos...
+                {t('dashboard.analytics.loading')}
             </div>
         );
     }
@@ -46,8 +48,8 @@ export default function AnalyticsCharts() {
                         <TrendingUp size={24} />
                     </div>
                     <div>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Evolução de Inscrições</h3>
-                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Últimos 7 dias</p>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('dashboard.analytics.evolution')}</h3>
+                        <p style={{ color: '#666', fontSize: '0.85rem' }}>{t('dashboard.analytics.last7Days')}</p>
                     </div>
                 </div>
 
@@ -93,8 +95,8 @@ export default function AnalyticsCharts() {
                         <MapPin size={24} />
                     </div>
                     <div>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Origem dos Participantes</h3>
-                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Top províncias (baseado nos dados do formulário)</p>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('dashboard.analytics.participantOrigin')}</h3>
+                        <p style={{ color: '#666', fontSize: '0.85rem' }}>{t('dashboard.analytics.topProvincesHelp')}</p>
                     </div>
                 </div>
 
@@ -125,8 +127,8 @@ export default function AnalyticsCharts() {
                     </div>
                 ) : (
                     <div style={{ textAlign: 'center', padding: '2rem', color: '#999', border: '2px dashed #eee', borderRadius: '12px' }}>
-                        <p>Ainda não há dados geográficos suficientes.</p>
-                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Certifique-se de que seus formulários perguntam a &quot;Província&quot; ou &quot;Cidade&quot;.</p>
+                        <p>{t('dashboard.analytics.noGeoData')}</p>
+                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{t('dashboard.analytics.geoDataHelp')}</p>
                     </div>
                 )}
             </div>

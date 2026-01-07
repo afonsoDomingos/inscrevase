@@ -7,6 +7,7 @@ import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as Lin
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService';
 import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface ProfileModalProps {
     isOpen: boolean;
@@ -16,6 +17,7 @@ interface ProfileModalProps {
 }
 
 export default function ProfileModal({ isOpen, onClose, user, onSuccess }: ProfileModalProps) {
+    const { t } = useTranslate();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -34,7 +36,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                 const url = await formService.uploadFile(e.target.files[0], 'profiles');
                 setProfilePhoto(url);
             } catch (err) {
-                alert('Erro no upload da foto');
+                alert(t('events.profile.uploadError'));
             } finally {
                 setUploading(false);
             }
@@ -56,7 +58,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
             onSuccess();
             onClose();
         } catch (err: any) {
-            alert(err.message || 'Erro ao atualizar perfil');
+            alert(err.message || t('events.profile.updateError'));
         } finally {
             setLoading(false);
         }
@@ -97,8 +99,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                     </button>
 
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Meu Perfil Profissional</h2>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>Estas informações aparecerão nos seus formulários.</p>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('events.profile.title')}</h2>
+                        <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('events.profile.subtitle')}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.2rem' }}>
@@ -128,7 +130,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
 
                         <div className="input-group">
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                <User size={14} /> Seu Nome Completo
+                                <User size={14} /> {t('events.profile.fullName')}
                             </label>
                             <input
                                 type="text"
@@ -141,21 +143,21 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
 
                         <div className="input-group">
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                <Briefcase size={14} /> Nome do Negócio/Marca
+                                <Briefcase size={14} /> {t('events.profile.businessName')}
                             </label>
                             <input
                                 type="text"
                                 className="input-luxury"
                                 value={businessName}
                                 onChange={(e) => setBusinessName(e.target.value)}
-                                placeholder="Ex: Master Mentoria"
+                                placeholder={t('events.profile.businessPlaceholder')}
                             />
                         </div>
 
                         {/* Social Links Section */}
                         <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px' }}>
                             <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#666', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <Globe size={14} /> Redes Sociais (Opcional)
+                                <Globe size={14} /> {t('events.profile.socialLinks')}
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
                                 <div className="input-group">
@@ -166,7 +168,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                             className="input-luxury"
                                             value={socialLinks.instagram || ''}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
-                                            placeholder="Instagram URL"
+                                            placeholder={t('dashboard.settings.instagramPlaceholder')}
                                             style={{ paddingLeft: '2.5rem' }}
                                         />
                                     </div>
@@ -179,7 +181,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                             className="input-luxury"
                                             value={socialLinks.linkedin || ''}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
-                                            placeholder="LinkedIn URL"
+                                            placeholder={t('dashboard.settings.linkedinPlaceholder')}
                                             style={{ paddingLeft: '2.5rem' }}
                                         />
                                     </div>
@@ -192,7 +194,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                             className="input-luxury"
                                             value={socialLinks.facebook || ''}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, facebook: e.target.value })}
-                                            placeholder="Facebook URL"
+                                            placeholder={t('dashboard.settings.facebookPlaceholder')}
                                             style={{ paddingLeft: '2.5rem' }}
                                         />
                                     </div>
@@ -205,7 +207,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                             className="input-luxury"
                                             value={socialLinks.website || ''}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
-                                            placeholder="Website Pessoal"
+                                            placeholder={t('dashboard.settings.websitePlaceholder')}
                                             style={{ paddingLeft: '2.5rem' }}
                                         />
                                     </div>
@@ -216,19 +218,19 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div className="input-group">
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <Phone size={14} /> WhatsApp Corporativo
+                                    <Phone size={14} /> {t('events.profile.whatsapp')}
                                 </label>
                                 <input
                                     type="text"
                                     className="input-luxury"
                                     value={whatsapp}
                                     onChange={(e) => setWhatsapp(e.target.value)}
-                                    placeholder="2588XXXXXXXX"
+                                    placeholder={t('dashboard.settings.whatsappPlaceholder')}
                                 />
                             </div>
                             <div className="input-group">
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <LinkIcon size={14} /> Status da Conta
+                                    <LinkIcon size={14} /> {t('events.profile.accountStatus')}
                                 </label>
                                 <div style={{ padding: '0.8rem', background: '#f8f9fa', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, color: user.plan === 'premium' ? '#38a169' : '#000' }}>
                                     {user.plan?.toUpperCase()} PLAN
@@ -238,14 +240,14 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
 
                         <div className="input-group">
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                <FileText size={14} /> Bio Curta
+                                <FileText size={14} /> {t('events.profile.bio')}
                             </label>
                             <textarea
                                 className="input-luxury"
                                 value={bio}
                                 onChange={(e) => setBio(e.target.value)}
                                 rows={3}
-                                placeholder="Uma pequena descrição sobre si..."
+                                placeholder={t('events.profile.bioPlaceholder')}
                                 style={{ resize: 'none' }}
                             />
                         </div>
@@ -256,7 +258,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                             className="btn-primary"
                             style={{ padding: '1rem', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '1rem' }}
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Salvar Alterações</>}
+                            {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> {t('events.profile.saveChanges')}</>}
                         </button>
                     </form>
                 </motion.div>

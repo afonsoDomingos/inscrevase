@@ -8,8 +8,10 @@ import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogI
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function Register() {
+    const { t } = useTranslate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -29,7 +31,7 @@ export default function Register() {
 
         try {
             await authService.register(formData);
-            toast.success('Conta criada com sucesso! Redirecionando...');
+            toast.success(t('auth.registerSuccess'));
             router.push('/dashboard/mentor');
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.';
@@ -71,7 +73,7 @@ export default function Register() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <LogIn size={16} /> Entrar
+                        <LogIn size={16} /> {t('auth.signIn')}
                     </Link>
                     <div
                         style={{
@@ -89,7 +91,7 @@ export default function Register() {
                             cursor: 'default'
                         }}
                     >
-                        <UserPlus size={16} /> Criar Conta
+                        <UserPlus size={16} /> {t('auth.signUp')}
                     </div>
                 </div>
 
@@ -103,8 +105,8 @@ export default function Register() {
                         style={{ height: '60px', marginBottom: '1rem' }}
                         className="float-anim"
                     />
-                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Criar Conta Premium</h1>
-                    <p style={{ color: '#666' }}>O primeiro passo para o sucesso do seu evento</p>
+                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{t('auth.registerTitle')}</h1>
+                    <p style={{ color: '#666' }}>{t('auth.registerSubtitle')}</p>
                 </div>
 
                 {error && (
@@ -125,7 +127,7 @@ export default function Register() {
                             transition={{ delay: 0.3 }}
                             className="input-group"
                         >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Nome Completo</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.fullName')}</label>
                             <div style={{ position: 'relative' }}>
                                 <User size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
@@ -134,7 +136,7 @@ export default function Register() {
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="input-luxury"
                                     style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder="Seu nome"
+                                    placeholder={t('auth.namePlaceholder')}
                                     required
                                     disabled={loading}
                                 />
@@ -147,7 +149,7 @@ export default function Register() {
                             transition={{ delay: 0.3 }}
                             className="input-group"
                         >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Nome do Negócio</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.businessName')}</label>
                             <div style={{ position: 'relative' }}>
                                 <Briefcase size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
@@ -156,7 +158,7 @@ export default function Register() {
                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                     className="input-luxury"
                                     style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder="Ex: Elite Mentoria"
+                                    placeholder={t('auth.businessPlaceholder')}
                                     required
                                     disabled={loading}
                                 />
@@ -171,7 +173,7 @@ export default function Register() {
                             transition={{ delay: 0.35 }}
                             className="input-group"
                         >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>País</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.country')}</label>
                             <div style={{ position: 'relative' }}>
                                 <Globe size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
                                 <select
@@ -182,7 +184,7 @@ export default function Register() {
                                     required
                                     disabled={loading}
                                 >
-                                    <option value="">Selecione seu país</option>
+                                    <option value="">{t('auth.selectCountry')}</option>
                                     <optgroup label="CPLP (Língua Portuguesa)">
                                         <option value="Angola">Angola</option>
                                         <option value="Brasil">Brasil</option>
@@ -226,7 +228,7 @@ export default function Register() {
                             transition={{ delay: 0.4 }}
                             className="input-group"
                         >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Email</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.email')}</label>
                             <div style={{ position: 'relative' }}>
                                 <Mail size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
@@ -235,7 +237,7 @@ export default function Register() {
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     className="input-luxury"
                                     style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder="seu@email.com"
+                                    placeholder={t('auth.emailPlaceholder')}
                                     required
                                     disabled={loading}
                                 />
@@ -248,7 +250,7 @@ export default function Register() {
                             transition={{ delay: 0.45 }}
                             className="input-group"
                         >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Senha</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.password')}</label>
                             <div style={{ position: 'relative' }}>
                                 <Lock size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
@@ -257,7 +259,7 @@ export default function Register() {
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     className="input-luxury"
                                     style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder="••••••••"
+                                    placeholder={t('auth.passwordPlaceholder')}
                                     required
                                     disabled={loading}
                                 />
@@ -294,7 +296,7 @@ export default function Register() {
                         {loading ? (
                             <Loader2 className="animate-spin" size={20} />
                         ) : (
-                            <>Criar Minha Conta <ArrowRight size={18} /></>
+                            <>{t('auth.createAccount')} <ArrowRight size={18} /></>
                         )}
                     </motion.button>
 
@@ -324,12 +326,12 @@ export default function Register() {
                         }}
                     >
                         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20" />
-                        Continuar com Google
+                        {t('auth.continueWithGoogle')}
                     </button>
                 </form>
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
-                    Já possui acesso? <Link href="/entrar" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Entrar agora</Link>
+                    {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
                 </p>
             </motion.div>
         </main>

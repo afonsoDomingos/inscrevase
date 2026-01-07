@@ -6,8 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function PublicForm({ params }: { params: { slug: string } }) {
+    const { t } = useTranslate();
     const { slug } = params;
     const [form, setForm] = useState<FormModel | null>(null);
     const [loading, setLoading] = useState(true);
@@ -71,7 +73,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             }
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || 'Erro ao enviar inscrição');
+            alert(error.message || t('form.submitError'));
         } finally {
             setSubmitting(false);
         }
@@ -89,8 +91,8 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
         return (
             <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#fff' }}>
                 <h1 style={{ fontSize: '3rem', fontWeight: 800 }}>404</h1>
-                <p style={{ color: '#888' }}>Formulário não encontrado ou inativo.</p>
-                <a href="/" className="btn-primary" style={{ marginTop: '2rem', padding: '0.8rem 2rem' }}>Voltar ao Início</a>
+                <p style={{ color: '#888' }}>{t('form.notFound')}</p>
+                <a href="/" className="btn-primary" style={{ marginTop: '2rem', padding: '0.8rem 2rem' }}>{t('form.backToHome')}</a>
             </div>
         );
     }
@@ -129,9 +131,9 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                             >
                                 <CheckCircle size={80} color={primaryColor} />
                             </motion.div>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: textColor }}>Inscrição Confirmada!</h2>
+                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: textColor }}>{t('form.confirmed')}</h2>
                             <p style={{ color: '#aaa', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-                                Seus dados foram enviados com sucesso. Você será redirecionado para o WhatsApp do mentor em instantes...
+                                {t('form.successMessage')}
                             </p>
 
                             <button
@@ -142,7 +144,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 className="btn-primary"
                                 style={{ width: '100%', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: primaryColor, color: isDark ? '#000' : '#fff' }}
                             >
-                                <MessageCircle size={20} /> Falar com Mentor no WhatsApp
+                                <MessageCircle size={20} /> {t('form.talkToMentor')}
                             </button>
                         </div>
                     </motion.div>
@@ -168,7 +170,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     </div>
                                 )}
 
-                                <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>Inscrições Abertas</span>
+                                <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
                                 <h1 style={{ fontSize: '3rem', fontWeight: 900, marginTop: '0.5rem', marginBottom: '1.5rem', lineHeight: '1.1', color: textColor }}>
                                     {form.title}
                                 </h1>
@@ -179,7 +181,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
 
                                 {form.eventDate && (
                                     <div style={{ marginBottom: '2rem', padding: '1rem', background: cardBg, borderRadius: '12px', border: `1px solid ${primaryColor}40`, display: 'inline-block' }}>
-                                        <div style={{ fontSize: '0.8rem', color: secondaryTextColor, textTransform: 'uppercase', letterSpacing: '1px' }}>Data do Evento</div>
+                                        <div style={{ fontSize: '0.8rem', color: secondaryTextColor, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('form.eventDate')}</div>
                                         <div style={{ fontSize: '1.2rem', fontWeight: 700, color: textColor }}>
                                             {new Date(form.eventDate).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                                         </div>
@@ -199,7 +201,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                 )}
                                             </div>
                                             <div>
-                                                <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>Mentor Responsável</div>
+                                                <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>{t('form.responsibleMentor')}</div>
                                                 <div style={{ fontWeight: 600 }}>{form.creator.name}</div>
                                                 {form.creator.bio && <div style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '2px' }}>{form.creator.bio}</div>}
 
@@ -234,7 +236,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                         <div style={{ display: 'grid', gap: '1rem', background: cardBg, padding: '1.5rem', borderRadius: '20px', border: `1px solid ${primaryColor}40` }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                 <div style={{ color: primaryColor }}><ShieldCheck size={24} /></div>
-                                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: textColor, textTransform: 'uppercase', letterSpacing: '1px' }}>Evento Pago</div>
+                                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: textColor, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('form.paidEvent')}</div>
                                             </div>
 
                                             <div style={{ fontSize: '2rem', fontWeight: 800, color: primaryColor }}>
@@ -259,7 +261,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 className="luxury-card"
                                 style={{ background: cardBg, backdropFilter: 'blur(10px)', border: `1px solid ${borderColor}`, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}
                             >
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', color: textColor }}>Preencha seus dados</h3>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', color: textColor }}>{t('form.fillYourData')}</h3>
 
                                 <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.5rem' }}>
                                     {form.fields.map((field) => (
@@ -274,14 +276,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                                                     style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
                                                 >
-                                                    <option value="">Selecione...</option>
+                                                    <option value="">{t('form.select')}</option>
                                                     {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                 </select>
                                             ) : (
                                                 <input
                                                     type={field.type}
                                                     required={field.required}
-                                                    placeholder={`Seu ${field.label.toLowerCase()}...`}
+                                                    placeholder={`${t('form.your')} ${field.label.toLowerCase()}...`}
                                                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                                                     style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
                                                 />
@@ -292,7 +294,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     {form.paymentConfig?.requireProof && (
                                         <div style={{ marginTop: '1rem' }}>
                                             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#aaa', marginBottom: '0.8rem' }}>
-                                                Anexar Comprovativo de Pagamento <span style={{ color: '#FFD700' }}>*</span>
+                                                {t('form.attachProof')} <span style={{ color: '#FFD700' }}>*</span>
                                             </label>
 
                                             <label style={{
@@ -316,8 +318,8 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                 ) : (
                                                     <>
                                                         <Upload size={32} color={primaryColor} style={{ marginBottom: '0.5rem' }} />
-                                                        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: textColor }}>Clique para enviar imagem ou PDF</div>
-                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '4px' }}>Tamanho máx: 5MB</div>
+                                                        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: textColor }}>{t('form.clickToUpload')}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '4px' }}>{t('form.maxSize')}</div>
                                                     </>
                                                 )}
                                             </label>
@@ -331,14 +333,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                         style={{ marginTop: '1.5rem', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '1rem', background: primaryColor, color: isDark ? '#000' : '#fff', border: 'none', borderRadius: '12px' }}
                                     >
                                         {submitting ? (
-                                            <><Loader2 className="animate-spin" size={20} /> Processando...</>
+                                            <><Loader2 className="animate-spin" size={20} /> {t('form.processing')}</>
                                         ) : (
-                                            <>Finalizar Inscrição <ArrowRight size={20} /></>
+                                            <>{t('form.finishRegistration')} <ArrowRight size={20} /></>
                                         )}
                                     </button>
 
                                     <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#555' }}>
-                                        Ao clicar em finalizar, você concorda com nossos termos de privacidade.
+                                        {t('form.termsAgreement')}
                                     </p>
                                 </form>
                             </motion.div>
@@ -348,7 +350,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             </AnimatePresence>
 
             <footer style={{ textAlign: 'center', padding: '3rem', color: '#333', fontSize: '0.8rem', borderTop: '1px solid #111' }}>
-                Powered by <strong>Inscreva-se</strong> &copy; 2026. Todos os direitos reservados.
+                {t('form.poweredBy')} &copy; 2026. {t('form.allRightsReserved')}
             </footer>
         </main>
     );

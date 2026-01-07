@@ -6,6 +6,7 @@ import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
 import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface MentorSettingsProps {
     user: UserData;
@@ -13,6 +14,7 @@ interface MentorSettingsProps {
 }
 
 export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) {
+    const { t } = useTranslate();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -68,7 +70,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 const url = await formService.uploadFile(e.target.files[0], 'profiles');
                 setFormData(prev => ({ ...prev, profilePhoto: url }));
             } catch (err) {
-                alert('Erro no upload da imagem');
+                alert(t('events.profile.uploadError'));
             } finally {
                 setUploading(false);
             }
@@ -89,9 +91,9 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 socialLinks: formData.socialLinks
             });
             onUpdate();
-            alert('Perfil atualizado com sucesso!');
+            alert(t('dashboard.settings.updateSuccess'));
         } catch (err) {
-            alert('Erro ao atualizar perfil.');
+            alert(t('dashboard.settings.updateError'));
         } finally {
             setLoading(false);
         }
@@ -99,7 +101,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
 
     return (
         <div className="luxury-card" style={{ background: '#fff', border: 'none', maxWidth: '800px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>Configurações do Perfil</h2>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>{t('dashboard.settings.title')}</h2>
 
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '2rem' }}>
 
@@ -131,13 +133,13 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
                         </label>
                     </div>
-                    <p style={{ fontSize: '0.85rem', color: '#666' }}>Sua foto aparecerá nos seus formulários de evento.</p>
+                    <p style={{ fontSize: '0.85rem', color: '#666' }}>{t('dashboard.settings.photoHelp')}</p>
                 </div>
 
                 {/* Personal Info */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                     <div className="input-group">
-                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Nome Completo</label>
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.fullName')}</label>
                         <div style={{ position: 'relative' }}>
                             <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                             <input
@@ -149,7 +151,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                         </div>
                     </div>
                     <div className="input-group">
-                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Nome da Empresa/Marca</label>
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.businessName')}</label>
                         <div style={{ position: 'relative' }}>
                             <Briefcase size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                             <input
@@ -162,27 +164,27 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 </div>
 
                 <div className="input-group">
-                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Bio (Resumo Profissional)</label>
+                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.bio')}</label>
                     <div style={{ position: 'relative' }}>
                         <FileText size={18} style={{ position: 'absolute', left: '12px', top: '16px', color: '#999' }} />
                         <textarea
                             name="bio"
                             value={formData.bio} onChange={handleInputChange}
                             className="input-luxury" style={{ paddingLeft: '2.5rem', minHeight: '100px', resize: 'vertical' }}
-                            placeholder="Conte um pouco sobre você..."
+                            placeholder={t('dashboard.settings.bioPlaceholder')}
                         />
                     </div>
                 </div>
 
                 <div className="input-group">
-                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>WhatsApp (para contato direto)</label>
+                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.whatsapp')}</label>
                     <div style={{ position: 'relative' }}>
                         <Phone size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                         <input
                             type="text" name="whatsapp"
                             value={formData.whatsapp} onChange={handleInputChange}
                             className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                            placeholder="+258 84 123 4567"
+                            placeholder={t('dashboard.settings.whatsappPlaceholder')}
                         />
                     </div>
                 </div>
@@ -190,7 +192,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 {/* Social Links */}
                 <div>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Globe size={18} color="#FFD700" /> Redes Sociais
+                        <Globe size={18} color="#FFD700" /> {t('events.profile.socialLinks')}
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div className="input-group">
@@ -200,7 +202,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     type="text" name="social_instagram"
                                     value={formData.socialLinks.instagram} onChange={handleInputChange}
                                     className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder="Instagram URL"
+                                    placeholder={t('dashboard.settings.instagramPlaceholder')}
                                 />
                             </div>
                         </div>
@@ -211,7 +213,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     type="text" name="social_linkedin"
                                     value={formData.socialLinks.linkedin} onChange={handleInputChange}
                                     className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder="LinkedIn URL"
+                                    placeholder={t('dashboard.settings.linkedinPlaceholder')}
                                 />
                             </div>
                         </div>
@@ -222,7 +224,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     type="text" name="social_facebook"
                                     value={formData.socialLinks.facebook} onChange={handleInputChange}
                                     className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder="Facebook URL"
+                                    placeholder={t('dashboard.settings.facebookPlaceholder')}
                                 />
                             </div>
                         </div>
@@ -233,7 +235,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     type="text" name="social_website"
                                     value={formData.socialLinks.website} onChange={handleInputChange}
                                     className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder="Seu Site / Portfólio"
+                                    placeholder={t('dashboard.settings.websitePlaceholder')}
                                 />
                             </div>
                         </div>
@@ -246,7 +248,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                     className="btn-primary"
                     style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem' }}
                 >
-                    {loading ? <Loader2 className="animate-spin" /> : <><Save size={20} /> Salvar Alterações</>}
+                    {loading ? <Loader2 className="animate-spin" /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
                 </button>
             </form>
         </div>

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Loader2, Palette, Upload, Image as ImageIcon, Type } from 'lucide-react';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface EditEventThemeModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ const FONTS = [
 ];
 
 export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }: EditEventThemeModalProps) {
+    const { t } = useTranslate();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -65,7 +67,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
             } catch (error) {
                 console.error("Upload failed", error);
-                alert("Falha no upload da imagem");
+                alert(t('events.theme.uploadFailed'));
             } finally {
                 setUploading(false);
             }
@@ -87,7 +89,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || 'Erro ao atualizar tema');
+            alert(error.message || t('events.theme.updateError'));
         } finally {
             setLoading(false);
         }
@@ -133,8 +135,8 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                         <div style={{ display: 'inline-flex', padding: '1rem', background: '#FFD70020', borderRadius: '50%', color: '#B8860B', marginBottom: '1rem' }}>
                             <Palette size={32} />
                         </div>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Personalizar Aparência</h2>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>Defina a identidade visual do seu evento</p>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('events.theme.title')}</h2>
+                        <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('events.theme.subtitle')}</p>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 350px', gap: '2rem', alignItems: 'start' }}>
@@ -143,12 +145,12 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                             {/* Section: Images */}
                             <section>
                                 <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <ImageIcon size={18} /> Imagens do Evento
+                                    <ImageIcon size={18} /> {t('events.theme.eventImages')}
                                 </h3>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                     {/* Cover Image */}
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>Imagem de Capa</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>{t('events.theme.coverLabel')}</label>
                                         <div style={{
                                             position: 'relative',
                                             height: '120px',
@@ -171,7 +173,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             ) : (
                                                 <div style={{ textAlign: 'center', color: '#999' }}>
                                                     <Upload size={24} style={{ marginBottom: '5px' }} />
-                                                    <div style={{ fontSize: '0.7rem' }}>Carregar Capa</div>
+                                                    <div style={{ fontSize: '0.7rem' }}>{t('events.theme.uploadCover')}</div>
                                                 </div>
                                             )}
                                             <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'cover')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
@@ -180,7 +182,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
                                     {/* Logo */}
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>Logo do Evento</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>{t('events.theme.logoLabel')}</label>
                                         <div style={{
                                             position: 'relative',
                                             height: '120px',
@@ -195,7 +197,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                         }}>
                                             {logo ? (
                                                 <>
-                                                    <Image src={logo} alt="Logo" width={80} height={80} style={{ objectFit: 'contain' }} />
+                                                    <Image src={logo} alt="Preview Logo" width={80} height={80} style={{ objectFit: 'contain' }} />
                                                     <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay">
                                                         <Upload color="#fff" />
                                                     </div>
@@ -203,7 +205,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             ) : (
                                                 <div style={{ textAlign: 'center', color: '#999' }}>
                                                     <Upload size={24} style={{ marginBottom: '5px' }} />
-                                                    <div style={{ fontSize: '0.7rem' }}>Carregar Logo</div>
+                                                    <div style={{ fontSize: '0.7rem' }}>{t('events.theme.uploadLogo')}</div>
                                                 </div>
                                             )}
                                             <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
@@ -217,12 +219,12 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                             {/* Section: Colors */}
                             <section>
                                 <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Palette size={18} /> Cores e Estilo
+                                    <Palette size={18} /> {t('events.theme.colorsAndStyle')}
                                 </h3>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                                     <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor Principal</label>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.primaryColor')}</label>
                                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                             {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
                                                 <motion.button
@@ -249,7 +251,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                     </div>
 
                                     <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Cor de Fundo</label>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.backgroundColor')}</label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <input
                                                 type="color"
@@ -268,10 +270,10 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                             {/* Section: Typography */}
                             <section>
                                 <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Type size={18} /> Tipografia
+                                    <Type size={18} /> {t('events.theme.typography')}
                                 </h3>
                                 <div>
-                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>Fonte do Evento</label>
+                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.theme.fontLabel')}</label>
                                     <select
                                         value={theme.fontFamily}
                                         onChange={(e) => setTheme({ ...theme, fontFamily: e.target.value })}
@@ -289,8 +291,8 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                         {/* Live Preview */}
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem' }}>Pré-visualização</label>
-                                <div style={{ fontSize: '0.7rem', color: '#888' }}>* Layout aproximado</div>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem' }}>{t('events.preview')}</label>
+                                <div style={{ fontSize: '0.7rem', color: '#888' }}>{t('events.theme.previewLayout')}</div>
                             </div>
 
                             <div style={{
@@ -319,13 +321,13 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                     )}
 
                                     <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
-                                        Inscrições Abertas
+                                        {t('events.registrationsOpen')}
                                     </div>
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', lineHeight: 1.2 }}>
                                         {form.title}
                                     </h3>
                                     <p style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '2rem', lineHeight: 1.6 }}>
-                                        {form.description ? form.description.substring(0, 80) + '...' : 'Descrição do seu evento incrível vai aqui...'}
+                                        {form.description ? form.description.substring(0, 80) + '...' : t('events.descriptionPlaceholder')}
                                     </p>
 
                                     <div style={{ marginTop: 'auto' }}>
@@ -340,7 +342,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             fontSize: '0.8rem',
                                             fontFamily: theme.fontFamily
                                         }}>
-                                            Inscrever-se Agora
+                                            {t('events.registerNow')}
                                         </button>
                                     </div>
                                 </div>
@@ -355,7 +357,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                             className="btn-primary"
                             style={{ width: '100%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                         >
-                            {loading || uploading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Salvar Alterações</>}
+                            {loading || uploading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> {t('events.profile.saveChanges')}</>}
                         </button>
                     </div>
                 </motion.div>

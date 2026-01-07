@@ -6,8 +6,10 @@ import { Menu, X, LogIn, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function Navbar() {
+  const { t } = useTranslate();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -37,17 +39,17 @@ export default function Navbar() {
           <LanguageSwitcher />
           {isLoggedIn ? (
             <>
-              <Link href="/dashboard/mentor" className="btn-luxury-icon" title="Dashboard">
+              <Link href="/dashboard/mentor" className="btn-luxury-icon" title={t('nav.dashboard')}>
                 <LayoutDashboard size={20} color="#FFD700" />
               </Link>
-              <Link href="/dashboard/mentor" className="btn-primary">Criar Evento</Link>
+              <Link href="/dashboard/mentor" className="btn-primary">{t('common.createEvent')}</Link>
             </>
           ) : (
             <>
-              <Link href="/entrar" className="btn-luxury-icon" title="Acesso Elite">
+              <Link href="/entrar" className="btn-luxury-icon" title={t('auth.login')}>
                 <LogIn size={20} color="#FFD700" />
               </Link>
-              <Link href="/entrar" className="btn-primary">Começar Agora</Link>
+              <Link href="/entrar" className="btn-primary">{t('common.getStarted')}</Link>
             </>
           )}
         </div>
@@ -66,13 +68,13 @@ export default function Navbar() {
           </div>
           {isLoggedIn ? (
             <>
-              <Link href="/dashboard/mentor" onClick={() => setIsOpen(false)}>Meu Painel</Link>
-              <Link href="/dashboard/mentor" className="btn-primary" onClick={() => setIsOpen(false)}>Criar Evento</Link>
+              <Link href="/dashboard/mentor" onClick={() => setIsOpen(false)}>{t('nav.dashboard')}</Link>
+              <Link href="/dashboard/mentor" className="btn-primary" onClick={() => setIsOpen(false)}>{t('common.createEvent')}</Link>
             </>
           ) : (
             <>
-              <Link href="/entrar" onClick={() => setIsOpen(false)}>Entrar</Link>
-              <Link href="/entrar" className="btn-primary" onClick={() => setIsOpen(false)}>Começar Agora</Link>
+              <Link href="/entrar" onClick={() => setIsOpen(false)}>{t('auth.login')}</Link>
+              <Link href="/entrar" className="btn-primary" onClick={() => setIsOpen(false)}>{t('common.getStarted')}</Link>
             </>
           )}
         </div>

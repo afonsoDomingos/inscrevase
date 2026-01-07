@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supportService, Ticket } from '@/lib/supportService';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface SupportModalProps {
     isOpen: boolean;
@@ -15,6 +16,7 @@ interface SupportModalProps {
 }
 
 export default function SupportModal({ isOpen, onClose, mode = 'user', initialTicket }: SupportModalProps) {
+    const { t } = useTranslate();
     const [view, setView] = useState<'list' | 'new' | 'chat'>('list');
     const [loading, setLoading] = useState(false);
     const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -193,11 +195,11 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                 <LifeBuoy size={24} />
                             </div>
                             <div>
-                                <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-                                    {mode === 'admin' ? 'Central de Suporte (Admin)' : 'Suporte & Ajuda'}
-                                </h2>
+                                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-playfair)' }}>
+                                    {mode === 'admin' ? t('support.adminTitle') : t('support.title')}
+                                </h3>
                                 <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                    {mode === 'admin' ? 'Gerencie os chamados dos mentores' : 'Fale diretamente com nossa equipe'}
+                                    {mode === 'admin' ? t('support.adminSubtitle') : t('support.userSubtitle')}
                                 </p>
                             </div>
                         </div>
@@ -213,19 +215,19 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                     className="btn-primary"
                                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', borderRadius: '12px', marginBottom: '2rem', width: '100%' }}
                                 >
-                                    <Plus size={18} /> Novo Ticket
+                                    <Plus size={18} /> {t('support.newTicket')}
                                 </button>
                             )}
 
                             <h3 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#999', marginBottom: '1rem', textTransform: 'uppercase' }}>
-                                {mode === 'admin' ? 'Todos os Tickets' : 'Seus Tickets'}
+                                {mode === 'admin' ? t('support.allTickets') : t('support.yourTickets')}
                             </h3>
 
                             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {loading && view === 'list' ? (
                                     <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><Loader2 className="animate-spin" /></div>
                                 ) : tickets.length === 0 ? (
-                                    <p style={{ textAlign: 'center', color: '#999', fontSize: '0.9rem', marginTop: '2rem' }}>Nenhum ticket encontrado.</p>
+                                    <p style={{ textAlign: 'center', color: '#999', fontSize: '0.9rem', marginTop: '2rem' }}>{t('support.noTickets')}</p>
                                 ) : (
                                     tickets.map(ticket => (
                                         <button
@@ -244,7 +246,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                         >
                                             <div style={{ fontWeight: 600, marginBottom: '4px', fontSize: '0.95rem' }}>{ticket.subject}</div>
                                             {mode === 'admin' && ticket.user && (
-                                                <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Por: {ticket.user.name || 'Mentor'}</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>{t('support.by')}: {ticket.user.name || t('common.mentor')}</div>
                                             )}
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <span style={{
@@ -255,7 +257,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                     color: ticket.status === 'answered' ? '#047857' : (ticket.status === 'closed' ? '#666' : '#b45309'),
                                                     fontWeight: 600
                                                 }}>
-                                                    {ticket.status === 'open' ? 'Aberto' : (ticket.status === 'answered' ? 'Respondido' : 'Fechado')}
+                                                    {ticket.status === 'open' ? t('support.statusOpen') : (ticket.status === 'answered' ? t('support.statusAnswered') : t('support.statusClosed'))}
                                                 </span>
                                                 <span style={{ fontSize: '0.7rem', color: '#999' }}>
                                                     {new Date(ticket.createdAt).toLocaleDateString()}
@@ -271,32 +273,32 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                         <div style={{ background: '#fff', display: 'flex', flexDirection: 'column' }}>
                             {view === 'new' && (
                                 <div style={{ padding: '3rem', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
-                                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>Abrir novo chamado</h2>
+                                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>{t('support.openNewTicket')}</h2>
                                     <div style={{ display: 'grid', gap: '1.5rem' }}>
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Assunto</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.subject')}</label>
                                             <input
                                                 type="text"
                                                 value={subject}
                                                 onChange={(e) => setSubject(e.target.value)}
-                                                placeholder="Resumo do problema"
+                                                placeholder={t('support.subjectPlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                         </div>
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Mensagem</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.message')}</label>
                                             <textarea
                                                 rows={6}
                                                 value={initialMessage}
                                                 onChange={(e) => setInitialMessage(e.target.value)}
-                                                placeholder="Descreva detalhadamente sua dúvida ou problema..."
+                                                placeholder={t('support.messagePlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
                                             />
                                         </div>
 
                                         {/* File Attachment */}
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Anexo (Opcional)</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.attachmentOptional')}</label>
                                             <input
                                                 ref={fileInputRef}
                                                 type="file"
@@ -330,9 +332,9 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                     style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px dashed #ddd', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#666' }}
                                                 >
                                                     {uploadingFile ? (
-                                                        <><Loader2 className="animate-spin" size={18} /> Enviando...</>
+                                                        <><Loader2 className="animate-spin" size={18} /> {t('common.sending')}...</>
                                                     ) : (
-                                                        <><Paperclip size={18} /> Anexar imagem ou PDF</>
+                                                        <><Paperclip size={18} /> {t('support.attachImageOrPdf')}</>
                                                     )}
                                                 </button>
                                             )}
@@ -344,7 +346,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                             className="btn-primary"
                                             style={{ padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '1rem' }}
                                         >
-                                            {loading ? <Loader2 className="animate-spin" /> : <>Enviar Solicitação <Send size={18} /></>}
+                                            {loading ? <Loader2 className="animate-spin" /> : <> {t('common.sendRequest')} <Send size={18} /></>}
                                         </button>
                                     </div>
                                 </div>
@@ -356,7 +358,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                     <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee', background: '#fff' }}>
                                         <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>{selectedTicket.subject}</div>
                                         <div style={{ fontSize: '0.8rem', color: '#666' }}>
-                                            Ticket #{selectedTicket._id.slice(-6)}
+                                            {t('common.ticket')} #{selectedTicket._id.slice(-6)}
                                             {selectedTicket.user && mode === 'admin' && ` • ${selectedTicket.user.name}`}
                                         </div>
                                     </div>
@@ -392,7 +394,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                                     style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', background: myMsg ? 'rgba(255,255,255,0.1)' : '#f8f9fa', color: myMsg ? '#fff' : '#000', textDecoration: 'none' }}
                                                                 >
                                                                     <FileText size={20} />
-                                                                    <span style={{ fontSize: '0.85rem' }}>Ver PDF</span>
+                                                                    <span style={{ fontSize: '0.85rem' }}>{t('common.viewPdf')}</span>
                                                                 </a>
                                                             ) : (
                                                                 <img
@@ -457,7 +459,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                 value={reply}
                                                 onChange={(e) => setReply(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleReply()}
-                                                placeholder="Digite sua resposta..."
+                                                placeholder={t('support.typeYourReply')}
                                                 style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                             <button
