@@ -30,6 +30,7 @@ export interface FormModel {
         options?: string[];
     }[];
     eventDate?: string;
+    capacity?: number;
     coverImage?: string;
     logo?: string;
     whatsappConfig?: {

@@ -317,6 +317,30 @@ export default function MentorDashboard() {
                                                             {form.active ? 'ATIVO' : 'RASCUNHO'}
                                                         </span>
                                                     </div>
+
+                                                    {form.capacity && (
+                                                        <div style={{ marginBottom: '1.5rem' }}>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
+                                                                <span>Inscritos: <b style={{ color: '#000' }}>{form.submissionCount || 0}</b></span>
+                                                                <span>Meta: <b>{form.capacity}</b></span>
+                                                            </div>
+                                                            <div style={{ width: '100%', height: '8px', background: '#eee', borderRadius: '4px', overflow: 'hidden' }}>
+                                                                <div
+                                                                    style={{
+                                                                        width: `${Math.min(100, Math.round(((form.submissionCount || 0) / form.capacity) * 100))}%`,
+                                                                        height: '100%',
+                                                                        background: 'var(--gold-gradient)',
+                                                                        borderRadius: '4px',
+                                                                        transition: 'width 1s ease'
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div style={{ textAlign: 'right', fontSize: '0.75rem', marginTop: '4px', color: '#999', fontWeight: 600 }}>
+                                                                {Math.round(((form.submissionCount || 0) / form.capacity) * 100)}% Alcançado
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     <div style={{ display: 'flex', gap: '1rem' }}>
                                                         <button onClick={() => copyToClipboard(form.slug)} style={{ flex: 1, padding: '1rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>
                                                             <Copy size={16} /> Link
@@ -379,7 +403,12 @@ export default function MentorDashboard() {
                                                         {form.active ? 'Ativo' : 'Inativo'}
                                                     </button>
                                                 </td>
-                                                <td style={{ padding: '1rem', fontWeight: 600 }}>{form.submissionCount || 0}</td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <div style={{ fontWeight: 600, fontSize: '1rem' }}>{form.submissionCount || 0}</div>
+                                                    {form.capacity && (
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>Meta: {form.capacity}</div>
+                                                    )}
+                                                </td>
                                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                                         <button onClick={() => setEditModalData({ isOpen: true, form })} title="Editar Evento" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}><Pencil size={18} /></button>

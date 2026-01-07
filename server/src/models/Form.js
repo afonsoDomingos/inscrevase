@@ -37,6 +37,7 @@ const FormSchema = new mongoose.Schema({
         phoneNumber: { type: String },
         message: { type: String }
     },
+    capacity: { type: Number }, // Target number of submissions
     paymentConfig: {
         enabled: { type: Boolean, default: false },
         price: { type: Number },

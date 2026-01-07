@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 
@@ -30,6 +31,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [eventDate, setEventDate] = useState('');
+    const [capacity, setCapacity] = useState('');
     const [coverImage, setCoverImage] = useState<string>('');
     const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -57,6 +59,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setTitle(form.title || '');
             setDescription(form.description || '');
             setEventDate(form.eventDate ? new Date(form.eventDate).toISOString().substring(0, 10) : '');
+            setCapacity(form.capacity ? form.capacity.toString() : '');
             setCoverImage(form.coverImage || '');
             setFields(form.fields || []);
             if (form.whatsappConfig) {
@@ -134,6 +137,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 title,
                 description,
                 eventDate,
+                capacity: capacity ? parseInt(capacity) : undefined,
                 fields: fields as FormModel['fields'],
                 coverImage,
                 whatsappConfig,
@@ -150,7 +154,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || 'Erro ao atualizar evento');
+            toast.error(error.message || 'Erro ao atualizar evento');
         } finally {
             setLoading(false);
         }
@@ -271,6 +275,18 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 onChange={(e) => setEventDate(e.target.value)}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Meta de Inscritos (Opcional)</label>
+                                            <input
+                                                type="number"
+                                                value={capacity}
+                                                onChange={(e) => setCapacity(e.target.value)}
+                                                placeholder="Ex: 50"
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            />
+                                            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>Defina um objetivo para acompanhar o progresso das inscrições.</p>
                                         </div>
 
                                         <div>

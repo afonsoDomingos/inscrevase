@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 
@@ -37,6 +38,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [eventDate, setEventDate] = useState('');
+    const [capacity, setCapacity] = useState('');
     const [coverImage, setCoverImage] = useState<string>('');
     const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -131,13 +133,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     fontFamily: theme.fontFamily // Use theme.fontFamily directly
                 },
                 paymentConfig,
+                capacity: capacity ? parseInt(capacity) : undefined,
                 active: true
             });
             onSuccess();
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || 'Erro ao criar evento');
+            toast.error(error.message || 'Erro ao criar evento');
         } finally {
             setLoading(false);
         }
@@ -258,6 +261,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 onChange={(e) => setEventDate(e.target.value)}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Meta de Inscritos (Opcional)</label>
+                                            <input
+                                                type="number"
+                                                value={capacity}
+                                                onChange={(e) => setCapacity(e.target.value)}
+                                                placeholder="Ex: 50"
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            />
+                                            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>Defina um objetivo para acompanhar o progresso das inscrições.</p>
                                         </div>
 
                                         <div>

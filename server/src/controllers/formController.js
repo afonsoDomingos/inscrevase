@@ -5,7 +5,7 @@ const Submission = require('../models/Submission');
 
 exports.createForm = async (req, res) => {
     try {
-        const { title, description, fields, theme, active, eventDate, paymentConfig } = req.body; // Extract only needed fields
+        const { title, description, fields, theme, active, eventDate, paymentConfig, capacity } = req.body; // Extract only needed fields
 
         let slug = slugify(title, { lower: true, strict: true });
 
@@ -34,6 +34,7 @@ exports.createForm = async (req, res) => {
             theme,
             eventDate: eventDate === "" ? undefined : eventDate, // Handle empty date string
             paymentConfig: sanitizedPaymentConfig,
+            capacity: capacity ? parseInt(capacity) : undefined,
             active
         });
 
@@ -83,7 +84,7 @@ exports.updateForm = async (req, res) => {
         }
 
         // Update fields
-        const { title, description, fields, theme, active, eventDate, paymentConfig, coverImage, logo } = req.body;
+        const { title, description, fields, theme, active, eventDate, paymentConfig, coverImage, logo, capacity } = req.body;
 
         // If title changed, update slug? Usually better not to break links, but user might want to.
         // For now, let's keep slug persistent unless explicitly requested.
@@ -95,6 +96,7 @@ exports.updateForm = async (req, res) => {
         if (active !== undefined) form.active = active;
         if (coverImage !== undefined) form.coverImage = coverImage;
         if (logo !== undefined) form.logo = logo;
+        if (capacity !== undefined) form.capacity = capacity ? parseInt(capacity) : undefined;
 
         // Handle Date Upgrade
         if (eventDate !== undefined) {
