@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, UserPlus, LogIn } from 'lucide-react';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
 
@@ -50,6 +50,48 @@ export default function Login() {
                 className="luxury-card"
                 style={{ maxWidth: '400px', width: '100%', marginTop: '60px' }}
             >
+                {/* Navigation Tabs */}
+                <div style={{ display: 'flex', marginBottom: '2rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
+                    <div
+                        style={{
+                            flex: 1,
+                            padding: '10px',
+                            borderRadius: '10px',
+                            background: 'var(--gold-gradient)',
+                            color: '#000',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            fontSize: '0.9rem',
+                            cursor: 'default'
+                        }}
+                    >
+                        <LogIn size={16} /> Entrar
+                    </div>
+                    <Link
+                        href="/cadastro"
+                        style={{
+                            flex: 1,
+                            padding: '10px',
+                            borderRadius: '10px',
+                            background: 'transparent',
+                            color: '#666',
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            fontSize: '0.9rem',
+                            textDecoration: 'none',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <UserPlus size={16} /> Criar Conta
+                    </Link>
+                </div>
+
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <motion.img
                         initial={{ y: -20, opacity: 0 }}
