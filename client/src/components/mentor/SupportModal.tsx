@@ -48,6 +48,10 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
     useEffect(() => {
         if (view === 'chat' && selectedTicket) {
             scrollToBottom();
+            // Mark ticket as read when viewing
+            supportService.markAsRead(selectedTicket._id).catch(err => {
+                console.error('Error marking as read:', err);
+            });
         }
     }, [view, selectedTicket?.messages]);
 

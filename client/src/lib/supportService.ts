@@ -74,5 +74,14 @@ export const supportService = {
         });
         if (!response.ok) throw new Error('Erro ao buscar notificações');
         return response.json();
+    },
+
+    markAsRead: async (id: string) => {
+        const response = await fetch(`${API_URL}/support/${id}/mark-read`, {
+            method: 'PUT',
+            headers: getHeaders()
+        });
+        if (!response.ok) throw new Error('Erro ao marcar como lido');
+        return response.json();
     }
 }

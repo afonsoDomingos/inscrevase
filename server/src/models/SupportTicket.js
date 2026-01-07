@@ -24,6 +24,14 @@ const supportTicketSchema = new mongoose.Schema({
         },
         createdAt: { type: Date, default: Date.now }
     }],
+    lastReadByUser: {
+        type: Date,
+        default: null
+    },
+    lastReadByAdmin: {
+        type: Date,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

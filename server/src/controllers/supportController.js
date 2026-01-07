@@ -76,19 +76,74 @@ exports.getUnreadCount = async (req, res) => {
         let unreadCount = 0;
 
         if (isAdmin) {
-            // For admin: count tickets with status 'open' (waiting for admin response)
-            unreadCount = await SupportTicket.countDocuments({ status: 'open' });
+            // For admin: count tickets where last message is from user and newer than lastReadByAdmin
+            const tickets = await SupportTicket.find({ status: { $ne: 'closed' } });
+
+            unreadCount = tickets.filter(ticket => {
+                if (ticket.messages.length === 0) return false;
+
+                const lastMessage = ticket.messages[ticket.messages.length - 1];
+
+                // If last message is from user
+                if (lastMessage.sender === 'user') {
+                    // Check if admin hasn't read it yet or if message is newer than last read
+                    if (!ticket.lastReadByAdmin || lastMessage.createdAt > ticket.lastReadByAdmin) {
+                        return true;
+                    }
+                }
+                return false;
+            }).length;
         } else {
-            // For user: count tickets with status 'answered' (admin replied)
-            unreadCount = await SupportTicket.countDocuments({
-                user: req.user.id,
-                status: 'answered'
-            });
+            // For user: count tickets where last message is from admin and newer than lastReadByUser
+            const tickets = await SupportTicket.find({ user: req.user.id, status: { $ne: 'closed' } });
+
+            unreadCount = tickets.filter(ticket => {
+                if (ticket.messages.length === 0) return false;
+
+                const lastMessage = ticket.messages[ticket.messages.length - 1];
+
+                // If last message is from admin
+                if (lastMessage.sender === 'admin') {
+                    // Check if user hasn't read it yet or if message is newer than last read
+                    if (!ticket.lastReadByUser || lastMessage.createdAt > ticket.lastReadByUser) {
+                        return true;
+                    }
+                }
+                return false;
+            }).length;
         }
 
         res.status(200).json({ unreadCount });
     } catch (error) {
         console.error('Error in getUnreadCount:', error);
         res.status(500).json({ message: 'Erro ao buscar notificações', error: error.message });
+    }
+};
+
+exports.markAsRead = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+
+        const ticket = await SupportTicket.findById(id);
+        if (!ticket) return res.status(404).json({ message: 'Ticket não encontrado' });
+
+        // Update the appropriate lastRead field
+        if (isAdmin) {
+            ticket.lastReadByAdmin = new Date();
+        } else {
+            // Verify user owns the ticket
+            const ticketUserId = ticket.user._id ? ticket.user._id.toString() : ticket.user.toString();
+            if (ticketUserId !== req.user.id) {
+                return res.status(403).json({ message: 'Não autorizado' });
+            }
+            ticket.lastReadByUser = new Date();
+        }
+
+        await ticket.save();
+        res.status(200).json({ message: 'Marcado como lido' });
+    } catch (error) {
+        console.error('Error in markAsRead:', error);
+        res.status(500).json({ message: 'Erro ao marcar como lido', error: error.message });
     }
 };
