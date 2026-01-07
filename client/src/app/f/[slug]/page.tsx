@@ -187,47 +187,49 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 )}
 
                                 <div style={{ display: 'grid', gap: '1.2rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>
-                                        <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: `2px solid ${primaryColor}` }}>
-                                            {form.creator.profilePhoto ? (
-                                                <Image src={form.creator.profilePhoto} alt={form.creator.name} fill style={{ objectFit: 'cover' }} />
-                                            ) : (
-                                                <div style={{ width: '100%', height: '100%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>
-                                                    {form.creator.name.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>Mentor Responsável</div>
-                                            <div style={{ fontWeight: 600 }}>{form.creator.name}</div>
-                                            {form.creator.bio && <div style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '2px' }}>{form.creator.bio}</div>}
+                                    {form.creator && form.creator.name && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>
+                                            <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: `2px solid ${primaryColor}` }}>
+                                                {form.creator.profilePhoto ? (
+                                                    <Image src={form.creator.profilePhoto} alt={form.creator.name} fill style={{ objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{ width: '100%', height: '100%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>
+                                                        {form.creator.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>Mentor Responsável</div>
+                                                <div style={{ fontWeight: 600 }}>{form.creator.name}</div>
+                                                {form.creator.bio && <div style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '2px' }}>{form.creator.bio}</div>}
 
-                                            {form.creator.socialLinks && (
-                                                <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                                                    {form.creator.socialLinks.instagram && (
-                                                        <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                            <Instagram size={16} />
-                                                        </a>
-                                                    )}
-                                                    {form.creator.socialLinks.linkedin && (
-                                                        <a href={form.creator.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                            <Linkedin size={16} />
-                                                        </a>
-                                                    )}
-                                                    {form.creator.socialLinks.facebook && (
-                                                        <a href={form.creator.socialLinks.facebook} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                            <Facebook size={16} />
-                                                        </a>
-                                                    )}
-                                                    {form.creator.socialLinks.website && (
-                                                        <a href={form.creator.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                            <Globe size={16} />
-                                                        </a>
-                                                    )}
-                                                </div>
-                                            )}
+                                                {form.creator.socialLinks && (
+                                                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                                                        {form.creator.socialLinks.instagram && (
+                                                            <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                                <Instagram size={16} />
+                                                            </a>
+                                                        )}
+                                                        {form.creator.socialLinks.linkedin && (
+                                                            <a href={form.creator.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                                <Linkedin size={16} />
+                                                            </a>
+                                                        )}
+                                                        {form.creator.socialLinks.facebook && (
+                                                            <a href={form.creator.socialLinks.facebook} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                                <Facebook size={16} />
+                                                            </a>
+                                                        )}
+                                                        {form.creator.socialLinks.website && (
+                                                            <a href={form.creator.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
+                                                                <Globe size={16} />
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                     {form.paymentConfig?.enabled && (
                                         <div style={{ display: 'grid', gap: '1rem', background: cardBg, padding: '1.5rem', borderRadius: '20px', border: `1px solid ${primaryColor}40` }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
