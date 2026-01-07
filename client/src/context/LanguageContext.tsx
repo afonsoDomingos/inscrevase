@@ -5,7 +5,6 @@ import pt from '../messages/pt.json';
 import en from '../messages/en.json';
 import Cookies from 'js-cookie';
 
-type Translations = typeof pt;
 type Locale = 'pt' | 'en';
 
 const translations = { pt, en };
@@ -35,11 +34,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     const t = (path: string) => {
         const keys = path.split('.');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let current: any = translations[locale];
 
         for (const key of keys) {
             if (current[key] === undefined) {
                 // Fallback to PT if key not found in EN
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let fallback: any = translations['pt'];
                 for (const fbKey of keys) {
                     if (fallback[fbKey] === undefined) return path;

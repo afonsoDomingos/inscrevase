@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
@@ -325,7 +326,7 @@ export default function Register() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20" />
+                        <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} />
                         {t('auth.continueWithGoogle')}
                     </button>
                 </form>

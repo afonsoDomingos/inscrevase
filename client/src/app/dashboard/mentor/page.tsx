@@ -132,14 +132,6 @@ export default function MentorDashboard() {
 
     if (!user) return null;
 
-    const cards = [
-        { label: t('dashboard.activeEvents'), value: stats?.forms || 0, icon: <FileText size={20} />, color: '#FFD700' },
-        { label: t('dashboard.totalSubscribers'), value: stats?.submissions || 0, icon: <Users size={20} />, color: '#3182ce' },
-        { label: t('dashboard.approvedSubscriptions'), value: stats?.approved || 0, icon: <CheckCircle size={20} />, color: '#38a169' },
-        { label: t('dashboard.estimatedRevenue'), value: stats?.revenue ? new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' }).format(stats.revenue) : '0 MZN', icon: <DollarSign size={20} />, color: '#48bb78' },
-        { label: t('dashboard.conversion'), value: stats?.submissions ? `${Math.round((stats.approved / stats.submissions) * 100)}%` : '0%', icon: <TrendingUp size={20} />, color: '#805ad5' },
-    ];
-
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
             {/* Sidebar */}
