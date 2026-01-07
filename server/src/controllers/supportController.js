@@ -41,7 +41,10 @@ exports.addMessage = async (req, res) => {
         const ticket = await SupportTicket.findById(id);
         if (!ticket) return res.status(404).json({ message: 'Ticket não encontrado' });
 
-        if (ticket.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        // Handle both ObjectId and populated user object
+        const ticketUserId = ticket.user._id ? ticket.user._id.toString() : ticket.user.toString();
+
+        if (ticketUserId !== req.user.id && req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
@@ -50,6 +53,10 @@ exports.addMessage = async (req, res) => {
         else ticket.status = 'open';
 
         await ticket.save();
+
+        // Populate user data before returning
+        await ticket.populate('user', 'name email');
+
         res.status(200).json(ticket);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao responder', error: error.message });
