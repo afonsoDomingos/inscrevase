@@ -5,13 +5,15 @@ import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2, UserPlus, LogIn } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
@@ -24,6 +26,7 @@ export default function Login() {
         try {
             const data = await authService.login(email, password);
             console.log('Login successful:', data);
+            toast.success('Login realizado com sucesso! Bem-vindo.');
 
             // Redirect based on role
             if (data.user.role === 'SuperAdmin' || data.user.role === 'admin') {
@@ -34,6 +37,7 @@ export default function Login() {
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Credenciais inválidas. Tente novamente.';
             setError(message);
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -149,15 +153,33 @@ export default function Login() {
                         <div style={{ position: 'relative' }}>
                             <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 className="input-luxury"
-                                style={{ paddingLeft: '3rem' }}
+                                style={{ paddingLeft: '3rem', paddingRight: '3rem' }}
                                 required
                                 disabled={loading}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: 'absolute',
+                                    right: '1rem',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    color: '#888',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </motion.div>
 

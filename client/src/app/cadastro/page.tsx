@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn } from 'lucide-react';
+import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
 
@@ -17,6 +18,7 @@ export default function Register() {
         country: ''
     });
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
 
@@ -27,10 +29,12 @@ export default function Register() {
 
         try {
             await authService.register(formData);
+            toast.success('Conta criada com sucesso! Redirecionando...');
             router.push('/dashboard/mentor');
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.';
             setError(message);
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -248,15 +252,33 @@ export default function Register() {
                             <div style={{ position: 'relative' }}>
                                 <Lock size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     className="input-luxury"
-                                    style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
+                                    style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', fontSize: '0.9rem' }}
                                     placeholder="••••••••"
                                     required
                                     disabled={loading}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '1rem',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#888',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
                             </div>
                         </motion.div>
                     </div>
