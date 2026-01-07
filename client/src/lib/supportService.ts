@@ -15,7 +15,11 @@ export interface Ticket {
     status: 'open' | 'answered' | 'closed';
     messages: Message[];
     createdAt: string;
-    user?: any;
+    user?: {
+        _id: string;
+        name: string;
+        email: string;
+    };
 }
 
 const getHeaders = () => {
