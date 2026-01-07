@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Sparkles, Bot, User } from 'lucide-react';
+import { X, Send, Sparkles } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 interface Message {

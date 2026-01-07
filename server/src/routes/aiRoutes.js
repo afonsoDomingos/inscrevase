@@ -28,6 +28,9 @@ router.post('/chat', async (req, res) => {
     const { message, locale } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
 
+    console.log("Aura Chat Request Received. Locale:", locale);
+    console.log("Using API Key (first 5 chars):", apiKey ? apiKey.substring(0, 5) : "MISSING");
+
     if (!apiKey) {
         // Fallback if API key is not set
         const fallback = locale === 'en'
@@ -38,17 +41,22 @@ router.post('/chat', async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
+        // Using gemini-1.5-pro as it's sometimes more strictly available than flash in certain regions
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `${AURA_SYSTEM_PROMPT}\n\nLocale: ${locale}\nUser Message: ${message}\n\nAura's Response:`;
+
+        console.log("Sending prompt to Gemini...");
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
+        console.log("Gemini Response received.");
+
         res.json({ reply: text });
     } catch (error) {
-        console.error("Aura AI Error:", error);
+        console.error("Aura AI Error Details:", error);
         res.status(500).json({ error: "Aura is resting." });
     }
 });
