@@ -45,7 +45,7 @@ export default function Register() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="luxury-card"
-                style={{ maxWidth: '500px', width: '100%', marginTop: '60px', marginBottom: '40px' }}
+                style={{ maxWidth: '700px', width: '100%', marginTop: '60px', marginBottom: '40px' }}
             >
                 {/* Navigation Tabs */}
                 <div style={{ display: 'flex', marginBottom: '2rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
@@ -160,7 +160,7 @@ export default function Register() {
                         </motion.div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8rem', marginBottom: '1rem' }}>
                         <motion.div
                             initial={{ y: 10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
@@ -222,7 +222,7 @@ export default function Register() {
                             transition={{ delay: 0.4 }}
                             className="input-group"
                         >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Email Profissional</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Email</label>
                             <div style={{ position: 'relative' }}>
                                 <Mail size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
@@ -237,29 +237,29 @@ export default function Register() {
                                 />
                             </div>
                         </motion.div>
-                    </div>
 
-                    <motion.div
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="input-group"
-                    >
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Senha de Acesso</label>
-                        <div style={{ position: 'relative' }}>
-                            <Lock size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
-                            <input
-                                type="password"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="input-luxury"
-                                style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                placeholder="••••••••"
-                                required
-                                disabled={loading}
-                            />
-                        </div>
-                    </motion.div>
+                        <motion.div
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.45 }}
+                            className="input-group"
+                        >
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>Senha</label>
+                            <div style={{ position: 'relative' }}>
+                                <Lock size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+                                <input
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    className="input-luxury"
+                                    style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
+                                    placeholder="••••••••"
+                                    required
+                                    disabled={loading}
+                                />
+                            </div>
+                        </motion.div>
+                    </div>
 
                     <motion.button
                         whileHover={{ scale: loading ? 1 : 1.02 }}
