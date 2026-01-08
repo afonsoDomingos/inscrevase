@@ -75,7 +75,7 @@ export default function MentorProfilePage() {
 
             {/* Premium Cinematic Header */}
             <div style={{
-                height: '450px',
+                height: '350px',
                 background: '#0a0a0a',
                 position: 'relative',
                 overflow: 'hidden',
@@ -125,10 +125,10 @@ export default function MentorProfilePage() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             style={{
-                                width: '260px', height: '260px', borderRadius: '40px',
-                                overflow: 'hidden', border: '8px solid rgba(255,255,255,0.1)',
-                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)', background: '#111',
-                                flexShrink: 0, position: 'relative', top: '130px'
+                                width: '200px', height: '200px', borderRadius: '32px',
+                                overflow: 'hidden', border: '5px solid rgba(255,255,255,0.1)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)', background: '#111',
+                                flexShrink: 0, position: 'relative', top: '100px'
                             }}
                         >
                             {mentor.profilePhoto ? (
@@ -152,7 +152,7 @@ export default function MentorProfilePage() {
                                 </div>
                                 <Verified size={20} className="gold-text" />
                             </div>
-                            <h1 style={{ fontSize: '4rem', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-playfair)', lineHeight: 1 }}>
+                            <h1 style={{ fontSize: '3rem', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-playfair)', lineHeight: 1 }}>
                                 {mentor.name}
                             </h1>
                             {mentor.businessName && (
@@ -166,8 +166,8 @@ export default function MentorProfilePage() {
             </div>
 
             {/* Profile Strategic Layout */}
-            <main style={{ maxWidth: '1200px', margin: '180px auto 100px', padding: '0 20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '4rem' }}>
+            <main style={{ maxWidth: '1200px', margin: '140px auto 80px', padding: '0 20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '3rem' }}>
 
                     {/* Left Sidebar - Key Info & Socials */}
                     <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -272,15 +272,15 @@ export default function MentorProfilePage() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 }}
                             className="luxury-card"
-                            style={{ background: '#fff', padding: '4rem', borderRadius: '40px', position: 'relative', overflow: 'hidden' }}
+                            style={{ background: '#fff', padding: '3rem', borderRadius: '32px', position: 'relative', overflow: 'hidden' }}
                         >
                             <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.03 }}>
                                 <Award size={300} />
                             </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2.5rem' }}>
-                                <div style={{ width: '3px', height: '30px', background: 'var(--gold-gradient)' }} />
-                                <h2 style={{ fontSize: '2.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#111' }}>{t('mentors.bio')}</h2>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
+                                <div style={{ width: '3px', height: '24px', background: 'var(--gold-gradient)' }} />
+                                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>{t('mentors.bio')}</h2>
                             </div>
 
                             <p style={{ fontSize: '1.25rem', lineHeight: 2, color: '#444', whiteSpace: 'pre-line', position: 'relative', zIndex: 1 }}>

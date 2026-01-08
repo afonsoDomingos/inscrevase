@@ -106,11 +106,10 @@ export default function MentorsShowcase() {
                         fontWeight: 900,
                         marginBottom: '1.5rem',
                         lineHeight: 1.05,
-                        letterSpacing: '-1px'
+                        letterSpacing: '-1px',
+                        color: '#fff'
                     }}>
-                        {t('mentors.title').split(' ').map((word, i) => (
-                            i === 1 ? <span key={i} className="gold-text">{word} </span> : word + ' '
-                        ))}
+                        {t('mentors.title')}
                     </h1>
 
                     <p style={{
@@ -201,8 +200,8 @@ export default function MentorsShowcase() {
                         ) : (
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
-                                gap: '3rem'
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                                gap: '2rem'
                             }}>
                                 <AnimatePresence>
                                     {filteredMentors.map((mentor, index) => (
@@ -225,12 +224,12 @@ export default function MentorsShowcase() {
                                             }}
                                         >
                                             {/* Luxury Image Container */}
-                                            <div style={{ position: 'relative', height: '300px', width: '100%', padding: '12px' }}>
+                                            <div style={{ position: 'relative', height: '220px', width: '100%', padding: '10px' }}>
                                                 <div style={{
                                                     position: 'relative',
                                                     height: '100%',
                                                     width: '100%',
-                                                    borderRadius: '24px',
+                                                    borderRadius: '20px',
                                                     overflow: 'hidden',
                                                     background: '#f8f8f8'
                                                 }}>
@@ -277,10 +276,10 @@ export default function MentorsShowcase() {
                                             </div>
 
                                             {/* Showcase Body */}
-                                            <div style={{ padding: '2.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.2rem' }}>
+                                            <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.8rem' }}>
                                                     <div>
-                                                        <h3 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#111', marginBottom: '0.2rem', fontFamily: 'var(--font-playfair)' }}>
+                                                        <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#111', marginBottom: '0.1rem', fontFamily: 'var(--font-playfair)' }}>
                                                             {mentor.name}
                                                         </h3>
                                                         {mentor.businessName && (
@@ -293,15 +292,15 @@ export default function MentorsShowcase() {
 
                                                 <p style={{
                                                     color: '#666',
-                                                    fontSize: '1rem',
-                                                    lineHeight: 1.7,
+                                                    fontSize: '0.9rem',
+                                                    lineHeight: 1.6,
                                                     display: '-webkit-box',
-                                                    WebkitLineClamp: 3,
+                                                    WebkitLineClamp: 2,
                                                     WebkitBoxOrient: 'vertical',
                                                     overflow: 'hidden',
-                                                    marginBottom: '2.5rem'
+                                                    marginBottom: '1.5rem'
                                                 }}>
-                                                    {mentor.bio || "Exclusividade e autoridade em cada mentoria. Junte-se à elite para elevar seus resultados."}
+                                                    {mentor.bio || "Exclusividade e autoridade em cada mentoria."}
                                                 </p>
 
                                                 {/* Card Footer Info */}
