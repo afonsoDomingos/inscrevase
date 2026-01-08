@@ -1,16 +1,19 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const User = require('../models/User');
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
+const linkedinClientId = process.env.LINKEDIN_CLIENT_ID;
+const linkedinClientSecret = process.env.LINKEDIN_CLIENT_SECRET;
+
+// Google Strategy
 if (googleClientId && googleClientSecret) {
     passport.use(new GoogleStrategy({
         clientID: googleClientId,
         clientSecret: googleClientSecret,
-        // Force HTTPS if not localhost
-        // Hardcode for Render to ensure HTTPS match
         callbackURL: process.env.NODE_ENV === 'production'
             ? 'https://inscrevase.onrender.com/api/auth/google/callback'
             : 'http://localhost:5000/api/auth/google/callback',
@@ -18,46 +21,86 @@ if (googleClientId && googleClientSecret) {
     },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                // Did we find a user with this googleId?
                 let user = await User.findOne({ googleId: profile.id });
-                if (user) {
-                    return done(null, user);
-                }
+                if (user) return done(null, user);
 
-                // Check if user exists with this email
                 const email = profile.emails[0].value;
                 user = await User.findOne({ email });
 
                 if (user) {
-                    // Link googleId to existing user
                     user.googleId = profile.id;
-                    if (!user.profilePhoto) {
+                    if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
+                    await user.save();
+                    return done(null, user);
+                }
+
+                user = new User({
+                    name: profile.displayName,
+                    email: email,
+                    googleId: profile.id,
+                    profilePhoto: profile.photos[0].value,
+                    role: 'mentor',
+                    password: ''
+                });
+
+                await user.save();
+                done(null, user);
+            } catch (err) {
+                console.error("Google Auth Error:", err);
+                done(err, null);
+            }
+        }));
+}
+
+// LinkedIn Strategy
+if (linkedinClientId && linkedinClientSecret) {
+    passport.use(new LinkedInStrategy({
+        clientID: linkedinClientId,
+        clientSecret: linkedinClientSecret,
+        callbackURL: process.env.NODE_ENV === 'production'
+            ? 'https://inscrevase.onrender.com/api/auth/linkedin/callback'
+            : 'http://localhost:5000/api/auth/linkedin/callback',
+        scope: ['openid', 'profile', 'email'],
+        state: true
+    },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                // profile object from LinkedIn looks slightly different
+                let user = await User.findOne({ linkedinId: profile.id });
+                if (user) return done(null, user);
+
+                const email = profile.emails[0].value;
+                user = await User.findOne({ email });
+
+                if (user) {
+                    user.linkedinId = profile.id;
+                    if (!user.profilePhoto && profile.photos && profile.photos.length > 0) {
                         user.profilePhoto = profile.photos[0].value;
                     }
                     await user.save();
                     return done(null, user);
                 }
 
-                // Create new user
                 user = new User({
                     name: profile.displayName,
                     email: email,
-                    googleId: profile.id,
-                    profilePhoto: profile.photos[0].value,
-                    role: 'mentor', // Default role for Google Signups
-                    password: '' // No password
+                    linkedinId: profile.id,
+                    profilePhoto: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : '',
+                    role: 'mentor',
+                    password: ''
                 });
 
                 await user.save();
                 done(null, user);
-
             } catch (err) {
-                console.error("Google Auth Error:", err);
+                console.error("LinkedIn Auth Error:", err);
                 done(err, null);
             }
         }));
-} else {
-    console.warn("⚠️ Google OAuth credentials missing. Google login will not work.");
+}
+
+if (!googleClientId && !linkedinClientId) {
+    console.warn("⚠️ Both Google and LinkedIn OAuth credentials missing.");
 }
 
 module.exports = passport;

@@ -22,6 +22,18 @@ router.get('/google/callback',
     }
 );
 
+// LinkedIn Auth Routes
+router.get('/linkedin', passport.authenticate('linkedin'));
+
+router.get('/linkedin/callback',
+    passport.authenticate('linkedin', { session: false, failureRedirect: '/login' }),
+    (req, res) => {
+        const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+    }
+);
+
 // Admin Routes
 router.get('/users', authMiddleware, adminMiddleware, getUsers);
 router.put('/users/:id', authMiddleware, adminMiddleware, updateByAdmin);

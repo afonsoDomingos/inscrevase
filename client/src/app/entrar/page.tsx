@@ -206,28 +206,53 @@ export default function Login() {
                         <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
-                        style={{
-                            width: '100%',
-                            padding: '1rem',
-                            background: '#fff',
-                            border: '1px solid #ddd',
-                            borderRadius: '8px',
-                            color: '#333',
-                            fontWeight: 600,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} />
-                        {t('auth.continueWithGoogle')}
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <button
+                            type="button"
+                            onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
+                                background: '#fff',
+                                border: '1px solid #ddd',
+                                borderRadius: '8px',
+                                color: '#333',
+                                fontWeight: 600,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} />
+                            {t('auth.continueWithGoogle')}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`}
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
+                                background: '#0077b5',
+                                border: 'none',
+                                borderRadius: '8px',
+                                color: '#fff',
+                                fontWeight: 600,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={20} height={20} style={{ filter: 'brightness(0) invert(1)' }} />
+                            {t('auth.continueWithLinkedIn')}
+                        </button>
+                    </div>
                 </form>
 
                 <p style={{ marginTop: '2.5rem', textAlign: 'center', color: '#666', fontSize: '0.95rem' }}>
