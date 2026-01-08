@@ -94,15 +94,21 @@ export const formService = {
 
     async uploadFile(file: File, folder: string = 'submissions'): Promise<string> {
         const formData = new FormData();
-        formData.append('file', file);
         formData.append('folder', folder);
+        formData.append('file', file);
 
         const response = await fetch(`${API_URL}/upload`, {
             method: 'POST',
             body: formData
         });
-        const result = await response.json();
-        if (!response.ok) throw new Error('Erro no upload do arquivo');
+
+        const result = await response.json().catch(() => ({ message: 'Resposta inválida do servidor' }));
+
+        if (!response.ok) {
+            console.error('Upload Error:', { status: response.status, result });
+            throw new Error(result.message || `Erro no servidor (Status: ${response.status})`);
+        }
+
         return result.url;
     },
 

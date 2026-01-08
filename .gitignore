@@ -22,6 +22,7 @@ server/dist
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+upload-debug.log
 
 # Local env files
 .env

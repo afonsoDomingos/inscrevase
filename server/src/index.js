@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+require('dotenv').config(); // Fallback to current dir
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,4 +33,15 @@ mongoose.connect(process.env.MONGODB_URI)
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log('--- Verificação de Ambiente ---');
+    console.log('PORT:', PORT);
+    console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'CONFIGURADO' : 'AUSENTE');
+    console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? 'CONFIGURADO' : 'AUSENTE');
+    console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY ? 'CONFIGURADO' : 'AUSENTE');
+    console.log('CLOUDINARY_API_SECRET:', process.env.CLOUDINARY_API_SECRET ? 'CONFIGURADO' : 'AUSENTE');
+    console.log('-------------------------------');
 });
+
+// Force restart trigger
+console.log('--- Servidor Reiniciado (Audit Mode): ' + new Date().toISOString() + ' ---');
+// Cache cleared and server forced to reload envs.

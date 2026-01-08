@@ -87,8 +87,10 @@ exports.updateForm = async (req, res) => {
         // Update fields
         const { title, description, fields, theme, active, eventDate, paymentConfig, coverImage, logo, capacity, whatsappConfig } = req.body;
 
-        // If title changed, update slug? Usually better not to break links, but user might want to.
-        // For now, let's keep slug persistent unless explicitly requested.
+        console.log(`--- Atualizando Formulário ${req.params.id} ---`);
+        if (coverImage) console.log(`Nova Capa: ${coverImage}`);
+        if (logo) console.log(`Novo Logo: ${logo}`);
+        if (theme) console.log('Tema atualizado recebido');
 
         if (title) form.title = title;
         if (description !== undefined) form.description = description;
@@ -98,6 +100,7 @@ exports.updateForm = async (req, res) => {
         if (coverImage !== undefined) form.coverImage = coverImage;
         if (logo !== undefined) form.logo = logo;
         if (capacity !== undefined) form.capacity = capacity ? parseInt(capacity) : undefined;
+
         if (whatsappConfig) {
             form.whatsappConfig = {
                 phoneNumber: whatsappConfig.phoneNumber || form.whatsappConfig?.phoneNumber,
@@ -122,6 +125,7 @@ exports.updateForm = async (req, res) => {
         }
 
         await form.save();
+        console.log('Formulário salvo com sucesso!');
         res.json(form);
     } catch (err) {
         console.error("Update Form Error:", err);

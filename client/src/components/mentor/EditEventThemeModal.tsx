@@ -1,13 +1,22 @@
 /* eslint-disable */
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Loader2, Palette, Upload, Image as ImageIcon, Type } from 'lucide-react';
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
+
+/**
+ * Custom CSS for hover effects
+ */
+const hoverOverlayStyles = `
+  .hover-parent:hover .hover-overlay-plus {
+    opacity: 1 !important;
+  }
+`;
 
 interface EditEventThemeModalProps {
     isOpen: boolean;
@@ -28,7 +37,7 @@ const FONTS = [
 export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }: EditEventThemeModalProps) {
     const { t } = useTranslate();
     const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
+    const [uploading, setUploading] = useState<string | null>(null); // 'cover', 'logo', 'background' or null
 
     // Initialize with current form settings
     const [theme, setTheme] = useState({
@@ -46,8 +55,13 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
     const [coverImage, setCoverImage] = useState<string>('');
     const [logo, setLogo] = useState<string>('');
 
+    const lastFormId = useRef<string | null>(null);
+
     useEffect(() => {
-        if (form) {
+        if (form && form._id !== lastFormId.current) {
+            console.log("Initializing theme modal state for form:", form._id);
+            lastFormId.current = form._id;
+
             if (form.theme) {
                 setTheme({
                     primaryColor: form.theme.primaryColor || '#FFD700',
@@ -68,7 +82,8 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cover' | 'logo' | 'background') => {
         if (e.target.files && e.target.files[0]) {
-            setUploading(true);
+            setUploading(type);
+            console.log(`Starting upload for ${type}...`);
             try {
                 const file = e.target.files[0];
                 let folder = 'general';
@@ -77,16 +92,19 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                 else if (type === 'background') folder = 'backgrounds';
 
                 const url = await formService.uploadFile(file, folder);
+                console.log(`Upload successful for ${type}: ${url}`);
 
                 if (type === 'cover') setCoverImage(url);
                 else if (type === 'logo') setLogo(url);
                 else if (type === 'background') setTheme(prev => ({ ...prev, backgroundImage: url }));
 
-            } catch (error) {
-                console.error("Upload failed", error);
-                toast.error(t('events.theme.uploadFailed') || 'Erro no upload');
+                toast.success(t('common.success') || 'Upload concluído');
+
+            } catch (error: any) {
+                console.error("Upload failed details:", error);
+                toast.error(`${t('events.theme.uploadFailed') || 'Erro no upload'}: ${error.message || 'Erro desconhecido'}`);
             } finally {
-                setUploading(false);
+                setUploading(null);
             }
         }
     };
@@ -117,6 +135,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
     return (
         <AnimatePresence>
+            <style>{hoverOverlayStyles}</style>
             <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -179,12 +198,15 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            cursor: 'pointer'
-                                        }}>
-                                            {coverImage ? (
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s'
+                                        }} className="hover-parent">
+                                            {uploading === 'cover' ? (
+                                                <Loader2 className="animate-spin" color="#FFD700" />
+                                            ) : coverImage ? (
                                                 <>
                                                     <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
-                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay-plus">
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', pointerEvents: 'none' }} className="hover-overlay-plus">
                                                         <Upload color="#fff" />
                                                     </div>
                                                 </>
@@ -194,7 +216,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                                     <div style={{ fontSize: '0.65rem' }}>{t('events.theme.uploadCover')}</div>
                                                 </div>
                                             )}
-                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'cover')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'cover')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 5 }} />
                                         </div>
                                     </div>
 
@@ -211,12 +233,15 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            cursor: 'pointer'
-                                        }}>
-                                            {logo ? (
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s'
+                                        }} className="hover-parent">
+                                            {uploading === 'logo' ? (
+                                                <Loader2 className="animate-spin" color="#FFD700" />
+                                            ) : logo ? (
                                                 <>
-                                                    <Image src={logo} alt="Preview Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
-                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay-plus">
+                                                    <Image src={logo} alt="Preview Logo" fill style={{ objectFit: 'contain' }} />
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', pointerEvents: 'none' }} className="hover-overlay-plus">
                                                         <Upload color="#fff" />
                                                     </div>
                                                 </>
@@ -226,7 +251,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                                     <div style={{ fontSize: '0.65rem' }}>{t('events.theme.uploadLogo')}</div>
                                                 </div>
                                             )}
-                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 5 }} />
                                         </div>
                                     </div>
 
@@ -244,15 +269,21 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             cursor: 'pointer'
-                                        }}>
-                                            {!theme.backgroundImage && (
+                                        }} className="hover-parent">
+                                            {uploading === 'background' ? (
+                                                <Loader2 className="animate-spin" color="#FFD700" />
+                                            ) : !theme.backgroundImage ? (
                                                 <div style={{ textAlign: 'center', color: '#999' }}>
                                                     <ImageIcon size={20} style={{ marginBottom: '5px' }} />
                                                     <div style={{ fontSize: '0.65rem' }}>Upload BG</div>
                                                 </div>
+                                            ) : (
+                                                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', pointerEvents: 'none' }} className="hover-overlay-plus">
+                                                    <Upload color="#fff" />
+                                                </div>
                                             )}
-                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'background')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
-                                            {theme.backgroundImage && (
+                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'background')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 5 }} />
+                                            {theme.backgroundImage && !uploading && (
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); setTheme({ ...theme, backgroundImage: '' }); }}
                                                     style={{ position: 'absolute', top: 5, right: 5, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '4px', padding: '2px 5px', fontSize: '10px', cursor: 'pointer', zIndex: 5 }}
@@ -470,7 +501,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                     <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #eee' }}>
                         <button
                             onClick={handleSubmit}
-                            disabled={loading || uploading}
+                            disabled={loading || !!uploading}
                             className="btn-primary"
                             style={{
                                 width: '100%',
@@ -481,10 +512,11 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                 gap: '10px',
                                 fontSize: '1rem',
                                 fontWeight: 700,
-                                borderRadius: '15px'
+                                borderRadius: '15px',
+                                opacity: loading || !!uploading ? 0.7 : 1
                             }}
                         >
-                            {loading || uploading ? <Loader2 className="animate-spin" /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
+                            {loading ? <Loader2 className="animate-spin" /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
                         </button>
                     </div>
                 </motion.div>
