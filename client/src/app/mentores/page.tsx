@@ -320,7 +320,7 @@ export default function MentorsShowcase() {
                                             )}
 
                                             <p style={{
-                                                color: '#777',
+                                                color: '#444',
                                                 fontSize: '0.85rem',
                                                 lineHeight: 1.5,
                                                 marginBottom: '1.5rem',
@@ -363,7 +363,7 @@ export default function MentorsShowcase() {
                                                         (e.currentTarget as HTMLAnchorElement).style.borderColor = '#eee';
                                                     }}
                                                 >
-                                                    {t('common.viewProfile')} <ChevronRight size={16} />
+                                                    Ver Perfil Completo <ChevronRight size={16} />
                                                 </Link>
                                             </div>
                                         </motion.div>
