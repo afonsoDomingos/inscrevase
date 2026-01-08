@@ -52,7 +52,7 @@ if (googleClientId && googleClientSecret) {
         }));
 }
 
-// LinkedIn Strategy
+// LinkedIn Strategy (Updated for OpenID Connect)
 if (linkedinClientId && linkedinClientSecret) {
     passport.use(new LinkedInStrategy({
         clientID: linkedinClientId,
@@ -61,7 +61,8 @@ if (linkedinClientId && linkedinClientSecret) {
             ? 'https://inscrevase.onrender.com/api/auth/linkedin/callback'
             : 'http://localhost:5000/api/auth/linkedin/callback',
         scope: ['openid', 'profile', 'email'],
-        userProfileURL: 'https://api.linkedin.com/v2/userinfo'
+        authorizationURL: 'https://www.linkedin.com/oauth/v2/authorization',
+        tokenURL: 'https://www.linkedin.com/oauth/v2/accessToken',
     },
         async (accessToken, refreshToken, profile, done) => {
             try {
