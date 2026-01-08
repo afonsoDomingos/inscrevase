@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
+import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe, X } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -17,6 +17,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
         const loadForm = async () => {
@@ -166,7 +167,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 transition={{ delay: 0.2 }}
                             >
                                 {form.coverImage && (
-                                    <div style={{ position: 'relative', width: '100%', height: '300px', borderRadius: '24px', overflow: 'hidden', marginBottom: '2rem', border: '1px solid #333' }}>
+                                    <div
+                                        style={{
+                                            position: 'relative', width: '100%', height: '300px',
+                                            borderRadius: '24px', overflow: 'hidden', marginBottom: '2rem',
+                                            border: '1px solid #333', cursor: 'zoom-in'
+                                        }}
+                                        onClick={() => setSelectedImage(form.coverImage!)}
+                                    >
                                         <Image src={form.coverImage} alt={form.title} fill style={{ objectFit: 'cover' }} />
                                     </div>
                                 )}
@@ -371,9 +379,9 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                             }}>
                                                 <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} required />
                                                 {filePreview ? (
-                                                    <div style={{ textAlign: 'center' }}>
+                                                    <div style={{ textAlign: 'center' }} onClick={(e) => { e.stopPropagation(); setSelectedImage(filePreview); }}>
                                                         <Image src={filePreview} alt="Comprovativo" width={100} height={100} style={{ borderRadius: '10px', marginBottom: '10px' }} />
-                                                        <div style={{ color: '#FFD700', fontSize: '0.8rem' }}>{file?.name}</div>
+                                                        <div style={{ color: primaryColor, fontSize: '0.8rem' }}>{file?.name}</div>
                                                     </div>
                                                 ) : (
                                                     <>
@@ -412,6 +420,81 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             <footer style={{ textAlign: 'center', padding: '3rem', color: '#333', fontSize: '0.8rem', borderTop: '1px solid #111' }}>
                 {t('form.poweredBy')} &copy; 2026. {t('form.allRightsReserved')}
             </footer>
+
+            {/* Image Lightbox */}
+            <AnimatePresence>
+                {selectedImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedImage(null)}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.95)',
+                            zIndex: 10000,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px',
+                            backdropFilter: 'blur(10px)'
+                        }}
+                    >
+                        <motion.button
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            onClick={() => setSelectedImage(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '30px',
+                                right: '30px',
+                                background: 'white',
+                                color: 'black',
+                                border: 'none',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                zIndex: 1
+                            }}
+                        >
+                            <X size={24} />
+                        </motion.button>
+
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                position: 'relative',
+                                maxWidth: '90vw',
+                                maxHeight: '85vh',
+                                width: 'auto',
+                                height: 'auto',
+                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                                borderRadius: '12px',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <img
+                                src={selectedImage}
+                                alt="Imagem ampliada"
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '85vh',
+                                    display: 'block',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </main>
     );
 }

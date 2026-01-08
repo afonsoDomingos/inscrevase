@@ -4,12 +4,12 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { motion } from 'framer-motion';
 import {
     Instagram, Linkedin, Facebook, Globe, MessageCircle,
     Award, Verified, Briefcase, ExternalLink, Users, UserPlus, UserMinus,
-    MapPin, Calendar, ChevronLeft, Loader2, Eye
+    MapPin, Calendar, ChevronLeft, Loader2, Eye, X
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
@@ -30,6 +30,7 @@ export default function MentorProfilePage() {
     const [eventsLoading, setEventsLoading] = useState(true);
     const currentUser = useMemo(() => authService.getCurrentUser(), []);
     const visitRecorded = useRef(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchMentor = async () => {
@@ -178,8 +179,10 @@ export default function MentorProfilePage() {
                                 padding: '4px', background: 'var(--gold-gradient)',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
                                 flexShrink: 0, position: 'relative', top: '70px',
-                                zIndex: 10
+                                zIndex: 10,
+                                cursor: 'zoom-in'
                             }}
+                            onClick={() => mentor.profilePhoto && setSelectedImage(mentor.profilePhoto)}
                         >
                             <div style={{
                                 width: '100%', height: '100%', borderRadius: '50%',
@@ -461,9 +464,20 @@ export default function MentorProfilePage() {
                                             style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', cursor: 'pointer' }}
                                             onClick={() => router.push(`/f/${event.slug}`)}
                                         >
-                                            <div style={{ height: '160px', position: 'relative', background: '#0a0a0a' }}>
+                                            <div
+                                                style={{ height: '160px', position: 'relative', background: '#0a0a0a', cursor: 'pointer' }}
+                                            >
                                                 {event.coverImage ? (
-                                                    <Image src={event.coverImage} alt={event.title} fill style={{ objectFit: 'cover', opacity: 0.8 }} />
+                                                    <Image
+                                                        src={event.coverImage}
+                                                        alt={event.title}
+                                                        fill
+                                                        style={{ objectFit: 'cover', opacity: 0.8 }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedImage(event.coverImage!);
+                                                        }}
+                                                    />
                                                 ) : (
                                                     <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', opacity: 0.2 }}>
                                                         <Calendar size={48} color="#000" />
@@ -544,6 +558,80 @@ export default function MentorProfilePage() {
                     © 2026 INSCRIVA-SE • MENTOR ELITE PROGRAM
                 </p>
             </div>
+            {/* Image Lightbox */}
+            <AnimatePresence>
+                {selectedImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedImage(null)}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.95)',
+                            zIndex: 10000,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px',
+                            backdropFilter: 'blur(10px)'
+                        }}
+                    >
+                        <motion.button
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            onClick={() => setSelectedImage(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '30px',
+                                right: '30px',
+                                background: 'white',
+                                color: 'black',
+                                border: 'none',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                zIndex: 1
+                            }}
+                        >
+                            <X size={24} />
+                        </motion.button>
+
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                position: 'relative',
+                                maxWidth: '90vw',
+                                maxHeight: '85vh',
+                                width: 'auto',
+                                height: 'auto',
+                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                                borderRadius: '12px',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <img
+                                src={selectedImage}
+                                alt="Imagem ampliada"
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '85vh',
+                                    display: 'block',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
