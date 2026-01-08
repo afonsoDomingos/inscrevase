@@ -60,31 +60,40 @@ if (linkedinClientId && linkedinClientSecret) {
         callbackURL: process.env.NODE_ENV === 'production'
             ? 'https://inscrevase.onrender.com/api/auth/linkedin/callback'
             : 'http://localhost:5000/api/auth/linkedin/callback',
-        scope: ['openid', 'profile', 'email']
+        scope: ['openid', 'profile', 'email'],
+        userProfileURL: 'https://api.linkedin.com/v2/userinfo'
     },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                // profile object from LinkedIn looks slightly different
-                let user = await User.findOne({ linkedinId: profile.id });
+                // With OpenID Connect, the profile structure is different
+                const linkedinId = profile.id || profile.sub;
+                const email = profile.emails && profile.emails[0] ? profile.emails[0].value : (profile._json ? profile._json.email : null);
+                const name = profile.displayName || (profile._json ? profile._json.name : 'LinkedIn User');
+                const photo = (profile.photos && profile.photos[0]) ? profile.photos[0].value : (profile._json ? profile._json.picture : '');
+
+                if (!email) {
+                    return done(new Error("Não foi possível obter o e-mail do LinkedIn"), null);
+                }
+
+                let user = await User.findOne({ linkedinId: linkedinId });
                 if (user) return done(null, user);
 
-                const email = profile.emails[0].value;
                 user = await User.findOne({ email });
 
                 if (user) {
-                    user.linkedinId = profile.id;
-                    if (!user.profilePhoto && profile.photos && profile.photos.length > 0) {
-                        user.profilePhoto = profile.photos[0].value;
+                    user.linkedinId = linkedinId;
+                    if (!user.profilePhoto) {
+                        user.profilePhoto = photo;
                     }
                     await user.save();
                     return done(null, user);
                 }
 
                 user = new User({
-                    name: profile.displayName,
+                    name: name,
                     email: email,
-                    linkedinId: profile.id,
-                    profilePhoto: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : '',
+                    linkedinId: linkedinId,
+                    profilePhoto: photo,
                     role: 'mentor',
                     password: ''
                 });
