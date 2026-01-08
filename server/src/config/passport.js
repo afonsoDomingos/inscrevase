@@ -52,28 +52,40 @@ if (googleClientId && googleClientSecret) {
         }));
 }
 
-// LinkedIn Strategy (Updated for OpenID Connect)
+// LinkedIn Strategy (Manual OIDC Flow)
 if (linkedinClientId && linkedinClientSecret) {
-    passport.use(new LinkedInStrategy({
+    const OAuth2Strategy = require('passport-oauth2').Strategy;
+
+    const strategy = new OAuth2Strategy({
+        authorizationURL: 'https://www.linkedin.com/oauth/v2/authorization',
+        tokenURL: 'https://www.linkedin.com/oauth/v2/accessToken',
         clientID: linkedinClientId,
         clientSecret: linkedinClientSecret,
         callbackURL: process.env.NODE_ENV === 'production'
             ? 'https://inscrevase.onrender.com/api/auth/linkedin/callback'
             : 'http://localhost:5000/api/auth/linkedin/callback',
         scope: ['openid', 'profile', 'email'],
-        authorizationURL: 'https://www.linkedin.com/oauth/v2/authorization',
-        tokenURL: 'https://www.linkedin.com/oauth/v2/accessToken',
     },
-        async (accessToken, refreshToken, profile, done) => {
+        async (accessToken, refreshToken, params, profile, done) => {
             try {
-                // With OpenID Connect, the profile structure is different
-                const linkedinId = profile.id || profile.sub;
-                const email = profile.emails && profile.emails[0] ? profile.emails[0].value : (profile._json ? profile._json.email : null);
-                const name = profile.displayName || (profile._json ? profile._json.name : 'LinkedIn User');
-                const photo = (profile.photos && profile.photos[0]) ? profile.photos[0].value : (profile._json ? profile._json.picture : '');
+                // Manual profile fetch using the accessToken
+                const response = await fetch('https://api.linkedin.com/v2/userinfo', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const data = await response.json();
+
+                if (!data || !data.sub) {
+                    console.error("LinkedIn OIDC data error:", data);
+                    return done(new Error("Falha ao obter dados do usuário do LinkedIn"), null);
+                }
+
+                const linkedinId = data.sub;
+                const email = data.email;
+                const name = data.name || `${data.given_name} ${data.family_name}`;
+                const photo = data.picture || '';
 
                 if (!email) {
-                    return done(new Error("Não foi possível obter o e-mail do LinkedIn"), null);
+                    return done(new Error("E-mail não retornado pelo LinkedIn"), null);
                 }
 
                 let user = await User.findOne({ linkedinId: linkedinId });
@@ -83,9 +95,7 @@ if (linkedinClientId && linkedinClientSecret) {
 
                 if (user) {
                     user.linkedinId = linkedinId;
-                    if (!user.profilePhoto) {
-                        user.profilePhoto = photo;
-                    }
+                    if (!user.profilePhoto) user.profilePhoto = photo;
                     await user.save();
                     return done(null, user);
                 }
@@ -102,10 +112,12 @@ if (linkedinClientId && linkedinClientSecret) {
                 await user.save();
                 done(null, user);
             } catch (err) {
-                console.error("LinkedIn Auth Error:", err);
+                console.error("LinkedIn OAuth Error:", err);
                 done(err, null);
             }
-        }));
+        });
+
+    passport.use('linkedin', strategy);
 }
 
 if (!googleClientId && !linkedinClientId) {
