@@ -6,7 +6,7 @@ import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion } from 'framer-motion';
 import {
-    MapPin, Briefcase, Calendar, ChevronLeft, Loader2,
+    MapPin, Calendar, ChevronLeft, Loader2,
     Instagram, Linkedin, Facebook, Globe, MessageCircle, Star
 } from 'lucide-react';
 import Image from 'next/image';
@@ -82,8 +82,8 @@ export default function MentorProfilePage() {
                             cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600,
                             backdropFilter: 'blur(10px)', transition: 'all 0.3s'
                         }}
-                        onMouseOver={(e) => (e.currentTarget as any).style.background = 'rgba(255,255,255,0.2)'}
-                        onMouseOut={(e) => (e.currentTarget as any).style.background = 'rgba(255,255,255,0.1)'}
+                        onMouseOver={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.2)'}
+                        onMouseOut={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)'}
                     >
                         <ChevronLeft size={18} /> {t('mentors.backToList')}
                     </button>
@@ -148,8 +148,8 @@ export default function MentorProfilePage() {
                                                 background: '#f8f9fa', color: platform.color,
                                                 transition: 'all 0.3s'
                                             }}
-                                            onMouseOver={(e) => (e.currentTarget as any).style.background = '#eee'}
-                                            onMouseOut={(e) => (e.currentTarget as any).style.background = '#f8f9fa'}
+                                            onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#eee'}
+                                            onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#f8f9fa'}
                                         >
                                             {platform.icon}
                                         </a>

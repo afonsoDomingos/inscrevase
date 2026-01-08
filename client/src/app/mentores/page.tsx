@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Briefcase, Calendar, ChevronRight, Loader2, Star, Globe, Users } from 'lucide-react';
+import { Search, Briefcase, Calendar, ChevronRight, Loader2, Star, Globe, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -107,8 +107,8 @@ export default function MentorsShowcase() {
                                 outline: 'none',
                                 transition: 'all 0.3s'
                             }}
-                            onFocus={(e) => (e.target as any).style.borderColor = '#FFD700'}
-                            onBlur={(e) => (e.target as any).style.borderColor = '#333'}
+                            onFocus={(e) => (e.target as HTMLInputElement).style.borderColor = '#FFD700'}
+                            onBlur={(e) => (e.target as HTMLInputElement).style.borderColor = '#333'}
                         />
                     </div>
                 </motion.div>
@@ -244,8 +244,8 @@ export default function MentorsShowcase() {
                                                             textDecoration: 'none',
                                                             transition: 'background 0.3s'
                                                         }}
-                                                        onMouseOver={(e) => (e.currentTarget as any).style.background = '#000'}
-                                                        onMouseOut={(e) => (e.currentTarget as any).style.background = '#1a1a1a'}
+                                                        onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#000'}
+                                                        onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#1a1a1a'}
                                                     >
                                                         {t('mentors.viewProfile')} <ChevronRight size={18} />
                                                     </Link>
