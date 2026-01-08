@@ -71,7 +71,10 @@ export default function AdminDashboard() {
         );
     }
 
-    if (!user) return null;
+    if (!user) {
+        if (!loading) router.push('/entrar');
+        return null;
+    }
 
     const cards = [
         { label: t('dashboard.activeMentors'), value: stats?.mentors || 0, icon: <Users size={24} />, color: '#FFD700', tab: 'users' },

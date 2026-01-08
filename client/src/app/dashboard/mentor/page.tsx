@@ -135,7 +135,10 @@ export default function MentorDashboard() {
         );
     }
 
-    if (!user) return null;
+    if (!user) {
+        if (!loading) router.push('/entrar');
+        return null;
+    }
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
