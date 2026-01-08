@@ -51,7 +51,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
     const [whatsappConfig, setWhatsappConfig] = useState({
         phoneNumber: '',
-        message: 'Olá! Gostaria de confirmar minha inscrição.'
+        message: 'Olá! Gostaria de confirmar minha inscrição.',
+        communityUrl: ''
     });
 
     const [paymentConfig, setPaymentConfig] = useState({
@@ -599,6 +600,17 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 onChange={(e) => setWhatsappConfig({ ...whatsappConfig, message: e.target.value })}
                                                 rows={3}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Link da Comunidade (WhatsApp)</label>
+                                            <input
+                                                type="text"
+                                                value={whatsappConfig.communityUrl}
+                                                onChange={(e) => setWhatsappConfig({ ...whatsappConfig, communityUrl: e.target.value })}
+                                                placeholder="Ex: https://chat.whatsapp.com/..."
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                         </div>
                                     </div>

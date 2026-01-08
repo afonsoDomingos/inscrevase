@@ -182,9 +182,36 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     {form.title}
                                 </h1>
 
-                                <div style={{ color: '#888', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2.5rem' }}>
+                                <div style={{ color: '#888', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2rem' }}>
                                     {form.description}
                                 </div>
+
+                                {form.whatsappConfig?.communityUrl && (
+                                    <motion.a
+                                        href={form.whatsappConfig.communityUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        whileHover={{ scale: 1.02, y: -2 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            padding: '1rem 2rem',
+                                            background: '#25D366',
+                                            color: '#fff',
+                                            borderRadius: '16px',
+                                            textDecoration: 'none',
+                                            fontWeight: 700,
+                                            fontSize: '1rem',
+                                            marginBottom: '2.5rem',
+                                            boxShadow: '0 10px 20px rgba(37, 211, 102, 0.2)',
+                                            border: 'none'
+                                        }}
+                                    >
+                                        <MessageCircle size={24} /> Entrar na Comunidade
+                                    </motion.a>
+                                )}
 
                                 {form.eventDate && (
                                     <div style={{ marginBottom: '2rem', padding: '1rem', background: cardBg, borderRadius: '12px', border: `1px solid ${primaryColor}40`, display: 'inline-block' }}>

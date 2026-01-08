@@ -36,6 +36,7 @@ export interface FormModel {
     whatsappConfig?: {
         phoneNumber: string;
         message: string;
+        communityUrl?: string;
     };
     theme?: {
         primaryColor: string;

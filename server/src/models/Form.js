@@ -36,7 +36,8 @@ const FormSchema = new mongoose.Schema({
     },
     whatsappConfig: {
         phoneNumber: { type: String },
-        message: { type: String }
+        message: { type: String },
+        communityUrl: { type: String }
     },
     capacity: { type: Number }, // Target number of submissions
     paymentConfig: {
