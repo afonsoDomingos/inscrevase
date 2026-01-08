@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Briefcase, Calendar, ChevronRight, Loader2, Star, Globe, Users } from 'lucide-react';
+import { Search, Calendar, ChevronRight, Loader2, Star, Globe, Users, Briefcase, Award } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -37,60 +37,107 @@ export default function MentorsShowcase() {
     );
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fdfdfd' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fcfcfc' }}>
             <Navbar />
 
-            {/* Hero Section */}
+            {/* Hero Section - Upgraded Aesthetics */}
             <section style={{
-                padding: '100px 20px 60px',
-                background: '#1a1a1a',
+                padding: '140px 20px 80px',
+                background: '#0a0a0a',
                 color: '#fff',
                 textAlign: 'center',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                borderBottom: '1px solid rgba(255,215,0,0.1)'
             }}>
+                {/* Dynamic Background Elements */}
                 <div style={{
                     position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 70%)',
-                    zIndex: 0
+                    top: '-10%',
+                    left: '-5%',
+                    width: '40%',
+                    height: '60%',
+                    background: 'radial-gradient(circle, rgba(255, 215, 0, 0.03) 0%, transparent 70%)',
+                    zIndex: 0,
+                    filter: 'blur(60px)'
+                }} />
+                <div style={{
+                    position: 'absolute',
+                    bottom: '-10%',
+                    right: '-5%',
+                    width: '40%',
+                    height: '60%',
+                    background: 'radial-gradient(circle, rgba(255, 215, 0, 0.03) 0%, transparent 70%)',
+                    zIndex: 0,
+                    filter: 'blur(60px)'
                 }} />
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}
+                    transition={{ duration: 0.8 }}
+                    style={{ position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto' }}
                 >
-                    <span style={{
-                        color: '#FFD700',
-                        fontWeight: 700,
-                        fontSize: '0.9rem',
-                        letterSpacing: '2px',
-                        textTransform: 'uppercase',
-                        display: 'block',
-                        marginBottom: '1rem'
+                    <div style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: 'rgba(255,215,0,0.1)',
+                        padding: '6px 16px',
+                        borderRadius: '50px',
+                        border: '1px solid rgba(255,215,0,0.2)',
+                        marginBottom: '1.5rem'
                     }}>
-                        {t('mentors.specialist')}
-                    </span>
+                        <Award size={14} className="gold-text" />
+                        <span style={{
+                            color: '#FFD700',
+                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                            letterSpacing: '1.5px',
+                            textTransform: 'uppercase'
+                        }}>
+                            {t('mentors.specialist')}
+                        </span>
+                    </div>
+
                     <h1 style={{
-                        fontSize: '3.5rem',
+                        fontSize: '4.5rem',
                         fontFamily: 'var(--font-playfair)',
-                        fontWeight: 800,
+                        fontWeight: 900,
                         marginBottom: '1.5rem',
-                        lineHeight: 1.1
+                        lineHeight: 1.05,
+                        letterSpacing: '-1px'
                     }}>
-                        {t('mentors.title')}
+                        {t('mentors.title').split(' ').map((word, i) => (
+                            i === 1 ? <span key={i} className="gold-text">{word} </span> : word + ' '
+                        ))}
                     </h1>
-                    <p style={{ fontSize: '1.2rem', color: '#aaa', marginBottom: '3rem' }}>
+
+                    <p style={{
+                        fontSize: '1.25rem',
+                        color: '#999',
+                        marginBottom: '3.5rem',
+                        maxWidth: '650px',
+                        margin: '0 auto 3.5rem',
+                        lineHeight: 1.6
+                    }}>
                         {t('mentors.subtitle')}
                     </p>
 
-                    {/* Search Bar */}
-                    <div style={{ position: 'relative', maxWidth: '600px', margin: '0 auto' }}>
-                        <Search style={{ position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} size={20} />
+                    {/* Elite Search Bar */}
+                    <div style={{
+                        position: 'relative',
+                        maxWidth: '650px',
+                        margin: '0 auto',
+                        background: '#151515',
+                        borderRadius: '100px',
+                        padding: '6px',
+                        border: '1px solid #222',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+                    }}>
+                        <div style={{ position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center' }}>
+                            <Search className="gold-text" size={20} style={{ opacity: 0.7 }} />
+                        </div>
                         <input
                             type="text"
                             placeholder={t('mentors.searchPlaceholder')}
@@ -98,156 +145,209 @@ export default function MentorsShowcase() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{
                                 width: '100%',
-                                padding: '1.2rem 1.2rem 1.2rem 3.5rem',
-                                borderRadius: '50px',
-                                border: '1px solid #333',
-                                background: '#252525',
+                                padding: '1rem 1.5rem 1rem 3.5rem',
+                                borderRadius: '100px',
+                                border: 'none',
+                                background: 'transparent',
                                 color: '#fff',
-                                fontSize: '1rem',
-                                outline: 'none',
-                                transition: 'all 0.3s'
+                                fontSize: '1.1rem',
+                                outline: 'none'
                             }}
-                            onFocus={(e) => (e.target as HTMLInputElement).style.borderColor = '#FFD700'}
-                            onBlur={(e) => (e.target as HTMLInputElement).style.borderColor = '#333'}
                         />
+                        <button style={{
+                            position: 'absolute',
+                            right: '6px',
+                            top: '6px',
+                            bottom: '6px',
+                            background: 'var(--gold-gradient)',
+                            border: 'none',
+                            borderRadius: '100px',
+                            padding: '0 2rem',
+                            color: '#000',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            fontSize: '0.9rem'
+                        }}>
+                            {t('common.search')}
+                        </button>
                     </div>
                 </motion.div>
             </section>
 
-            {/* List Section */}
-            <main style={{ flex: 1, padding: '60px 20px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+            {/* Main Showcase Grid */}
+            <main style={{ flex: 1, padding: '80px 20px', maxWidth: '1300px', margin: '0 auto', width: '100%' }}>
                 {loading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
-                        <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '120px' }}>
+                        <Loader2 className="animate-spin" size={48} color="#FFD700" />
                     </div>
                 ) : (
                     <>
                         {filteredMentors.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '100px 0', color: '#666' }}>
-                                <Users size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                style={{ textAlign: 'center', padding: '120px 0', color: '#888' }}
+                            >
+                                <div style={{
+                                    width: '80px', height: '80px', background: '#f5f5f5',
+                                    borderRadius: '50%', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', margin: '0 auto 1.5rem'
+                                }}>
+                                    <Users size={32} style={{ opacity: 0.2 }} />
+                                </div>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#333', marginBottom: '0.5rem' }}>Nenhum mentor encontrado</h3>
                                 <p>{t('mentors.noMentors')}</p>
-                            </div>
+                            </motion.div>
                         ) : (
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-                                gap: '2.5rem'
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+                                gap: '3rem'
                             }}>
                                 <AnimatePresence>
                                     {filteredMentors.map((mentor, index) => (
                                         <motion.div
                                             key={mentor._id || mentor.id}
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: index * 0.05 }}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.1, duration: 0.5 }}
+                                            whileHover={{ y: -12 }}
                                             style={{
                                                 background: '#fff',
-                                                borderRadius: '24px',
+                                                borderRadius: '32px',
                                                 overflow: 'hidden',
-                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                                                border: '1px solid #f0f0f0',
+                                                boxShadow: '0 20px 50px rgba(0,0,0,0.06)',
+                                                border: '1px solid #f2f2f2',
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 height: '100%',
-                                                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                                                position: 'relative'
                                             }}
-                                            whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                                         >
-                                            {/* Mentor Header (Image & Name) */}
-                                            <div style={{ position: 'relative', height: '240px', background: '#f5f5f5' }}>
-                                                {mentor.profilePhoto ? (
-                                                    <Image
-                                                        src={mentor.profilePhoto}
-                                                        alt={mentor.name}
-                                                        fill
-                                                        style={{ objectFit: 'cover' }}
-                                                    />
-                                                ) : (
-                                                    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', color: '#000' }}>
-                                                        <span style={{ fontSize: '3rem', fontWeight: 800 }}>{mentor.name.charAt(0)}</span>
-                                                    </div>
-                                                )}
-
-                                                {mentor.plan === 'premium' && (
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        top: '1.5rem',
-                                                        right: '1.5rem',
-                                                        background: 'rgba(0,0,0,0.8)',
-                                                        color: '#FFD700',
-                                                        padding: '0.4rem 1rem',
-                                                        borderRadius: '50px',
-                                                        fontSize: '0.7rem',
-                                                        fontWeight: 700,
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '5px',
-                                                        backdropFilter: 'blur(5px)',
-                                                        border: '1px solid rgba(255,215,0,0.3)'
-                                                    }}>
-                                                        <Star size={12} fill="#FFD700" /> PREMIUM
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Details Body */}
-                                            <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <div style={{ marginBottom: '1.5rem' }}>
-                                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1a1a1a', marginBottom: '0.3rem' }}>{mentor.name}</h3>
-                                                    {mentor.businessName && (
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontWeight: 600, fontSize: '0.9rem' }}>
-                                                            <Briefcase size={16} /> {mentor.businessName}
+                                            {/* Luxury Image Container */}
+                                            <div style={{ position: 'relative', height: '300px', width: '100%', padding: '12px' }}>
+                                                <div style={{
+                                                    position: 'relative',
+                                                    height: '100%',
+                                                    width: '100%',
+                                                    borderRadius: '24px',
+                                                    overflow: 'hidden',
+                                                    background: '#f8f8f8'
+                                                }}>
+                                                    {mentor.profilePhoto ? (
+                                                        <Image
+                                                            src={mentor.profilePhoto}
+                                                            alt={mentor.name}
+                                                            fill
+                                                            style={{ objectFit: 'cover' }}
+                                                        />
+                                                    ) : (
+                                                        <div style={{
+                                                            height: '100%', display: 'flex', alignItems: 'center',
+                                                            justifyContent: 'center', background: 'var(--gold-gradient)',
+                                                            color: '#000', fontSize: '4rem', fontWeight: 900
+                                                        }}>
+                                                            {mentor.name.charAt(0)}
                                                         </div>
                                                     )}
+
+                                                    {/* Premium Ribbon */}
+                                                    {mentor.plan === 'premium' && (
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            top: '1.5rem',
+                                                            right: '1.5rem',
+                                                            background: 'rgba(0,0,0,0.85)',
+                                                            color: '#FFD700',
+                                                            padding: '6px 14px',
+                                                            borderRadius: '100px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            backdropFilter: 'blur(8px)',
+                                                            border: '1px solid rgba(255,215,0,0.4)',
+                                                            zIndex: 10
+                                                        }}>
+                                                            <Star size={12} fill="#FFD700" /> ELITE
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Showcase Body */}
+                                            <div style={{ padding: '2.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.2rem' }}>
+                                                    <div>
+                                                        <h3 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#111', marginBottom: '0.2rem', fontFamily: 'var(--font-playfair)' }}>
+                                                            {mentor.name}
+                                                        </h3>
+                                                        {mentor.businessName && (
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontWeight: 700, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                                                <Briefcase size={14} /> {mentor.businessName}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
 
                                                 <p style={{
                                                     color: '#666',
-                                                    fontSize: '0.95rem',
-                                                    lineHeight: 1.6,
+                                                    fontSize: '1rem',
+                                                    lineHeight: 1.7,
                                                     display: '-webkit-box',
                                                     WebkitLineClamp: 3,
                                                     WebkitBoxOrient: 'vertical',
                                                     overflow: 'hidden',
-                                                    marginBottom: '2rem'
+                                                    marginBottom: '2.5rem'
                                                 }}>
-                                                    {mentor.bio || "Este mentor é um especialista de renome na nossa plataforma."}
+                                                    {mentor.bio || "Exclusividade e autoridade em cada mentoria. Junte-se à elite para elevar seus resultados."}
                                                 </p>
 
-                                                {/* Meta Info */}
-                                                <div style={{ display: 'flex', gap: '1.5rem', marginTop: 'auto', paddingBottom: '2rem', borderBottom: '1px solid #f0f0f0' }}>
-                                                    {mentor.country && (
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: '#888' }}>
-                                                            <Globe size={14} /> {mentor.country}
+                                                {/* Card Footer Info */}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    marginTop: 'auto',
+                                                    paddingTop: '1.5rem',
+                                                    borderTop: '1px solid #f5f5f5'
+                                                }}>
+                                                    <div style={{ display: 'flex', gap: '1.2rem' }}>
+                                                        {mentor.country && (
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: '#999', fontWeight: 500 }}>
+                                                                <Globe size={14} className="gold-text" /> {mentor.country}
+                                                            </div>
+                                                        )}
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: '#999', fontWeight: 500 }}>
+                                                            <Calendar size={14} className="gold-text" /> {new Date(mentor.createdAt || Date.now()).getFullYear()}
                                                         </div>
-                                                    )}
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: '#888' }}>
-                                                        <Calendar size={14} /> {new Date(mentor.createdAt || Date.now()).getFullYear()}
                                                     </div>
-                                                </div>
 
-                                                {/* Action Button */}
-                                                <div style={{ paddingTop: '1.5rem' }}>
                                                     <Link
                                                         href={`/mentores/${mentor.id || mentor._id}`}
                                                         style={{
+                                                            width: '44px',
+                                                            height: '44px',
+                                                            background: '#0a0a0a',
+                                                            color: '#FFD700',
+                                                            borderRadius: '50%',
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
-                                                            gap: '8px',
-                                                            width: '100%',
-                                                            padding: '1rem',
-                                                            background: '#1a1a1a',
-                                                            color: '#fff',
-                                                            borderRadius: '12px',
-                                                            fontWeight: 700,
-                                                            textDecoration: 'none',
-                                                            transition: 'background 0.3s'
+                                                            transition: 'all 0.3s',
+                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                                         }}
-                                                        onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#000'}
-                                                        onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#1a1a1a'}
+                                                        onMouseOver={(e) => {
+                                                            (e.currentTarget as HTMLAnchorElement).style.background = '#000';
+                                                            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.1)';
+                                                        }}
+                                                        onMouseOut={(e) => {
+                                                            (e.currentTarget as HTMLAnchorElement).style.background = '#0a0a0a';
+                                                            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)';
+                                                        }}
                                                     >
-                                                        {t('mentors.viewProfile')} <ChevronRight size={18} />
+                                                        <ChevronRight size={20} />
                                                     </Link>
                                                 </div>
                                             </div>
@@ -259,6 +359,19 @@ export default function MentorsShowcase() {
                     </>
                 )}
             </main>
+
+            {/* Premium Bottom Bar */}
+            <div style={{
+                padding: '40px',
+                background: '#000',
+                textAlign: 'center',
+                color: '#fff',
+                borderTop: '1px solid rgba(255,215,0,0.2)'
+            }}>
+                <p style={{ opacity: 0.5, fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                    © 2026 Inscreva-se • Elite Network
+                </p>
+            </div>
         </div>
     );
 }
