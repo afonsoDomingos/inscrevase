@@ -3,10 +3,11 @@
 
 import { useEffect, useState } from 'react';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
-import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 
 interface SubmissionManagementProps {
     formId?: string | null;
@@ -73,6 +74,20 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
         );
 
         return emailKey ? data[emailKey] : null;
+    };
+
+    const getPhoneIdentifier = (data: Record<string, any>) => {
+        if (!data) return null;
+        const keys = Object.keys(data);
+        const phoneKey = keys.find(k =>
+            k.toLowerCase().includes('tel') ||
+            k.toLowerCase().includes('cel') ||
+            k.toLowerCase().includes('zap') ||
+            k.toLowerCase().includes('phone') ||
+            k.toLowerCase().includes('contato') ||
+            k.toLowerCase().includes('telemovel')
+        );
+        return phoneKey ? data[phoneKey] : null;
     };
 
     // Formatting date helper
@@ -145,11 +160,12 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                         <thead>
                             <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.85rem', color: '#666' }}>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.registrant')}</th>
+                                <th style={{ padding: '1rem' }}>Contato</th>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.event')}</th>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.date')}</th>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.proof')}</th>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.status')}</th>
-                                <th style={{ padding: '1rem', textAlign: 'center' }}>{t('events.submissions.details')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'center' }}>Inscrição</th>
                                 <th style={{ padding: '1rem', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
                             </tr>
                         </thead>
@@ -157,11 +173,17 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                             {filteredSubmissions.map(submission => (
                                 <tr key={submission._id} style={{ borderBottom: '1px solid #eee' }}>
                                     <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 700 }}>{getMainIdentifier(submission.data)}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#999' }}>{getEmailIdentifier(submission.data)}</div>
+                                        <div style={{ fontWeight: 700, color: '#000' }}>{getMainIdentifier(submission.data)}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>{getEmailIdentifier(submission.data) || '---'}</div>
                                     </td>
                                     <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{submission.form.title}</div>
+                                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#333' }}>
+                                            {getPhoneIdentifier(submission.data) || '---'}
+                                        </div>
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{submission.form.title}</div>
+                                        <div style={{ fontSize: '0.7rem', color: '#999' }}>/{submission.form.slug}</div>
                                     </td>
                                     <td style={{ padding: '1rem', fontSize: '0.85rem', color: '#666' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -197,12 +219,14 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             onClick={() => setSelectedSubmission(submission)}
                                             style={{
                                                 display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                padding: '0.4rem 0.8rem', borderRadius: '6px',
-                                                border: '1px solid #FFD700', background: 'rgba(255,215,0,0.05)',
-                                                color: '#B8860B', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                                padding: '0.5rem 1rem', borderRadius: '8px',
+                                                border: 'none', background: '#000',
+                                                color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                                                textTransform: 'uppercase', letterSpacing: '0.5px'
                                             }}
                                         >
-                                            <FileText size={14} /> {t('events.submissions.viewData')}
+                                            <FileText size={14} /> DETALHES
                                         </button>
                                     </td>
                                     <td style={{ padding: '1rem', textAlign: 'right' }}>
@@ -261,27 +285,59 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>
                                         {t('events.submissions.details')}
                                     </h3>
-                                    <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>
-                                        Recebido em {formatDate(selectedSubmission.submittedAt)}
+                                    <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>
+                                        {selectedSubmission.form.title}
+                                    </p>
+                                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>
+                                        #{selectedSubmission._id.slice(-8).toUpperCase()} • {formatDate(selectedSubmission.submittedAt)}
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() => setSelectedSubmission(null)}
-                                    style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                    <XCircle size={20} />
-                                </button>
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <button
+                                        onClick={() => {
+                                            const text = Object.entries(selectedSubmission.data || {})
+                                                .map(([k, v]) => `${k}: ${v}`).join('\n');
+                                            navigator.clipboard.writeText(text);
+                                            toast.success('Dados copiados!');
+                                        }}
+                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 700 }}
+                                    >
+                                        <Copy size={14} /> COPIAR
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedSubmission(null)}
+                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        <XCircle size={20} />
+                                    </button>
+                                </div>
                             </div>
 
                             <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
-                                        <div key={key} style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
-                                            <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.3rem', letterSpacing: '0.5px' }}>
-                                                {key}
-                                            </label>
-                                            <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>
-                                                {String(value)}
+                                        <div key={key} style={{ padding: '1.2rem', background: '#f8f9fa', borderRadius: '16px', border: '1px solid #eee', position: 'relative' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
+                                                        {key}
+                                                    </label>
+                                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
+                                                        {String(value)}
+                                                    </div>
+                                                </div>
+
+                                                {(key.toLowerCase().includes('tel') || key.toLowerCase().includes('cel') || key.toLowerCase().includes('phone') || key.toLowerCase().includes('zap') || key.toLowerCase().includes('contato')) && (
+                                                    <a
+                                                        href={`https://wa.me/${String(value).replace(/\D/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ background: '#25D366', color: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        title="Chamar no WhatsApp"
+                                                    >
+                                                        <MessageCircle size={18} />
+                                                    </a>
+                                                )}
                                             </div>
                                         </div>
                                     ))}

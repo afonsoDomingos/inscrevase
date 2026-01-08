@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, X } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, X, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SubmissionList() {
@@ -131,12 +131,13 @@ export default function SubmissionList() {
                                         onClick={() => setSelectedSubmission(sub)}
                                         style={{
                                             display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                            padding: '0.4rem 0.8rem', borderRadius: '6px',
-                                            border: '1px solid #FFD700', background: 'rgba(255,215,0,0.05)',
-                                            color: '#B8860B', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                            padding: '0.4rem 0.8rem', borderRadius: '8px',
+                                            border: 'none', background: '#000',
+                                            color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                            textTransform: 'uppercase', letterSpacing: '0.5px'
                                         }}
                                     >
-                                        <FileText size={14} /> Ver Dados
+                                        <FileText size={14} /> DETALHES
                                     </button>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
@@ -186,17 +187,37 @@ export default function SubmissionList() {
                             <div style={{ padding: '1.5rem 2rem', background: '#000', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
                                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Dados de Inscrição</h3>
-                                    <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>Admin Review Mode</p>
+                                    <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>{selectedSubmission.form?.title}</p>
                                 </div>
-                                <button onClick={() => setSelectedSubmission(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer' }}><X size={20} /></button>
+                                <button onClick={() => setSelectedSubmission(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
                             </div>
 
                             <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
-                                        <div key={key} style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
-                                            <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.3rem' }}>{key}</label>
-                                            <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>{String(value)}</div>
+                                        <div key={key} style={{ padding: '1.2rem', background: '#f8f9fa', borderRadius: '16px', border: '1px solid #eee' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
+                                                        {key}
+                                                    </label>
+                                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
+                                                        {String(value)}
+                                                    </div>
+                                                </div>
+
+                                                {(key.toLowerCase().includes('tel') || key.toLowerCase().includes('cel') || key.toLowerCase().includes('phone') || key.toLowerCase().includes('zap') || key.toLowerCase().includes('contato')) && (
+                                                    <a
+                                                        href={`https://wa.me/${String(value).replace(/\D/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ background: '#25D366', color: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        title="Chamar no WhatsApp"
+                                                    >
+                                                        <MessageCircle size={18} />
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
