@@ -42,7 +42,7 @@ export default function MentorsShowcase() {
 
             {/* Hero Section - Upgraded Aesthetics */}
             <section style={{
-                padding: '80px 20px 60px',
+                padding: '120px 20px 60px',
                 background: '#0a0a0a',
                 color: '#fff',
                 textAlign: 'center',
