@@ -75,7 +75,7 @@ export default function MentorProfilePage() {
 
             {/* Premium Cinematic Header */}
             <div style={{
-                height: '350px',
+                height: '250px',
                 background: '#0a0a0a',
                 position: 'relative',
                 overflow: 'hidden',
@@ -125,19 +125,26 @@ export default function MentorProfilePage() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             style={{
-                                width: '200px', height: '200px', borderRadius: '32px',
-                                overflow: 'hidden', border: '5px solid rgba(255,255,255,0.1)',
-                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)', background: '#111',
-                                flexShrink: 0, position: 'relative', top: '100px'
+                                width: '220px', height: '220px', borderRadius: '50%',
+                                padding: '6px', background: 'var(--gold-gradient)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                                flexShrink: 0, position: 'relative', top: '110px',
+                                zIndex: 10
                             }}
                         >
-                            {mentor.profilePhoto ? (
-                                <Image src={mentor.profilePhoto} alt={mentor.name} fill style={{ objectFit: 'cover' }} priority />
-                            ) : (
-                                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', fontSize: '6rem', fontWeight: 900 }}>
-                                    {mentor.name.charAt(0)}
-                                </div>
-                            )}
+                            <div style={{
+                                width: '100%', height: '100%', borderRadius: '50%',
+                                overflow: 'hidden', border: '4px solid #fff',
+                                background: '#111', position: 'relative'
+                            }}>
+                                {mentor.profilePhoto ? (
+                                    <Image src={mentor.profilePhoto} alt={mentor.name} fill style={{ objectFit: 'cover' }} priority />
+                                ) : (
+                                    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', color: '#FFD700', fontSize: '6rem', fontWeight: 900 }}>
+                                        {mentor.name.charAt(0)}
+                                    </div>
+                                )}
+                            </div>
                         </motion.div>
 
                         <motion.div

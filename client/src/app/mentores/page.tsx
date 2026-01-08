@@ -42,7 +42,7 @@ export default function MentorsShowcase() {
 
             {/* Hero Section - Upgraded Aesthetics */}
             <section style={{
-                padding: '140px 20px 80px',
+                padding: '100px 20px 60px',
                 background: '#0a0a0a',
                 color: '#fff',
                 textAlign: 'center',
@@ -101,11 +101,11 @@ export default function MentorsShowcase() {
                     </div>
 
                     <h1 style={{
-                        fontSize: '4.5rem',
+                        fontSize: '3.5rem',
                         fontFamily: 'var(--font-playfair)',
                         fontWeight: 900,
-                        marginBottom: '1.5rem',
-                        lineHeight: 1.05,
+                        marginBottom: '1rem',
+                        lineHeight: 1.1,
                         letterSpacing: '-1px',
                         color: '#fff'
                     }}>
@@ -113,11 +113,11 @@ export default function MentorsShowcase() {
                     </h1>
 
                     <p style={{
-                        fontSize: '1.25rem',
-                        color: '#999',
-                        marginBottom: '3.5rem',
-                        maxWidth: '650px',
-                        margin: '0 auto 3.5rem',
+                        fontSize: '1.1rem',
+                        color: '#888',
+                        marginBottom: '2.5rem',
+                        maxWidth: '600px',
+                        margin: '0 auto 2.5rem',
                         lineHeight: 1.6
                     }}>
                         {t('mentors.subtitle')}
@@ -144,12 +144,12 @@ export default function MentorsShowcase() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{
                                 width: '100%',
-                                padding: '1rem 1.5rem 1rem 3.5rem',
+                                padding: '0.8rem 1.2rem 0.8rem 3rem',
                                 borderRadius: '100px',
                                 border: 'none',
                                 background: 'transparent',
                                 color: '#fff',
-                                fontSize: '1.1rem',
+                                fontSize: '1rem',
                                 outline: 'none'
                             }}
                         />
@@ -161,11 +161,13 @@ export default function MentorsShowcase() {
                             background: 'var(--gold-gradient)',
                             border: 'none',
                             borderRadius: '100px',
-                            padding: '0 2rem',
+                            padding: '0 1.5rem',
                             color: '#000',
-                            fontWeight: 700,
+                            fontWeight: 800,
                             cursor: 'pointer',
-                            fontSize: '0.9rem'
+                            fontSize: '0.85rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
                         }}>
                             {t('common.search')}
                         </button>
@@ -207,31 +209,43 @@ export default function MentorsShowcase() {
                                     {filteredMentors.map((mentor, index) => (
                                         <motion.div
                                             key={mentor._id || mentor.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.1, duration: 0.5 }}
-                                            whileHover={{ y: -12 }}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: index * 0.05, duration: 0.4 }}
                                             style={{
                                                 background: '#fff',
-                                                borderRadius: '32px',
-                                                overflow: 'hidden',
-                                                boxShadow: '0 20px 50px rgba(0,0,0,0.06)',
-                                                border: '1px solid #f2f2f2',
+                                                borderRadius: '24px',
+                                                padding: '2rem 1.5rem',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
+                                                border: '1px solid #f0f0f0',
                                                 display: 'flex',
                                                 flexDirection: 'column',
-                                                height: '100%',
-                                                position: 'relative'
+                                                alignItems: 'center',
+                                                textAlign: 'center',
+                                                position: 'relative',
+                                                transition: 'all 0.3s ease'
                                             }}
+                                            whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}
                                         >
-                                            {/* Luxury Image Container */}
-                                            <div style={{ position: 'relative', height: '220px', width: '100%', padding: '10px' }}>
+                                            {/* Circular Profile Wrapper */}
+                                            <div style={{
+                                                position: 'relative',
+                                                width: '100px',
+                                                height: '100px',
+                                                marginBottom: '1.2rem',
+                                                padding: '4px',
+                                                background: 'var(--gold-gradient)',
+                                                borderRadius: '50%',
+                                                boxShadow: '0 8px 20px rgba(255,215,0,0.15)'
+                                            }}>
                                                 <div style={{
                                                     position: 'relative',
-                                                    height: '100%',
                                                     width: '100%',
-                                                    borderRadius: '20px',
+                                                    height: '100%',
+                                                    borderRadius: '50%',
                                                     overflow: 'hidden',
-                                                    background: '#f8f8f8'
+                                                    background: '#fff',
+                                                    border: '2px solid #fff'
                                                 }}>
                                                     {mentor.profilePhoto ? (
                                                         <Image
@@ -243,112 +257,111 @@ export default function MentorsShowcase() {
                                                     ) : (
                                                         <div style={{
                                                             height: '100%', display: 'flex', alignItems: 'center',
-                                                            justifyContent: 'center', background: 'var(--gold-gradient)',
-                                                            color: '#000', fontSize: '4rem', fontWeight: 900
+                                                            justifyContent: 'center', background: '#f5f5f5',
+                                                            color: '#000', fontSize: '2.5rem', fontWeight: 900
                                                         }}>
                                                             {mentor.name.charAt(0)}
                                                         </div>
                                                     )}
-
-                                                    {/* Premium Ribbon */}
-                                                    {mentor.plan === 'premium' && (
-                                                        <div style={{
-                                                            position: 'absolute',
-                                                            top: '1.5rem',
-                                                            right: '1.5rem',
-                                                            background: 'rgba(0,0,0,0.85)',
-                                                            color: '#FFD700',
-                                                            padding: '6px 14px',
-                                                            borderRadius: '100px',
-                                                            fontSize: '0.7rem',
-                                                            fontWeight: 800,
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '6px',
-                                                            backdropFilter: 'blur(8px)',
-                                                            border: '1px solid rgba(255,215,0,0.4)',
-                                                            zIndex: 10
-                                                        }}>
-                                                            <Star size={12} fill="#FFD700" /> ELITE
-                                                        </div>
-                                                    )}
                                                 </div>
+
+                                                {/* Elite Badge - Small & Elegant */}
+                                                {mentor.plan === 'premium' && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        bottom: '5px',
+                                                        right: '5px',
+                                                        background: '#0a0a0a',
+                                                        color: '#FFD700',
+                                                        width: '28px',
+                                                        height: '28px',
+                                                        borderRadius: '50%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        border: '2px solid #fff',
+                                                        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+                                                        zIndex: 2
+                                                    }}>
+                                                        <Star size={12} fill="#FFD700" />
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Showcase Body */}
-                                            <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.8rem' }}>
-                                                    <div>
-                                                        <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#111', marginBottom: '0.1rem', fontFamily: 'var(--font-playfair)' }}>
-                                                            {mentor.name}
-                                                        </h3>
-                                                        {mentor.businessName && (
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontWeight: 700, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                                                <Briefcase size={14} /> {mentor.businessName}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
+                                            <h3 style={{
+                                                fontSize: '1.25rem',
+                                                fontWeight: 800,
+                                                color: '#111',
+                                                marginBottom: '0.2rem',
+                                                fontFamily: 'var(--font-playfair)'
+                                            }}>
+                                                {mentor.name}
+                                            </h3>
 
-                                                <p style={{
-                                                    color: '#666',
-                                                    fontSize: '0.9rem',
-                                                    lineHeight: 1.6,
-                                                    display: '-webkit-box',
-                                                    WebkitLineClamp: 2,
-                                                    WebkitBoxOrient: 'vertical',
-                                                    overflow: 'hidden',
-                                                    marginBottom: '1.5rem'
-                                                }}>
-                                                    {mentor.bio || "Exclusividade e autoridade em cada mentoria."}
-                                                </p>
-
-                                                {/* Card Footer Info */}
+                                            {mentor.businessName && (
                                                 <div style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    marginTop: 'auto',
-                                                    paddingTop: '1.5rem',
-                                                    borderTop: '1px solid #f5f5f5'
+                                                    justifyContent: 'center',
+                                                    gap: '6px',
+                                                    color: '#FFD700',
+                                                    fontWeight: 700,
+                                                    fontSize: '0.75rem',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '1px',
+                                                    marginBottom: '1rem'
                                                 }}>
-                                                    <div style={{ display: 'flex', gap: '1.2rem' }}>
-                                                        {mentor.country && (
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: '#999', fontWeight: 500 }}>
-                                                                <Globe size={14} className="gold-text" /> {mentor.country}
-                                                            </div>
-                                                        )}
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: '#999', fontWeight: 500 }}>
-                                                            <Calendar size={14} className="gold-text" /> {new Date(mentor.createdAt || Date.now()).getFullYear()}
-                                                        </div>
-                                                    </div>
-
-                                                    <Link
-                                                        href={`/mentores/${mentor.id || mentor._id}`}
-                                                        style={{
-                                                            width: '44px',
-                                                            height: '44px',
-                                                            background: '#0a0a0a',
-                                                            color: '#FFD700',
-                                                            borderRadius: '50%',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            transition: 'all 0.3s',
-                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                                        }}
-                                                        onMouseOver={(e) => {
-                                                            (e.currentTarget as HTMLAnchorElement).style.background = '#000';
-                                                            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.1)';
-                                                        }}
-                                                        onMouseOut={(e) => {
-                                                            (e.currentTarget as HTMLAnchorElement).style.background = '#0a0a0a';
-                                                            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)';
-                                                        }}
-                                                    >
-                                                        <ChevronRight size={20} />
-                                                    </Link>
+                                                    {mentor.businessName}
                                                 </div>
+                                            )}
+
+                                            <p style={{
+                                                color: '#777',
+                                                fontSize: '0.85rem',
+                                                lineHeight: 1.5,
+                                                marginBottom: '1.5rem',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 3,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                                minHeight: '4.5em'
+                                            }}>
+                                                {mentor.bio || "Autoridade e excelência em cada mentoria realizada pela nossa rede de especialistas."}
+                                            </p>
+
+                                            {/* Action Button - Subtle & Integrated */}
+                                            <div style={{ marginTop: 'auto', width: '100%' }}>
+                                                <Link
+                                                    href={`/mentores/${mentor.id || mentor._id}`}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px',
+                                                        padding: '0.8rem 1.5rem',
+                                                        background: '#fcfcfc',
+                                                        color: '#1a1a1a',
+                                                        borderRadius: '100px',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: 700,
+                                                        textDecoration: 'none',
+                                                        border: '1px solid #eee',
+                                                        transition: 'all 0.3s'
+                                                    }}
+                                                    onMouseOver={(e) => {
+                                                        (e.currentTarget as HTMLAnchorElement).style.background = '#0a0a0a';
+                                                        (e.currentTarget as HTMLAnchorElement).style.color = '#fff';
+                                                        (e.currentTarget as HTMLAnchorElement).style.borderColor = '#0a0a0a';
+                                                    }}
+                                                    onMouseOut={(e) => {
+                                                        (e.currentTarget as HTMLAnchorElement).style.background = '#fcfcfc';
+                                                        (e.currentTarget as HTMLAnchorElement).style.color = '#1a1a1a';
+                                                        (e.currentTarget as HTMLAnchorElement).style.borderColor = '#eee';
+                                                    }}
+                                                >
+                                                    {t('common.viewProfile')} <ChevronRight size={16} />
+                                                </Link>
                                             </div>
                                         </motion.div>
                                     ))}
