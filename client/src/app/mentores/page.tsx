@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, ChevronRight, Loader2, Star, Globe, Users, Briefcase, Award, Eye } from 'lucide-react';
+import { Search, ChevronRight, Loader2, Star, Users, Award, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';

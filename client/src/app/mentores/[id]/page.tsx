@@ -7,7 +7,7 @@ import { UserData } from '@/lib/authService';
 import { motion } from 'framer-motion';
 import {
     Instagram, Linkedin, Facebook, Globe, MessageCircle,
-    Award, Verified, Briefcase, ExternalLink, Users, Heart, UserPlus, UserMinus,
+    Award, Verified, Briefcase, ExternalLink, Users, UserPlus, UserMinus,
     MapPin, Calendar, ChevronLeft, Loader2, Eye
 } from 'lucide-react';
 import Image from 'next/image';
