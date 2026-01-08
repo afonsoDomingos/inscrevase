@@ -75,12 +75,11 @@ export default function MentorProfilePage() {
 
             {/* Premium Cinematic Header */}
             <div style={{
-                height: '200px',
+                padding: '120px 0 40px',
                 background: '#0a0a0a',
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
                 borderBottom: '2px solid #FFD700',
                 boxShadow: '0 5px 20px rgba(255,215,0,0.1)'
             }}>
@@ -129,7 +128,7 @@ export default function MentorProfilePage() {
                                 width: '160px', height: '160px', borderRadius: '50%',
                                 padding: '4px', background: 'var(--gold-gradient)',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                                flexShrink: 0, position: 'relative', top: '80px',
+                                flexShrink: 0, position: 'relative', top: '70px',
                                 zIndex: 10
                             }}
                         >
