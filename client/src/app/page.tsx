@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { ArrowRight, CheckCircle, Palette, Zap, ShieldCheck, BarChart3, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -35,64 +36,120 @@ export default function Home() {
     }
   };
 
+  const [videoSrc, setVideoSrc] = useState("/banner3.mp4");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setVideoSrc("/banner.mp4");
+      } else {
+        setVideoSrc("/banner3.mp4");
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <main style={{ backgroundColor: '#fff', overflow: 'hidden' }}>
       <Navbar />
 
-      {/* Hero Section with Mesh Gradient Background */}
+      {/* Hero Section with Video Background */}
       <section className="hero" style={{
         position: 'relative',
-        minHeight: '100vh',
-        background: 'radial-gradient(circle at 0% 0%, rgba(255,215,0,0.15) 0%, transparent 40%), radial-gradient(circle at 100% 100%, rgba(255,215,0,0.1) 0%, transparent 40%), #000',
+        minHeight: '85vh',
+        background: '#000',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        padding: '120px 20px 60px'
+        padding: '100px 20px 40px',
+        overflow: 'hidden'
       }}>
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          key={videoSrc}
+          poster="/hero-bg.png"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+            opacity: 0.6 // Controlled opacity for better text readability
+          }}
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+
+        {/* Gradient Overlay for Sophistication */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%)',
+          zIndex: 1
+        }} />
+
+        {/* Moving Spotlight Effect (Kept as secondary layer) */}
+        <motion.div
+          animate={{
+            x: ['-100%', '100%'],
+            opacity: [0, 0.2, 0]
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '50%',
+            height: '100%',
+            background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)',
+            transform: 'skewX(-20deg)',
+            pointerEvents: 'none',
+            zIndex: 2
+          }}
+        />
+
         {/* Animated Background Elements */}
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', opacity: 0.4 }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', opacity: 0.5, zIndex: 1 }}>
           <motion.div
             animate={{
               scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-              x: [0, 50, 0],
-              y: [0, -50, 0]
+              x: [0, 100, 0],
+              y: [0, 50, 0]
             }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            style={{ position: 'absolute', top: '10%', left: '10%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', borderRadius: '50%' }}
-          />
-          <motion.div
-            animate={{
-              scale: [1.2, 1, 1.2],
-              rotate: [0, -90, 0],
-              x: [0, -30, 0],
-              y: [0, 40, 0]
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            style={{ position: 'absolute', bottom: '10%', right: '5%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, rgba(255,215,0,0.08) 0%, transparent 70%)', borderRadius: '50%' }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: 'absolute', top: '-10%', left: '10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(255,215,0,0.12) 0%, transparent 70%)', borderRadius: '50%' }}
           />
         </div>
 
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             <span style={{
               color: '#FFD700',
               textTransform: 'uppercase',
-              letterSpacing: '4px',
-              fontSize: '0.8rem',
+              letterSpacing: '5px',
+              fontSize: '0.75rem',
               fontWeight: 700,
               display: 'block',
-              marginBottom: '1.5rem'
+              marginBottom: '1rem'
             }}>
               ✨ {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
             </span>
-            <h1 className="hero-title" style={{ fontSize: 'clamp(3rem, 10vw, 6rem)', color: '#fff', marginBottom: '2rem' }}>
-              <span style={{ display: 'block', fontWeight: 300 }}>{t('landing.hero.title1')}</span>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 3.8rem)', color: '#fff', marginBottom: '1.5rem', lineHeight: 1.2 }}>
+              <span style={{ fontWeight: 300 }}>{t('landing.hero.title1')}</span>
               <span className="gold-text luxury-shimmer" style={{ display: 'block', fontWeight: 900 }}>{t('landing.hero.title2')}</span>
             </h1>
             <p style={{
