@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, ChevronRight, Loader2, Star, Globe, Users, Briefcase, Award } from 'lucide-react';
+import { Search, Calendar, ChevronRight, Loader2, Star, Globe, Users, Briefcase, Award, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -319,19 +319,25 @@ export default function MentorsShowcase() {
                                                 </div>
                                             )}
 
-                                            {/* Followers Indicator */}
+                                            {/* Social Stats Indicator */}
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                gap: '5px',
+                                                gap: '15px',
                                                 fontSize: '0.8rem',
                                                 color: '#888',
                                                 fontWeight: 600,
                                                 marginBottom: '1rem'
                                             }}>
-                                                <Users size={14} className="gold-text" />
-                                                <span>{mentor.followers?.length || 0} Seguidores</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                    <Users size={14} className="gold-text" />
+                                                    <span>{mentor.followers?.length || 0} Seguidores</span>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                    <Eye size={14} className="gold-text" />
+                                                    <span>{mentor.profileVisits || 0} Visitas</span>
+                                                </div>
                                             </div>
 
                                             <p style={{

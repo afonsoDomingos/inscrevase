@@ -130,7 +130,7 @@ const deleteByAdmin = async (req, res) => {
 const getPublicMentors = async (req, res) => {
     try {
         const mentors = await User.find({ role: 'mentor', status: 'active', isPublic: true })
-            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following')
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits')
             .sort({ createdAt: -1 });
         res.json(mentors);
     } catch (err) {
@@ -140,8 +140,11 @@ const getPublicMentors = async (req, res) => {
 
 const getPublicMentorById = async (req, res) => {
     try {
-        const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active', isPublic: true })
-            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following');
+        const mentor = await User.findOneAndUpdate(
+            { _id: req.params.id, role: 'mentor', status: 'active', isPublic: true },
+            { $inc: { profileVisits: 1 } },
+            { new: true }
+        ).select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits');
 
         if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
 

@@ -25,6 +25,7 @@ export interface UserData {
     isPublic?: boolean;
     followers?: string[];
     following?: string[];
+    profileVisits?: number;
     createdAt?: string;
     authProvider?: 'google' | 'linkedin' | 'native';
 }

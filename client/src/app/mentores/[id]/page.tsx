@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import {
     Instagram, Linkedin, Facebook, Globe, MessageCircle,
     Award, Verified, Briefcase, ExternalLink, Users, Heart, UserPlus, UserMinus,
-    MapPin, Calendar, ChevronLeft, Loader2
+    MapPin, Calendar, ChevronLeft, Loader2, Eye
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
@@ -210,6 +210,9 @@ export default function MentorProfilePage() {
                                 )}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFD700', fontWeight: 700, fontSize: '1.1rem' }}>
                                     <Users size={18} /> {followersCount} {t('common.followers') || 'Seguidores'}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: '1.1rem' }}>
+                                    <Eye size={18} className="gold-text" /> {mentor.profileVisits || 0} {t('common.visits') || 'Visitas'}
                                 </div>
                             </div>
 
