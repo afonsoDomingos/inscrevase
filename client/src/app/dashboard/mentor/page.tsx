@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
+import { useRouter } from 'next/navigation';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings';
 
 export default function MentorDashboard() {
     const { t } = useTranslate();
+    const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [forms, setForms] = useState<FormModel[]>([]);
@@ -69,6 +71,10 @@ export default function MentorDashboard() {
             setForms(formsData);
         } catch (error: unknown) {
             console.error("Dashboard error:", error);
+            // If unauthorized, redirect to login
+            if (error instanceof Error && (error.message.includes('401') || error.message.includes('Falha ao buscar perfil'))) {
+                router.push('/entrar');
+            }
         } finally {
             setLoading(false);
         }

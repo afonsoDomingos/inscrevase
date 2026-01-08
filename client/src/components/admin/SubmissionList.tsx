@@ -81,8 +81,8 @@ export default function SubmissionList() {
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem' }}>
-                                    <div style={{ fontWeight: 600 }}>{String(sub.data['nome'] || sub.data['name'] || 'Sem Nome')}</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{String(sub.data['email'] || 'Sem Email')}</div>
+                                    <div style={{ fontWeight: 600 }}>{String(sub.data?.['nome'] || sub.data?.['name'] || 'Sem Nome')}</div>
+                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{String(sub.data?.['email'] || 'Sem Email')}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{sub.form?.title || 'Form Removido'}</div>
@@ -181,7 +181,7 @@ export default function SubmissionList() {
 
                             <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    {Object.entries(selectedSubmission.data).map(([key, value]) => (
+                                    {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
                                         <div key={key} style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
                                             <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.3rem' }}>{key}</label>
                                             <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>{String(value)}</div>

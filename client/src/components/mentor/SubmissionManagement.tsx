@@ -47,6 +47,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     };
 
     const getMainIdentifier = (data: Record<string, any>) => {
+        if (!data) return t('events.noIdentification');
         // Try to find a name field, otherwise first value
         const keys = Object.keys(data);
         const nameKey = keys.find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
@@ -72,10 +73,11 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     };
 
     const filteredSubmissions = submissions.filter(s => {
-        const matchesForm = formId ? s.form._id === formId : true;
+        const matchesForm = formId ? s.form?._id === formId : true;
         const matchesStatus = filterStatus === 'all' || s.status === filterStatus;
         const identifier = String(getMainIdentifier(s.data)).toLowerCase();
-        const matchesSearch = identifier.includes(searchTerm.toLowerCase()) || s.form.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = identifier.includes(searchTerm.toLowerCase()) ||
+            (s.form?.title || '').toLowerCase().includes(searchTerm.toLowerCase());
         return matchesForm && matchesStatus && matchesSearch;
     });
 
@@ -259,7 +261,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
                             <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    {Object.entries(selectedSubmission.data).map(([key, value]) => (
+                                    {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
                                         <div key={key} style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
                                             <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.3rem', letterSpacing: '0.5px' }}>
                                                 {key}

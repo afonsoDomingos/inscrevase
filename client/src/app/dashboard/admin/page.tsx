@@ -10,6 +10,7 @@ import SupportTicketList from '@/components/admin/SupportTicketList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -19,6 +20,7 @@ type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support';
 
 export default function AdminDashboard() {
     const { t } = useTranslate();
+    const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -36,6 +38,9 @@ export default function AdminDashboard() {
                 setStats(statsData);
             } catch (err) {
                 console.error("Dashboard error:", err);
+                if (err instanceof Error && (err.message.includes('401') || err.message.includes('perfil'))) {
+                    router.push('/entrar');
+                }
             } finally {
                 setLoading(false);
             }
