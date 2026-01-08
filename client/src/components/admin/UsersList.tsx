@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search, Pencil } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 
@@ -79,6 +79,7 @@ export default function UsersList() {
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', color: '#666' }}>Nome</th>
+                            <th style={{ padding: '1rem', color: '#666' }}>Origem</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Cargo</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Plano</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Status</th>
@@ -97,6 +98,23 @@ export default function UsersList() {
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontWeight: 600 }}>{user.name}</div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{user.email}</div>
+                                </td>
+                                <td style={{ padding: '1rem' }}>
+                                    {user.authProvider === 'linkedin' && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0077b5', fontSize: '0.8rem', fontWeight: 600 }}>
+                                            <Linkedin size={14} /> LinkedIn
+                                        </div>
+                                    )}
+                                    {user.authProvider === 'google' && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#db4437', fontSize: '0.8rem', fontWeight: 600 }}>
+                                            <Chrome size={14} /> Google
+                                        </div>
+                                    )}
+                                    {(user.authProvider === 'native' || !user.authProvider) && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.8rem', fontWeight: 600 }}>
+                                            <Mail size={14} /> E-mail
+                                        </div>
+                                    )}
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <span style={{

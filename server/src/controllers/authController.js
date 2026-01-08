@@ -66,7 +66,14 @@ const updateProfile = async (req, res) => {
 const getUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ createdAt: -1 });
-        res.json(users);
+
+        // Add authProvider for admin insights
+        const usersWithProvider = users.map(user => ({
+            ...user._doc,
+            authProvider: user.linkedinId ? 'linkedin' : (user.googleId ? 'google' : 'native')
+        }));
+
+        res.json(usersWithProvider);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }

@@ -13,6 +13,7 @@ import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashbo
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
+import { Chrome, Linkedin, Mail } from 'lucide-react';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support';
 
@@ -264,6 +265,56 @@ export default function AdminDashboard() {
                                         <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{card.value}</h2>
                                     </motion.div>
                                 ))}
+                            </div>
+
+                            {/* Data is Power Section */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '3rem' }}>
+                                <div className="luxury-card" style={{ background: '#fff', padding: '2rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Database className="gold-text" size={20} /> Distribuição por Origem
+                                    </h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                                        {[
+                                            { label: 'E-mail Nativo', count: stats?.authStats?.native || 0, icon: <Mail size={16} />, color: '#666' },
+                                            { label: 'Google Auth', count: stats?.authStats?.google || 0, icon: <Chrome size={16} />, color: '#db4437' },
+                                            { label: 'LinkedIn Connect', count: stats?.authStats?.linkedin || 0, icon: <Linkedin size={16} />, color: '#0077b5' }
+                                        ].map((item, idx) => {
+                                            const total = (stats?.authStats?.native || 0) + (stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0);
+                                            const percentage = total > 0 ? (item.count / total) * 100 : 0;
+                                            return (
+                                                <div key={idx}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: item.color }}>
+                                                            {item.icon} {item.label}
+                                                        </div>
+                                                        <span style={{ fontWeight: 700 }}>{item.count} ({Math.round(percentage)}%)</span>
+                                                    </div>
+                                                    <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '10px', overflow: 'hidden' }}>
+                                                        <motion.div
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${percentage}%` }}
+                                                            transition={{ duration: 1, delay: idx * 0.2 }}
+                                                            style={{ height: '100%', background: item.color }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className="luxury-card" style={{ background: 'var(--gold-gradient)', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', color: '#000' }}>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>💡 Insight de Crescimento</h3>
+                                    <p style={{ fontSize: '1rem', lineHeight: 1.5, opacity: 0.9 }}>
+                                        {(stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0) > (stats?.authStats?.native || 0)
+                                            ? "O login social está dominando! Considere simplificar ainda mais o fluxo removendo campos desnecessários no cadastro nativo."
+                                            : "A maioria prefere o e-mail tradicional. Pode ser uma boa oportunidade para destacar os benefícios de um clique dos logins sociais."
+                                        }
+                                    </p>
+                                    <div style={{ marginTop: '1.5rem', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <TrendingUp size={16} /> Dado é poder. Use com sabedoria.
+                                    </div>
+                                </div>
                             </div>
 
                             <div style={{ marginTop: '2.5rem' }}>

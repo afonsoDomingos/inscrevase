@@ -12,11 +12,22 @@ exports.getAdminStats = async (req, res) => {
         // For "growth", we can calculate based on last 30 days vs previous 30 days
         // but for now let's just return real counts
 
+        // Auth distribution stats
+        const googleUsers = await User.countDocuments({ googleId: { $ne: null } });
+        const linkedinUsers = await User.countDocuments({ linkedinId: { $ne: null } });
+        const totalUsers = await User.countDocuments();
+        const nativeUsers = totalUsers - googleUsers - linkedinUsers;
+
         res.json({
             mentors: totalMentors,
             forms: totalForms,
             submissions: totalSubmissions,
-            approved: approvedSubmissions
+            approved: approvedSubmissions,
+            authStats: {
+                google: googleUsers,
+                linkedin: linkedinUsers,
+                native: Math.max(0, nativeUsers)
+            }
         });
     } catch (err) {
         res.status(500).json({ message: 'Error fetching stats' });

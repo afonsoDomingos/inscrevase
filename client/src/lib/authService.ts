@@ -23,6 +23,7 @@ export interface UserData {
     status?: 'active' | 'blocked';
     plan?: 'free' | 'premium';
     createdAt?: string;
+    authProvider?: 'google' | 'linkedin' | 'native';
 }
 
 export interface RegisterData {
