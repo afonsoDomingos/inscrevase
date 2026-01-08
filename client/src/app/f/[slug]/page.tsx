@@ -156,8 +156,8 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', paddingTop: '100px', paddingBottom: '100px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1fr', gap: '4rem', alignItems: 'start' }}>
+                    <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px' }}>
+                        <div className="responsive-form-grid">
 
                             {/* Left Side: Info */}
                             <motion.div
@@ -178,7 +178,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 )}
 
                                 <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
-                                <h1 style={{ fontSize: '3rem', fontWeight: 900, marginTop: '0.5rem', marginBottom: '1.5rem', lineHeight: '1.1', color: textColor }}>
+                                <h1 style={{
+                                    fontSize: 'clamp(2rem, 8vw, 3.5rem)',
+                                    fontWeight: 900,
+                                    marginTop: '0.5rem',
+                                    marginBottom: '1.5rem',
+                                    lineHeight: '1.1',
+                                    color: textColor
+                                }}>
                                     {form.title}
                                 </h1>
 
@@ -308,10 +315,21 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                 <select
                                                     required={field.required}
                                                     onChange={(e) => handleInputChange(field.id, e.target.value)}
-                                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '1rem',
+                                                        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                                        border: `1px solid ${borderColor}`,
+                                                        borderRadius: '12px',
+                                                        color: textColor,
+                                                        outline: 'none',
+                                                        appearance: 'none'
+                                                    }}
                                                 >
-                                                    <option value="">{t('form.select')}</option>
-                                                    {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                    <option value="" style={{ background: bgColor, color: textColor }}>{t('form.select')}</option>
+                                                    {field.options?.map(opt => (
+                                                        <option key={opt} value={opt} style={{ background: bgColor, color: textColor }}>{opt}</option>
+                                                    ))}
                                                 </select>
                                             ) : (
                                                 <input
@@ -319,7 +337,15 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     required={field.required}
                                                     placeholder={`${t('form.your')} ${field.label.toLowerCase()}...`}
                                                     onChange={(e) => handleInputChange(field.id, e.target.value)}
-                                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '1rem',
+                                                        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                                        border: `1px solid ${borderColor}`,
+                                                        borderRadius: '12px',
+                                                        color: textColor,
+                                                        outline: 'none'
+                                                    }}
                                                 />
                                             )}
                                         </div>

@@ -321,6 +321,14 @@ h6 {
   .section {
     padding: 4rem 0;
   }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .luxury-card {
+    padding: 1.5rem;
+  }
 }
 
 .glass-card {
@@ -362,5 +370,19 @@ h6 {
 
   to {
     transform: rotate(360deg);
+  }
+}
+
+.responsive-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .responsive-form-grid {
+    grid-template-columns: minmax(300px, 1.2fr) 1fr;
+    gap: 4rem;
   }
 }
