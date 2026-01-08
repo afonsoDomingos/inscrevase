@@ -29,6 +29,7 @@
         "viewPdf": "View PDF",
         "createEvent": "Create Event",
         "getStarted": "Start Now",
+        "seeExamples": "See Examples",
         "copyLinkSuccess": "Link copied to clipboard!",
         "updateStatusError": "Error updating status",
         "deleteFormError": "Error deleting event",

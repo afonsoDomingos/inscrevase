@@ -98,27 +98,28 @@ export default function Home() {
           zIndex: 1
         }} />
 
-        {/* Moving Spotlight Effect (Kept as secondary layer) */}
-        <motion.div
-          animate={{
-            x: ['-100%', '100%'],
-            opacity: [0, 0.2, 0]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '50%',
-            height: '100%',
-            background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)',
-            transform: 'skewX(-20deg)',
-            pointerEvents: 'none',
-            zIndex: 2
-          }}
+        {/* Moving Spotlight Effect (Temporarily Disabled)
+        <motion.div 
+           animate={{ 
+             x: ['-100%', '100%'],
+             opacity: [0, 0.2, 0]
+           }}
+           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+           style={{ 
+             position: 'absolute', 
+             top: 0, 
+             left: 0, 
+             width: '50%', 
+             height: '100%', 
+             background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)',
+             transform: 'skewX(-20deg)',
+             pointerEvents: 'none',
+             zIndex: 2
+           }} 
         />
+        */}
 
-        {/* Animated Background Elements */}
+        {/* Animated Background Elements (Temporarily Disabled)
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', opacity: 0.5, zIndex: 1 }}>
           <motion.div
             animate={{
@@ -130,6 +131,7 @@ export default function Home() {
             style={{ position: 'absolute', top: '-10%', left: '10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(255,215,0,0.12) 0%, transparent 70%)', borderRadius: '50%' }}
           />
         </div>
+        */}
 
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <motion.div
@@ -167,7 +169,7 @@ export default function Home() {
                 {t('common.getStarted')} <ArrowRight size={20} />
               </Link>
               <Link href="/mentores" style={{ padding: '1.2rem 3rem', borderRadius: '100px', fontSize: '1.1rem', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', textDecoration: 'none', fontWeight: 600, backdropFilter: 'blur(10px)', transition: 'all 0.3s' }}>
-                {t('common.seeExamples') || 'Ver Exemplos'}
+                {t('common.seeExamples')}
               </Link>
             </div>
           </motion.div>
