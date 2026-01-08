@@ -81,7 +81,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -96,6 +96,7 @@ const updateByAdmin = async (req, res) => {
         if (profilePhoto) user.profilePhoto = profilePhoto;
         if (whatsapp) user.whatsapp = whatsapp;
         if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks };
+        if (isPublic !== undefined) user.isPublic = isPublic;
 
         // Update password if provided
         if (password && password.trim() !== '') {
@@ -128,7 +129,7 @@ const deleteByAdmin = async (req, res) => {
 
 const getPublicMentors = async (req, res) => {
     try {
-        const mentors = await User.find({ role: 'mentor', status: 'active' })
+        const mentors = await User.find({ role: 'mentor', status: 'active', isPublic: true })
             .select('name businessName bio profilePhoto socialLinks country plan createdAt')
             .sort({ createdAt: -1 });
         res.json(mentors);
@@ -139,7 +140,7 @@ const getPublicMentors = async (req, res) => {
 
 const getPublicMentorById = async (req, res) => {
     try {
-        const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active' })
+        const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active', isPublic: true })
             .select('name businessName bio profilePhoto socialLinks country plan createdAt');
 
         if (!mentor) return res.status(404).json({ message: 'Mentor not found' });

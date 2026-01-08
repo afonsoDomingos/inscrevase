@@ -30,6 +30,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     const [whatsapp, setWhatsapp] = useState('');
     const [profilePhoto, setProfilePhoto] = useState('');
     const [password, setPassword] = useState(''); // New state for password reset
+    const [isPublic, setIsPublic] = useState(false);
     const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -43,6 +44,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
             setWhatsapp(user.whatsapp || '');
             setProfilePhoto(user.profilePhoto || '');
             setPassword(''); // Reset password field
+            setIsPublic(user.isPublic || false);
             setSocialLinks(user.socialLinks || {});
         }
     }, [user]);
@@ -78,7 +80,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 whatsapp,
                 profilePhoto,
                 socialLinks,
-                password // Include password in update
+                password, // Include password in update
+                isPublic
             });
             onSuccess();
             onClose();
@@ -205,6 +208,19 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             <option value="blocked">Bloqueado</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '10px', background: '#e6fffa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #b2f5ea' }}>
+                                    <input
+                                        type="checkbox"
+                                        id="isPublic"
+                                        checked={isPublic}
+                                        onChange={(e) => setIsPublic(e.target.checked)}
+                                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                    />
+                                    <label htmlFor="isPublic" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2c7a7b', cursor: 'pointer' }}>
+                                        Exibir perfil publicamente na aba Mentor
+                                    </label>
                                 </div>
                             </div>
 

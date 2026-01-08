@@ -22,6 +22,7 @@ export interface UserData {
     };
     status?: 'active' | 'blocked';
     plan?: 'free' | 'premium';
+    isPublic?: boolean;
     createdAt?: string;
     authProvider?: 'google' | 'linkedin' | 'native';
 }

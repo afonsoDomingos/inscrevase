@@ -82,6 +82,7 @@ export default function UsersList() {
                             <th style={{ padding: '1rem', color: '#666' }}>Origem</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Cargo</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Plano</th>
+                            <th style={{ padding: '1rem', color: '#666' }}>Visibilidade</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Status</th>
                             <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
                         </tr>
@@ -131,6 +132,19 @@ export default function UsersList() {
                                 <td style={{ padding: '1rem' }}>
                                     <span style={{ fontWeight: 500, color: user.plan === 'premium' ? '#38a169' : '#666' }}>
                                         {user.plan === 'premium' ? 'Premium' : 'Grátis'}
+                                    </span>
+                                </td>
+                                <td style={{ padding: '1rem' }}>
+                                    <span style={{
+                                        fontSize: '0.75rem',
+                                        fontWeight: 700,
+                                        padding: '0.3rem 0.6rem',
+                                        borderRadius: '6px',
+                                        background: user.isPublic ? '#e6fffa' : '#fff5f5',
+                                        color: user.isPublic ? '#2c7a7b' : '#c53030',
+                                        border: `1px solid ${user.isPublic ? '#b2f5ea' : '#fed7d7'}`
+                                    }}>
+                                        {user.isPublic ? 'Publicado' : 'Privado'}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
