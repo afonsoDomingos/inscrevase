@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, X, MessageCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, X, MessageCircle, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
@@ -189,7 +190,20 @@ export default function SubmissionList() {
                                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Dados de Inscrição</h3>
                                     <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>{selectedSubmission.form?.title}</p>
                                 </div>
-                                <button onClick={() => setSelectedSubmission(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <button
+                                        onClick={() => {
+                                            const text = Object.entries(selectedSubmission.data || {})
+                                                .map(([k, v]) => `${k}: ${v}`).join('\n');
+                                            navigator.clipboard.writeText(text);
+                                            toast.success('Dados copiados!');
+                                        }}
+                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 700 }}
+                                    >
+                                        <Copy size={14} /> COPIAR
+                                    </button>
+                                    <button onClick={() => setSelectedSubmission(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
+                                </div>
                             </div>
 
                             <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
