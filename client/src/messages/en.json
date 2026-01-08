@@ -51,7 +51,8 @@
         "contact": "Contact",
         "dashboard": "Dashboard",
         "profile": "Profile",
-        "settings": "Settings"
+        "settings": "Settings",
+        "mentors": "Explore Mentors"
     },
     "auth": {
         "signIn": "Sign In",
@@ -372,5 +373,19 @@
         "hypeTitle": "Hype Generator",
         "globalGuideTitle": "Global Guide",
         "error": "Sorry, I had a digital hiccup. Could you repeat that?"
+    },
+    "mentors": {
+        "title": "Mentor Elite",
+        "subtitle": "Connect with the top experts in our exclusive network.",
+        "searchPlaceholder": "Search mentor or business...",
+        "noMentors": "No mentors found with these criteria.",
+        "viewProfile": "View Profile",
+        "joinedIn": "Member since",
+        "specialist": "Specialist",
+        "location": "Location",
+        "events": "Active Events",
+        "bio": "About the Mentor",
+        "contact": "Contact",
+        "backToList": "Back to list"
     }
 }

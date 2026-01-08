@@ -126,4 +126,28 @@ const deleteByAdmin = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin };
+const getPublicMentors = async (req, res) => {
+    try {
+        const mentors = await User.find({ role: 'mentor', status: 'active' })
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt')
+            .sort({ createdAt: -1 });
+        res.json(mentors);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const getPublicMentorById = async (req, res) => {
+    try {
+        const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active' })
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt');
+
+        if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
+
+        res.json(mentor);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById };

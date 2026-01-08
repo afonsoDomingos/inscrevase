@@ -36,6 +36,9 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="nav-links">
+          <Link href="/mentores" style={{ color: '#1a1a1a', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}>
+            {t('nav.mentors')}
+          </Link>
           <LanguageSwitcher />
           {isLoggedIn ? (
             <>
@@ -64,6 +67,9 @@ export default function Navbar() {
       {isOpen && (
         <div className="mobile-menu">
           <div style={{ padding: '0 0.5rem' }}>
+            <Link href="/mentores" style={{ color: '#1a1a1a', fontWeight: 600, textDecoration: 'none', display: 'block', padding: '1rem 0' }} onClick={() => setIsOpen(false)}>
+              {t('nav.mentors')}
+            </Link>
             <LanguageSwitcher />
           </div>
           {isLoggedIn ? (

@@ -34,5 +34,17 @@ export const userService = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Falha ao excluir usuário');
+    },
+
+    async getPublicMentors(): Promise<UserData[]> {
+        const response = await fetch(`${API_URL}/auth/public/mentors`);
+        if (!response.ok) throw new Error('Falha ao buscar mentores');
+        return response.json();
+    },
+
+    async getPublicMentorById(id: string): Promise<UserData> {
+        const response = await fetch(`${API_URL}/auth/public/mentors/${id}`);
+        if (!response.ok) throw new Error('Falha ao buscar mentor');
+        return response.json();
     }
 };

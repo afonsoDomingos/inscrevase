@@ -51,7 +51,8 @@
         "contact": "Contato",
         "dashboard": "Painel",
         "profile": "Perfil",
-        "settings": "Configurações"
+        "settings": "Configurações",
+        "mentors": "Explorar Mentores"
     },
     "auth": {
         "signIn": "Entrar",
@@ -372,5 +373,19 @@
         "hypeTitle": "Gerador de Hype",
         "globalGuideTitle": "Guia Global",
         "error": "Desculpe, tive um soluço digital. Pode repetir?"
+    },
+    "mentors": {
+        "title": "Elite de Mentores",
+        "subtitle": "Conecte-se com os maiores especialistas da nossa rede exclusiva.",
+        "searchPlaceholder": "Buscar mentor ou negócio...",
+        "noMentors": "Nenhum mentor encontrado com esses critérios.",
+        "viewProfile": "Ver Perfil",
+        "joinedIn": "Membro desde",
+        "specialist": "Especialista",
+        "location": "Localização",
+        "events": "Eventos Ativos",
+        "bio": "Sobre o Mentor",
+        "contact": "Contactar",
+        "backToList": "Voltar à lista"
     }
 }
