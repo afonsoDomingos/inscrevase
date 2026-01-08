@@ -36,7 +36,8 @@ import {
     Palette,
     DollarSign,
     PieChart,
-    LifeBuoy
+    LifeBuoy,
+    Eye
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -474,6 +475,7 @@ export default function MentorDashboard() {
                                             <th style={{ padding: '1rem', color: '#666' }}>{t('dashboard.eventName')}</th>
                                             <th style={{ padding: '1rem', color: '#666' }}>{t('dashboard.status')}</th>
                                             <th style={{ padding: '1rem', color: '#666' }}>{t('dashboard.registrants')}</th>
+                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>{t('common.visits')}</th>
                                             <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>{t('dashboard.actions')}</th>
                                         </tr>
                                     </thead>
@@ -506,6 +508,11 @@ export default function MentorDashboard() {
                                                     {form.capacity && (
                                                         <div style={{ fontSize: '0.75rem', color: '#999' }}>{t('dashboard.goal')}: {form.capacity}</div>
                                                     )}
+                                                </td>
+                                                <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                                                        <Eye size={16} color="#B8860B" /> {form.visits || 0}
+                                                    </div>
                                                 </td>
                                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>

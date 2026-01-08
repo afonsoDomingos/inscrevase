@@ -77,6 +77,7 @@ export default function FormList() {
                             <th style={{ padding: '1rem', color: '#666' }}>Criador (Mentor)</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Status</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Data</th>
+                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Visitas</th>
                             <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
                         </tr>
                     </thead>
@@ -112,6 +113,11 @@ export default function FormList() {
                                 </td>
                                 <td style={{ padding: '1rem', color: '#888', fontSize: '0.85rem' }}>
                                     {new Date(form.createdAt).toLocaleDateString('pt-BR')}
+                                </td>
+                                <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.9rem', color: '#666', fontWeight: 600 }}>
+                                        <Eye size={14} /> {form.visits || 0}
+                                    </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe, X } from 'lucide-react';
+import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe, X, Eye } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -18,6 +18,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const visitRecorded = useRef(false);
+
+    useEffect(() => {
+        if (slug && !visitRecorded.current) {
+            formService.recordVisit(slug);
+            visitRecorded.current = true;
+        }
+    }, [slug]);
 
     useEffect(() => {
         const loadForm = async () => {
@@ -185,7 +193,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     </div>
                                 )}
 
-                                <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
+                                    {form.visits !== undefined && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: secondaryTextColor }}>
+                                            <Eye size={14} /> {form.visits + (visitRecorded.current ? 0 : 1)} {t('common.visits')}
+                                        </div>
+                                    )}
+                                </div>
                                 <h1 style={{
                                     fontSize: 'clamp(2rem, 8vw, 3.5rem)',
                                     fontWeight: 900,
@@ -322,7 +337,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                             {field.type === 'select' ? (
                                                 <select
                                                     required={field.required}
-                                                    onChange={(e) => handleInputChange(field.id, e.target.value)}
+                                                    onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                     style={{
                                                         width: '100%',
                                                         padding: '1rem',
@@ -344,7 +359,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     type={field.type}
                                                     required={field.required}
                                                     placeholder={`${t('form.your')} ${field.label.toLowerCase()}...`}
-                                                    onChange={(e) => handleInputChange(field.id, e.target.value)}
+                                                    onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                     style={{
                                                         width: '100%',
                                                         padding: '1rem',

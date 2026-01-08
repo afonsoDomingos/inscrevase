@@ -58,6 +58,7 @@ export interface FormModel {
     };
     createdAt: string;
     submissionCount?: number;
+    visits?: number;
 }
 
 export const formService = {
@@ -167,5 +168,13 @@ export const formService = {
         const response = await fetch(`${API_URL}/forms/mentor/${mentorId}`);
         if (!response.ok) throw new Error('Falha ao buscar eventos do mentor');
         return response.json();
+    },
+
+    async recordVisit(slug: string): Promise<void> {
+        try {
+            await fetch(`${API_URL}/forms/${slug}/visit`, { method: 'POST' });
+        } catch (err) {
+            console.error("Error recording form visit:", err);
+        }
     }
 };

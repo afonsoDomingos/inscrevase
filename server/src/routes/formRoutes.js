@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { createForm, getMyForms, getFormBySlug, updateForm, deleteForm, getAllFormsAdmin, getFormsByMentor } = require('../controllers/formController');
+const { createForm, getMyForms, getFormBySlug, updateForm, deleteForm, getAllFormsAdmin, getFormsByMentor, recordVisit } = require('../controllers/formController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 
 router.post('/', authMiddleware, createForm);
 router.get('/my-forms', authMiddleware, getMyForms);
 router.get('/all', authMiddleware, adminMiddleware, getAllFormsAdmin);
 router.get('/mentor/:mentorId', getFormsByMentor); // Public mentor events
+router.post('/:slug/visit', recordVisit); // Public visit recording
 router.get('/:slug', getFormBySlug); // Public route
 router.put('/:id', authMiddleware, updateForm);
 router.delete('/:id', authMiddleware, deleteForm);

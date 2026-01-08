@@ -52,6 +52,7 @@ const FormSchema = new mongoose.Schema({
         requireProof: { type: Boolean, default: false }
     },
     active: { type: Boolean, default: true },
+    visits: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

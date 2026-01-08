@@ -497,6 +497,23 @@ export default function MentorProfilePage() {
                                                         INSCRIÇÕES ABERTAS
                                                     </span>
                                                 </div>
+
+                                                <div style={{ position: 'absolute', bottom: '15px', left: '15px' }}>
+                                                    <span style={{
+                                                        background: 'rgba(0,0,0,0.4)',
+                                                        color: '#fff',
+                                                        padding: '4px 8px',
+                                                        borderRadius: '100px',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 600,
+                                                        backdropFilter: 'blur(5px)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}>
+                                                        <Eye size={12} /> {event.visits || 0}
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div style={{ padding: '1.5rem' }}>
                                                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem', color: '#111', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

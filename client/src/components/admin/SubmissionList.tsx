@@ -81,8 +81,20 @@ export default function SubmissionList() {
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem' }}>
-                                    <div style={{ fontWeight: 600 }}>{String(sub.data?.['nome'] || sub.data?.['name'] || 'Sem Nome')}</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{String(sub.data?.['email'] || 'Sem Email')}</div>
+                                    <div style={{ fontWeight: 600 }}>
+                                        {(() => {
+                                            const keys = Object.keys(sub.data || {});
+                                            const nameKey = keys.find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
+                                            return nameKey ? String(sub.data[nameKey]) : (keys[0] ? String(sub.data[keys[0]]) : 'Sem Nome');
+                                        })()}
+                                    </div>
+                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>
+                                        {(() => {
+                                            const keys = Object.keys(sub.data || {});
+                                            const emailKey = keys.find(k => k.toLowerCase().includes('email') || k.toLowerCase().includes('mail'));
+                                            return emailKey ? String(sub.data[emailKey]) : 'Sem Email';
+                                        })()}
+                                    </div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{sub.form?.title || 'Form Removido'}</div>

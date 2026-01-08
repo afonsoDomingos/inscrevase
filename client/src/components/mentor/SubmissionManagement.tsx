@@ -48,16 +48,30 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
     const getMainIdentifier = (data: Record<string, any>) => {
         if (!data) return t('events.noIdentification');
-        // Try to find a name field, otherwise first value
         const keys = Object.keys(data);
-        const nameKey = keys.find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
+        if (keys.length === 0) return t('events.noIdentification');
+
+        // Try to find a name field
+        const nameKey = keys.find(k =>
+            k.toLowerCase().includes('nome') ||
+            k.toLowerCase().includes('name') ||
+            k.toLowerCase() === 'n'
+        );
+
         if (nameKey) return data[nameKey];
         return data[keys[0]] || t('events.noIdentification');
     };
 
     const getEmailIdentifier = (data: Record<string, any>) => {
+        if (!data) return null;
         const keys = Object.keys(data);
-        const emailKey = keys.find(k => k.toLowerCase().includes('email') || k.toLowerCase().includes('mail'));
+
+        // Try to find an email field
+        const emailKey = keys.find(k =>
+            k.toLowerCase().includes('email') ||
+            k.toLowerCase().includes('mail')
+        );
+
         return emailKey ? data[emailKey] : null;
     };
 

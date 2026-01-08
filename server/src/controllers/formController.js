@@ -168,3 +168,19 @@ exports.getFormsByMentor = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+exports.recordVisit = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const form = await Form.findOneAndUpdate(
+            { slug },
+            { $inc: { visits: 1 } },
+            { new: true }
+        );
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+        res.json({ success: true, visits: form.visits });
+    } catch (err) {
+        console.error("Record form visit error:", err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
