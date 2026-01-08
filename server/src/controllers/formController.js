@@ -98,7 +98,13 @@ exports.updateForm = async (req, res) => {
         if (coverImage !== undefined) form.coverImage = coverImage;
         if (logo !== undefined) form.logo = logo;
         if (capacity !== undefined) form.capacity = capacity ? parseInt(capacity) : undefined;
-        if (whatsappConfig) form.whatsappConfig = whatsappConfig;
+        if (whatsappConfig) {
+            form.whatsappConfig = {
+                phoneNumber: whatsappConfig.phoneNumber || form.whatsappConfig?.phoneNumber,
+                message: whatsappConfig.message || form.whatsappConfig?.message,
+                communityUrl: whatsappConfig.communityUrl || form.whatsappConfig?.communityUrl
+            };
+        }
 
         // Handle Date Upgrade
         if (eventDate !== undefined) {
@@ -118,8 +124,8 @@ exports.updateForm = async (req, res) => {
         await form.save();
         res.json(form);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error("Update Form Error:", err);
+        res.status(500).json({ message: 'Erro ao atualizar formulário', error: err.message });
     }
 };
 

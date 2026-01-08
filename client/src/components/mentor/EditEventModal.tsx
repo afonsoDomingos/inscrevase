@@ -106,11 +106,14 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         setFields(fields.filter(f => f.id !== id));
     };
 
-    const handleFieldChange = (id: string, key: string, value: string | boolean) => {
+    const handleFieldChange = (id: string, key: string, value: string | boolean | string[]) => {
         setFields(fields.map(f => {
             if (f.id !== id) return f;
             if (key === 'required') {
                 return { ...f, required: value as boolean };
+            }
+            if (key === 'options') {
+                return { ...f, options: value as string[] };
             }
             // For other string fields
             return { ...f, [key]: value as string };
@@ -134,10 +137,24 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
     const handleSubmit = async () => {
         if (!title || !description) {
-            alert(t('common.fillRequiredFields'));
+            alert(t('events.fillTitleDescAlert'));
             setStep(1);
             return;
         }
+
+        // Validate Fields
+        const hasEmptyFields = fields.some(f => !f.label.trim());
+        if (hasEmptyFields) {
+            alert(t('events.emptyFieldsAlert'));
+            setStep(2);
+            return;
+        }
+
+        // Clean up fields (remove temporary id for existing fields or rename if needed)
+        const cleanedFields = fields.map(f => {
+            const { id, ...rest } = f;
+            return rest;
+        });
 
         setLoading(true);
         try {
@@ -146,7 +163,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 description,
                 eventDate,
                 capacity: capacity ? parseInt(capacity) : undefined,
-                fields: fields as FormModel['fields'],
+                fields: cleanedFields as FormModel['fields'],
                 coverImage,
                 whatsappConfig,
                 theme: {
@@ -353,38 +370,51 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
                                     <div style={{ display: 'grid', gap: '1rem' }}>
                                         {fields.map((field) => (
-                                            <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'grid', gridTemplateColumns: '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
-                                                <input
-                                                    type="text"
-                                                    value={field.label}
-                                                    onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
-                                                    placeholder={t('events.fieldLabel')}
-                                                    style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
-                                                />
-                                                <select
-                                                    value={field.type}
-                                                    onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
-                                                    style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
-                                                >
-                                                    <option value="text">{t('events.typeText')}</option>
-                                                    <option value="email">{t('events.typeEmail')}</option>
-                                                    <option value="number">{t('events.typeNumber')}</option>
-                                                    <option value="tel">{t('events.typePhone')}</option>
-                                                    <option value="select">{t('events.typeSelect')}</option>
-                                                </select>
-                                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                            <div key={field._id || field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
                                                     <input
-                                                        type="checkbox"
-                                                        checked={field.required}
-                                                        onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
-                                                    /> {t('events.requiredField')}
-                                                </label>
-                                                <button
-                                                    onClick={() => handleRemoveField(field.id)}
-                                                    style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
+                                                        type="text"
+                                                        value={field.label}
+                                                        onChange={(e) => handleFieldChange(field._id || field.id, 'label', e.target.value)}
+                                                        placeholder={t('events.fieldLabel')}
+                                                        style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
+                                                    />
+                                                    <select
+                                                        value={field.type}
+                                                        onChange={(e) => handleFieldChange(field._id || field.id, 'type', e.target.value)}
+                                                        style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
+                                                    >
+                                                        <option value="text">{t('events.typeText')}</option>
+                                                        <option value="email">{t('events.typeEmail')}</option>
+                                                        <option value="number">{t('events.typeNumber')}</option>
+                                                        <option value="tel">{t('events.typePhone')}</option>
+                                                        <option value="select">{t('events.typeSelect')}</option>
+                                                    </select>
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={field.required}
+                                                            onChange={(e) => handleFieldChange(field._id || field.id, 'required', e.target.checked)}
+                                                        /> {t('events.requiredField')}
+                                                    </label>
+                                                    <button
+                                                        onClick={() => handleRemoveField(field._id || field.id)}
+                                                        style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+
+                                                {/* Options input for Select type */}
+                                                {field.type === 'select' && (
+                                                    <input
+                                                        type="text"
+                                                        value={Array.isArray(field.options) ? field.options.join(', ') : ''}
+                                                        onChange={(e) => handleFieldChange(field._id || field.id, 'options', e.target.value.split(',').map((s: string) => s.trim()))}
+                                                        placeholder={t('events.optionsPlaceholder')}
+                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px dashed #ccc', fontSize: '0.85rem', background: '#f9f9f9' }}
+                                                    />
+                                                )}
                                             </div>
                                         ))}
                                     </div>
