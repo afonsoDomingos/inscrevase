@@ -42,6 +42,10 @@ export interface FormModel {
         primaryColor: string;
         backgroundColor: string;
         backgroundImage?: string;
+        titleColor?: string;
+        inputColor?: string;
+        inputBackgroundColor?: string;
+        inputPlaceholderColor?: string;
         fontFamily: string;
         style: 'luxury' | 'minimalist';
     };

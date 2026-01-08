@@ -29,9 +29,13 @@ const FormSchema = new mongoose.Schema({
     eventDate: { type: Date },
     theme: {
         primaryColor: { type: String, default: '#FFD700' }, // Gold
-        backgroundColor: { type: String, default: '#FFFFFF' }, // White
+        backgroundColor: { type: String, default: '#050505' }, // Black
         backgroundImage: { type: String },
-        fontFamily: { type: String, default: 'Playfair Display' },
+        titleColor: { type: String, default: '#FFFFFF' },
+        inputColor: { type: String, default: '#FFFFFF' },
+        inputBackgroundColor: { type: String, default: 'rgba(255,255,255,0.05)' },
+        inputPlaceholderColor: { type: String, default: 'rgba(255,255,255,0.4)' },
+        fontFamily: { type: String, default: 'Inter' },
         style: { type: String, enum: ['luxury', 'minimalist'], default: 'luxury' }
     },
     whatsappConfig: {

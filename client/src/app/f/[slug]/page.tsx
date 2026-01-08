@@ -111,8 +111,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const primaryColor = form.theme?.primaryColor || '#FFD700';
     const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
     const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : 'none';
-    const isDark = isLuxury || (bgColor.startsWith('#') && parseInt(bgColor.slice(1), 16) < 0x888888);
 
+    // Advanced Colors
+    const titleColor = form.theme?.titleColor || (isLuxury ? '#fff' : '#111');
+    const inputTextColor = form.theme?.inputColor || (isLuxury ? '#fff' : '#111');
+    const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)');
+    const placeholderColor = form.theme?.inputPlaceholderColor || (isLuxury ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)');
+
+    const isDark = isLuxury || (bgColor.startsWith('#') && parseInt(bgColor.slice(1), 16) < 0x888888);
     const textColor = isDark ? '#fff' : '#111';
     const secondaryTextColor = isDark ? '#aaa' : '#666';
     const cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#fff';
@@ -129,6 +135,29 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             color: textColor,
             fontFamily: form.theme?.fontFamily || 'Inter'
         }}>
+            {/* Dynamic Placeholder Styling */}
+            <style jsx global>{`
+                input::placeholder, select::placeholder, textarea::placeholder {
+                    color: ${placeholderColor} !important;
+                    opacity: 1;
+                }
+                select option {
+                    background: ${bgColor} !important;
+                    color: ${textColor} !important;
+                }
+                .responsive-form-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 450px;
+                    gap: 60px;
+                    align-items: start;
+                }
+                @media (max-width: 992px) {
+                    .responsive-form-grid {
+                        grid-template-columns: 1fr;
+                        gap: 40px;
+                    }
+                }
+            `}</style>
 
             <AnimatePresence>
                 {success ? (
@@ -207,7 +236,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     marginTop: '0.5rem',
                                     marginBottom: '1.5rem',
                                     lineHeight: '1.1',
-                                    color: textColor
+                                    color: titleColor
                                 }}>
                                     {form.title}
                                 </h1>
@@ -340,13 +369,15 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                     style={{
                                                         width: '100%',
-                                                        padding: '1rem',
-                                                        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                                        padding: '1.2rem',
+                                                        background: inputBg,
                                                         border: `1px solid ${borderColor}`,
-                                                        borderRadius: '12px',
-                                                        color: textColor,
+                                                        borderRadius: '16px',
+                                                        color: inputTextColor,
                                                         outline: 'none',
-                                                        appearance: 'none'
+                                                        appearance: 'none',
+                                                        fontSize: '1rem',
+                                                        transition: 'all 0.3s ease'
                                                     }}
                                                 >
                                                     <option value="" style={{ background: bgColor, color: textColor }}>{t('form.select')}</option>
@@ -362,12 +393,14 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                     style={{
                                                         width: '100%',
-                                                        padding: '1rem',
-                                                        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                                        padding: '1.2rem',
+                                                        background: inputBg,
                                                         border: `1px solid ${borderColor}`,
-                                                        borderRadius: '12px',
-                                                        color: textColor,
-                                                        outline: 'none'
+                                                        borderRadius: '16px',
+                                                        color: inputTextColor,
+                                                        outline: 'none',
+                                                        fontSize: '1rem',
+                                                        transition: 'all 0.3s ease'
                                                     }}
                                                 />
                                             )}

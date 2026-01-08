@@ -7,6 +7,7 @@ import { X, Save, Loader2, Palette, Upload, Image as ImageIcon, Type } from 'luc
 import { formService, FormModel } from '@/lib/formService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 
 interface EditEventThemeModalProps {
     isOpen: boolean;
@@ -35,6 +36,10 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
         style: 'luxury',
         backgroundColor: '#050505',
         backgroundImage: '',
+        titleColor: '#FFFFFF',
+        inputColor: '#FFFFFF',
+        inputBackgroundColor: 'rgba(255,255,255,0.05)',
+        inputPlaceholderColor: 'rgba(255,255,255,0.4)',
         fontFamily: 'Inter'
     });
 
@@ -49,6 +54,10 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                     style: form.theme.style || 'luxury',
                     backgroundColor: form.theme.backgroundColor || (form.theme.style === 'minimalist' ? '#FFFFFF' : '#050505'),
                     backgroundImage: form.theme.backgroundImage || '',
+                    titleColor: form.theme.titleColor || '#FFFFFF',
+                    inputColor: form.theme.inputColor || '#FFFFFF',
+                    inputBackgroundColor: form.theme.inputBackgroundColor || 'rgba(255,255,255,0.05)',
+                    inputPlaceholderColor: form.theme.inputPlaceholderColor || 'rgba(255,255,255,0.4)',
                     fontFamily: form.theme.fontFamily || 'Inter'
                 });
             }
@@ -57,12 +66,17 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
         }
     }, [form]);
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cover' | 'logo') => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cover' | 'logo' | 'background') => {
         if (e.target.files && e.target.files[0]) {
             setUploading(true);
             try {
                 const file = e.target.files[0];
-                const url = await formService.uploadFile(file, type === 'cover' ? 'covers' : 'logos');
+                let folder = 'general';
+                if (type === 'cover') folder = 'covers';
+                else if (type === 'logo') folder = 'logos';
+                else if (type === 'background') folder = 'backgrounds';
+
+                const url = await formService.uploadFile(file, folder);
 
                 if (type === 'cover') setCoverImage(url);
                 else if (type === 'logo') setLogo(url);
@@ -70,7 +84,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
             } catch (error) {
                 console.error("Upload failed", error);
-                alert(t('events.theme.uploadFailed'));
+                toast.error(t('events.theme.uploadFailed') || 'Erro no upload');
             } finally {
                 setUploading(false);
             }
@@ -88,11 +102,12 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                     style: theme.style as "luxury" | "minimalist"
                 }
             });
+            toast.success(t('events.theme.updateSuccess') || 'Tema atualizado com sucesso!');
             onSuccess();
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || t('events.theme.updateError'));
+            toast.error(error.message || t('events.theme.updateError'));
         } finally {
             setLoading(false);
         }
@@ -118,7 +133,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '1000px',
+                        maxWidth: '1100px',
                         maxHeight: '90vh',
                         overflowY: 'auto',
                         background: '#fff',
@@ -142,7 +157,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                         <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('events.theme.subtitle')}</p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 350px', gap: '2rem', alignItems: 'start' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', alignItems: 'start' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
                             {/* Section: Images */}
@@ -150,13 +165,13 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                 <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <ImageIcon size={18} /> {t('events.theme.eventImages')}
                                 </h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
                                     {/* Cover Image */}
                                     <div>
                                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>{t('events.theme.coverLabel')}</label>
                                         <div style={{
                                             position: 'relative',
-                                            height: '120px',
+                                            height: '100px',
                                             border: '2px dashed #ddd',
                                             borderRadius: '12px',
                                             overflow: 'hidden',
@@ -169,14 +184,14 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                             {coverImage ? (
                                                 <>
                                                     <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
-                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay">
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay-plus">
                                                         <Upload color="#fff" />
                                                     </div>
                                                 </>
                                             ) : (
                                                 <div style={{ textAlign: 'center', color: '#999' }}>
-                                                    <Upload size={24} style={{ marginBottom: '5px' }} />
-                                                    <div style={{ fontSize: '0.7rem' }}>{t('events.theme.uploadCover')}</div>
+                                                    <Upload size={20} style={{ marginBottom: '5px' }} />
+                                                    <div style={{ fontSize: '0.65rem' }}>{t('events.theme.uploadCover')}</div>
                                                 </div>
                                             )}
                                             <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'cover')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
@@ -188,7 +203,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>{t('events.theme.logoLabel')}</label>
                                         <div style={{
                                             position: 'relative',
-                                            height: '120px',
+                                            height: '100px',
                                             border: '2px dashed #ddd',
                                             borderRadius: '12px',
                                             overflow: 'hidden',
@@ -200,18 +215,49 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                         }}>
                                             {logo ? (
                                                 <>
-                                                    <Image src={logo} alt="Preview Logo" width={80} height={80} style={{ objectFit: 'contain' }} />
-                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay">
+                                                    <Image src={logo} alt="Preview Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} className="hover-overlay-plus">
                                                         <Upload color="#fff" />
                                                     </div>
                                                 </>
                                             ) : (
                                                 <div style={{ textAlign: 'center', color: '#999' }}>
-                                                    <Upload size={24} style={{ marginBottom: '5px' }} />
-                                                    <div style={{ fontSize: '0.7rem' }}>{t('events.theme.uploadLogo')}</div>
+                                                    <Upload size={20} style={{ marginBottom: '5px' }} />
+                                                    <div style={{ fontSize: '0.65rem' }}>{t('events.theme.uploadLogo')}</div>
                                                 </div>
                                             )}
                                             <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                        </div>
+                                    </div>
+
+                                    {/* Background Image */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#555' }}>Imagem de Fundo (BG)</label>
+                                        <div style={{
+                                            position: 'relative',
+                                            height: '100px',
+                                            border: '2px dashed #ddd',
+                                            borderRadius: '12px',
+                                            overflow: 'hidden',
+                                            background: theme.backgroundImage ? `url(${theme.backgroundImage}) center/cover` : '#f8f9fa',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer'
+                                        }}>
+                                            {!theme.backgroundImage && (
+                                                <div style={{ textAlign: 'center', color: '#999' }}>
+                                                    <ImageIcon size={20} style={{ marginBottom: '5px' }} />
+                                                    <div style={{ fontSize: '0.65rem' }}>Upload BG</div>
+                                                </div>
+                                            )}
+                                            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'background')} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                            {theme.backgroundImage && (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setTheme({ ...theme, backgroundImage: '' }); }}
+                                                    style={{ position: 'absolute', top: 5, right: 5, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '4px', padding: '2px 5px', fontSize: '10px', cursor: 'pointer', zIndex: 5 }}
+                                                >Remover</button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -221,80 +267,92 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
                             {/* Section: Colors */}
                             <section>
-                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Palette size={18} /> {t('events.theme.colorsAndStyle')}
+                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Palette size={18} /> Cores e Personalização Avançada
                                 </h3>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                                    {/* Cor Principal */}
                                     <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.primaryColor')}</label>
-                                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                            {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
-                                                <motion.button
-                                                    key={color}
-                                                    onClick={() => setTheme({ ...theme, primaryColor: color })}
-                                                    style={{
-                                                        width: '32px',
-                                                        height: '32px',
-                                                        borderRadius: '50%',
-                                                        background: color,
-                                                        border: theme.primaryColor === color ? '3px solid #000' : '3px solid transparent',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                    whileHover={{ scale: 1.1 }}
-                                                />
-                                            ))}
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>{t('events.primaryColor')}</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <input
                                                 type="color"
                                                 value={theme.primaryColor}
                                                 onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
-                                                style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                                                style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
                                             />
+                                            <span style={{ fontSize: '0.8rem', color: '#666' }}>{theme.primaryColor}</span>
                                         </div>
                                     </div>
 
+                                    {/* Cor de Fundo */}
                                     <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.backgroundColor')}</label>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>{t('events.backgroundColor')}</label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <input
                                                 type="color"
                                                 value={theme.backgroundColor}
                                                 onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
-                                                style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                                                style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
                                             />
-                                            <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
+                                            <span style={{ fontSize: '0.8rem', color: '#666' }}>{theme.backgroundColor}</span>
                                         </div>
                                     </div>
 
+                                    {/* Cor do Título */}
                                     <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.theme.backgroundImage') || 'Imagem de Fundo'}</label>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>Cor do Título</label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{
-                                                position: 'relative',
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '8px',
-                                                border: '1px solid #ddd',
-                                                overflow: 'hidden',
-                                                background: theme.backgroundImage ? `url(${theme.backgroundImage}) center/cover` : '#f0f0f0',
-                                                cursor: 'pointer'
-                                            }}>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => handleFileUpload(e, 'background' as any)}
-                                                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
-                                                />
-                                                {!theme.backgroundImage && <ImageIcon size={16} color="#999" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />}
-                                            </div>
-                                            {theme.backgroundImage && (
-                                                <button
-                                                    onClick={() => setTheme({ ...theme, backgroundImage: '' })}
-                                                    style={{ background: 'none', border: 'none', color: '#e53e3e', fontSize: '0.75rem', cursor: 'pointer' }}
-                                                >
-                                                    Remover
-                                                </button>
-                                            )}
+                                            <input
+                                                type="color"
+                                                value={theme.titleColor}
+                                                onChange={(e) => setTheme({ ...theme, titleColor: e.target.value })}
+                                                style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
+                                            />
+                                            <span style={{ fontSize: '0.8rem', color: '#666' }}>{theme.titleColor}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Cor do Texto do Input */}
+                                    <div>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>Cor do Texto do Input</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <input
+                                                type="color"
+                                                value={theme.inputColor}
+                                                onChange={(e) => setTheme({ ...theme, inputColor: e.target.value })}
+                                                style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
+                                            />
+                                            <span style={{ fontSize: '0.8rem', color: '#666' }}>{theme.inputColor}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Cor de Fundo do Input */}
+                                    <div>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>Fundo do Input</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <input
+                                                type="text"
+                                                value={theme.inputBackgroundColor}
+                                                onChange={(e) => setTheme({ ...theme, inputBackgroundColor: e.target.value })}
+                                                placeholder="rgba(0,0,0,0.1) ou #hex"
+                                                style={{ flex: 1, padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Cor do Placeholder */}
+                                    <div>
+                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>Cor do Placeholder</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <input
+                                                type="text"
+                                                value={theme.inputPlaceholderColor}
+                                                onChange={(e) => setTheme({ ...theme, inputPlaceholderColor: e.target.value })}
+                                                placeholder="rgba(0,0,0,0.4) ou #hex"
+                                                style={{ flex: 1, padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -308,7 +366,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                     <Type size={18} /> {t('events.theme.typography')}
                                 </h3>
                                 <div>
-                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.theme.fontLabel')}</label>
+                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.85rem' }}>{t('events.theme.fontLabel')}</label>
                                     <select
                                         value={theme.fontFamily}
                                         onChange={(e) => setTheme({ ...theme, fontFamily: e.target.value })}
@@ -324,7 +382,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                         </div>
 
                         {/* Live Preview */}
-                        <div>
+                        <div style={{ position: 'sticky', top: 0 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                                 <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem' }}>{t('events.preview')}</label>
                                 <div style={{ fontSize: '0.7rem', color: '#888' }}>{t('events.theme.previewLayout')}</div>
@@ -335,50 +393,71 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                                 backgroundImage: theme.backgroundImage ? `url(${theme.backgroundImage})` : 'none',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
-                                borderRadius: '16px',
+                                borderRadius: '20px',
                                 overflow: 'hidden',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                                 border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.1)' : '#eee'}`,
-                                color: theme.style === 'luxury' ? '#fff' : '#000',
                                 fontFamily: theme.fontFamily,
-                                minHeight: '400px',
+                                minHeight: '500px',
                                 display: 'flex',
-                                flexDirection: 'column'
+                                flexDirection: 'column',
+                                transition: 'all 0.3s ease'
                             }}>
                                 {coverImage && (
-                                    <div style={{ position: 'relative', height: '120px', width: '100%' }}>
+                                    <div style={{ position: 'relative', height: '140px', width: '100%' }}>
                                         <Image src={coverImage} alt="Preview Cover" fill style={{ objectFit: 'cover' }} />
                                     </div>
                                 )}
 
                                 <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     {logo && (
-                                        <div style={{ marginBottom: '1rem' }}>
+                                        <div style={{ marginBottom: '1.5rem' }}>
                                             <Image src={logo} alt="Preview Logo" width={50} height={50} style={{ objectFit: 'contain' }} />
                                         </div>
                                     )}
 
-                                    <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
+                                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '2px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
                                         {t('events.registrationsOpen')}
                                     </div>
-                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', lineHeight: 1.2 }}>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2, color: theme.titleColor }}>
                                         {form.title}
                                     </h3>
-                                    <p style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '2rem', lineHeight: 1.6 }}>
-                                        {form.description ? form.description.substring(0, 80) + '...' : t('events.descriptionPlaceholder')}
-                                    </p>
 
-                                    <div style={{ marginTop: 'auto' }}>
-                                        <button style={{
-                                            width: '100%',
+                                    {/* Input Previews */}
+                                    <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                        <div style={{
                                             padding: '0.8rem',
                                             borderRadius: '8px',
+                                            background: theme.inputBackgroundColor,
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            color: theme.inputPlaceholderColor,
+                                            fontSize: '0.75rem'
+                                        }}>Seu nome completo...</div>
+                                        <div style={{
+                                            padding: '0.8rem',
+                                            borderRadius: '8px',
+                                            background: theme.inputBackgroundColor,
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            color: theme.inputColor,
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600
+                                        }}>Exemplo de Texto</div>
+                                    </div>
+
+                                    <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+                                        <button style={{
+                                            width: '100%',
+                                            padding: '0.9rem',
+                                            borderRadius: '10px',
                                             background: theme.primaryColor,
-                                            color: theme.style === 'luxury' ? '#000' : '#fff',
+                                            color: theme.backgroundColor, // Auto-contrast for preview
+                                            filter: 'brightness(1.1)',
                                             border: 'none',
-                                            fontWeight: 700,
+                                            fontWeight: 800,
                                             fontSize: '0.8rem',
-                                            fontFamily: theme.fontFamily
+                                            fontFamily: theme.fontFamily,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '1px'
                                         }}>
                                             {t('events.registerNow')}
                                         </button>
@@ -388,14 +467,24 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
                         </div>
                     </div>
 
-                    <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+                    <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #eee' }}>
                         <button
                             onClick={handleSubmit}
                             disabled={loading || uploading}
                             className="btn-primary"
-                            style={{ width: '100%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                fontSize: '1rem',
+                                fontWeight: 700,
+                                borderRadius: '15px'
+                            }}
                         >
-                            {loading || uploading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> {t('events.profile.saveChanges')}</>}
+                            {loading || uploading ? <Loader2 className="animate-spin" /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
                         </button>
                     </div>
                 </motion.div>
