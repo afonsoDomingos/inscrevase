@@ -313,11 +313,26 @@ export default function MentorsShowcase() {
                                                     fontSize: '0.75rem',
                                                     textTransform: 'uppercase',
                                                     letterSpacing: '1px',
-                                                    marginBottom: '1rem'
+                                                    marginBottom: '0.5rem'
                                                 }}>
                                                     {mentor.businessName}
                                                 </div>
                                             )}
+
+                                            {/* Followers Indicator */}
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '5px',
+                                                fontSize: '0.8rem',
+                                                color: '#888',
+                                                fontWeight: 600,
+                                                marginBottom: '1rem'
+                                            }}>
+                                                <Users size={14} className="gold-text" />
+                                                <span>{mentor.followers?.length || 0} Seguidores</span>
+                                            </div>
 
                                             <p style={{
                                                 color: '#444',
