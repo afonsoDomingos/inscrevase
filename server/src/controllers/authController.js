@@ -140,15 +140,21 @@ const getPublicMentors = async (req, res) => {
 
 const getPublicMentorById = async (req, res) => {
     try {
-        const mentor = await User.findOneAndUpdate(
-            { _id: req.params.id, role: 'mentor', status: 'active', isPublic: true },
-            { $inc: { profileVisits: 1 } },
-            { new: true }
-        ).select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits');
+        const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active', isPublic: true })
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits');
 
         if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
 
         res.json(mentor);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const recordVisit = async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.params.id, { $inc: { profileVisits: 1 } });
+        res.json({ message: 'Visit recorded' });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
@@ -193,4 +199,4 @@ const toggleFollow = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow };
+module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit };

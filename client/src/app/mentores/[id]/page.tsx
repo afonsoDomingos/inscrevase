@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
@@ -25,7 +25,8 @@ export default function MentorProfilePage() {
     const [isFollowing, setIsFollowing] = useState(false);
     const [followersCount, setFollowersCount] = useState(0);
     const [followingLoading, setFollowingLoading] = useState(false);
-    const currentUser = authService.getCurrentUser();
+    const currentUser = useMemo(() => authService.getCurrentUser(), []);
+    const visitRecorded = useRef(false);
 
     useEffect(() => {
         const fetchMentor = async () => {
@@ -47,6 +48,13 @@ export default function MentorProfilePage() {
         };
         fetchMentor();
     }, [id, currentUser]);
+
+    useEffect(() => {
+        if (!id || visitRecorded.current) return;
+
+        userService.recordVisit(id as string);
+        visitRecorded.current = true;
+    }, [id]);
 
     const handleFollowToggle = async () => {
         if (!currentUser) {

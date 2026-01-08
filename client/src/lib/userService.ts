@@ -56,5 +56,11 @@ export const userService = {
         });
         if (!response.ok) throw new Error('Falha ao seguir mentor');
         return response.json();
+    },
+
+    async recordVisit(id: string): Promise<void> {
+        await fetch(`${API_URL}/auth/public/mentors/${id}/visit`, {
+            method: 'POST'
+        });
     }
 };
