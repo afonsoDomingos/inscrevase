@@ -24,6 +24,10 @@ const UserSchema = new mongoose.Schema({
     isPublic: { type: Boolean, default: false }, // Admins choose who appears publicly
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    badges: [{
+        name: String,
+        color: { type: String, default: '#FFD700' }
+    }],
     profileVisits: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });

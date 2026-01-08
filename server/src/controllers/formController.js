@@ -158,3 +158,13 @@ exports.getAllFormsAdmin = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+exports.getFormsByMentor = async (req, res) => {
+    try {
+        const forms = await Form.find({ creator: req.params.mentorId, active: true }).sort({ createdAt: -1 });
+        res.json(forms);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};

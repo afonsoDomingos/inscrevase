@@ -161,5 +161,11 @@ export const formService = {
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Falha ao atualizar formulário');
         return result;
+    },
+
+    async getFormsByMentor(mentorId: string): Promise<FormModel[]> {
+        const response = await fetch(`${API_URL}/forms/mentor/${mentorId}`);
+        if (!response.ok) throw new Error('Falha ao buscar eventos do mentor');
+        return response.json();
     }
 };

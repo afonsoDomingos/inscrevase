@@ -291,6 +291,39 @@ export default function MentorsShowcase() {
                                                 )}
                                             </div>
 
+                                            {/* Badges Area */}
+                                            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
+                                                {mentor.badges && mentor.badges.length > 0 ? (
+                                                    mentor.badges.map((badge, idx) => (
+                                                        <span key={idx} style={{
+                                                            fontSize: '0.6rem',
+                                                            fontWeight: 900,
+                                                            padding: '2px 8px',
+                                                            borderRadius: '50px',
+                                                            background: badge.name === 'Elite' ? 'var(--gold-gradient)' : (badge.color || '#4299e1'),
+                                                            color: '#000',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px'
+                                                        }}>
+                                                            {badge.name}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span style={{
+                                                        fontSize: '0.6rem',
+                                                        fontWeight: 900,
+                                                        padding: '2px 8px',
+                                                        borderRadius: '50px',
+                                                        background: 'rgba(0,0,0,0.05)',
+                                                        color: '#666',
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '0.5px'
+                                                    }}>
+                                                        Mentor
+                                                    </span>
+                                                )}
+                                            </div>
+
                                             {/* Showcase Body */}
                                             <h3 style={{
                                                 fontSize: '1.25rem',

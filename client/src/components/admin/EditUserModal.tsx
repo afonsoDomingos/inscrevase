@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield, Lock } from 'lucide-react';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield, Lock, Award } from 'lucide-react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService'; // For uploading images if admin wants to change user photo
@@ -32,6 +32,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     const [password, setPassword] = useState(''); // New state for password reset
     const [isPublic, setIsPublic] = useState(false);
     const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
+    const [badges, setBadges] = useState<{ name: string; color: string }[]>([]);
 
     useEffect(() => {
         if (user) {
@@ -46,6 +47,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
             setPassword(''); // Reset password field
             setIsPublic(user.isPublic || false);
             setSocialLinks(user.socialLinks || {});
+            setBadges(user.badges || []);
         }
     }, [user]);
 
@@ -81,7 +83,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 profilePhoto,
                 socialLinks,
                 password, // Include password in update
-                isPublic
+                isPublic,
+                badges
             });
             onSuccess();
             onClose();
@@ -221,6 +224,44 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                     <label htmlFor="isPublic" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2c7a7b', cursor: 'pointer' }}>
                                         Exibir perfil publicamente na aba Mentor
                                     </label>
+                                </div>
+
+                                {/* Badges Management */}
+                                <div style={{ marginTop: '1rem', borderTop: '1px solid #ddd', paddingTop: '1rem' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <Award size={14} /> Selos e Distinções
+                                    </div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
+                                        {['Especialista', 'Top Mentor', 'Verificado', 'Elite'].map(badgeName => {
+                                            const isActive = badges.some(b => b.name === badgeName);
+                                            return (
+                                                <button
+                                                    key={badgeName}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (isActive) {
+                                                            setBadges(badges.filter(b => b.name !== badgeName));
+                                                        } else {
+                                                            setBadges([...badges, { name: badgeName, color: badgeName === 'Elite' ? '#FFD700' : '#4299e1' }]);
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        padding: '4px 12px',
+                                                        borderRadius: '100px',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        background: isActive ? (badgeName === 'Elite' ? 'var(--gold-gradient)' : '#4299e1') : '#fff',
+                                                        color: isActive ? '#000' : '#666',
+                                                        border: isActive ? 'none' : '1px solid #ddd',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                >
+                                                    {badgeName}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
                             </div>
 

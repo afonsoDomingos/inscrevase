@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import { authService } from '@/lib/authService';
+import { formService, FormModel } from '@/lib/formService';
 
 export default function MentorProfilePage() {
     const { id } = useParams();
@@ -25,6 +26,8 @@ export default function MentorProfilePage() {
     const [isFollowing, setIsFollowing] = useState(false);
     const [followersCount, setFollowersCount] = useState(0);
     const [followingLoading, setFollowingLoading] = useState(false);
+    const [mentorEvents, setMentorEvents] = useState<FormModel[]>([]);
+    const [eventsLoading, setEventsLoading] = useState(true);
     const currentUser = useMemo(() => authService.getCurrentUser(), []);
     const visitRecorded = useRef(false);
 
@@ -40,10 +43,15 @@ export default function MentorProfilePage() {
                     const userId = currentUser.id || currentUser._id;
                     setIsFollowing(data.followers?.includes(userId as string) || false);
                 }
+
+                // Fetch Mentor Events
+                const events = await formService.getFormsByMentor(id as string);
+                setMentorEvents(events);
             } catch (error) {
-                console.error("Error fetching mentor:", error);
+                console.error("Error fetching mentor info:", error);
             } finally {
                 setLoading(false);
+                setEventsLoading(false);
             }
         };
         fetchMentor();
@@ -194,33 +202,66 @@ export default function MentorProfilePage() {
                             transition={{ delay: 0.2 }}
                             style={{ paddingBottom: '2rem' }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
-                                <div style={{ background: '#FFD700', color: '#000', padding: '4px 12px', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                    Elite Member
-                                </div>
+                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '1.2rem' }}>
+                                {mentor.badges && mentor.badges.length > 0 ? (
+                                    mentor.badges.map((badge, idx) => (
+                                        <div
+                                            key={idx}
+                                            style={{
+                                                background: badge.name === 'Elite' ? 'var(--gold-gradient)' : (badge.color || '#4299e1'),
+                                                color: '#000',
+                                                padding: '4px 14px',
+                                                borderRadius: '100px',
+                                                fontSize: '0.65rem',
+                                                fontWeight: 900,
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '1px',
+                                                boxShadow: badge.name === 'Elite' ? '0 4px 12px rgba(255,215,0,0.3)' : 'none'
+                                            }}
+                                        >
+                                            {badge.name}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div style={{ background: '#FFD700', color: '#000', padding: '4px 12px', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        Mentor Verificado
+                                    </div>
+                                )}
                                 <Verified size={20} className="gold-text" />
                             </div>
                             <h1 style={{
-                                fontSize: '2.4rem', // Changed from 2.5rem to 2.4rem
+                                fontSize: '2.4rem',
                                 fontWeight: 900,
                                 color: '#fff',
                                 fontFamily: 'var(--font-playfair)',
                                 lineHeight: 1,
-                                textShadow: '0 0 15px rgba(255,215,0,0.2)' // Changed from 0.1 to 0.2
+                                textShadow: '0 0 15px rgba(255,215,0,0.2)'
                             }}>
                                 {mentor.name}
                             </h1>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginTop: '1.2rem' }}>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginTop: '1.2rem' }}>
                                 {mentor.businessName && (
                                     <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                                         <Briefcase size={18} className="gold-text" /> {mentor.businessName}
                                     </p>
                                 )}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFD700', fontWeight: 700, fontSize: '1.1rem' }}>
-                                    <Users size={18} /> {followersCount} {t('common.followers') || 'Seguidores'}
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: '1.1rem' }}>
-                                    <Eye size={18} className="gold-text" /> {mentor.profileVisits || 0} {t('common.visits') || 'Visitas'}
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '0.8rem 1.2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', width: 'fit-content' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '1.5rem' }}>
+                                        <Users size={18} className="gold-text" />
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>{followersCount}</span>
+                                            <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Seguidores</span>
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Eye size={18} className="gold-text" />
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{mentor.profileVisits || 0}</span>
+                                            <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Visitas</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -231,7 +272,7 @@ export default function MentorProfilePage() {
                                 disabled={followingLoading}
                                 style={{
                                     marginTop: '1.5rem',
-                                    padding: '0.8rem 2rem',
+                                    padding: '0.8rem 2.2rem',
                                     borderRadius: '100px',
                                     background: isFollowing ? 'transparent' : 'var(--gold-gradient)',
                                     color: isFollowing ? '#fff' : '#000',
@@ -242,7 +283,7 @@ export default function MentorProfilePage() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '10px',
-                                    boxShadow: isFollowing ? 'none' : '0 10px 20px rgba(255,215,0,0.2)',
+                                    boxShadow: isFollowing ? 'none' : '0 10px 25px rgba(255,215,0,0.25)',
                                     transition: 'all 0.3s'
                                 }}
                             >
@@ -393,6 +434,82 @@ export default function MentorProfilePage() {
                                     </div>
                                 ))}
                             </div>
+                        </motion.div>
+
+                        {/* Active Events List */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.45 }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
+                                <div style={{ width: '3px', height: '24px', background: 'var(--gold-gradient)' }} />
+                                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>Eventos & Masterclasses</h2>
+                            </div>
+
+                            {eventsLoading ? (
+                                <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                                    <Loader2 className="animate-spin" size={32} color="#FFD700" />
+                                </div>
+                            ) : mentorEvents.length > 0 ? (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
+                                    {mentorEvents.map((event) => (
+                                        <motion.div
+                                            key={event._id}
+                                            whileHover={{ y: -5 }}
+                                            className="luxury-card"
+                                            style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', cursor: 'pointer' }}
+                                            onClick={() => router.push(`/f/${event.slug}`)}
+                                        >
+                                            <div style={{ height: '160px', position: 'relative', background: '#0a0a0a' }}>
+                                                {event.coverImage ? (
+                                                    <Image src={event.coverImage} alt={event.title} fill style={{ objectFit: 'cover', opacity: 0.8 }} />
+                                                ) : (
+                                                    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', opacity: 0.2 }}>
+                                                        <Calendar size={48} color="#000" />
+                                                    </div>
+                                                )}
+                                                <div style={{ position: 'absolute', bottom: '15px', right: '15px' }}>
+                                                    <span style={{
+                                                        background: 'rgba(0,0,0,0.8)',
+                                                        color: '#FFD700',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '100px',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 800,
+                                                        backdropFilter: 'blur(5px)',
+                                                        border: '1px solid rgba(255,215,0,0.3)'
+                                                    }}>
+                                                        INSCRIÇÕES ABERTAS
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div style={{ padding: '1.5rem' }}>
+                                                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem', color: '#111', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                    {event.title}
+                                                </h3>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888', fontSize: '0.85rem' }}>
+                                                    <Calendar size={14} className="gold-text" />
+                                                    {event.eventDate ? new Date(event.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Data a definir'}
+                                                </div>
+                                                <button style={{
+                                                    width: '100%', marginTop: '1.5rem', padding: '0.8rem',
+                                                    borderRadius: '12px', border: '1px solid #eee', background: '#fcfcfc',
+                                                    color: '#000', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                                                    transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                                }}>
+                                                    Ver Detalhes <ExternalLink size={14} />
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{ background: '#fff', padding: '4rem', borderRadius: '32px', textAlign: 'center', border: '2px dashed #eee' }}>
+                                    <Calendar size={48} color="#eee" style={{ marginBottom: '1rem' }} />
+                                    <p style={{ color: '#999', fontWeight: 600 }}>Nenhum evento ativo no momento.</p>
+                                </div>
+                            )}
                         </motion.div>
 
                         {/* Call to Action for Mentors */}
