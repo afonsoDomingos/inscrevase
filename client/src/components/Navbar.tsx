@@ -88,13 +88,15 @@ export default function Navbar() {
 
       <style jsx>{`
         .navbar {
-          background: white;
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
           padding: 0.8rem 2rem;
           position: fixed;
           top: 0;
           width: 100%;
           z-index: 1000;
-          border-bottom: 1px solid #eee;
+          border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .nav-container {
           max-width: 1200px;

@@ -304,7 +304,14 @@
             "title1": "Transforme seus eventos com",
             "title2": "Elegância e Exclusividade",
             "title3": "na Inscreva-se",
+            "subtitle": "A Nova Era de Eventos",
             "description": "A plataforma de inscrições desenhada para mentores e palestrantes que prezam pelo branding de luxo e a melhor experiência para seus clientes."
+        },
+        "stats": {
+            "s1": "Eventos Criados",
+            "s2": "Mentores Ativos",
+            "s3": "Inscrições Hoje",
+            "s4": "Suporte Online"
         },
         "cta": {
             "title": "Pronto para elevar o nível dos seus eventos?",

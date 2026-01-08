@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Palette, Zap, ShieldCheck, BarChart3 } from "lucide-react";
+import { ArrowRight, CheckCircle, Palette, Zap, ShieldCheck, BarChart3, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
@@ -18,191 +18,255 @@ const galleryImages = [
 
 export default function Home() {
   const { t } = useTranslate();
+
   const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
+    initial: { opacity: 0, y: 30 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+  };
+
+  const staggerContainer = {
+    initial: {},
+    whileInView: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
   };
 
   return (
-    <main>
+    <main style={{ backgroundColor: '#fff', overflow: 'hidden' }}>
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="container">
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="hero-title"
-          >
-            <motion.span
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'block' }}
-            >
-              {t('landing.hero.title1')}
-            </motion.span>
-            <motion.span
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'block' }}
-              className="gold-text luxury-shimmer"
-            >
-              {t('landing.hero.title2')}
-            </motion.span>
-            <motion.span
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'block', fontSize: '2.5rem', marginTop: '1rem', fontWeight: 400 }}
-            >
-              {t('landing.hero.title3').split(' ')[0]} <span style={{ fontWeight: 800 }}>{t('landing.hero.title3').split(' ')[1]}</span>
-            </motion.span>
-          </motion.h1>
-          <motion.p
-            {...fadeIn}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            {t('landing.hero.description')}
-          </motion.p>
-          <motion.div
-            {...fadeIn}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex gap-4 justify-center"
-          >
-            <Link href="/entrar" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-              {t('common.getStarted')} <ArrowRight size={20} />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Infinite Gallery Section */}
-      <section style={{ overflow: 'hidden', padding: '0 0 4rem 0', background: '#fff' }}>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', overflow: 'hidden' }}>
-          {/* Row 1: Left Scroll */}
-          <motion.div
-            initial={{ x: 0 }}
-            animate={{ x: "-50%" }}
-            transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
-            style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
-          >
-            {[...galleryImages, ...galleryImages].map((src, i) => (
-              <div key={`row1 - ${i} `} style={{
-                position: 'relative',
-                width: '350px',
-                height: '220px',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                flexShrink: 0,
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-              }}>
-                <Image src={src} alt="Evento" fill style={{ objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
-              </div>
-            ))}
-          </motion.div>
-
-          {/* Row 2: Right Scroll (Reverse) */}
-          <motion.div
-            initial={{ x: "-50%" }}
-            animate={{ x: 0 }}
-            transition={{ repeat: Infinity, ease: "linear", duration: 45 }}
-            style={{ display: 'flex', gap: '1.5rem', flexShrink: 0, paddingRight: '1.5rem' }}
-          >
-            {[...galleryImages, ...galleryImages].map((src, i) => (
-              <div key={`row2 - ${i} `} style={{
-                position: 'relative',
-                width: '350px',
-                height: '220px',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                flexShrink: 0,
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-              }}>
-                <Image src={src} alt="Evento" fill style={{ objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="section" style={{
-        background: 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, rgba(250, 250, 250, 1) 70%)',
-        position: 'relative'
+      {/* Hero Section with Mesh Gradient Background */}
+      <section className="hero" style={{
+        position: 'relative',
+        minHeight: '100vh',
+        background: 'radial-gradient(circle at 0% 0%, rgba(255,215,0,0.15) 0%, transparent 40%), radial-gradient(circle at 100% 100%, rgba(255,215,0,0.1) 0%, transparent 40%), #000',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        padding: '120px 20px 60px'
       }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-            <h2 style={{ fontSize: '3rem' }}>{t('landing.features.title')} <span className="gold-text">{t('landing.features.titleHighlight')}</span></h2>
-            <p style={{ color: '#666', maxWidth: '600px', margin: '1rem auto' }}>
-              {t('landing.features.subtitle')}
-            </p>
-          </div>
+        {/* Animated Background Elements */}
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', opacity: 0.4 }}>
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 90, 0],
+              x: [0, 50, 0],
+              y: [0, -50, 0]
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            style={{ position: 'absolute', top: '10%', left: '10%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', borderRadius: '50%' }}
+          />
+          <motion.div
+            animate={{
+              scale: [1.2, 1, 1.2],
+              rotate: [0, -90, 0],
+              x: [0, -30, 0],
+              y: [0, 40, 0]
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            style={{ position: 'absolute', bottom: '10%', right: '5%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, rgba(255,215,0,0.08) 0%, transparent 70%)', borderRadius: '50%' }}
+          />
+        </div>
 
-          <div className="grid">
-            <FeatureCard
-              icon={<Palette className="gold-text" />}
-              title={t('landing.features.f1.title')}
-              description={t('landing.features.f1.description')}
-            />
-            <FeatureCard
-              icon={<CheckCircle className="gold-text" />}
-              title={t('landing.features.f2.title')}
-              description={t('landing.features.f2.description')}
-            />
-            <FeatureCard
-              icon={<Zap className="gold-text" />}
-              title={t('landing.features.f3.title')}
-              description={t('landing.features.f3.description')}
-            />
-            <FeatureCard
-              icon={<BarChart3 className="gold-text" />}
-              title={t('landing.features.f4.title')}
-              description={t('landing.features.f4.description')}
-            />
-            <FeatureCard
-              icon={<ShieldCheck className="gold-text" />}
-              title={t('landing.features.f5.title')}
-              description={t('landing.features.f5.description')}
-            />
-            <FeatureCard
-              icon={<Palette className="gold-text" />}
-              title={t('landing.features.f6.title')}
-              description={t('landing.features.f6.description')}
-            />
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span style={{
+              color: '#FFD700',
+              textTransform: 'uppercase',
+              letterSpacing: '4px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              display: 'block',
+              marginBottom: '1.5rem'
+            }}>
+              ✨ {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
+            </span>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(3rem, 10vw, 6rem)', color: '#fff', marginBottom: '2rem' }}>
+              <span style={{ display: 'block', fontWeight: 300 }}>{t('landing.hero.title1')}</span>
+              <span className="gold-text luxury-shimmer" style={{ display: 'block', fontWeight: 900 }}>{t('landing.hero.title2')}</span>
+            </h1>
+            <p style={{
+              fontSize: '1.25rem',
+              color: 'rgba(255,255,255,0.7)',
+              maxWidth: '800px',
+              margin: '0 auto 3rem',
+              lineHeight: 1.6,
+              fontWeight: 400
+            }}>
+              {t('landing.hero.description')}
+            </p>
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/entrar" className="btn-primary" style={{ padding: '1.2rem 3rem', borderRadius: '100px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {t('common.getStarted')} <ArrowRight size={20} />
+              </Link>
+              <Link href="/mentores" style={{ padding: '1.2rem 3rem', borderRadius: '100px', fontSize: '1.1rem', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', textDecoration: 'none', fontWeight: 600, backdropFilter: 'blur(10px)', transition: 'all 0.3s' }}>
+                {t('common.seeExamples') || 'Ver Exemplos'}
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Infinite Scroll Gallery with Tilt/Luxury Feel */}
+      <section style={{ padding: '80px 0', background: '#000', borderTop: '1px solid rgba(255,215,0,0.1)', borderBottom: '1px solid rgba(255,215,0,0.1)', transform: 'skewY(-2deg)', width: '110%', marginLeft: '-5%' }}>
+        <div style={{ transform: 'skewY(2deg)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', overflow: 'hidden' }}>
+            <motion.div
+              initial={{ x: 0 }}
+              animate={{ x: "-50%" }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 50 }}
+              style={{ display: 'flex', gap: '2rem', flexShrink: 0 }}
+            >
+              {[...galleryImages, ...galleryImages].map((src, i) => (
+                <motion.div
+                  key={`row1-${i}`}
+                  whileHover={{ scale: 1.05 }}
+                  style={{
+                    position: 'relative',
+                    width: '400px',
+                    height: '250px',
+                    borderRadius: '24px',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    border: '1px solid rgba(255,215,0,0.2)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+                  }}
+                >
+                  <Image src={src} alt="Evento" fill style={{ objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }} />
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof / Call to Action */}
-      <section className="section">
+      {/* Stats Section */}
+      <section style={{ padding: '100px 0', background: '#fff' }}>
         <div className="container">
-          <div className="luxury-card" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
-            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{t('landing.cta.title')}</h2>
-            <p style={{ color: '#666', marginBottom: '3rem', fontSize: '1.1rem' }}>
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px', textAlign: 'center' }}
+          >
+            {[
+              { label: t('landing.stats.s1') || 'Eventos Criados', value: '2,500+' },
+              { label: t('landing.stats.s2') || 'Mentores Ativos', value: '450+' },
+              { label: t('landing.stats.s3') || 'Inscrições Hoje', value: '1,200+' },
+              { label: t('landing.stats.s4') || 'Suporte Online', value: '24/7' },
+            ].map((stat, i) => (
+              <motion.div key={i} variants={fadeIn} style={{ padding: '20px' }}>
+                <div className="gold-text" style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>{stat.value}</div>
+                <div style={{ color: '#666', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem' }}>{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Section with Glassmorphism Cards */}
+      <section className="section" style={{
+        background: '#fafafa',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Subtle Decorative elements */}
+        <div style={{ position: 'absolute', top: '20%', left: '-10%', width: '400px', height: '400px', background: 'rgba(255,215,0,0.03)', borderRadius: '50%', filter: 'blur(80px)' }} />
+
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '6rem' }}>
+            <motion.div {...fadeIn}>
+              <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', marginBottom: '1.5rem', lineHeight: 1.1 }}>
+                {t('landing.features.title')} <br />
+                <span className="gold-text">{t('landing.features.titleHighlight')}</span>
+              </h2>
+              <div style={{ width: '80px', height: '4px', background: 'var(--gold-gradient)', margin: '0 auto 2rem' }} />
+              <p style={{ color: '#666', maxWidth: '600px', margin: '0 auto', fontSize: '1.2rem' }}>
+                {t('landing.features.subtitle')}
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid"
+          >
+            {[
+              { icon: <Palette size={32} />, title: t('landing.features.f1.title'), desc: t('landing.features.f1.description') },
+              { icon: <CheckCircle size={32} />, title: t('landing.features.f2.title'), desc: t('landing.features.f2.description') },
+              { icon: <Zap size={32} />, title: t('landing.features.f3.title'), desc: t('landing.features.f3.description') },
+              { icon: <BarChart3 size={32} />, title: t('landing.features.f4.title'), desc: t('landing.features.f4.description') },
+              { icon: <ShieldCheck size={32} />, title: t('landing.features.f5.title'), desc: t('landing.features.f5.description') },
+              { icon: <MessageCircle size={32} />, title: t('landing.features.f6.title'), desc: t('landing.features.f6.description') }
+            ].map((feature, i) => (
+              <FeatureCard
+                key={i}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.desc}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section - Sophisticated */}
+      <section style={{ padding: '120px 0', background: '#000', position: 'relative' }}>
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.05) 100%)',
+              padding: '6rem 3rem',
+              borderRadius: '60px',
+              border: '1px solid rgba(255,215,0,0.2)',
+              textAlign: 'center',
+              backdropFilter: 'blur(20px)'
+            }}
+          >
+            <h2 style={{ fontSize: '3.5rem', marginBottom: '2rem', color: '#fff' }}>{t('landing.cta.title')}</h2>
+            <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '3.5rem', fontSize: '1.25rem', maxWidth: '700px', margin: '0 auto 3.5rem' }}>
               {t('landing.cta.description')}
             </p>
-            <Link href="/cadastro" className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.1rem' }}>
+            <Link href="/cadastro" className="btn-primary" style={{ padding: '1.5rem 4rem', fontSize: '1.2rem', borderRadius: '100px' }}>
               {t('landing.cta.button')}
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      <footer style={{ padding: '4rem 0', borderTop: '1px solid #eee', textAlign: 'center' }}>
+      <footer style={{ padding: '6rem 0', background: '#fafafa', textAlign: 'center', borderTop: '1px solid #eee' }}>
         <div className="container">
-          <p style={{ fontFamily: 'var(--font-playfair)', fontWeight: 700, fontSize: '1.5rem', marginBottom: '1rem' }}>
-            Inscreva<span className="gold-text">.se</span>
-          </p>
-          <p style={{ color: '#999', fontSize: '0.9rem' }}>
-            &copy; {new Date().getFullYear()} Inscreva-se. {t('landing.footer.rights')}
-          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+            <span style={{ fontFamily: 'var(--font-playfair)', fontWeight: 800, fontSize: '2rem' }}>
+              Inscreva<span className="gold-text">.se</span>
+            </span>
+            <div style={{ display: 'flex', gap: '2rem' }}>
+              <Link href="/mentores" style={{ color: '#666', textDecoration: 'none', fontWeight: 600 }}>Mentores</Link>
+              <Link href="/cadastro" style={{ color: '#666', textDecoration: 'none', fontWeight: 600 }}>Começar</Link>
+              <Link href="/suporte" style={{ color: '#666', textDecoration: 'none', fontWeight: 600 }}>Suporte</Link>
+            </div>
+            <p style={{ color: '#999', fontSize: '0.9rem', maxWidth: '500px' }}>
+              &copy; {new Date().getFullYear()} Inscreva-se. {t('landing.footer.rights')}
+            </p>
+          </div>
         </div>
       </footer>
     </main>
@@ -212,32 +276,36 @@ export default function Home() {
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
     <motion.div
-      whileHover={{ y: -10 }}
+      variants={{
+        initial: { opacity: 0, y: 30 },
+        animate: { opacity: 1, y: 0 }
+      }}
+      whileHover={{ y: -15, boxShadow: '0 30px 60px rgba(0,0,0,0.1)' }}
       className="luxury-card"
       style={{
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '3rem 2rem'
+        textAlign: 'left',
+        background: '#fff',
+        borderRadius: '30px',
+        padding: '3.5rem 2.5rem',
+        border: '1px solid rgba(0,0,0,0.05)'
       }}
     >
       <div style={{
-        marginBottom: '1.5rem',
-        background: 'rgba(255, 215, 0, 0.08)',
-        padding: '1.2rem',
-        borderRadius: '50%',
-        display: 'inline-flex',
+        marginBottom: '2rem',
+        background: 'var(--gold-gradient)',
+        width: '64px',
+        height: '64px',
+        borderRadius: '20px',
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        border: '1px solid rgba(255, 215, 0, 0.2)'
+        color: '#000',
+        boxShadow: '0 10px 20px rgba(255,215,0,0.2)'
       }}>
-        <div style={{ transform: 'scale(1.2)' }}>
-          {icon}
-        </div>
+        {icon}
       </div>
-      <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>{title}</h3>
-      <p style={{ color: '#666', lineHeight: 1.6, fontSize: '0.95rem' }}>{description}</p>
+      <h3 style={{ fontSize: '1.6rem', marginBottom: '1.2rem', fontFamily: 'var(--font-playfair)', fontWeight: 800 }}>{title}</h3>
+      <p style={{ color: '#777', lineHeight: 1.7, fontSize: '1rem' }}>{description}</p>
     </motion.div>
   );
 }

@@ -304,7 +304,14 @@
             "title1": "Transform your events with",
             "title2": "Elegance and Exclusivity",
             "title3": "at Inscreva-se",
+            "subtitle": "The New Era of Events",
             "description": "The registration platform designed for mentors and speakers who value luxury branding and the best experience for their clients."
+        },
+        "stats": {
+            "s1": "Created Events",
+            "s2": "Active Mentors",
+            "s3": "Registrations Today",
+            "s4": "Online Support"
         },
         "cta": {
             "title": "Ready to elevate your events?",
