@@ -75,10 +75,9 @@ export default function MentorProfilePage() {
 
             {/* Premium Cinematic Header */}
             <div style={{
-                height: '180px',
+                height: '200px',
                 background: '#0a0a0a',
                 position: 'relative',
-                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -130,7 +129,7 @@ export default function MentorProfilePage() {
                                 width: '160px', height: '160px', borderRadius: '50%',
                                 padding: '4px', background: 'var(--gold-gradient)',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                                flexShrink: 0, position: 'relative', top: '70px',
+                                flexShrink: 0, position: 'relative', top: '80px',
                                 zIndex: 10
                             }}
                         >
@@ -162,12 +161,12 @@ export default function MentorProfilePage() {
                                 <Verified size={20} className="gold-text" />
                             </div>
                             <h1 style={{
-                                fontSize: '2.5rem',
+                                fontSize: '2.4rem', // Changed from 2.5rem to 2.4rem
                                 fontWeight: 900,
                                 color: '#fff',
                                 fontFamily: 'var(--font-playfair)',
                                 lineHeight: 1,
-                                textShadow: '0 0 15px rgba(255,215,0,0.1)'
+                                textShadow: '0 0 15px rgba(255,215,0,0.2)' // Changed from 0.1 to 0.2
                             }}>
                                 {mentor.name}
                             </h1>
