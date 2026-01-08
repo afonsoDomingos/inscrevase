@@ -78,7 +78,7 @@ export default function MentorDashboard() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [router]);
 
     useEffect(() => {
         loadDashboard();

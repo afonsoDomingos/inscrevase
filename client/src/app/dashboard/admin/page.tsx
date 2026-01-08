@@ -52,7 +52,7 @@ export default function AdminDashboard() {
         // Poll for unread count every 30 seconds
         const interval = setInterval(loadUnreadCount, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [router]);
 
     const loadUnreadCount = async () => {
         try {

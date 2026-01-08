@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
     MapPin, Calendar, ChevronLeft, Loader2,
-    Instagram, Linkedin, Facebook, Globe, MessageCircle, Star,
+    Instagram, Linkedin, Facebook, Globe, MessageCircle,
     Award, Verified, Briefcase, ExternalLink
 } from 'lucide-react';
 import Image from 'next/image';
@@ -337,7 +337,7 @@ export default function MentorProfilePage() {
     );
 }
 
-const Users = ({ size, style }: { size: number, style?: any }) => (
+const Users = ({ size, style }: { size: number, style?: React.CSSProperties }) => (
     <div style={{ ...style }}>
         <Loader2 className="animate-spin" size={size} />
     </div>

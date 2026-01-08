@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, DollarSign, X } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SubmissionList() {
