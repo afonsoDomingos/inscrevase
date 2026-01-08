@@ -75,13 +75,15 @@ export default function MentorProfilePage() {
 
             {/* Premium Cinematic Header */}
             <div style={{
-                height: '250px',
+                height: '180px',
                 background: '#0a0a0a',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                borderBottom: '2px solid #FFD700',
+                boxShadow: '0 5px 20px rgba(255,215,0,0.1)'
             }}>
                 <div style={{
                     position: 'absolute',
@@ -125,10 +127,10 @@ export default function MentorProfilePage() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             style={{
-                                width: '220px', height: '220px', borderRadius: '50%',
-                                padding: '6px', background: 'var(--gold-gradient)',
-                                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                                flexShrink: 0, position: 'relative', top: '110px',
+                                width: '160px', height: '160px', borderRadius: '50%',
+                                padding: '4px', background: 'var(--gold-gradient)',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                flexShrink: 0, position: 'relative', top: '70px',
                                 zIndex: 10
                             }}
                         >
@@ -159,7 +161,14 @@ export default function MentorProfilePage() {
                                 </div>
                                 <Verified size={20} className="gold-text" />
                             </div>
-                            <h1 style={{ fontSize: '3rem', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-playfair)', lineHeight: 1 }}>
+                            <h1 style={{
+                                fontSize: '2.5rem',
+                                fontWeight: 900,
+                                color: '#fff',
+                                fontFamily: 'var(--font-playfair)',
+                                lineHeight: 1,
+                                textShadow: '0 0 15px rgba(255,215,0,0.1)'
+                            }}>
                                 {mentor.name}
                             </h1>
                             {mentor.businessName && (
@@ -173,7 +182,7 @@ export default function MentorProfilePage() {
             </div>
 
             {/* Profile Strategic Layout */}
-            <main style={{ maxWidth: '1200px', margin: '140px auto 80px', padding: '0 20px' }}>
+            <main style={{ maxWidth: '1200px', margin: '100px auto 80px', padding: '0 20px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '3rem' }}>
 
                     {/* Left Sidebar - Key Info & Socials */}

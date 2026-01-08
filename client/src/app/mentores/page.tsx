@@ -42,13 +42,14 @@ export default function MentorsShowcase() {
 
             {/* Hero Section - Upgraded Aesthetics */}
             <section style={{
-                padding: '100px 20px 60px',
+                padding: '70px 20px 40px',
                 background: '#0a0a0a',
                 color: '#fff',
                 textAlign: 'center',
                 position: 'relative',
                 overflow: 'hidden',
-                borderBottom: '1px solid rgba(255,215,0,0.1)'
+                borderBottom: '2px solid #FFD700',
+                boxShadow: '0 10px 30px rgba(255,215,0,0.1)'
             }}>
                 {/* Dynamic Background Elements */}
                 <div style={{
@@ -82,11 +83,12 @@ export default function MentorsShowcase() {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '8px',
-                        background: 'rgba(255,215,0,0.1)',
-                        padding: '6px 16px',
+                        background: 'rgba(255,215,0,0.15)',
+                        padding: '4px 14px',
                         borderRadius: '50px',
-                        border: '1px solid rgba(255,215,0,0.2)',
-                        marginBottom: '1.5rem'
+                        border: '1px solid #FFD700',
+                        marginBottom: '1rem',
+                        boxShadow: '0 0 15px rgba(255,215,0,0.2)'
                     }}>
                         <Award size={14} className="gold-text" />
                         <span style={{
@@ -101,24 +103,26 @@ export default function MentorsShowcase() {
                     </div>
 
                     <h1 style={{
-                        fontSize: '3.5rem',
+                        fontSize: '2.8rem',
                         fontFamily: 'var(--font-playfair)',
                         fontWeight: 900,
-                        marginBottom: '1rem',
+                        marginBottom: '0.8rem',
                         lineHeight: 1.1,
-                        letterSpacing: '-1px',
-                        color: '#fff'
+                        letterSpacing: '-0.5px',
+                        color: '#fff',
+                        textShadow: '0 0 20px rgba(255,215,0,0.1)'
                     }}>
                         {t('mentors.title')}
                     </h1>
 
                     <p style={{
-                        fontSize: '1.1rem',
-                        color: '#888',
-                        marginBottom: '2.5rem',
-                        maxWidth: '600px',
-                        margin: '0 auto 2.5rem',
-                        lineHeight: 1.6
+                        fontSize: '1rem',
+                        color: '#aaa',
+                        marginBottom: '2rem',
+                        maxWidth: '550px',
+                        margin: '0 auto 2rem',
+                        lineHeight: 1.5,
+                        opacity: 0.8
                     }}>
                         {t('mentors.subtitle')}
                     </p>
