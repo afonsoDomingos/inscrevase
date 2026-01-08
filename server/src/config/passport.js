@@ -60,8 +60,7 @@ if (linkedinClientId && linkedinClientSecret) {
         callbackURL: process.env.NODE_ENV === 'production'
             ? 'https://inscrevase.onrender.com/api/auth/linkedin/callback'
             : 'http://localhost:5000/api/auth/linkedin/callback',
-        scope: ['openid', 'profile', 'email'],
-        state: true
+        scope: ['openid', 'profile', 'email']
     },
         async (accessToken, refreshToken, profile, done) => {
             try {
