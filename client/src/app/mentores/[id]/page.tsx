@@ -6,13 +6,14 @@ import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion } from 'framer-motion';
 import {
-    MapPin, Calendar, ChevronLeft, Loader2,
     Instagram, Linkedin, Facebook, Globe, MessageCircle,
-    Award, Verified, Briefcase, ExternalLink
+    Award, Verified, Briefcase, ExternalLink, Users, Heart, UserPlus, UserMinus,
+    MapPin, Calendar, ChevronLeft, Loader2
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
+import { authService } from '@/lib/authService';
 
 export default function MentorProfilePage() {
     const { id } = useParams();
@@ -21,12 +22,23 @@ export default function MentorProfilePage() {
     const [mentor, setMentor] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followersCount, setFollowersCount] = useState(0);
+    const [followingLoading, setFollowingLoading] = useState(false);
+    const currentUser = authService.getCurrentUser();
+
     useEffect(() => {
         const fetchMentor = async () => {
             try {
                 if (!id) return;
                 const data = await userService.getPublicMentorById(id as string);
                 setMentor(data);
+                setFollowersCount(data.followers?.length || 0);
+
+                if (currentUser) {
+                    const userId = currentUser.id || currentUser._id;
+                    setIsFollowing(data.followers?.includes(userId as string) || false);
+                }
             } catch (error) {
                 console.error("Error fetching mentor:", error);
             } finally {
@@ -34,7 +46,28 @@ export default function MentorProfilePage() {
             }
         };
         fetchMentor();
-    }, [id]);
+    }, [id, currentUser]);
+
+    const handleFollowToggle = async () => {
+        if (!currentUser) {
+            router.push('/entrar');
+            return;
+        }
+
+        try {
+            setFollowingLoading(true);
+            const mentorId = mentor?.id || mentor?._id;
+            if (!mentorId) return;
+
+            const result = await userService.toggleFollow(mentorId);
+            setIsFollowing(result.isFollowing);
+            setFollowersCount(result.followersCount);
+        } catch (error) {
+            console.error("Error toggling follow:", error);
+        } finally {
+            setFollowingLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -169,11 +202,47 @@ export default function MentorProfilePage() {
                             }}>
                                 {mentor.name}
                             </h1>
-                            {mentor.businessName && (
-                                <p style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: '1.2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Briefcase size={20} className="gold-text" /> {mentor.businessName}
-                                </p>
-                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginTop: '1.2rem' }}>
+                                {mentor.businessName && (
+                                    <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                                        <Briefcase size={18} className="gold-text" /> {mentor.businessName}
+                                    </p>
+                                )}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFD700', fontWeight: 700, fontSize: '1.1rem' }}>
+                                    <Users size={18} /> {followersCount} {t('common.followers') || 'Seguidores'}
+                                </div>
+                            </div>
+
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleFollowToggle}
+                                disabled={followingLoading}
+                                style={{
+                                    marginTop: '1.5rem',
+                                    padding: '0.8rem 2rem',
+                                    borderRadius: '100px',
+                                    background: isFollowing ? 'transparent' : 'var(--gold-gradient)',
+                                    color: isFollowing ? '#fff' : '#000',
+                                    border: isFollowing ? '1px solid #FFD700' : 'none',
+                                    fontWeight: 800,
+                                    fontSize: '0.9rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    boxShadow: isFollowing ? 'none' : '0 10px 20px rgba(255,215,0,0.2)',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                {followingLoading ? (
+                                    <Loader2 className="animate-spin" size={18} />
+                                ) : isFollowing ? (
+                                    <><UserMinus size={18} /> Seguindo</>
+                                ) : (
+                                    <><UserPlus size={18} /> Seguir Mentor</>
+                                )}
+                            </motion.button>
                         </motion.div>
                     </div>
                 </div>
@@ -350,9 +419,3 @@ export default function MentorProfilePage() {
         </div>
     );
 }
-
-const Users = ({ size, style }: { size: number, style?: React.CSSProperties }) => (
-    <div style={{ ...style }}>
-        <Loader2 className="animate-spin" size={size} />
-    </div>
-);

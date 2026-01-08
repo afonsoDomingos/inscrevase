@@ -130,7 +130,7 @@ const deleteByAdmin = async (req, res) => {
 const getPublicMentors = async (req, res) => {
     try {
         const mentors = await User.find({ role: 'mentor', status: 'active', isPublic: true })
-            .select('name businessName bio profilePhoto socialLinks country plan createdAt')
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following')
             .sort({ createdAt: -1 });
         res.json(mentors);
     } catch (err) {
@@ -141,7 +141,7 @@ const getPublicMentors = async (req, res) => {
 const getPublicMentorById = async (req, res) => {
     try {
         const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active', isPublic: true })
-            .select('name businessName bio profilePhoto socialLinks country plan createdAt');
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following');
 
         if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
 
@@ -151,4 +151,43 @@ const getPublicMentorById = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById };
+const toggleFollow = async (req, res) => {
+    try {
+        const mentorId = req.params.id;
+        const userId = req.user.id;
+
+        if (mentorId === userId) {
+            return res.status(400).json({ message: 'Cannot follow yourself' });
+        }
+
+        const mentor = await User.findById(mentorId);
+        const user = await User.findById(userId);
+
+        if (!mentor || !user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const isFollowing = mentor.followers.includes(userId);
+
+        if (isFollowing) {
+            mentor.followers = mentor.followers.filter(id => id.toString() !== userId);
+            user.following = user.following.filter(id => id.toString() !== mentorId);
+        } else {
+            mentor.followers.push(userId);
+            user.following.push(mentorId);
+        }
+
+        await mentor.save();
+        await user.save();
+
+        res.json({
+            message: isFollowing ? 'Unfollowed' : 'Followed',
+            isFollowing: !isFollowing,
+            followersCount: mentor.followers.length
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow };

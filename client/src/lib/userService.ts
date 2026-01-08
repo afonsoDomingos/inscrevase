@@ -46,5 +46,15 @@ export const userService = {
         const response = await fetch(`${API_URL}/auth/public/mentors/${id}`);
         if (!response.ok) throw new Error('Falha ao buscar mentor');
         return response.json();
+    },
+
+    async toggleFollow(id: string): Promise<{ followersCount: number, isFollowing: boolean }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/mentors/${id}/follow`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao seguir mentor');
+        return response.json();
     }
 };

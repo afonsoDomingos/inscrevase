@@ -22,6 +22,8 @@ const UserSchema = new mongoose.Schema({
     plan: { type: String, enum: ['free', 'premium'], default: 'free' },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
     isPublic: { type: Boolean, default: false }, // Admins choose who appears publicly
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now }
 });
 
