@@ -256,6 +256,8 @@
             "status": "Status",
             "actions": "Actions",
             "view": "View",
+            "details": "Details",
+            "viewData": "View Data",
             "noAttachment": "No attachment",
             "approvedLabel": "APPROVED",
             "rejectedLabel": "REJECTED",

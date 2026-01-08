@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
-import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
@@ -17,6 +17,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
+    const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -132,6 +133,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.date')}</th>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.proof')}</th>
                                 <th style={{ padding: '1rem' }}>{t('events.submissions.status')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'center' }}>{t('events.submissions.details')}</th>
                                 <th style={{ padding: '1rem', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
                             </tr>
                         </thead>
@@ -174,6 +176,19 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             {submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                         </span>
                                     </td>
+                                    <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                        <button
+                                            onClick={() => setSelectedSubmission(submission)}
+                                            style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '0.4rem 0.8rem', borderRadius: '6px',
+                                                border: '1px solid #FFD700', background: 'rgba(255,215,0,0.05)',
+                                                color: '#B8860B', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                            }}
+                                        >
+                                            <FileText size={14} /> {t('events.submissions.viewData')}
+                                        </button>
+                                    </td>
                                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                             <button
@@ -203,6 +218,118 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
             {/* Payment Proof Modal */}
             <AnimatePresence>
+                {/* Registration Details Modal */}
+                {selectedSubmission && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setSelectedSubmission(null)}
+                            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            style={{
+                                position: 'relative', width: '100%', maxWidth: '600px',
+                                maxHeight: '90vh', background: '#fff', borderRadius: '24px',
+                                overflow: 'hidden', display: 'flex', flexDirection: 'column',
+                                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+                            }}
+                        >
+                            <div style={{
+                                padding: '1.5rem 2rem', background: '#000', color: '#fff',
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                            }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>
+                                        {t('events.submissions.details')}
+                                    </h3>
+                                    <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+                                        Recebido em {formatDate(selectedSubmission.submittedAt)}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedSubmission(null)}
+                                    style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <XCircle size={20} />
+                                </button>
+                            </div>
+
+                            <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    {Object.entries(selectedSubmission.data).map(([key, value]) => (
+                                        <div key={key} style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
+                                            <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.3rem', letterSpacing: '0.5px' }}>
+                                                {key}
+                                            </label>
+                                            <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>
+                                                {String(value)}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {selectedSubmission.paymentProof && (
+                                    <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,215,0,0.05)', borderRadius: '16px', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                                            <DollarSign size={20} className="gold-text" />
+                                            <h4 style={{ fontWeight: 800 }}>{t('events.submissions.paymentProof')}</h4>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                const proof = selectedSubmission.paymentProof;
+                                                setSelectedSubmission(null);
+                                                setTimeout(() => setSelectedProof(proof!), 300);
+                                            }}
+                                            style={{
+                                                width: '100%', padding: '0.8rem', borderRadius: '10px',
+                                                border: '1px solid #000', background: '#000', color: '#FFD700',
+                                                fontWeight: 700, cursor: 'pointer', display: 'flex',
+                                                alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                            }}
+                                        >
+                                            <Eye size={18} /> {t('events.submissions.view')}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{ padding: '1.5rem 2rem', background: '#f8f9fa', borderTop: '1px solid #eee', display: 'flex', gap: '1rem' }}>
+                                <button
+                                    onClick={() => {
+                                        handleUpdateStatus(selectedSubmission._id, 'approved');
+                                        setSelectedSubmission(null);
+                                    }}
+                                    disabled={selectedSubmission.status === 'approved'}
+                                    style={{
+                                        flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none',
+                                        background: selectedSubmission.status === 'approved' ? '#eee' : '#38a169',
+                                        color: '#fff', fontWeight: 700, cursor: 'pointer'
+                                    }}
+                                >
+                                    Aprovar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        handleUpdateStatus(selectedSubmission._id, 'rejected');
+                                        setSelectedSubmission(null);
+                                    }}
+                                    disabled={selectedSubmission.status === 'rejected'}
+                                    style={{
+                                        flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none',
+                                        background: selectedSubmission.status === 'rejected' ? '#eee' : '#e53e3e',
+                                        color: '#fff', fontWeight: 700, cursor: 'pointer'
+                                    }}
+                                >
+                                    Rejeitar
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
                 {selectedProof && (
                     <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                         <motion.div

@@ -256,6 +256,8 @@
             "status": "Status",
             "actions": "Ações",
             "view": "Ver",
+            "details": "Detalhes",
+            "viewData": "Ver Dados",
             "noAttachment": "Sem anexo",
             "approvedLabel": "APROVADO",
             "rejectedLabel": "REJEITADO",

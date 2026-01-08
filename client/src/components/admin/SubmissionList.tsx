@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, DollarSign, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
 
     useEffect(() => {
         loadSubmissions();
@@ -66,6 +67,7 @@ export default function SubmissionList() {
                             <th style={{ padding: '1rem', color: '#666' }}>Evento</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Pagamento</th>
                             <th style={{ padding: '1rem', color: '#666' }}>Status</th>
+                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Detalhes</th>
                             <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
                         </tr>
                     </thead>
@@ -112,6 +114,19 @@ export default function SubmissionList() {
                                         {sub.status.toUpperCase()}
                                     </div>
                                 </td>
+                                <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                    <button
+                                        onClick={() => setSelectedSubmission(sub)}
+                                        style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                            padding: '0.4rem 0.8rem', borderRadius: '6px',
+                                            border: '1px solid #FFD700', background: 'rgba(255,215,0,0.05)',
+                                            color: '#B8860B', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                        }}
+                                    >
+                                        <FileText size={14} /> Ver Dados
+                                    </button>
+                                </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                         {sub.status !== 'approved' && (
@@ -139,6 +154,60 @@ export default function SubmissionList() {
                     </tbody>
                 </table>
             </div>
+
+            <AnimatePresence>
+                {selectedSubmission && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setSelectedSubmission(null)}
+                            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            style={{
+                                position: 'relative', width: '100%', maxWidth: '600px',
+                                maxHeight: '90vh', background: '#fff', borderRadius: '24px',
+                                overflow: 'hidden', display: 'flex', flexDirection: 'column'
+                            }}
+                        >
+                            <div style={{ padding: '1.5rem 2rem', background: '#000', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Dados de Inscrição</h3>
+                                    <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>Admin Review Mode</p>
+                                </div>
+                                <button onClick={() => setSelectedSubmission(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer' }}><X size={20} /></button>
+                            </div>
+
+                            <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    {Object.entries(selectedSubmission.data).map(([key, value]) => (
+                                        <div key={key} style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
+                                            <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.3rem' }}>{key}</label>
+                                            <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>{String(value)}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div style={{ padding: '1.5rem 2rem', background: '#f8f9fa', borderTop: '1px solid #eee', display: 'flex', gap: '1rem' }}>
+                                <button
+                                    onClick={() => { handleUpdateStatus(selectedSubmission._id, 'approved'); setSelectedSubmission(null); }}
+                                    style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none', background: '#38a169', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                    Aprovar
+                                </button>
+                                <button
+                                    onClick={() => { handleUpdateStatus(selectedSubmission._id, 'rejected'); setSelectedSubmission(null); }}
+                                    style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none', background: '#e53e3e', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                    Rejeitar
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
