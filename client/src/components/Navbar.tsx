@@ -112,6 +112,12 @@ export default function Navbar() {
         .logo-container {
           text-decoration: none !important;
         }
+        .logo-container:hover,
+        .logo-container:active,
+        .logo-container:focus,
+        .logo-container:visited {
+          text-decoration: none !important;
+        }
         .logo-with-text {
           display: flex;
           align-items: center;
@@ -141,6 +147,7 @@ export default function Navbar() {
         .tesla-logo-text .gold-text {
           color: #FFD700 !important;
           text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+          text-decoration: none !important;
         }
         .navbar.scrolled .tesla-logo-text {
           color: #000000 !important;
@@ -167,21 +174,9 @@ export default function Navbar() {
         .logo-container:hover .tesla-logo-text::before {
           left: 100%;
         }
-        /* Floating Underline on Logo Hover */
-        .tesla-logo-text::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          width: 0;
-          height: 2px;
-          background: #FFD700;
-          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          transform: translateX(-50%);
-          box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-        }
+        /* Remove any underline that might appear */
         .logo-container:hover .tesla-logo-text::after {
-          width: 80%;
+          display: none;
         }
         .logo-container:hover .tesla-logo-text {
           transform: translateY(-2px);
