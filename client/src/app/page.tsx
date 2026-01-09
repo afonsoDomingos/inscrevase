@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { ArrowRight, CheckCircle, Palette, Zap, ShieldCheck, BarChart3, MessageCircle } from "lucide-react";
+import { CheckCircle, Palette, Zap, ShieldCheck, BarChart3, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
@@ -304,47 +304,136 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section - Sophisticated */}
-      <section style={{ padding: '120px 0', background: '#000', position: 'relative' }}>
-        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.05) 100%)',
-              padding: '6rem 3rem',
-              borderRadius: '60px',
-              border: '1px solid rgba(255,215,0,0.2)',
-              textAlign: 'center',
-              backdropFilter: 'blur(20px)'
-            }}
-          >
-            <h2 style={{ fontSize: '3.5rem', marginBottom: '2rem', color: '#fff' }}>{t('landing.cta.title')}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '3.5rem', fontSize: '1.25rem', maxWidth: '700px', margin: '0 auto 3.5rem' }}>
-              {t('landing.cta.description')}
-            </p>
-            <Link href="/cadastro" className="btn-primary" style={{ padding: '1.5rem 4rem', fontSize: '1.2rem', borderRadius: '100px' }}>
-              {t('landing.cta.button')}
-            </Link>
-          </motion.div>
+      {/* Tesla-inspired Showcase Section */}
+      <section style={{ padding: '0 20px 80px', background: '#fff' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
+          gap: '24px',
+          maxWidth: '1600px',
+          margin: '0 auto'
+        }}>
+          {/* Block 1: Masterclasses */}
+          <div style={{
+            position: 'relative',
+            height: '600px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            padding: '60px',
+            textAlign: 'center'
+          }}>
+            <Image
+              src="/luxury_masterclass_event_1767917828982.png"
+              alt="Masterclass"
+              fill
+              style={{ objectFit: 'cover', zIndex: 0 }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', zIndex: 1 }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Masterclasses</h2>
+              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>Aprenda com os melhores mentores do mercado.</p>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/cadastro" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'var(--gold-gradient)',
+                  color: '#000',
+                  textDecoration: 'none',
+                  fontWeight: 700
+                }}>
+                  {t('common.getStarted')}
+                </Link>
+                <Link href="/mentores" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#393c41',
+                  textDecoration: 'none',
+                  fontWeight: 600
+                }}>
+                  Ver Mais
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Block 2: VIP Events */}
+          <div style={{
+            position: 'relative',
+            height: '600px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            padding: '60px',
+            textAlign: 'center'
+          }}>
+            <Image
+              src="/vip_networking_event_1767917843966.png"
+              alt="Networking"
+              fill
+              style={{ objectFit: 'cover', zIndex: 0 }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', zIndex: 1 }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Gala & Networking</h2>
+              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>Conexões exclusivas em ambientes de elite.</p>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/entrar" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'var(--gold-gradient)',
+                  color: '#000',
+                  textDecoration: 'none',
+                  fontWeight: 700
+                }}>
+                  Participar
+                </Link>
+                <Link href="/mentores" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#393c41',
+                  textDecoration: 'none',
+                  fontWeight: 600
+                }}>
+                  Explorar
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <footer style={{ padding: '6rem 0', background: '#fafafa', textAlign: 'center', borderTop: '1px solid #eee' }}>
+      {/* Tesla-inspired Minimalist Footer */}
+      <footer style={{ padding: '40px 0 60px', background: '#fff' }}>
         <div className="container">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
-            <span style={{ fontFamily: 'var(--font-playfair)', fontWeight: 800, fontSize: '2rem' }}>
-              Inscreva<span className="gold-text">.se</span>
-            </span>
-            <div style={{ display: 'flex', gap: '2rem' }}>
-              <Link href="/mentores" style={{ color: '#666', textDecoration: 'none', fontWeight: 600 }}>Mentores</Link>
-              <Link href="/cadastro" style={{ color: '#666', textDecoration: 'none', fontWeight: 600 }}>Começar</Link>
-              <Link href="/suporte" style={{ color: '#666', textDecoration: 'none', fontWeight: 600 }}>Suporte</Link>
-            </div>
-            <p style={{ color: '#999', fontSize: '0.9rem', maxWidth: '500px' }}>
-              &copy; {new Date().getFullYear()} Inscreva-se. {t('landing.footer.rights')}
-            </p>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '24px',
+            flexWrap: 'wrap',
+            fontSize: '0.8rem',
+            color: '#5c5e62',
+            fontWeight: 600
+          }}>
+            <span>Inscreva-se © {new Date().getFullYear()}</span>
+            <Link href="/privacidade" style={{ textDecoration: 'none', color: 'inherit' }}>Privacidade e Termos</Link>
+            <Link href="/mentores" style={{ textDecoration: 'none', color: 'inherit' }}>Eventos</Link>
+            <Link href="/suporte" style={{ textDecoration: 'none', color: 'inherit' }}>Suporte</Link>
+            <Link href="/entrar" style={{ textDecoration: 'none', color: 'inherit' }}>Login</Link>
+            <Link href="/cadastro" style={{ textDecoration: 'none', color: 'inherit' }}>Começar Agora</Link>
           </div>
         </div>
       </footer>

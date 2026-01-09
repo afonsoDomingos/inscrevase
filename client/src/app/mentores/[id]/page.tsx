@@ -635,15 +635,18 @@ export default function MentorProfilePage() {
                                 overflow: 'hidden'
                             }}
                         >
-                            <img
+                            <Image
                                 src={selectedImage}
                                 alt="Imagem ampliada"
+                                width={1200}
+                                height={800}
                                 style={{
                                     maxWidth: '100%',
                                     maxHeight: '85vh',
                                     display: 'block',
                                     objectFit: 'contain'
                                 }}
+                                unoptimized
                             />
                         </motion.div>
                     </motion.div>
