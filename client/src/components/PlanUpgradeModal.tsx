@@ -65,7 +65,17 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
     );
 }
 
-function PlanCard({ name, price, color, icon, features, onSelect, loading }: any) {
+interface PlanCardProps {
+    name: string;
+    price: string;
+    color: string;
+    icon: React.ReactNode;
+    features: string[];
+    onSelect: () => void;
+    loading: boolean;
+}
+
+function PlanCard({ name, price, color, icon, features, onSelect, loading }: PlanCardProps) {
     return (
         <div style={{ border: `2px solid ${color}20`, padding: '30px', borderRadius: '24px', textAlign: 'center' }}>
             <div style={{ background: `${color}10`, color: color, padding: '15px', borderRadius: '50%', width: 'fit-content', margin: '0 auto 20px' }}>

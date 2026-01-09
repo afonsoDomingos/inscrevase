@@ -6,7 +6,7 @@ import { CreditCard, Loader2 } from 'lucide-react';
 
 interface StripeCheckoutProps {
     formId: string;
-    formData: Record<string, any>;
+    formData: Record<string, string | number | boolean | null>;
     eventTitle?: string;
     price: number;
     currency: string;

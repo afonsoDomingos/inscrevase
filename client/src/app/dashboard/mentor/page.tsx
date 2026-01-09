@@ -44,7 +44,7 @@ import StripeConnect from '@/components/StripeConnect';
 import EarningsDashboard from '@/components/EarningsDashboard';
 import PlanUpgradeModal from '@/components/PlanUpgradeModal';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings';
 
 export default function MentorDashboard() {
     const { t } = useTranslate();
@@ -61,6 +61,7 @@ export default function MentorDashboard() {
     const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
     const [themeModalData, setThemeModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
     const [unreadCount, setUnreadCount] = useState(0);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     const loadDashboard = useCallback(async () => {
         try {
@@ -568,10 +569,25 @@ export default function MentorDashboard() {
 
                     {activeTab === 'settings' && (
                         <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <StripeConnect />
                             <MentorSettings user={user} onUpdate={loadDashboard} />
+                            <div style={{ marginTop: '2rem' }}>
+                                <button
+                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    className="btn-secondary"
+                                    style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', cursor: 'pointer', border: '1px solid #ddd', background: '#fff' }}
+                                >
+                                    Fazer Upgrade de Plano
+                                </button>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <PlanUpgradeModal
+                    isOpen={isUpgradeModalOpen}
+                    onClose={() => setIsUpgradeModalOpen(false)}
+                />
 
                 <CreateEventModal
                     isOpen={isEventModalOpen}
