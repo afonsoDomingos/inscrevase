@@ -26,7 +26,7 @@ exports.createConnectAccount = async (req, res) => {
         // Create Express account
         const account = await stripe.accounts.create({
             type: 'express',
-            country: user.country || 'US',
+            country: user.country || 'US', // Fallback to US if not set
             email: user.email,
             capabilities: {
                 card_payments: { requested: true },
@@ -44,7 +44,11 @@ exports.createConnectAccount = async (req, res) => {
             message: 'Stripe account created successfully'
         });
     } catch (error) {
-        console.error('Stripe Connect Error:', error);
+        console.error('--- STRIPE CREATE ACCOUNT ERROR ---');
+        console.error('Code:', error.code);
+        console.error('Type:', error.type);
+        console.error('Message:', error.message);
+        console.error('-----------------------------------');
         res.status(500).json({ message: error.message });
     }
 };

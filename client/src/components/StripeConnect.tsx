@@ -42,10 +42,15 @@ export default function StripeConnect() {
             const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
             // 1. Garantir que a conta Stripe existe (Create if not exists)
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/create`, {
+            const createRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/create`, {
                 method: 'POST',
                 headers
             });
+
+            if (!createRes.ok) {
+                const errorData = await createRes.json();
+                throw new Error(errorData.message || 'Falha ao criar conta Stripe');
+            }
 
             // 2. Pegar o link de onboarding
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/onboarding`, {
