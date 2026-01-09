@@ -4,6 +4,7 @@ const stripeController = require('../controllers/stripeController');
 const { authMiddleware } = require('../middleware/authMiddleware');
 
 router.get('/test', (req, res) => res.json({ message: 'Stripe routes are active' }));
+router.get('/whoami', stripeController.whoami);
 
 /**
  * STRIPE CONNECT ROUTES

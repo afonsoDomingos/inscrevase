@@ -278,6 +278,22 @@ exports.handleWebhook = async (req, res) => {
     res.json({ received: true });
 };
 
+exports.whoami = async (req, res) => {
+    try {
+        const account = await stripe.accounts.retrieve();
+        res.status(200).json({
+            success: true,
+            account_id: account.id,
+            business_name: account.settings?.dashboard?.display_name,
+            email: account.email,
+            charges_enabled: account.charges_enabled,
+            details_submitted: account.details_submitted
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
 exports.createSubscription = async (req, res) => {
     try {
         const { plan } = req.body;
