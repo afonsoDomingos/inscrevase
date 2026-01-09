@@ -115,7 +115,9 @@ exports.createCheckoutSession = async (req, res) => {
         const { formId, submissionData, userCountry } = req.body;
 
         const form = await Form.findById(formId).populate('creator');
-        if (!form) return res.status(404).json({ message: 'Form not found' });
+        if (!form || !form.slug) {
+            return res.status(404).json({ message: 'Form not found or slug missing' });
+        }
 
         if (!form.paymentConfig?.enabled || !form.paymentConfig?.price) {
             return res.status(400).json({ message: 'This event is not set up for payments' });
