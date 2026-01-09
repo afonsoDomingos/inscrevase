@@ -138,7 +138,7 @@ exports.createCheckoutSession = async (req, res) => {
             payment_method_types: ['card'],
             line_items: [{
                 price_data: {
-                    currency: form.paymentConfig.currency.toLowerCase(),
+                    currency: form.paymentConfig.currency === 'MT' ? 'mzn' : form.paymentConfig.currency.toLowerCase(),
                     product_data: {
                         name: form.title,
                         description: `Registration for ${form.title}`,
