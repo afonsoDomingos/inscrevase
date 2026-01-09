@@ -7,6 +7,7 @@ import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, I
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 
 export default function PublicForm({ params }: { params: { slug: string } }) {
     const { t } = useTranslate();
@@ -57,6 +58,13 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!form) return;
+
+        // Validation for paid events with manual proof
+        if (form.paymentConfig?.enabled && form.paymentConfig?.requireProof && !file) {
+            toast.error('Por favor, anexe o comprovativo de pagamento para continuar.');
+            return;
+        }
+
         setSubmitting(true);
 
         try {
@@ -284,41 +292,68 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
 
                                 <div style={{ display: 'grid', gap: '1.2rem' }}>
                                     {form.creator && form.creator.name && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: cardBg, padding: '1rem', borderRadius: '15px' }}>
-                                            <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: `2px solid ${primaryColor}` }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '1.5rem',
+                                            background: 'rgba(255,255,255,0.03)',
+                                            padding: '1.5rem',
+                                            borderRadius: '24px',
+                                            border: '1px solid rgba(255,255,255,0.08)',
+                                            backdropFilter: 'blur(10px)',
+                                            margin: '1rem 0'
+                                        }}>
+                                            <div style={{
+                                                position: 'relative',
+                                                width: '75px',
+                                                height: '75px',
+                                                borderRadius: '20px',
+                                                overflow: 'hidden',
+                                                border: `2px solid ${primaryColor}`,
+                                                boxShadow: `0 0 20px ${primaryColor}20`,
+                                                flexShrink: 0
+                                            }}>
                                                 {form.creator.profilePhoto ? (
                                                     <Image src={form.creator.profilePhoto} alt={form.creator.name} fill style={{ objectFit: 'cover' }} />
                                                 ) : (
-                                                    <div style={{ width: '100%', height: '100%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>
+                                                    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #222, #000)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor, fontSize: '1.5rem', fontWeight: 800 }}>
                                                         {form.creator.name.charAt(0).toUpperCase()}
                                                     </div>
                                                 )}
                                             </div>
-                                            <div>
-                                                <div style={{ fontSize: '0.9rem', color: secondaryTextColor }}>{t('form.responsibleMentor')}</div>
-                                                <div style={{ fontWeight: 600 }}>{form.creator.name}</div>
-                                                {form.creator.bio && <div style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '2px' }}>{form.creator.bio}</div>}
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: '0.7rem', color: primaryColor, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '1px', marginBottom: '0.2rem' }}>
+                                                    {t('form.responsibleMentor') || 'Mentor Responsável'}
+                                                </div>
+                                                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: textColor, marginBottom: '0.3rem' }}>
+                                                    {form.creator.name}
+                                                </div>
+                                                {form.creator.bio && (
+                                                    <div style={{ fontSize: '0.85rem', color: secondaryTextColor, lineHeight: '1.4', marginBottom: '0.8rem' }}>
+                                                        {form.creator.bio}
+                                                    </div>
+                                                )}
 
                                                 {form.creator.socialLinks && (
-                                                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                                                    <div style={{ display: 'flex', gap: '12px' }}>
                                                         {form.creator.socialLinks.instagram && (
-                                                            <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                                <Instagram size={16} />
+                                                            <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'all 0.2s' }}>
+                                                                <Instagram size={18} />
                                                             </a>
                                                         )}
                                                         {form.creator.socialLinks.linkedin && (
-                                                            <a href={form.creator.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                                <Linkedin size={16} />
+                                                            <a href={form.creator.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'all 0.2s' }}>
+                                                                <Linkedin size={18} />
                                                             </a>
                                                         )}
                                                         {form.creator.socialLinks.facebook && (
-                                                            <a href={form.creator.socialLinks.facebook} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                                <Facebook size={16} />
+                                                            <a href={form.creator.socialLinks.facebook} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'all 0.2s' }}>
+                                                                <Facebook size={18} />
                                                             </a>
                                                         )}
                                                         {form.creator.socialLinks.website && (
-                                                            <a href={form.creator.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'color 0.2s' }}>
-                                                                <Globe size={16} />
+                                                            <a href={form.creator.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor, transition: 'all 0.2s' }}>
+                                                                <Globe size={18} />
                                                             </a>
                                                         )}
                                                     </div>

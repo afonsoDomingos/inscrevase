@@ -39,10 +39,24 @@ export default function StripeCheckout({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ formId, submissionData: formData })
             });
-            const { url } = await response.json();
-            window.location.href = url;
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || 'Erro ao iniciar checkout');
+                setLoading(false);
+                return;
+            }
+
+            if (result.url) {
+                window.location.href = result.url;
+            } else {
+                alert('Erro: URL de pagamento não recebida.');
+                setLoading(false);
+            }
         } catch (err: unknown) {
             console.error('Payment Error:', err);
+            alert('Falha na conexão com o sistema de pagamentos.');
             setLoading(false);
         }
     };
@@ -80,12 +94,12 @@ export default function StripeCheckout({
                     <p style={{ color: '#888', fontSize: '0.9rem' }}>Powered by Stripe</p>
                 </div>
                 <div style={{ padding: '30px' }}>
-                    <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '16px', marginBottom: '20px' }}>
-                        <div style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Evento</div>
-                        <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{eventTitle}</div>
-                        <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #ddd', display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Total</span>
-                            <span style={{ fontWeight: 800 }}>{price} {currency}</span>
+                    <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '16px', marginBottom: '20px', border: '1px solid #eee' }}>
+                        <div style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '4px' }}>Evento</div>
+                        <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#000', marginBottom: '12px' }}>{eventTitle}</div>
+                        <div style={{ marginTop: '10px', paddingTop: '15px', borderTop: '1px dashed #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: '#444', fontWeight: 600 }}>Total a pagar</span>
+                            <span style={{ fontWeight: 900, fontSize: '1.4rem', color: '#000' }}>{price} {currency}</span>
                         </div>
                     </div>
                     <button
