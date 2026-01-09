@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, X, Crown, Sparkles, Loader2 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);
@@ -10,11 +11,12 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
     const handleUpgrade = async (plan: string) => {
         try {
             setLoading(plan);
+            const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ plan })
             });

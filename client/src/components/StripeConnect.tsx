@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { CreditCard, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 interface StripeStatus {
     onboardingComplete: boolean;
@@ -15,8 +16,9 @@ export default function StripeConnect() {
 
     const checkStatus = useCallback(async () => {
         try {
+            const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/status`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 const data = await response.json();
@@ -36,7 +38,7 @@ export default function StripeConnect() {
     const handleConnect = async () => {
         try {
             setConnecting(true);
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
             // 1. Garantir que a conta Stripe existe (Create if not exists)

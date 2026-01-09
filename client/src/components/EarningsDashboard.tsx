@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, Wallet, Clock } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 interface Transaction {
     _id: string;
@@ -28,8 +29,9 @@ export default function EarningsDashboard() {
     useEffect(() => {
         const loadEarnings = async () => {
             try {
+                const token = Cookies.get('token');
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/earnings`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const result = await response.json();
                 setData(result);
