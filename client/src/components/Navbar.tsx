@@ -91,15 +91,16 @@ export default function Navbar() {
           top: 0;
           width: 100%;
           z-index: 1000;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
           background: transparent;
         }
         .navbar.scrolled {
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(15px);
-          -webkit-backdrop-filter: blur(15px);
-          padding: 0.8rem 3rem;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          padding: 0.7rem 3rem;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+          border-bottom: 1px solid rgba(255, 215, 0, 0.2);
         }
         .nav-container {
           max-width: 1400px;
@@ -109,44 +110,46 @@ export default function Navbar() {
           align-items: center;
         }
         .logo-container {
-          text-decoration: none;
+          text-decoration: none !important;
         }
         .logo-with-text {
           display: flex;
           align-items: center;
-          gap: 0.8rem;
+          gap: 1rem;
         }
         .nav-logo-img {
           object-fit: contain;
-          filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
-          transition: transform 0.3s ease;
+          filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+          transition: all 0.5s ease;
         }
         .logo-container:hover .nav-logo-img {
-          transform: scale(1.1);
+          transform: scale(1.1) rotate(-5deg);
         }
         .tesla-logo-text {
-          font-family: var(--font-poppins), sans-serif;
-          font-weight: 800;
-          letter-spacing: 4px;
-          font-size: 1.2rem;
-          color: white;
-          transition: color 0.3s;
+          font-family: 'Poppins', sans-serif !important;
+          font-weight: 800 !important;
+          letter-spacing: 5px;
+          font-size: 1.3rem;
+          color: #FFFFFF !important;
+          text-decoration: none !important;
+          transition: all 0.3s;
         }
         .tesla-logo-text .gold-text {
-          color: #FFD700;
+          color: #FFD700 !important;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
         .navbar.scrolled .tesla-logo-text {
-          color: #000;
+          color: #000000 !important;
         }
         .navbar.scrolled .tesla-logo-text .gold-text {
-          color: #B8860B;
+          color: #B8860B !important;
         }
         .nav-center-links {
           display: flex;
-          gap: 2rem;
+          gap: 1rem;
         }
-        .nav-item {
-          font-family: var(--font-poppins), sans-serif !important;
+        :global(.nav-item) {
+          font-family: 'Poppins', sans-serif !important;
           color: #FFD700 !important;
           text-decoration: none !important;
           font-size: 0.8rem;
@@ -154,35 +157,57 @@ export default function Navbar() {
           text-transform: uppercase;
           letter-spacing: 1.5px;
           transition: all 0.3s ease;
-          padding: 0.5rem 1rem;
+          padding: 0.8rem 1.5rem;
           position: relative;
           display: inline-block;
+          overflow: hidden;
         }
-        .navbar.scrolled .nav-item {
-          color: #B8860B !important;
+        .navbar.scrolled :global(.nav-item) {
+          color: #8B6508 !important;
         }
-        /* Creative Underline Effect */
-        .nav-item::after {
+        /* Creative Background Hover Effect */
+        :global(.nav-item)::before {
           content: '';
           position: absolute;
-          bottom: 0;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 215, 0, 0.1),
+            transparent
+          );
+          transition: all 0.4s ease;
+        }
+        :global(.nav-item):hover::before {
+          left: 100%;
+        }
+        /* Hover State */
+        :global(.nav-item):hover {
+          color: #fff !important;
+          transform: translateY(-3px);
+          text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        .navbar.scrolled :global(.nav-item):hover {
+          color: #000 !important;
+        }
+        /* Creative Floating Line */
+        :global(.nav-item)::after {
+          content: '';
+          position: absolute;
+          bottom: 5px;
           left: 50%;
           width: 0;
           height: 2px;
           background: #FFD700;
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           transform: translateX(-50%);
-          box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+          box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
         }
-        .navbar.scrolled .nav-item::after {
-          background: #B8860B;
-        }
-        .nav-item:hover::after {
-          width: 70%;
-        }
-        .nav-item:hover {
-          transform: translateY(-2px);
-          text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        :global(.nav-item):hover::after {
+          width: 50%;
         }
         .nav-right-section {
           display: flex;
@@ -190,25 +215,27 @@ export default function Navbar() {
           align-items: center;
           gap: 1.5rem;
         }
-        .icon-link {
+        :global(.icon-link) {
           color: #FFD700 !important;
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           display: flex;
           align-items: center;
           justify-content: center;
+          text-decoration: none !important;
         }
-        .navbar.scrolled .icon-link {
+        .navbar.scrolled :global(.icon-link) {
           color: #B8860B !important;
         }
-        .icon-link:hover {
-          transform: scale(1.2) rotate(5deg);
-          color: #fff !important;
-          filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+        :global(.icon-link):hover {
+          transform: scale(1.3) rotate(15deg);
+          color: #FFFFFF !important;
+          filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
         }
         .mobile-toggle {
           display: none;
           background: none;
           border: none;
+          cursor: pointer;
         }
         @media (max-width: 992px) {
           .nav-center-links, .nav-right-section { display: none; }
@@ -220,18 +247,21 @@ export default function Navbar() {
           top: 100%;
           left: 0;
           width: 100%;
-          background: white;
-          padding: 2rem;
+          background: #FFFFFF;
+          padding: 2.5rem;
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+          border-bottom: 3px solid #FFD700;
         }
         .mobile-menu a {
-          color: #000;
-          text-decoration: none;
-          font-weight: 600;
-          font-size: 1.1rem;
+          color: #000000 !important;
+          text-decoration: none !important;
+          font-family: 'Poppins', sans-serif !important;
+          font-weight: 700;
+          font-size: 1.2rem;
+          text-transform: uppercase;
         }
       `}</style>
     </nav>
