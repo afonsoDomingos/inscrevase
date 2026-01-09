@@ -1,11 +1,13 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { CreditCard, CheckCircle, ExternalLink, AlertCircle, Loader2 } from 'lucide-react';
+import { CreditCard, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
+
+interface StripeStatus {
+    onboardingComplete: boolean;
+    connected: boolean;
+}
 
 export default function StripeConnect() {
-    const [status, setStatus] = useState<any>(null);
+    const [status, setStatus] = useState<StripeStatus | null>(null);
     const [loading, setLoading] = useState(true);
     const [connecting, setConnecting] = useState(false);
 

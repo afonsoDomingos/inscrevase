@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, Lock, X, Sparkles, CheckCircle, Globe, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { CreditCard, Loader2 } from 'lucide-react';
 
 interface StripeCheckoutProps {
     formId: string;
@@ -28,7 +28,6 @@ export default function StripeCheckout({
 }: StripeCheckoutProps) {
     const [isInternalOpen, setIsInternalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const showModal = isOpen || isInternalOpen;
 
@@ -42,8 +41,8 @@ export default function StripeCheckout({
             });
             const { url } = await response.json();
             window.location.href = url;
-        } catch (err: any) {
-            setError(err.message || 'Erro ao processar pagamento');
+        } catch (err: unknown) {
+            console.error('Payment Error:', err);
             setLoading(false);
         }
     };

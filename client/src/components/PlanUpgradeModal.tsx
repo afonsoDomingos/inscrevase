@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Crown, Zap, Sparkles, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Check, X, Crown, Sparkles, Loader2 } from 'lucide-react';
 
 export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);

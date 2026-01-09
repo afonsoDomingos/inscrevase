@@ -1,11 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { DollarSign, TrendingUp, Wallet, PieChart, ArrowUpRight, Clock, ChevronRight } from 'lucide-react';
+import { DollarSign, TrendingUp, Wallet, Clock } from 'lucide-react';
+
+interface Transaction {
+    _id: string;
+    form: { title: string };
+    amount: number;
+    currency: string;
+    mentorEarnings: number;
+    createdAt: string;
+}
+
+interface EarningsData {
+    summary: {
+        totalRevenue: number;
+        totalEarnings: number;
+        totalFees: number;
+    };
+    transactions: Transaction[];
+}
 
 export default function EarningsDashboard() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<EarningsData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -62,7 +79,7 @@ export default function EarningsDashboard() {
                     {transactions.length === 0 ? (
                         <p style={{ color: '#999', textAlign: 'center', padding: '2rem' }}>Nenhuma transação encontrada ainda.</p>
                     ) : (
-                        transactions.map((tx: any) => (
+                        transactions.map((tx: Transaction) => (
                             <div key={tx._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid #f0f0f0' }}>
                                 <div>
                                     <div style={{ fontWeight: 600 }}>{tx.form?.title || 'Evento'}</div>
@@ -81,7 +98,7 @@ export default function EarningsDashboard() {
     );
 }
 
-function FinanceCard({ title, value, icon, color }: any) {
+function FinanceCard({ title, value, icon, color }: { title: string, value: string, icon: React.ReactNode, color: string }) {
     return (
         <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', borderLeft: `4px solid ${color}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#999', marginBottom: '1rem' }}>
