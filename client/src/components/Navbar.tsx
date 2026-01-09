@@ -153,21 +153,36 @@ export default function Navbar() {
           font-weight: 700 !important;
           text-transform: uppercase;
           letter-spacing: 1.5px;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
           padding: 0.5rem 1rem;
-          border-radius: 4px;
+          position: relative;
           display: inline-block;
         }
         .navbar.scrolled .nav-item {
           color: #B8860B !important;
         }
-        .nav-item:hover {
-          color: #fff !important;
-          background: rgba(255, 215, 0, 0.2);
+        /* Creative Underline Effect */
+        .nav-item::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 0;
+          height: 2px;
+          background: #FFD700;
+          transition: all 0.3s ease;
+          transform: translateX(-50%);
+          box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
-        .navbar.scrolled .nav-item:hover {
-          color: #000 !important;
-          background: rgba(184, 134, 11, 0.1);
+        .navbar.scrolled .nav-item::after {
+          background: #B8860B;
+        }
+        .nav-item:hover::after {
+          width: 70%;
+        }
+        .nav-item:hover {
+          transform: translateY(-2px);
+          text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
         .nav-right-section {
           display: flex;
@@ -177,7 +192,7 @@ export default function Navbar() {
         }
         .icon-link {
           color: #FFD700 !important;
-          transition: 0.3s;
+          transition: all 0.3s ease;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -186,8 +201,9 @@ export default function Navbar() {
           color: #B8860B !important;
         }
         .icon-link:hover {
-          transform: scale(1.1);
+          transform: scale(1.2) rotate(5deg);
           color: #fff !important;
+          filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
         }
         .mobile-toggle {
           display: none;

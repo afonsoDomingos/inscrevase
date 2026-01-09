@@ -326,7 +326,7 @@ export default function Home() {
             textAlign: 'center'
           }}>
             <Image
-              src="/luxury_masterclass_event_1767917828982.png"
+              src="/masterclass.png"
               alt="Masterclass"
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
@@ -376,7 +376,7 @@ export default function Home() {
             textAlign: 'center'
           }}>
             <Image
-              src="/vip_networking_event_1767917843966.png"
+              src="/networking.png"
               alt="Networking"
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
