@@ -11,6 +11,7 @@ function SuccessContent() {
     const router = useRouter();
     const sessionId = searchParams.get('session_id');
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+    const [submissionId, setSubmissionId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!sessionId) {
@@ -20,8 +21,6 @@ function SuccessContent() {
 
         const verifyPayment = async () => {
             try {
-                // Pequeno delay para garantir que o webhook (se houver) processe, 
-                // embora o verifyPayment lide com isso manualmente também.
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/payment/verify`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -32,6 +31,7 @@ function SuccessContent() {
 
                 if (response.ok && data.success) {
                     setStatus('success');
+                    setSubmissionId(data.submission);
                     toast.success('Pagamento confirmado com sucesso!');
                 } else {
                     console.error('Verification failed:', data.message);
@@ -94,7 +94,7 @@ function SuccessContent() {
                 </p>
 
                 <button
-                    onClick={() => router.push('/')}
+                    onClick={() => router.push(`/hub/${submissionId}`)}
                     style={{
                         width: '100%',
                         padding: '1.2rem',
@@ -110,7 +110,7 @@ function SuccessContent() {
                         cursor: 'pointer'
                     }}
                 >
-                    PÁGINA INICIAL <ArrowRight size={20} />
+                    ACESSAR MEU PASSAPORTE <ArrowRight size={20} />
                 </button>
             </motion.div>
         </div>

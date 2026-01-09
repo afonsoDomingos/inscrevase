@@ -87,4 +87,27 @@ const getMySubmissions = async (req, res) => {
     }
 };
 
-module.exports = { submitForm, getFormSubmissions, updateStatus, getAllSubmissionsAdmin, getMySubmissions };
+const getSubmissionPublic = async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id)
+            .populate({
+                path: 'form',
+                populate: { path: 'creator', select: 'name profilePhoto bio socialLinks' }
+            });
+
+        if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
+
+        res.json(submission);
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao buscar inscrição', error: err.message });
+    }
+};
+
+module.exports = {
+    submitForm,
+    getFormSubmissions,
+    updateStatus,
+    getAllSubmissionsAdmin,
+    getMySubmissions,
+    getSubmissionPublic
+};

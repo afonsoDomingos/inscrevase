@@ -27,6 +27,8 @@ const FormSchema = new mongoose.Schema({
     videoUrl: { type: String },
     fields: [FormFieldSchema],
     eventDate: { type: Date },
+    location: { type: String }, // Physical address
+    onlineLink: { type: String }, // Zoom/Meet/YouTube link
     theme: {
         primaryColor: { type: String, default: '#FFD700' }, // Gold
         backgroundColor: { type: String, default: '#050505' }, // Black

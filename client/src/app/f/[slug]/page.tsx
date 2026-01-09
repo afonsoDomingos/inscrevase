@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,6 +19,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 
 export default function PublicForm({ params }: { params: { slug: string } }) {
+    const router = useRouter();
     const { t } = useTranslate();
     const { slug } = params;
     const [form, setForm] = useState<FormModel | null>(null);
@@ -92,19 +94,19 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                 paymentProofUrl = await formService.uploadFile(file);
             }
 
-            await formService.submitForm({
+            const response = await formService.submitForm({
                 formId: form._id,
                 data: formData,
                 paymentProof: paymentProofUrl
             });
 
-            setSuccess(true);
+            const submissionId = response.submission?._id;
 
-            if (form.whatsappConfig?.phoneNumber) {
-                setTimeout(() => {
-                    const message = encodeURIComponent(form.whatsappConfig?.message || 'Olá, acabei de me inscrever!');
-                    window.open(`https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`, '_blank');
-                }, 3000);
+            if (submissionId) {
+                toast.success('Inscrição enviada com sucesso!');
+                router.push(`/hub/${submissionId}`);
+            } else {
+                setSuccess(true);
             }
         } catch (err: unknown) {
             const error = err as Error;
