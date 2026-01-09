@@ -31,6 +31,7 @@ const UserSchema = new mongoose.Schema({
         color: { type: String, default: '#FFD700' }
     }],
     profileVisits: { type: Number, default: 0 },
+    canCreateEvents: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });
 

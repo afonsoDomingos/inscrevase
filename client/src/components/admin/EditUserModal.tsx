@@ -33,6 +33,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     const [isPublic, setIsPublic] = useState(false);
     const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
     const [badges, setBadges] = useState<{ name: string; color: string }[]>([]);
+    const [canCreateEvents, setCanCreateEvents] = useState(true);
 
     useEffect(() => {
         if (user) {
@@ -48,6 +49,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
             setIsPublic(user.isPublic || false);
             setSocialLinks(user.socialLinks || {});
             setBadges(user.badges || []);
+            setCanCreateEvents(user.canCreateEvents !== false);
         }
     }, [user]);
 
@@ -84,6 +86,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 socialLinks,
                 password, // Include password in update
                 isPublic,
+                canCreateEvents,
                 badges
             });
             onSuccess();
@@ -196,7 +199,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             style={{ padding: '0.6rem' }}
                                         >
                                             <option value="free">Grátis</option>
-                                            <option value="premium">Premium</option>
+                                            <option value="pro">Pro</option>
+                                            <option value="enterprise">Enterprise</option>
                                         </select>
                                     </div>
                                     <div className="input-group">
@@ -213,17 +217,31 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                     </div>
                                 </div>
 
-                                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '10px', background: '#e6fffa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #b2f5ea' }}>
-                                    <input
-                                        type="checkbox"
-                                        id="isPublic"
-                                        checked={isPublic}
-                                        onChange={(e) => setIsPublic(e.target.checked)}
-                                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                                    />
-                                    <label htmlFor="isPublic" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2c7a7b', cursor: 'pointer' }}>
-                                        Exibir perfil publicamente na aba Mentor
-                                    </label>
+                                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#e6fffa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #b2f5ea' }}>
+                                        <input
+                                            type="checkbox"
+                                            id="isPublic"
+                                            checked={isPublic}
+                                            onChange={(e) => setIsPublic(e.target.checked)}
+                                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                        />
+                                        <label htmlFor="isPublic" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2c7a7b', cursor: 'pointer' }}>
+                                            Exibir perfil publicamente na aba Mentor
+                                        </label>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: canCreateEvents ? '#f0fff4' : '#fff5f5', padding: '0.8rem', borderRadius: '8px', border: `1px solid ${canCreateEvents ? '#c6f6d5' : '#fed7d7'}` }}>
+                                        <input
+                                            type="checkbox"
+                                            id="canCreateEvents"
+                                            checked={canCreateEvents}
+                                            onChange={(e) => setCanCreateEvents(e.target.checked)}
+                                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                        />
+                                        <label htmlFor="canCreateEvents" style={{ fontSize: '0.85rem', fontWeight: 700, color: canCreateEvents ? '#2f855a' : '#c53030', cursor: 'pointer' }}>
+                                            Habilitar criação de novos eventos e formulários
+                                        </label>
+                                    </div>
                                 </div>
 
                                 {/* Badges Management */}

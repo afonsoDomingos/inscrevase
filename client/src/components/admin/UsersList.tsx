@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail, Lock, Unlock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 
@@ -37,6 +37,17 @@ export default function UsersList() {
         } catch (error: unknown) {
             console.error(error);
             alert('Erro ao atualizar status');
+        }
+    };
+
+    const handleToggleEvents = async (user: UserData) => {
+        try {
+            const newValue = user.canCreateEvents !== false ? false : true;
+            await userService.updateUser(user.id || user._id || '', { canCreateEvents: newValue });
+            loadUsers();
+        } catch (error: unknown) {
+            console.error(error);
+            alert('Erro ao atualizar permissão de eventos');
         }
     };
 
@@ -130,8 +141,8 @@ export default function UsersList() {
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
-                                    <span style={{ fontWeight: 500, color: user.plan === 'premium' ? '#38a169' : '#666' }}>
-                                        {user.plan === 'premium' ? 'Premium' : 'Grátis'}
+                                    <span style={{ fontWeight: 500, color: user.plan !== 'free' ? '#D4AF37' : '#666' }}>
+                                        {user.plan === 'enterprise' ? 'Enterprise' : (user.plan === 'pro' ? 'Pro' : 'Grátis')}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -156,9 +167,16 @@ export default function UsersList() {
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                         <button
+                                            onClick={() => handleToggleEvents(user)}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.canCreateEvents !== false ? '#38a169' : '#e53e3e' }}
+                                            title={user.canCreateEvents !== false ? 'Bloquear Criação de Eventos' : 'Habilitar Criação de Eventos'}
+                                        >
+                                            {user.canCreateEvents !== false ? <Lock size={18} /> : <Unlock size={18} />}
+                                        </button>
+                                        <button
                                             onClick={() => handleToggleStatus(user)}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.status === 'active' ? '#e53e3e' : '#38a169' }}
-                                            title={user.status === 'active' ? 'Bloquear' : 'Desbloquear'}
+                                            title={user.status === 'active' ? 'Bloquear Usuário' : 'Desbloquear Usuário'}
                                         >
                                             {user.status === 'active' ? <UserX size={18} /> : <UserCheck size={18} />}
                                         </button>

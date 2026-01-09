@@ -304,19 +304,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tesla-inspired Showcase Section */}
+      {/* Tesla-inspired Packages Showcase */}
       <section style={{ padding: '0 20px 80px', background: '#fff' }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <motion.div {...fadeIn}>
+            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1rem', fontWeight: 700 }}>
+              Escolha seu <span className="gold-text">Nível de Impacto</span>
+            </h2>
+            <p style={{ color: '#666', fontSize: '1.1rem' }}>Soluções sob medida para cada etapa da sua jornada.</p>
+          </motion.div>
+        </div>
+
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
           gap: '24px',
           maxWidth: '1600px',
           margin: '0 auto'
         }}>
-          {/* Block 1: Masterclasses */}
+          {/* Package 1: Free */}
           <div style={{
             position: 'relative',
-            height: '600px',
+            height: '700px',
             borderRadius: '12px',
             overflow: 'hidden',
             display: 'flex',
@@ -326,47 +335,42 @@ export default function Home() {
             textAlign: 'center'
           }}>
             <Image
-              src="/masterclass.png"
-              alt="Masterclass"
+              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1000"
+              alt="Free Plan"
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
-              <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Masterclasses</h2>
-              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>Aprenda com os melhores mentores do mercado.</p>
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/cadastro" style={{
-                  padding: '12px 60px',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  background: 'var(--gold-gradient)',
-                  color: '#000',
-                  textDecoration: 'none',
-                  fontWeight: 700
-                }}>
-                  {t('common.getStarted')}
-                </Link>
-                <Link href="/mentores" style={{
-                  padding: '12px 60px',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  background: 'rgba(255,255,255,0.9)',
-                  color: '#393c41',
-                  textDecoration: 'none',
-                  fontWeight: 600
-                }}>
-                  Ver Mais
-                </Link>
+              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Plano Free</h3>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>Comece sua jornada sem custos.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
+                <span style={{ opacity: 0.9 }}>• Taxa de 15% por inscrição</span>
+                <span style={{ opacity: 0.9 }}>• Formulários Ilimitados</span>
+                <span style={{ opacity: 0.9 }}>• Gestão de Conteúdo Base</span>
               </div>
+              <Link href="/cadastro" style={{
+                display: 'inline-block',
+                padding: '12px 80px',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: 'rgba(255,255,255,0.9)',
+                color: '#393c41',
+                textDecoration: 'none',
+                fontWeight: 600,
+                width: '100%',
+                maxWidth: '300px'
+              }}>
+                Começar Grátis
+              </Link>
             </div>
           </div>
 
-          {/* Block 2: VIP Events */}
+          {/* Package 2: Pro */}
           <div style={{
             position: 'relative',
-            height: '600px',
+            height: '700px',
             borderRadius: '12px',
             overflow: 'hidden',
             display: 'flex',
@@ -376,40 +380,93 @@ export default function Home() {
             textAlign: 'center'
           }}>
             <Image
-              src="/networking.png"
-              alt="Networking"
+              src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1000"
+              alt="Pro Plan"
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
-              <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Gala & Networking</h2>
-              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>Conexões exclusivas em ambientes de elite.</p>
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/entrar" style={{
-                  padding: '12px 60px',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  background: 'var(--gold-gradient)',
-                  color: '#000',
-                  textDecoration: 'none',
-                  fontWeight: 700
-                }}>
-                  Participar
-                </Link>
-                <Link href="/mentores" style={{
-                  padding: '12px 60px',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  background: 'rgba(255,255,255,0.9)',
-                  color: '#393c41',
-                  textDecoration: 'none',
-                  fontWeight: 600
-                }}>
-                  Explorar
-                </Link>
+              <div style={{
+                background: 'var(--gold-gradient)',
+                color: '#000',
+                padding: '4px 12px',
+                borderRadius: '4px',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                display: 'inline-block',
+                marginBottom: '1rem',
+                textTransform: 'uppercase'
+              }}>
+                Mais Popular
               </div>
+              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Plano Pro</h3>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>Para profissionais em ascensão.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
+                <span style={{ opacity: 0.9 }}>• Taxa reduzida de 10%</span>
+                <span style={{ opacity: 0.9 }}>• Destaque no Showcase</span>
+                <span style={{ opacity: 0.9 }}>• Analytics Avançado</span>
+              </div>
+              <Link href="/cadastro?plan=pro" style={{
+                display: 'inline-block',
+                padding: '12px 80px',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: 'var(--gold-gradient)',
+                color: '#000',
+                textDecoration: 'none',
+                fontWeight: 700,
+                width: '100%',
+                maxWidth: '300px'
+              }}>
+                Assinar Pro
+              </Link>
+            </div>
+          </div>
+
+          {/* Package 3: Enterprise */}
+          <div style={{
+            position: 'relative',
+            height: '700px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            padding: '60px',
+            textAlign: 'center'
+          }}>
+            <Image
+              src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=1000"
+              alt="Enterprise Plan"
+              fill
+              style={{ objectFit: 'cover', zIndex: 0 }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Enterprise</h3>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>O topo da performance.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
+                <span style={{ opacity: 0.9 }}>• Taxa mínima de 5%</span>
+                <span style={{ opacity: 0.9 }}>• Suporte VIP 24/7</span>
+                <span style={{ opacity: 0.9 }}>• Customização Total</span>
+              </div>
+              <Link href="/cadastro?plan=enterprise" style={{
+                display: 'inline-block',
+                padding: '12px 80px',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: '#fff',
+                color: '#000',
+                textDecoration: 'none',
+                fontWeight: 700,
+                width: '100%',
+                maxWidth: '300px'
+              }}>
+                Contactar Vendas
+              </Link>
             </div>
           </div>
         </div>

@@ -232,8 +232,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
                                     <LinkIcon size={14} /> {t('events.profile.accountStatus')}
                                 </label>
-                                <div style={{ padding: '0.8rem', background: '#f8f9fa', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, color: user.plan === 'premium' ? '#38a169' : '#000' }}>
-                                    {user.plan?.toUpperCase()} PLAN
+                                <div style={{ padding: '0.8rem', background: '#f8f9fa', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, color: user.plan !== 'free' ? '#38a169' : '#000' }}>
+                                    {(user.plan || 'free').toUpperCase()} PLAN
                                 </div>
                             </div>
                         </div>

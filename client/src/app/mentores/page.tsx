@@ -269,7 +269,7 @@ export default function MentorsShowcase() {
                                                 </div>
 
                                                 {/* Elite Badge - Small & Elegant */}
-                                                {mentor.plan === 'premium' && (
+                                                {mentor.plan !== 'free' && (
                                                     <div style={{
                                                         position: 'absolute',
                                                         bottom: '5px',

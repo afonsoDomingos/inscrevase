@@ -39,7 +39,8 @@ import {
     LifeBuoy,
     Eye,
     Crown,
-    Check
+    Lock,
+    AlertCircle
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -342,6 +343,35 @@ export default function MentorDashboard() {
                         </div>
                     </div>
 
+                    {user.canCreateEvents === false && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            style={{
+                                background: 'linear-gradient(90deg, #fff5f5 0%, #fff 100%)',
+                                borderLeft: '4px solid #c53030',
+                                padding: '1.2rem 1.5rem',
+                                borderRadius: '12px',
+                                marginBottom: '2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '15px',
+                                boxShadow: '0 4px 12px rgba(197, 48, 48, 0.08)'
+                            }}
+                        >
+                            <div style={{ background: '#c53030', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <AlertCircle size={20} />
+                            </div>
+                            <div>
+                                <h4 style={{ color: '#c53030', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>Acesso à Criação de Eventos Bloqueado</h4>
+                                <p style={{ color: '#666', fontSize: '0.85rem' }}>
+                                    Sua permissão para criar novos eventos foi temporariamente suspensa por um administrador.
+                                    Isso geralmente ocorre devido a taxas pendentes. Entre em contato com o suporte para regularizar.
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <Link
                             href="/"
@@ -363,27 +393,44 @@ export default function MentorDashboard() {
                         >
                             <ArrowRight size={18} /> {t('nav.home')}
                         </Link>
-                        <button
-                            onClick={() => setIsEventModalOpen(true)} // Changed from setIsCreateModalOpen
-                            style={{
+                        {user.canCreateEvents !== false ? (
+                            <button
+                                onClick={() => setIsEventModalOpen(true)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '0.75rem 1.5rem',
+                                    background: 'var(--gold-gradient)',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    color: '#000',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
+                                    transition: 'all 0.3s'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                <Plus size={18} /> {t('common.createEvent')}
+                            </button>
+                        ) : (
+                            <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
                                 padding: '0.75rem 1.5rem',
-                                background: 'var(--gold-gradient)',
-                                border: 'none',
+                                background: '#fff5f5',
+                                border: '1px solid #fed7d7',
                                 borderRadius: '12px',
-                                color: '#000',
+                                color: '#c53030',
                                 fontWeight: 700,
-                                cursor: 'pointer',
-                                boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
-                                transition: 'all 0.3s'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                        >
-                            <Plus size={18} /> {t('common.createEvent')}
-                        </button>
+                                fontSize: '0.85rem'
+                            }}>
+                                <Lock size={16} /> Acesso Restrito
+                            </div>
+                        )}
                     </div>
                 </header>
 

@@ -27,6 +27,7 @@ export interface UserData {
     following?: string[];
     badges?: { name: string; color: string }[];
     profileVisits?: number;
+    canCreateEvents?: boolean;
     createdAt?: string;
     authProvider?: 'google' | 'linkedin' | 'native';
 }
