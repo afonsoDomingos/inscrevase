@@ -43,7 +43,11 @@ export default function StripeCheckout({
             const result = await response.json();
 
             if (!response.ok) {
-                alert(result.message || 'Erro ao iniciar checkout');
+                if (result.message?.includes('not ready')) {
+                    alert('Este mentor ainda não configurou completamente os pagamentos via Stripe. Por favor, utilize o método "Manual" para enviar seu comprovativo.');
+                } else {
+                    alert(result.message || 'Erro ao iniciar checkout');
+                }
                 setLoading(false);
                 return;
             }

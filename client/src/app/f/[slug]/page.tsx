@@ -331,21 +331,22 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     )}
                                                     {paymentMode === 'manual' && (
                                                         <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                            {form.paymentConfig.requireProof && (
-                                                                <div style={{ marginBottom: '1.5rem' }}>
-                                                                    <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}`, borderRadius: '20px', cursor: 'pointer' }}>
-                                                                        <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
-                                                                        {filePreview ? (
+                                                            <div style={{ marginBottom: '1.5rem' }}>
+                                                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}`, borderRadius: '20px', cursor: 'pointer' }}>
+                                                                    <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
+                                                                    {filePreview ? (
+                                                                        <div style={{ textAlign: 'center' }}>
                                                                             <Image src={filePreview} alt="Preview" width={80} height={80} style={{ borderRadius: '10px' }} />
-                                                                        ) : (
-                                                                            <>
-                                                                                <Upload size={32} color={primaryColor} />
-                                                                                <span style={{ marginTop: '10px', fontSize: '0.9rem' }}>Anexar Comprovativo</span>
-                                                                            </>
-                                                                        )}
-                                                                    </label>
-                                                                </div>
-                                                            )}
+                                                                            <div style={{ marginTop: '10px', fontSize: '0.8rem', color: primaryColor }}>{file?.name}</div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <>
+                                                                            <Upload size={32} color={primaryColor} />
+                                                                            <span style={{ marginTop: '10px', fontSize: '0.9rem' }}>Anexar Comprovativo de Pagamento</span>
+                                                                        </>
+                                                                    )}
+                                                                </label>
+                                                            </div>
                                                             <button type="submit" disabled={submitting} className="btn-primary" style={{ width: '100%', padding: '1.2rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '16px', fontWeight: 800 }}>
                                                                 {submitting ? <Loader2 className="animate-spin" /> : 'FINALIZAR INSCRIÇÃO'}
                                                             </button>
