@@ -9,6 +9,13 @@ const SubmissionSchema = new mongoose.Schema({
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending'
     },
+    paymentStatus: {
+        type: String,
+        enum: ['unpaid', 'paid', 'pending'],
+        default: 'unpaid'
+    },
+    stripePaymentIntentId: { type: String },
+    stripeSessionId: { type: String },
     submittedAt: { type: Date, default: Date.now }
 });
 
