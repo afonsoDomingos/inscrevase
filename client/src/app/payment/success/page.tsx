@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { CheckCircle, Loader2, ArrowRight, MessageCircle } from 'lucide-react';
+import { CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function PaymentSuccess() {
+function SuccessContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const sessionId = searchParams.get('session_id');
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-    const [submissionId, setSubmissionId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!sessionId) {
@@ -21,6 +20,8 @@ export default function PaymentSuccess() {
 
         const verifyPayment = async () => {
             try {
+                // Pequeno delay para garantir que o webhook (se houver) processe, 
+                // embora o verifyPayment lide com isso manualmente também.
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/payment/verify`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -31,7 +32,6 @@ export default function PaymentSuccess() {
 
                 if (response.ok && data.success) {
                     setStatus('success');
-                    setSubmissionId(data.submission);
                     toast.success('Pagamento confirmado com sucesso!');
                 } else {
                     console.error('Verification failed:', data.message);
@@ -58,10 +58,10 @@ export default function PaymentSuccess() {
     if (status === 'error') {
         return (
             <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#050505', color: '#fff', textAlign: 'center', padding: '20px' }}>
-                <div style={{ background: 'rgba(255, 0, 0, 0.1)', padding: '2rem', borderRadius: '30px', border: '1px solid rgba(255, 0, 0, 0.2)' }}>
+                <div style={{ background: 'rgba(255, 0, 0, 0.1)', padding: '2rem', borderRadius: '30px', border: '1px solid rgba(255, 0, 0, 0.2)', maxWidth: '500px' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Ops! Algo deu errado</h2>
-                    <p style={{ color: '#aaa', marginBottom: '2rem' }}>Não conseguimos verificar seu pagamento automaticamente. Por favor, entre em contato com o suporte.</p>
-                    <button onClick={() => router.push('/')} className="btn-primary" style={{ padding: '0.8rem 2rem', background: '#FFD700', color: '#000', borderRadius: '12px', fontWeight: 700 }}>
+                    <p style={{ color: '#aaa', marginBottom: '2rem' }}>Não conseguimos verificar seu pagamento automaticamente. Se o valor foi debitado, não se preocupe, sua vaga será processada manualmente.</p>
+                    <button onClick={() => router.push('/')} className="btn-primary" style={{ padding: '0.8rem 2rem', background: '#FFD700', color: '#000', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer' }}>
                         Voltar para o Início
                     </button>
                 </div>
@@ -85,35 +85,46 @@ export default function PaymentSuccess() {
                     <CheckCircle size={80} />
                 </motion.div>
 
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1rem', background: 'linear-gradient(to bottom, #fff, #aaa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1rem', color: '#fff' }}>
                     Inscrição Confirmada!
                 </h1>
 
                 <p style={{ color: '#aaa', fontSize: '1.1rem', marginBottom: '2.5rem', lineHeight: '1.6' }}>
-                    Seu pagamento foi aprovado e sua vaga está garantida. Enviamos os detalhes para o seu e-mail.
+                    Seu pagamento foi aprovado e sua vaga está garantida. Estamos ansiosos para te ver no evento!
                 </p>
 
-                <div style={{ display: 'grid', gap: '1rem' }}>
-                    <button
-                        onClick={() => router.push('/')}
-                        style={{
-                            padding: '1.2rem',
-                            background: '#FFD700',
-                            color: '#000',
-                            borderRadius: '16px',
-                            fontWeight: 800,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            border: 'none',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        PÁGINA INICIAL <ArrowRight size={20} />
-                    </button>
-                </div>
+                <button
+                    onClick={() => router.push('/')}
+                    style={{
+                        width: '100%',
+                        padding: '1.2rem',
+                        background: '#FFD700',
+                        color: '#000',
+                        borderRadius: '16px',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px',
+                        border: 'none',
+                        cursor: 'pointer'
+                    }}
+                >
+                    PÁGINA INICIAL <ArrowRight size={20} />
+                </button>
             </motion.div>
         </div>
+    );
+}
+
+export default function PaymentSuccess() {
+    return (
+        <Suspense fallback={
+            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050505' }}>
+                <Loader2 className="animate-spin" size={48} color="#FFD700" />
+            </div>
+        }>
+            <SuccessContent />
+        </Suspense>
     );
 }
