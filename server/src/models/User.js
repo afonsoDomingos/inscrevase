@@ -19,8 +19,10 @@ const UserSchema = new mongoose.Schema({
         facebook: { type: String },
         website: { type: String }
     },
-    plan: { type: String, enum: ['free', 'premium'], default: 'free' },
+    plan: { type: String, enum: ['free', 'pro', 'enterprise'], default: 'free' },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
+    stripeAccountId: { type: String },
+    stripeOnboardingComplete: { type: Boolean, default: false },
     isPublic: { type: Boolean, default: false }, // Admins choose who appears publicly
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
