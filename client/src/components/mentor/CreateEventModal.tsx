@@ -58,13 +58,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [paymentConfig, setPaymentConfig] = useState({
         enabled: false,
         price: 0,
-        currency: 'MZN',
+        currency: 'MT',
         mpesaNumber: '',
         emolaNumber: '',
         bankAccount: '',
         accountHolder: '',
         instructions: '',
-        requireProof: false
+        requireProof: false,
+        stripeEnabled: false,
+        stripePriceId: '',
+        stripeProductId: ''
     });
 
     const handleAddField = () => {
@@ -521,27 +524,56 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                     <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.priceLabel')}</label>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Preço do Ingresso</label>
                                                         <input
                                                             type="number"
                                                             value={paymentConfig.price}
                                                             onChange={(e) => setPaymentConfig({ ...paymentConfig, price: parseFloat(e.target.value) })}
-                                                            placeholder={t('events.pricePlaceholder')}
+                                                            placeholder="Ex: 500"
                                                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currencyLabel')}</label>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Moeda</label>
                                                         <select
                                                             value={paymentConfig.currency}
                                                             onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
                                                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
                                                         >
-                                                            <option value="MZN">Metical (MZN)</option>
+                                                            <option value="MT">Metical (MT)</option>
                                                             <option value="USD">Dólar (USD)</option>
-                                                            <option value="EUR">Euro (EUR)</option>
                                                         </select>
                                                     </div>
+                                                </div>
+
+                                                <div style={{ background: '#f0f7ff', padding: '1.5rem', borderRadius: '15px', border: '1px solid #c3dafe' }}>
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#2c5282', cursor: 'pointer', marginBottom: '1rem' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={paymentConfig.stripeEnabled}
+                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, stripeEnabled: e.target.checked })}
+                                                            style={{ width: '20px', height: '20px' }}
+                                                        />
+                                                        Habilitar Pagamento com Cartão (Stripe)
+                                                    </label>
+
+                                                    {paymentConfig.stripeEnabled && (
+                                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                                            <p style={{ fontSize: '0.8rem', color: '#666' }}>
+                                                                Para usar o Stripe, você precisa criar um Produto e um Preço no seu painel do Stripe e colar o <b>Price ID</b> abaixo.
+                                                            </p>
+                                                            <div>
+                                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.8rem' }}>Stripe Price ID</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={paymentConfig.stripePriceId}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, stripePriceId: e.target.value })}
+                                                                    placeholder="Ex: price_1Q..."
+                                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e0', outline: 'none' }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 <div>

@@ -477,11 +477,11 @@ export default function MentorDashboard() {
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                                            <th style={{ padding: '1rem', color: '#666' }}>{t('dashboard.eventName')}</th>
-                                            <th style={{ padding: '1rem', color: '#666' }}>{t('dashboard.status')}</th>
-                                            <th style={{ padding: '1rem', color: '#666' }}>{t('dashboard.registrants')}</th>
-                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>{t('common.visits')}</th>
-                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>{t('dashboard.actions')}</th>
+                                            <th style={{ padding: '1rem', color: '#666' }}>Evento</th>
+                                            <th style={{ padding: '1rem', color: '#666' }}>Status</th>
+                                            <th style={{ padding: '1rem', color: '#666' }}>Inscritos</th>
+                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Visitas</th>
+                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>

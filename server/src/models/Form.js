@@ -47,13 +47,16 @@ const FormSchema = new mongoose.Schema({
     paymentConfig: {
         enabled: { type: Boolean, default: false },
         price: { type: Number },
-        currency: { type: String, default: 'MZN' },
+        currency: { type: String, default: 'MT' },
         mpesaNumber: { type: String },
         emolaNumber: { type: String },
         bankAccount: { type: String },
         accountHolder: { type: String },
         instructions: { type: String },
-        requireProof: { type: Boolean, default: false }
+        requireProof: { type: Boolean, default: false },
+        stripeEnabled: { type: Boolean, default: false },
+        stripePriceId: { type: String },
+        stripeProductId: { type: String }
     },
     active: { type: Boolean, default: true },
     visits: { type: Number, default: 0 },
