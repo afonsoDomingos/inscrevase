@@ -40,9 +40,9 @@ import {
     Eye
 } from 'lucide-react';
 import Image from 'next/image';
-import StripeConnect from '@/components/StripeConnect';
-import EarningsDashboard from '@/components/EarningsDashboard';
-import PlanUpgradeModal from '@/components/PlanUpgradeModal';
+import StripeConnect from '../../../components/StripeConnect';
+import EarningsDashboard from '../../../components/EarningsDashboard';
+import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings';
 
@@ -171,8 +171,8 @@ export default function MentorDashboard() {
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
-                        { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
-                        { id: 'earnings', label: t('dashboard.earnings') || 'Ganhos', icon: <DollarSign size={20} /> },
+                        { id: 'submissions', label: t('dashboard.submissions') || 'Inscrições', icon: <Users size={20} /> },
+                        { id: 'earnings', label: 'Ganhos', icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item) => (
