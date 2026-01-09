@@ -3,6 +3,8 @@ const router = express.Router();
 const stripeController = require('../controllers/stripeController');
 const { authMiddleware } = require('../middleware/authMiddleware');
 
+router.get('/test', (req, res) => res.json({ message: 'Stripe routes are active' }));
+
 /**
  * STRIPE CONNECT ROUTES
  */

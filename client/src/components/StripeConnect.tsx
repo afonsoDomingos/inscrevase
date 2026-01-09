@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
 import { CreditCard, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
 
 interface StripeStatus {
@@ -11,33 +13,53 @@ export default function StripeConnect() {
     const [loading, setLoading] = useState(true);
     const [connecting, setConnecting] = useState(false);
 
-    useEffect(() => {
-        const checkStatus = async () => {
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/status`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
+    const checkStatus = useCallback(async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/status`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.ok) {
                 const data = await response.json();
                 setStatus(data);
-            } catch (error) {
-                console.error('Error checking Stripe status:', error);
-            } finally {
-                setLoading(false);
             }
-        };
-        checkStatus();
+        } catch (error) {
+            console.error('Error checking Stripe status:', error);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        checkStatus();
+    }, [checkStatus]);
 
     const handleConnect = async () => {
         try {
             setConnecting(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/onboarding`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            const token = localStorage.getItem('token');
+            const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+            // 1. Garantir que a conta Stripe existe (Create if not exists)
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/create`, {
+                method: 'POST',
+                headers
             });
-            const { url } = await response.json();
-            window.location.href = url;
+
+            // 2. Pegar o link de onboarding
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/onboarding`, {
+                headers
+            });
+
+            const result = await response.json();
+
+            if (result.url) {
+                window.location.href = result.url;
+            } else {
+                throw new Error(result.message || 'Falha ao gerar link');
+            }
         } catch (error) {
             console.error('Connection error:', error);
+            alert('Erro ao conectar com Stripe. Verifique os logs.');
             setConnecting(false);
         }
     };
@@ -83,10 +105,9 @@ export default function StripeConnect() {
                 <button
                     onClick={handleConnect}
                     disabled={connecting}
-                    className="btn-primary"
                     style={{
                         padding: '0.8rem 1.5rem',
-                        background: 'var(--gold-gradient)',
+                        background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
                         color: '#000',
                         fontWeight: 700,
                         display: 'flex',
@@ -98,7 +119,7 @@ export default function StripeConnect() {
                     }}
                 >
                     {connecting ? <Loader2 size={18} className="animate-spin" /> : <ExternalLink size={18} />}
-                    Configurar Agora
+                    CONFIGURAR AGORA
                 </button>
             )}
         </div>
