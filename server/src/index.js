@@ -20,6 +20,7 @@ app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/stripe', require('./routes/stripeRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {
