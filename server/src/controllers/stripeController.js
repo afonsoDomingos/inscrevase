@@ -172,57 +172,86 @@ exports.createCheckoutSession = async (req, res) => {
     }
 };
 
-exports.verifyPayment = async (req, res) => {
+const completeOrder = async (session) => {
     try {
-        const { sessionId } = req.body;
-        const session = await stripe.checkout.sessions.retrieve(sessionId, {
+        console.log('--- PROCESSING SUCCESSFUL ORDER ---');
+        console.log('Session ID:', session.id);
+
+        // 1. Expand payment intent to get more details
+        const expandedSession = await stripe.checkout.sessions.retrieve(session.id, {
             expand: ['payment_intent']
         });
 
-        if (session.payment_status !== 'paid') {
-            return res.status(400).json({ message: 'Payment not completed' });
+        const paymentIntent = expandedSession.payment_intent;
+        if (!paymentIntent) {
+            console.error('No payment intent found in session');
+            return null;
         }
 
-        // Check if already processed
-        const existingTx = await Transaction.findOne({ stripePaymentIntentId: session.payment_intent.id });
+        // 2. Check if transaction already exists to avoid duplicates
+        const existingTx = await Transaction.findOne({ stripePaymentIntentId: paymentIntent.id });
         if (existingTx) {
-            return res.status(200).json({ success: true, message: 'Already processed' });
+            console.log('Order already processed for PaymentIntent:', paymentIntent.id);
+            const submission = await Submission.findOne({ stripePaymentIntentId: paymentIntent.id });
+            return submission;
         }
 
-        const metadata = session.metadata;
+        // 3. Extract metadata
+        const metadata = expandedSession.metadata;
+        const formId = metadata.formId;
         const submissionData = JSON.parse(metadata.submissionData);
 
-        // Create submission
+        // 4. Create submission
         const submission = new Submission({
-            form: metadata.formId,
+            form: formId,
             data: submissionData,
             paymentMethod: 'stripe',
-            stripePaymentIntentId: session.payment_intent.id,
+            stripePaymentIntentId: paymentIntent.id,
             stripeSessionId: session.id,
             status: 'approved',
             paymentStatus: 'paid'
         });
         await submission.save();
+        console.log('Submission created:', submission._id);
 
-        // Create transaction
+        // 5. Create transaction for mentor dashboard
         const transaction = new Transaction({
-            user: submission.form.creator, // This will be fixed in post-save or populated
-            mentor: session.payment_intent.metadata.mentorId,
-            form: metadata.formId,
+            mentor: paymentIntent.metadata.mentorId,
+            form: formId,
             submission: submission._id,
-            amount: session.amount_total / 100,
-            currency: session.currency.toUpperCase(),
-            platformFee: (session.payment_intent.application_fee_amount || 0) / 100,
-            mentorEarnings: (session.amount_total - (session.payment_intent.application_fee_amount || 0)) / 100,
+            amount: expandedSession.amount_total / 100,
+            currency: expandedSession.currency.toUpperCase(),
+            platformFee: (paymentIntent.application_fee_amount || 0) / 100,
+            mentorEarnings: (expandedSession.amount_total - (paymentIntent.application_fee_amount || 0)) / 100,
             status: 'completed',
-            stripePaymentIntentId: session.payment_intent.id
+            stripePaymentIntentId: paymentIntent.id
         });
         await transaction.save();
+        console.log('Transaction logged for mentor:', transaction.mentor);
+
+        return submission;
+    } catch (error) {
+        console.error('FATAL ERROR IN COMPLETEORDER:', error);
+        throw error;
+    }
+};
+
+exports.verifyPayment = async (req, res) => {
+    try {
+        const { sessionId } = req.body;
+        console.log('Verifying payment for session:', sessionId);
+
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        if (session.payment_status !== 'paid') {
+            return res.status(400).json({ message: 'Payment not completed' });
+        }
+
+        const submission = await completeOrder(session);
 
         res.status(200).json({
             success: true,
-            submission: submission._id,
-            transaction: transaction._id
+            submission: submission?._id
         });
     } catch (error) {
         console.error('Verify Payment Error:', error);
@@ -268,12 +297,18 @@ exports.handleWebhook = async (req, res) => {
     }
 
     // Handle events
-    if (event.type === 'account.updated') {
+    console.log('Stripe Webhook Event:', event.type);
+
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        await completeOrder(session);
+    } else if (event.type === 'account.updated') {
         const account = event.data.object;
         const user = await User.findOne({ stripeAccountId: account.id });
         if (user) {
             user.stripeOnboardingComplete = account.details_submitted && account.charges_enabled;
             await user.save();
+            console.log(`Mentor ${user._id} onboarding status updated: ${user.stripeOnboardingComplete}`);
         }
     }
 
