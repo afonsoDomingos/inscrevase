@@ -5,18 +5,12 @@ import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     CheckCircle,
-    ArrowRight,
     MessageCircle,
     Eye,
     Upload,
     Loader2,
-    Instagram,
-    Linkedin,
-    Facebook,
-    Globe,
     ShieldCheck,
-    CreditCard,
-    X
+    CreditCard
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
