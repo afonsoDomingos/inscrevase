@@ -1,0 +1,50 @@
+const express = require('express');
+const router = express.Router();
+const stripeController = require('../controllers/stripeController');
+const { authMiddleware } = require('../middleware/authMiddleware');
+
+/**
+ * STRIPE CONNECT ROUTES
+ */
+
+// Create Stripe Connect account for mentor
+router.post('/connect/create', authMiddleware, stripeController.createConnectAccount);
+
+// Get onboarding link
+router.get('/connect/onboarding', authMiddleware, stripeController.getOnboardingLink);
+
+// Check account status
+router.get('/connect/status', authMiddleware, stripeController.getAccountStatus);
+
+/**
+ * PAYMENT ROUTES
+ */
+
+// Create checkout session for event payment
+router.post('/checkout/create', stripeController.createCheckoutSession);
+
+// Verify payment after checkout
+router.post('/payment/verify', stripeController.verifyPayment);
+
+/**
+ * EARNINGS & ANALYTICS
+ */
+
+// Get earnings dashboard (mentor only)
+router.get('/earnings', authMiddleware, stripeController.getEarningsDashboard);
+
+/**
+ * SUBSCRIPTION ROUTES
+ */
+
+// Create subscription for plan upgrade
+router.post('/subscription/create', authMiddleware, stripeController.createSubscription);
+
+/**
+ * WEBHOOKS
+ */
+
+// Stripe webhooks
+router.post('/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
+
+module.exports = router;
