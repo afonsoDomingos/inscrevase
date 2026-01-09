@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe, X, Eye } from 'lucide-react';
+import { CheckCircle, Upload, ShieldCheck, MessageCircle, ArrowRight, Loader2, Instagram, Linkedin, Facebook, Globe, X, Eye, CreditCard } from 'lucide-react';
+import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -454,6 +455,24 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                             <>{t('form.finishRegistration')} <ArrowRight size={20} /></>
                                         )}
                                     </button>
+
+                                    {form.paymentConfig?.stripeEnabled && (
+                                        <div style={{ marginTop: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '1.5rem 0' }}>
+                                                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                                                <span style={{ fontSize: '0.8rem', color: '#666' }}>{t('common.or') || 'OU'}</span>
+                                                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                                            </div>
+
+                                            <StripeCheckout
+                                                formId={form._id}
+                                                formData={formData}
+                                                eventTitle={form.title}
+                                                price={form.paymentConfig.price || 0}
+                                                currency={form.paymentConfig.currency || 'USD'}
+                                            />
+                                        </div>
+                                    )}
 
                                     <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#555' }}>
                                         {t('form.termsAgreement')}

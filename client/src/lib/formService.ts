@@ -58,6 +58,9 @@ export interface FormModel {
         bankAccount?: string;
         accountHolder?: string;
         instructions?: string;
+        stripeEnabled?: boolean;
+        stripePriceId?: string;
+        stripeProductId?: string;
         requireProof: boolean;
     };
     createdAt: string;
