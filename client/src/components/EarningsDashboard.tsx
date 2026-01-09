@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, Wallet, Clock } from 'lucide-react';
 import Cookies from 'js-cookie';
+import StripeConnect from './StripeConnect';
 
 interface Transaction {
     _id: string;
@@ -51,6 +52,7 @@ export default function EarningsDashboard() {
 
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
+            <StripeConnect />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 <FinanceCard
                     title="Receita Total"
