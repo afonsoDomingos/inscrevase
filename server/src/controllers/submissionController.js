@@ -1,5 +1,8 @@
 const Submission = require('../models/Submission');
 const Form = require('../models/Form');
+const Transaction = require('../models/Transaction');
+const User = require('../models/User');
+const { PLANS } = require('../config/stripe');
 
 const submitForm = async (req, res) => {
     try {
@@ -52,6 +55,42 @@ const updateStatus = async (req, res) => {
         }
 
         submission.status = status;
+
+        // --- NEW FINANCIAL LOGIC FOR MANUAL PAYMENTS ---
+        if (status === 'approved' && submission.form.paymentConfig?.enabled) {
+            // Check if transaction already exists (avoid duplicates)
+            const existingTx = await Transaction.findOne({ submission: submission._id });
+
+            if (!existingTx) {
+                const mentor = await User.findById(submission.form.creator);
+                if (mentor) {
+                    const mentorPlan = mentor.plan || 'free';
+                    const planConfig = PLANS[mentorPlan] || PLANS.free;
+                    const amount = submission.form.paymentConfig.price || 0;
+                    const platformFee = amount * planConfig.commissionRate;
+
+                    // Create manual transaction (Status: pending until mentor pays platform)
+                    const transaction = new Transaction({
+                        user: mentor._id,
+                        mentor: mentor._id,
+                        form: submission.form._id,
+                        submission: submission._id,
+                        amount: amount,
+                        currency: submission.form.paymentConfig.currency || 'MT',
+                        platformFee: platformFee,
+                        mentorEarnings: amount, // For manual, mentor already has 100% of money
+                        status: 'pending', // Pending platform fee reconciliation
+                        paymentMethod: 'manual'
+                    });
+                    await transaction.save();
+
+                    // Also mark payment as paid in submission since it's approved
+                    submission.paymentStatus = 'paid';
+                }
+            }
+        }
+        // -----------------------------------------------
+
         await submission.save();
         res.json(submission);
     } catch (err) {

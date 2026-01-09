@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, Wallet, Clock } from 'lucide-react';
+import { DollarSign, TrendingUp, Wallet, Clock, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Cookies from 'js-cookie';
 import StripeConnect from './StripeConnect';
+import PlanUpgradeModal from './PlanUpgradeModal';
+import { UserData, authService } from '@/lib/authService';
 
 interface Transaction {
     _id: string;
@@ -19,6 +22,7 @@ interface EarningsData {
         totalRevenue: number;
         totalEarnings: number;
         totalFees: number;
+        pendingFees: number;
     };
     transactions: Transaction[];
 }
@@ -26,16 +30,23 @@ interface EarningsData {
 export default function EarningsDashboard() {
     const [data, setData] = useState<EarningsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<UserData | null>(null);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     useEffect(() => {
         const loadEarnings = async () => {
             try {
                 const token = Cookies.get('token');
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/earnings`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const result = await response.json();
+                const [earningsRes, profile] = await Promise.all([
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/earnings`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    authService.getProfile()
+                ]);
+
+                const result = await earningsRes.json();
                 setData(result);
+                setUser(profile);
             } catch (error) {
                 console.error('Error loading earnings:', error);
             } finally {
@@ -47,7 +58,7 @@ export default function EarningsDashboard() {
 
     if (loading) return <div>Carregando estatísticas financeiras...</div>;
 
-    const summary = data?.summary || { totalRevenue: 0, totalEarnings: 0, totalFees: 0 };
+    const summary = data?.summary || { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 };
     const transactions = data?.transactions || [];
 
     return (
@@ -67,12 +78,89 @@ export default function EarningsDashboard() {
                     color="#10b981"
                 />
                 <FinanceCard
-                    title="Taxas da Plataforma"
+                    title="Taxas Pagas"
                     value={`${summary.totalFees.toFixed(2)}`}
                     icon={<DollarSign size={24} />}
                     color="#666"
                 />
             </div>
+
+            {summary.pendingFees > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                        background: '#fff7ed',
+                        padding: '1.5rem',
+                        borderRadius: '20px',
+                        border: '1px solid #ffedd5',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '1rem'
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{ background: '#f59e0b', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <AlertCircle size={20} />
+                        </div>
+                        <div>
+                            <div style={{ fontWeight: 800, color: '#9a3412', fontSize: '0.9rem' }}>Taxas da Plataforma Pendentes</div>
+                            <div style={{ fontSize: '0.8rem', color: '#c2410c' }}>Você possui {summary.pendingFees.toFixed(2)} MT em taxas de inscrições manuais a conciliar com a administração.</div>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
+            {user?.plan === 'free' && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                        background: '#1a1a1a',
+                        padding: '1.5rem',
+                        borderRadius: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '1rem',
+                        color: '#fff'
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{ background: 'var(--gold-gradient)', color: '#000', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <TrendingUp size={20} />
+                        </div>
+                        <div>
+                            <div style={{ fontWeight: 800, color: '#FFD700', fontSize: '0.9rem' }}>Reduza suas Taxas</div>
+                            <div style={{ fontSize: '0.8rem', color: '#999' }}>Sua comissão atual é de 15%. No plano PRO ela cai para 10%.</div>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setIsUpgradeModalOpen(true)}
+                        style={{
+                            background: 'var(--gold-gradient)',
+                            color: '#000',
+                            border: 'none',
+                            padding: '0.6rem 1.2rem',
+                            borderRadius: '10px',
+                            fontWeight: 800,
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                        }}
+                    >
+                        Ver Planos <ArrowUpRight size={16} />
+                    </button>
+                </motion.div>
+            )}
+
+            <PlanUpgradeModal
+                isOpen={isUpgradeModalOpen}
+                onClose={() => setIsUpgradeModalOpen(false)}
+            />
 
             <div style={{ background: '#fff', padding: '2rem', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>

@@ -44,6 +44,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [coverImage, setCoverImage] = useState<string>('');
     const [uploadingImage, setUploadingImage] = useState(false);
 
+    const [location, setLocation] = useState('');
+    const [onlineLink, setOnlineLink] = useState('');
     const [fields, setFields] = useState<Field[]>([
         { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
         { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
@@ -140,6 +142,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 },
                 paymentConfig,
                 capacity: capacity ? parseInt(capacity) : undefined,
+                location,
+                onlineLink,
                 active: true
             });
             onSuccess();
@@ -279,6 +283,29 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                             <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.capacityHelp')}</p>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Localização (Presencial)</label>
+                                                <input
+                                                    type="text"
+                                                    value={location}
+                                                    onChange={(e) => setLocation(e.target.value)}
+                                                    placeholder="Ex: Av. Eduardo Mondlane, Maputo"
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Link do Evento (Online)</label>
+                                                <input
+                                                    type="text"
+                                                    value={onlineLink}
+                                                    onChange={(e) => setOnlineLink(e.target.value)}
+                                                    placeholder="Ex: Zoom, Google Meet link"
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div>

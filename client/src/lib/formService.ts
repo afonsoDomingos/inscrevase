@@ -31,6 +31,8 @@ export interface FormModel {
     }[];
     eventDate?: string;
     capacity?: number;
+    location?: string;
+    onlineLink?: string;
     coverImage?: string;
     logo?: string;
     whatsappConfig?: {

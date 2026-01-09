@@ -7,16 +7,17 @@ import UsersList from '@/components/admin/UsersList';
 import FormList from '@/components/admin/FormList';
 import SubmissionList from '@/components/admin/SubmissionList';
 import SupportTicketList from '@/components/admin/SupportTicketList';
+import AdminFinance from '@/components/admin/AdminFinance';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight, Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { Chrome, Linkedin, Mail } from 'lucide-react';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance';
 
 export default function AdminDashboard() {
     const { t } = useTranslate();
@@ -88,6 +89,7 @@ export default function AdminDashboard() {
         { id: 'users', label: t('dashboard.users'), icon: <Users size={20} /> },
         { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
         { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
+        { id: 'finance', label: t('dashboard.finance'), icon: <Wallet size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ];
 
@@ -361,6 +363,12 @@ export default function AdminDashboard() {
                     {activeTab === 'support' && (
                         <motion.div key="support" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <SupportTicketList />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'finance' && (
+                        <motion.div key="finance" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <AdminFinance />
                         </motion.div>
                     )}
                 </AnimatePresence>

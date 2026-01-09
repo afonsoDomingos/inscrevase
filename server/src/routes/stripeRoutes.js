@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const stripeController = require('../controllers/stripeController');
-const { authMiddleware } = require('../middleware/authMiddleware');
+const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 
 router.get('/test', (req, res) => res.json({ message: 'Stripe routes are active' }));
 router.get('/whoami', stripeController.whoami);
@@ -35,6 +35,19 @@ router.post('/payment/verify', stripeController.verifyPayment);
 
 // Get earnings dashboard (mentor only)
 router.get('/earnings', authMiddleware, stripeController.getEarningsDashboard);
+
+/**
+ * ADMIN FINANCE ROUTES
+ */
+
+// Get all transactions for admin
+router.get('/admin/transactions', authMiddleware, adminMiddleware, stripeController.getAdminTransactions);
+
+// Get financial summary for admin
+router.get('/admin/summary', authMiddleware, adminMiddleware, stripeController.getAdminFinancialSummary);
+
+// Confirm manual fee payment
+router.patch('/admin/confirm-payment/:transactionId', authMiddleware, adminMiddleware, stripeController.confirmTransactionPayment);
 
 /**
  * SUBSCRIPTION ROUTES

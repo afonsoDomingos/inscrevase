@@ -38,6 +38,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [coverImage, setCoverImage] = useState<string>('');
     const [uploadingImage, setUploadingImage] = useState(false);
 
+    const [location, setLocation] = useState('');
+    const [onlineLink, setOnlineLink] = useState('');
     const [fields, setFields] = useState<any[]>([]);
 
     const [whatsappConfig, setWhatsappConfig] = useState({
@@ -68,6 +70,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setEventDate(form.eventDate ? new Date(form.eventDate).toISOString().substring(0, 10) : '');
             setCapacity(form.capacity ? form.capacity.toString() : '');
             setCoverImage(form.coverImage || '');
+            setLocation(form.location || '');
+            setOnlineLink(form.onlineLink || '');
             setFields(form.fields || []);
             if (form.whatsappConfig) {
                 setWhatsappConfig({
@@ -169,6 +173,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 description,
                 eventDate,
                 capacity: capacity ? parseInt(capacity) : undefined,
+                location,
+                onlineLink,
                 fields: cleanedFields as FormModel['fields'],
                 coverImage,
                 whatsappConfig,
@@ -318,6 +324,29 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                             <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.capacityHelp')}</p>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Localização (Presencial)</label>
+                                                <input
+                                                    type="text"
+                                                    value={location}
+                                                    onChange={(e) => setLocation(e.target.value)}
+                                                    placeholder="Ex: Av. Eduardo Mondlane, Maputo"
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Link do Evento (Online)</label>
+                                                <input
+                                                    type="text"
+                                                    value={onlineLink}
+                                                    onChange={(e) => setOnlineLink(e.target.value)}
+                                                    placeholder="Ex: Zoom, Google Meet link"
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div>

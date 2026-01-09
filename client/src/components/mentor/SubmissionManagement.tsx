@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
-import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
@@ -215,19 +215,35 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         </span>
                                     </td>
                                     <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                        <button
-                                            onClick={() => setSelectedSubmission(submission)}
-                                            style={{
-                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                padding: '0.5rem 1rem', borderRadius: '8px',
-                                                border: 'none', background: '#000',
-                                                color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
-                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                                                textTransform: 'uppercase', letterSpacing: '0.5px'
-                                            }}
-                                        >
-                                            <FileText size={14} /> DETALHES
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                            <button
+                                                onClick={() => setSelectedSubmission(submission)}
+                                                style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                    padding: '0.5rem 1rem', borderRadius: '8px',
+                                                    border: 'none', background: '#f4f4f4',
+                                                    color: '#000', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800
+                                                }}
+                                            >
+                                                <Eye size={14} />
+                                            </button>
+                                            <a
+                                                href={`/hub/${submission._id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                    padding: '0.5rem 1rem', borderRadius: '8px',
+                                                    border: 'none', background: '#000',
+                                                    color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
+                                                    textDecoration: 'none'
+                                                }}
+                                            >
+                                                <ExternalLink size={14} /> HUB
+                                            </a>
+                                        </div>
                                     </td>
                                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>

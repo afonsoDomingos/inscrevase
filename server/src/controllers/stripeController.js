@@ -225,7 +225,8 @@ const completeOrder = async (session) => {
             platformFee: (paymentIntent.application_fee_amount || 0) / 100,
             mentorEarnings: (expandedSession.amount_total - (paymentIntent.application_fee_amount || 0)) / 100,
             status: 'completed',
-            stripePaymentIntentId: paymentIntent.id
+            stripePaymentIntentId: paymentIntent.id,
+            paymentMethod: 'stripe'
         });
         await transaction.save();
         console.log('Transaction logged for mentor:', transaction.mentor);
@@ -264,22 +265,25 @@ exports.getEarningsDashboard = async (req, res) => {
     try {
         const mentorId = req.user.id;
         const transactions = await Transaction.find({
-            mentor: mentorId,
-            status: 'completed'
+            mentor: mentorId
         }).populate('form', 'title slug').sort({ createdAt: -1 });
 
         // Simple aggregation
         const summary = transactions.reduce((acc, tx) => {
-            acc.totalRevenue += tx.amount;
-            acc.totalEarnings += tx.mentorEarnings;
-            acc.totalFees += tx.platformFee;
+            if (tx.status === 'completed') {
+                acc.totalRevenue += tx.amount;
+                acc.totalEarnings += tx.mentorEarnings;
+                acc.totalFees += tx.platformFee;
+            } else if (tx.status === 'pending') {
+                acc.pendingFees += tx.platformFee;
+            }
             return acc;
-        }, { totalRevenue: 0, totalEarnings: 0, totalFees: 0 });
+        }, { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 });
 
         res.status(200).json({
             success: true,
             summary,
-            transactions: transactions.slice(0, 10)
+            transactions: transactions.filter(t => t.status === 'completed').slice(0, 10)
         });
     } catch (error) {
         console.error('Earnings Error:', error);
@@ -302,7 +306,17 @@ exports.handleWebhook = async (req, res) => {
 
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
-        await completeOrder(session);
+
+        if (session.mode === 'subscription') {
+            // Plan Upgrade
+            const userId = session.metadata.userId;
+            const plan = session.metadata.plan;
+            await User.findByIdAndUpdate(userId, { plan: plan });
+            console.log(`User ${userId} upgraded to ${plan}`);
+        } else {
+            // Event registration payment
+            await completeOrder(session);
+        }
     } else if (event.type === 'account.updated') {
         const account = event.data.object;
         const user = await User.findOne({ stripeAccountId: account.id });
@@ -363,6 +377,65 @@ exports.createSubscription = async (req, res) => {
         res.status(200).json({ success: true, url: session.url });
     } catch (error) {
         console.error('Subscription Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * ADMIN FINANCIAL CONTROL
+ */
+
+exports.getAdminTransactions = async (req, res) => {
+    try {
+        const { status, paymentMethod } = req.query;
+        const query = {};
+        if (status) query.status = status;
+        if (paymentMethod) query.paymentMethod = paymentMethod;
+
+        const transactions = await Transaction.find(query)
+            .populate('mentor', 'name email businessName')
+            .populate('form', 'title')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, transactions });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.confirmTransactionPayment = async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const transaction = await Transaction.findById(transactionId);
+
+        if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
+        if (transaction.status === 'completed') return res.status(400).json({ message: 'Transaction already completed' });
+
+        transaction.status = 'completed';
+        await transaction.save();
+
+        res.status(200).json({ success: true, message: 'Pagamento confirmado com sucesso' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getAdminFinancialSummary = async (req, res) => {
+    try {
+        const allTransactions = await Transaction.find();
+
+        const summary = allTransactions.reduce((acc, tx) => {
+            if (tx.status === 'completed') {
+                acc.collectedFees += tx.platformFee;
+                acc.totalRevenue += tx.amount;
+            } else if (tx.status === 'pending') {
+                acc.pendingFees += tx.platformFee;
+            }
+            return acc;
+        }, { collectedFees: 0, pendingFees: 0, totalRevenue: 0 });
+
+        res.status(200).json({ success: true, summary });
+    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };

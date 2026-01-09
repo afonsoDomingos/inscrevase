@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, FileText, X, MessageCircle, Copy } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, X, MessageCircle, Copy, ExternalLink, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -128,18 +128,34 @@ export default function SubmissionList() {
                                     </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                    <button
-                                        onClick={() => setSelectedSubmission(sub)}
-                                        style={{
-                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                            padding: '0.4rem 0.8rem', borderRadius: '8px',
-                                            border: 'none', background: '#000',
-                                            color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
-                                            textTransform: 'uppercase', letterSpacing: '0.5px'
-                                        }}
-                                    >
-                                        <FileText size={14} /> DETALHES
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '5px', justifyContent: 'center' }}>
+                                        <button
+                                            onClick={() => setSelectedSubmission(sub)}
+                                            style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '0.4rem 0.8rem', borderRadius: '8px',
+                                                border: 'none', background: '#f4f4f4',
+                                                color: '#000', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800
+                                            }}
+                                        >
+                                            <Eye size={14} />
+                                        </button>
+                                        <a
+                                            href={`/hub/${sub._id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '0.4rem 0.8rem', borderRadius: '8px',
+                                                border: 'none', background: '#000',
+                                                color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                                textTransform: 'uppercase', letterSpacing: '0.5px',
+                                                textDecoration: 'none'
+                                            }}
+                                        >
+                                            <ExternalLink size={14} /> HUB
+                                        </a>
+                                    </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>

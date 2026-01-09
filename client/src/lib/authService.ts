@@ -21,7 +21,7 @@ export interface UserData {
         website?: string;
     };
     status?: 'active' | 'blocked';
-    plan?: 'free' | 'premium';
+    plan?: 'free' | 'pro' | 'enterprise';
     isPublic?: boolean;
     followers?: string[];
     following?: string[];

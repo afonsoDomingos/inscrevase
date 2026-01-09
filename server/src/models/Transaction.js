@@ -49,6 +49,11 @@ const transactionSchema = new mongoose.Schema({
     stripeSessionId: {
         type: String
     },
+    paymentMethod: {
+        type: String,
+        enum: ['stripe', 'manual'],
+        default: 'manual'
+    },
     metadata: {
         type: Map,
         of: String

@@ -140,7 +140,8 @@
             "facebookPlaceholder": "URL do Facebook",
             "updateSuccess": "Perfil atualizado com sucesso!",
             "updateError": "Erro ao atualizar perfil."
-        }
+        },
+        "finance": "Financeiro"
     },
     "support": {
         "title": "Suporte & Ajuda",

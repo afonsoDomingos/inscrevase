@@ -37,7 +37,9 @@ import {
     DollarSign,
     PieChart,
     LifeBuoy,
-    Eye
+    Eye,
+    Crown,
+    Check
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -214,6 +216,16 @@ export default function MentorDashboard() {
                             {item.label}
                         </button>
                     ))}
+
+                    <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Plano Atual</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
+                            <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff', textTransform: 'capitalize' }}>
+                                {user.plan || 'Free'}
+                            </span>
+                        </div>
+                    </div>
                 </nav>
 
                 <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -309,9 +321,24 @@ export default function MentorDashboard() {
                             >
                                 {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name.split(' ')[0]}</span>
                             </motion.h1>
-                            <p style={{ color: '#666', marginTop: '0.4rem', fontSize: '1.05rem', fontWeight: 500 }}>
-                                {t('dashboard.readyToManage')}
-                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <p style={{ color: '#666', marginTop: '0.4rem', fontSize: '1.05rem', fontWeight: 500 }}>
+                                    {t('dashboard.readyToManage')}
+                                </p>
+                                <span style={{
+                                    marginTop: '4px',
+                                    background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : '#eee',
+                                    color: user.plan === 'enterprise' ? '#FFD700' : '#000',
+                                    padding: '2px 10px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 900,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                }}>
+                                    {user.plan} account
+                                </span>
+                            </div>
                         </div>
                     </div>
 
