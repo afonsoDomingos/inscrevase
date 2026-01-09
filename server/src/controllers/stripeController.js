@@ -216,6 +216,7 @@ const completeOrder = async (session) => {
 
         // 5. Create transaction for mentor dashboard
         const transaction = new Transaction({
+            user: paymentIntent.metadata.mentorId, // Required field in schema
             mentor: paymentIntent.metadata.mentorId,
             form: formId,
             submission: submission._id,
