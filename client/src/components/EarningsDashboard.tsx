@@ -28,7 +28,7 @@ export default function EarningsDashboard() {
     useEffect(() => {
         const loadEarnings = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/stripe/earnings`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/earnings`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 const result = await response.json();

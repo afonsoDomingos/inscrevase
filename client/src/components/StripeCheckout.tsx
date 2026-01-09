@@ -34,7 +34,7 @@ export default function StripeCheckout({
     const handlePayment = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/stripe/checkout/create`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/checkout/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ formId, submissionData: formData })

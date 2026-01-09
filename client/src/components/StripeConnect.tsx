@@ -14,7 +14,7 @@ export default function StripeConnect() {
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/stripe/connect/status`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/status`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 const data = await response.json();
@@ -31,7 +31,7 @@ export default function StripeConnect() {
     const handleConnect = async () => {
         try {
             setConnecting(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/stripe/connect/onboarding`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/connect/onboarding`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             const { url } = await response.json();

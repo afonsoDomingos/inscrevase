@@ -10,7 +10,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
     const handleUpgrade = async (plan: string) => {
         try {
             setLoading(plan);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/stripe/subscription/create`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
