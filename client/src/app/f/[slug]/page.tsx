@@ -11,7 +11,11 @@ import {
     Upload,
     Loader2,
     ShieldCheck,
-    CreditCard
+    CreditCard,
+    Instagram,
+    Linkedin,
+    Globe,
+    User
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -232,20 +236,44 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                 <p style={{ color: secondaryTextColor, fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2rem' }}>{form.description}</p>
 
                                 {form.creator && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', background: cardBg, padding: '1.5rem', borderRadius: '24px', border: `1px solid ${borderColor}`, margin: '2rem 0' }}>
-                                        <div style={{ position: 'relative', width: '70px', height: '70px', borderRadius: '18px', overflow: 'hidden', border: `2px solid ${primaryColor}` }}>
-                                            {form.creator.profilePhoto ? (
-                                                <Image src={form.creator.profilePhoto} alt={form.creator.name} fill style={{ objectFit: 'cover' }} />
-                                            ) : (
-                                                <div style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor, fontSize: '1.5rem', fontWeight: 800 }}>
-                                                    {form.creator.name.charAt(0)}
+                                    <div style={{ background: cardBg, padding: '2rem', borderRadius: '32px', border: `1px solid ${borderColor}`, margin: '2.5rem 0', position: 'relative', overflow: 'hidden' }}>
+                                        {/* Background Decoration */}
+                                        <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: `${primaryColor}08`, borderRadius: '50%', filter: 'blur(40px)' }}></div>
+
+                                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                                            <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '22px', overflow: 'hidden', border: `2px solid ${primaryColor}40`, flexShrink: 0 }}>
+                                                {form.creator.profilePhoto ? (
+                                                    <Image src={form.creator.profilePhoto} alt={form.creator.name} fill style={{ objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor, fontSize: '1.8rem', fontWeight: 800 }}>
+                                                        {form.creator.name.charAt(0)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <div>
+                                                        <div style={{ fontSize: '0.7rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>Mentor Oficial</div>
+                                                        <div style={{ fontWeight: 900, fontSize: '1.4rem', color: titleColor }}>{form.creator.name}</div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                                        {form.creator.socialLinks?.instagram && (
+                                                            <a href={form.creator.socialLinks.instagram} target="_blank" style={{ color: secondaryTextColor, hover: { color: primaryColor } } as any}><Instagram size={18} /></a>
+                                                        )}
+                                                        {form.creator.socialLinks?.linkedin && (
+                                                            <a href={form.creator.socialLinks.linkedin} target="_blank" style={{ color: secondaryTextColor }}><Linkedin size={18} /></a>
+                                                        )}
+                                                        {form.creator.socialLinks?.website && (
+                                                            <a href={form.creator.socialLinks.website} target="_blank" style={{ color: secondaryTextColor }}><Globe size={18} /></a>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.7rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Mentor</div>
-                                            <div style={{ fontWeight: 800, fontSize: '1.2rem' }}>{form.creator.name}</div>
-                                            {form.creator.bio && <div style={{ fontSize: '0.85rem', color: secondaryTextColor }}>{form.creator.bio}</div>}
+                                                {form.creator.bio && (
+                                                    <p style={{ fontSize: '0.95rem', color: secondaryTextColor, marginTop: '12px', lineHeight: '1.6', fontStyle: 'italic' }}>
+                                                        "{form.creator.bio}"
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 )}
