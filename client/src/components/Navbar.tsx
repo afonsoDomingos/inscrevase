@@ -133,6 +133,10 @@ export default function Navbar() {
           color: #FFFFFF !important;
           text-decoration: none !important;
           transition: all 0.3s;
+          position: relative;
+          overflow: hidden;
+          display: inline-block;
+          padding: 0.5rem 0;
         }
         .tesla-logo-text .gold-text {
           color: #FFD700 !important;
@@ -143,6 +147,45 @@ export default function Navbar() {
         }
         .navbar.scrolled .tesla-logo-text .gold-text {
           color: #B8860B !important;
+        }
+        /* Creative Shine Effect on Logo */
+        .tesla-logo-text::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 215, 0, 0.15),
+            transparent
+          );
+          transition: all 0.4s ease;
+        }
+        .logo-container:hover .tesla-logo-text::before {
+          left: 100%;
+        }
+        /* Floating Underline on Logo Hover */
+        .tesla-logo-text::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 0;
+          height: 2px;
+          background: #FFD700;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          transform: translateX(-50%);
+          box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+        .logo-container:hover .tesla-logo-text::after {
+          width: 80%;
+        }
+        .logo-container:hover .tesla-logo-text {
+          transform: translateY(-2px);
+          text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
         .nav-center-links {
           display: flex;
