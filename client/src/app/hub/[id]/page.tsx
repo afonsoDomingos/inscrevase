@@ -4,8 +4,6 @@ import { useEffect, useState, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-    Calendar,
-    MapPin,
     Video,
     MessageCircle,
     CheckCircle2,
@@ -15,11 +13,8 @@ import {
     ShieldCheck,
     Instagram,
     Linkedin,
-    Globe,
-    User,
     Loader2,
     QrCode,
-    ExternalLink,
     Navigation,
     Info
 } from 'lucide-react';

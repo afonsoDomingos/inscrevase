@@ -14,8 +14,7 @@ import {
     CreditCard,
     Instagram,
     Linkedin,
-    Globe,
-    User
+    Globe
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -258,7 +257,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                     </div>
                                                     <div style={{ display: 'flex', gap: '10px' }}>
                                                         {form.creator.socialLinks?.instagram && (
-                                                            <a href={form.creator.socialLinks.instagram} target="_blank" style={{ color: secondaryTextColor, hover: { color: primaryColor } } as any}><Instagram size={18} /></a>
+                                                            <a href={form.creator.socialLinks.instagram} target="_blank" style={{ color: secondaryTextColor }}><Instagram size={18} /></a>
                                                         )}
                                                         {form.creator.socialLinks?.linkedin && (
                                                             <a href={form.creator.socialLinks.linkedin} target="_blank" style={{ color: secondaryTextColor }}><Linkedin size={18} /></a>
@@ -270,7 +269,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                                 </div>
                                                 {form.creator.bio && (
                                                     <p style={{ fontSize: '0.95rem', color: secondaryTextColor, marginTop: '12px', lineHeight: '1.6', fontStyle: 'italic' }}>
-                                                        "{form.creator.bio}"
+                                                        &quot;{form.creator.bio}&quot;
                                                     </p>
                                                 )}
                                             </div>
