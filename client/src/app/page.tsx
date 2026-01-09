@@ -147,7 +147,7 @@ export default function Home() {
               display: 'block',
               marginBottom: '1rem'
             }}>
-              ✨ {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
+              {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
             </span>
             <h1 className="hero-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#fff', marginBottom: '1rem', letterSpacing: '-1.5px' }}>
               <span className="luxury-shimmer-hover" style={{ fontWeight: 600 }}>{t('landing.hero.title2')}</span>
@@ -415,9 +415,88 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tesla-inspired Minimalist Footer */}
-      <footer style={{ padding: '40px 0 60px', background: '#fff' }}>
+      {/* Tesla-inspired Minimalist Footer with Developer Credits */}
+      <footer style={{ padding: '60px 0 40px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
         <div className="container">
+          {/* Developer Credits Section */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '20px',
+            marginBottom: '40px',
+            paddingBottom: '40px',
+            borderBottom: '1px solid #f0f0f0'
+          }}>
+            <a
+              href="https://www.linkedin.com/in/afonso-domingos-6b59361a5/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '12px',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div style={{
+                position: 'relative',
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                padding: '3px',
+                background: 'var(--gold-gradient)',
+                boxShadow: '0 10px 30px rgba(255, 215, 0, 0.2)',
+                transition: 'all 0.3s ease'
+              }}>
+                <Image
+                  src="/developer-vibe.jpg"
+                  alt="Vibe - Developer"
+                  width={80}
+                  height={80}
+                  style={{
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '3px solid #fff'
+                  }}
+                />
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <p style={{
+                  fontSize: '0.7rem',
+                  color: '#999',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.5px',
+                  marginBottom: '4px'
+                }}>
+                  Desenvolvido por
+                </p>
+                <p style={{
+                  fontSize: '1.1rem',
+                  fontWeight: 800,
+                  background: 'var(--gold-gradient)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontFamily: 'var(--font-poppins)'
+                }}>
+                  Vibe
+                </p>
+              </div>
+            </a>
+          </div>
+
+          {/* Footer Links */}
           <div style={{
             display: 'flex',
             justifyContent: 'center',
