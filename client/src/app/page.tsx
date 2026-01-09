@@ -144,31 +144,51 @@ export default function Home() {
               textTransform: 'uppercase',
               letterSpacing: '5px',
               fontSize: '0.75rem',
-              fontWeight: 700,
               display: 'block',
               marginBottom: '1rem'
             }}>
               ✨ {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
             </span>
-            <h1 className="hero-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 3.8rem)', color: '#fff', marginBottom: '1.5rem', lineHeight: 1.2 }}>
-              <span style={{ fontWeight: 300 }}>{t('landing.hero.title1')}</span>
-              <span className="gold-text luxury-shimmer" style={{ display: 'block', fontWeight: 900 }}>{t('landing.hero.title2')}</span>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#fff', marginBottom: '1rem', letterSpacing: '-1.5px' }}>
+              <span className="luxury-shimmer-hover" style={{ fontWeight: 600 }}>{t('landing.hero.title2')}</span>
             </h1>
             <p style={{
-              fontSize: '1.25rem',
-              color: 'rgba(255,255,255,0.7)',
+              fontSize: '1.2rem',
+              color: '#fff',
               maxWidth: '800px',
-              margin: '0 auto 3rem',
-              lineHeight: 1.6,
+              margin: '0 auto 2.5rem',
               fontWeight: 400
             }}>
               {t('landing.hero.description')}
             </p>
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/entrar" className="btn-primary" style={{ padding: '1.2rem 3rem', borderRadius: '100px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {t('common.getStarted')} <ArrowRight size={20} />
+              <Link href="/entrar" style={{
+                padding: '0.8rem 3.5rem',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: 'var(--gold-gradient)',
+                color: '#000',
+                textDecoration: 'none',
+                fontWeight: 700,
+                transition: 'all 0.3s',
+                textTransform: 'none',
+                letterSpacing: '0.5px',
+                boxShadow: '0 4px 15px rgba(218, 165, 32, 0.2)'
+              }}>
+                {t('common.getStarted')}
               </Link>
-              <Link href="/mentores" style={{ padding: '1.2rem 3rem', borderRadius: '100px', fontSize: '1.1rem', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', textDecoration: 'none', fontWeight: 600, backdropFilter: 'blur(10px)', transition: 'all 0.3s' }}>
+              <Link href="/mentores" style={{
+                padding: '0.8rem 3.5rem',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: 'rgba(255,255,255,1)',
+                color: '#393c41',
+                textDecoration: 'none',
+                fontWeight: 600,
+                transition: 'all 0.3s',
+                textTransform: 'none',
+                letterSpacing: '0.5px'
+              }}>
                 {t('common.seeExamples')}
               </Link>
             </div>

@@ -230,24 +230,36 @@ h6 {
   filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.2));
 }
 
-.luxury-shimmer {
+.luxury-shimmer-hover {
   background: linear-gradient(90deg,
-      #FFD700 0%,
-      #FFF8DC 25%,
-      #FFD700 50%,
-      #B8860B 75%,
-      #FFD700 100%);
-  background-size: 200% auto;
+      #fff 0%,
+      #fff 40%,
+      #FFD700 45%,
+      #FFF8DC 50%,
+      #FFD700 55%,
+      #fff 60%,
+      #fff 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 4s linear infinite;
-  transition: all 0.5s ease;
+  transition: background-position 0s, letter-spacing 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.hero-title:hover .luxury-shimmer {
-  filter: brightness(1.3);
-  letter-spacing: 2px;
+.hero-title:hover .luxury-shimmer-hover {
+  animation: shimmer-on-demand 1.5s linear infinite;
+  letter-spacing: 1px;
+}
+
+@keyframes shimmer-on-demand {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
 }
 
 @keyframes shimmer {
