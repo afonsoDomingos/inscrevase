@@ -164,6 +164,14 @@ export default function OnboardingTour() {
         if (left < 20) left = 20;
         if (left + width > window.innerWidth - 20) left = window.innerWidth - width - 20;
 
+        // Vertical boundary check (assuming approx height of card ~250-300px)
+        const estimatedHeight = 300;
+        if (top + estimatedHeight > window.innerHeight) {
+            // If it overflows bottom, try to align bottom-up or just clamp
+            top = window.innerHeight - estimatedHeight - 20;
+        }
+        if (top < 20) top = 20;
+
         return {
             top: top,
             left: left,
