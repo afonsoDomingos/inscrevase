@@ -62,7 +62,7 @@ function HubContent() {
     const router = useRouter();
     const [submission, setSubmission] = useState<SubmissionData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [qrCodeUrl, setQrCodeUrl] = useState('');
+    const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
     useEffect(() => {
         const fetchSubmission = async () => {
@@ -84,13 +84,33 @@ function HubContent() {
         fetchSubmission();
     }, [id]);
 
+    // Countdown Timer
     useEffect(() => {
-        // Generate QR code URL on client side only
-        if (typeof window !== 'undefined' && id) {
-            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
-            setQrCodeUrl(`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${baseUrl}/hub/${id}`);
-        }
-    }, [id]);
+        if (!submission?.form?.eventDate) return;
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const eventTime = new Date(submission.form.eventDate).getTime();
+            const distance = eventTime - now;
+
+            if (distance < 0) {
+                setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                return;
+            }
+
+            setCountdown({
+                days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+                seconds: Math.floor((distance % (1000 * 60)) / 1000)
+            });
+        };
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+
+        return () => clearInterval(interval);
+    }, [submission]);
 
     if (loading) return (
         <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff' }}>
@@ -241,21 +261,29 @@ function HubContent() {
                             animate={{ opacity: 1, x: 0 }}
                             style={{ background: '#fff', borderRadius: '30px', padding: '30px', boxShadow: '0 20px 60px rgba(0,0,0,0.06)', border: '1px solid #eee', textAlign: 'center' }}
                         >
-                            <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center' }}>
-                                {qrCodeUrl ? (
-                                    <Image
-                                        src={qrCodeUrl}
-                                        alt="QR Code Acesso"
-                                        width={200}
-                                        height={200}
-                                        style={{ borderRadius: '15px', border: '1px solid #eee' }}
-                                        unoptimized
-                                    />
-                                ) : (
-                                    <div style={{ width: '200px', height: '200px', background: '#f4f4f4', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
-                                        Carregando QR...
+                            {/* Countdown Timer */}
+                            <div style={{ marginBottom: '25px' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', marginBottom: '15px', letterSpacing: '1px' }}>
+                                    Contagem Regressiva
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                                    <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '12px', padding: '15px 10px', color: '#fff' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, lineHeight: 1 }}>{countdown.days}</div>
+                                        <div style={{ fontSize: '0.65rem', opacity: 0.9, marginTop: '5px', textTransform: 'uppercase' }}>Dias</div>
                                     </div>
-                                )}
+                                    <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '12px', padding: '15px 10px', color: '#fff' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, lineHeight: 1 }}>{countdown.hours}</div>
+                                        <div style={{ fontSize: '0.65rem', opacity: 0.9, marginTop: '5px', textTransform: 'uppercase' }}>Horas</div>
+                                    </div>
+                                    <div style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', borderRadius: '12px', padding: '15px 10px', color: '#fff' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, lineHeight: 1 }}>{countdown.minutes}</div>
+                                        <div style={{ fontSize: '0.65rem', opacity: 0.9, marginTop: '5px', textTransform: 'uppercase' }}>Min</div>
+                                    </div>
+                                    <div style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', borderRadius: '12px', padding: '15px 10px', color: '#fff' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, lineHeight: 1 }}>{countdown.seconds}</div>
+                                        <div style={{ fontSize: '0.65rem', opacity: 0.9, marginTop: '5px', textTransform: 'uppercase' }}>Seg</div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div style={{ borderTop: '1px dashed #eee', paddingTop: '25px', marginBottom: '25px' }}>
