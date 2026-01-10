@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, ArrowRight, Loader2, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
@@ -17,6 +17,7 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [focusedField, setFocusedField] = useState<string | null>(null);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -41,6 +42,16 @@ export default function Login() {
         }
     };
 
+    const inputVariants = {
+        initial: { scale: 1, boxShadow: "0px 0px 0px rgba(212, 175, 55, 0)" },
+        focused: { scale: 1.02, boxShadow: "0px 0px 20px rgba(212, 175, 55, 0.15)" }
+    };
+
+    const iconVariants = {
+        initial: { x: 0, color: "#888", scale: 1 },
+        focused: { x: 5, color: "var(--primary)", scale: 1.2 }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, x: -40, rotateY: -8 }}
@@ -48,10 +59,10 @@ export default function Login() {
             exit={{ opacity: 0, x: 40, rotateY: 8 }}
             transition={{ type: 'spring', damping: 20, stiffness: 100 }}
             className="luxury-card"
-            style={{ maxWidth: '560px', width: '100%', margin: '0 auto', padding: '1.8rem', perspective: '1000px' }}
+            style={{ maxWidth: '560px', width: '100%', margin: '0 auto', padding: '2rem', perspective: '1000px' }}
         >
             {/* Navigation Tabs */}
-            <div style={{ display: 'flex', marginBottom: '1.2rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
+            <div style={{ display: 'flex', marginBottom: '1.5rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
                 <div style={{
                     flex: 1, padding: '10px', borderRadius: '10px', background: 'var(--gold-gradient)', color: '#000',
                     fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem'
@@ -66,7 +77,7 @@ export default function Login() {
                 </Link>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                 <motion.div
                     animate={{ y: [0, -8, 0] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -83,81 +94,180 @@ export default function Login() {
             )}
 
             <form onSubmit={handleSubmit}>
-                <div className="input-group" style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.85rem' }}>{t('auth.email')}</label>
+                {/* Email Field */}
+                <div className="input-group" style={{ marginBottom: '1.2rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#444' }}>{t('auth.email')}</label>
                     <div style={{ position: 'relative' }}>
-                        <Mail size={18} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="input-luxury"
-                            style={{ paddingLeft: '2.5rem', paddingBlock: '0.7rem', fontSize: '0.95rem' }}
-                            required
-                            disabled={loading}
-                        />
+                        <motion.div
+                            variants={inputVariants}
+                            animate={focusedField === 'email' ? 'focused' : 'initial'}
+                            style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden' }}
+                        >
+                            <motion.div
+                                variants={iconVariants}
+                                animate={focusedField === 'email' ? 'focused' : 'initial'}
+                                transition={{ type: 'spring', stiffness: 300 }}
+                                style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', zIndex: 2 }}
+                            >
+                                <Mail size={18} />
+                            </motion.div>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onFocus={() => setFocusedField('email')}
+                                onBlur={() => setFocusedField(null)}
+                                className="input-luxury"
+                                style={{
+                                    paddingLeft: '3rem',
+                                    paddingBlock: '0.8rem',
+                                    fontSize: '1rem',
+                                    border: focusedField === 'email' ? '1px solid var(--primary)' : '1px solid #e0e0e0',
+                                    transition: 'border-color 0.3s ease'
+                                }}
+                                required
+                                disabled={loading}
+                            />
+                            {/* Liquid Border Animation */}
+                            <AnimatePresence>
+                                {focusedField === 'email' && (
+                                    <motion.div
+                                        initial={{ scaleX: 0 }}
+                                        animate={{ scaleX: 1 }}
+                                        exit={{ scaleX: 0 }}
+                                        transition={{ duration: 0.4, ease: "circOut" }}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            height: '3px',
+                                            background: 'var(--gold-gradient)',
+                                            transformOrigin: 'left'
+                                        }}
+                                    />
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
                     </div>
                 </div>
 
-                <div className="input-group" style={{ marginBottom: '1.2rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.85rem' }}>{t('auth.password')}</label>
+                {/* Password Field */}
+                <div className="input-group" style={{ marginBottom: '1.8rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#444' }}>{t('auth.password')}</label>
                     <div style={{ position: 'relative' }}>
-                        <Lock size={18} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="input-luxury"
-                            style={{ paddingLeft: '2.5rem', paddingRight: '2.8rem', paddingBlock: '0.7rem', fontSize: '0.95rem' }}
-                            required
-                            disabled={loading}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
+                        <motion.div
+                            variants={inputVariants}
+                            animate={focusedField === 'password' ? 'focused' : 'initial'}
+                            style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden' }}
                         >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
+                            <motion.div
+                                variants={iconVariants}
+                                animate={focusedField === 'password' ? 'focused' : 'initial'}
+                                transition={{ type: 'spring', stiffness: 300 }}
+                                style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', zIndex: 2 }}
+                            >
+                                <Lock size={18} />
+                            </motion.div>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onFocus={() => setFocusedField('password')}
+                                onBlur={() => setFocusedField(null)}
+                                className="input-luxury"
+                                style={{
+                                    paddingLeft: '3rem',
+                                    paddingRight: '3rem',
+                                    paddingBlock: '0.8rem',
+                                    fontSize: '1rem',
+                                    border: focusedField === 'password' ? '1px solid var(--primary)' : '1px solid #e0e0e0',
+                                    transition: 'border-color 0.3s ease'
+                                }}
+                                required
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: 'absolute',
+                                    right: '1rem',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    color: '#888',
+                                    zIndex: 3
+                                }}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                            {/* Liquid Border Animation */}
+                            <AnimatePresence>
+                                {focusedField === 'password' && (
+                                    <motion.div
+                                        initial={{ scaleX: 0 }}
+                                        animate={{ scaleX: 1 }}
+                                        exit={{ scaleX: 0 }}
+                                        transition={{ duration: 0.4, ease: "circOut" }}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            height: '3px',
+                                            background: 'var(--gold-gradient)',
+                                            transformOrigin: 'left'
+                                        }}
+                                    />
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
                     </div>
                 </div>
 
                 <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.01, boxShadow: "0px 5px 15px rgba(212, 175, 55, 0.3)" }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
                     className="btn-primary"
-                    style={{ width: '100%', padding: '0.9rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', fontSize: '0.95rem' }}
+                    style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.6rem', fontSize: '1rem', borderRadius: '12px' }}
                     disabled={loading}
                 >
-                    {loading ? <Loader2 className="animate-spin" size={20} /> : <>{t('auth.loginButton')} <ArrowRight size={18} /></>}
+                    {loading ? <Loader2 className="animate-spin" size={20} /> : <>{t('auth.loginButton')} <ArrowRight size={20} /></>}
                 </motion.button>
 
-                <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', margin: '1.2rem 0' }}>
                     <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
-                    <span style={{ padding: '0 12px', color: '#888', fontSize: '0.75rem' }}>OU</span>
+                    <span style={{ padding: '0 15px', color: '#888', fontSize: '0.8rem' }}>OU</span>
                     <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button
+                    <motion.button
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.95 }}
                         type="button"
                         onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
-                        style={{ flex: 1, padding: '0.7rem', background: '#fff', border: '1px solid #ddd', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer' }}
+                        style={{ flex: 1, padding: '0.8rem', background: '#fff', border: '1px solid #ddd', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                     >
-                        <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={16} height={16} /> Google
-                    </button>
-                    <button
+                        <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={18} height={18} /> Google
+                    </motion.button>
+                    <motion.button
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.95 }}
                         type="button"
                         onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`}
-                        style={{ flex: 1, padding: '0.7rem', background: '#0077b5', border: 'none', borderRadius: '10px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer' }}
+                        style={{ flex: 1, padding: '0.8rem', background: '#0077b5', border: 'none', borderRadius: '12px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,119,181,0.2)' }}
                     >
-                        <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={16} height={16} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
-                    </button>
+                        <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={18} height={18} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
+                    </motion.button>
                 </div>
             </form>
 
-            <p style={{ marginTop: '1.2rem', textAlign: 'center', color: '#666', fontSize: '0.85rem' }}>
+            <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
                 {t('auth.noAccountYet')} <Link href="/cadastro" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>{t('auth.registerNow')}</Link>
             </p>
         </motion.div>
