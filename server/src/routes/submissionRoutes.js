@@ -6,7 +6,8 @@ const {
     updateStatus,
     getAllSubmissionsAdmin,
     getMySubmissions,
-    getSubmissionPublic
+    getSubmissionPublic,
+    analyzeReceipt
 } = require('../controllers/submissionController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 

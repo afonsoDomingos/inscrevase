@@ -143,6 +143,19 @@ const getMySubmissions = async (req, res) => {
     }
 };
 
+const getSubmissionPublic = async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id)
+            .populate('form', 'title creator customFields theme');
+
+        if (!submission) return res.status(404).json({ message: 'Submission not found' });
+
+        res.json(submission);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 const analyzeReceipt = async (req, res) => {
     try {
         const { submissionId } = req.params;
