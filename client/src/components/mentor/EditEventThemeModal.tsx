@@ -100,7 +100,8 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
 
                 toast.success(t('common.success') || 'Upload concluído');
 
-            } catch (error: any) {
+            } catch (err: unknown) {
+                const error = err as Error;
                 console.error("Upload failed details:", error);
                 toast.error(`${t('events.theme.uploadFailed') || 'Erro no upload'}: ${error.message || 'Erro desconhecido'}`);
             } finally {

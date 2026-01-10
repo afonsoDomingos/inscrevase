@@ -57,8 +57,9 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
             });
             onSuccess();
             onClose();
-        } catch (err: any) {
-            alert(err.message || t('events.profile.updateError'));
+        } catch (err: unknown) {
+            const error = err as Error;
+            alert(error.message || t('events.profile.updateError'));
         } finally {
             setLoading(false);
         }

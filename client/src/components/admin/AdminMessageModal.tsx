@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Search, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Check } from 'lucide-react';
 
 interface AdminMessageModalProps {
     isOpen: boolean;
@@ -29,7 +29,6 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [isSelectingMentors, setIsSelectingMentors] = useState(false);
     const [fetchingMentors, setFetchingMentors] = useState(false);
 
     useEffect(() => {

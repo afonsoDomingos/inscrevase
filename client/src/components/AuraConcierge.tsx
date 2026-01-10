@@ -6,6 +6,7 @@ import { X, Send, Sparkles, Paperclip, FileText, Image as ImageIcon, Loader2 } f
 import ReactMarkdown from 'react-markdown';
 import { useTranslate } from '@/context/LanguageContext';
 import { aiService } from '@/lib/aiService';
+import Image from 'next/image';
 import { toast } from 'sonner';
 
 interface Message {
@@ -231,12 +232,15 @@ export default function AuraConcierge() {
                                                                 Ver Documento PDF
                                                             </a>
                                                         ) : (
-                                                            <img
-                                                                src={msg.attachment}
-                                                                alt="Anexo"
-                                                                style={{ maxWidth: '100%', borderRadius: '8px', cursor: 'pointer' }}
-                                                                onClick={() => window.open(msg.attachment, '_blank')}
-                                                            />
+                                                            <div style={{ position: 'relative', width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer' }} onClick={() => window.open(msg.attachment, '_blank')}>
+                                                                <Image
+                                                                    src={msg.attachment}
+                                                                    alt="Anexo"
+                                                                    fill
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    unoptimized
+                                                                />
+                                                            </div>
                                                         )}
                                                     </div>
                                                 )}

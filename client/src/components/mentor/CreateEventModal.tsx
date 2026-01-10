@@ -42,8 +42,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             const data = await aiService.chat(prompt, t('locale') || 'pt');
             setDescription(data.reply);
             toast.success(t('ai.toastSuccess'));
-        } catch (err: any) {
-            toast.error(err.message || t('ai.toastError'));
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message || t('ai.toastError'));
         } finally {
             setAiLoading(false);
         }
