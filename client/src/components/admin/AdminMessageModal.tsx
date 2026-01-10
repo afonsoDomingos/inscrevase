@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X, Users, MessageSquare, AlertTriangle, Sparkles } from 'lucide-react';
+import { Send, X, Users, MessageSquare, AlertTriangle, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { notificationService } from '@/lib/notificationService';
+import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface AdminMessageModalProps {
     isOpen: boolean;
@@ -12,10 +14,31 @@ interface AdminMessageModalProps {
 }
 
 export default function AdminMessageModal({ isOpen, onClose, recipientId, recipientName }: AdminMessageModalProps) {
+    const { locale, t } = useTranslate();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [type, setType] = useState('personal');
     const [loading, setLoading] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
+
+    const handleAiGenerate = async () => {
+        if (!title.trim()) {
+            toast.error(t('ai.promptOrient'));
+            return;
+        }
+
+        setAiLoading(true);
+        try {
+            const prompt = `Crie uma mensagem sofisticada e profissional para os nossos mentores sobre o seguinte assunto: "${title}". O tom deve ser motivador, luxuoso e direto ao ponto.`;
+            const data = await aiService.chat(prompt, locale);
+            setContent(data.reply);
+            toast.success(t('ai.toastSuccess'));
+        } catch (err: any) {
+            toast.error(err.message || t('ai.toastError'));
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -140,7 +163,32 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                         </div>
 
                         <div style={{ marginBottom: '2rem' }}>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Conteúdo</label>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Conteúdo</label>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    type="button"
+                                    onClick={handleAiGenerate}
+                                    disabled={aiLoading}
+                                    style={{
+                                        background: 'rgba(255,215,0,0.1)',
+                                        border: '1px solid rgba(255,215,0,0.3)',
+                                        borderRadius: '20px',
+                                        padding: '4px 12px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 800,
+                                        color: '#b8860b',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                                    {t('ai.buttonWrite')}
+                                </motion.button>
+                            </div>
                             <textarea
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}

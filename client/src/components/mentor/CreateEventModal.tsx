@@ -3,9 +3,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
+import { aiService } from '@/lib/aiService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -27,6 +28,26 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const { t } = useTranslate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
+
+    const handleAiGenerate = async () => {
+        if (!title.trim()) {
+            toast.error(t('ai.promptOrient'));
+            return;
+        }
+
+        setAiLoading(true);
+        try {
+            const prompt = `Crie uma descrição sofisticada, luxuosa e persuasiva para um evento chamado "${title}". Foque nos benefícios exclusivos para os participantes e use um tom de elite.`;
+            const data = await aiService.chat(prompt, t('locale') || 'pt');
+            setDescription(data.reply);
+            toast.success(t('ai.toastSuccess'));
+        } catch (err: any) {
+            toast.error(err.message || t('ai.toastError'));
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     // Theme State
     const [theme, setTheme] = useState({
@@ -309,7 +330,32 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         </div>
 
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.description')}</label>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                                <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t('events.description')}</label>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    type="button"
+                                                    onClick={handleAiGenerate}
+                                                    disabled={aiLoading}
+                                                    style={{
+                                                        background: 'rgba(255,215,0,0.1)',
+                                                        border: '1px solid rgba(255,215,0,0.3)',
+                                                        borderRadius: '20px',
+                                                        padding: '4px 10px',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 800,
+                                                        color: '#b8860b',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                                                    {t('ai.buttonDescribe')}
+                                                </motion.button>
+                                            </div>
                                             <textarea
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}

@@ -398,5 +398,13 @@
         "bio": "Sobre o Mentor",
         "contact": "Contactar",
         "backToList": "Voltar à lista"
+    },
+    "ai": {
+        "buttonWrite": "AURA AI: AJUDAR A ESCREVER",
+        "buttonDescribe": "AURA AI: DESCREVER",
+        "toastSuccess": "Aura gerou o texto para você!",
+        "toastError": "Aura está descansando agora.",
+        "promptOrient": "Por favor, digite um título ou assunto para a Aura se orientar.",
+        "generating": "Gerando..."
     }
 }

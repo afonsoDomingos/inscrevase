@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 
 // Aura's Identity and Rules
 const AURA_SYSTEM_PROMPT = `
@@ -26,7 +27,11 @@ router.get('/health', (req, res) => {
     res.json({ status: 'Aura is breathing', model: 'gemini-1.5-flash' });
 });
 
-router.post('/chat', async (req, res) => {
+router.post('/chat', authMiddleware, async (req, res) => {
+    // Check if user is at least a mentor
+    if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin' && req.user.role !== 'mentor') {
+        return res.status(403).json({ message: 'Acesso negado.' });
+    }
     const { message, locale } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
 
