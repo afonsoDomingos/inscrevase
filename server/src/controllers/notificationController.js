@@ -6,6 +6,20 @@ exports.sendNotification = async (req, res) => {
         const { recipientId, title, content, type, actionUrl } = req.body;
         const senderId = req.user.id;
 
+        // Send to multiple specific recipients
+        if (Array.isArray(recipientId)) {
+            const notifications = recipientId.map(id => ({
+                recipient: id,
+                sender: senderId,
+                title,
+                content,
+                type: type || 'announcement',
+                actionUrl
+            }));
+            await Notification.insertMany(notifications);
+            return res.status(201).json({ message: 'Mensagens enviadas com sucesso' });
+        }
+
         // If recipientId is 'all', broadcast to all mentors
         if (recipientId === 'all') {
             const mentors = await User.find({ role: 'mentor' });

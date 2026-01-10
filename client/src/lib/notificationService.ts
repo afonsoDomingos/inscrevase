@@ -47,7 +47,7 @@ export const notificationService = {
         return response.json();
     },
     sendNotification: async (data: {
-        recipientId: string;
+        recipientId: string | string[];
         title: string;
         content: string;
         type?: string;

@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, X, Users, MessageSquare, AlertTriangle, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { notificationService } from '@/lib/notificationService';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
+import { userService } from '@/lib/userService';
+import { UserData } from '@/lib/authService';
+import { Search, Check, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface AdminMessageModalProps {
     isOpen: boolean;
     onClose: () => void;
-    recipientId?: string; // If null, it's a broadcast
+    recipientId?: string; // If provided, it's a fixed single recipient
     recipientName?: string;
 }
 
@@ -20,6 +23,46 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
     const [type, setType] = useState('personal');
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+
+    // Broadcast logic states
+    const [isAllMentors, setIsAllMentors] = useState(!recipientId);
+    const [mentors, setMentors] = useState<UserData[]>([]);
+    const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSelectingMentors, setIsSelectingMentors] = useState(false);
+    const [fetchingMentors, setFetchingMentors] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && !recipientId) {
+            loadMentors();
+        }
+    }, [isOpen, recipientId]);
+
+    const loadMentors = async () => {
+        setFetchingMentors(true);
+        try {
+            const allUsers = await userService.getAllUsers();
+            const mentorList = allUsers.filter(u => u.role === 'mentor');
+            setMentors(mentorList);
+        } catch (error) {
+            console.error('Error loading mentors:', error);
+            toast.error('Erro ao carregar lista de mentores');
+        } finally {
+            setFetchingMentors(false);
+        }
+    };
+
+    const toggleMentorSelection = (id: string) => {
+        setSelectedMentorIds(prev =>
+            prev.includes(id) ? prev.filter(mid => mid !== id) : [...prev, id]
+        );
+    };
+
+    const filteredMentors = mentors.filter(m =>
+        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        m.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (m.businessName && m.businessName.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
     const handleAiGenerate = async () => {
         if (!title.trim()) {
@@ -46,8 +89,18 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
         setLoading(true);
 
         try {
+            const finalRecipientId = recipientId
+                ? recipientId
+                : (isAllMentors ? 'all' : selectedMentorIds);
+
+            if (!recipientId && !isAllMentors && selectedMentorIds.length === 0) {
+                toast.error('Selecione pelo menos um mentor ou escolha "Todos os Mentores"');
+                setLoading(false);
+                return;
+            }
+
             await notificationService.sendNotification({
-                recipientId: recipientId || 'all',
+                recipientId: finalRecipientId,
                 title,
                 content,
                 type,
@@ -114,7 +167,120 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} style={{ padding: '2rem' }}>
+                    <form onSubmit={handleSubmit} style={{ padding: '2rem', maxHeight: '70vh', overflowY: 'auto' }}>
+                        {!recipientId && (
+                            <div style={{ marginBottom: '2rem', background: '#f9f9f9', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <label style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Destinatários</label>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsAllMentors(true)}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 700,
+                                                background: isAllMentors ? '#000' : 'transparent',
+                                                color: isAllMentors ? '#FFD700' : '#888',
+                                                border: isAllMentors ? 'none' : '1px solid #ddd',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Todos os Mentores
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsAllMentors(false)}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 700,
+                                                background: !isAllMentors ? '#000' : 'transparent',
+                                                color: !isAllMentors ? '#FFD700' : '#888',
+                                                border: !isAllMentors ? 'none' : '1px solid #ddd',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Selecionar Específicos
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {!isAllMentors && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        <div style={{ position: 'relative' }}>
+                                            <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#aaa' }} />
+                                            <input
+                                                type="text"
+                                                placeholder="Buscar por nome, email ou negócio..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                style={{ width: '100%', padding: '10px 10px 10px 35px', borderRadius: '12px', border: '1px solid #ddd', fontSize: '0.85rem', outline: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div style={{
+                                            maxHeight: '150px',
+                                            overflowY: 'auto',
+                                            display: 'grid',
+                                            gap: '5px',
+                                            padding: '10px',
+                                            background: '#fff',
+                                            borderRadius: '12px',
+                                            border: '1px solid #eee'
+                                        }}>
+                                            {fetchingMentors ? (
+                                                <div style={{ textAlign: 'center', padding: '10px', fontSize: '0.8rem', color: '#999' }}>Carregando mentores...</div>
+                                            ) : filteredMentors.length === 0 ? (
+                                                <div style={{ textAlign: 'center', padding: '10px', fontSize: '0.8rem', color: '#999' }}>Nenhum mentor encontrado</div>
+                                            ) : (
+                                                filteredMentors.map(mentor => (
+                                                    <div
+                                                        key={mentor.id || mentor._id}
+                                                        onClick={() => toggleMentorSelection(mentor.id || mentor._id!)}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '10px',
+                                                            padding: '8px',
+                                                            borderRadius: '8px',
+                                                            cursor: 'pointer',
+                                                            background: selectedMentorIds.includes(mentor.id || mentor._id!) ? 'rgba(255,215,0,0.1)' : 'transparent',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            borderRadius: '4px',
+                                                            border: '2px solid',
+                                                            borderColor: selectedMentorIds.includes(mentor.id || mentor._id!) ? '#FFD700' : '#ddd',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            background: selectedMentorIds.includes(mentor.id || mentor._id!) ? '#FFD700' : 'transparent'
+                                                        }}>
+                                                            {selectedMentorIds.includes(mentor.id || mentor._id!) && <Check size={12} color="#000" strokeWidth={4} />}
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{mentor.name}</div>
+                                                            <div style={{ fontSize: '0.7rem', color: '#888' }}>{mentor.businessName || mentor.email}</div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                        {selectedMentorIds.length > 0 && (
+                                            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#FFD700', padding: '0 5px' }}>
+                                                {selectedMentorIds.length} selecionado(s)
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div style={{ marginBottom: '1.5rem' }}>
                             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Título da Mensagem</label>
                             <input
