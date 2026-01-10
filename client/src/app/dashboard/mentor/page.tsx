@@ -431,6 +431,28 @@ export default function MentorDashboard() {
                                 <Lock size={16} /> Acesso Restrito
                             </div>
                         )}
+                        <button
+                            onClick={() => authService.logout()}
+                            title={t('common.logout')}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '45px',
+                                height: '45px',
+                                background: '#fff',
+                                border: '1px solid #fed7d7',
+                                borderRadius: '12px',
+                                color: '#e53e3e',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#fff5f5'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+                        >
+                            <LogOut size={20} />
+                        </button>
                     </div>
                 </header>
 

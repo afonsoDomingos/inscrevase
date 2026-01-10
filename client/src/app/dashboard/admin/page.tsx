@@ -217,36 +217,60 @@ export default function AdminDashboard() {
                         </motion.h1>
                     </div>
 
-                    <Link
-                        href="/"
-                        style={{
-                            padding: '0.9rem 2rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.8rem',
-                            textTransform: 'uppercase',
-                            fontSize: '0.85rem',
-                            letterSpacing: '1px',
-                            borderRadius: '50px',
-                            background: '#fff',
-                            border: '2px solid #FFD700',
-                            color: '#000',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            transition: 'all 0.3s'
-                        }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.background = '#FFD700';
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.background = '#fff';
-                            e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                    >
-                        <ArrowRight size={18} /> {t('nav.home')}
-                    </Link>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <Link
+                            href="/"
+                            style={{
+                                padding: '0.9rem 2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.8rem',
+                                textTransform: 'uppercase',
+                                fontSize: '0.85rem',
+                                letterSpacing: '1px',
+                                borderRadius: '50px',
+                                background: '#fff',
+                                border: '2px solid #FFD700',
+                                color: '#000',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                transition: 'all 0.3s'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.background = '#FFD700';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.background = '#fff';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                            }}
+                        >
+                            <ArrowRight size={18} /> {t('nav.home')}
+                        </Link>
+                        <button
+                            onClick={() => authService.logout()}
+                            title={t('common.logout')}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '45px',
+                                height: '45px',
+                                background: '#fff',
+                                border: '1px solid #fed7d7',
+                                borderRadius: '50px',
+                                color: '#e53e3e',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#fff5f5'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+                        >
+                            <LogOut size={20} />
+                        </button>
+                    </div>
                 </header>
 
                 <AnimatePresence mode="wait">
@@ -401,6 +425,6 @@ export default function AdminDashboard() {
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="admin" />
             </main>
-        </div>
+        </div >
     );
 }
