@@ -6,6 +6,7 @@ import { UserData } from '@/lib/authService';
 import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail, Lock, Unlock, MessageSquare, BadgeCheck, XOctagon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
+import PremiumBadge from '../common/PremiumBadge';
 
 interface UsersListProps {
     onMessageUser?: (user: UserData) => void;
@@ -127,8 +128,8 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         {user.name}
-                                        {user.isVerified && <BadgeCheck size={16} fill="#1877F2" color="#fff" />}
-                                        {user.verificationStatus === 'pending' && <span style={{ fontSize: '0.65rem', background: '#FEF3C7', color: '#B45309', padding: '2px 6px', borderRadius: '4px', border: '1px solid #FCD34D' }}>PENDENTE</span>}
+                                        {user.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
+                                        {user.verificationStatus === 'pending' && <PremiumBadge type="pending" size="sm" showLabel={false} />}
                                     </div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{user.email}</div>
                                 </td>
@@ -150,21 +151,10 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                     )}
                                 </td>
                                 <td style={{ padding: '1rem' }}>
-                                    <span style={{
-                                        padding: '0.3rem 0.6rem',
-                                        borderRadius: '20px',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 600,
-                                        background: user.role === 'SuperAdmin' ? '#000' : (user.role === 'admin' ? '#FFD70015' : '#eee'),
-                                        color: user.role === 'SuperAdmin' ? '#FFD700' : (user.role === 'admin' ? '#B8860B' : '#666')
-                                    }}>
-                                        {user.role}
-                                    </span>
+                                    <PremiumBadge type={user.role === 'SuperAdmin' ? 'superadmin' : (user.role === 'admin' ? 'admin' : 'mentor')} size="sm" />
                                 </td>
                                 <td style={{ padding: '1rem' }}>
-                                    <span style={{ fontWeight: 500, color: user.plan !== 'free' ? '#D4AF37' : '#666' }}>
-                                        {user.plan === 'enterprise' ? 'Enterprise' : (user.plan === 'pro' ? 'Pro' : 'Grátis')}
-                                    </span>
+                                    <PremiumBadge type={(user.plan || 'free') as 'free' | 'pro' | 'enterprise'} size="sm" />
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <span style={{

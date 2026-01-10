@@ -4,9 +4,10 @@
 import { useState, useEffect } from 'react';
 import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
-import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, BadgeCheck } from 'lucide-react';
+import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
+import PremiumBadge from '../common/PremiumBadge';
 
 interface MentorSettingsProps {
     user: UserData;
@@ -161,27 +162,19 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                     <p style={{ color: '#666', fontSize: '0.9rem', margin: 0 }}>{formData.businessName || 'Sua Empresa'}</p>
 
                     <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                        <div style={{ padding: '4px 12px', background: '#f0f0f0', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#666' }}>
-                            MENTOR
-                        </div>
-                        <div style={{ padding: '4px 12px', background: 'rgba(255, 215, 0, 0.15)', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, color: '#B8860B' }}>
-                            {user.plan ? user.plan.toUpperCase() : 'FREE'}
-                        </div>
+                        <PremiumBadge type="mentor" size="sm" />
+                        <PremiumBadge type={(user.plan || 'free') as 'free' | 'pro' | 'enterprise'} size="sm" />
                     </div>
 
                     {/* Verification Status */}
                     <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
                         {user.isVerified ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1877F2', fontWeight: 600, fontSize: '0.9rem' }}>
-                                <BadgeCheck size={20} fill="#1877F2" color="#fff" /> Conta Verificada
-                            </div>
+                            <PremiumBadge type="verified" size="md" />
                         ) : user.verificationStatus === 'pending' ? (
-                            <div style={{ fontSize: '0.8rem', color: '#888', background: '#f0f0f0', padding: '6px 12px', borderRadius: '12px' }}>
-                                ⏳ Verificação em Análise
-                            </div>
+                            <PremiumBadge type="pending" size="md" />
                         ) : user.verificationStatus === 'rejected' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                                <span style={{ fontSize: '0.8rem', color: 'red' }}>Verificação Recusada</span>
+                                <span style={{ fontSize: '0.8rem', color: 'red', fontWeight: 600 }}>Verificação Recusada</span>
                                 <button onClick={handleRequestVerification} style={{ fontSize: '0.8rem', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', color: '#555' }}>
                                     Tentar Novamente
                                 </button>
@@ -190,7 +183,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                             <button
                                 onClick={handleRequestVerification}
                                 style={{
-                                    background: 'transparent',
+                                    background: '#fff',
                                     border: '1px solid #1877F2',
                                     color: '#1877F2',
                                     padding: '6px 16px',
@@ -201,12 +194,19 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '6px',
-                                    transition: 'all 0.2s'
+                                    transition: 'all 0.2s',
+                                    boxShadow: '0 2px 4px rgba(24, 119, 242, 0.1)'
                                 }}
-                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(24, 119, 242, 0.05)'}
-                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.background = '#1877F2';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.background = '#fff';
+                                    e.currentTarget.style.color = '#1877F2';
+                                }}
                             >
-                                <BadgeCheck size={16} /> Solicitar Selo
+                                <PremiumBadge type="verified" size="sm" showLabel={false} /> Solicitar Selo
                             </button>
                         )}
                     </div>
