@@ -141,7 +141,7 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                     style={{
                         background: '#fff',
                         width: '100%',
-                        maxWidth: '600px',
+                        maxWidth: '800px',
                         borderRadius: '30px',
                         overflow: 'hidden',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
@@ -223,7 +223,7 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                                         </div>
 
                                         <div style={{
-                                            maxHeight: '150px',
+                                            maxHeight: '300px',
                                             overflowY: 'auto',
                                             display: 'grid',
                                             gap: '5px',

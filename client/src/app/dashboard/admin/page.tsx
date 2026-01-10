@@ -324,6 +324,7 @@ export default function AdminDashboard() {
                                 background: '#000',
                                 color: '#FFD700',
                                 border: '2px solid #000',
+                                whiteSpace: 'nowrap',
                                 fontWeight: 700,
                                 cursor: 'pointer',
                                 transition: 'all 0.3s',
