@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2 } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -19,10 +19,44 @@ interface EditEventModalProps {
 }
 
 export default function EditEventModal({ isOpen, onClose, onSuccess, form }: EditEventModalProps) {
-    const { t } = useTranslate();
+    const { t, locale } = useTranslate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+
+    // Marketing State
+    const [marketingPlatform, setMarketingPlatform] = useState('instagram');
+    const [marketingContent, setMarketingContent] = useState('');
+    const [marketingLoading, setMarketingLoading] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const handleMarketingGenerate = async () => {
+        if (!title.trim()) {
+            toast.error(t('ai.promptOrient'));
+            return;
+        }
+
+        setMarketingLoading(true);
+        try {
+            const prompt = `Crie um post de marketing persuasivo e envolvente para o ${marketingPlatform} sobre o evento: "${title}". Use emojis, hashtags relevantes e um tom luxuoso e exclusivo. Inclua Call to Action.`;
+            const data = await aiService.chat(prompt, locale);
+            setMarketingContent(data.reply);
+            toast.success(t('ai.toastSuccess'));
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message || t('ai.toastError'));
+        } finally {
+            setMarketingLoading(false);
+        }
+    };
+
+    const copyToClipboard = () => {
+        if (!marketingContent) return;
+        navigator.clipboard.writeText(marketingContent);
+        setCopied(true);
+        toast.success(t('ai.copySuccess') || 'Copiado!');
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     const handleAiGenerate = async () => {
         if (!title.trim()) {
@@ -33,7 +67,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         setAiLoading(true);
         try {
             const prompt = `Crie uma descrição sofisticada, luxuosa e persuasiva para um evento chamado "${title}". Foque nos benefícios exclusivos para os participantes e use um tom de elite.`;
-            const data = await aiService.chat(prompt, t('locale') || 'pt');
+            const data = await aiService.chat(prompt, locale);
             setDescription(data.reply);
             toast.success(t('ai.toastSuccess'));
         } catch (err: unknown) {
@@ -263,6 +297,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                 { id: 3, label: t('events.steps.design'), icon: <Palette size={18} /> },
                                 { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} /> },
                                 { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
+                                { id: 6, label: 'Marketing AI', icon: <Megaphone size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -759,6 +794,103 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                             />
                                         </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {step === 6 && (
+                                <motion.div key="step6" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Megaphone color="#FFD700" /> Marketing Social AI
+                                    </h2>
+                                    <p style={{ color: '#666', marginBottom: '2rem' }}>Deixe a Aura criar o post perfeito para divulgar seu evento.</p>
+
+                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Escolha a Plataforma</label>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                {['instagram', 'linkedin', 'whatsapp'].map(p => (
+                                                    <button
+                                                        key={p}
+                                                        type="button"
+                                                        onClick={() => setMarketingPlatform(p)}
+                                                        style={{
+                                                            padding: '10px 20px',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid',
+                                                            borderColor: marketingPlatform === p ? '#FFD700' : '#ddd',
+                                                            background: marketingPlatform === p ? '#FFD700' : '#fff',
+                                                            color: marketingPlatform === p ? '#000' : '#666',
+                                                            fontWeight: 700,
+                                                            textTransform: 'capitalize',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            flex: 1
+                                                        }}
+                                                    >
+                                                        {p}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={handleMarketingGenerate}
+                                            disabled={marketingLoading}
+                                            style={{
+                                                background: 'linear-gradient(135deg, #000 0%, #333 100%)',
+                                                color: '#FFD700',
+                                                border: 'none',
+                                                padding: '1rem',
+                                                borderRadius: '15px',
+                                                fontWeight: 800,
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '10px',
+                                                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                                            }}
+                                        >
+                                            {marketingLoading ? <Loader2 className="animate-spin" /> : <Wand2 size={20} />}
+                                            GERAR POST COM AURA
+                                        </button>
+
+                                        {marketingContent && (
+                                            <div style={{ position: 'relative' }}>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Resultado Gerado</label>
+                                                <textarea
+                                                    value={marketingContent}
+                                                    onChange={(e) => setMarketingContent(e.target.value)}
+                                                    rows={10}
+                                                    style={{ width: '100%', padding: '1.5rem', borderRadius: '20px', border: '1px solid #ddd', outline: 'none', resize: 'none', background: '#f8f9fa', lineHeight: '1.6' }}
+                                                />
+                                                <button
+                                                    onClick={copyToClipboard}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '35px',
+                                                        right: '10px',
+                                                        background: copied ? '#48bb78' : '#fff',
+                                                        border: '1px solid #ddd',
+                                                        borderRadius: '8px',
+                                                        padding: '8px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: 600,
+                                                        color: copied ? '#fff' : '#333',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                >
+                                                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                                                    {copied ? 'Copiado!' : 'Copiar'}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}

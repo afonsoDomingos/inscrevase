@@ -405,6 +405,7 @@
         "toastSuccess": "Aura gerou o texto para você!",
         "toastError": "Aura está descansando agora.",
         "promptOrient": "Por favor, digite um título ou assunto para a Aura se orientar.",
-        "generating": "Gerando..."
+        "generating": "Gerando...",
+        "copySuccess": "Conteúdo copiado!"
     }
 }

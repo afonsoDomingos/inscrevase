@@ -404,6 +404,7 @@
         "toastSuccess": "Aura generated the text for you!",
         "toastError": "Aura is resting now.",
         "promptOrient": "Please enter a title or subject for Aura's guidance.",
-        "generating": "Generating..."
+        "generating": "Generating...",
+        "copySuccess": "Content copied!"
     }
 }
