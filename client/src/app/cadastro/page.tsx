@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Navbar from '@/components/Navbar';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -44,319 +44,177 @@ export default function Register() {
     };
 
     return (
-        <main className="bg-auth">
-            <Navbar />
+        <main className="bg-auth" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+            <div style={{ position: 'absolute', top: '15px', left: '15px' }}>
+                <Link href="/" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', fontWeight: 600 }}>
+                    <ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} /> Voltar
+                </Link>
+            </div>
 
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="luxury-card"
-                style={{ maxWidth: '600px', width: '100%', marginTop: '30px', marginBottom: '30px', padding: '1.5rem' }}
+                style={{ maxWidth: '480px', width: '100%', margin: '0 auto', padding: '1.2rem' }}
             >
                 {/* Navigation Tabs */}
-                <div style={{ display: 'flex', marginBottom: '1rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
-                    <Link
-                        href="/entrar"
-                        style={{
-                            flex: 1,
-                            padding: '10px',
-                            borderRadius: '10px',
-                            background: 'transparent',
-                            color: '#666',
-                            fontWeight: 600,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            fontSize: '0.9rem',
-                            textDecoration: 'none',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <LogIn size={16} /> {t('auth.signIn')}
+                <div style={{ display: 'flex', marginBottom: '0.8rem', background: '#f8f9fa', borderRadius: '12px', padding: '4px' }}>
+                    <Link href="/entrar" style={{
+                        flex: 1, padding: '8px', borderRadius: '10px', color: '#666', fontWeight: 600,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', textDecoration: 'none'
+                    }}>
+                        <LogIn size={14} /> {t('auth.signIn')}
                     </Link>
-                    <div
-                        style={{
-                            flex: 1,
-                            padding: '10px',
-                            borderRadius: '10px',
-                            background: 'var(--gold-gradient)',
-                            color: '#000',
-                            fontWeight: 700,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            fontSize: '0.9rem',
-                            cursor: 'default'
-                        }}
-                    >
-                        <UserPlus size={16} /> {t('auth.signUp')}
+                    <div style={{
+                        flex: 1, padding: '8px', borderRadius: '10px', background: 'var(--gold-gradient)', color: '#000',
+                        fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem'
+                    }}>
+                        <UserPlus size={14} /> {t('auth.signUp')}
                     </div>
                 </div>
 
-                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                    <motion.img
-                        initial={{ y: -20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        src="/logo.png"
-                        alt="Logo"
-                        style={{ height: '45px', marginBottom: '0.8rem' }}
-                        className="float-anim"
-                    />
-                    <h1 style={{ fontSize: '1.5rem', marginBottom: '0.3rem' }}>{t('auth.registerTitle')}</h1>
-                    <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('auth.registerSubtitle')}</p>
+                <div style={{ textAlign: 'center', marginBottom: '0.8rem' }}>
+                    <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ margin: '0 auto 0.4rem' }} className="float-anim" />
+                    <h1 style={{ fontSize: '1.2rem', margin: 0 }}>{t('auth.registerTitle')}</h1>
                 </div>
 
                 {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        style={{ background: '#fff5f5', color: '#e53e3e', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.9rem', border: '1px solid #fed7d7' }}
-                    >
+                    <div style={{ background: '#fff5f5', color: '#e53e3e', padding: '0.5rem', borderRadius: '8px', marginBottom: '0.8rem', textAlign: 'center', fontSize: '0.8rem', border: '1px solid #fed7d7' }}>
                         {error}
-                    </motion.div>
+                    </div>
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.8rem' }}>
-                        <motion.div
-                            initial={{ x: -10, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="input-group"
-                        >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.fullName')}</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.75rem' }}>{t('auth.fullName')}</label>
                             <div style={{ position: 'relative' }}>
-                                <User size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+                                <User size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="input-luxury"
-                                    style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder={t('auth.namePlaceholder')}
+                                    style={{ paddingLeft: '2rem', paddingBlock: '0.5rem', fontSize: '0.85rem' }}
                                     required
                                     disabled={loading}
                                 />
                             </div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ x: 10, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="input-group"
-                        >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.businessName')}</label>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.75rem' }}>{t('auth.businessName')}</label>
                             <div style={{ position: 'relative' }}>
-                                <Briefcase size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+                                <Briefcase size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
                                     type="text"
                                     value={formData.businessName}
                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                     className="input-luxury"
-                                    style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder={t('auth.businessPlaceholder')}
+                                    style={{ paddingLeft: '2rem', paddingBlock: '0.5rem', fontSize: '0.85rem' }}
                                     required
                                     disabled={loading}
                                 />
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.8rem', marginBottom: '0.8rem', marginTop: '0.8rem' }}>
-                        <motion.div
-                            initial={{ y: 10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.35 }}
-                            className="input-group"
-                        >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.country')}</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.75rem' }}>{t('auth.country')}</label>
                             <div style={{ position: 'relative' }}>
-                                <Globe size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+                                <Globe size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
                                 <select
                                     value={formData.country}
                                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                                     className="input-luxury"
-                                    style={{ paddingLeft: '2.5rem', fontSize: '0.9rem', width: '100%', cursor: 'pointer' }}
+                                    style={{ paddingLeft: '2rem', paddingBlock: '0.5rem', fontSize: '0.85rem', width: '100%' }}
                                     required
                                     disabled={loading}
                                 >
-                                    <option value="">{t('auth.selectCountry')}</option>
-                                    <optgroup label="CPLP (Língua Portuguesa)">
-                                        <option value="Angola">Angola</option>
-                                        <option value="Brasil">Brasil</option>
-                                        <option value="Cabo Verde">Cabo Verde</option>
-                                        <option value="Guiné-Bissau">Guiné-Bissau</option>
-                                        <option value="Moçambique">Moçambique</option>
-                                        <option value="Portugal">Portugal</option>
-                                        <option value="São Tomé e Príncipe">São Tomé e Príncipe</option>
-                                        <option value="Timor-Leste">Timor-Leste</option>
-                                    </optgroup>
-                                    <optgroup label="Outros (Língua Inglesa/Mundo)">
-                                        <option value="África do Sul">África do Sul</option>
-                                        <option value="Alemanha">Alemanha</option>
-                                        <option value="Austrália">Austrália</option>
-                                        <option value="Canadá">Canadá</option>
-                                        <option value="China">China</option>
-                                        <option value="Emirados Árabes Unidos">Emirados Árabes Unidos</option>
-                                        <option value="Espanha">Espanha</option>
-                                        <option value="Estados Unidos">Estados Unidos</option>
-                                        <option value="França">França</option>
-                                        <option value="Gana">Gana</option>
-                                        <option value="Índia">Índia</option>
-                                        <option value="Irlanda">Irlanda</option>
-                                        <option value="Itália">Itália</option>
-                                        <option value="Japão">Japão</option>
-                                        <option value="Nigéria">Nigéria</option>
-                                        <option value="Nova Zelândia">Nova Zelândia</option>
-                                        <option value="Quênia">Quênia</option>
-                                        <option value="Reino Unido">Reino Unido</option>
-                                        <option value="Suíça">Suíça</option>
-                                        <option value="Zâmbia">Zâmbia</option>
-                                        <option value="Zimbábue">Zimbábue</option>
-                                    </optgroup>
+                                    <option value="">País</option>
+                                    <option value="Angola">Angola</option>
+                                    <option value="Brasil">Brasil</option>
+                                    <option value="Moçambique">Moçambique</option>
+                                    <option value="Portugal">Portugal</option>
                                 </select>
                             </div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ y: 10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                            className="input-group"
-                        >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.email')}</label>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.75rem' }}>{t('auth.email')}</label>
                             <div style={{ position: 'relative' }}>
-                                <Mail size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+                                <Mail size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     className="input-luxury"
-                                    style={{ paddingLeft: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder={t('auth.emailPlaceholder')}
+                                    style={{ paddingLeft: '2rem', paddingBlock: '0.5rem', fontSize: '0.85rem' }}
                                     required
                                     disabled={loading}
                                 />
                             </div>
-                        </motion.div>
+                        </div>
+                    </div>
 
-                        <motion.div
-                            initial={{ y: 10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.45 }}
-                            className="input-group"
-                        >
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.85rem' }}>{t('auth.password')}</label>
-                            <div style={{ position: 'relative' }}>
-                                <Lock size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    className="input-luxury"
-                                    style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', fontSize: '0.9rem' }}
-                                    placeholder={t('auth.passwordPlaceholder')}
-                                    required
-                                    disabled={loading}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '1rem',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        color: '#888',
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </button>
-                            </div>
-                        </motion.div>
+                    <div className="input-group" style={{ marginBottom: '0.8rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.75rem' }}>{t('auth.password')}</label>
+                        <div style={{ position: 'relative' }}>
+                            <Lock size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="input-luxury"
+                                style={{ paddingLeft: '2rem', paddingRight: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem' }}
+                                required
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
+                            >
+                                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                        </div>
                     </div>
 
                     <motion.button
-                        whileHover={{ scale: loading ? 1 : 1.02 }}
-                        whileTap={{ scale: loading ? 1 : 0.98 }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
                         type="submit"
                         className="btn-primary"
-                        style={{ width: '100%', padding: '1.2rem', marginTop: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+                        style={{ width: '100%', padding: '0.7rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}
                         disabled={loading}
                     >
-                        {loading ? (
-                            <Loader2 className="animate-spin" size={20} />
-                        ) : (
-                            <>{t('auth.createAccount')} <ArrowRight size={18} /></>
-                        )}
+                        {loading ? <Loader2 className="animate-spin" size={16} /> : <>{t('auth.createAccount')} <ArrowRight size={14} /></>}
                     </motion.button>
 
-                    <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '0.6rem 0' }}>
                         <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
-                        <span style={{ padding: '0 10px', color: '#888', fontSize: '0.75rem' }}>OU</span>
+                        <span style={{ padding: '0 8px', color: '#888', fontSize: '0.65rem' }}>OU</span>
                         <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '0.6rem' }}>
                         <button
                             type="button"
                             onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
-                            style={{
-                                width: '100%',
-                                padding: '1rem',
-                                background: '#fff',
-                                border: '1px solid #ddd',
-                                borderRadius: '8px',
-                                color: '#333',
-                                fontWeight: 600,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}
+                            style={{ flex: 1, padding: '0.5rem', background: '#fff', border: '1px solid #ddd', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.75rem', cursor: 'pointer' }}
                         >
-                            <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} />
-                            {t('auth.continueWithGoogle')}
+                            <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={12} height={12} /> Google
                         </button>
-
                         <button
                             type="button"
                             onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`}
-                            style={{
-                                width: '100%',
-                                padding: '1rem',
-                                background: '#0077b5',
-                                border: 'none',
-                                borderRadius: '8px',
-                                color: '#fff',
-                                fontWeight: 600,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}
+                            style={{ flex: 1, padding: '0.5rem', background: '#0077b5', border: 'none', borderRadius: '8px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.75rem', cursor: 'pointer' }}
                         >
-                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={20} height={20} style={{ filter: 'brightness(0) invert(1)' }} />
-                            {t('auth.continueWithLinkedIn')}
+                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={12} height={12} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
                         </button>
                     </div>
                 </form>
 
-                <p style={{ marginTop: '2rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
+                <p style={{ marginTop: '0.6rem', textAlign: 'center', color: '#666', fontSize: '0.75rem' }}>
                     {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
                 </p>
             </motion.div>
