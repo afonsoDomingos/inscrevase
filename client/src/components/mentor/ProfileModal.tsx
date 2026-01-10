@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook } from 'lucide-react';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook, Sparkles } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService';
 import Image from 'next/image';
@@ -243,27 +243,37 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                                 <div
                                     onClick={onUpgradeClick}
                                     style={{
-                                        padding: '0.8rem',
-                                        background: '#f8f9fa',
-                                        borderRadius: '8px',
-                                        fontSize: '0.8rem',
+                                        padding: '0.8rem 1rem',
+                                        background: onUpgradeClick ? '#fff' : '#f8f9fa',
+                                        borderRadius: '12px',
+                                        fontSize: '0.85rem',
                                         fontWeight: 800,
                                         color: user.plan !== 'free' ? '#38a169' : '#000',
                                         cursor: onUpgradeClick ? 'pointer' : 'default',
-                                        border: onUpgradeClick ? '1px solid #FFD700' : '1px solid transparent',
+                                        border: onUpgradeClick ? '2px solid #FFD700' : '1px solid #eee',
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        boxShadow: onUpgradeClick ? '0 4px 12px rgba(255, 215, 0, 0.2)' : 'none'
                                     }}
-                                    onMouseOver={(e) => onUpgradeClick && (e.currentTarget.style.transform = 'scale(1.02)')}
-                                    onMouseOut={(e) => onUpgradeClick && (e.currentTarget.style.transform = 'scale(1)')}
+                                    className={onUpgradeClick ? "hover:scale-105" : ""}
                                 >
                                     {(user.plan || 'free').toUpperCase()} PLAN
                                     {onUpgradeClick && (user.plan === 'free' || !user.plan) && (
-                                        <span style={{ fontSize: '0.7rem', color: '#B8860B', textDecoration: 'underline' }}>
-                                            FAZER UPGRADE
-                                        </span>
+                                        <div style={{
+                                            background: '#FFD700',
+                                            color: '#000',
+                                            padding: '4px 10px',
+                                            borderRadius: '20px',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}>
+                                            UPGRADE <Sparkles size={10} />
+                                        </div>
                                     )}
                                 </div>
                             </div>

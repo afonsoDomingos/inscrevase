@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
-import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2 } from 'lucide-react';
+import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -100,15 +100,25 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
     };
 
     return (
-        <div className="luxury-card" style={{ background: '#fff', border: 'none', maxWidth: '800px', margin: '0 auto', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1.5rem' }}>{t('dashboard.settings.title')}</h2>
+        <div style={{ maxWidth: '900px', margin: '0 auto', fontFamily: 'var(--font-inter)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('dashboard.settings.title')}</h2>
+                <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="btn-primary"
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}
+                >
+                    {loading ? <Loader2 className="animate-spin" size={16} /> : <><Save size={16} /> {t('events.profile.saveChanges')}</>}
+                </button>
+            </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) 2fr', gap: '2rem', alignItems: 'start' }}>
 
-                {/* Profile Photo */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{ position: 'relative', width: '80px', height: '80px' }}>
-                        <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', border: '3px solid #FFD700', position: 'relative', background: '#f0f0f0' }}>
+                {/* Left Column: Profile Card */}
+                <div className="luxury-card" style={{ background: '#fff', padding: '2rem', textAlign: 'center', position: 'sticky', top: '2rem' }}>
+                    <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 1.5rem' }}>
+                        <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', border: '4px solid #FFD700', position: 'relative', background: '#f8f9fa' }}>
                             {formData.profilePhoto ? (
                                 <Image src={formData.profilePhoto} alt="Profile" fill style={{ objectFit: 'cover' }} />
                             ) : (
@@ -127,130 +137,137 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                             background: '#000', color: '#FFD700',
                             width: '36px', height: '36px', borderRadius: '50%',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer', border: '2px solid #fff'
+                            cursor: 'pointer', border: '2px solid #fff',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                         }}>
-                            <Camera size={18} />
+                            <Camera size={16} />
                             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
                         </label>
                     </div>
-                    <p style={{ fontSize: '0.85rem', color: '#666' }}>{t('dashboard.settings.photoHelp')}</p>
+
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 0.5rem' }}>{formData.name || 'Seu Nome'}</h3>
+                    <p style={{ color: '#666', fontSize: '0.9rem', margin: 0 }}>{formData.businessName || 'Sua Empresa'}</p>
+
+                    <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                        <div style={{ padding: '4px 12px', background: '#f0f0f0', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#666' }}>
+                            MENTOR
+                        </div>
+                        <div style={{ padding: '4px 12px', background: 'rgba(255, 215, 0, 0.15)', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, color: '#B8860B' }}>
+                            {user.plan ? user.plan.toUpperCase() : 'FREE'}
+                        </div>
+                    </div>
                 </div>
 
-                {/* Personal Info */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div className="input-group">
-                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.fullName')}</label>
-                        <div style={{ position: 'relative' }}>
-                            <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                            <input
-                                type="text" name="name"
-                                value={formData.name} onChange={handleInputChange}
-                                className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                required
+                {/* Right Column: Form Fields */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+                    <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem' }}>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#333', borderBottom: '1px solid #f0f0f0', paddingBottom: '0.8rem' }}>
+                            <User size={18} /> Informações Pessoais
+                        </h4>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>Nome Completo</label>
+                                <input
+                                    type="text" name="name"
+                                    value={formData.name} onChange={handleInputChange}
+                                    className="input-luxury" style={{ padding: '0.7rem' }}
+                                    placeholder="Ex: João Silva"
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>Nome da Empresa/Comercial</label>
+                                <input
+                                    type="text" name="businessName"
+                                    value={formData.businessName} onChange={handleInputChange}
+                                    className="input-luxury" style={{ padding: '0.7rem' }}
+                                    placeholder="Ex: JS Consultoria"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="input-group" style={{ marginTop: '1rem' }}>
+                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>Biografia Curta</label>
+                            <textarea
+                                name="bio"
+                                value={formData.bio} onChange={handleInputChange}
+                                className="input-luxury" style={{ padding: '0.7rem', minHeight: '80px', resize: 'none' }}
+                                placeholder="Conte um pouco sobre você..."
                             />
                         </div>
                     </div>
-                    <div className="input-group">
-                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.businessName')}</label>
-                        <div style={{ position: 'relative' }}>
-                            <Briefcase size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                            <input
-                                type="text" name="businessName"
-                                value={formData.businessName} onChange={handleInputChange}
-                                className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                            />
-                        </div>
-                    </div>
-                </div>
 
-                <div className="input-group">
-                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.bio')}</label>
-                    <div style={{ position: 'relative' }}>
-                        <FileText size={18} style={{ position: 'absolute', left: '12px', top: '16px', color: '#999' }} />
-                        <textarea
-                            name="bio"
-                            value={formData.bio} onChange={handleInputChange}
-                            className="input-luxury" style={{ paddingLeft: '2.5rem', minHeight: '100px', resize: 'vertical' }}
-                            placeholder={t('dashboard.settings.bioPlaceholder')}
-                        />
-                    </div>
-                </div>
+                    <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem' }}>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#333', borderBottom: '1px solid #f0f0f0', paddingBottom: '0.8rem' }}>
+                            <Globe size={18} /> Contato & Redes Sociais
+                        </h4>
 
-                <div className="input-group">
-                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.whatsapp')}</label>
-                    <div style={{ position: 'relative' }}>
-                        <Phone size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                        <input
-                            type="text" name="whatsapp"
-                            value={formData.whatsapp} onChange={handleInputChange}
-                            className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                            placeholder={t('dashboard.settings.whatsappPlaceholder')}
-                        />
-                    </div>
-                </div>
-
-                {/* Social Links */}
-                <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Globe size={18} color="#FFD700" /> {t('events.profile.socialLinks')}
-                    </h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div className="input-group">
-                            <div style={{ position: 'relative' }}>
-                                <Instagram size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                                <input
-                                    type="text" name="social_instagram"
-                                    value={formData.socialLinks.instagram} onChange={handleInputChange}
-                                    className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder={t('dashboard.settings.instagramPlaceholder')}
-                                />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>WhatsApp</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Phone size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                                    <input
+                                        type="text" name="whatsapp"
+                                        value={formData.whatsapp} onChange={handleInputChange}
+                                        className="input-luxury" style={{ paddingLeft: '2.2rem', padding: '0.7rem 0.7rem 0.7rem 2.2rem' }}
+                                        placeholder="+258 84..."
+                                    />
+                                </div>
+                            </div>
+                            <div className="input-group">
+                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>Website</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Globe size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                                    <input
+                                        type="text" name="social_website"
+                                        value={formData.socialLinks.website} onChange={handleInputChange}
+                                        className="input-luxury" style={{ paddingLeft: '2.2rem', padding: '0.7rem 0.7rem 0.7rem 2.2rem' }}
+                                        placeholder="https://..."
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div className="input-group">
-                            <div style={{ position: 'relative' }}>
-                                <Linkedin size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                                <input
-                                    type="text" name="social_linkedin"
-                                    value={formData.socialLinks.linkedin} onChange={handleInputChange}
-                                    className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder={t('dashboard.settings.linkedinPlaceholder')}
-                                />
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '1rem' }}>
+                            <div className="input-group">
+                                <div style={{ position: 'relative' }}>
+                                    <Instagram size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                                    <input
+                                        type="text" name="social_instagram"
+                                        value={formData.socialLinks.instagram} onChange={handleInputChange}
+                                        className="input-luxury" style={{ paddingLeft: '2.2rem', padding: '0.7rem 0.7rem 0.7rem 2.2rem' }}
+                                        placeholder="Instagram"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="input-group">
-                            <div style={{ position: 'relative' }}>
-                                <Facebook size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                                <input
-                                    type="text" name="social_facebook"
-                                    value={formData.socialLinks.facebook} onChange={handleInputChange}
-                                    className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder={t('dashboard.settings.facebookPlaceholder')}
-                                />
+                            <div className="input-group">
+                                <div style={{ position: 'relative' }}>
+                                    <Linkedin size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                                    <input
+                                        type="text" name="social_linkedin"
+                                        value={formData.socialLinks.linkedin} onChange={handleInputChange}
+                                        className="input-luxury" style={{ paddingLeft: '2.2rem', padding: '0.7rem 0.7rem 0.7rem 2.2rem' }}
+                                        placeholder="LinkedIn"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="input-group">
-                            <div style={{ position: 'relative' }}>
-                                <Globe size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                                <input
-                                    type="text" name="social_website"
-                                    value={formData.socialLinks.website} onChange={handleInputChange}
-                                    className="input-luxury" style={{ paddingLeft: '2.5rem' }}
-                                    placeholder={t('dashboard.settings.websitePlaceholder')}
-                                />
+                            <div className="input-group">
+                                <div style={{ position: 'relative' }}>
+                                    <Facebook size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                                    <input
+                                        type="text" name="social_facebook"
+                                        value={formData.socialLinks.facebook} onChange={handleInputChange}
+                                        className="input-luxury" style={{ paddingLeft: '2.2rem', padding: '0.7rem 0.7rem 0.7rem 2.2rem' }}
+                                        placeholder="Facebook"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-primary"
-                    style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem' }}
-                >
-                    {loading ? <Loader2 className="animate-spin" /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
-                </button>
-            </form>
+            </div>
         </div>
     );
 }
