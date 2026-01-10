@@ -52,10 +52,11 @@ export default function Register() {
             </div>
 
             <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 50, rotateY: 10 }}
+                animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 100 }}
                 className="luxury-card"
-                style={{ maxWidth: '480px', width: '100%', margin: '0 auto', padding: '1.2rem' }}
+                style={{ maxWidth: '540px', width: '100%', margin: '0 auto', padding: '1.5rem', perspective: '1000px' }}
             >
                 {/* Navigation Tabs */}
                 <div style={{ display: 'flex', marginBottom: '0.8rem', background: '#f8f9fa', borderRadius: '12px', padding: '4px' }}>
@@ -73,9 +74,14 @@ export default function Register() {
                     </div>
                 </div>
 
-                <div style={{ textAlign: 'center', marginBottom: '0.8rem' }}>
-                    <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ margin: '0 auto 0.4rem' }} className="float-anim" />
-                    <h1 style={{ fontSize: '1.2rem', margin: 0 }}>{t('auth.registerTitle')}</h1>
+                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                    <motion.div
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <Image src="/logo.png" alt="Logo" width={36} height={36} style={{ margin: '0 auto 0.6rem' }} />
+                    </motion.div>
+                    <h1 style={{ fontSize: '1.3rem', margin: 0 }}>{t('auth.registerTitle')}</h1>
                 </div>
 
                 {error && (
