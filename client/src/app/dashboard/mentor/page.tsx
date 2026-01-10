@@ -17,6 +17,9 @@ import { useTranslate } from '@/context/LanguageContext';
 import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
 
+import NotificationCenter from '@/components/mentor/NotificationCenter';
+import { notificationService } from '@/lib/notificationService';
+
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,7 +43,8 @@ import {
     Eye,
     Crown,
     Lock,
-    AlertCircle
+    AlertCircle,
+    Bell
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -64,7 +68,9 @@ export default function MentorDashboard() {
     const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
     const [themeModalData, setThemeModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
     const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
     const loadDashboard = useCallback(async () => {
         try {
@@ -88,14 +94,27 @@ export default function MentorDashboard() {
         }
     }, [router]);
 
+    const loadUnreadCounts = useCallback(async () => {
+        try {
+            const [supportData, notificationData] = await Promise.all([
+                supportService.getUnreadCount(),
+                notificationService.getUnreadCount()
+            ]);
+            setUnreadCount(supportData.unreadCount);
+            setUnreadNotifications(notificationData.count);
+        } catch (error) {
+            console.error('Error loading unread counts:', error);
+        }
+    }, []);
+
     useEffect(() => {
         loadDashboard();
-        loadUnreadCount();
+        loadUnreadCounts();
 
         // Poll for unread count every 30 seconds
-        const interval = setInterval(loadUnreadCount, 30000);
+        const interval = setInterval(loadUnreadCounts, 30000);
         return () => clearInterval(interval);
-    }, [loadDashboard]);
+    }, [loadDashboard, loadUnreadCounts]);
 
     const copyToClipboard = (slug: string) => {
         const url = `${window.location.origin}/f/${slug}`;
@@ -123,15 +142,6 @@ export default function MentorDashboard() {
                 console.error(error);
                 toast.error(t('common.deleteFormError'));
             }
-        }
-    };
-
-    const loadUnreadCount = async () => {
-        try {
-            const data = await supportService.getUnreadCount();
-            setUnreadCount(data.unreadCount);
-        } catch (error) {
-            console.error('Error loading unread count:', error);
         }
     };
 
@@ -431,6 +441,67 @@ export default function MentorDashboard() {
                                 <Lock size={16} /> Acesso Restrito
                             </div>
                         )}
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                title="Notificações"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '45px',
+                                    height: '45px',
+                                    background: '#fff',
+                                    border: '1px solid #FFD700',
+                                    borderRadius: '12px',
+                                    color: '#000',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                    position: 'relative'
+                                }}
+                            >
+                                <Bell size={20} />
+                                {unreadNotifications > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-5px',
+                                        right: '-5px',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 900,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid #fff'
+                                    }}>
+                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '55px',
+                                            right: 0,
+                                            zIndex: 2000
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
                         <button
                             onClick={() => authService.logout()}
                             title={t('common.logout')}
@@ -448,8 +519,8 @@ export default function MentorDashboard() {
                                 transition: 'all 0.3s',
                                 boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#fff5f5'}
-                            onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+                            onMouseOver={(e: any) => e.currentTarget.style.background = '#fff5f5'}
+                            onMouseOut={(e: any) => e.currentTarget.style.background = '#fff'}
                         >
                             <LogOut size={20} />
                         </button>

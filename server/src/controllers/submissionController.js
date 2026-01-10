@@ -2,6 +2,7 @@ const Submission = require('../models/Submission');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const { PLANS } = require('../config/stripe');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -23,6 +24,19 @@ const submitForm = async (req, res) => {
         });
 
         await submission.save();
+
+        // Notify Mentor
+        const participantName = data.nome || data.name || 'Um novo participante';
+        const notification = new Notification({
+            recipient: form.creator,
+            sender: form.creator, // System notification (self-sender for now or find admin)
+            title: 'Nova Inscrição Recebida! 📩',
+            content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
+            type: 'personal',
+            actionUrl: '/dashboard/mentor'
+        });
+        await notification.save();
+
         res.status(201).json({ message: 'Inscrição enviada com sucesso', submission });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });

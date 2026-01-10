@@ -3,11 +3,15 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail, Lock, Unlock } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail, Lock, Unlock, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 
-export default function UsersList() {
+interface UsersListProps {
+    onMessageUser?: (user: UserData) => void;
+}
+
+export default function UsersList({ onMessageUser }: UsersListProps) {
     const [users, setUsers] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -166,6 +170,15 @@ export default function UsersList() {
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                        {onMessageUser && (
+                                            <button
+                                                onClick={() => onMessageUser(user)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                title="Enviar Mensagem"
+                                            >
+                                                <MessageSquare size={18} />
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => handleToggleEvents(user)}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.canCreateEvents !== false ? '#38a169' : '#e53e3e' }}

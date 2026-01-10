@@ -15,7 +15,8 @@ import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
-import { Chrome, Linkedin, Mail } from 'lucide-react';
+import { Chrome, Linkedin, Mail, MessageSquare, Send } from 'lucide-react';
+import AdminMessageModal from '@/components/admin/AdminMessageModal';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance';
 
@@ -28,6 +29,8 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [selectedRecipient, setSelectedRecipient] = useState<{ id: string, name: string } | undefined>(undefined);
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -218,6 +221,37 @@ export default function AdminDashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button
+                            onClick={() => {
+                                setSelectedRecipient(undefined);
+                                setIsMessageModalOpen(true);
+                            }}
+                            style={{
+                                padding: '0.9rem 1.5rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.8rem',
+                                borderRadius: '50px',
+                                background: '#000',
+                                color: '#FFD700',
+                                border: '2px solid #000',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                fontSize: '0.85rem',
+                                letterSpacing: '0.5px'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            <Send size={18} /> Comunicado Global
+                        </button>
                         <Link
                             href="/"
                             style={{
@@ -368,7 +402,10 @@ export default function AdminDashboard() {
 
                     {activeTab === 'users' && (
                         <motion.div key="users" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <UsersList />
+                            <UsersList onMessageUser={(user) => {
+                                setSelectedRecipient({ id: user.id || user._id || '', name: user.name });
+                                setIsMessageModalOpen(true);
+                            }} />
                         </motion.div>
                     )}
 
@@ -424,6 +461,16 @@ export default function AdminDashboard() {
                 </button>
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="admin" />
+
+                <AdminMessageModal
+                    isOpen={isMessageModalOpen}
+                    onClose={() => {
+                        setIsMessageModalOpen(false);
+                        setSelectedRecipient(undefined);
+                    }}
+                    recipientId={selectedRecipient?.id}
+                    recipientName={selectedRecipient?.name}
+                />
             </main>
         </div >
     );

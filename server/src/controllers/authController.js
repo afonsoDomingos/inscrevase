@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 const register = async (req, res) => {
     try {
@@ -9,6 +10,20 @@ const register = async (req, res) => {
 
         user = new User({ name, email, password, businessName, country, role: 'mentor' });
         await user.save();
+
+        // Send Welcome Notification
+        const admin = await User.findOne({ role: 'admin' });
+        if (admin) {
+            const welcomeNotification = new Notification({
+                recipient: user._id,
+                sender: admin._id,
+                title: 'Bem-vindo ao Inscreva-se! 🚀',
+                content: `Olá ${name}, estamos muito felizes em ter você como mentor na nossa plataforma. Transforme seu conhecimento em eventos de escala mundial. Comece configurando seu perfil e criando seu primeiro formulário no dashboard. Estamos aqui para ajudar sua jornada de sucesso!`,
+                type: 'welcome',
+                actionUrl: '/dashboard/mentor'
+            });
+            await welcomeNotification.save();
+        }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
         res.status(201).json({ token, user: { id: user._id, name, email, role: user.role } });
