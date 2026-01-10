@@ -22,6 +22,7 @@ import { notificationService } from '@/lib/notificationService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
+import OnboardingTour from '@/components/mentor/OnboardingTour';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -241,6 +242,7 @@ export default function MentorDashboard() {
 
                 <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <button
+                        id="mentor-support-btn"
                         onClick={() => setIsSupportOpen(true)}
                         style={{
                             width: '100%',
@@ -313,6 +315,7 @@ export default function MentorDashboard() {
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div
+                            id="mentor-profile-photo"
                             onClick={() => setIsProfileModalOpen(true)}
                             style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
                         >
@@ -405,6 +408,7 @@ export default function MentorDashboard() {
                         </Link>
                         {user.canCreateEvents !== false ? (
                             <button
+                                id="mentor-create-btn"
                                 onClick={() => setIsEventModalOpen(true)}
                                 style={{
                                     display: 'flex',
@@ -530,7 +534,7 @@ export default function MentorDashboard() {
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div id="mentor-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                                 <StatCard
                                     icon={<Users className="gold-text" />}
                                     label={t('dashboard.totalSubscribers')}
@@ -792,6 +796,7 @@ export default function MentorDashboard() {
                 )}
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+                <OnboardingTour />
             </main>
         </div>
     );
