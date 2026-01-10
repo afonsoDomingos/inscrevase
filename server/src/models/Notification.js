@@ -36,6 +36,10 @@ const notificationSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    attachmentUrl: {
+        type: String,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

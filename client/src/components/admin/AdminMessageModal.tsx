@@ -7,7 +7,8 @@ import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Search, Check } from 'lucide-react';
+import { Search, Check, Paperclip, File, Trash2 } from 'lucide-react';
+import { formService } from '@/lib/formService';
 
 interface AdminMessageModalProps {
     isOpen: boolean;
@@ -23,6 +24,8 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
     const [type, setType] = useState('personal');
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+    const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
+    const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
     // Broadcast logic states
     const [isAllMentors, setIsAllMentors] = useState(!recipientId);
@@ -84,6 +87,23 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
         }
     };
 
+    const handleAttachmentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setUploadingAttachment(true);
+            try {
+                // Upload to 'attachments' folder
+                const url = await formService.uploadFile(e.target.files[0], 'attachments');
+                setAttachmentUrl(url);
+                toast.success('Anexo enviado com sucesso!');
+            } catch (err) {
+                console.error(err);
+                toast.error('Erro ao enviar anexo.');
+            } finally {
+                setUploadingAttachment(false);
+            }
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -105,12 +125,14 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                 content,
                 type,
                 actionUrl: type === 'welcome' ? '/dashboard/mentor' : undefined,
-                department: department || undefined
+                department: department || undefined,
+                attachmentUrl: attachmentUrl || undefined
             });
 
             toast.success(recipientId ? `Mensagem enviada para ${recipientName}` : 'Broadcast enviado para todos os mentores!');
             setTitle('');
             setContent('');
+            setAttachmentUrl(null);
             onClose();
         } catch {
             toast.error('Erro ao enviar mensagem');
@@ -393,6 +415,90 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                                 rows={5}
                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none', resize: 'none', transition: 'border-color 0.3s' }}
                             />
+                        </div>
+
+                        {/* Attachment Section */}
+                        <div style={{ marginBottom: '2rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Anexo (Opcional)</label>
+                            </div>
+
+                            {!attachmentUrl ? (
+                                <div
+                                    onClick={() => document.getElementById('attachment-input')?.click()}
+                                    style={{
+                                        border: '2px dashed #ddd',
+                                        borderRadius: '12px',
+                                        padding: '1.5rem',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                        background: uploadingAttachment ? '#f9f9f9' : '#fff',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    className="hover:border-gold"
+                                >
+                                    <input
+                                        type="file"
+                                        id="attachment-input"
+                                        hidden
+                                        onChange={handleAttachmentUpload}
+                                        accept="image/*,application/pdf"
+                                    />
+                                    {uploadingAttachment ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#666' }}>
+                                            <Loader2 className="animate-spin" size={24} color="#FFD700" />
+                                            <span style={{ fontSize: '0.9rem' }}>Enviando arquivo...</span>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#888' }}>
+                                            <div style={{ background: '#f0f0f0', padding: '10px', borderRadius: '50%' }}>
+                                                <Paperclip size={20} />
+                                            </div>
+                                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>Clique para anexar imagem ou PDF</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '1rem',
+                                    background: '#f8f9fa',
+                                    borderRadius: '12px',
+                                    border: '1px solid #eee'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ background: '#FFD700', padding: '10px', borderRadius: '8px', color: '#000' }}>
+                                            <File size={20} />
+                                        </div>
+                                        <div style={{ overflow: 'hidden' }}>
+                                            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>Arquivo Anexado</div>
+                                            <a href={attachmentUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', color: '#666', textDecoration: 'underline', display: 'block', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                Ver arquivo
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setAttachmentUrl(null)}
+                                        style={{
+                                            background: '#fff',
+                                            border: '1px solid #fed7d7',
+                                            color: '#e53e3e',
+                                            padding: '8px',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                        title="Remover anexo"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div style={{ display: 'flex', gap: '1rem' }}>

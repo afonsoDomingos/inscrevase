@@ -16,6 +16,7 @@ export interface NotificationModel {
     read: boolean;
     actionUrl?: string;
     department?: string;
+    attachmentUrl?: string;
     createdAt: string;
 }
 
@@ -54,6 +55,7 @@ export const notificationService = {
         type?: string;
         actionUrl?: string;
         department?: string;
+        attachmentUrl?: string;
     }): Promise<unknown> => {
         const response = await fetch(`${API_URL}/notifications/send`, {
             method: 'POST',
