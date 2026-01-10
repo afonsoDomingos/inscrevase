@@ -45,7 +45,8 @@ import {
     Crown,
     Lock,
     AlertCircle,
-    Bell
+    Bell,
+    Map
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -284,6 +285,30 @@ export default function MentorDashboard() {
                                 {unreadCount > 9 ? '9+' : unreadCount}
                             </span>
                         )}
+                    </button>
+
+                    <button
+                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                        style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            background: 'transparent',
+                            border: '1px dashed #444',
+                            borderRadius: '12px',
+                            color: '#888',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: 500,
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#FFD700'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.color = '#888'; }}
+                    >
+                        <Map size={16} /> Ver Tour Guiado
                     </button>
 
                     <button

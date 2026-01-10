@@ -57,6 +57,14 @@ export default function OnboardingTour() {
             // Small delay to ensure UI renders
             setTimeout(() => setIsVisible(true), 1500);
         }
+
+        const handleStartTour = () => {
+            setIsVisible(true);
+            setCurrentStep(0);
+        };
+
+        window.addEventListener('start-onboarding', handleStartTour);
+        return () => window.removeEventListener('start-onboarding', handleStartTour);
     }, []);
 
     useEffect(() => {
