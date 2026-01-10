@@ -4,6 +4,7 @@ import { Bell, Check, ExternalLink, Mail, Clock, MessageSquare } from 'lucide-re
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 
 interface NotificationCenterProps {
@@ -129,9 +130,18 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                                 <Clock size={12} /> {format(new Date(notification.createdAt), "dd MMM, HH:mm", { locale: ptBR })}
                                             </span>
                                         </div>
-                                        <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#666', lineHeight: 1.5 }}>
-                                            {notification.content}
-                                        </p>
+                                        <div style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#666', lineHeight: 1.5 }}>
+                                            <ReactMarkdown
+                                                components={{
+                                                    p: ({ ...props }) => <p style={{ margin: '0 0 10px 0' }} {...props} />,
+                                                    ul: ({ ...props }) => <ul style={{ paddingLeft: '20px', margin: '0 0 10px 0' }} {...props} />,
+                                                    li: ({ ...props }) => <li style={{ marginBottom: '4px' }} {...props} />,
+                                                    strong: ({ ...props }) => <strong style={{ color: '#000', fontWeight: 700 }} {...props} />
+                                                }}
+                                            >
+                                                {notification.content}
+                                            </ReactMarkdown>
+                                        </div>
 
                                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                             {!notification.read && (
