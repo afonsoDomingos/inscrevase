@@ -52,10 +52,10 @@ export default function Register() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="luxury-card"
-                style={{ maxWidth: '700px', width: '100%', marginTop: '60px', marginBottom: '40px' }}
+                style={{ maxWidth: '600px', width: '100%', marginTop: '30px', marginBottom: '30px', padding: '1.5rem' }}
             >
                 {/* Navigation Tabs */}
-                <div style={{ display: 'flex', marginBottom: '2rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
+                <div style={{ display: 'flex', marginBottom: '1rem', background: '#f8f9fa', borderRadius: '12px', padding: '5px' }}>
                     <Link
                         href="/entrar"
                         style={{
@@ -96,18 +96,18 @@ export default function Register() {
                     </div>
                 </div>
 
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                     <motion.img
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
                         src="/logo.png"
                         alt="Logo"
-                        style={{ height: '60px', marginBottom: '1rem' }}
+                        style={{ height: '45px', marginBottom: '0.8rem' }}
                         className="float-anim"
                     />
-                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{t('auth.registerTitle')}</h1>
-                    <p style={{ color: '#666' }}>{t('auth.registerSubtitle')}</p>
+                    <h1 style={{ fontSize: '1.5rem', marginBottom: '0.3rem' }}>{t('auth.registerTitle')}</h1>
+                    <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('auth.registerSubtitle')}</p>
                 </div>
 
                 {error && (
@@ -121,7 +121,7 @@ export default function Register() {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.8rem' }}>
                         <motion.div
                             initial={{ x: -10, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
@@ -167,7 +167,7 @@ export default function Register() {
                         </motion.div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.8rem', marginBottom: '0.8rem', marginTop: '0.8rem' }}>
                         <motion.div
                             initial={{ y: 10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
@@ -301,9 +301,9 @@ export default function Register() {
                         )}
                     </motion.button>
 
-                    <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0' }}>
                         <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
-                        <span style={{ padding: '0 10px', color: '#888', fontSize: '0.8rem' }}>OU</span>
+                        <span style={{ padding: '0 10px', color: '#888', fontSize: '0.75rem' }}>OU</span>
                         <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
                     </div>
 
