@@ -107,7 +107,7 @@ export default function Login() {
                                 variants={iconVariants}
                                 animate={focusedField === 'email' ? 'focused' : 'initial'}
                                 transition={{ type: 'spring', stiffness: 300 }}
-                                style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', zIndex: 2 }}
+                                style={{ position: 'absolute', left: '1.2rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}
                             >
                                 <Mail size={18} />
                             </motion.div>
@@ -119,9 +119,10 @@ export default function Login() {
                                 onBlur={() => setFocusedField(null)}
                                 className="input-luxury"
                                 style={{
-                                    paddingLeft: '3rem',
+                                    paddingLeft: '3.5rem',
                                     paddingBlock: '0.8rem',
                                     fontSize: '1rem',
+                                    background: 'transparent',
                                     border: focusedField === 'email' ? '1px solid var(--primary)' : '1px solid #e0e0e0',
                                     transition: 'border-color 0.3s ease'
                                 }}
@@ -165,7 +166,7 @@ export default function Login() {
                                 variants={iconVariants}
                                 animate={focusedField === 'password' ? 'focused' : 'initial'}
                                 transition={{ type: 'spring', stiffness: 300 }}
-                                style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', zIndex: 2 }}
+                                style={{ position: 'absolute', left: '1.2rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}
                             >
                                 <Lock size={18} />
                             </motion.div>
@@ -177,10 +178,11 @@ export default function Login() {
                                 onBlur={() => setFocusedField(null)}
                                 className="input-luxury"
                                 style={{
-                                    paddingLeft: '3rem',
+                                    paddingLeft: '3.5rem',
                                     paddingRight: '3rem',
                                     paddingBlock: '0.8rem',
                                     fontSize: '1rem',
+                                    background: 'transparent',
                                     border: focusedField === 'password' ? '1px solid var(--primary)' : '1px solid #e0e0e0',
                                     transition: 'border-color 0.3s ease'
                                 }}
