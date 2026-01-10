@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { CheckCircle, Zap, ShieldCheck, Crown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
 
 export default function PlansPage() {
