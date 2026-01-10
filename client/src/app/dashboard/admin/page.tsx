@@ -10,7 +10,8 @@ import SupportTicketList from '@/components/admin/SupportTicketList';
 import AdminFinance from '@/components/admin/AdminFinance';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight, Wallet } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight, Wallet, Settings } from 'lucide-react';
+import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
@@ -31,6 +32,7 @@ export default function AdminDashboard() {
     const [unreadCount, setUnreadCount] = useState(0);
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
     const [selectedRecipient, setSelectedRecipient] = useState<{ id: string, name: string } | undefined>(undefined);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -179,6 +181,27 @@ export default function AdminDashboard() {
                 </nav>
 
                 <div style={{ padding: '2rem' }}>
+                    <button
+                        onClick={() => setIsProfileOpen(true)}
+                        style={{
+                            width: '100%',
+                            padding: '1rem',
+                            background: 'none',
+                            border: '1px solid #ddd',
+                            borderRadius: '12px',
+                            color: '#000',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            marginBottom: '1rem',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Settings size={18} /> {t('events.profile.title') || 'Perfil'}
+                    </button>
                     <button
                         onClick={() => authService.logout()}
                         style={{
@@ -470,6 +493,16 @@ export default function AdminDashboard() {
                     }}
                     recipientId={selectedRecipient?.id}
                     recipientName={selectedRecipient?.name}
+                />
+
+                <ProfileModal
+                    isOpen={isProfileOpen}
+                    onClose={() => setIsProfileOpen(false)}
+                    user={user}
+                    onSuccess={() => {
+                        const updatedUser = authService.getCurrentUser();
+                        if (updatedUser) setUser(updatedUser);
+                    }}
                 />
             </main>
         </div >
