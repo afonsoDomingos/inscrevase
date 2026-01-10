@@ -19,7 +19,9 @@ import {
     ShieldCheck,
     Loader2,
     Trash2,
-    Award
+    Award,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -40,6 +42,8 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         loadSubmissions();
@@ -160,6 +164,17 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
         return matchesForm && matchesStatus && matchesSearch;
     });
 
+    // Pagination
+    const totalPages = Math.ceil(filteredSubmissions.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterStatus, searchTerm]);
+
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>{t('events.loading')}</div>;
 
     return (
@@ -209,41 +224,41 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                     <>
                         {/* Desktop Table */}
                         <div style={{ overflowX: 'auto' }} className="desktop-table">
-                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1200px' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px', fontSize: '0.85rem' }}>
                                 <thead>
-                                    <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.85rem', color: '#666' }}>
-                                        <th style={{ padding: '1rem', minWidth: '180px' }}>{t('events.submissions.registrant')}</th>
-                                        <th style={{ padding: '1rem', minWidth: '130px' }}>Contato</th>
-                                        <th style={{ padding: '1rem', minWidth: '150px' }}>{t('events.submissions.event')}</th>
-                                        <th style={{ padding: '1rem', minWidth: '120px' }}>{t('events.submissions.date')}</th>
-                                        <th style={{ padding: '1rem', minWidth: '120px' }}>{t('events.submissions.proof')}</th>
-                                        <th style={{ padding: '1rem', minWidth: '100px' }}>{t('events.submissions.status')}</th>
-                                        <th style={{ padding: '1rem', minWidth: '140px', textAlign: 'center' }}>Inscrição</th>
-                                        <th style={{ padding: '1rem', minWidth: '200px', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
+                                    <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.75rem', color: '#666' }}>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '150px' }}>{t('events.submissions.registrant')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '110px' }}>Contato</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '130px' }}>{t('events.submissions.event')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.date')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.proof')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '90px' }}>{t('events.submissions.status')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '120px', textAlign: 'center' }}>Inscrição</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '160px', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredSubmissions.map(submission => (
+                                    {paginatedSubmissions.map(submission => (
                                         <tr key={submission._id} style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '1rem' }}>
-                                                <div style={{ fontWeight: 700, color: '#000' }}>{getMainIdentifier(submission.data)}</div>
-                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>{getEmailIdentifier(submission.data) || '---'}</div>
+                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                                <div style={{ fontWeight: 700, color: '#000', fontSize: '0.9rem' }}>{getMainIdentifier(submission.data)}</div>
+                                                <div style={{ fontSize: '0.7rem', color: '#666' }}>{getEmailIdentifier(submission.data) || '---'}</div>
                                             </td>
-                                            <td style={{ padding: '1rem' }}>
-                                                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#333' }}>
+                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#333' }}>
                                                     {getPhoneIdentifier(submission.data) || '---'}
                                                 </div>
                                             </td>
-                                            <td style={{ padding: '1rem' }}>
-                                                <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{submission.form.title}</div>
-                                                <div style={{ fontSize: '0.7rem', color: '#999' }}>/{submission.form.slug}</div>
+                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                                <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>{submission.form.title}</div>
+                                                <div style={{ fontSize: '0.65rem', color: '#999' }}>/{submission.form.slug}</div>
                                             </td>
-                                            <td style={{ padding: '1rem', fontSize: '0.85rem', color: '#666' }}>
+                                            <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.8rem', color: '#666' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <Calendar size={14} /> {formatDate(submission.submittedAt)}
+                                                    <Calendar size={12} /> {formatDate(submission.submittedAt)}
                                                 </div>
                                             </td>
-                                            <td style={{ padding: '1rem' }}>
+                                            <td style={{ padding: '0.6rem 0.8rem' }}>
                                                 {submission.paymentProof ? (
                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                                         <button
@@ -363,9 +378,62 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                             </table>
                         </div>
 
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div style={{
+                                padding: '1rem',
+                                borderTop: '1px solid #eee',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                background: '#f8f9fa'
+                            }}>
+                                <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                                    Mostrando {startIndex + 1}-{Math.min(endIndex, filteredSubmissions.length)} de {filteredSubmissions.length} inscrições
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        style={{
+                                            padding: '0.5rem',
+                                            borderRadius: '6px',
+                                            border: '1px solid #ddd',
+                                            background: currentPage === 1 ? '#f0f0f0' : '#fff',
+                                            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            opacity: currentPage === 1 ? 0.5 : 1
+                                        }}
+                                    >
+                                        <ChevronLeft size={18} />
+                                    </button>
+                                    <span style={{ fontSize: '0.85rem', fontWeight: 600, minWidth: '80px', textAlign: 'center' }}>
+                                        Página {currentPage} de {totalPages}
+                                    </span>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        style={{
+                                            padding: '0.5rem',
+                                            borderRadius: '6px',
+                                            border: '1px solid #ddd',
+                                            background: currentPage === totalPages ? '#f0f0f0' : '#fff',
+                                            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            opacity: currentPage === totalPages ? 0.5 : 1
+                                        }}
+                                    >
+                                        <ChevronRight size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Mobile Cards */}
                         <div className="mobile-cards" style={{ display: 'none' }}>
-                            {filteredSubmissions.map(submission => (
+                            {paginatedSubmissions.map(submission => (
                                 <div key={submission._id} style={{ padding: '1.5rem', borderBottom: '1px solid #eee' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
                                         <div>
