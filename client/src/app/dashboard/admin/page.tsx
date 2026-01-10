@@ -522,7 +522,7 @@ export default function AdminDashboard() {
                     style={{
                         position: 'fixed',
                         bottom: '2rem',
-                        right: '2rem',
+                        right: '5rem',
                         width: '60px',
                         height: '60px',
                         borderRadius: '50%',
