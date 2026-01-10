@@ -18,6 +18,40 @@ import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { Chrome, Linkedin, Mail, Send } from 'lucide-react';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
+import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
+
+const ADMIN_STEPS: Step[] = [
+    {
+        targetId: 'welcome-modal',
+        title: 'Painel do Administrador 🛡️',
+        description: 'Bem-vindo ao centro de comando. Aqui você tem supervisão total sobre usuários, finanças e conteúdo.',
+        position: 'center'
+    },
+    {
+        targetId: 'admin-nav-users',
+        title: 'Gestão de Usuários',
+        description: 'Gerencie mentores, alunos e admins. Acesse perfis detalhados e controle permissões.',
+        position: 'right'
+    },
+    {
+        targetId: 'admin-global-msg',
+        title: 'Comunicação em Massa',
+        description: 'Envie comunicados importantes para todos os usuários ou grupos específicos diretamente por aqui.',
+        position: 'bottom'
+    },
+    {
+        targetId: 'admin-nav-finance',
+        title: 'Controle Financeiro',
+        description: 'Acompanhe o fluxo de caixa, saques de mentores e receita da plataforma.',
+        position: 'right'
+    },
+    {
+        targetId: 'admin-support-fab',
+        title: 'Suporte Global',
+        description: 'Visualize e responda tickets de suporte de todos os usuários em um só lugar.',
+        position: 'left'
+    }
+];
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance';
 
@@ -142,6 +176,7 @@ export default function AdminDashboard() {
                                 fontSize: '0.95rem',
                                 position: 'relative'
                             }}
+                            id={'admin-nav-' + item.id}
                         >
                             {activeTab === item.id && (
                                 <motion.div
@@ -179,6 +214,30 @@ export default function AdminDashboard() {
                         </button>
                     ))}
                 </nav>
+
+                <button
+                    onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '0.75rem 2rem',
+                        width: '100%',
+                        border: 'none',
+                        background: 'transparent',
+                        color: '#FFD700',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        textAlign: 'left',
+                        fontSize: '0.95rem'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
+                    onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                    <HelpCircle size={20} />
+                    Tour Guiado
+                </button>
 
                 <div style={{ padding: '2rem' }}>
                     <button
@@ -249,6 +308,7 @@ export default function AdminDashboard() {
                                 setSelectedRecipient(undefined);
                                 setIsMessageModalOpen(true);
                             }}
+                            id="admin-global-msg"
                             style={{
                                 padding: '0.9rem 1.5rem',
                                 display: 'flex',
@@ -458,6 +518,7 @@ export default function AdminDashboard() {
                 </AnimatePresence>
                 <button
                     onClick={() => setIsSupportOpen(true)}
+                    id="admin-support-fab"
                     style={{
                         position: 'fixed',
                         bottom: '2rem',
@@ -504,6 +565,8 @@ export default function AdminDashboard() {
                         if (updatedUser) setUser(updatedUser);
                     }}
                 />
+
+                <OnboardingTour steps={ADMIN_STEPS} storageKey="inscrevase_admin_tour_completed" />
             </main>
         </div >
     );

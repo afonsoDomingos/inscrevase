@@ -22,7 +22,7 @@ import { notificationService } from '@/lib/notificationService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
-import OnboardingTour from '@/components/mentor/OnboardingTour';
+import OnboardingTour, { MENTOR_STEPS } from '@/components/mentor/OnboardingTour';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -829,7 +829,7 @@ export default function MentorDashboard() {
                 }
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
-                <OnboardingTour />
+                <OnboardingTour steps={MENTOR_STEPS} storageKey="inscrevase_mentor_tour_completed" />
             </main >
         </div >
     );

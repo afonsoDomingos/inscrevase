@@ -5,14 +5,14 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, Check, Sparkles } from 'lucide-react';
 
-interface Step {
+export interface Step {
     targetId: string;
     title: string;
     description: string;
     position: 'top' | 'bottom' | 'left' | 'right' | 'center';
 }
 
-const steps: Step[] = [
+export const MENTOR_STEPS: Step[] = [
     {
         targetId: 'welcome-modal', // Virtual target for center modal
         title: 'Bem-vindo ao Inscreva-se! 💎',
@@ -45,14 +45,19 @@ const steps: Step[] = [
     }
 ];
 
-export default function OnboardingTour() {
+interface OnboardingTourProps {
+    steps: Step[];
+    storageKey: string;
+}
+
+export default function OnboardingTour({ steps, storageKey }: OnboardingTourProps) {
     // Start only if not seen
     const [isVisible, setIsVisible] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
     useEffect(() => {
-        const hasSeenTour = localStorage.getItem('inscrevase_mentor_tour_completed');
+        const hasSeenTour = localStorage.getItem(storageKey);
         if (!hasSeenTour) {
             // Small delay to ensure UI renders
             setTimeout(() => setIsVisible(true), 1500);
@@ -65,7 +70,7 @@ export default function OnboardingTour() {
 
         window.addEventListener('start-onboarding', handleStartTour);
         return () => window.removeEventListener('start-onboarding', handleStartTour);
-    }, []);
+    }, [storageKey]);
 
     useEffect(() => {
         if (!isVisible) return;
@@ -112,12 +117,12 @@ export default function OnboardingTour() {
 
     const handleComplete = () => {
         setIsVisible(false);
-        localStorage.setItem('inscrevase_mentor_tour_completed', 'true');
+        localStorage.setItem(storageKey, 'true');
     };
 
     const handleSkip = () => {
         setIsVisible(false);
-        localStorage.setItem('inscrevase_mentor_tour_completed', 'true');
+        localStorage.setItem(storageKey, 'true');
     };
 
     if (!isVisible) return null;
