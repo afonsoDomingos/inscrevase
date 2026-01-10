@@ -87,27 +87,29 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                         width: '100%',
                         maxWidth: '550px',
                         background: '#fff',
-                        borderRadius: '30px',
-                        padding: '2.5rem',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                        borderRadius: '20px',
+                        padding: '1.5rem',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                        maxHeight: '90vh',
+                        overflowY: 'auto'
                     }}
+                    className="custom-scrollbar"
                 >
                     <button
                         onClick={onClose}
-                        style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: '#f8f9fa', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#f8f9fa', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
                     >
-                        <X size={18} />
+                        <X size={16} />
                     </button>
 
-                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('events.profile.title')}</h2>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('events.profile.subtitle')}</p>
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 800 }}>{t('events.profile.title')}</h2>
                     </div>
 
-                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.2rem' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
                         {/* Avatar Upload */}
-                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-                            <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                            <div style={{ position: 'relative', width: '80px', height: '80px' }}>
                                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0', border: '3px solid #FFD700', position: 'relative' }}>
                                     {profilePhoto ? (
                                         <Image src={profilePhoto} alt="Avatar" fill style={{ objectFit: 'cover' }} />
@@ -129,30 +131,34 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                             </div>
                         </div>
 
-                        <div className="input-group">
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                <User size={14} /> {t('events.profile.fullName')}
-                            </label>
-                            <input
-                                type="text"
-                                className="input-luxury"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <User size={12} /> {t('events.profile.fullName')}
+                                </label>
+                                <input
+                                    type="text"
+                                    className="input-luxury"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                    style={{ padding: '0.8rem' }}
+                                />
+                            </div>
 
-                        <div className="input-group">
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                <Briefcase size={14} /> {t('events.profile.businessName')}
-                            </label>
-                            <input
-                                type="text"
-                                className="input-luxury"
-                                value={businessName}
-                                onChange={(e) => setBusinessName(e.target.value)}
-                                placeholder={t('events.profile.businessPlaceholder')}
-                            />
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <Briefcase size={12} /> {t('events.profile.businessName')}
+                                </label>
+                                <input
+                                    type="text"
+                                    className="input-luxury"
+                                    value={businessName}
+                                    onChange={(e) => setBusinessName(e.target.value)}
+                                    placeholder={t('events.profile.businessPlaceholder')}
+                                    style={{ padding: '0.8rem' }}
+                                />
+                            </div>
                         </div>
 
                         {/* Social Links Section */}
