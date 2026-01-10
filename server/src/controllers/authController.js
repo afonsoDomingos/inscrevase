@@ -17,8 +17,8 @@ const register = async (req, res) => {
             const welcomeNotification = new Notification({
                 recipient: user._id,
                 sender: admin._id,
-                title: 'Bem-vindo ao Inscreva-se! 🚀',
-                content: `Olá ${name}, estamos muito felizes em ter você como mentor na nossa plataforma. Transforme seu conhecimento em eventos de escala mundial. Comece configurando seu perfil e criando seu primeiro formulário no dashboard. Estamos aqui para ajudar sua jornada de sucesso!`,
+                title: 'Seja bem-vindo à Elite da Mentoria! ✨',
+                content: `Olá ${name}! É uma honra ter você na nossa comunidade exclusiva. O 'Inscreva-se' foi desenhado para mentores que buscam excelência e escala. Sua jornada para transformar conhecimento em impacto global começa agora. 🚀\n\nSugestão para começar: Complete seu perfil com uma foto de alta qualidade e crie seu primeiro formulário personalizado no dashboard. Estamos ansiosos para ver seu sucesso brilhar! 🌟`,
                 type: 'welcome',
                 actionUrl: '/dashboard/mentor'
             });
