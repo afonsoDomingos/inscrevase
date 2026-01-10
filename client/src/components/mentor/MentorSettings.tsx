@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
-import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail } from 'lucide-react';
+import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, BadgeCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -99,6 +99,18 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
         }
     };
 
+    const handleRequestVerification = async () => {
+        if (confirm('Deseja solicitar o selo de verificação oficial? Isso sinaliza aos administradores que sua conta é autêntica.')) {
+            try {
+                await authService.requestVerification();
+                onUpdate(); // Refresh parent
+                alert('Solicitação enviada! Aguarde a análise.');
+            } catch (err) {
+                alert('Erro ao solicitar verificação.');
+            }
+        }
+    };
+
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', fontFamily: 'var(--font-inter)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
@@ -155,6 +167,48 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                         <div style={{ padding: '4px 12px', background: 'rgba(255, 215, 0, 0.15)', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, color: '#B8860B' }}>
                             {user.plan ? user.plan.toUpperCase() : 'FREE'}
                         </div>
+                    </div>
+
+                    {/* Verification Status */}
+                    <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
+                        {user.isVerified ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1877F2', fontWeight: 600, fontSize: '0.9rem' }}>
+                                <BadgeCheck size={20} fill="#1877F2" color="#fff" /> Conta Verificada
+                            </div>
+                        ) : user.verificationStatus === 'pending' ? (
+                            <div style={{ fontSize: '0.8rem', color: '#888', background: '#f0f0f0', padding: '6px 12px', borderRadius: '12px' }}>
+                                ⏳ Verificação em Análise
+                            </div>
+                        ) : user.verificationStatus === 'rejected' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                <span style={{ fontSize: '0.8rem', color: 'red' }}>Verificação Recusada</span>
+                                <button onClick={handleRequestVerification} style={{ fontSize: '0.8rem', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', color: '#555' }}>
+                                    Tentar Novamente
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handleRequestVerification}
+                                style={{
+                                    background: 'transparent',
+                                    border: '1px solid #1877F2',
+                                    color: '#1877F2',
+                                    padding: '6px 16px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(24, 119, 242, 0.05)'}
+                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                            >
+                                <BadgeCheck size={16} /> Solicitar Selo
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -268,6 +322,6 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail, Lock, Unlock, MessageSquare } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Chrome, Mail, Lock, Unlock, MessageSquare, BadgeCheck, XOctagon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 
@@ -66,6 +66,19 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
         }
     };
 
+    const handleVerify = async (user: UserData, approve: boolean) => {
+        try {
+            await userService.updateUser(user.id || user._id || '', {
+                isVerified: approve,
+                verificationStatus: approve ? 'verified' : (user.isVerified ? 'none' : 'rejected')
+            });
+            loadUsers();
+        } catch (error: unknown) {
+            console.error(error);
+            alert('Erro ao atualizar verificação');
+        }
+    };
+
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -112,7 +125,11 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem' }}>
-                                    <div style={{ fontWeight: 600 }}>{user.name}</div>
+                                    <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        {user.name}
+                                        {user.isVerified && <BadgeCheck size={16} fill="#1877F2" color="#fff" />}
+                                        {user.verificationStatus === 'pending' && <span style={{ fontSize: '0.65rem', background: '#FEF3C7', color: '#B45309', padding: '2px 6px', borderRadius: '4px', border: '1px solid #FCD34D' }}>PENDENTE</span>}
+                                    </div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>{user.email}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -170,6 +187,26 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                        {/* Verification Controls */}
+                                        {user.verificationStatus === 'pending' ? (
+                                            <>
+                                                <button onClick={() => handleVerify(user, true)} title="Aprovar Verificação" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#38a169' }}>
+                                                    <BadgeCheck size={18} />
+                                                </button>
+                                                <button onClick={() => handleVerify(user, false)} title="Rejeitar Solicitação" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}>
+                                                    <XOctagon size={18} />
+                                                </button>
+                                            </>
+                                        ) : user.isVerified ? (
+                                            <button onClick={() => handleVerify(user, false)} title="Remover Verificação" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1877F2' }}>
+                                                <BadgeCheck size={18} fill="#e2e8f0" />
+                                            </button>
+                                        ) : (
+                                            <button onClick={() => handleVerify(user, true)} title="Verificar Manualmente" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e0' }}>
+                                                <BadgeCheck size={18} />
+                                            </button>
+                                        )}
+
                                         {onMessageUser && (
                                             <button
                                                 onClick={() => onMessageUser(user)}

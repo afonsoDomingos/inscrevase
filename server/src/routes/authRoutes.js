@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const passport = require('../config/passport');
-const { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit } = require('../controllers/authController');
+const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit } = require('../controllers/authController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 
 router.post('/register', register);
 router.post('/login', login);
 router.get('/profile', authMiddleware, getProfile);
 router.put('/profile', authMiddleware, updateProfile);
+router.post('/verification', authMiddleware, requestVerification);
 router.get('/public/mentors', getPublicMentors);
 router.get('/public/mentors/:id', getPublicMentorById);
 router.post('/public/mentors/:id/visit', recordVisit);

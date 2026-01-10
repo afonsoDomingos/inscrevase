@@ -32,6 +32,9 @@ const UserSchema = new mongoose.Schema({
     }],
     profileVisits: { type: Number, default: 0 },
     canCreateEvents: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
+    verificationStatus: { type: String, enum: ['none', 'pending', 'verified', 'rejected'], default: 'none' },
+    verificationRequestedAt: { type: Date },
     createdAt: { type: Date, default: Date.now }
 });
 

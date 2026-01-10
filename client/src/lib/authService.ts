@@ -30,6 +30,8 @@ export interface UserData {
     canCreateEvents?: boolean;
     createdAt?: string;
     authProvider?: 'google' | 'linkedin' | 'native';
+    isVerified?: boolean;
+    verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
 }
 
 export interface RegisterData {
@@ -133,5 +135,17 @@ export const authService = {
         localStorage.setItem('user', JSON.stringify(user));
 
         return user;
+    },
+
+    async requestVerification(): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/verification`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao solicitar verificação');
+
+        // Refresh profile to update UI
+        await this.getProfile();
     }
 };

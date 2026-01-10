@@ -78,6 +78,21 @@ const updateProfile = async (req, res) => {
     }
 };
 
+const requestVerification = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.verificationStatus = 'pending';
+        user.verificationRequestedAt = new Date();
+        await user.save();
+
+        res.json({ message: 'Verificação solicitada com sucesso', user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 const getUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ createdAt: -1 });
@@ -96,7 +111,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic, canCreateEvents, badges } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic, canCreateEvents, badges, isVerified, verificationStatus } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -114,6 +129,8 @@ const updateByAdmin = async (req, res) => {
         if (isPublic !== undefined) user.isPublic = isPublic;
         if (canCreateEvents !== undefined) user.canCreateEvents = canCreateEvents;
         if (badges) user.badges = badges;
+        if (isVerified !== undefined) user.isVerified = isVerified;
+        if (verificationStatus) user.verificationStatus = verificationStatus;
 
         // Update password if provided
         if (password && password.trim() !== '') {
@@ -216,4 +233,4 @@ const toggleFollow = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit };
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit };
