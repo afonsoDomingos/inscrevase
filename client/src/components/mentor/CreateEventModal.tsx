@@ -91,7 +91,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         requireProof: false,
         stripeEnabled: false,
         stripePriceId: '',
-        stripeProductId: ''
+        stripeProductId: '',
+        nib: '',
+        mpesa: '',
+        emola: ''
     });
 
     const handleAddField = () => {
@@ -633,9 +636,35 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                                     {paymentConfig.stripeEnabled && (
                                                         <div style={{ display: 'grid', gap: '1rem' }}>
-                                                            <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                                                Para usar o Stripe, você precisa criar um Produto e um Preço no seu painel do Stripe e colar o <b>Price ID</b> abaixo.
-                                                            </p>
+                                                            <div style={{ padding: '1rem', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
+                                                                <p style={{ fontSize: '0.85rem', color: '#1e40af', marginBottom: '0.5rem' }}>
+                                                                    Para usar o Stripe, você precisa criar um Produto e um Preço no seu painel do Stripe e colar o <b>Price ID</b> abaixo.
+                                                                </p>
+                                                                <a
+                                                                    href="https://dashboard.stripe.com/products"
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    style={{
+                                                                        display: 'inline-flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '0.5rem',
+                                                                        color: '#2563eb',
+                                                                        fontWeight: 600,
+                                                                        fontSize: '0.85rem',
+                                                                        textDecoration: 'none',
+                                                                        padding: '0.5rem 1rem',
+                                                                        background: '#fff',
+                                                                        borderRadius: '6px',
+                                                                        border: '1px solid #2563eb',
+                                                                        cursor: 'pointer'
+                                                                    }}
+                                                                >
+                                                                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                                                                    </svg>
+                                                                    Abrir Painel do Stripe
+                                                                </a>
+                                                            </div>
                                                             <div>
                                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.8rem' }}>Stripe Price ID</label>
                                                                 <input
@@ -651,14 +680,81 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 </div>
 
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.paymentInstructions')}</label>
-                                                    <textarea
-                                                        value={paymentConfig.instructions}
-                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
-                                                        rows={4}
-                                                        placeholder={t('events.instructionsPlaceholder')}
-                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
-                                                    />
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Instruções de Pagamento</label>
+                                                    <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem' }}>Configure os métodos de pagamento disponíveis para os participantes:</p>
+
+                                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                                        {/* NIB / Conta Bancária */}
+                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                                                                    <line x1="2" y1="10" x2="22" y2="10" />
+                                                                </svg>
+                                                                NIB / Conta Bancária
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={paymentConfig.nib || ''}
+                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, nib: e.target.value })}
+                                                                placeholder="Ex: 0000 0000 0000 0000 0000 0000 0"
+                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                            />
+                                                        </div>
+
+                                                        {/* MPesa */}
+                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                                                                </svg>
+                                                                MPesa (Vodacom)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={paymentConfig.mpesa || ''}
+                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, mpesa: e.target.value })}
+                                                                placeholder="Ex: +258 84 123 4567"
+                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                            />
+                                                        </div>
+
+                                                        {/* eMola */}
+                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                                    <circle cx="12" cy="12" r="10" />
+                                                                    <path d="M12 6v6l4 2" />
+                                                                </svg>
+                                                                eMola (Movitel)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={paymentConfig.emola || ''}
+                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, emola: e.target.value })}
+                                                                placeholder="Ex: +258 86 123 4567"
+                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                            />
+                                                        </div>
+
+                                                        {/* Outras Instruções */}
+                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                                                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                                </svg>
+                                                                Outras Instruções / Carteiras Digitais
+                                                            </label>
+                                                            <textarea
+                                                                value={paymentConfig.instructions || ''}
+                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
+                                                                rows={3}
+                                                                placeholder="Ex: PayPal, Skrill, outras informações importantes..."
+                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', resize: 'vertical', fontSize: '0.9rem' }}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 600, padding: '1rem', background: '#f8f9fa', borderRadius: '12px' }}>
@@ -723,8 +819,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </div>
-                </motion.div>
+                    </div >
+                </motion.div >
             </div >
         </AnimatePresence >
     );
