@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useTranslate } from '@/context/LanguageContext';
+import { aiService } from '@/lib/aiService';
 
 interface Message {
     id: string;
@@ -13,7 +14,6 @@ interface Message {
     timestamp: Date;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function AuraConcierge() {
     const { t, locale } = useTranslate();
@@ -60,30 +60,21 @@ export default function AuraConcierge() {
         setIsTyping(true);
 
         try {
-            console.log('Aura attempting to call:', `${API_URL}/ai/chat`);
-            // Placeholder for AI API call
-            // We'll implement the actual backend next
-            const response = await fetch(`${API_URL}/ai/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userMsg.text, locale })
-            });
-
-            const data = await response.json();
+            const data = await aiService.chat(userMsg.text, locale);
 
             const auraMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: data.reply || t('aura.error'),
+                text: data.reply,
                 sender: 'aura',
                 timestamp: new Date()
             };
 
             setMessages(prev => [...prev, auraMsg]);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Aura Error:', error);
             const errorMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: t('aura.error'),
+                text: error.message || t('aura.error'),
                 sender: 'aura',
                 timestamp: new Date()
             };
