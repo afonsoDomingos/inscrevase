@@ -212,92 +212,96 @@ export default function OnboardingTour() {
                     </motion.div>
 
                     {/* Tooltip Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.3 }}
-                        style={{
-                            zIndex: 10000,
-                            background: '#fff',
-                            borderRadius: '24px',
-                            padding: '24px',
-                            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-                            ...getTooltipStyle()
-                        }}
-                        // @ts-ignore
-                        className="onboarding-card"
-                    >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                            <div style={{ background: '#FFF8E1', padding: '10px', borderRadius: '50%', color: '#B8860B' }}>
-                                <Sparkles size={24} />
-                            </div>
-                            <button onClick={handleSkip} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}>
-                                PULAR
-                            </button>
-                        </div>
-
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: 'var(--font-playfair)' }}>
-                            {step.title}
-                        </h3>
-                        <p style={{ fontSize: '0.95rem', color: '#666', lineHeight: '1.5', marginBottom: '24px' }}>
-                            {step.description}
-                        </p>
-
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                                {steps.map((_, i) => (
-                                    <div
-                                        key={i}
-                                        style={{
-                                            width: i === currentStep ? '20px' : '6px',
-                                            height: '6px',
-                                            borderRadius: '3px',
-                                            background: i === currentStep ? '#FFD700' : '#eee',
-                                            transition: 'all 0.3s'
-                                        }}
-                                    />
-                                ))}
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                {currentStep > 0 && (
-                                    <button
-                                        onClick={handlePrev}
-                                        style={{
-                                            padding: '10px',
-                                            borderRadius: '12px',
-                                            border: '1px solid #eee',
-                                            background: '#fff',
-                                            cursor: 'pointer',
-                                            color: '#666'
-                                        }}
-                                    >
-                                        <ChevronLeft size={20} />
-                                    </button>
-                                )}
-                                <button
-                                    onClick={handleNext}
-                                    style={{
-                                        padding: '10px 20px',
-                                        borderRadius: '12px',
-                                        background: '#1a1a1a',
-                                        color: '#fff',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '0.9rem',
-                                        fontWeight: 700,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px'
-                                    }}
-                                >
-                                    {currentStep === steps.length - 1 ? 'Concluir' : 'Próximo'}
-                                    {currentStep === steps.length - 1 ? <Check size={16} /> : <ChevronRight size={16} />}
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, pointerEvents: 'none', display: isCenter ? 'flex' : 'block', alignItems: 'center', justifyContent: 'center' }}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, x: isCenter ? 0 : 0, y: isCenter ? 0 : 10 }}
+                            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                            style={{
+                                pointerEvents: 'auto',
+                                background: '#fff',
+                                borderRadius: '24px',
+                                padding: '24px',
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                                maxWidth: '400px',
+                                width: '100%',
+                                position: isCenter ? 'relative' : 'fixed',
+                                ...(isCenter ? {} : getTooltipStyle())
+                            }}
+                            className="onboarding-card"
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                <div style={{ background: '#FFF8E1', padding: '10px', borderRadius: '50%', color: '#B8860B' }}>
+                                    <Sparkles size={24} />
+                                </div>
+                                <button onClick={handleSkip} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}>
+                                    PULAR
                                 </button>
                             </div>
-                        </div>
-                    </motion.div>
+
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px', fontFamily: 'var(--font-playfair)' }}>
+                                {step.title}
+                            </h3>
+                            <p style={{ fontSize: '0.95rem', color: '#666', lineHeight: '1.5', marginBottom: '24px' }}>
+                                {step.description}
+                            </p>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '4px' }}>
+                                    {steps.map((_, i) => (
+                                        <div
+                                            key={i}
+                                            style={{
+                                                width: i === currentStep ? '20px' : '6px',
+                                                height: '6px',
+                                                borderRadius: '3px',
+                                                background: i === currentStep ? '#FFD700' : '#eee',
+                                                transition: 'all 0.3s'
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    {currentStep > 0 && (
+                                        <button
+                                            onClick={handlePrev}
+                                            style={{
+                                                padding: '10px',
+                                                borderRadius: '12px',
+                                                border: '1px solid #eee',
+                                                background: '#fff',
+                                                cursor: 'pointer',
+                                                color: '#666'
+                                            }}
+                                        >
+                                            <ChevronLeft size={20} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={handleNext}
+                                        style={{
+                                            padding: '10px 20px',
+                                            borderRadius: '12px',
+                                            background: '#1a1a1a',
+                                            color: '#fff',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontSize: '0.9rem',
+                                            fontWeight: 700,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}
+                                    >
+                                        {currentStep === steps.length - 1 ? 'Concluir' : 'Próximo'}
+                                        {currentStep === steps.length - 1 ? <Check size={16} /> : <ChevronRight size={16} />}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </>
             )}
         </AnimatePresence>

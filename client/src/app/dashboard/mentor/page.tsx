@@ -182,7 +182,7 @@ export default function MentorDashboard() {
                     </h2>
                 </div>
 
-                <nav style={{ padding: '2rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
@@ -198,7 +198,7 @@ export default function MentorDashboard() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '12px',
-                                padding: '1rem',
+                                padding: '0.75rem 1rem',
                                 width: '100%',
                                 borderRadius: '12px',
                                 border: 'none',
@@ -229,6 +229,31 @@ export default function MentorDashboard() {
                             {item.label}
                         </button>
                     ))}
+
+                    <button
+                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            padding: '0.75rem 1rem',
+                            width: '100%',
+                            borderRadius: '12px',
+                            border: 'none',
+                            background: 'transparent',
+                            color: '#FFD700',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'left',
+                            fontSize: '0.95rem'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                        <Map size={20} />
+                        Tour Guiado
+                    </button>
 
                     <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
                         <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Plano Atual</div>
@@ -287,29 +312,6 @@ export default function MentorDashboard() {
                         )}
                     </button>
 
-                    <button
-                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: 'transparent',
-                            border: '1px dashed #444',
-                            borderRadius: '12px',
-                            color: '#888',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            fontSize: '0.85rem',
-                            fontWeight: 500,
-                            transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#FFD700'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.color = '#888'; }}
-                    >
-                        <Map size={16} /> Ver Tour Guiado
-                    </button>
 
                     <button
                         onClick={() => authService.logout()}
@@ -381,34 +383,36 @@ export default function MentorDashboard() {
                         </div>
                     </div>
 
-                    {user.canCreateEvents === false && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            style={{
-                                background: 'linear-gradient(90deg, #fff5f5 0%, #fff 100%)',
-                                borderLeft: '4px solid #c53030',
-                                padding: '1.2rem 1.5rem',
-                                borderRadius: '12px',
-                                marginBottom: '2rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '15px',
-                                boxShadow: '0 4px 12px rgba(197, 48, 48, 0.08)'
-                            }}
-                        >
-                            <div style={{ background: '#c53030', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <AlertCircle size={20} />
-                            </div>
-                            <div>
-                                <h4 style={{ color: '#c53030', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>Acesso à Criação de Eventos Bloqueado</h4>
-                                <p style={{ color: '#666', fontSize: '0.85rem' }}>
-                                    Sua permissão para criar novos eventos foi temporariamente suspensa por um administrador.
-                                    Isso geralmente ocorre devido a taxas pendentes. Entre em contato com o suporte para regularizar.
-                                </p>
-                            </div>
-                        </motion.div>
-                    )}
+                    {
+                        user.canCreateEvents === false && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                style={{
+                                    background: 'linear-gradient(90deg, #fff5f5 0%, #fff 100%)',
+                                    borderLeft: '4px solid #c53030',
+                                    padding: '1.2rem 1.5rem',
+                                    borderRadius: '12px',
+                                    marginBottom: '2rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '15px',
+                                    boxShadow: '0 4px 12px rgba(197, 48, 48, 0.08)'
+                                }}
+                            >
+                                <div style={{ background: '#c53030', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <AlertCircle size={20} />
+                                </div>
+                                <div>
+                                    <h4 style={{ color: '#c53030', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>Acesso à Criação de Eventos Bloqueado</h4>
+                                    <p style={{ color: '#666', fontSize: '0.85rem' }}>
+                                        Sua permissão para criar novos eventos foi temporariamente suspensa por um administrador.
+                                        Isso geralmente ocorre devido a taxas pendentes. Entre em contato com o suporte para regularizar.
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )
+                    }
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <Link
@@ -554,7 +558,7 @@ export default function MentorDashboard() {
                             <LogOut size={20} />
                         </button>
                     </div>
-                </header>
+                </header >
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
@@ -802,28 +806,32 @@ export default function MentorDashboard() {
                     }}
                 />
 
-                {themeModalData.form && (
-                    <EditEventThemeModal
-                        isOpen={themeModalData.isOpen}
-                        onClose={() => setThemeModalData({ isOpen: false, form: null })}
-                        form={themeModalData.form}
-                        onSuccess={loadDashboard}
-                    />
-                )}
+                {
+                    themeModalData.form && (
+                        <EditEventThemeModal
+                            isOpen={themeModalData.isOpen}
+                            onClose={() => setThemeModalData({ isOpen: false, form: null })}
+                            form={themeModalData.form}
+                            onSuccess={loadDashboard}
+                        />
+                    )
+                }
 
-                {editModalData.form && (
-                    <EditEventModal
-                        isOpen={editModalData.isOpen}
-                        onClose={() => setEditModalData({ isOpen: false, form: null })}
-                        form={editModalData.form}
-                        onSuccess={loadDashboard}
-                    />
-                )}
+                {
+                    editModalData.form && (
+                        <EditEventModal
+                            isOpen={editModalData.isOpen}
+                            onClose={() => setEditModalData({ isOpen: false, form: null })}
+                            form={editModalData.form}
+                            onSuccess={loadDashboard}
+                        />
+                    )
+                }
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
                 <OnboardingTour />
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }
 
