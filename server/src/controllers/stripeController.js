@@ -280,9 +280,30 @@ exports.getEarningsDashboard = async (req, res) => {
             return acc;
         }, { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 });
 
+        // Calculate chart data (last 30 days)
+        const dailyRevenue = {};
+        transactions.forEach(tx => {
+            if (tx.status === 'completed') {
+                const date = new Date(tx.createdAt).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+                dailyRevenue[date] = (dailyRevenue[date] || 0) + tx.amount;
+            }
+        });
+
+        const chartData = Object.keys(dailyRevenue)
+            .sort((a, b) => {
+                const [dayA, monthA] = a.split('/').map(Number);
+                const [dayB, monthB] = b.split('/').map(Number);
+                return monthA !== monthB ? monthA - monthB : dayA - dayB;
+            })
+            .map(date => ({
+                date,
+                revenue: dailyRevenue[date]
+            }));
+
         res.status(200).json({
             success: true,
             summary,
+            chartData,
             transactions: transactions.filter(t => t.status === 'completed').slice(0, 10)
         });
     } catch (error) {
@@ -348,7 +369,7 @@ exports.whoami = async (req, res) => {
 
 exports.createSubscription = async (req, res) => {
     try {
-        const { plan } = req.body;
+        const { plan, currency = 'MZN' } = req.body;
         const user = await User.findById(req.user.id);
 
         const planConfig = PLANS[plan];
@@ -356,15 +377,17 @@ exports.createSubscription = async (req, res) => {
             return res.status(400).json({ message: 'Invalid plan selected' });
         }
 
+        const price = planConfig.prices[currency];
+
         const session = await stripe.checkout.sessions.create({
             mode: 'subscription',
             payment_method_types: ['card'],
             customer_email: user.email,
             line_items: [{
                 price_data: {
-                    currency: planConfig.currency.toLowerCase(),
+                    currency: currency.toLowerCase(),
                     product_data: { name: `Inscreva-se ${planConfig.name} Plan` },
-                    unit_amount: planConfig.price,
+                    unit_amount: price,
                     recurring: { interval: planConfig.interval },
                 },
                 quantity: 1,

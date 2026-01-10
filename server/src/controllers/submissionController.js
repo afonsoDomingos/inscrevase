@@ -3,6 +3,9 @@ const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const { PLANS } = require('../config/stripe');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const submitForm = async (req, res) => {
     try {
@@ -126,19 +129,53 @@ const getMySubmissions = async (req, res) => {
     }
 };
 
-const getSubmissionPublic = async (req, res) => {
+const analyzeReceipt = async (req, res) => {
     try {
-        const submission = await Submission.findById(req.params.id)
-            .populate({
-                path: 'form',
-                populate: { path: 'creator', select: 'name profilePhoto bio socialLinks' }
-            });
+        const { submissionId } = req.params;
+        const submission = await Submission.findById(submissionId);
+        if (!submission || !submission.paymentProof) {
+            return res.status(404).json({ message: 'Recibo não encontrado' });
+        }
 
-        if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
+        // Gemini Vision API logic
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        res.json(submission);
-    } catch (err) {
-        res.status(500).json({ message: 'Erro ao buscar inscrição', error: err.message });
+        const prompt = `
+            Você é um assistente financeiro moçambicano especializado em validar capturas de ecrã (screenshots) de pagamentos.
+            Analise esta imagem e extraia as seguintes informações em formato JSON rigoroso:
+            - transactionId: O código da transação (ex: MZN.... ou ID da transferência)
+            - amount: O valor numérico (apenas o número)
+            - currency: "MT" ou "USD"
+            - date: A data da transação
+            - isValid: true se parecer um recibo real e legível, false caso contrário
+            - confidence: 0-100
+            - warning: Qualquer suspeita de fraude ou edição de imagem.
+            
+            Se não for um recibo, retorne isValid: false.
+            Resposta apenas em JSON.
+        `;
+
+        // Fetch image and convert to base64
+        const response = await fetch(submission.paymentProof);
+        const buffer = await response.arrayBuffer();
+        const base64Image = Buffer.from(buffer).toString('base64');
+
+        const result = await model.generateContent([
+            prompt,
+            { inlineData: { data: base64Image, mimeType: "image/jpeg" } }
+        ]);
+
+        const text = result.response.text();
+        const jsonMatch = text.match(/\{.*\}/s);
+        const aiAnalysis = jsonMatch ? JSON.parse(jsonMatch[0]) : { error: "Falha na análise da IA" };
+
+        submission.aiAnalysis = aiAnalysis;
+        await submission.save();
+
+        res.json({ success: true, analysis: aiAnalysis });
+    } catch (error) {
+        console.error("AI Analysis Error:", error);
+        res.status(500).json({ message: "Erro na análise de IA", error: error.message });
     }
 };
 
@@ -148,5 +185,6 @@ module.exports = {
     updateStatus,
     getAllSubmissionsAdmin,
     getMySubmissions,
-    getSubmissionPublic
+    getSubmissionPublic,
+    analyzeReceipt
 };

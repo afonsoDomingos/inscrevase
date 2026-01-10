@@ -14,7 +14,8 @@ import {
     CreditCard,
     Instagram,
     Linkedin,
-    Globe
+    Globe,
+    Zap
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -161,6 +162,16 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             color: textColor,
             fontFamily: form.theme?.fontFamily || 'Inter'
         }}>
+            <motion.style jsx global>{`
+                @keyframes pulse-red {
+                    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+                }
+                .scarcity-badge-active {
+                    animation: pulse-red 2s infinite;
+                }
+            `}</motion.style>
             <style jsx global>{`
                 input::placeholder, select::placeholder, textarea::placeholder {
                     color: ${placeholderColor} !important;
@@ -229,6 +240,28 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: secondaryTextColor }}>
                                         <Eye size={14} /> {form.visits || 0} {t('common.visits')}
                                     </div>
+                                    {form.capacity && (
+                                        <div
+                                            className={(form.capacity - (form.submissionCount || 0)) <= 5 ? 'scarcity-badge-active' : ''}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 800,
+                                                padding: '4px 12px',
+                                                borderRadius: '20px',
+                                                background: (form.capacity - (form.submissionCount || 0)) <= 5 ? '#ef4444' : `${primaryColor}15`,
+                                                color: (form.capacity - (form.submissionCount || 0)) <= 5 ? '#fff' : primaryColor,
+                                                border: (form.capacity - (form.submissionCount || 0)) <= 5 ? 'none' : `1px solid ${primaryColor}30`
+                                            }}
+                                        >
+                                            <Zap size={12} fill="currentColor" />
+                                            {form.capacity - (form.submissionCount || 0) > 0
+                                                ? `APENAS ${form.capacity - (form.submissionCount || 0)} VAGAS RESTANTES`
+                                                : 'VAGAS ESGOTADAS'}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <h1 style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 900, marginTop: '0.5rem', marginBottom: '1.5rem', color: titleColor }}>{form.title}</h1>
@@ -297,7 +330,13 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
 
                             {/* Right Side: Form */}
                             <motion.div initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
-                                <div style={{ background: cardBg, borderRadius: '30px', border: `1px solid ${borderColor}`, padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                                <div style={{ background: cardBg, borderRadius: '30px', border: `1px solid ${borderColor}`, padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}>
+                                    {form.capacity && (form.capacity - (form.submissionCount || 0)) <= 0 && (
+                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', backdropFilter: 'blur(4px)' }}>
+                                            <div style={{ background: '#ef4444', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', fontWeight: 900, marginBottom: '1rem' }}>INSCRIÇÕES ENCERRADAS</div>
+                                            <p style={{ color: '#fff', fontSize: '1.1rem' }}>Este evento atingiu a capacidade máxima. Fique atento para as próximas edições!</p>
+                                        </div>
+                                    )}
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>{t('form.fillYourData')}</h3>
 
                                     <form onSubmit={handleSubmit}>

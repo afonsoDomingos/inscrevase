@@ -13,6 +13,15 @@ export interface SubmissionModel {
     data: Record<string, any>;
     paymentProof?: string;
     status: 'pending' | 'approved' | 'rejected';
+    aiAnalysis?: {
+        transactionId?: string;
+        amount?: number;
+        currency?: string;
+        date?: string;
+        isValid?: boolean;
+        confidence?: number;
+        warning?: string;
+    };
     submittedAt: string;
 }
 
@@ -37,6 +46,16 @@ export const submissionService = {
             body: JSON.stringify({ status })
         });
         if (!response.ok) throw new Error('Falha ao atualizar status');
+        return response.json();
+    },
+
+    async analyzeReceipt(submissionId: string): Promise<any> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/${submissionId}/analyze-receipt`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha na análise da IA');
         return response.json();
     }
 };

@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'sonner';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -30,9 +31,11 @@ export default function RootLayout({
     <html lang="pt">
       <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
         <LanguageProvider>
-          <ClientLayoutWrapper>
-            {children}
-          </ClientLayoutWrapper>
+          <CurrencyProvider>
+            <ClientLayoutWrapper>
+              {children}
+            </ClientLayoutWrapper>
+          </CurrencyProvider>
         </LanguageProvider>
         <Toaster position="top-center" richColors theme="light" />
       </body>

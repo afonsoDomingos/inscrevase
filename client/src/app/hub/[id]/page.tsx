@@ -16,10 +16,12 @@ import {
     Loader2,
     QrCode,
     Navigation,
-    Info
+    Info,
+    Award
 } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import { generateCertificate } from '@/lib/certificateGenerator';
 
 interface SubmissionData {
     _id: string;
@@ -218,8 +220,12 @@ function HubContent() {
                             animate={{ opacity: 1, x: 0 }}
                             style={{ background: '#fff', borderRadius: '30px', padding: '30px', boxShadow: '0 20px 60px rgba(0,0,0,0.06)', border: '1px solid #eee', textAlign: 'center' }}
                         >
-                            <div style={{ marginBottom: '25px' }}>
-                                <QrCode size={180} style={{ margin: '0 auto', color: '#171A20' }} strokeWidth={1} />
+                            <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center' }}>
+                                <img
+                                    src={`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${window.location.protocol}//${window.location.host}/hub/${id}`}
+                                    alt="QR Code Acesso"
+                                    style={{ borderRadius: '15px', border: '1px solid #eee' }}
+                                />
                             </div>
 
                             <div style={{ borderTop: '1px dashed #eee', paddingTop: '25px', marginBottom: '25px' }}>
@@ -250,6 +256,44 @@ function HubContent() {
                                     </a>
                                 )}
                                 <button style={{ background: '#f4f4f4', color: '#171A20', padding: '16px', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>Adicionar à Wallet</button>
+                                {isApproved && (
+                                    <button
+                                        onClick={() => {
+                                            const dataMap = (submission as any).data || {};
+                                            const nameKey = Object.keys(dataMap).find(k =>
+                                                k.toLowerCase().includes('nome') ||
+                                                k.toLowerCase().includes('name')
+                                            );
+                                            const participantName = nameKey ? dataMap[nameKey] : "Participante";
+
+                                            generateCertificate({
+                                                participantName: String(participantName),
+                                                eventTitle: form.title,
+                                                date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : 'A definir',
+                                                mentorName: form.creator.name,
+                                                id: submission._id
+                                            });
+                                            toast.success("Certificado gerado com sucesso!");
+                                        }}
+                                        style={{
+                                            background: 'var(--gold-gradient, linear-gradient(135deg, #FFD700 0%, #FDB931 100%))',
+                                            color: '#000',
+                                            padding: '16px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 800,
+                                            fontSize: '0.9rem',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                            boxShadow: '0 4px 15px rgba(212,175,55,0.3)'
+                                        }}
+                                    >
+                                        <Award size={20} /> BAIXAR CERTIFICADO
+                                    </button>
+                                )}
                             </div>
 
                             <p style={{ marginTop: '20px', fontSize: '0.75rem', color: '#888', lineHeight: 1.4 }}>Apresente este código na entrada do evento para validar seu acesso.</p>

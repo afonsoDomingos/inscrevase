@@ -16,6 +16,15 @@ const SubmissionSchema = new mongoose.Schema({
     },
     stripePaymentIntentId: { type: String },
     stripeSessionId: { type: String },
+    aiAnalysis: {
+        transactionId: String,
+        amount: Number,
+        currency: String,
+        date: String,
+        isValid: Boolean,
+        confidence: Number,
+        warning: String
+    },
     submittedAt: { type: Date, default: Date.now }
 });
 

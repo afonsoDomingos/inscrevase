@@ -3,11 +3,13 @@
 
 import { useEffect, useState } from 'react';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
-import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy, ExternalLink } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy, ExternalLink, Sparkles, AlertTriangle, ShieldCheck, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
+import { generateCertificate } from '@/lib/certificateGenerator';
+import { Award } from 'lucide-react';
 
 interface SubmissionManagementProps {
     formId?: string | null;
@@ -21,6 +23,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const [analyzingId, setAnalyzingId] = useState<string | null>(null);
 
     useEffect(() => {
         loadSubmissions();
@@ -42,8 +45,27 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             await submissionService.updateStatus(id, status);
             // Optimistic update
             setSubmissions(prev => prev.map(s => s._id === id ? { ...s, status } : s));
+            if (selectedSubmission?._id === id) {
+                setSelectedSubmission({ ...selectedSubmission, status });
+            }
         } catch (error) {
             alert(t('common.updateStatusError'));
+        }
+    };
+
+    const handleAnalyzeReceipt = async (submissionId: string) => {
+        setAnalyzingId(submissionId);
+        try {
+            const result = await submissionService.analyzeReceipt(submissionId);
+            setSubmissions(prev => prev.map(s => s._id === submissionId ? { ...s, aiAnalysis: result.analysis } : s));
+            if (selectedSubmission?._id === submissionId) {
+                setSelectedSubmission({ ...selectedSubmission, aiAnalysis: result.analysis });
+            }
+            toast.success('Análise de IA concluída!');
+        } catch (error) {
+            toast.error('Erro ao analisar recibo');
+        } finally {
+            setAnalyzingId(null);
         }
     };
 
@@ -192,12 +214,27 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     </td>
                                     <td style={{ padding: '1rem' }}>
                                         {submission.paymentProof ? (
-                                            <button
-                                                onClick={() => setSelectedProof(submission.paymentProof!)}
-                                                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '0.8rem' }}
-                                            >
-                                                <Eye size={14} /> {t('events.submissions.view')}
-                                            </button>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                                <button
+                                                    onClick={() => setSelectedProof(submission.paymentProof!)}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                >
+                                                    <Eye size={14} /> {t('events.submissions.view')}
+                                                </button>
+                                                {submission.aiAnalysis ? (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', fontWeight: 800, color: submission.aiAnalysis.isValid ? '#10b981' : '#ef4444' }}>
+                                                        <Sparkles size={10} /> IA: {submission.aiAnalysis.isValid ? 'VÁLIDO' : 'SUSPEITO'}
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        disabled={analyzingId === submission._id}
+                                                        onClick={() => handleAnalyzeReceipt(submission._id)}
+                                                        style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.65rem', fontWeight: 800, color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                    >
+                                                        {analyzingId === submission._id ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />} ANALISAR IA
+                                                    </button>
+                                                )}
+                                            </div>
                                         ) : (
                                             <span style={{ color: '#999', fontSize: '0.8rem' }}>{t('events.submissions.noAttachment')}</span>
                                         )}
@@ -263,6 +300,23 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             >
                                                 <XCircle size={16} />
                                             </button>
+                                            {submission.status === 'approved' && (
+                                                <button
+                                                    onClick={() => {
+                                                        generateCertificate({
+                                                            participantName: String(getMainIdentifier(submission.data)),
+                                                            eventTitle: submission.form.title,
+                                                            date: new Date(submission.submittedAt).toLocaleDateString(),
+                                                            mentorName: 'Mentor Oficial', // Could be dynamic if we pop'd user
+                                                            id: submission._id
+                                                        });
+                                                    }}
+                                                    title="Baixar Certificado"
+                                                    style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: '#D4AF37', color: '#000', cursor: 'pointer' }}
+                                                >
+                                                    <Award size={16} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -359,6 +413,50 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     ))}
                                 </div>
 
+                                {selectedSubmission.aiAnalysis && (
+                                    <div style={{
+                                        marginTop: '1.5rem',
+                                        padding: '1.5rem',
+                                        background: selectedSubmission.aiAnalysis.isValid ? '#f0fdf4' : '#fef2f2',
+                                        borderRadius: '20px',
+                                        border: `1px solid ${selectedSubmission.aiAnalysis.isValid ? '#bbf7d0' : '#fecaca'}`,
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.1 }}>
+                                            <Sparkles size={40} />
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                                            <Sparkles size={18} color={selectedSubmission.aiAnalysis.isValid ? '#10b981' : '#ef4444'} />
+                                            <h4 style={{ fontWeight: 800, color: selectedSubmission.aiAnalysis.isValid ? '#166534' : '#991b1b', fontSize: '0.9rem' }}>Análise Inteligente (Aura AI)</h4>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div>
+                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>ID Transação</div>
+                                                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.transactionId || '---'}</div>
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>Valor Identificado</div>
+                                                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.amount} {selectedSubmission.aiAnalysis.currency}</div>
+                                            </div>
+                                        </div>
+
+                                        {selectedSubmission.aiAnalysis.warning && (
+                                            <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fff', borderRadius: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                                <AlertTriangle size={16} color="#ef4444" style={{ flexShrink: 0 }} />
+                                                <p style={{ fontSize: '0.75rem', color: '#991b1b', fontWeight: 600 }}>{selectedSubmission.aiAnalysis.warning}</p>
+                                            </div>
+                                        )}
+
+                                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ fontSize: '0.7rem', color: '#666' }}>Confiança da IA: <b>{selectedSubmission.aiAnalysis.confidence}%</b></div>
+                                            {selectedSubmission.aiAnalysis.isValid && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#10b981', fontWeight: 800 }}><ShieldCheck size={14} /> VERIFICADO</div>}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {selectedSubmission.paymentProof && (
                                     <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,215,0,0.05)', borderRadius: '16px', border: '1px solid rgba(255,215,0,0.2)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
@@ -385,6 +483,25 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                             </div>
 
                             <div style={{ padding: '1.5rem 2rem', background: '#f8f9fa', borderTop: '1px solid #eee', display: 'flex', gap: '1rem' }}>
+                                <button
+                                    onClick={() => {
+                                        const phone = getPhoneIdentifier(selectedSubmission.data);
+                                        const name = getMainIdentifier(selectedSubmission.data);
+                                        const eventTitle = selectedSubmission.form.title;
+                                        const hubLink = `${window.location.protocol}//${window.location.host}/hub/${selectedSubmission._id}`;
+
+                                        const message = encodeURIComponent(`Olá ${name}, a tua vaga na *${eventTitle}* está confirmada! 🎉\n\nAqui está o teu QR Code de entrada e detalhes do evento 🎟️:\n${hubLink}\n\nPrepare-se para uma experiência incrível!`);
+                                        window.open(`https://wa.me/${String(phone).replace(/\D/g, '')}?text=${message}`, '_blank');
+                                    }}
+                                    style={{
+                                        flex: 2, padding: '0.8rem', borderRadius: '10px',
+                                        border: '1px solid #25D366', background: '#25D366',
+                                        color: '#fff', fontWeight: 700, cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                    }}
+                                >
+                                    <MessageCircle size={18} /> WhatsApp Pro
+                                </button>
                                 <button
                                     onClick={() => {
                                         handleUpdateStatus(selectedSubmission._id, 'approved');

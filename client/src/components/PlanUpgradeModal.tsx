@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, X, Crown, Sparkles, Loader2 } from 'lucide-react';
 import Cookies from 'js-cookie';
+import { useCurrency } from '@/context/CurrencyContext';
 
 export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);
+    const { currency, setCurrency, formatPrice } = useCurrency();
 
     const handleUpgrade = async (plan: string) => {
         try {
@@ -18,7 +20,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ plan })
+                body: JSON.stringify({ plan, currency })
             });
             const { url } = await response.json();
             window.location.href = url;
@@ -40,24 +42,63 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>Escolha seu Plano 💎</h2>
                     <p style={{ color: '#666' }}>Aumente seu alcance e reduza comissões</p>
+
+                    {/* Currency Selector */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        marginTop: '1.5rem'
+                    }}>
+                        <button
+                            onClick={() => setCurrency('MZN')}
+                            style={{
+                                padding: '6px 20px',
+                                borderRadius: '20px',
+                                border: '1px solid #eee',
+                                background: currency === 'MZN' ? '#1a1a1b' : '#fff',
+                                color: currency === 'MZN' ? '#fff' : '#1a1a1b',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                            }}
+                        >
+                            MT
+                        </button>
+                        <button
+                            onClick={() => setCurrency('USD')}
+                            style={{
+                                padding: '6px 20px',
+                                borderRadius: '20px',
+                                border: '1px solid #eee',
+                                background: currency === 'USD' ? '#1a1a1b' : '#fff',
+                                color: currency === 'USD' ? '#fff' : '#1a1a1b',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                            }}
+                        >
+                            USD
+                        </button>
+                    </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <PlanCard
                         name="Pro"
-                        price="49"
+                        price={formatPrice(499, 7.99)}
                         color="#D4AF37"
                         icon={<Sparkles size={24} />}
-                        features={['Taxa de 10%', 'Submissões Ilimitadas', 'Suporte Prioritário']}
+                        features={['Taxa reduzida de 10%', 'Destaque no Showcase', 'Suporte Prioritário']}
                         onSelect={() => handleUpgrade('pro')}
                         loading={loading === 'pro'}
                     />
                     <PlanCard
                         name="Enterprise"
-                        price="149"
+                        price={formatPrice(4990, 79.90)}
                         color="#000"
                         icon={<Crown size={24} />}
-                        features={['Taxa de 5%', 'Domínio Customizado', 'Suporte 24/7']}
+                        features={['TAXA 0% (Isenção Total)', 'Customização de Branding', 'Account Manager VIP']}
                         onSelect={() => handleUpgrade('enterprise')}
                         loading={loading === 'enterprise'}
                     />

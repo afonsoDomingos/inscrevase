@@ -67,7 +67,14 @@ exports.getFormBySlug = async (req, res) => {
     try {
         const form = await Form.findOne({ slug: req.params.slug }).populate('creator');
         if (!form) return res.status(404).json({ message: 'Form not found' });
-        res.json(form);
+
+        // Get submission count to calculate remaining slots
+        const submissionCount = await Submission.countDocuments({ form: form._id });
+
+        res.json({
+            ...form.toObject(),
+            submissionCount
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

@@ -8,6 +8,16 @@ import StripeConnect from './StripeConnect';
 import PlanUpgradeModal from './PlanUpgradeModal';
 import { UserData, authService } from '@/lib/authService';
 
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer
+} from 'recharts';
+
 interface Transaction {
     _id: string;
     form: { title: string };
@@ -24,6 +34,7 @@ interface EarningsData {
         totalFees: number;
         pendingFees: number;
     };
+    chartData: { date: string; revenue: number }[];
     transactions: Transaction[];
 }
 
@@ -83,6 +94,58 @@ export default function EarningsDashboard() {
                     icon={<DollarSign size={24} />}
                     color="#666"
                 />
+            </div>
+
+            {/* Performance Chart */}
+            <div style={{
+                background: '#fff',
+                padding: '2rem',
+                borderRadius: '32px',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                minHeight: '400px'
+            }}>
+                <div style={{ marginBottom: '2rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1a1a1b' }}>Desempenho de Vendas</h3>
+                    <p style={{ fontSize: '0.85rem', color: '#888' }}>Volume de receita diária nos últimos 30 dias</p>
+                </div>
+
+                <div style={{ width: '100%', height: 300 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={data?.chartData || []}>
+                            <defs>
+                                <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                            <XAxis
+                                dataKey="date"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: '#999' }}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: '#999' }}
+                                tickFormatter={(value) => `${value} MT`}
+                            />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
+                                itemStyle={{ fontWeight: 800, color: '#D4AF37' }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="revenue"
+                                stroke="#D4AF37"
+                                strokeWidth={3}
+                                fillOpacity={1}
+                                fill="url(#colorRev)"
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
 
             {summary.pendingFees > 0 && (

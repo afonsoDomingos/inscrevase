@@ -7,6 +7,7 @@ import { CheckCircle, Palette, Zap, ShieldCheck, BarChart3, MessageCircle } from
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -19,6 +20,7 @@ const galleryImages = [
 
 export default function Home() {
   const { t } = useTranslate();
+  const { currency, setCurrency, formatPrice } = useCurrency();
 
   const fadeIn = {
     initial: { opacity: 0, y: 30 },
@@ -255,63 +257,170 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section with Glassmorphism Cards */}
-      <section className="section" style={{
-        background: '#fafafa',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Subtle Decorative elements */}
-        <div style={{ position: 'absolute', top: '20%', left: '-10%', width: '400px', height: '400px', background: 'rgba(255,215,0,0.03)', borderRadius: '50%', filter: 'blur(80px)' }} />
 
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '6rem' }}>
-            <motion.div {...fadeIn}>
-              <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', marginBottom: '1.5rem', lineHeight: 1.1 }}>
-                {t('landing.features.title')} <br />
-                <span className="gold-text">{t('landing.features.titleHighlight')}</span>
-              </h2>
-              <div style={{ width: '80px', height: '4px', background: 'var(--gold-gradient)', margin: '0 auto 2rem' }} />
-              <p style={{ color: '#666', maxWidth: '600px', margin: '0 auto', fontSize: '1.2rem' }}>
-                {t('landing.features.subtitle')}
-              </p>
-            </motion.div>
+
+      {/* Tesla-inspired Events Showcase (Original) */}
+      <section style={{ padding: '0 20px 80px', background: '#fff' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
+          gap: '24px',
+          maxWidth: '1600px',
+          margin: '0 auto'
+        }}>
+          {/* Block 1: Masterclasses */}
+          <div style={{
+            position: 'relative',
+            height: '600px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            padding: '60px',
+            textAlign: 'center'
+          }}>
+            <Image
+              src="/masterclass.png"
+              alt="Masterclass"
+              fill
+              style={{ objectFit: 'cover', zIndex: 0 }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', zIndex: 1 }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Masterclasses</h2>
+              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>Aprenda com os melhores mentores do mercado.</p>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/cadastro" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'var(--gold-gradient)',
+                  color: '#000',
+                  textDecoration: 'none',
+                  fontWeight: 700
+                }}>
+                  {t('common.getStarted')}
+                </Link>
+                <Link href="/mentores" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#393c41',
+                  textDecoration: 'none',
+                  fontWeight: 600
+                }}>
+                  Ver Mais
+                </Link>
+              </div>
+            </div>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid"
-          >
-            {[
-              { icon: <Palette size={32} />, title: t('landing.features.f1.title'), desc: t('landing.features.f1.description') },
-              { icon: <CheckCircle size={32} />, title: t('landing.features.f2.title'), desc: t('landing.features.f2.description') },
-              { icon: <Zap size={32} />, title: t('landing.features.f3.title'), desc: t('landing.features.f3.description') },
-              { icon: <BarChart3 size={32} />, title: t('landing.features.f4.title'), desc: t('landing.features.f4.description') },
-              { icon: <ShieldCheck size={32} />, title: t('landing.features.f5.title'), desc: t('landing.features.f5.description') },
-              { icon: <MessageCircle size={32} />, title: t('landing.features.f6.title'), desc: t('landing.features.f6.description') }
-            ].map((feature, i) => (
-              <FeatureCard
-                key={i}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.desc}
-              />
-            ))}
-          </motion.div>
+          {/* Block 2: VIP Events */}
+          <div style={{
+            position: 'relative',
+            height: '600px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            padding: '60px',
+            textAlign: 'center'
+          }}>
+            <Image
+              src="/networking.png"
+              alt="Networking"
+              fill
+              style={{ objectFit: 'cover', zIndex: 0 }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', zIndex: 1 }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Gala & Networking</h2>
+              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>Conexões exclusivas em ambientes de elite.</p>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/entrar" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'var(--gold-gradient)',
+                  color: '#000',
+                  textDecoration: 'none',
+                  fontWeight: 700
+                }}>
+                  Participar
+                </Link>
+                <Link href="/mentores" style={{
+                  padding: '12px 60px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#393c41',
+                  textDecoration: 'none',
+                  fontWeight: 600
+                }}>
+                  Explorar
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Tesla-inspired Packages Showcase */}
-      <section style={{ padding: '0 20px 80px', background: '#fff' }}>
+      <section style={{ padding: '40px 20px 80px', background: '#fff' }}>
         <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <motion.div {...fadeIn}>
             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1rem', fontWeight: 700 }}>
               Escolha seu <span className="gold-text">Nível de Impacto</span>
             </h2>
             <p style={{ color: '#666', fontSize: '1.1rem' }}>Soluções sob medida para cada etapa da sua jornada.</p>
+
+            {/* Currency Selector */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '12px',
+              marginTop: '2.5rem'
+            }}>
+              <button
+                onClick={() => setCurrency('MZN')}
+                style={{
+                  padding: '10px 30px',
+                  borderRadius: '30px',
+                  border: '1px solid #e0e0e0',
+                  background: currency === 'MZN' ? '#1a1a1b' : '#fff',
+                  color: currency === 'MZN' ? '#fff' : '#1a1a1b',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: currency === 'MZN' ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                MT (Moçambique)
+              </button>
+              <button
+                onClick={() => setCurrency('USD')}
+                style={{
+                  padding: '10px 30px',
+                  borderRadius: '30px',
+                  border: '1px solid #e0e0e0',
+                  background: currency === 'USD' ? '#1a1a1b' : '#fff',
+                  color: currency === 'USD' ? '#fff' : '#1a1a1b',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: currency === 'USD' ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                USD (Global)
+              </button>
+            </div>
           </motion.div>
         </div>
 
@@ -331,7 +440,7 @@ export default function Home() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-end',
-            padding: '60px',
+            padding: '40px',
             textAlign: 'center'
           }}>
             <Image
@@ -352,7 +461,7 @@ export default function Home() {
               </div>
               <Link href="/cadastro" style={{
                 display: 'inline-block',
-                padding: '12px 80px',
+                padding: '12px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: 'rgba(255,255,255,0.9)',
@@ -376,7 +485,7 @@ export default function Home() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-end',
-            padding: '60px',
+            padding: '40px',
             textAlign: 'center'
           }}>
             <Image
@@ -401,8 +510,11 @@ export default function Home() {
               }}>
                 Mais Popular
               </div>
-              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Plano Pro</h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>Para profissionais em ascensão.</p>
+              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>Plano Pro</h3>
+              <p style={{ color: 'var(--gold-text)', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                {formatPrice(499, 7.99)}<span style={{ fontSize: '0.8rem', opacity: 0.8 }}>/mês</span>
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>Para profissionais em ascensão.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
                 <span style={{ opacity: 0.9 }}>• Taxa reduzida de 10%</span>
                 <span style={{ opacity: 0.9 }}>• Destaque no Showcase</span>
@@ -410,7 +522,7 @@ export default function Home() {
               </div>
               <Link href="/cadastro?plan=pro" style={{
                 display: 'inline-block',
-                padding: '12px 80px',
+                padding: '12px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: 'var(--gold-gradient)',
@@ -434,7 +546,7 @@ export default function Home() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-end',
-            padding: '60px',
+            padding: '40px',
             textAlign: 'center'
           }}>
             <Image
@@ -446,16 +558,19 @@ export default function Home() {
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
-              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Enterprise</h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>O topo da performance.</p>
+              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>Enterprise</h3>
+              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                {formatPrice(4990, 79.90)}<span style={{ fontSize: '0.8rem', opacity: 0.8 }}>/mês</span>
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>O topo da performance.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
-                <span style={{ opacity: 0.9 }}>• Taxa mínima de 5%</span>
+                <span style={{ fontWeight: 800, color: '#FFD700' }}>• TAXA 0% (Isenção Total)</span>
                 <span style={{ opacity: 0.9 }}>• Suporte VIP 24/7</span>
                 <span style={{ opacity: 0.9 }}>• Customização Total</span>
               </div>
               <Link href="/cadastro?plan=enterprise" style={{
                 display: 'inline-block',
-                padding: '12px 80px',
+                padding: '12px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: '#fff',
@@ -469,6 +584,60 @@ export default function Home() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Features CTA Section (Tesla Inspired) - Placed at the end */}
+      <section style={{
+        height: '70vh',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        background: '#fff',
+        borderTop: '1px solid #f0f0f0'
+      }}>
+        <div className="container">
+          <motion.div {...fadeIn}>
+            <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', marginBottom: '1.5rem', fontWeight: 600, letterSpacing: '-1px' }}>
+              Funcionalidades <span className="gold-text">Premium</span>
+            </h2>
+            <p style={{ color: '#5c5e62', maxWidth: '650px', margin: '0 auto 3.5rem', fontSize: '1.2rem', lineHeight: 1.6 }}>
+              Tudo o que você precisa para gerir suas inscrições com profissionalismo.
+            </p>
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/cadastro" style={{
+                padding: '12px 80px',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: '#1a1a1b',
+                color: '#fff',
+                textDecoration: 'none',
+                fontWeight: 600,
+                width: '100%',
+                maxWidth: '300px',
+                transition: 'all 0.3s'
+              }}>
+                Criar Evento
+              </Link>
+              <Link href="/funcionalidades" style={{
+                padding: '12px 80px',
+                borderRadius: '4px',
+                fontSize: '0.85rem',
+                background: 'rgba(255,255,255,1)',
+                color: '#393c41',
+                textDecoration: 'none',
+                fontWeight: 600,
+                width: '100%',
+                maxWidth: '300px',
+                border: '1px solid #e2e2e2',
+                transition: 'all 0.3s'
+              }}>
+                Ver Funcionalidades
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
