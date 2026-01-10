@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X, Users, MessageSquare, AlertTriangle, Sparkles, Wand2, Loader2 } from 'lucide-react';
+import { Send, X, Users, MessageSquare, AlertTriangle, Sparkles, Wand2, Loader2, Building2 } from 'lucide-react';
 import { notificationService } from '@/lib/notificationService';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
@@ -28,6 +28,7 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
     const [isAllMentors, setIsAllMentors] = useState(!recipientId);
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([]);
+    const [department, setDepartment] = useState<string>(''); // '' = Personal
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchingMentors, setFetchingMentors] = useState(false);
 
@@ -103,7 +104,8 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                 title,
                 content,
                 type,
-                actionUrl: type === 'welcome' ? '/dashboard/mentor' : undefined
+                actionUrl: type === 'welcome' ? '/dashboard/mentor' : undefined,
+                department: department || undefined
             });
 
             toast.success(recipientId ? `Mensagem enviada para ${recipientName}` : 'Broadcast enviado para todos os mentores!');
@@ -280,6 +282,34 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                                 )}
                             </div>
                         )}
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                <Building2 size={16} /> Enviar como:
+                            </label>
+                            <select
+                                value={department}
+                                onChange={(e) => setDepartment(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '12px',
+                                    border: '1px solid #ddd',
+                                    fontSize: '0.9rem',
+                                    background: '#fcfcfc',
+                                    outline: 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <option value="">👤 Pessoal (Meu Nome)</option>
+                                <option value="finance">💰 Departamento Financeiro</option>
+                                <option value="support">🛠️ Suporte Técnico</option>
+                                <option value="marketing">📢 Marketing & Eventos</option>
+                                <option value="onboarding">✨ Equipe de Onboarding</option>
+                                <option value="general">🏛️ Administração Geral</option>
+                            </select>
+                        </div>
+
                         <div style={{ marginBottom: '1.5rem' }}>
                             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Título da Mensagem</label>
                             <input

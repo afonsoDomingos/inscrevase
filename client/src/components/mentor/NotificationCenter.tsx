@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { notificationService, NotificationModel } from '@/lib/notificationService';
-import { Bell, Check, ExternalLink, Mail, Clock, MessageSquare, Reply, Loader2, SendHorizontal } from 'lucide-react';
+import { Bell, Check, ExternalLink, Mail, Clock, MessageSquare, Reply, Loader2, SendHorizontal, Wallet, LifeBuoy, Megaphone, ShieldCheck, User, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -17,6 +17,17 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
     const [replyMode, setReplyMode] = useState<string | null>(null);
     const [replyText, setReplyText] = useState('');
     const [sendingReply, setSendingReply] = useState(false);
+
+    const getDepartmentInfo = (dept: string) => {
+        switch (dept) {
+            case 'finance': return { name: 'Departamento Financeiro', icon: <Wallet size={20} />, color: '#38a169' };
+            case 'support': return { name: 'Suporte Técnico', icon: <LifeBuoy size={20} />, color: '#3182ce' };
+            case 'marketing': return { name: 'Marketing & Eventos', icon: <Megaphone size={20} />, color: '#d53f8c' };
+            case 'onboarding': return { name: 'Equipe de Onboarding', icon: <Sparkles size={20} />, color: '#805ad5' };
+            case 'general': return { name: 'Administração Geral', icon: <ShieldCheck size={20} />, color: '#000' };
+            default: return { name: 'Administrador', icon: <User size={20} />, color: '#000' };
+        }
+    };
 
     useEffect(() => {
         loadNotifications();
@@ -148,7 +159,11 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                         overflow: 'hidden',
                                         border: '1px solid #FFD700'
                                     }}>
-                                        {notification.sender?.profilePhoto ? (
+                                        {notification.department ? (
+                                            <div style={{ color: '#FFD700' }}>
+                                                {getDepartmentInfo(notification.department).icon}
+                                            </div>
+                                        ) : notification.sender?.profilePhoto ? (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img src={notification.sender.profilePhoto} alt={notification.sender.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
@@ -159,7 +174,13 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', alignItems: 'flex-start' }}>
                                             <div>
                                                 <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1a1a1a' }}>{notification.title}</h4>
-                                                {notification.sender && (
+                                                {notification.department ? (
+                                                    <span style={{ fontSize: '0.75rem', color: '#666', display: 'block', marginTop: '2px' }}>
+                                                        De: <strong style={{ color: getDepartmentInfo(notification.department).color }}>
+                                                            {getDepartmentInfo(notification.department).name}
+                                                        </strong>
+                                                    </span>
+                                                ) : notification.sender && (
                                                     <span style={{ fontSize: '0.75rem', color: '#666', display: 'block', marginTop: '2px' }}>
                                                         De: <strong>{notification.sender.name}</strong>
                                                     </span>
@@ -252,7 +273,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                                 <textarea
                                                     value={replyText}
                                                     onChange={(e) => setReplyText(e.target.value)}
-                                                    placeholder={`Escreva sua resposta para ${notification.sender.name}...`}
+                                                    placeholder={`Escreva sua resposta para ${notification.department ? getDepartmentInfo(notification.department).name : notification.sender.name}...`}
                                                     rows={2}
                                                     style={{
                                                         width: '100%',

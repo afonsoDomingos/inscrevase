@@ -24,6 +24,10 @@ const notificationSchema = new mongoose.Schema({
         enum: ['welcome', 'announcement', 'personal', 'alert'],
         default: 'personal'
     },
+    department: {
+        type: String, // 'finance', 'support', 'marketing', 'general', etc.
+        default: null
+    },
     read: {
         type: Boolean,
         default: false

@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 exports.sendNotification = async (req, res) => {
     try {
-        const { recipientId, title, content, type, actionUrl } = req.body;
+        const { recipientId, title, content, type, actionUrl, department } = req.body;
         const senderId = req.user.id;
 
         // Send to multiple specific recipients
@@ -14,7 +14,8 @@ exports.sendNotification = async (req, res) => {
                 title,
                 content,
                 type: type || 'announcement',
-                actionUrl
+                actionUrl,
+                department
             }));
             await Notification.insertMany(notifications);
             return res.status(201).json({ message: 'Mensagens enviadas com sucesso' });
@@ -29,7 +30,8 @@ exports.sendNotification = async (req, res) => {
                 title,
                 content,
                 type: type || 'announcement',
-                actionUrl
+                actionUrl,
+                department
             }));
             await Notification.insertMany(notifications);
             return res.status(201).json({ message: 'Broadcast enviado com sucesso' });
@@ -41,7 +43,8 @@ exports.sendNotification = async (req, res) => {
             title,
             content,
             type: type || 'personal',
-            actionUrl
+            actionUrl,
+            department
         });
 
         await notification.save();
