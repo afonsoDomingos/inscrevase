@@ -3,7 +3,6 @@
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { CheckCircle, Palette, Zap, ShieldCheck, BarChart3, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
@@ -743,42 +742,5 @@ export default function Home() {
         </div>
       </footer>
     </main>
-  );
-}
-
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
-  return (
-    <motion.div
-      variants={{
-        initial: { opacity: 0, y: 30 },
-        animate: { opacity: 1, y: 0 }
-      }}
-      whileHover={{ y: -15, boxShadow: '0 30px 60px rgba(0,0,0,0.1)' }}
-      className="luxury-card"
-      style={{
-        textAlign: 'left',
-        background: '#fff',
-        borderRadius: '30px',
-        padding: '3.5rem 2.5rem',
-        border: '1px solid rgba(0,0,0,0.05)'
-      }}
-    >
-      <div style={{
-        marginBottom: '2rem',
-        background: 'var(--gold-gradient)',
-        width: '64px',
-        height: '64px',
-        borderRadius: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#000',
-        boxShadow: '0 10px 20px rgba(255,215,0,0.2)'
-      }}>
-        {icon}
-      </div>
-      <h3 style={{ fontSize: '1.6rem', marginBottom: '1.2rem', fontFamily: 'var(--font-playfair)', fontWeight: 800 }}>{title}</h3>
-      <p style={{ color: '#777', lineHeight: 1.7, fontSize: '1rem' }}>{description}</p>
-    </motion.div>
   );
 }

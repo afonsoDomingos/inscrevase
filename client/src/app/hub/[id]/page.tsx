@@ -14,7 +14,6 @@ import {
     Instagram,
     Linkedin,
     Loader2,
-    QrCode,
     Navigation,
     Info,
     Award
@@ -27,6 +26,7 @@ interface SubmissionData {
     _id: string;
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'unpaid' | 'paid' | 'pending';
+    data: Record<string, string | number | boolean>;
     submittedAt: string;
     form: {
         _id: string;
@@ -221,10 +221,13 @@ function HubContent() {
                             style={{ background: '#fff', borderRadius: '30px', padding: '30px', boxShadow: '0 20px 60px rgba(0,0,0,0.06)', border: '1px solid #eee', textAlign: 'center' }}
                         >
                             <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center' }}>
-                                <img
-                                    src={`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${window.location.protocol}//${window.location.host}/hub/${id}`}
+                                <Image
+                                    src={`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${typeof window !== 'undefined' ? window.location.origin : ''}/hub/${id}`}
                                     alt="QR Code Acesso"
+                                    width={200}
+                                    height={200}
                                     style={{ borderRadius: '15px', border: '1px solid #eee' }}
+                                    unoptimized
                                 />
                             </div>
 
@@ -259,7 +262,7 @@ function HubContent() {
                                 {isApproved && (
                                     <button
                                         onClick={() => {
-                                            const dataMap = (submission as any).data || {};
+                                            const dataMap = (submission as SubmissionData).data || {};
                                             const nameKey = Object.keys(dataMap).find(k =>
                                                 k.toLowerCase().includes('nome') ||
                                                 k.toLowerCase().includes('name')

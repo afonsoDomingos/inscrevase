@@ -9,15 +9,7 @@ import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
 
 export default function PlansPage() {
-    const { t } = useTranslate();
     const { currency, setCurrency, formatPrice } = useCurrency();
-
-    const fadeIn = {
-        initial: { opacity: 0, y: 30 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true },
-        transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
-    };
 
     return (
         <main style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
