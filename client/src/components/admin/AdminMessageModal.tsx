@@ -34,7 +34,7 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
             setTitle('');
             setContent('');
             onClose();
-        } catch (error) {
+        } catch (_error) {
             toast.error('Erro ao enviar mensagem');
         } finally {
             setLoading(false);

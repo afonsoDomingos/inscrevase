@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
-import { Chrome, Linkedin, Mail, MessageSquare, Send } from 'lucide-react';
+import { Chrome, Linkedin, Mail, Send } from 'lucide-react';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance';

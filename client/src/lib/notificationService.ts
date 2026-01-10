@@ -52,7 +52,7 @@ export const notificationService = {
         content: string;
         type?: string;
         actionUrl?: string;
-    }): Promise<any> => {
+    }): Promise<unknown> => {
         const response = await fetch(`${API_URL}/notifications/send`, {
             method: 'POST',
             headers: getHeaders(),

@@ -519,8 +519,8 @@ export default function MentorDashboard() {
                                 transition: 'all 0.3s',
                                 boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
                             }}
-                            onMouseOver={(e: any) => e.currentTarget.style.background = '#fff5f5'}
-                            onMouseOut={(e: any) => e.currentTarget.style.background = '#fff'}
+                            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
+                            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
                         >
                             <LogOut size={20} />
                         </button>

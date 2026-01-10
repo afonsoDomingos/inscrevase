@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { notificationService, NotificationModel } from '@/lib/notificationService';
-import { Bell, Check, ExternalLink, Mail, Clock, Trash2, MessageSquare } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Bell, Check, ExternalLink, Mail, Clock, MessageSquare } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -22,8 +22,8 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
         try {
             const data = await notificationService.getMyNotifications();
             setNotifications(data);
-        } catch (error) {
-            console.error('Error loading notifications:', error);
+        } catch (_error) {
+            console.error('Error loading notifications:', _error);
         } finally {
             setLoading(false);
         }
@@ -33,7 +33,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
         try {
             await notificationService.markAsRead(id);
             setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
-        } catch (error) {
+        } catch (_error) {
             toast.error('Erro ao marcar como lida');
         }
     };
