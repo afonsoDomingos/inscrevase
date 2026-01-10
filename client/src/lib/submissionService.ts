@@ -57,5 +57,14 @@ export const submissionService = {
         });
         if (!response.ok) throw new Error('Falha na análise da IA');
         return response.json();
+    },
+
+    async deleteSubmission(id: string): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao excluir inscrição');
     }
 };

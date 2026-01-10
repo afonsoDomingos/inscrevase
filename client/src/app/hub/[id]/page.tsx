@@ -62,6 +62,7 @@ function HubContent() {
     const router = useRouter();
     const [submission, setSubmission] = useState<SubmissionData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
 
     useEffect(() => {
         const fetchSubmission = async () => {
@@ -81,6 +82,14 @@ function HubContent() {
             }
         };
         fetchSubmission();
+    }, [id]);
+
+    useEffect(() => {
+        // Generate QR code URL on client side only
+        if (typeof window !== 'undefined' && id) {
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+            setQrCodeUrl(`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${baseUrl}/hub/${id}`);
+        }
     }, [id]);
 
     if (loading) return (
@@ -145,7 +154,13 @@ function HubContent() {
                             style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.03)', border: '1px solid #eee' }}
                         >
                             <div style={{ position: 'relative', width: '100%', height: '300px' }}>
-                                <Image src={form.coverImage || '/event-placeholder.jpg'} alt={form.title} fill style={{ objectFit: 'cover' }} />
+                                <Image
+                                    src={form.coverImage || 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}
+                                    alt={form.title}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    unoptimized={!form.coverImage}
+                                />
                                 <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', padding: '40px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', color: '#fff' }}>
                                     <div style={{ display: 'flex', gap: '30px' }}>
                                         <div>
@@ -196,7 +211,13 @@ function HubContent() {
                         {/* Mentor Section */}
                         <div style={{ background: '#171A20', padding: '40px', borderRadius: '24px', color: '#fff', display: 'flex', gap: '30px', alignItems: 'center' }}>
                             <div style={{ position: 'relative', width: '100px', height: '100px', flexShrink: 0 }}>
-                                <Image src={form.creator.profilePhoto || '/default-avatar.png'} alt={form.creator.name} fill style={{ borderRadius: '20px', objectFit: 'cover' }} />
+                                <Image
+                                    src={form.creator.profilePhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(form.creator.name) + '&size=200&background=171A20&color=FFD700&bold=true'}
+                                    alt={form.creator.name}
+                                    fill
+                                    style={{ borderRadius: '20px', objectFit: 'cover' }}
+                                    unoptimized={!form.creator.profilePhoto}
+                                />
                                 <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', background: primaryColor, padding: '5px', borderRadius: '50%', border: '3px solid #171A20' }}>
                                     <ShieldCheck size={14} color="#fff" />
                                 </div>
@@ -221,14 +242,20 @@ function HubContent() {
                             style={{ background: '#fff', borderRadius: '30px', padding: '30px', boxShadow: '0 20px 60px rgba(0,0,0,0.06)', border: '1px solid #eee', textAlign: 'center' }}
                         >
                             <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center' }}>
-                                <Image
-                                    src={`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${typeof window !== 'undefined' ? window.location.origin : ''}/hub/${id}`}
-                                    alt="QR Code Acesso"
-                                    width={200}
-                                    height={200}
-                                    style={{ borderRadius: '15px', border: '1px solid #eee' }}
-                                    unoptimized
-                                />
+                                {qrCodeUrl ? (
+                                    <Image
+                                        src={qrCodeUrl}
+                                        alt="QR Code Acesso"
+                                        width={200}
+                                        height={200}
+                                        style={{ borderRadius: '15px', border: '1px solid #eee' }}
+                                        unoptimized
+                                    />
+                                ) : (
+                                    <div style={{ width: '200px', height: '200px', background: '#f4f4f4', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
+                                        Carregando QR...
+                                    </div>
+                                )}
                             </div>
 
                             <div style={{ borderTop: '1px dashed #eee', paddingTop: '25px', marginBottom: '25px' }}>

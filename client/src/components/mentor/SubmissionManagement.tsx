@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
-import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy, ExternalLink, Sparkles, AlertTriangle, ShieldCheck, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, FileText, Download, Calendar, Search, Filter, DollarSign, MessageCircle, Copy, ExternalLink, Sparkles, AlertTriangle, ShieldCheck, Loader2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
@@ -66,6 +66,21 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             toast.error('Erro ao analisar recibo');
         } finally {
             setAnalyzingId(null);
+        }
+    };
+
+
+
+    const handleDelete = async (id: string) => {
+        if (confirm('Tem certeza que deseja excluir esta inscrição? Esta ação é irreversível.')) {
+            try {
+                await submissionService.deleteSubmission(id);
+                setSubmissions(prev => prev.filter(s => s._id !== id));
+                toast.success('Inscrição excluída com sucesso');
+                if (selectedSubmission?._id === id) setSelectedSubmission(null);
+            } catch (error) {
+                toast.error('Erro ao excluir inscrição');
+            }
         }
     };
 
@@ -317,6 +332,13 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                     <Award size={16} />
                                                 </button>
                                             )}
+                                            <button
+                                                onClick={() => handleDelete(submission._id)}
+                                                title="Excluir Inscrição"
+                                                style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #ffcccb', background: '#fff', color: '#e53e3e', cursor: 'pointer' }}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

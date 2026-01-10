@@ -206,6 +206,23 @@ const analyzeReceipt = async (req, res) => {
     }
 };
 
+const deleteSubmission = async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id).populate('form');
+        if (!submission) return res.status(404).json({ message: 'Submission not found' });
+
+        // Check ownership
+        if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        await Submission.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Submission deleted' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 module.exports = {
     submitForm,
     getFormSubmissions,
@@ -213,5 +230,6 @@ module.exports = {
     getAllSubmissionsAdmin,
     getMySubmissions,
     getSubmissionPublic,
-    analyzeReceipt
+    analyzeReceipt,
+    deleteSubmission
 };
