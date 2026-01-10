@@ -10,7 +10,7 @@ import SupportTicketList from '@/components/admin/SupportTicketList';
 import AdminFinance from '@/components/admin/AdminFinance';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, ArrowRight, Wallet, Settings } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -37,6 +37,12 @@ const ADMIN_STEPS: Step[] = [
         targetId: 'admin-global-msg',
         title: 'Comunicação em Massa',
         description: 'Envie comunicados importantes para todos os usuários ou grupos específicos diretamente por aqui.',
+        position: 'bottom'
+    },
+    {
+        targetId: 'admin-view-visitor',
+        title: 'Ver site como Visitante',
+        description: 'Clique aqui para abrir uma nova aba e visualizar o site público como um visitante ou mentor, sem sair do painel.',
         position: 'bottom'
     },
     {
@@ -337,17 +343,20 @@ export default function AdminDashboard() {
                         </button>
                         <Link
                             href="/"
+                            target="_blank"
+                            id="admin-view-visitor"
+                            title="Visualize a plataforma como um usuário não logado ou mentor"
                             style={{
-                                padding: '0.9rem 2rem',
+                                padding: '0.9rem 1.5rem',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.8rem',
                                 textTransform: 'uppercase',
-                                fontSize: '0.85rem',
+                                fontSize: '0.8rem',
                                 letterSpacing: '1px',
                                 borderRadius: '50px',
-                                background: '#fff',
-                                border: '2px solid #FFD700',
+                                background: 'transparent',
+                                border: '1px solid #FFD700',
                                 color: '#000',
                                 fontWeight: 700,
                                 cursor: 'pointer',
@@ -356,14 +365,16 @@ export default function AdminDashboard() {
                             }}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.background = '#FFD700';
+                                e.currentTarget.style.color = '#000';
                                 e.currentTarget.style.transform = 'translateY(-2px)';
                             }}
                             onMouseOut={(e) => {
-                                e.currentTarget.style.background = '#fff';
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.color = '#000';
                                 e.currentTarget.style.transform = 'translateY(0)';
                             }}
                         >
-                            <ArrowRight size={18} /> {t('nav.home')}
+                            <Eye size={18} /> Ver como Visitante
                         </Link>
                         <button
                             onClick={() => authService.logout()}
