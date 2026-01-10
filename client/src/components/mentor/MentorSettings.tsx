@@ -100,15 +100,15 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
     };
 
     return (
-        <div className="luxury-card" style={{ background: '#fff', border: 'none', maxWidth: '800px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>{t('dashboard.settings.title')}</h2>
+        <div className="luxury-card" style={{ background: '#fff', border: 'none', maxWidth: '800px', margin: '0 auto', padding: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1.5rem' }}>{t('dashboard.settings.title')}</h2>
 
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '2rem' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.5rem' }}>
 
                 {/* Profile Photo */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ position: 'relative', width: '120px', height: '120px' }}>
-                        <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', border: '4px solid #FFD700', position: 'relative', background: '#f0f0f0' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ position: 'relative', width: '80px', height: '80px' }}>
+                        <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', border: '3px solid #FFD700', position: 'relative', background: '#f0f0f0' }}>
                             {formData.profilePhoto ? (
                                 <Image src={formData.profilePhoto} alt="Profile" fill style={{ objectFit: 'cover' }} />
                             ) : (
@@ -137,7 +137,7 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 </div>
 
                 {/* Personal Info */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="input-group">
                         <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.profile.fullName')}</label>
                         <div style={{ position: 'relative' }}>

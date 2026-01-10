@@ -767,6 +767,10 @@ export default function MentorDashboard() {
                     onClose={() => setIsProfileModalOpen(false)}
                     user={user}
                     onSuccess={loadDashboard}
+                    onUpgradeClick={() => {
+                        setIsProfileModalOpen(false);
+                        setIsUpgradeModalOpen(true);
+                    }}
                 />
 
                 {themeModalData.form && (

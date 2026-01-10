@@ -14,9 +14,10 @@ interface ProfileModalProps {
     onClose: () => void;
     user: UserData;
     onSuccess: () => void;
+    onUpgradeClick?: () => void;
 }
 
-export default function ProfileModal({ isOpen, onClose, user, onSuccess }: ProfileModalProps) {
+export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgradeClick }: ProfileModalProps) {
     const { t } = useTranslate();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -236,11 +237,34 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess }: Profi
                                 />
                             </div>
                             <div className="input-group">
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <LinkIcon size={14} /> {t('events.profile.accountStatus')}
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <LinkIcon size={12} /> {t('events.profile.accountStatus')}
                                 </label>
-                                <div style={{ padding: '0.8rem', background: '#f8f9fa', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, color: user.plan !== 'free' ? '#38a169' : '#000' }}>
+                                <div
+                                    onClick={onUpgradeClick}
+                                    style={{
+                                        padding: '0.8rem',
+                                        background: '#f8f9fa',
+                                        borderRadius: '8px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 800,
+                                        color: user.plan !== 'free' ? '#38a169' : '#000',
+                                        cursor: onUpgradeClick ? 'pointer' : 'default',
+                                        border: onUpgradeClick ? '1px solid #FFD700' : '1px solid transparent',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseOver={(e) => onUpgradeClick && (e.currentTarget.style.transform = 'scale(1.02)')}
+                                    onMouseOut={(e) => onUpgradeClick && (e.currentTarget.style.transform = 'scale(1)')}
+                                >
                                     {(user.plan || 'free').toUpperCase()} PLAN
+                                    {onUpgradeClick && (user.plan === 'free' || !user.plan) && (
+                                        <span style={{ fontSize: '0.7rem', color: '#B8860B', textDecoration: 'underline' }}>
+                                            FAZER UPGRADE
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
