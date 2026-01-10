@@ -2,16 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles } from 'lucide-react';
+import { X, Send, Sparkles, Paperclip, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useTranslate } from '@/context/LanguageContext';
 import { aiService } from '@/lib/aiService';
+import { toast } from 'sonner';
 
 interface Message {
     id: string;
     text: string;
     sender: 'user' | 'aura';
     timestamp: Date;
+    attachment?: string;
 }
 
 
@@ -21,7 +23,10 @@ export default function AuraConcierge() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTyping, setIsTyping] = useState(false);
+    const [attachment, setAttachment] = useState<string | null>(null);
+    const [uploadingFile, setUploadingFile] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -52,15 +57,22 @@ export default function AuraConcierge() {
             id: Date.now().toString(),
             text: message,
             sender: 'user',
-            timestamp: new Date()
+            timestamp: new Date(),
+            attachment: attachment || undefined
         };
 
         setMessages(prev => [...prev, userMsg]);
         setMessage('');
+        setAttachment(null);
         setIsTyping(true);
 
         try {
-            const data = await aiService.chat(userMsg.text, locale);
+            // If there's an attachment, we might want to tell Aura about it in the prompt
+            const contextualMessage = attachment
+                ? `${message} (O usuário anexou um arquivo: ${attachment})`
+                : message;
+
+            const data = await aiService.chat(contextualMessage, locale);
 
             const auraMsg: Message = {
                 id: (Date.now() + 1).toString(),
@@ -70,8 +82,9 @@ export default function AuraConcierge() {
             };
 
             setMessages(prev => [...prev, auraMsg]);
-        } catch (error: any) {
-            console.error('Aura Error:', error);
+        } catch (err: unknown) {
+            console.error('Aura Error:', err);
+            const error = err as Error;
             const errorMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 text: error.message || t('aura.error'),
@@ -81,6 +94,38 @@ export default function AuraConcierge() {
             setMessages(prev => [...prev, errorMsg]);
         } finally {
             setIsTyping(false);
+        }
+    };
+
+    const handleFileUpload = async (file: File) => {
+        if (!file) return;
+
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+            toast.error('Arquivo muito grande. Máximo: 10MB');
+            return;
+        }
+
+        setUploadingFile(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Erro no upload');
+
+            const data = await response.json();
+            setAttachment(data.url);
+            toast.success('Arquivo anexado com sucesso!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao fazer upload do arquivo');
+        } finally {
+            setUploadingFile(false);
         }
     };
 
@@ -176,7 +221,26 @@ export default function AuraConcierge() {
                                                 </ReactMarkdown>
                                             </div>
                                         ) : (
-                                            msg.text
+                                            <div>
+                                                {msg.text}
+                                                {msg.attachment && (
+                                                    <div style={{ marginTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem' }}>
+                                                        {msg.attachment.endsWith('.pdf') ? (
+                                                            <a href={msg.attachment} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFD700', textDecoration: 'none', fontSize: '0.8rem' }}>
+                                                                <FileText size={16} />
+                                                                Ver Documento PDF
+                                                            </a>
+                                                        ) : (
+                                                            <img
+                                                                src={msg.attachment}
+                                                                alt="Anexo"
+                                                                style={{ maxWidth: '100%', borderRadius: '8px', cursor: 'pointer' }}
+                                                                onClick={() => window.open(msg.attachment, '_blank')}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                     <div style={{ fontSize: '0.65rem', color: '#999', marginTop: '4px', textAlign: msg.sender === 'user' ? 'right' : 'left' }}>
@@ -194,41 +258,92 @@ export default function AuraConcierge() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Input */}
-                        <form onSubmit={handleSend} style={{ padding: '1.5rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', gap: '10px' }}>
-                            <input
-                                type="text"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder={t('aura.placeholder')}
-                                style={{
-                                    flex: 1,
-                                    padding: '0.8rem 1.2rem',
-                                    borderRadius: '12px',
-                                    border: '1px solid #eee',
-                                    outline: 'none',
-                                    fontSize: '0.9rem',
-                                    background: '#f8f9fa'
-                                }}
-                            />
-                            <button
-                                type="submit"
-                                style={{
-                                    background: '#000',
-                                    color: '#FFD700',
-                                    border: 'none',
-                                    width: '45px',
-                                    height: '45px',
-                                    borderRadius: '12px',
+                        {/* Input Area */}
+                        <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(0,0,0,0.05)', background: '#fff' }}>
+                            {attachment && (
+                                <div style={{
+                                    marginBottom: '0.75rem',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                <Send size={20} />
-                            </button>
-                        </form>
+                                    gap: '0.5rem',
+                                    padding: '0.5rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #FFD700',
+                                    background: 'rgba(255,215,0,0.05)',
+                                    fontSize: '0.75rem'
+                                }}>
+                                    {attachment.endsWith('.pdf') ? <FileText size={14} color="#ef4444" /> : <ImageIcon size={14} color="#FFD700" />}
+                                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {attachment.split('/').pop()}
+                                    </span>
+                                    <button onClick={() => setAttachment(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff4d4d' }}>
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSend} style={{ display: 'flex', gap: '8px' }}>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*,.pdf"
+                                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                                    style={{ display: 'none' }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={uploadingFile}
+                                    style={{
+                                        background: '#f8f9fa',
+                                        color: '#666',
+                                        border: '1px solid #eee',
+                                        width: '45px',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    {uploadingFile ? <Loader2 className="animate-spin" size={20} /> : <Paperclip size={20} />}
+                                </button>
+                                <input
+                                    type="text"
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder={t('aura.placeholder')}
+                                    style={{
+                                        flex: 1,
+                                        padding: '0.8rem 1.2rem',
+                                        borderRadius: '12px',
+                                        border: '1px solid #eee',
+                                        outline: 'none',
+                                        fontSize: '0.9rem',
+                                        background: '#f8f9fa'
+                                    }}
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!message.trim() && !attachment}
+                                    style={{
+                                        background: '#000',
+                                        color: '#FFD700',
+                                        border: 'none',
+                                        width: '45px',
+                                        height: '45px',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        opacity: (!message.trim() && !attachment) ? 0.5 : 1
+                                    }}
+                                >
+                                    <Send size={20} />
+                                </button>
+                            </form>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

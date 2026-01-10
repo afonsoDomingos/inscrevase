@@ -33,8 +33,9 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
             const data = await aiService.chat(prompt, locale);
             setContent(data.reply);
             toast.success(t('ai.toastSuccess'));
-        } catch (err: any) {
-            toast.error(err.message || t('ai.toastError'));
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message || t('ai.toastError'));
         } finally {
             setAiLoading(false);
         }
