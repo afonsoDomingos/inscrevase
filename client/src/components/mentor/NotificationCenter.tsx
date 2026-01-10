@@ -33,7 +33,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
         try {
             await notificationService.markAsRead(id);
             setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
-        } catch (_error) {
+        } catch {
             toast.error('Erro ao marcar como lida');
         }
     };
