@@ -154,13 +154,13 @@ export default function AdminDashboard() {
                 zIndex: 1000,
                 boxShadow: '4px 0 20px rgba(0,0,0,0.1)'
             }}>
-                <div style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
+                <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
                         Inscreva<span className="gold-text">.se</span>
                     </h2>
                 </div>
 
-                <nav style={{ padding: '2rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {menuItems.map((item) => (
                         <button
                             key={item.id}
@@ -169,7 +169,7 @@ export default function AdminDashboard() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '12px',
-                                padding: '1rem',
+                                padding: '0.75rem 1rem',
                                 width: '100%',
                                 borderRadius: '12px',
                                 border: 'none',
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
                     Tour Guiado
                 </button>
 
-                <div style={{ padding: '2rem' }}>
+                <div style={{ padding: '1.5rem' }}>
                     <button
                         onClick={() => setIsProfileOpen(true)}
                         style={{

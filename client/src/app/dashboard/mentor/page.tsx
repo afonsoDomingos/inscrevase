@@ -176,7 +176,7 @@ export default function MentorDashboard() {
                 zIndex: 1000,
                 boxShadow: '4px 0 20px rgba(0,0,0,0.1)'
             }}>
-                <div style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
+                <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
                         Inscreva<span className="gold-text">.se</span>
                     </h2>
@@ -266,13 +266,13 @@ export default function MentorDashboard() {
                     </div>
                 </nav>
 
-                <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <button
                         id="mentor-support-btn"
                         onClick={() => setIsSupportOpen(true)}
                         style={{
                             width: '100%',
-                            padding: '1rem',
+                            padding: '0.8rem',
                             background: '#2a2a2a',
                             border: '1px solid #FFD700',
                             borderRadius: '12px',
@@ -317,7 +317,7 @@ export default function MentorDashboard() {
                         onClick={() => authService.logout()}
                         style={{
                             width: '100%',
-                            padding: '1rem',
+                            padding: '0.8rem',
                             background: '#2a2a2a',
                             border: '1px solid #333',
                             borderRadius: '12px',
