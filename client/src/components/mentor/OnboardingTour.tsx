@@ -71,9 +71,9 @@ export default function OnboardingTour() {
         if (!isVisible) return;
 
         const updatePosition = () => {
+            setTargetRect(null); // Reset rect
             const step = steps[currentStep];
             if (step.position === 'center') {
-                setTargetRect(null); // Center modal doesn't need rect
                 return;
             }
 
@@ -184,12 +184,11 @@ export default function OnboardingTour() {
                         style={{
                             position: 'fixed',
                             inset: 0,
-                            zIndex: 9998,
+                            zIndex: 9999,
                             background: 'rgba(0,0,0,0.6)',
-                            // If we had a path clipper for spotlight, we'd use it here. 
-                            // For simplicity, we use just a darkening overlay, 
-                            // but we could use `mix-blend-mode` or SVG masks for a true hole punch.
+                            cursor: 'pointer' // Indicate clickable
                         }}
+                        onClick={handleSkip} // Allow closing by clicking background
                     >
                         {/* Optional: Highlight Glow specific to the target if not center */}
                         {!isCenter && targetRect && (
@@ -219,7 +218,7 @@ export default function OnboardingTour() {
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.3 }}
                         style={{
-                            zIndex: 9999,
+                            zIndex: 10000,
                             background: '#fff',
                             borderRadius: '24px',
                             padding: '24px',
