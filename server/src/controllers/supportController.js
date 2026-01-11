@@ -149,9 +149,21 @@ exports.markAsRead = async (req, res) => {
 };
 
 
+
 // Public contact form (no authentication required)
 const SupportMessage = require('../models/SupportMessage');
-const nodemailer = require('nodemailer');
+let nodemailer;
+try {
+    nodemailer = require('nodemailer');
+    // Handle both CommonJS and ES module exports
+    if (nodemailer.default) {
+        nodemailer = nodemailer.default;
+    }
+    console.log('[Email] Nodemailer loaded successfully');
+} catch (error) {
+    console.error('[Email] Failed to load nodemailer:', error.message);
+}
+
 
 exports.createPublicMessage = async (req, res) => {
     try {
@@ -177,11 +189,23 @@ exports.createPublicMessage = async (req, res) => {
         const emailPassword = process.env.EMAIL_PASSWORD;
 
         if (!emailUser || !emailPassword) {
-            console.warn('Email credentials not configured. Message saved but email not sent.');
+            console.warn('[Email] Email credentials not configured. Message saved but email not sent.');
             return res.status(201).json({
                 message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
                 id: supportMessage._id,
                 emailSent: false
+            });
+        }
+
+        // Verificar se nodemailer está disponível
+        if (!nodemailer || typeof nodemailer.createTransporter !== 'function') {
+            console.error('[Email] Nodemailer not properly loaded. Type:', typeof nodemailer);
+            console.error('[Email] createTransporter type:', typeof nodemailer?.createTransporter);
+            return res.status(201).json({
+                message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
+                id: supportMessage._id,
+                emailSent: false,
+                error: 'Email service temporarily unavailable'
             });
         }
 
