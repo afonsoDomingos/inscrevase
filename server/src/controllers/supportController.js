@@ -239,11 +239,20 @@ exports.createPublicMessage = async (req, res) => {
                 auth: {
                     user: emailUser,
                     pass: emailPassword
-                }
+                },
+                connectionTimeout: 5000, // 5 seconds
+                greetingTimeout: 5000,
+                socketTimeout: 5000
             });
 
-            // Verificar conexão antes de enviar
-            await transporter.verify();
+            // Verificar conexão antes de enviar (com timeout)
+            const verifyPromise = transporter.verify();
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('SMTP connection timeout')), 5000)
+            );
+
+            await Promise.race([verifyPromise, timeoutPromise]);
+            console.log('[Email] SMTP connection verified');
 
             // Enviar email de notificação para o admin
             await transporter.sendMail({
@@ -296,16 +305,23 @@ exports.createPublicMessage = async (req, res) => {
                 `
             });
 
-            console.log('Emails sent successfully for message:', supportMessage._id);
+            console.log('[Email] Emails sent successfully for message:', supportMessage._id);
 
         } catch (emailError) {
-            console.error('Erro ao enviar email:', emailError.message);
+            console.error('[Email] Erro ao enviar email:', emailError.message);
+
+            // Se for timeout de conexão, é provável que o Render esteja bloqueando SMTP
+            if (emailError.message.includes('timeout') || emailError.message.includes('ETIMEDOUT')) {
+                console.warn('[Email] SMTP ports may be blocked by hosting provider (Render)');
+                console.warn('[Email] Consider using SendGrid, Mailgun, or AWS SES instead');
+            }
+
             // Não falha a requisição se o email não for enviado
             return res.status(201).json({
                 message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
                 id: supportMessage._id,
                 emailSent: false,
-                emailError: emailError.message
+                note: 'Email temporariamente indisponível. Sua mensagem foi salva.'
             });
         }
 
