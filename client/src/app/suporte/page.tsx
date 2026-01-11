@@ -30,15 +30,32 @@ export default function SuportePage() {
         e.preventDefault();
         setSending(true);
 
-        // Simular envio (você pode integrar com um serviço de email real)
-        setTimeout(() => {
-            setSending(false);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/contact`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao enviar mensagem');
+            }
+
             setSent(true);
-            toast.success('Mensagem enviada com sucesso!');
+            toast.success('Mensagem enviada com sucesso! Verifique seu email.');
             setFormData({ name: '', email: '', subject: '', message: '' });
 
             setTimeout(() => setSent(false), 3000);
-        }, 2000);
+        } catch (error) {
+            const err = error as Error;
+            toast.error(err.message || 'Erro ao enviar mensagem. Tente novamente.');
+        } finally {
+            setSending(false);
+        }
     };
 
     const contactMethods = [

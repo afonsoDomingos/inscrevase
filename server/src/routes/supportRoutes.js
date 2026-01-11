@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
-const { createTicket, getMyTickets, getAllTickets, addMessage, getUnreadCount, markAsRead } = require('../controllers/supportController');
+const { createTicket, getMyTickets, getAllTickets, addMessage, getUnreadCount, markAsRead, createPublicMessage } = require('../controllers/supportController');
+
+// Public route (no authentication)
+router.post('/contact', createPublicMessage);
 
 router.post('/', authMiddleware, createTicket);
 router.get('/my', authMiddleware, getMyTickets);

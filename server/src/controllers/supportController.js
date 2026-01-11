@@ -147,3 +147,105 @@ exports.markAsRead = async (req, res) => {
         res.status(500).json({ message: 'Erro ao marcar como lido', error: error.message });
     }
 };
+
+// Public contact form (no authentication required)
+const SupportMessage = require('../models/SupportMessage');
+const nodemailer = require('nodemailer');
+
+// Configurar transporter de email
+const transporter = nodemailer.createTransporter({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER || 'karinganastudio23@gmail.com',
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
+
+exports.createPublicMessage = async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+
+        if (!name || !email || !subject || !message) {
+            return res.status(400).json({
+                message: 'Todos os campos são obrigatórios'
+            });
+        }
+
+        const supportMessage = new SupportMessage({
+            name,
+            email,
+            subject,
+            message
+        });
+
+        await supportMessage.save();
+
+        // Enviar email de notificação para o admin
+        try {
+            await transporter.sendMail({
+                from: `"Inscreva-se Suporte" <${process.env.EMAIL_USER || 'karinganastudio23@gmail.com'}>`,
+                to: 'karinganastudio23@gmail.com',
+                subject: `Nova Mensagem de Suporte: ${subject}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #171A20;">Nova Mensagem de Suporte</h2>
+                        <div style="background: #f4f4f4; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <p><strong>Nome:</strong> ${name}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Assunto:</strong> ${subject}</p>
+                        </div>
+                        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                            <h3>Mensagem:</h3>
+                            <p style="line-height: 1.6;">${message}</p>
+                        </div>
+                        <p style="color: #666; font-size: 12px; margin-top: 20px;">
+                            ID: ${supportMessage._id}<br>
+                            Data: ${new Date().toLocaleString('pt-BR')}
+                        </p>
+                    </div>
+                `
+            });
+
+            // Email de confirmação para o usuário
+            await transporter.sendMail({
+                from: `"Inscreva-se Suporte" <${process.env.EMAIL_USER || 'karinganastudio23@gmail.com'}>`,
+                to: email,
+                subject: 'Recebemos sua mensagem - Inscreva-se',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #171A20;">Olá, ${name}!</h2>
+                        <p style="font-size: 16px; line-height: 1.6;">
+                            Recebemos sua mensagem e entraremos em contato em breve.
+                        </p>
+                        <div style="background: #f4f4f4; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <p><strong>Assunto:</strong> ${subject}</p>
+                            <p><strong>Sua mensagem:</strong></p>
+                            <p style="color: #666;">${message}</p>
+                        </div>
+                        <p style="color: #666;">
+                            Nossa equipe geralmente responde em até 24 horas durante dias úteis.
+                        </p>
+                        <p style="color: #666; font-size: 12px; margin-top: 30px;">
+                            Protocolo: #${supportMessage._id.toString().slice(-8).toUpperCase()}
+                        </p>
+                    </div>
+                `
+            });
+        } catch (emailError) {
+            console.error('Erro ao enviar email:', emailError);
+        }
+
+        res.status(201).json({
+            message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.',
+            id: supportMessage._id
+        });
+
+    } catch (error) {
+        console.error('Erro ao criar mensagem:', error);
+        res.status(500).json({
+            message: 'Erro ao enviar mensagem. Tente novamente.',
+            error: error.message
+        });
+    }
+};
+
