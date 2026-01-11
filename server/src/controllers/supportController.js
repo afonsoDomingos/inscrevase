@@ -172,19 +172,35 @@ exports.createPublicMessage = async (req, res) => {
 
         await supportMessage.save();
 
-        // Configurar transporter de email (dentro da função)
-        const transporter = nodemailer.createTransporter({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER || 'karinganastudio23@gmail.com',
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
+        // Verificar se as credenciais de email estão configuradas
+        const emailUser = process.env.EMAIL_USER;
+        const emailPassword = process.env.EMAIL_PASSWORD;
 
-        // Enviar email de notificação para o admin
+        if (!emailUser || !emailPassword) {
+            console.warn('Email credentials not configured. Message saved but email not sent.');
+            return res.status(201).json({
+                message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
+                id: supportMessage._id,
+                emailSent: false
+            });
+        }
+
+        // Configurar transporter de email (dentro da função)
         try {
+            const transporter = nodemailer.createTransporter({
+                service: 'gmail',
+                auth: {
+                    user: emailUser,
+                    pass: emailPassword
+                }
+            });
+
+            // Verificar conexão antes de enviar
+            await transporter.verify();
+
+            // Enviar email de notificação para o admin
             await transporter.sendMail({
-                from: `"Inscreva-se Suporte" <${process.env.EMAIL_USER || 'karinganastudio23@gmail.com'}>`,
+                from: `"Inscreva-se Suporte" <${emailUser}>`,
                 to: 'karinganastudio23@gmail.com',
                 subject: `Nova Mensagem de Suporte: ${subject}`,
                 html: `
@@ -209,7 +225,7 @@ exports.createPublicMessage = async (req, res) => {
 
             // Email de confirmação para o usuário
             await transporter.sendMail({
-                from: `"Inscreva-se Suporte" <${process.env.EMAIL_USER || 'karinganastudio23@gmail.com'}>`,
+                from: `"Inscreva-se Suporte" <${emailUser}>`,
                 to: email,
                 subject: 'Recebemos sua mensagem - Inscreva-se',
                 html: `
@@ -232,13 +248,24 @@ exports.createPublicMessage = async (req, res) => {
                     </div>
                 `
             });
+
+            console.log('Emails sent successfully for message:', supportMessage._id);
+
         } catch (emailError) {
-            console.error('Erro ao enviar email:', emailError);
+            console.error('Erro ao enviar email:', emailError.message);
+            // Não falha a requisição se o email não for enviado
+            return res.status(201).json({
+                message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
+                id: supportMessage._id,
+                emailSent: false,
+                emailError: emailError.message
+            });
         }
 
         res.status(201).json({
-            message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.',
-            id: supportMessage._id
+            message: 'Mensagem enviada com sucesso! Verifique seu email.',
+            id: supportMessage._id,
+            emailSent: true
         });
 
     } catch (error) {
