@@ -148,18 +148,10 @@ exports.markAsRead = async (req, res) => {
     }
 };
 
+
 // Public contact form (no authentication required)
 const SupportMessage = require('../models/SupportMessage');
 const nodemailer = require('nodemailer');
-
-// Configurar transporter de email
-const transporter = nodemailer.createTransporter({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER || 'karinganastudio23@gmail.com',
-        pass: process.env.EMAIL_PASSWORD
-    }
-});
 
 exports.createPublicMessage = async (req, res) => {
     try {
@@ -179,6 +171,15 @@ exports.createPublicMessage = async (req, res) => {
         });
 
         await supportMessage.save();
+
+        // Configurar transporter de email (dentro da função)
+        const transporter = nodemailer.createTransporter({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER || 'karinganastudio23@gmail.com',
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
 
         // Enviar email de notificação para o admin
         try {
@@ -248,4 +249,5 @@ exports.createPublicMessage = async (req, res) => {
         });
     }
 };
+
 
