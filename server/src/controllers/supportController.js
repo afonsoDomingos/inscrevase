@@ -152,39 +152,7 @@ exports.markAsRead = async (req, res) => {
 
 // Public contact form (no authentication required)
 const SupportMessage = require('../models/SupportMessage');
-
-// Try to load nodemailer with multiple fallbacks
-let nodemailer;
-try {
-    const nodemailerModule = require('nodemailer');
-    console.log('[Email] Nodemailer module type:', typeof nodemailerModule);
-    console.log('[Email] Nodemailer keys:', Object.keys(nodemailerModule || {}).join(', '));
-
-    // Try different ways to get createTransporter
-    if (typeof nodemailerModule === 'function') {
-        // If nodemailer itself is a function
-        nodemailer = nodemailerModule;
-    } else if (nodemailerModule && nodemailerModule.default) {
-        // ES module with default export
-        nodemailer = nodemailerModule.default;
-        console.log('[Email] Using default export');
-    } else if (nodemailerModule && typeof nodemailerModule.createTransport === 'function') {
-        // Note: it's createTransport, not createTransporter!
-        nodemailer = nodemailerModule;
-        console.log('[Email] Found createTransport (not createTransporter)');
-    } else {
-        // Use as-is
-        nodemailer = nodemailerModule;
-    }
-
-    console.log('[Email] Final nodemailer type:', typeof nodemailer);
-    console.log('[Email] Has createTransport?', typeof nodemailer?.createTransport);
-    console.log('[Email] Has createTransporter?', typeof nodemailer?.createTransporter);
-} catch (error) {
-    console.error('[Email] Failed to load nodemailer:', error.message);
-}
-
-
+const sgMail = require('@sendgrid/mail');
 
 exports.createPublicMessage = async (req, res) => {
     try {
@@ -204,13 +172,13 @@ exports.createPublicMessage = async (req, res) => {
         });
 
         await supportMessage.save();
+        console.log('[Support] Message saved:', supportMessage._id);
 
-        // Verificar se as credenciais de email estão configuradas
-        const emailUser = process.env.EMAIL_USER;
-        const emailPassword = process.env.EMAIL_PASSWORD;
+        // Verificar se SendGrid está configurado
+        const sendgridKey = process.env.SENDGRID_API_KEY;
 
-        if (!emailUser || !emailPassword) {
-            console.warn('[Email] Email credentials not configured. Message saved but email not sent.');
+        if (!sendgridKey) {
+            console.warn('[Email] SendGrid API key not configured');
             return res.status(201).json({
                 message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
                 id: supportMessage._id,
@@ -218,46 +186,14 @@ exports.createPublicMessage = async (req, res) => {
             });
         }
 
-        // Verificar se nodemailer está disponível
-        const createTransportFn = nodemailer?.createTransport || nodemailer?.createTransporter;
-        if (!nodemailer || typeof createTransportFn !== 'function') {
-            console.error('[Email] Nodemailer not properly loaded. Type:', typeof nodemailer);
-            console.error('[Email] createTransport type:', typeof nodemailer?.createTransport);
-            console.error('[Email] createTransporter type:', typeof nodemailer?.createTransporter);
-            return res.status(201).json({
-                message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
-                id: supportMessage._id,
-                emailSent: false,
-                error: 'Email service temporarily unavailable'
-            });
-        }
+        // Configurar SendGrid
+        sgMail.setApiKey(sendgridKey);
 
-        // Configurar transporter de email (dentro da função)
         try {
-            const transporter = createTransportFn({
-                service: 'gmail',
-                auth: {
-                    user: emailUser,
-                    pass: emailPassword
-                },
-                connectionTimeout: 5000, // 5 seconds
-                greetingTimeout: 5000,
-                socketTimeout: 5000
-            });
-
-            // Verificar conexão antes de enviar (com timeout)
-            const verifyPromise = transporter.verify();
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('SMTP connection timeout')), 5000)
-            );
-
-            await Promise.race([verifyPromise, timeoutPromise]);
-            console.log('[Email] SMTP connection verified');
-
-            // Enviar email de notificação para o admin
-            await transporter.sendMail({
-                from: `"Inscreva-se Suporte" <${emailUser}>`,
+            // Email para o admin
+            const adminEmail = {
                 to: 'karinganastudio23@gmail.com',
+                from: 'karinganastudio23@gmail.com', // Deve ser verificado no SendGrid
                 subject: `Nova Mensagem de Suporte: ${subject}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -273,16 +209,17 @@ exports.createPublicMessage = async (req, res) => {
                         </div>
                         <p style="color: #666; font-size: 12px; margin-top: 20px;">
                             ID: ${supportMessage._id}<br>
-                            Data: ${new Date().toLocaleString('pt-BR')}
+                            Data: ${new Date().toLocaleString('pt-BR')}<br>
+                            <a href="mailto:${email}">Responder para ${email}</a>
                         </p>
                     </div>
                 `
-            });
+            };
 
             // Email de confirmação para o usuário
-            await transporter.sendMail({
-                from: `"Inscreva-se Suporte" <${emailUser}>`,
+            const userEmail = {
                 to: email,
+                from: 'karinganastudio23@gmail.com',
                 subject: 'Recebemos sua mensagem - Inscreva-se',
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -301,43 +238,46 @@ exports.createPublicMessage = async (req, res) => {
                         <p style="color: #666; font-size: 12px; margin-top: 30px;">
                             Protocolo: #${supportMessage._id.toString().slice(-8).toUpperCase()}
                         </p>
+                        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                        <p style="font-size: 12px; color: #999; text-align: center;">
+                            Inscreva-se - Plataforma de Gestão de Eventos<br>
+                            WhatsApp: +258 84 787 7405
+                        </p>
                     </div>
                 `
+            };
+
+            // Enviar ambos os emails
+            await Promise.all([
+                sgMail.send(adminEmail),
+                sgMail.send(userEmail)
+            ]);
+
+            console.log('[Email] Emails sent successfully via SendGrid for message:', supportMessage._id);
+
+            res.status(201).json({
+                message: 'Mensagem enviada com sucesso! Verifique seu email.',
+                id: supportMessage._id,
+                emailSent: true
             });
 
-            console.log('[Email] Emails sent successfully for message:', supportMessage._id);
-
         } catch (emailError) {
-            console.error('[Email] Erro ao enviar email:', emailError.message);
+            console.error('[Email] SendGrid error:', emailError.response?.body || emailError.message);
 
-            // Se for timeout de conexão, é provável que o Render esteja bloqueando SMTP
-            if (emailError.message.includes('timeout') || emailError.message.includes('ETIMEDOUT')) {
-                console.warn('[Email] SMTP ports may be blocked by hosting provider (Render)');
-                console.warn('[Email] Consider using SendGrid, Mailgun, or AWS SES instead');
-            }
-
-            // Não falha a requisição se o email não for enviado
+            // Mensagem salva, mas email falhou
             return res.status(201).json({
                 message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
                 id: supportMessage._id,
                 emailSent: false,
-                note: 'Email temporariamente indisponível. Sua mensagem foi salva.'
+                note: 'Email temporariamente indisponível'
             });
         }
 
-        res.status(201).json({
-            message: 'Mensagem enviada com sucesso! Verifique seu email.',
-            id: supportMessage._id,
-            emailSent: true
-        });
-
     } catch (error) {
-        console.error('Erro ao criar mensagem:', error);
+        console.error('[Support] Error creating message:', error);
         res.status(500).json({
             message: 'Erro ao enviar mensagem. Tente novamente.',
             error: error.message
         });
     }
 };
-
-
