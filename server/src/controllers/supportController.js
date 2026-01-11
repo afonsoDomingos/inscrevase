@@ -152,17 +152,38 @@ exports.markAsRead = async (req, res) => {
 
 // Public contact form (no authentication required)
 const SupportMessage = require('../models/SupportMessage');
+
+// Try to load nodemailer with multiple fallbacks
 let nodemailer;
 try {
-    nodemailer = require('nodemailer');
-    // Handle both CommonJS and ES module exports
-    if (nodemailer.default) {
-        nodemailer = nodemailer.default;
+    const nodemailerModule = require('nodemailer');
+    console.log('[Email] Nodemailer module type:', typeof nodemailerModule);
+    console.log('[Email] Nodemailer keys:', Object.keys(nodemailerModule || {}).join(', '));
+
+    // Try different ways to get createTransporter
+    if (typeof nodemailerModule === 'function') {
+        // If nodemailer itself is a function
+        nodemailer = nodemailerModule;
+    } else if (nodemailerModule && nodemailerModule.default) {
+        // ES module with default export
+        nodemailer = nodemailerModule.default;
+        console.log('[Email] Using default export');
+    } else if (nodemailerModule && typeof nodemailerModule.createTransport === 'function') {
+        // Note: it's createTransport, not createTransporter!
+        nodemailer = nodemailerModule;
+        console.log('[Email] Found createTransport (not createTransporter)');
+    } else {
+        // Use as-is
+        nodemailer = nodemailerModule;
     }
-    console.log('[Email] Nodemailer loaded successfully');
+
+    console.log('[Email] Final nodemailer type:', typeof nodemailer);
+    console.log('[Email] Has createTransport?', typeof nodemailer?.createTransport);
+    console.log('[Email] Has createTransporter?', typeof nodemailer?.createTransporter);
 } catch (error) {
     console.error('[Email] Failed to load nodemailer:', error.message);
 }
+
 
 
 exports.createPublicMessage = async (req, res) => {
@@ -198,8 +219,10 @@ exports.createPublicMessage = async (req, res) => {
         }
 
         // Verificar se nodemailer está disponível
-        if (!nodemailer || typeof nodemailer.createTransporter !== 'function') {
+        const createTransportFn = nodemailer?.createTransport || nodemailer?.createTransporter;
+        if (!nodemailer || typeof createTransportFn !== 'function') {
             console.error('[Email] Nodemailer not properly loaded. Type:', typeof nodemailer);
+            console.error('[Email] createTransport type:', typeof nodemailer?.createTransport);
             console.error('[Email] createTransporter type:', typeof nodemailer?.createTransporter);
             return res.status(201).json({
                 message: 'Mensagem recebida com sucesso! Entraremos em contato em breve.',
@@ -211,7 +234,7 @@ exports.createPublicMessage = async (req, res) => {
 
         // Configurar transporter de email (dentro da função)
         try {
-            const transporter = nodemailer.createTransporter({
+            const transporter = createTransportFn({
                 service: 'gmail',
                 auth: {
                     user: emailUser,
