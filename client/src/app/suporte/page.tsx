@@ -30,29 +30,48 @@ export default function SuportePage() {
         e.preventDefault();
         setSending(true);
 
+        console.log('[Support Form] Submitting to:', `${process.env.NEXT_PUBLIC_API_URL}/support/contact`);
+        console.log('[Support Form] Data:', formData);
+
         try {
+            // Add timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/contact`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                signal: controller.signal
             });
 
+            clearTimeout(timeoutId);
+
+            console.log('[Support Form] Response status:', response.status);
+
             const data = await response.json();
+            console.log('[Support Form] Response data:', data);
 
             if (!response.ok) {
                 throw new Error(data.message || 'Erro ao enviar mensagem');
             }
 
             setSent(true);
-            toast.success('Mensagem enviada com sucesso! Verifique seu email.');
+            toast.success(data.message || 'Mensagem enviada com sucesso!');
             setFormData({ name: '', email: '', subject: '', message: '' });
 
             setTimeout(() => setSent(false), 3000);
         } catch (error) {
+            console.error('[Support Form] Error:', error);
             const err = error as Error;
-            toast.error(err.message || 'Erro ao enviar mensagem. Tente novamente.');
+
+            if (err.name === 'AbortError') {
+                toast.error('Tempo esgotado. Verifique sua conexão e tente novamente.');
+            } else {
+                toast.error(err.message || 'Erro ao enviar mensagem. Tente novamente.');
+            }
         } finally {
             setSending(false);
         }
