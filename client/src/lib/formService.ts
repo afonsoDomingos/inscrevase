@@ -32,6 +32,7 @@ export interface FormModel {
     eventDate?: string;
     eventTime?: string;
     eventType?: string;
+    category?: string;
     capacity?: number;
     location?: string;
     onlineLink?: string;
@@ -231,5 +232,15 @@ export const formService = {
         } catch (err) {
             console.error("Error recording form visit:", err);
         }
+    },
+
+    async getExploreEvents(category?: string, search?: string): Promise<FormModel[]> {
+        const params = new URLSearchParams();
+        if (category && category !== 'Todos') params.append('category', category);
+        if (search) params.append('search', search);
+
+        const response = await fetch(`${API_URL}/forms/explore?${params}`);
+        if (!response.ok) throw new Error('Failed to fetch events');
+        return response.json();
     }
 };

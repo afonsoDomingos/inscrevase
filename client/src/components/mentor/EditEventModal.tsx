@@ -113,6 +113,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [eventDate, setEventDate] = useState('');
     const [eventTime, setEventTime] = useState('');
     const [eventType, setEventType] = useState('modeOnline');
+    const [category, setCategory] = useState('Outros');
     const [capacity, setCapacity] = useState('');
     const [coverImage, setCoverImage] = useState<string>('');
     const [coverImageMode, setCoverImageMode] = useState<'full' | 'banner'>('full');
@@ -174,6 +175,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setEventDate(form.eventDate ? new Date(form.eventDate).toISOString().substring(0, 10) : '');
             setEventTime(form.eventTime || '');
             setEventType(form.eventType || 'modeOnline');
+            setCategory(form.category || 'Outros');
             setCapacity(form.capacity ? form.capacity.toString() : '');
             setCoverImage(form.coverImage || '');
             setCoverImageMode((form as any).coverImageMode || 'full');
@@ -324,6 +326,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 eventDate,
                 eventTime,
                 eventType,
+                category,
                 capacity: capacity ? parseInt(capacity) : undefined,
                 location,
                 onlineLink,
@@ -508,6 +511,22 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         <option value="modeHybrid">{t('events.modeHybrid')}</option>
                                                     </select>
                                                 </div>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
+                                                <select
+                                                    value={category}
+                                                    onChange={(e) => setCategory(e.target.value)}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
+                                                >
+                                                    <option value="Outros">Outros</option>
+                                                    <option value="Negócios">Negócios</option>
+                                                    <option value="Tecnologia">Tecnologia</option>
+                                                    <option value="Arte & Música">Arte & Música</option>
+                                                    <option value="Educação">Educação</option>
+                                                    <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
+                                                </select>
                                             </div>
 
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

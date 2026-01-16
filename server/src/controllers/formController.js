@@ -5,7 +5,7 @@ const Submission = require('../models/Submission');
 
 exports.createForm = async (req, res) => {
     try {
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink } = req.body;
 
         let slug = slugify(title, { lower: true, strict: true });
 
@@ -35,6 +35,7 @@ exports.createForm = async (req, res) => {
             eventDate: eventDate === "" ? undefined : eventDate,
             eventTime,
             eventType,
+            category: category || 'Outros',
             paymentConfig: sanitizedPaymentConfig,
             capacity: capacity ? parseInt(capacity) : undefined,
             whatsappConfig,
@@ -99,7 +100,7 @@ exports.updateForm = async (req, res) => {
         }
 
         // Update fields
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl } = req.body;
 
         console.log(`--- Atualizando Formulário ${req.params.id} ---`);
         if (coverImage) console.log(`Nova Capa: ${coverImage}`);
@@ -120,6 +121,7 @@ exports.updateForm = async (req, res) => {
         if (onlineLink !== undefined) form.onlineLink = onlineLink;
         if (eventTime !== undefined) form.eventTime = eventTime;
         if (eventType !== undefined) form.eventType = eventType;
+        if (category !== undefined) form.category = category;
         if (waitingVideo !== undefined) form.waitingVideo = waitingVideo;
         if (showVideoOnStart !== undefined) form.showVideoOnStart = showVideoOnStart;
         if (videoUrl !== undefined) form.videoUrl = videoUrl;
@@ -209,5 +211,30 @@ exports.recordVisit = async (req, res) => {
     } catch (err) {
         console.error("Record form visit error:", err);
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+exports.getExploreEvents = async (req, res) => {
+    try {
+        const { category, search } = req.query;
+        let query = { active: true };
+
+        if (category && category !== 'Todos') {
+            query.category = category;
+        }
+
+        if (search) {
+            query.title = { $regex: search, $options: 'i' };
+        }
+
+        const forms = await Form.find(query)
+            .select('title slug coverImage eventDate eventType category creator location onlineLink')
+            .populate('creator', 'name businessName')
+            .sort({ createdAt: -1 });
+
+        res.json(forms);
+    } catch (err) {
+        console.error("Explore Events Error:", err);
+        res.status(500).send('Server Error');
     }
 };

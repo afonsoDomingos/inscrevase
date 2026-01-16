@@ -30,6 +30,11 @@ const FormSchema = new mongoose.Schema({
     eventDate: { type: Date },
     eventTime: { type: String }, // Ex: "14:00"
     eventType: { type: String, enum: ['modePresencial', 'modeOnline', 'modeHybrid'], default: 'modeOnline' },
+    category: {
+        type: String,
+        enum: ['Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'],
+        default: 'Outros'
+    },
     location: { type: String }, // Physical address
     onlineLink: { type: String }, // Zoom/Meet/YouTube link
     waitingVideo: { type: String }, // Link para vídeo de aquecimento/espera (Youtube/Vimeo)

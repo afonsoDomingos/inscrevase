@@ -1,8 +1,9 @@
 "use strict";
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
+import { formService, FormModel } from '@/lib/formService';
 import { useRouter } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,11 +19,14 @@ import {
     ChevronLeft,
     Bell,
     Calendar,
-    Award
+    Award,
+    Search,
+    MapPin
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 type Tab = 'tickets' | 'explore' | 'certificates' | 'profile';
+const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
 
 export default function ParticipantDashboard() {
     const { t } = useTranslate();
@@ -31,6 +35,12 @@ export default function ParticipantDashboard() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<Tab>('tickets');
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    // Explore State
+    const [exploreEvents, setExploreEvents] = useState<FormModel[]>([]);
+    const [exploreLoading, setExploreLoading] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState('Todos');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -50,6 +60,30 @@ export default function ParticipantDashboard() {
         };
         loadProfile();
     }, [router]);
+
+    const fetchExploreEvents = useCallback(async () => {
+        setExploreLoading(true);
+        try {
+            const data = await formService.getExploreEvents(selectedCategory, searchQuery);
+            setExploreEvents(data);
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao carregar eventos');
+        } finally {
+            setExploreLoading(false);
+        }
+    }, [selectedCategory, searchQuery]);
+
+    useEffect(() => {
+        if (activeTab === 'explore') {
+            fetchExploreEvents();
+        }
+    }, [activeTab, selectedCategory, fetchExploreEvents]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        fetchExploreEvents();
+    };
 
     if (loading) {
         return (
@@ -264,37 +298,113 @@ export default function ParticipantDashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                         >
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {/* Mock Event Card 1 */}
-                                <div className="luxury-card" style={{ padding: 0, overflow: 'hidden' }}>
-                                    <div style={{ height: '200px', background: 'url(https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800) center/cover' }} />
-                                    <div style={{ padding: '1.5rem' }}>
-                                        <div style={{ fontSize: '0.8rem', color: '#DAA520', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase' }}>Masterclass</div>
-                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Workshop de Liderança 2024</h3>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                                            <Calendar size={16} /> 24 Out, 2024
-                                        </div>
-                                        <Link href="/f/exemplo-evento" style={{ display: 'block', textAlign: 'center', padding: '0.8rem', background: '#1a1a1a', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>
-                                            Ver Detalhes
-                                        </Link>
+                            {/* Search and Filters */}
+                            <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px' }}>
+                                    <div style={{ position: 'relative', flex: 1 }}>
+                                        <Search size={20} color="#666" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+                                        <input
+                                            type="text"
+                                            placeholder="Buscar eventos..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '1rem 1rem 1rem 3rem',
+                                                borderRadius: '12px',
+                                                border: '1px solid #ddd',
+                                                outline: 'none',
+                                                fontSize: '1rem'
+                                            }}
+                                        />
                                     </div>
-                                </div>
+                                    <button type="submit" className="btn-primary" style={{ borderRadius: '12px', padding: '0 2rem' }}>
+                                        Buscar
+                                    </button>
+                                </form>
 
-                                {/* Mock Event Card 2 */}
-                                <div className="luxury-card" style={{ padding: 0, overflow: 'hidden' }}>
-                                    <div style={{ height: '200px', background: 'url(https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800) center/cover' }} />
-                                    <div style={{ padding: '1.5rem' }}>
-                                        <div style={{ fontSize: '0.8rem', color: '#DAA520', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase' }}>Networking</div>
-                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Gala de Empreendedores</h3>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                                            <Calendar size={16} /> 10 Nov, 2024
-                                        </div>
-                                        <Link href="/f/exemplo-evento" style={{ display: 'block', textAlign: 'center', padding: '0.8rem', background: '#1a1a1a', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>
-                                            Ver Detalhes
-                                        </Link>
-                                    </div>
+                                {/* Categories */}
+                                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px', scrollbarWidth: 'none' }}>
+                                    {CATEGORIES.map(cat => (
+                                        <button
+                                            key={cat}
+                                            onClick={() => setSelectedCategory(cat)}
+                                            style={{
+                                                padding: '8px 16px',
+                                                borderRadius: '20px',
+                                                border: selectedCategory === cat ? '1px solid #FFD700' : '1px solid #ddd',
+                                                background: selectedCategory === cat ? '#FFF8E1' : '#fff',
+                                                color: selectedCategory === cat ? '#B8860B' : '#666',
+                                                cursor: 'pointer',
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '0.9rem',
+                                                fontWeight: selectedCategory === cat ? 600 : 400,
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
+
+                            {/* Events Grid */}
+                            {exploreLoading ? (
+                                <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+                                    <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                </div>
+                            ) : exploreEvents.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '4rem', color: '#666' }}>
+                                    <Compass size={48} style={{ marginBottom: '1rem', opacity: 0.3 }} />
+                                    <h3>Nenhum evento encontrado</h3>
+                                    <p>Tente buscar por outro termo ou categoria.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {exploreEvents.map(event => (
+                                        <div key={event._id} className="luxury-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                            <div style={{ height: '200px', background: '#f0f0f0', position: 'relative' }}>
+                                                {event.coverImage ? (
+                                                    <Image src={event.coverImage} alt={event.title} fill style={{ objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1a1a1a' }}>
+                                                        <Ticket size={40} color="#333" />
+                                                    </div>
+                                                )}
+                                                <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: '#FFD700', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                                    {event.eventType === 'modeOnline' ? 'ONLINE' : 'PRESENCIAL'}
+                                                </div>
+                                            </div>
+                                            <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <div style={{ fontSize: '0.75rem', color: '#DAA520', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                    {event.category || 'Geral'}
+                                                </div>
+                                                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', lineHeight: 1.3, flex: 1 }}>{event.title}</h3>
+
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', color: '#666', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                                                    {event.eventDate && (
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <Calendar size={14} /> {new Date(event.eventDate).toLocaleDateString()}
+                                                        </div>
+                                                    )}
+                                                    {event.location && (
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            <MapPin size={14} /> {event.location}
+                                                        </div>
+                                                    )}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <User size={14} /> {event.creator?.businessName || event.creator?.name || 'Organizador'}
+                                                    </div>
+                                                </div>
+
+                                                <Link href={`/f/${event.slug}`} style={{ display: 'block', textAlign: 'center', padding: '0.8rem', background: '#1a1a1a', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, transition: 'transform 0.2s' }}>
+                                                    Ver Detalhes
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
