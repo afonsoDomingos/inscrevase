@@ -80,7 +80,11 @@ export default function Register() {
         try {
             await authService.register(formData);
             toast.success(t('auth.registerSuccess'));
-            router.push('/dashboard/mentor');
+            if (formData.role === 'participant') {
+                router.push('/dashboard/participant');
+            } else {
+                router.push('/dashboard/mentor');
+            }
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.';
             setError(message);

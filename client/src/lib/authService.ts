@@ -7,7 +7,7 @@ export interface UserData {
     _id?: string;
     name: string;
     email: string;
-    role: 'admin' | 'mentor' | 'SuperAdmin';
+    role: 'admin' | 'mentor' | 'SuperAdmin' | 'participant';
     businessName?: string;
     bio?: string;
     profilePhoto?: string;

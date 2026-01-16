@@ -119,6 +119,13 @@ export default function MentorDashboard() {
             ]);
 
             setUser(userProfile);
+
+            // Redirect if not a mentor or admin
+            if (userProfile.role === 'participant') {
+                router.push('/dashboard/participant');
+                return;
+            }
+
             setStats(statsData);
             setForms(formsData);
         } catch (error: unknown) {
