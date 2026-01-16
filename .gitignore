@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Next.js
+client/.next/
+client/out/
+
+# Production
+client/build
+server/dist
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+upload-debug.log
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Documentation (keep local only)
+GUIA_COMMITS.md
+RESEND_SETUP.md
+SOLUCAO_EMAIL.md
+LIMPAR_CACHE_RENDER.md
+RENDER_REBUILD.md
+RENDER_EMAIL_CONFIG.md
+TROUBLESHOOT_EMAIL.md
+URGENTE_RENDER.md
+CONFIGURACAO_EMAIL.md
+SETUP_EMAIL_RAPIDO.md

@@ -1,0 +1,330 @@
+import { useState, useEffect } from 'react';
+import { notificationService, NotificationModel } from '@/lib/notificationService';
+import { Bell, Check, ExternalLink, Mail, Clock, MessageSquare, Reply, Loader2, SendHorizontal, Wallet, LifeBuoy, Megaphone, ShieldCheck, User, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import ReactMarkdown from 'react-markdown';
+import { toast } from 'sonner';
+
+interface NotificationCenterProps {
+    onClose?: () => void;
+}
+
+export default function NotificationCenter({ onClose }: NotificationCenterProps) {
+    const [notifications, setNotifications] = useState<NotificationModel[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [replyMode, setReplyMode] = useState<string | null>(null);
+    const [replyText, setReplyText] = useState('');
+    const [sendingReply, setSendingReply] = useState(false);
+
+    const getDepartmentInfo = (dept: string) => {
+        switch (dept) {
+            case 'finance': return { name: 'Departamento Financeiro', icon: <Wallet size={20} />, color: '#38a169' };
+            case 'support': return { name: 'Suporte Técnico', icon: <LifeBuoy size={20} />, color: '#3182ce' };
+            case 'marketing': return { name: 'Marketing & Eventos', icon: <Megaphone size={20} />, color: '#d53f8c' };
+            case 'onboarding': return { name: 'Equipe de Onboarding', icon: <Sparkles size={20} />, color: '#805ad5' };
+            case 'general': return { name: 'Administração Geral', icon: <ShieldCheck size={20} />, color: '#000' };
+            default: return { name: 'Administrador', icon: <User size={20} />, color: '#000' };
+        }
+    };
+
+    useEffect(() => {
+        loadNotifications();
+    }, []);
+
+    const loadNotifications = async () => {
+        try {
+            const data = await notificationService.getMyNotifications();
+            setNotifications(data);
+        } catch (_error) {
+            console.error('Error loading notifications:', _error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleMarkAsRead = async (id: string) => {
+        try {
+            await notificationService.markAsRead(id);
+            setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
+        } catch {
+            toast.error('Erro ao marcar como lida');
+        }
+    };
+
+    const handleSendReply = async (notification: NotificationModel) => {
+        if (!replyText.trim()) return;
+
+        setSendingReply(true);
+        try {
+            await notificationService.sendNotification({
+                recipientId: notification.sender._id,
+                title: `Re: ${notification.title}`,
+                content: replyText,
+                type: 'personal' // Reply is always personal
+            });
+            toast.success('Resposta enviada com sucesso');
+            setReplyMode(null);
+            setReplyText('');
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao enviar resposta');
+        } finally {
+            setSendingReply(false);
+        }
+    };
+
+    const unreadCount = notifications.filter(n => !n.read).length;
+
+    return (
+        <div style={{
+            width: '400px',
+            maxHeight: '600px',
+            background: '#fff',
+            borderRadius: '20px',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            border: '1px solid #eee'
+        }}>
+            <div style={{
+                padding: '1.5rem',
+                borderBottom: '1px solid #eee',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: 'linear-gradient(to right, #000, #1a1a1a)',
+                color: '#fff'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Bell size={20} className="gold-text" />
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Notificações</h3>
+                    {unreadCount > 0 && (
+                        <span style={{
+                            background: 'var(--gold-gradient)',
+                            color: '#000',
+                            padding: '2px 8px',
+                            borderRadius: '10px',
+                            fontSize: '0.7rem',
+                            fontWeight: 900
+                        }}>
+                            {unreadCount} NOVAS
+                        </span>
+                    )}
+                </div>
+                {onClose && (
+                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.7 }}>
+                        &times;
+                    </button>
+                )}
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }} className="custom-scrollbar">
+                {loading ? (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>Carregandou...</div>
+                ) : notifications.length === 0 ? (
+                    <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+                        <Mail size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
+                        <p style={{ color: '#999', margin: 0 }}>Você não tem notificações</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {notifications.map((notification) => (
+                            <motion.div
+                                key={notification._id}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                style={{
+                                    padding: '1.2rem',
+                                    borderRadius: '15px',
+                                    background: notification.read ? '#fff' : 'rgba(255,215,0,0.05)',
+                                    border: notification.read ? '1px solid #eee' : '1px solid rgba(255,215,0,0.2)',
+                                    position: 'relative',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <div style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        borderRadius: '50%',
+                                        background: '#000',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#FFD700',
+                                        flexShrink: 0,
+                                        overflow: 'hidden',
+                                        border: '1px solid #FFD700'
+                                    }}>
+                                        {notification.department ? (
+                                            <div style={{ color: '#FFD700' }}>
+                                                {getDepartmentInfo(notification.department).icon}
+                                            </div>
+                                        ) : notification.sender?.profilePhoto ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img src={notification.sender.profilePhoto} alt={notification.sender.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            notification.type === 'welcome' ? <Bell size={18} /> : <MessageSquare size={18} />
+                                        )}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', alignItems: 'flex-start' }}>
+                                            <div>
+                                                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1a1a1a' }}>{notification.title}</h4>
+                                                {notification.department ? (
+                                                    <span style={{ fontSize: '0.75rem', color: '#666', display: 'block', marginTop: '2px' }}>
+                                                        De: <strong style={{ color: getDepartmentInfo(notification.department).color }}>
+                                                            {getDepartmentInfo(notification.department).name}
+                                                        </strong>
+                                                    </span>
+                                                ) : notification.sender && (
+                                                    <span style={{ fontSize: '0.75rem', color: '#666', display: 'block', marginTop: '2px' }}>
+                                                        De: <strong>{notification.sender.name}</strong>
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <span style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+                                                <Clock size={12} /> {format(new Date(notification.createdAt), "dd MMM, HH:mm", { locale: ptBR })}
+                                            </span>
+                                        </div>
+                                        <div style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#666', lineHeight: 1.5 }}>
+                                            <ReactMarkdown
+                                                components={{
+                                                    p: ({ ...props }) => <p style={{ margin: '0 0 10px 0' }} {...props} />,
+                                                    ul: ({ ...props }) => <ul style={{ paddingLeft: '20px', margin: '0 0 10px 0' }} {...props} />,
+                                                    li: ({ ...props }) => <li style={{ marginBottom: '4px' }} {...props} />,
+                                                    strong: ({ ...props }) => <strong style={{ color: '#000', fontWeight: 700 }} {...props} />
+                                                }}
+                                            >
+                                                {notification.content}
+                                            </ReactMarkdown>
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            {!notification.read && (
+                                                <button
+                                                    onClick={() => handleMarkAsRead(notification._id)}
+                                                    style={{
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: '#B8860B',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        padding: 0,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}
+                                                >
+                                                    <Check size={14} /> Marcar como lida
+                                                </button>
+                                            )}
+                                            {notification.actionUrl && (
+                                                <a
+                                                    href={notification.actionUrl}
+                                                    style={{
+                                                        color: '#000',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 700,
+                                                        textDecoration: 'none',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}
+                                                >
+                                                    <ExternalLink size={14} /> Ver detalhes
+                                                </a>
+                                            )}
+                                            {notification.sender && (
+                                                <button
+                                                    onClick={() => {
+                                                        if (replyMode === notification._id) {
+                                                            setReplyMode(null);
+                                                            setReplyText('');
+                                                        } else {
+                                                            setReplyMode(notification._id);
+                                                            setReplyText('');
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: '#666',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        padding: 0,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}
+                                                >
+                                                    <Reply size={14} /> {replyMode === notification._id ? 'Cancelar' : 'Responder'}
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {replyMode === notification._id && (
+                                            <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                                                <textarea
+                                                    value={replyText}
+                                                    onChange={(e) => setReplyText(e.target.value)}
+                                                    placeholder={`Escreva sua resposta para ${notification.department ? getDepartmentInfo(notification.department).name : notification.sender.name}...`}
+                                                    rows={2}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '8px',
+                                                        borderRadius: '8px',
+                                                        border: '1px solid #ddd',
+                                                        fontSize: '0.85rem',
+                                                        marginBottom: '8px',
+                                                        fontFamily: 'inherit',
+                                                        resize: 'none'
+                                                    }}
+                                                    autoFocus
+                                                />
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                                    <button
+                                                        onClick={() => handleSendReply(notification)}
+                                                        disabled={sendingReply || !replyText.trim()}
+                                                        style={{
+                                                            background: '#000',
+                                                            color: '#FFD700',
+                                                            border: 'none',
+                                                            padding: '6px 12px',
+                                                            borderRadius: '6px',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 700,
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            opacity: !replyText.trim() ? 0.5 : 1
+                                                        }}
+                                                    >
+                                                        {sendingReply ? <Loader2 size={12} className="animate-spin" /> : <SendHorizontal size={12} />}
+                                                        Enviar Resposta
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div style={{ padding: '1rem', borderTop: '1px solid #eee', textAlign: 'center', background: '#fcfcfc' }}>
+                <button onClick={loadNotifications} style={{ background: 'none', border: 'none', color: '#666', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+                    Atualizar lista
+                </button>
+            </div>
+        </div >
+    );
+}

@@ -1,0 +1,994 @@
+"use client";
+
+import { useEffect, useState, useCallback } from 'react';
+import { authService, UserData } from '@/lib/authService';
+import { useRouter } from 'next/navigation';
+import { dashboardService, AdminStats } from '@/lib/dashboardService';
+import { formService, FormModel } from '@/lib/formService';
+import { toast } from 'sonner';
+import CreateEventModal from '@/components/mentor/CreateEventModal';
+import ProfileModal from '@/components/mentor/ProfileModal';
+import SubmissionManagement from '@/components/mentor/SubmissionManagement';
+import MentorSettings from '@/components/mentor/MentorSettings';
+import EditEventModal from '@/components/mentor/EditEventModal';
+import SupportModal from '@/components/mentor/SupportModal';
+import Link from 'next/link';
+import { useTranslate } from '@/context/LanguageContext';
+import { Pencil } from 'lucide-react';
+import { supportService } from '@/lib/supportService';
+
+import NotificationCenter from '@/components/mentor/NotificationCenter';
+import { notificationService } from '@/lib/notificationService';
+
+import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
+import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
+import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Plus,
+    ArrowRight,
+    FileText,
+    Users,
+    CheckCircle,
+    LogOut,
+    Loader2,
+    LayoutDashboard,
+    Settings,
+    Copy,
+    Trash2,
+    User as UserIcon,
+    Palette,
+    DollarSign,
+    PieChart,
+    LifeBuoy,
+    Eye,
+    Crown,
+    Lock,
+    AlertCircle,
+    Bell,
+    Map,
+    ChevronLeft,
+    Menu
+} from 'lucide-react';
+import Image from 'next/image';
+import StripeConnect from '../../../components/StripeConnect';
+import EarningsDashboard from '../../../components/EarningsDashboard';
+import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
+
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings';
+
+export default function MentorDashboard() {
+    const { t } = useTranslate();
+    const router = useRouter();
+    const [user, setUser] = useState<UserData | null>(null);
+    const [stats, setStats] = useState<AdminStats | null>(null);
+    const [forms, setForms] = useState<FormModel[]>([]);
+    const [activeTab, setActiveTab] = useState<Tab>('overview');
+    const [loading, setLoading] = useState(true);
+    const [editModalData, setEditModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
+    const [isSupportOpen, setIsSupportOpen] = useState(false);
+    const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [selectedSubmissionFormId, setSelectedSubmissionFormId] = useState<string | null>(null);
+    const [themeModalData, setThemeModalData] = useState<{ isOpen: boolean; form: FormModel | null }>({ isOpen: false, form: null });
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // New State
+
+    const steps: Step[] = [
+        {
+            targetId: 'welcome-modal', // Virtual target for center modal
+            title: t('dashboard.settings.tour.welcome.title'),
+            description: t('dashboard.settings.tour.welcome.desc'),
+            position: 'center'
+        },
+        {
+            targetId: 'mentor-create-btn',
+            title: t('dashboard.settings.tour.create.title'),
+            description: t('dashboard.settings.tour.create.desc'),
+            position: 'bottom'
+        },
+        {
+            targetId: 'mentor-stats-grid',
+            title: t('dashboard.settings.tour.stats.title'),
+            description: t('dashboard.settings.tour.stats.desc'),
+            position: 'bottom'
+        },
+        {
+            targetId: 'mentor-support-btn',
+            title: t('dashboard.settings.tour.support.title'),
+            description: t('dashboard.settings.tour.support.desc'),
+            position: 'right'
+        },
+        {
+            targetId: 'mentor-profile-photo',
+            title: t('dashboard.settings.tour.profile.title'),
+            description: t('dashboard.settings.tour.profile.desc'),
+            position: 'left'
+        }
+    ];
+
+    const loadDashboard = useCallback(async () => {
+        try {
+            const [userProfile, statsData, formsData] = await Promise.all([
+                authService.getProfile(),
+                dashboardService.getMentorStats(),
+                formService.getMyForms()
+            ]);
+
+            setUser(userProfile);
+            setStats(statsData);
+            setForms(formsData);
+        } catch (error: unknown) {
+            console.error("Dashboard error:", error);
+            // If unauthorized, redirect to login
+            if (error instanceof Error && (error.message.includes('401') || error.message.includes('Falha ao buscar perfil'))) {
+                router.push('/entrar');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [router]);
+
+    const loadUnreadCounts = useCallback(async () => {
+        try {
+            const [supportData, notificationData] = await Promise.all([
+                supportService.getUnreadCount(),
+                notificationService.getUnreadCount()
+            ]);
+            setUnreadCount(supportData.unreadCount);
+            setUnreadNotifications(notificationData.count);
+        } catch (error) {
+            console.error('Error loading unread counts:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadDashboard();
+        loadUnreadCounts();
+
+        // Poll for unread count every 30 seconds
+        const interval = setInterval(loadUnreadCounts, 30000);
+        return () => clearInterval(interval);
+    }, [loadDashboard, loadUnreadCounts]);
+
+    const copyToClipboard = (slug: string) => {
+        const url = `${window.location.origin}/f/${slug}`;
+        navigator.clipboard.writeText(url);
+        toast.success(t('common.copyLinkSuccess'));
+    };
+
+    const handleToggleStatus = async (form: FormModel) => {
+        try {
+            await formService.toggleFormStatus(form._id, !form.active);
+            await loadDashboard();
+        } catch (error: unknown) {
+            console.error(error);
+            toast.error(t('common.updateStatusError'));
+        }
+    };
+
+    const handleDeleteForm = async (id: string) => {
+        if (confirm(t('common.confirmDelete'))) {
+            try {
+                await formService.deleteForm(id);
+                toast.success(t('common.deleteFormSuccess'));
+                await loadDashboard();
+            } catch (error: unknown) {
+                console.error(error);
+                toast.error(t('common.deleteFormError'));
+            }
+        }
+    };
+
+    if (loading) {
+        return (
+            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8f9fa' }}>
+                <Loader2 className="animate-spin" size={48} color="#FFD700" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        if (!loading) router.push('/entrar');
+        return null;
+    }
+
+    return (
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
+            {/* Sidebar */}
+            {/* Sidebar */}
+            <aside style={{
+                width: isSidebarCollapsed ? '80px' : '280px',
+                transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                background: '#1a1a1a',
+                color: '#fff',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'fixed',
+                height: '100vh',
+                left: 0,
+                top: 0,
+                zIndex: 1000,
+                boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+                overflowX: 'hidden'
+            }}>
+                <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid #333' }}>
+                    {!isSidebarCollapsed && (
+                        <motion.h2
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff', margin: 0 }}
+                        >
+                            Inscreva<span className="gold-text">.se</span>
+                        </motion.h2>
+                    )}
+                    <button
+                        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: isSidebarCollapsed ? '#FFD700' : '#666',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '4px',
+                            transition: 'color 0.2s'
+                        }}
+                    >
+                        {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
+                    </button>
+                </div>
+
+                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                    {[
+                        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
+                        { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
+                        { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
+                        { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
+                        { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
+                        { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
+                    ].map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id as Tab)}
+                            title={isSidebarCollapsed ? item.label : ''}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                width: '100%',
+                                padding: '12px 16px',
+                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                color: activeTab === item.id ? '#000' : '#aaa',
+                                border: 'none',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                fontWeight: activeTab === item.id ? 700 : 500,
+                                position: 'relative', // Added for the active indicator
+                                overflow: 'hidden' // Added for the active indicator
+                            }}
+                        >
+                            {activeTab === item.id && (
+                                <motion.div
+                                    layoutId="active-indicator"
+                                    style={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        width: '4px',
+                                        height: '24px',
+                                        background: '#FFD700',
+                                        borderTopRightRadius: '4px',
+                                        borderBottomRightRadius: '4px'
+                                    }}
+                                />
+                            )}
+                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                            {!isSidebarCollapsed && (
+                                <motion.span
+                                    initial={{ opacity: 0, width: 0 }}
+                                    animate={{ opacity: 1, width: 'auto' }}
+                                    style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}
+                                >
+                                    {item.label}
+                                </motion.span>
+                            )}
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                        title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                            gap: '12px',
+                            padding: '0.75rem 1rem',
+                            width: '100%',
+                            borderRadius: '12px',
+                            border: 'none',
+                            background: 'transparent',
+                            color: '#FFD700',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'left',
+                            fontSize: '0.95rem'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                        <Map size={20} />
+                        {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                    </button>
+
+                    {!isSidebarCollapsed && (
+                        <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
+                                <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff', textTransform: 'capitalize' }}>
+                                    {user.plan || 'Free'}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </nav>
+
+                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <button
+                        id="mentor-support-btn"
+                        onClick={() => setIsSupportOpen(true)}
+                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
+                        style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #FFD700',
+                            borderRadius: '12px',
+                            color: '#FFD700',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            transition: 'all 0.2s',
+                            position: 'relative'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = '#333'}
+                        onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
+                    >
+                        <LifeBuoy size={18} />
+                        {!isSidebarCollapsed && t('dashboard.support')}
+                        {unreadCount > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-5px',
+                                right: '-5px',
+                                background: '#ef4444',
+                                color: '#fff',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                border: '2px solid #1a1a1a'
+                            }}>
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </button>
+
+
+                    <button
+                        onClick={() => authService.logout()}
+                        title={isSidebarCollapsed ? t('common.logout') : ""}
+                        style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            color: '#e53e3e',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <LogOut size={18} />
+                        {!isSidebarCollapsed && t('common.logout')}
+                    </button>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main style={{
+                marginLeft: isSidebarCollapsed ? '80px' : '280px',
+                transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                flex: 1,
+                padding: '2.5rem',
+                minHeight: '100vh',
+                maxWidth: `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`
+            }}>
+                {/* Header */}
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div
+                            id="mentor-profile-photo"
+                            onClick={() => setIsProfileModalOpen(true)}
+                            style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
+                        >
+                            {user.profilePhoto ? (
+                                <Image src={user.profilePhoto} alt={user.name} fill style={{ objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: '#000' }}>
+                                    <UserIcon size={32} />
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <motion.h1
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
+                            >
+                                {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name.split(' ')[0]}</span>
+                            </motion.h1>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <p style={{ color: '#666', marginTop: '0.4rem', fontSize: '1.05rem', fontWeight: 500 }}>
+                                    {t('dashboard.readyToManage')}
+                                </p>
+                                <span style={{
+                                    marginTop: '4px',
+                                    background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : '#eee',
+                                    color: user.plan === 'enterprise' ? '#FFD700' : '#000',
+                                    padding: '2px 10px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 900,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                }}>
+                                    {user.plan} {t('dashboard.account')}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {
+                        user.canCreateEvents === false && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                style={{
+                                    background: 'linear-gradient(90deg, #fff5f5 0%, #fff 100%)',
+                                    borderLeft: '4px solid #c53030',
+                                    padding: '1.2rem 1.5rem',
+                                    borderRadius: '12px',
+                                    marginBottom: '2rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '15px',
+                                    boxShadow: '0 4px 12px rgba(197, 48, 48, 0.08)'
+                                }}
+                            >
+                                <div style={{ background: '#c53030', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <AlertCircle size={20} />
+                                </div>
+                                <div>
+                                    <h4 style={{ color: '#c53030', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>{t('dashboard.settings.creationBlockedTitle')}</h4>
+                                    <p style={{ color: '#666', fontSize: '0.85rem' }}>
+                                        {t('dashboard.settings.creationBlockedDesc')}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )
+                    }
+
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <Link
+                            href="/"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '0.75rem 1.5rem',
+                                background: '#fff',
+                                border: '1px solid #FFD700',
+                                borderRadius: '12px',
+                                color: '#000',
+                                fontWeight: 700,
+                                textDecoration: 'none',
+                                transition: 'all 0.3s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#fffaf0'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+                        >
+                            <ArrowRight size={18} /> {t('nav.home')}
+                        </Link>
+                        {user.canCreateEvents !== false ? (
+                            <button
+                                id="mentor-create-btn"
+                                onClick={() => setIsEventModalOpen(true)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '0.75rem 1.5rem',
+                                    background: 'var(--gold-gradient)',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    color: '#000',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
+                                    transition: 'all 0.3s'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                <Plus size={18} /> {t('common.createEvent')}
+                            </button>
+                        ) : (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '0.75rem 1.5rem',
+                                background: '#fff5f5',
+                                border: '1px solid #fed7d7',
+                                borderRadius: '12px',
+                                color: '#c53030',
+                                fontWeight: 700,
+                                fontSize: '0.85rem'
+                            }}>
+                                <Lock size={16} /> {t('dashboard.restrictedAccess')}
+                            </div>
+                        )}
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                title={t('dashboard.notifications')}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '45px',
+                                    height: '45px',
+                                    background: '#fff',
+                                    border: '1px solid #FFD700',
+                                    borderRadius: '12px',
+                                    color: '#000',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                    position: 'relative'
+                                }}
+                            >
+                                <Bell size={20} />
+                                {unreadNotifications > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-5px',
+                                        right: '-5px',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 900,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid #fff'
+                                    }}>
+                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '55px',
+                                            right: 0,
+                                            zIndex: 2000
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        <button
+                            onClick={() => authService.logout()}
+                            title={t('common.logout')}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '45px',
+                                height: '45px',
+                                background: '#fff',
+                                border: '1px solid #fed7d7',
+                                borderRadius: '12px',
+                                color: '#e53e3e',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
+                            }}
+                            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
+                            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
+                        >
+                            <LogOut size={20} />
+                        </button>
+                    </div>
+                </header >
+
+                <AnimatePresence mode="wait">
+                    {activeTab === 'overview' && (
+                        <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <div id="mentor-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                                <StatCard
+                                    icon={<Users className="gold-text" />}
+                                    label={t('dashboard.totalSubscribers')}
+                                    value={stats?.submissions || 0}
+                                    trend="+12%"
+                                    color="rgba(10, 10, 10, 0.9)"
+                                />
+                                <StatCard
+                                    icon={<FileText className="gold-text" />}
+                                    label={t('dashboard.activeEvents')}
+                                    value={forms.filter(f => f.active).length}
+                                    trend="0"
+                                    color="rgba(10, 10, 10, 0.9)"
+                                />
+                                <StatCard
+                                    icon={<CheckCircle className="gold-text" />}
+                                    label={t('dashboard.approvedSubscriptions')}
+                                    value={stats?.approved || 0}
+                                    trend="+5%"
+                                    color="rgba(10, 10, 10, 0.9)"
+                                />
+                                <StatCard
+                                    icon={<DollarSign className="gold-text" />}
+                                    label={t('dashboard.estimatedRevenue')}
+                                    value={`MT ${(stats?.revenue || 0).toLocaleString()}`}
+                                    trend="+18%"
+                                    color="rgba(10, 10, 10, 0.9)"
+                                />
+                            </div>
+
+                            <div style={{
+                                marginTop: '4rem',
+                                position: 'relative',
+                                padding: '2.5rem',
+                                borderRadius: '32px',
+                                background: 'linear-gradient(145deg, #ffffff 0%, #e2e8f0 100%)',
+                                overflow: 'hidden',
+                                border: '1px solid rgba(255, 215, 0, 0.3)',
+                                boxShadow: 'inset 0 0 40px rgba(255,255,255,0.8), 0 20px 40px rgba(0,0,0,0.05)'
+                            }}>
+                                {/* Decorative Elements */}
+                                <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(60px)', pointerEvents: 'none' }} />
+                                <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(50px)', pointerEvents: 'none' }} />
+
+                                <div style={{ position: 'relative', zIndex: 1 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{t('dashboard.recentEvents')}</h3>
+                                        <button onClick={() => setActiveTab('forms')} style={{ background: 'none', border: 'none', color: '#FFD700', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>{t('dashboard.viewAll')}</button>
+                                    </div>
+
+                                    {forms.length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                            {forms.slice(0, 3).map((form) => (
+                                                <div key={form._id} className="luxury-card" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.4)', padding: '0', overflow: 'hidden', boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)' }}>
+                                                    <div style={{ height: '4px', width: '100%', background: 'var(--gold-gradient)' }}></div>
+                                                    <div style={{ padding: '2rem' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+                                                            <h4 style={{ fontWeight: 700, fontSize: '1.3rem', fontFamily: 'var(--font-playfair)', maxWidth: '80%' }}>{form.title}</h4>
+                                                            <span style={{
+                                                                padding: '0.4rem 0.8rem',
+                                                                borderRadius: '4px',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 800,
+                                                                background: form.active ? '#38a16915' : '#eee',
+                                                                color: form.active ? '#38a169' : '#888',
+                                                                textTransform: 'uppercase',
+                                                                letterSpacing: '0.5px'
+                                                            }}>
+                                                                {form.active ? t('dashboard.activeTitle') : t('dashboard.draftTitle')}
+                                                            </span>
+                                                        </div>
+
+                                                        {form.capacity && (
+                                                            <div style={{ marginBottom: '1.5rem' }}>
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
+                                                                    <span>{t('dashboard.registrants')}: <b style={{ color: '#000' }}>{form.submissionCount || 0}</b></span>
+                                                                    <span>{t('dashboard.goal')}: <b>{form.capacity}</b></span>
+                                                                </div>
+                                                                <div style={{ width: '100%', height: '8px', background: '#eee', borderRadius: '4px', overflow: 'hidden' }}>
+                                                                    <div
+                                                                        style={{
+                                                                            width: `${Math.min(100, Math.round(((form.submissionCount || 0) / form.capacity) * 100))}%`,
+                                                                            height: '100%',
+                                                                            background: 'var(--gold-gradient, linear-gradient(to right, #FFD700, #FDB931))',
+                                                                            borderRadius: '4px',
+                                                                            transition: 'width 1s ease'
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <div style={{ textAlign: 'right', fontSize: '0.75rem', marginTop: '4px', color: '#999', fontWeight: 600 }}>
+                                                                    {Math.round(((form.submissionCount || 0) / form.capacity) * 100)}% {t('dashboard.reached')}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        <div style={{ display: 'flex', gap: '1rem' }}>
+                                                            <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ flex: 1, padding: '1rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>
+                                                                <Copy size={16} /> {t('common.link')}
+                                                            </button>
+                                                            <button
+                                                                onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                                                                style={{
+                                                                    flex: 3,
+                                                                    padding: 0,
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                    display: 'flex',
+                                                                    gap: '8px',
+                                                                    height: '40px', // Reduced height
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                <div style={{
+                                                                    background: '#1a1a1a',
+                                                                    color: '#fff',
+                                                                    flex: 1,
+                                                                    borderRadius: '10px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontWeight: 800,
+                                                                    fontSize: '0.75rem', // Smaller font
+                                                                    textTransform: 'uppercase',
+                                                                    letterSpacing: '1px',
+                                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                                                }}>
+                                                                    {t('common.view')}
+                                                                </div>
+                                                                <div style={{
+                                                                    background: '#FFD700',
+                                                                    width: '46px', // Smaller icon part
+                                                                    borderRadius: '10px 14px 4px 10px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    color: '#000',
+                                                                    boxShadow: '0 4px 10px rgba(255, 215, 0, 0.2)'
+                                                                }}>
+                                                                    <ArrowRight size={18} strokeWidth={2.5} />
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="luxury-card" style={{ background: '#fff', border: 'none', textAlign: 'center', padding: '4rem' }}>
+                                            <FileText size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
+                                            <h4 style={{ color: '#999', marginBottom: '1rem' }}>{t('dashboard.noEventsYet')}</h4>
+                                            <button onClick={() => setIsEventModalOpen(true)} className="btn-primary" style={{ padding: '0.8rem 2rem' }}>{t('dashboard.createFirstEvent')}</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'forms' && (
+                        <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <div className="luxury-card" style={{ background: '#fff', border: 'none' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
+                                            <th style={{ padding: '1rem', color: '#666' }}>Evento</th>
+                                            <th style={{ padding: '1rem', color: '#666' }}>Status</th>
+                                            <th style={{ padding: '1rem', color: '#666' }}>Inscritos</th>
+                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Visitas</th>
+                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {forms.map((form) => (
+                                            <tr key={form._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <div style={{ fontWeight: 700 }}>{form.title}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#999' }}>/{form.slug}</div>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <button
+                                                        onClick={() => handleToggleStatus(form)}
+                                                        style={{
+                                                            padding: '0.3rem 0.6rem',
+                                                            borderRadius: '20px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 700,
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            background: form.active ? '#38a16915' : '#e53e3e15',
+                                                            color: form.active ? '#38a169' : '#e53e3e'
+                                                        }}
+                                                    >
+                                                        {form.active ? t('common.active') : t('common.inactive')}
+                                                    </button>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <div style={{ fontWeight: 600, fontSize: '1rem' }}>{form.submissionCount || 0}</div>
+                                                    {form.capacity && (
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{t('dashboard.goal')}: {form.capacity}</div>
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                                                        <Eye size={16} color="#B8860B" /> {form.visits || 0}
+                                                    </div>
+                                                </td>
+                                                <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                                        <button onClick={() => setEditModalData({ isOpen: true, form })} title={t('common.editEvent')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}><Pencil size={18} /></button>
+                                                        <button onClick={() => setThemeModalData({ isOpen: true, form })} title={t('common.customizeTheme')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>
+                                                        <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>
+                                                        <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title={t('common.viewSubmissions')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
+                                                        <button onClick={() => handleDeleteForm(form._id)} title={t('common.delete')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}><Trash2 size={18} /></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'submissions' && (
+                        <motion.div
+                            key="submissions"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <SubmissionManagement formId={selectedSubmissionFormId} />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'reports' && (
+                        <motion.div
+                            key="reports"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-playfair)' }}>
+                                {t('dashboard.performanceAnalysis')}
+                            </h2>
+                            <AnalyticsCharts />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'earnings' && (
+                        <motion.div key="earnings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <EarningsDashboard />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'settings' && (
+                        <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <StripeConnect />
+                            <MentorSettings user={user} onUpdate={loadDashboard} />
+                            <div style={{ marginTop: '2rem' }}>
+                                <button
+                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    className="btn-secondary"
+                                    style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', cursor: 'pointer', border: '1px solid #ddd', background: '#fff' }}
+                                >
+                                    Fazer Upgrade de Plano
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <PlanUpgradeModal
+                    isOpen={isUpgradeModalOpen}
+                    onClose={() => setIsUpgradeModalOpen(false)}
+                />
+
+                <CreateEventModal
+                    isOpen={isEventModalOpen}
+                    onClose={() => setIsEventModalOpen(false)}
+                    onSuccess={loadDashboard}
+                />
+
+                <ProfileModal
+                    isOpen={isProfileModalOpen}
+                    onClose={() => setIsProfileModalOpen(false)}
+                    user={user}
+                    onSuccess={loadDashboard}
+                    onUpgradeClick={() => {
+                        setIsProfileModalOpen(false);
+                        setIsUpgradeModalOpen(true);
+                    }}
+                />
+
+                {
+                    themeModalData.form && (
+                        <EditEventThemeModal
+                            isOpen={themeModalData.isOpen}
+                            onClose={() => setThemeModalData({ isOpen: false, form: null })}
+                            form={themeModalData.form}
+                            onSuccess={loadDashboard}
+                        />
+                    )
+                }
+
+                {
+                    editModalData.form && (
+                        <EditEventModal
+                            isOpen={editModalData.isOpen}
+                            onClose={() => setEditModalData({ isOpen: false, form: null })}
+                            form={editModalData.form}
+                            onSuccess={loadDashboard}
+                        />
+                    )
+                }
+
+                <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+                <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />
+            </main >
+        </div >
+    );
+}
+
+function StatCard({ icon, label, value, trend, color }: { icon: React.ReactNode, label: string, value: string | number, trend: string, color: string }) {
+    return (
+        <motion.div
+            whileHover={{ y: -5 }}
+            className="luxury-card"
+            style={{ background: '#fff', padding: '1.8rem', border: 'none', borderTop: `1px solid ${color}` }}
+        >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ background: `rgba(212,175,55,0.1)`, color: '#D4AF37', padding: '0.8rem', borderRadius: '12px' }}>
+                    {icon}
+                </div>
+                <span style={{ color: '#666', fontWeight: 500, fontSize: '0.95rem' }}>{label}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+                <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{value}</h2>
+                <span style={{ fontSize: '0.85rem', color: trend.startsWith('+') ? '#10b981' : '#666', fontWeight: 600 }}>{trend}</span>
+            </div>
+        </motion.div>
+    );
+}

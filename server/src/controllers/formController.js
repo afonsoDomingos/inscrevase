@@ -1,0 +1,213 @@
+const Form = require('../models/Form');
+const slugify = require('slugify');
+
+const Submission = require('../models/Submission');
+
+exports.createForm = async (req, res) => {
+    try {
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink } = req.body;
+
+        let slug = slugify(title, { lower: true, strict: true });
+
+        // Ensure unique slug
+        let slugExists = await Form.findOne({ slug });
+        let counter = 1;
+        while (slugExists) {
+            slug = `${slug}-${counter}`;
+            slugExists = await Form.findOne({ slug });
+            counter++;
+        }
+
+        // Sanitize paymentConfig to ensure price is a valid number
+        let sanitizedPaymentConfig = paymentConfig;
+        if (sanitizedPaymentConfig && sanitizedPaymentConfig.enabled) {
+            const price = parseFloat(sanitizedPaymentConfig.price);
+            sanitizedPaymentConfig.price = isNaN(price) ? 0 : price;
+        }
+
+        const newForm = new Form({
+            creator: req.user.id,
+            title,
+            description,
+            slug,
+            fields,
+            theme,
+            eventDate: eventDate === "" ? undefined : eventDate,
+            eventTime,
+            eventType,
+            paymentConfig: sanitizedPaymentConfig,
+            capacity: capacity ? parseInt(capacity) : undefined,
+            whatsappConfig,
+            videoUrl,
+            coverImage,
+            coverImageMode,
+            location,
+            onlineLink,
+            active
+        });
+
+        const form = await newForm.save();
+        res.status(201).json(form);
+    } catch (err) {
+        console.error("Create Form Error:", err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+exports.getMyForms = async (req, res) => {
+    try {
+        const forms = await Form.find({ creator: req.user.id }).sort({ createdAt: -1 }).lean();
+
+        const formsWithCount = await Promise.all(forms.map(async (form) => {
+            const count = await Submission.countDocuments({ form: form._id });
+            return { ...form, submissionCount: count };
+        }));
+
+        res.json(formsWithCount);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getFormBySlug = async (req, res) => {
+    try {
+        const form = await Form.findOne({ slug: req.params.slug }).populate('creator');
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+
+        // Get submission count to calculate remaining slots
+        const submissionCount = await Submission.countDocuments({ form: form._id });
+
+        res.json({
+            ...form.toObject(),
+            submissionCount
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.updateForm = async (req, res) => {
+    try {
+        let form = await Form.findById(req.params.id);
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+
+        // Ensure user owns the form OR is an admin
+        if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        // Update fields
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl } = req.body;
+
+        console.log(`--- Atualizando Formulário ${req.params.id} ---`);
+        if (coverImage) console.log(`Nova Capa: ${coverImage}`);
+        if (logo) console.log(`Novo Logo: ${logo}`);
+        if (onlineLink) console.log(`Novo Link Online: ${onlineLink}`);
+
+        if (title) form.title = title;
+        if (description !== undefined) form.description = description;
+        if (fields) form.fields = fields;
+        if (theme) form.theme = theme;
+        if (active !== undefined) form.active = active;
+        if (coverImage !== undefined) form.coverImage = coverImage;
+        if (coverImageMode !== undefined) form.coverImageMode = coverImageMode;
+        if (logo !== undefined) form.logo = logo;
+        if (capacity !== undefined) form.capacity = capacity ? parseInt(capacity) : undefined;
+
+        if (location !== undefined) form.location = location;
+        if (onlineLink !== undefined) form.onlineLink = onlineLink;
+        if (eventTime !== undefined) form.eventTime = eventTime;
+        if (eventType !== undefined) form.eventType = eventType;
+        if (waitingVideo !== undefined) form.waitingVideo = waitingVideo;
+        if (showVideoOnStart !== undefined) form.showVideoOnStart = showVideoOnStart;
+        if (videoUrl !== undefined) form.videoUrl = videoUrl;
+
+        if (whatsappConfig) {
+            form.whatsappConfig = {
+                phoneNumber: whatsappConfig.phoneNumber || form.whatsappConfig?.phoneNumber,
+                message: whatsappConfig.message || form.whatsappConfig?.message,
+                communityUrl: whatsappConfig.communityUrl || form.whatsappConfig?.communityUrl
+            };
+        }
+
+        // Handle Date Upgrade
+        if (eventDate !== undefined) {
+            form.eventDate = eventDate === "" ? undefined : eventDate;
+        }
+
+        // Handle Payment Config
+        if (paymentConfig) {
+            let sanitizedConfig = { ...paymentConfig };
+            if (sanitizedConfig.enabled) {
+                const price = parseFloat(sanitizedConfig.price);
+                sanitizedConfig.price = isNaN(price) ? 0 : price;
+            }
+            form.paymentConfig = sanitizedConfig;
+        }
+
+        await form.save();
+        console.log('Formulário salvo com sucesso!');
+        res.json(form);
+    } catch (err) {
+        console.error("Update Form Error:", err);
+        res.status(500).json({ message: 'Erro ao atualizar formulário', error: err.message });
+    }
+};
+
+exports.deleteForm = async (req, res) => {
+    try {
+        const form = await Form.findById(req.params.id);
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+
+        if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        // Delete associated submissions? Or keep them? Usually delete.
+        // await Submission.deleteMany({ form: form._id }); // Add Submission model if needed
+
+        await form.deleteOne();
+        res.json({ message: 'Form removed' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getAllFormsAdmin = async (req, res) => {
+    try {
+        const forms = await Form.find().populate('creator', 'name email').sort({ createdAt: -1 });
+        res.json(forms);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getFormsByMentor = async (req, res) => {
+    try {
+        const forms = await Form.find({ creator: req.params.mentorId, active: true }).sort({ createdAt: -1 });
+        res.json(forms);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.recordVisit = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const form = await Form.findOneAndUpdate(
+            { slug },
+            { $inc: { visits: 1 } },
+            { new: true }
+        );
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+        res.json({ success: true, visits: form.visits });
+    } catch (err) {
+        console.error("Record form visit error:", err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

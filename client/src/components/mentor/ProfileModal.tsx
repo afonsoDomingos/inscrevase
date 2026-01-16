@@ -1,0 +1,309 @@
+/* eslint-disable */
+"use client";
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook, Sparkles } from 'lucide-react';
+import { authService, UserData } from '@/lib/authService';
+import { formService } from '@/lib/formService';
+import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
+
+interface ProfileModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    user: UserData;
+    onSuccess: () => void;
+    onUpgradeClick?: () => void;
+}
+
+export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgradeClick }: ProfileModalProps) {
+    const { t } = useTranslate();
+    const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
+
+    // Form State
+    const [name, setName] = useState(user.name || '');
+    const [businessName, setBusinessName] = useState(user.businessName || '');
+    const [bio, setBio] = useState(user.bio || '');
+    const [whatsapp, setWhatsapp] = useState(user.whatsapp || '');
+    const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || '');
+    const [socialLinks, setSocialLinks] = useState(user.socialLinks || {});
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setUploading(true);
+            try {
+                const url = await formService.uploadFile(e.target.files[0], 'profiles');
+                setProfilePhoto(url);
+            } catch (err) {
+                alert(t('events.profile.uploadError'));
+            } finally {
+                setUploading(false);
+            }
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await authService.updateProfile({
+                name,
+                businessName,
+                bio,
+                whatsapp,
+                profilePhoto,
+                socialLinks
+            });
+            onSuccess();
+            onClose();
+        } catch (err: unknown) {
+            const error = err as Error;
+            alert(error.message || t('events.profile.updateError'));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <AnimatePresence>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={onClose}
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}
+                />
+
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    style={{
+                        position: 'relative',
+                        width: '100%',
+                        maxWidth: '550px',
+                        background: '#fff',
+                        borderRadius: '20px',
+                        padding: '1.5rem',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                        maxHeight: '90vh',
+                        overflowY: 'auto'
+                    }}
+                    className="custom-scrollbar"
+                >
+                    <button
+                        onClick={onClose}
+                        style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#f8f9fa', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
+                    >
+                        <X size={16} />
+                    </button>
+
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 800 }}>{t('events.profile.title')}</h2>
+                    </div>
+
+                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+                        {/* Avatar Upload */}
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                            <div style={{ position: 'relative', width: '80px', height: '80px' }}>
+                                <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0', border: '3px solid #FFD700', position: 'relative' }}>
+                                    {profilePhoto ? (
+                                        <Image src={profilePhoto} alt="Avatar" fill style={{ objectFit: 'cover' }} />
+                                    ) : (
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+                                            <User size={40} />
+                                        </div>
+                                    )}
+                                    {uploading && (
+                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Loader2 className="animate-spin" color="#fff" />
+                                        </div>
+                                    )}
+                                </div>
+                                <label style={{ position: 'absolute', bottom: 0, right: 0, width: '32px', height: '32px', background: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', cursor: 'pointer', border: '2px solid #fff' }}>
+                                    <Camera size={16} />
+                                    <input type="file" hidden onChange={handleImageUpload} accept="image/*" />
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <User size={12} /> {t('events.profile.fullName')}
+                                </label>
+                                <input
+                                    type="text"
+                                    className="input-luxury"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                    style={{ padding: '0.8rem' }}
+                                />
+                            </div>
+
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <Briefcase size={12} /> {t('events.profile.businessName')}
+                                </label>
+                                <input
+                                    type="text"
+                                    className="input-luxury"
+                                    value={businessName}
+                                    onChange={(e) => setBusinessName(e.target.value)}
+                                    placeholder={t('events.profile.businessPlaceholder')}
+                                    style={{ padding: '0.8rem' }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Social Links Section */}
+                        <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px' }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#666', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <Globe size={14} /> {t('events.profile.socialLinks')}
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Instagram size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.instagram || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
+                                            placeholder={t('dashboard.settings.instagramPlaceholder')}
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Linkedin size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.linkedin || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
+                                            placeholder={t('dashboard.settings.linkedinPlaceholder')}
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Facebook size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.facebook || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, facebook: e.target.value })}
+                                            placeholder={t('dashboard.settings.facebookPlaceholder')}
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <div style={{ position: 'relative' }}>
+                                        <Globe size={14} style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={socialLinks.website || ''}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
+                                            placeholder={t('dashboard.settings.websitePlaceholder')}
+                                            style={{ paddingLeft: '2.5rem' }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                    <Phone size={14} /> {t('events.profile.whatsapp')}
+                                </label>
+                                <input
+                                    type="text"
+                                    className="input-luxury"
+                                    value={whatsapp}
+                                    onChange={(e) => setWhatsapp(e.target.value)}
+                                    placeholder={t('dashboard.settings.whatsappPlaceholder')}
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <LinkIcon size={12} /> {t('events.profile.accountStatus')}
+                                </label>
+                                <div
+                                    onClick={onUpgradeClick}
+                                    style={{
+                                        padding: '0.8rem 1rem',
+                                        background: onUpgradeClick ? '#fff' : '#f8f9fa',
+                                        borderRadius: '12px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 800,
+                                        color: user.plan !== 'free' ? '#38a169' : '#000',
+                                        cursor: onUpgradeClick ? 'pointer' : 'default',
+                                        border: onUpgradeClick ? '2px solid #FFD700' : '1px solid #eee',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        transition: 'all 0.2s',
+                                        boxShadow: onUpgradeClick ? '0 4px 12px rgba(255, 215, 0, 0.2)' : 'none'
+                                    }}
+                                    className={onUpgradeClick ? "hover:scale-105" : ""}
+                                >
+                                    {(user.plan || 'free').toUpperCase()} PLAN
+                                    {onUpgradeClick && (user.plan === 'free' || !user.plan) && (
+                                        <div style={{
+                                            background: '#FFD700',
+                                            color: '#000',
+                                            padding: '4px 10px',
+                                            borderRadius: '20px',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}>
+                                            UPGRADE <Sparkles size={10} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="input-group">
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                <FileText size={14} /> {t('events.profile.bio')}
+                            </label>
+                            <textarea
+                                className="input-luxury"
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
+                                rows={3}
+                                placeholder={t('events.profile.bioPlaceholder')}
+                                style={{ resize: 'none' }}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn-primary"
+                            style={{ padding: '1rem', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '1rem' }}
+                        >
+                            {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> {t('events.profile.saveChanges')}</>}
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+        </AnimatePresence>
+    );
+}
