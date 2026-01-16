@@ -17,7 +17,6 @@ import {
     Menu,
     ChevronLeft,
     Bell,
-    MapPin,
     Calendar,
     Award
 } from 'lucide-react';
