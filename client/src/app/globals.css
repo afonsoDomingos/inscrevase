@@ -3,7 +3,8 @@
 :root {
   --background: #fdfdfd;
   --foreground: #101010;
-  --primary: #D4AF37; /* More antique gold */
+  --primary: #D4AF37;
+  /* More antique gold */
   --primary-glow: rgba(212, 175, 55, 0.4);
   --secondary: #1a1a1a;
   --accent: #FFD700;
@@ -68,7 +69,7 @@ h6 {
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 
+  box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.02),
     0 20px 40px rgba(0, 0, 0, 0.04),
     inset 0 0 0 1px rgba(255, 255, 255, 0.5);
@@ -94,7 +95,7 @@ h6 {
 
 .luxury-card:hover {
   transform: translateY(-10px) scale(1.01);
-  box-shadow: 
+  box-shadow:
     0 30px 60px rgba(0, 0, 0, 0.1),
     0 0 40px rgba(212, 175, 55, 0.15);
   border-color: rgba(212, 175, 55, 0.3);
@@ -120,31 +121,25 @@ h6 {
   pointer-events: none;
   opacity: 0;
   z-index: 1;
-  background: radial-gradient(
-    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(212, 175, 55, 0.15),
-    transparent 40%
-  );
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(212, 175, 55, 0.15),
+      transparent 40%);
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .spotlight-low {
-  background: radial-gradient(
-    400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(212, 175, 55, 0.08),
-    transparent 40%
-  );
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(212, 175, 55, 0.08),
+      transparent 40%);
 }
 
 .spotlight-high {
-  background: radial-gradient(
-    800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(212, 175, 55, 0.25),
-    transparent 40%
-  );
+  background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(212, 175, 55, 0.25),
+      transparent 40%);
 }
 
-:hover > .spotlight,
+:hover>.spotlight,
 .luxury-card:hover .spotlight,
 .spotlight-card:hover .spotlight,
 .spotlight-container:hover .spotlight {
@@ -170,13 +165,11 @@ h6 {
   left: -150%;
   width: 40%;
   height: 200%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 215, 0, 0.1) 0%,
-    rgba(255, 215, 0, 0.6) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 215, 0, 0.1) 0%,
+      rgba(255, 215, 0, 0.6) 50%,
+      transparent 100%);
   transform: rotate(25deg);
   pointer-events: none;
   z-index: 10;
@@ -193,14 +186,12 @@ h6 {
   position: relative;
   display: inline-block;
   color: transparent;
-  background: linear-gradient(
-    90deg,
-    #000 0%,
-    #000 40%,
-    #D4AF37 50%,
-    #000 60%,
-    #000 100%
-  );
+  background: linear-gradient(90deg,
+      #000 0%,
+      #000 40%,
+      #D4AF37 50%,
+      #000 60%,
+      #000 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -213,14 +204,12 @@ h6 {
 }
 
 .dark .luxury-shimmer-hover {
-  background: linear-gradient(
-    90deg,
-    #fff 0%,
-    #fff 40%,
-    #FFD700 50%,
-    #fff 60%,
-    #fff 100%
-  );
+  background: linear-gradient(90deg,
+      #fff 0%,
+      #fff 40%,
+      #FFD700 50%,
+      #fff 60%,
+      #fff 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -265,7 +254,7 @@ h6 {
 }
 
 .container {
-  max-width: 1600px;
+  max-width: 1920px;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -538,7 +527,7 @@ h6 {
   left: 0;
   top: 0;
   z-index: 1000;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -564,7 +553,7 @@ h6 {
   width: 45px;
   height: 45px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   align-items: center;
   justify-content: center;
 }
@@ -573,7 +562,7 @@ h6 {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 999;
   backdrop-filter: blur(4px);
   opacity: 0;
@@ -615,15 +604,17 @@ h6 {
   .admin-main {
     margin-left: 0;
     width: 100%;
-    padding: 1.25rem; /* Padding mais confortável */
+    padding: 1.25rem;
+    /* Padding mais confortável */
     padding-top: 5rem;
-    overflow-x: hidden; /* Evita scroll horizontal indesejado na página */
+    overflow-x: hidden;
+    /* Evita scroll horizontal indesejado na página */
   }
 
   .admin-mobile-toggle {
     display: flex;
   }
-  
+
   .admin-overlay {
     display: block;
     pointer-events: none;
@@ -633,12 +624,20 @@ h6 {
     opacity: 1;
     pointer-events: auto;
   }
-  
+
   /* Melhora tipografia em mobile */
-  h1 { font-size: 2rem !important; }
-  h2 { font-size: 1.75rem !important; }
-  h3 { font-size: 1.25rem !important; }
-  
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  h2 {
+    font-size: 1.75rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
   /* Ajuste no padding dos cards */
   .luxury-card {
     padding: 1.5rem !important;
@@ -652,16 +651,16 @@ h6 {
     gap: 1.25rem;
     margin-bottom: 2rem;
   }
-  
+
   .admin-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.25rem;
     margin-bottom: 2rem;
   }
-  
+
   /* Botões em largura total no mobile para facilitar o toque */
-  .admin-header button, 
+  .admin-header button,
   .admin-header a {
     width: 100%;
     justify-content: center;
@@ -683,6 +682,7 @@ h6 {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
 /* Floating Background Orbs */
 .bg-mesh {
   position: fixed;
@@ -721,8 +721,13 @@ h6 {
 }
 
 @keyframes mesh-float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(10%, 10%) scale(1.2); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(10%, 10%) scale(1.2);
+  }
 }
 
 /* Premium Gradient Text */
@@ -736,7 +741,9 @@ h6 {
 }
 
 @keyframes text-shine {
-  to { background-position: 200% center; }
+  to {
+    background-position: 200% center;
+  }
 }
 
 /* Animated Border for Buttons */
