@@ -653,5 +653,14 @@
             "title": "Cookies de Marketing",
             "desc": "Podem ser definidos através do nosso site pelos nossos parceiros publicitários para mostrar anúncios relevantes em outros sites."
         }
+    },
+    "countdown": {
+        "badge": "LANÇAMENTO",
+        "description": "A revolução chega em breve",
+        "days": "Dias",
+        "hours": "Horas",
+        "minutes": "Minutos",
+        "seconds": "Segundos",
+        "notify": "Notificar-me"
     }
 }

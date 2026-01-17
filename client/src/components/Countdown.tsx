@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bell } from 'lucide-react';
 import { useSpotlight } from '@/hooks/useSpotlight';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface TimeLeft {
   days: number;
@@ -13,19 +14,20 @@ interface TimeLeft {
 }
 
 export default function Countdown() {
+  const { t } = useTranslate();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isMounted, setIsMounted] = useState(false);
   const { handleMouseMove } = useSpotlight();
 
   useEffect(() => {
     setIsMounted(true);
-    
+
     // Stable calculation function inside effect to avoid dependency issues
     const updateTime = () => {
       const target = new Date('2026-02-14T00:00:00');
       const now = new Date();
       const difference = +target - +now;
-      
+
       if (difference <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
@@ -45,19 +47,17 @@ export default function Countdown() {
     return () => clearInterval(timer);
   }, []);
 
-
-
   if (!isMounted) return null;
 
   const timerItems = [
-    { label: 'Dias', value: timeLeft.days },
-    { label: 'Horas', value: timeLeft.hours },
-    { label: 'Minutos', value: timeLeft.minutes },
-    { label: 'Segundos', value: timeLeft.seconds },
+    { label: t('countdown.days'), value: timeLeft.days },
+    { label: t('countdown.hours'), value: timeLeft.hours },
+    { label: t('countdown.minutes'), value: timeLeft.minutes },
+    { label: t('countdown.seconds'), value: timeLeft.seconds },
   ];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
@@ -84,37 +84,37 @@ export default function Countdown() {
     >
       <div className="spotlight" />
       <div style={{ textAlign: 'left', position: 'relative', zIndex: 2 }}>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '12px', 
-          marginBottom: '8px' 
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '8px'
         }}>
-          <span style={{ 
-            background: 'rgba(59, 130, 246, 0.1)', 
-            color: '#3b82f6', 
-            padding: '4px 12px', 
-            borderRadius: '50px', 
-            fontSize: '0.75rem', 
+          <span style={{
+            background: 'rgba(59, 130, 246, 0.1)',
+            color: '#3b82f6',
+            padding: '4px 12px',
+            borderRadius: '50px',
+            fontSize: '0.75rem',
             fontWeight: 800,
             letterSpacing: '1px',
             border: '1px solid rgba(59, 130, 246, 0.2)'
           }}>
-            LANÇAMENTO
+            {t('countdown.badge')}
           </span>
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', boxShadow: '0 0 10px #3b82f6' }} />
         </div>
         <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.9rem', fontWeight: 500 }}>
-          A revolução chega em breve
+          {t('countdown.description')}
         </p>
       </div>
 
       <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'relative', zIndex: 2 }}>
         {timerItems.map((item, idx) => (
-          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ 
-                background: 'rgba(255, 255, 255, 0.03)', 
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '16px',
                 width: '70px',
@@ -161,7 +161,7 @@ export default function Countdown() {
         onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
       >
         <Bell size={18} />
-        Notificar-me
+        {t('countdown.notify')}
       </motion.button>
     </motion.div>
   );

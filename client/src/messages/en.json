@@ -652,5 +652,14 @@
             "title": "Marketing Cookies",
             "desc": "They may be set through our site by our advertising partners to show relevant ads on other sites."
         }
+    },
+    "countdown": {
+        "badge": "LAUNCH",
+        "description": "The revolution is coming soon",
+        "days": "Days",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "seconds": "Seconds",
+        "notify": "Notify me"
     }
 }
