@@ -473,6 +473,25 @@ exports.syncSubscription = async (req, res) => {
                 console.log(`Manual sync: User ${user._id} upgraded to ${planName} found in Stripe`);
 
                 // Also ensure admin transaction exists (optional but good for consistency)
+                const existingTx = await Transaction.findOne({ subscriptionId: activeSub.id });
+                if (!existingTx) {
+                    const priceItem = activeSub.items.data[0].price;
+                    const amount = priceItem.unit_amount / 100;
+
+                    const tx = new Transaction({
+                        type: 'subscription',
+                        user: user._id,
+                        amount: amount,
+                        currency: activeSub.currency.toUpperCase(),
+                        platformFee: amount, // For subscriptions, 100% is platform revenue
+                        status: 'completed',
+                        subscriptionId: activeSub.id,
+                        paymentMethod: 'stripe',
+                        metadata: { plan: planName, sync: 'manual' }
+                    });
+                    await tx.save();
+                    console.log(`Manual sync: Transaction created for subscription ${activeSub.id}`);
+                }
             }
 
             return res.json({ success: true, role: 'mentor', plan: planName, status: 'synced' });
