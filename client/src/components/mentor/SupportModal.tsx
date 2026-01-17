@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, Image as ImageIcon } from 'lucide-react';
+import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, Image as ImageIcon, User as UserIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supportService, Ticket } from '@/lib/supportService';
 import { useTranslate } from '@/context/LanguageContext';
@@ -445,9 +445,34 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                     {/* Chat Header */}
                                     <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee', background: '#fff' }}>
                                         <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>{selectedTicket.subject}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>
-                                            {t('common.ticket')} #{selectedTicket._id.slice(-6)}
-                                            {selectedTicket.user && mode === 'admin' && ` • ${selectedTicket.user.name}`}
+                                        <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                            <span style={{ background: '#f0f0f0', padding: '2px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600 }}>#{selectedTicket._id.slice(-6).toUpperCase()}</span>
+
+                                            {/* Mentor View: Showing Participant Name */}
+                                            {mode === 'mentor' && selectedTicket.user && (
+                                                <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <UserIcon size={14} /> Participante: <span style={{ fontWeight: 400 }}>{selectedTicket.user.name ?? 'Usuário'}</span>
+                                                </span>
+                                            )}
+
+                                            {/* User View: Showing Mentor Name */}
+                                            {mode === 'user' && (
+                                                <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    {selectedTicket.mentor ? (
+                                                        <><UserIcon size={14} /> Mentor: <span style={{ fontWeight: 400 }}>{selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span></>
+                                                    ) : (
+                                                        <><LifeBuoy size={14} /> Suporte: <span style={{ fontWeight: 400 }}>Equipe Inscreva.se</span></>
+                                                    )}
+                                                </span>
+                                            )}
+
+                                            {/* Admin View */}
+                                            {mode === 'admin' && selectedTicket.user && (
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <UserIcon size={14} /> De: {selectedTicket.user.name}
+                                                    {selectedTicket.mentor && <span style={{ marginLeft: '8px', color: '#666' }}>Para: {selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span>}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
