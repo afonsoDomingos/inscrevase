@@ -14,6 +14,10 @@ const submitForm = async (req, res) => {
     try {
         const { formId, data, paymentProof } = req.body;
 
+        if (!data || typeof data !== 'object') {
+            return res.status(400).json({ message: 'Dados do formulário inválidos' });
+        }
+
         const form = await Form.findById(formId);
         if (!form || !form.active) {
             return res.status(404).json({ message: 'Form not found or inactive' });
@@ -32,8 +36,9 @@ const submitForm = async (req, res) => {
             // Try to find email in data and link to existing user
             const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
             let foundEmail = null;
+
             for (const key of emailKeys) {
-                if (data[key]) {
+                if (data[key] && typeof data[key] === 'string') {
                     foundEmail = data[key];
                     break;
                 }
@@ -45,10 +50,14 @@ const submitForm = async (req, res) => {
                 foundEmail = allValues.find(v => typeof v === 'string' && v.includes('@') && v.includes('.'));
             }
 
-            if (foundEmail) {
-                const existingUser = await User.findOne({ email: foundEmail.toLowerCase().trim() });
-                if (existingUser) {
-                    submissionData.user = existingUser._id;
+            if (foundEmail && typeof foundEmail === 'string') {
+                try {
+                    const existingUser = await User.findOne({ email: foundEmail.toLowerCase().trim() });
+                    if (existingUser) {
+                        submissionData.user = existingUser._id;
+                    }
+                } catch (linkError) {
+                    console.error("Error linking submission to user:", linkError);
                 }
             }
         }
