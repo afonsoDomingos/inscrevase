@@ -266,4 +266,19 @@ const downgradeToParticipant = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant };
+const restoreMentorRole = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.role = 'mentor';
+        user.canCreateEvents = true;
+
+        await user.save();
+        res.json({ message: 'Modo Mentor restaurado com sucesso', user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole };
