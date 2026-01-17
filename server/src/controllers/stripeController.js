@@ -432,6 +432,59 @@ exports.createSubscription = async (req, res) => {
     }
 };
 
+exports.syncSubscription = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // List subscriptions from Stripe for this user's email
+        const subscriptions = await stripe.subscriptions.list({
+            limit: 1,
+            status: 'active',
+            customer: user.stripeCustomerId, // Assuming you store this, or filter by email if not
+        });
+
+        // Fallback search by email if stripeCustomerId is missing/invalid
+        let activeSub = null;
+        if (subscriptions.data.length > 0) {
+            activeSub = subscriptions.data[0];
+        } else {
+            const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+            if (customers.data.length > 0) {
+                const customerSubs = await stripe.subscriptions.list({
+                    customer: customers.data[0].id,
+                    status: 'active',
+                    limit: 1
+                });
+                if (customerSubs.data.length > 0) activeSub = customerSubs.data[0];
+            }
+        }
+
+        if (activeSub) {
+            // Found valid subscription, force update role
+            const planName = activeSub.metadata.plan || 'pro'; // Default to pro if metadata missing
+
+            // Only update if not already correct
+            if (user.role !== 'mentor' || user.plan !== planName) {
+                user.role = 'mentor';
+                user.plan = planName;
+                user.canCreateEvents = true;
+                await user.save();
+                console.log(`Manual sync: User ${user._id} upgraded to ${planName} found in Stripe`);
+
+                // Also ensure admin transaction exists (optional but good for consistency)
+            }
+
+            return res.json({ success: true, role: 'mentor', plan: planName, status: 'synced' });
+        }
+
+        return res.json({ success: false, message: 'No active subscription found' });
+    } catch (error) {
+        console.error('Sync Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 /**
  * ADMIN FINANCIAL CONTROL
  */

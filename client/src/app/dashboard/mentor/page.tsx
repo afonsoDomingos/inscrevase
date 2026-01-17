@@ -155,8 +155,19 @@ function MentorDashboardContent() {
     useEffect(() => {
         if (searchParams.get('subscription') === 'success') {
             setLoading(true);
+            let attempts = 0;
             const interval = setInterval(async () => {
+                attempts++;
                 try {
+                    // Try to sync periodically if stuck
+                    if (attempts % 3 === 0) {
+                        const token = authService.getToken();
+                        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/sync`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        }).catch(err => console.log('Sync attempt failed', err));
+                    }
+
                     const profile = await authService.getProfile();
                     if (profile.role === 'mentor') {
                         setUser(profile);
