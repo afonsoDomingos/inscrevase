@@ -8,6 +8,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
+const SupportTicket = require('../models/SupportTicket');
+
 const submitForm = async (req, res) => {
     try {
         const { formId, data, paymentProof } = req.body;
@@ -17,25 +19,50 @@ const submitForm = async (req, res) => {
             return res.status(404).json({ message: 'Form not found or inactive' });
         }
 
-        const submission = new Submission({
+        const submissionData = {
             form: formId,
             data,
             paymentProof
-        });
+        };
 
+        // If user is logged in, link the submission
+        if (req.user) {
+            submissionData.user = req.user.id;
+        }
+
+        const submission = new Submission(submissionData);
         await submission.save();
 
         // Notify Mentor
-        const participantName = data.nome || data.name || 'Um novo participante';
+        const participantName = data.nome || data.name || (req.user ? req.user.name : 'Um novo participante');
         const notification = new Notification({
             recipient: form.creator,
-            sender: form.creator, // System notification (self-sender for now or find admin)
+            sender: req.user ? req.user.id : form.creator,
             title: 'Nova Inscrição Recebida! 📩',
             content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
             type: 'personal',
             actionUrl: '/dashboard/mentor'
         });
         await notification.save();
+
+        // AUTOMATIC WELCOME MESSAGE
+        // If the participant is a registered user, we send them an automatic message from the mentor
+        if (req.user && req.user.id !== form.creator.toString()) {
+            const welcomeText = form.welcomeMessage || `Olá ${participantName.split(' ')[0]}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
+
+            // Check if there is already a conversation between this user and mentor for this specific event or general
+            // Let's create a new ticket for the event welcome
+            await SupportTicket.create({
+                user: req.user.id,
+                mentor: form.creator,
+                subject: `Bem-vindo: ${form.title}`,
+                messages: [{
+                    sender: 'mentor',
+                    content: welcomeText
+                }],
+                unreadByUser: true
+            });
+        }
 
         res.status(201).json({ message: 'Inscrição enviada com sucesso', submission });
     } catch (err) {

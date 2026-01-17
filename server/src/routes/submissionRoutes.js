@@ -11,9 +11,9 @@ const {
     analyzeReceipt,
     deleteSubmission
 } = require('../controllers/submissionController');
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
 
-router.post('/submit', submitForm); // Public
+router.post('/submit', optionalAuthMiddleware, submitForm); // Optional Auth for linking users
 router.get('/my-submissions', authMiddleware, getMySubmissions);
 router.get('/form/:formId', authMiddleware, getFormSubmissions);
 router.get('/all', authMiddleware, adminMiddleware, getAllSubmissionsAdmin);

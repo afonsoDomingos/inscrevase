@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const SubmissionSchema = new mongoose.Schema({
     form: { type: mongoose.Schema.Types.ObjectId, ref: 'Form', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     data: { type: Map, of: mongoose.Schema.Types.Mixed }, // Dynamic response data
     paymentProof: { type: String }, // Cloudinary URL
     status: {

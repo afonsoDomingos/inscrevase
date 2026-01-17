@@ -85,6 +85,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         communityUrl: ''
     });
 
+    const [welcomeMessage, setWelcomeMessage] = useState('');
+
     const [paymentConfig, setPaymentConfig] = useState({
         enabled: false,
         price: 0,
@@ -203,6 +205,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 eventType,
                 category,
                 videoUrl,
+                welcomeMessage,
                 active: true
             });
             onSuccess();
@@ -1031,6 +1034,23 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 onChange={(e) => setWhatsappConfig({ ...whatsappConfig, communityUrl: e.target.value })}
                                                 placeholder={t('events.communityPlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div style={{ marginTop: '1rem', padding: '1.5rem', background: '#FDF2F2', borderRadius: '20px', border: '1px solid #FEE2E2' }}>
+                                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '0.5rem', fontSize: '1rem', color: '#9B1C1C' }}>
+                                                <MessageCircle size={20} />
+                                                Mensagem Automática de Boas-Vindas
+                                            </label>
+                                            <p style={{ fontSize: '0.8rem', color: '#7F1D1D', marginBottom: '1rem' }}>
+                                                Esta mensagem será enviada automaticamente pelo chat assim que o participante se inscrever.
+                                            </p>
+                                            <textarea
+                                                value={welcomeMessage}
+                                                onChange={(e) => setWelcomeMessage(e.target.value)}
+                                                placeholder="Ex: Olá! Seja bem-vindo ao evento. Estamos muito felizes com sua participação..."
+                                                rows={4}
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #FCA5A5', outline: 'none', resize: 'none' }}
                                             />
                                         </div>
                                     </div>
