@@ -204,6 +204,28 @@
                     "title": "Suporte Global",
                     "desc": "Visualize e responda tickets de suporte de todos os usuários em um só lugar."
                 }
+            },
+            "participantTour": {
+                "welcome": {
+                    "title": "Bem-vindo, Viajante! 🌟",
+                    "desc": "Aqui é o seu portal para o conhecimento. Vamos mostrar como você pode aproveitar ao máximo sua jornada conosco."
+                },
+                "explore": {
+                    "title": "Explore Novos Mundos",
+                    "desc": "Clique aqui para descobrir masterclasses, workshops e eventos exclusivos de mentores do mundo todo."
+                },
+                "tickets": {
+                    "title": "Seu Passaporte",
+                    "desc": "Aqui você encontra todos os seus bilhetes e detalhes dos eventos em que já está inscrito."
+                },
+                "certificates": {
+                    "title": "Suas Conquistas",
+                    "desc": "Após concluir seus eventos, seus certificados de excelência aparecerão magicamente aqui."
+                },
+                "profile": {
+                    "title": "Sua Identidade Digital",
+                    "desc": "Personalize seu perfil, adicione sua foto e mantenha seus dados atualizados para seus certificados."
+                }
             }
         },
         "finance": {

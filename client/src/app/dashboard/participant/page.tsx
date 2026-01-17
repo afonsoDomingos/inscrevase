@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
@@ -26,6 +25,8 @@ import {
     MapPin,
     Zap
 } from 'lucide-react';
+import ProfileModal from '@/components/mentor/ProfileModal';
+import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 
 type Tab = 'tickets' | 'explore' | 'certificates' | 'profile';
 const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
@@ -46,6 +47,40 @@ export default function ParticipantDashboard() {
 
     // Upgrade State
     const [upgradeLoading, setUpgradeLoading] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+    const participantSteps: Step[] = [
+        {
+            targetId: 'welcome-modal',
+            title: t('dashboard.participantTour.welcome.title'),
+            description: t('dashboard.participantTour.welcome.desc'),
+            position: 'center'
+        },
+        {
+            targetId: 'participant-nav-explore',
+            title: t('dashboard.participantTour.explore.title'),
+            description: t('dashboard.participantTour.explore.desc'),
+            position: 'right'
+        },
+        {
+            targetId: 'participant-nav-tickets',
+            title: t('dashboard.participantTour.tickets.title'),
+            description: t('dashboard.participantTour.tickets.desc'),
+            position: 'right'
+        },
+        {
+            targetId: 'participant-nav-certificates',
+            title: t('dashboard.participantTour.certificates.title'),
+            description: t('dashboard.participantTour.certificates.desc'),
+            position: 'right'
+        },
+        {
+            targetId: 'participant-nav-profile',
+            title: t('dashboard.participantTour.profile.title'),
+            description: t('dashboard.participantTour.profile.desc'),
+            position: 'right'
+        }
+    ];
 
     const handleUpgrade = async (plan: string) => {
         if (plan === 'enterprise') {
@@ -190,6 +225,7 @@ export default function ParticipantDashboard() {
                     ].map((item) => (
                         <button
                             key={item.id}
+                            id={`participant-nav-${item.id}`}
                             onClick={() => setActiveTab(item.id as Tab)}
                             title={isSidebarCollapsed ? item.label : ''}
                             style={{
@@ -474,7 +510,7 @@ export default function ParticipantDashboard() {
                                     </div>
 
                                     <button
-                                        onClick={() => toast.info('Edição de perfil em breve!')}
+                                        onClick={() => setIsProfileModalOpen(true)}
                                         style={{ padding: '0.8rem', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
                                     >
                                         Editar Perfil
@@ -603,6 +639,24 @@ export default function ParticipantDashboard() {
                     )}
                 </AnimatePresence>
             </main>
+
+            {/* Modals & Tour */}
+            {user && (
+                <ProfileModal
+                    isOpen={isProfileModalOpen}
+                    onClose={() => setIsProfileModalOpen(false)}
+                    user={user}
+                    onSuccess={() => {
+                        toast.success('Perfil atualizado!');
+                        authService.getProfile().then(setUser);
+                    }}
+                />
+            )}
+
+            <OnboardingTour
+                steps={participantSteps}
+                storageKey="participant-tour-seen"
+            />
         </div>
     );
 }

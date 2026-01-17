@@ -203,6 +203,28 @@
                     "title": "Global Support",
                     "desc": "View and respond to support tickets from all users in one place."
                 }
+            },
+            "participantTour": {
+                "welcome": {
+                    "title": "Welcome, Voyager! 🌟",
+                    "desc": "This is your portal to knowledge. Let's show you how to make the most of your journey with us."
+                },
+                "explore": {
+                    "title": "Explore New Worlds",
+                    "desc": "Click here to discover masterclasses, workshops, and exclusive events from mentors worldwide."
+                },
+                "tickets": {
+                    "title": "Your Passport",
+                    "desc": "Here you'll find all your tickets and details for the events you're already registered for."
+                },
+                "certificates": {
+                    "title": "Your Achievements",
+                    "desc": "After completing your events, your certificates of excellence will magically appear here."
+                },
+                "profile": {
+                    "title": "Your Digital Identity",
+                    "desc": "Customize your profile, add your photo, and keep your details updated for your certificates."
+                }
             }
         },
         "finance": {
