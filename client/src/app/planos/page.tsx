@@ -3,7 +3,6 @@
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { CheckCircle, Zap, ShieldCheck, Crown, Loader2 } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
@@ -23,8 +22,8 @@ export default function PlansPage() {
     }, []);
 
     const trackPlan = (plan: string, value: number) => {
-        if (typeof window !== 'undefined' && (window as any).fbq) {
-            (window as any).fbq('track', 'InitiateCheckout', {
+        if (typeof window !== 'undefined' && window.fbq) {
+            window.fbq('track', 'InitiateCheckout', {
                 content_name: `Plano ${plan}`,
                 value: value,
                 currency: currency

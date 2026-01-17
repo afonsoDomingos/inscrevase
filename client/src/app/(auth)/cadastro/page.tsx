@@ -102,8 +102,8 @@ function RegisterContent() {
             toast.success(t('auth.registerSuccess'));
 
             // Meta Pixel Tracking
-            if (typeof window !== 'undefined' && (window as any).fbq) {
-                (window as any).fbq('track', 'CompleteRegistration', {
+            if (typeof window !== 'undefined' && window.fbq) {
+                window.fbq('track', 'CompleteRegistration', {
                     content_name: formData.role,
                     status: 'success',
                     plan: searchParams.get('plan') || 'default'

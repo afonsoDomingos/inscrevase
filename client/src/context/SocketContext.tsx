@@ -128,6 +128,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('🔌 [SocketContext] Limpando conexão...');
             socketInstance.disconnect();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, fetchOnlineUsersHTTP]);
 
     return (
