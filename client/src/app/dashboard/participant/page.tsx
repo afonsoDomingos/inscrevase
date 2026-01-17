@@ -59,32 +59,32 @@ export default function ParticipantDashboard() {
     const participantSteps: Step[] = [
         {
             targetId: 'welcome-modal',
-            title: t('dashboard.participantTour.welcome.title'),
-            description: t('dashboard.participantTour.welcome.desc'),
+            title: t('dashboard.settings.participantTour.welcome.title'),
+            description: t('dashboard.settings.participantTour.welcome.desc'),
             position: 'center'
         },
         {
             targetId: 'participant-nav-explore',
-            title: t('dashboard.participantTour.explore.title'),
-            description: t('dashboard.participantTour.explore.desc'),
+            title: t('dashboard.settings.participantTour.explore.title'),
+            description: t('dashboard.settings.participantTour.explore.desc'),
             position: 'right'
         },
         {
             targetId: 'participant-nav-tickets',
-            title: t('dashboard.participantTour.tickets.title'),
-            description: t('dashboard.participantTour.tickets.desc'),
+            title: t('dashboard.settings.participantTour.tickets.title'),
+            description: t('dashboard.settings.participantTour.tickets.desc'),
             position: 'right'
         },
         {
             targetId: 'participant-nav-certificates',
-            title: t('dashboard.participantTour.certificates.title'),
-            description: t('dashboard.participantTour.certificates.desc'),
+            title: t('dashboard.settings.participantTour.certificates.title'),
+            description: t('dashboard.settings.participantTour.certificates.desc'),
             position: 'right'
         },
         {
             targetId: 'participant-nav-profile',
-            title: t('dashboard.participantTour.profile.title'),
-            description: t('dashboard.participantTour.profile.desc'),
+            title: t('dashboard.settings.participantTour.profile.title'),
+            description: t('dashboard.settings.participantTour.profile.desc'),
             position: 'right'
         }
     ];
