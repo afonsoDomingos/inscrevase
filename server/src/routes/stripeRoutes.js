@@ -61,6 +61,6 @@ router.post('/subscription/create', authMiddleware, stripeController.createSubsc
  */
 
 // Stripe webhooks
-router.post('/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
+router.post('/webhook', stripeController.handleWebhook);
 
 module.exports = router;
