@@ -22,7 +22,7 @@ export interface TransactionModel {
     status: 'pending' | 'completed' | 'failed';
     paymentMethod: 'stripe' | 'manual';
     createdAt: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 
 export interface FinancialSummary {
