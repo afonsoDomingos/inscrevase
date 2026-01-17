@@ -416,10 +416,25 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                         <button
                                             onClick={handleCreateTicket}
                                             disabled={loading}
-                                            className="btn-primary"
-                                            style={{ padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '1rem' }}
+                                            // className="btn-primary" // Removed class reliance, using explicit styles
+                                            style={{
+                                                width: '100%',
+                                                padding: '1rem',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '10px',
+                                                marginTop: '1rem',
+                                                background: '#1a1a1a',
+                                                color: '#fff',
+                                                border: 'none',
+                                                fontWeight: 700,
+                                                cursor: loading ? 'not-allowed' : 'pointer',
+                                                opacity: loading ? 0.7 : 1
+                                            }}
                                         >
-                                            {loading ? <Loader2 className="animate-spin" /> : <> {t('common.sendRequest')} <Send size={18} /></>}
+                                            {loading ? <Loader2 className="animate-spin" /> : <> Enviar Mensagem <Send size={18} /></>}
                                         </button>
                                     </div>
                                 </div>
