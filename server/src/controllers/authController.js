@@ -119,7 +119,7 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const { name, businessName, bio, profilePhoto, whatsapp, socialLinks, country } = req.body;
+        const { name, businessName, bio, profilePhoto, whatsapp, socialLinks, country, facebookPixelId } = req.body;
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -130,6 +130,7 @@ const updateProfile = async (req, res) => {
         if (profilePhoto) user.profilePhoto = profilePhoto;
         if (whatsapp) user.whatsapp = whatsapp;
         if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks };
+        if (facebookPixelId !== undefined) user.facebookPixelId = facebookPixelId;
 
         await user.save();
         res.json({ message: 'Profile updated successfully', user });

@@ -35,6 +35,7 @@ const UserSchema = new mongoose.Schema({
     isVerified: { type: Boolean, default: false },
     verificationStatus: { type: String, enum: ['none', 'pending', 'verified', 'rejected'], default: 'none' },
     verificationRequestedAt: { type: Date },
+    facebookPixelId: { type: String, sparse: true }, // Meta Pixel ID for tracking
     createdAt: { type: Date, default: Date.now }
 });
 

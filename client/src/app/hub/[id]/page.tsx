@@ -33,6 +33,7 @@ import Image from 'next/image';
 import { toast } from 'sonner';
 import { generateCertificate } from '@/lib/certificateGenerator';
 import { useTranslate } from '@/context/LanguageContext';
+import MetaPixel from '@/components/MetaPixel';
 
 const getEmbedUrl = (url?: string) => {
     if (!url) return undefined;
@@ -116,6 +117,7 @@ interface SubmissionData {
                 linkedin?: string;
                 website?: string;
             };
+            facebookPixelId?: string;
         };
         theme: {
             primaryColor: string;
@@ -209,6 +211,7 @@ function HubContent() {
 
     return (
         <main style={{ minHeight: '100vh', background: `linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(5,5,5,0.95)), url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop')`, backgroundSize: 'cover', backgroundAttachment: 'fixed', color: '#fff', fontFamily: 'var(--font-inter), sans-serif', padding: '0' }}>
+            {form.creator.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Top Navigation Bar - Glass White */}
             <nav style={{ position: 'sticky', top: 0, background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', zIndex: 100, padding: '15px 24px', borderBottom: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

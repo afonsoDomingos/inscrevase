@@ -32,6 +32,7 @@ export interface UserData {
     authProvider?: 'google' | 'linkedin' | 'native';
     isVerified?: boolean;
     verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
+    facebookPixelId?: string;
 }
 
 export interface RegisterData {

@@ -29,6 +29,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
     const [whatsapp, setWhatsapp] = useState(user.whatsapp || '');
     const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || '');
     const [socialLinks, setSocialLinks] = useState(user.socialLinks || {});
+    const [facebookPixelId, setFacebookPixelId] = useState(user.facebookPixelId || '');
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -54,7 +55,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                 bio,
                 whatsapp,
                 profilePhoto,
-                socialLinks
+                socialLinks,
+                facebookPixelId
             });
             onSuccess();
             onClose();
@@ -218,6 +220,29 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                                             placeholder={t('dashboard.settings.websitePlaceholder')}
                                             style={{ paddingLeft: '2.5rem' }}
                                         />
+                                    </div>
+                                </div>
+
+                                {/* Marketing */}
+                                <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd' }}>
+                                    <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <Sparkles size={14} /> Marketing & Rastreamento
+                                    </div>
+                                    <div className="input-group">
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#0c4a6e', marginBottom: '0.3rem' }}>
+                                            Facebook Pixel ID
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="input-luxury"
+                                            value={facebookPixelId}
+                                            onChange={(e) => setFacebookPixelId(e.target.value)}
+                                            placeholder="Ex: 123456789012345"
+                                            style={{ padding: '0.8rem', borderColor: '#bae6fd' }}
+                                        />
+                                        <p style={{ fontSize: '0.7rem', color: '#0ea5e9', marginTop: '4px' }}>
+                                            O pixel será ativado automaticamente em todas as páginas dos seus eventos.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
