@@ -481,12 +481,12 @@ export default function ParticipantDashboard() {
                                                             right: '12px',
                                                             padding: '4px 12px',
                                                             borderRadius: '20px',
-                                                            background: ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b',
+                                                            background: ticket.status === 'rejected' ? '#ef4444' : (ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b'),
                                                             color: '#fff',
                                                             fontSize: '0.75rem',
                                                             fontWeight: 700
                                                         }}>
-                                                            {(ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? 'Confirmado' : 'Pendente'}
+                                                            {ticket.status === 'rejected' ? 'Recusado' : ((ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? 'Confirmado' : 'Pendente')}
                                                         </div>
                                                     </div>
                                                     <div style={{ padding: '1.5rem' }}>
