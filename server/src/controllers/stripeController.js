@@ -216,6 +216,7 @@ const completeOrder = async (session) => {
 
         // 5. Create transaction for mentor dashboard
         const transaction = new Transaction({
+            type: 'event_registration',
             user: paymentIntent.metadata.mentorId, // Required field in schema
             mentor: paymentIntent.metadata.mentorId,
             form: formId,
@@ -337,7 +338,23 @@ exports.handleWebhook = async (req, res) => {
                 role: 'mentor',
                 canCreateEvents: true
             });
-            console.log(`User ${userId} upgraded to ${plan} and role changed to mentor`);
+
+            // Record this as a transaction for the admin
+            const tx = new Transaction({
+                type: 'subscription',
+                user: userId,
+                amount: session.amount_total / 100,
+                currency: session.currency.toUpperCase(),
+                platformFee: session.amount_total / 100, // For subscriptions, the whole amount is platform fee
+                status: 'completed',
+                stripeSessionId: session.id,
+                subscriptionId: session.subscription,
+                paymentMethod: 'stripe',
+                metadata: { plan }
+            });
+            await tx.save();
+
+            console.log(`User ${userId} upgraded to ${plan} and transaction recorded`);
         } else {
             // Event registration payment
             await completeOrder(session);
@@ -453,13 +470,19 @@ exports.getAdminFinancialSummary = async (req, res) => {
 
         const summary = allTransactions.reduce((acc, tx) => {
             if (tx.status === 'completed') {
-                acc.collectedFees += tx.platformFee;
                 acc.totalRevenue += tx.amount;
+                if (tx.type === 'subscription') {
+                    acc.subscriptionRevenue += tx.amount;
+                    acc.collectedFees += tx.amount; // Subscriptions are pure fee
+                } else {
+                    acc.eventFeeRevenue += tx.platformFee;
+                    acc.collectedFees += tx.platformFee;
+                }
             } else if (tx.status === 'pending') {
                 acc.pendingFees += tx.platformFee;
             }
             return acc;
-        }, { collectedFees: 0, pendingFees: 0, totalRevenue: 0 });
+        }, { collectedFees: 0, pendingFees: 0, totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
 
         // Growth Chart (Last 12 months)
         const currentYear = new Date().getFullYear();
@@ -473,8 +496,12 @@ exports.getAdminFinancialSummary = async (req, res) => {
             const date = new Date(tx.createdAt);
             if (date.getFullYear() === currentYear && tx.status === 'completed') {
                 const month = date.getMonth();
-                monthlyStats[month].platformFees += tx.platformFee;
                 monthlyStats[month].revenue += tx.amount;
+                if (tx.type === 'subscription') {
+                    monthlyStats[month].platformFees += tx.amount;
+                } else {
+                    monthlyStats[month].platformFees += tx.platformFee;
+                }
             }
         });
 

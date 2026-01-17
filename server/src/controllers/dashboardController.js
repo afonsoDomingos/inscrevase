@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
+const Transaction = require('../models/Transaction');
 
 exports.getAdminStats = async (req, res) => {
     try {
@@ -9,6 +10,18 @@ exports.getAdminStats = async (req, res) => {
         const totalForms = await Form.countDocuments();
         const totalSubmissions = await Submission.countDocuments();
         const approvedSubmissions = await Submission.countDocuments({ status: 'approved' });
+
+        // Financial Stats
+        const allTx = await Transaction.find({ status: 'completed' });
+        const summary = allTx.reduce((acc, tx) => {
+            acc.totalRevenue += tx.amount;
+            if (tx.type === 'subscription') {
+                acc.subscriptionRevenue += tx.amount;
+            } else {
+                acc.eventFeeRevenue += tx.platformFee;
+            }
+            return acc;
+        }, { totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
 
         // For "growth", we can calculate based on last 30 days vs previous 30 days
         // but for now let's just return real counts
@@ -25,6 +38,9 @@ exports.getAdminStats = async (req, res) => {
             forms: totalForms,
             submissions: totalSubmissions,
             approved: approvedSubmissions,
+            revenue: summary.totalRevenue,
+            subscriptionRevenue: summary.subscriptionRevenue,
+            eventFeeRevenue: summary.eventFeeRevenue,
             authStats: {
                 google: googleUsers,
                 linkedin: linkedinUsers,

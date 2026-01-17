@@ -45,9 +45,9 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
         if (!isVisible) return;
 
         const updatePosition = () => {
-            setTargetRect(null); // Reset rect
             const step = steps[currentStep];
             if (step.position === 'center') {
+                setTargetRect(null);
                 return;
             }
 
@@ -55,20 +55,37 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
             if (element) {
                 const rect = element.getBoundingClientRect();
                 setTargetRect(rect);
-                // Scroll element into view smoothly if needed
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                setTargetRect(null);
             }
         };
 
-        updatePosition();
-        window.addEventListener('resize', updatePosition);
-        window.addEventListener('scroll', updatePosition);
+        // Scroll element into view only when step changes
+        const step = steps[currentStep];
+        if (step.position !== 'center') {
+            const element = document.getElementById(step.targetId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Delay to allow smooth scroll to finish
+                setTimeout(updatePosition, 500);
+            }
+        } else {
+            updatePosition();
+        }
+
+        const handleUpdate = () => {
+            // Use requestAnimationFrame for smoother updates during scroll/resize
+            requestAnimationFrame(updatePosition);
+        };
+
+        window.addEventListener('resize', handleUpdate);
+        window.addEventListener('scroll', handleUpdate, { passive: true });
 
         return () => {
-            window.removeEventListener('resize', updatePosition);
-            window.removeEventListener('scroll', updatePosition);
+            window.removeEventListener('resize', handleUpdate);
+            window.removeEventListener('scroll', handleUpdate);
         };
-    }, [currentStep, isVisible]);
+    }, [currentStep, isVisible, steps]);
 
     const handleNext = () => {
         if (currentStep < steps.length - 1) {
@@ -106,14 +123,16 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                maxWidth: '500px'
+                maxWidth: '500px',
+                position: 'fixed' as const
             };
         }
 
-        const gap = 20;
-        let top = 0;
-        let left = 0;
-        const width = 320; // Tooltip width
+        const gap = 16;
+        let top: string | number = 0;
+        let left: string | number = 0;
+        let transform = '';
+        const width = 320;
 
         switch (step.position) {
             case 'bottom':
@@ -121,36 +140,38 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
                 left = targetRect.left + (targetRect.width / 2) - (width / 2);
                 break;
             case 'top':
-                top = targetRect.top - gap - 200; // approx height
+                top = targetRect.top - gap;
                 left = targetRect.left + (targetRect.width / 2) - (width / 2);
+                transform = 'translateY(-100%)';
                 break;
             case 'left':
-                top = targetRect.top;
+                top = targetRect.top + (targetRect.height / 2);
                 left = targetRect.left - width - gap;
+                transform = 'translateY(-50%)';
                 break;
             case 'right':
-                top = targetRect.top;
+                top = targetRect.top + (targetRect.height / 2);
                 left = targetRect.right + gap;
+                transform = 'translateY(-50%)';
                 break;
         }
 
-        // Boundary checks to prevent overflowing screen
-        if (left < 20) left = 20;
-        if (left + width > window.innerWidth - 20) left = window.innerWidth - width - 20;
+        // Screen boundary safety and clamping
+        const padding = 20;
 
-        // Vertical boundary check (assuming approx height of card ~250-300px)
-        const estimatedHeight = 300;
-        if (top + estimatedHeight > window.innerHeight) {
-            // If it overflows bottom, try to align bottom-up or just clamp
-            top = window.innerHeight - estimatedHeight - 20;
+        // Manual numeric left clamping (since we assigned it earlier)
+        if (typeof left === 'number') {
+            if (left < padding) left = padding;
+            if (left + width > window.innerWidth - padding) left = window.innerWidth - width - padding;
         }
-        if (top < 20) top = 20;
 
         return {
             top: top,
             left: left,
+            transform: transform,
             position: 'fixed' as const,
-            width: `${width}px`
+            width: `${width}px`,
+            transition: 'all 0.3s ease-out'
         };
     };
 
@@ -208,8 +229,7 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
                                 maxWidth: '400px',
                                 width: '100%',
-                                position: isCenter ? 'relative' : 'fixed',
-                                ...(isCenter ? {} : getTooltipStyle())
+                                ...getTooltipStyle()
                             }}
                             className="onboarding-card"
                         >

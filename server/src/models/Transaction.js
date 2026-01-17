@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['event_registration', 'subscription'],
+        default: 'event_registration'
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -9,12 +14,12 @@ const transactionSchema = new mongoose.Schema({
     mentor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: function () { return this.type === 'event_registration'; }
     },
     form: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Form',
-        required: true
+        required: function () { return this.type === 'event_registration'; }
     },
     submission: {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,7 +39,7 @@ const transactionSchema = new mongoose.Schema({
     },
     mentorEarnings: {
         type: Number,
-        required: true
+        required: function () { return this.type === 'event_registration'; }
     },
     status: {
         type: String,
@@ -47,6 +52,9 @@ const transactionSchema = new mongoose.Schema({
         sparse: true
     },
     stripeSessionId: {
+        type: String
+    },
+    subscriptionId: {
         type: String
     },
     paymentMethod: {

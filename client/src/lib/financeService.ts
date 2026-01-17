@@ -4,29 +4,33 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface TransactionModel {
     _id: string;
-    mentor: {
+    type: 'event_registration' | 'subscription';
+    mentor?: {
         _id: string;
         name: string;
         email: string;
         businessName?: string;
     };
-    form: {
+    form?: {
         _id: string;
         title: string;
     };
     amount: number;
     currency: string;
     platformFee: number;
-    mentorEarnings: number;
+    mentorEarnings?: number;
     status: 'pending' | 'completed' | 'failed';
     paymentMethod: 'stripe' | 'manual';
     createdAt: string;
+    metadata?: Record<string, any>;
 }
 
 export interface FinancialSummary {
     collectedFees: number;
     pendingFees: number;
     totalRevenue: number;
+    subscriptionRevenue?: number;
+    eventFeeRevenue?: number;
     monthlyStats?: { month: number; platformFees: number; revenue: number }[];
     paymentMethods?: { [key: string]: number };
     topMentors?: { name: string; business: string; totalGenerated: number; platformFees: number }[];

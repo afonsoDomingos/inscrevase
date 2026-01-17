@@ -244,7 +244,9 @@
             "noTransactions": "Nenhuma transação encontrada ainda.",
             "net": "Líquido",
             "loading": "Carregando estatísticas financeiras...",
-            "event": "Evento"
+            "event": "Evento",
+            "subscriptionRevenue": "Receita de Assinaturas",
+            "eventFeeRevenue": "Comissões de Eventos"
         },
         "plans": {
             "choosePlan": "Escolha seu Plano 💎",

@@ -12,20 +12,22 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { 
-    AreaChart, 
-    Area, 
-    XAxis, 
-    YAxis, 
-    CartesianGrid, 
-    Tooltip, 
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
     ResponsiveContainer,
     Cell,
     PieChart,
     Pie
 } from 'recharts';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function AdminFinance() {
+    const { t } = useTranslate();
     const [transactions, setTransactions] = useState<TransactionModel[]>([]);
     const [summary, setSummary] = useState<FinancialSummary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -70,11 +72,15 @@ export default function AdminFinance() {
         }
     };
 
-    const filteredTransactions = transactions.filter(tx =>
-        tx.mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.mentor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.form.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredTransactions = transactions.filter(tx => {
+        const mentorMatch = tx.mentor?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tx.mentor?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tx.mentor?.businessName?.toLowerCase().includes(searchTerm.toLowerCase());
+        const formMatch = tx.form?.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const typeMatch = tx.type?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return mentorMatch || formMatch || typeMatch;
+    });
 
     // Color palette for charts
     const COLORS = ['#FFD700', '#B8860B', '#DAA520', '#C5B358', '#FFDF00'];
@@ -111,18 +117,25 @@ export default function AdminFinance() {
                     subtitle="Total processado (Stripe + Manual)"
                 />
                 <StatsCard
-                    title="Taxas Coletadas"
-                    value={summary?.collectedFees || 0}
-                    icon={<CheckCircle size={24} />}
+                    title={t('dashboard.finance.subscriptionRevenue')}
+                    value={summary?.subscriptionRevenue || 0}
+                    icon={<TrendingUp size={24} />}
+                    color="#6366f1"
+                    subtitle="Upgrades de planos Mentores"
+                />
+                <StatsCard
+                    title={t('dashboard.finance.eventFeeRevenue')}
+                    value={summary?.eventFeeRevenue || 0}
+                    icon={<TrendingUp size={24} />}
                     color="#10b981"
-                    subtitle="Dinheiro em caixa (Plataforma)"
+                    subtitle="Taxas coletadas de inscrições"
                 />
                 <StatsCard
                     title="Taxas Pendentes"
                     value={summary?.pendingFees || 0}
                     icon={<Clock size={24} />}
                     color="#f59e0b"
-                    subtitle="Cobranças a mentores (Manual)"
+                    subtitle="Cobranças manuais a mentores"
                 />
             </div>
 
@@ -141,14 +154,14 @@ export default function AdminFinance() {
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="colorFees" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#FFD700" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#FFD700" stopOpacity={0}/>
+                                        <stop offset="5%" stopColor="#FFD700" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
-                                <Tooltip 
+                                <Tooltip
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
                                     formatter={(value: string | number | undefined) => [`${Number(value || 0).toLocaleString()} MT`, 'Taxa Plataforma']}
                                 />
@@ -273,11 +286,11 @@ export default function AdminFinance() {
                                     style={{ borderBottom: '1px solid #f9f9f9', fontSize: '0.9rem' }}
                                 >
                                     <td style={{ padding: '1.2rem' }}>
-                                        <div style={{ fontWeight: 700 }}>{tx.mentor.name}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{tx.mentor.businessName || tx.mentor.email}</div>
+                                        <div style={{ fontWeight: 700 }}>{tx.mentor?.name || 'Sistema'}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{tx.mentor?.businessName || tx.mentor?.email || 'Assinatura Direta'}</div>
                                     </td>
                                     <td style={{ padding: '1.2rem' }}>
-                                        <div style={{ fontWeight: 600 }}>{tx.form.title}</div>
+                                        <div style={{ fontWeight: 600 }}>{tx.type === 'subscription' ? `Assinatura: ${tx.metadata?.plan || 'Upgrade'}` : (tx.form?.title || 'Evento')}</div>
                                         <span style={{
                                             fontSize: '0.7rem',
                                             fontWeight: 800,

@@ -9,6 +9,8 @@ export interface AdminStats {
     submissions: number;
     approved: number;
     revenue?: number;
+    subscriptionRevenue?: number;
+    eventFeeRevenue?: number;
     authStats?: {
         google: number;
         linkedin: number;
