@@ -7,14 +7,25 @@ export interface SubmissionModel {
     form: {
         _id: string;
         title: string;
+        slug?: string;
         coverImage?: string;
         eventDate?: string;
         eventTime?: string;
         location?: string;
         onlineLink?: string;
     };
+    data: Record<string, any>;
+    paymentProof?: string;
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'unpaid' | 'paid' | 'pending';
+    aiAnalysis?: {
+        isValid: boolean;
+        transactionId?: string;
+        amount?: number;
+        currency?: string;
+        warning?: string;
+        confidence?: number;
+    };
     submittedAt: string;
 }
 
@@ -26,5 +37,46 @@ export const submissionService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar seus ingressos');
         return response.json();
+    },
+
+    async getMySubmissions(): Promise<SubmissionModel[]> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/my-submissions`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar submissões');
+        return response.json();
+    },
+
+    async updateStatus(id: string, status: 'approved' | 'rejected'): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/${id}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+        if (!response.ok) throw new Error('Falha ao atualizar status');
+    },
+
+    async analyzeReceipt(submissionId: string): Promise<{ success: boolean; analysis: any }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/${submissionId}/analyze-receipt`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao analisar recibo');
+        return response.json();
+    },
+
+    async deleteSubmission(id: string): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao excluir submissão');
     }
 };
