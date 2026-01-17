@@ -521,7 +521,17 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                     )}
 
                                                     <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '8px', textAlign: 'right' }}>
-                                                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        {(() => {
+                                                            const date = new Date(msg.createdAt);
+                                                            const today = new Date();
+                                                            const isToday = date.getDate() === today.getDate() &&
+                                                                date.getMonth() === today.getMonth() &&
+                                                                date.getFullYear() === today.getFullYear();
+
+                                                            return isToday
+                                                                ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                                                : date.toLocaleString([], { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                                                        })()}
                                                     </div>
                                                 </div>
                                             );

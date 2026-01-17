@@ -1,4 +1,5 @@
 const SupportTicket = require('../models/SupportTicket');
+const Notification = require('../models/Notification');
 
 exports.createTicket = async (req, res) => {
     try {
@@ -11,6 +12,18 @@ exports.createTicket = async (req, res) => {
             unreadByAdmin: !mentorId, // If no mentor, it's for admin
             unreadByMentor: !!mentorId // If mentor, it's for mentor
         });
+
+        // Notify Mentor if applicable
+        if (mentorId) {
+            await Notification.create({
+                user: mentorId,
+                type: 'info',
+                title: 'Nova Mensagem de Suporte',
+                message: `Novo ticket de suporte: ${subject}`,
+                link: '/dashboard/mentor?tab=support' // Assuming support tab or modal logic
+            });
+        }
+
         res.status(201).json(ticket);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar ticket', error: error.message });
@@ -71,18 +84,38 @@ exports.addMessage = async (req, res) => {
             attachment: attachment || null
         });
 
-        // Set unread flags
+        // Set unread flags and send Notifications
+        const notificationData = {
+            type: 'info',
+            title: 'Nova Resposta no Suporte',
+            message: `Nova resposta no ticket: ${ticket.subject}`,
+            link: role === 'user' ? '/dashboard/mentor?tab=support' : '/dashboard/participant?tab=tickets'
+        };
+
         if (role === 'admin') {
             ticket.unreadByUser = true;
             ticket.unreadByMentor = ticket.mentor ? true : false;
+            // Notify User
+            await Notification.create({ ...notificationData, user: ticket.user, link: '/dashboard/participant?tab=tickets' });
+            // Notify Mentor if involved
+            if (ticket.mentor) {
+                await Notification.create({ ...notificationData, user: ticket.mentor, link: '/dashboard/mentor?tab=support' });
+            }
+
         } else if (role === 'mentor') {
             ticket.unreadByUser = true;
-            ticket.unreadByAdmin = false; // Usually mentors don't talk to admins via participant tickets
+            ticket.unreadByAdmin = false;
+            // Notify User
+            await Notification.create({ ...notificationData, user: ticket.user, link: '/dashboard/participant?tab=tickets' });
+
         } else if (role === 'user') {
             if (ticket.mentor) {
                 ticket.unreadByMentor = true;
+                // Notify Mentor
+                await Notification.create({ ...notificationData, user: ticket.mentor, link: '/dashboard/mentor?tab=support' });
             } else {
                 ticket.unreadByAdmin = true;
+                // Notify Admin (optional, or just rely on unread flag)
             }
         }
 
