@@ -47,7 +47,9 @@
         "discoverPlatform": "Discover Our Platform",
         "participate": "Participate",
         "explore": "Explore",
-        "viewMore": "View More"
+        "viewMore": "View More",
+        "dashboard": "Dashboard",
+        "createAccount": "Create Free Account"
     },
     "nav": {
         "home": "Home",

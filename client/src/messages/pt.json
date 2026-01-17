@@ -47,7 +47,9 @@
         "discoverPlatform": "Descubra Nossa Plataforma",
         "participate": "Participar",
         "explore": "Explorar",
-        "viewMore": "Ver Mais"
+        "viewMore": "Ver Mais",
+        "dashboard": "Painel de Controlo",
+        "createAccount": "Criar Conta Grátis"
     },
     "nav": {
         "home": "Início",
