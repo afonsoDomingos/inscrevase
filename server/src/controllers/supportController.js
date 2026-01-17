@@ -16,11 +16,12 @@ exports.createTicket = async (req, res) => {
         // Notify Mentor if applicable
         if (mentorId) {
             await Notification.create({
-                user: mentorId,
-                type: 'info',
+                recipient: mentorId,
+                sender: req.user.id,
+                type: 'personal',
                 title: 'Nova Mensagem de Suporte',
-                message: `Novo ticket de suporte: ${subject}`,
-                link: '/dashboard/mentor?tab=support' // Assuming support tab or modal logic
+                content: `Novo ticket de suporte: ${subject}`,
+                actionUrl: '/dashboard/mentor?tab=support'
             });
         }
 
@@ -85,34 +86,34 @@ exports.addMessage = async (req, res) => {
         });
 
         // Set unread flags and send Notifications
-        const notificationData = {
-            type: 'info',
+        const notificationBase = {
+            sender: req.user.id,
+            type: 'personal',
             title: 'Nova Resposta no Suporte',
-            message: `Nova resposta no ticket: ${ticket.subject}`,
-            link: role === 'user' ? '/dashboard/mentor?tab=support' : '/dashboard/participant?tab=tickets'
+            content: `Nova resposta no ticket: ${ticket.subject}`,
         };
 
         if (role === 'admin') {
             ticket.unreadByUser = true;
             ticket.unreadByMentor = ticket.mentor ? true : false;
             // Notify User
-            await Notification.create({ ...notificationData, user: ticket.user, link: '/dashboard/participant?tab=tickets' });
+            await Notification.create({ ...notificationBase, recipient: ticket.user, actionUrl: '/dashboard/participant?tab=tickets' });
             // Notify Mentor if involved
             if (ticket.mentor) {
-                await Notification.create({ ...notificationData, user: ticket.mentor, link: '/dashboard/mentor?tab=support' });
+                await Notification.create({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
             }
 
         } else if (role === 'mentor') {
             ticket.unreadByUser = true;
             ticket.unreadByAdmin = false;
             // Notify User
-            await Notification.create({ ...notificationData, user: ticket.user, link: '/dashboard/participant?tab=tickets' });
+            await Notification.create({ ...notificationBase, recipient: ticket.user, actionUrl: '/dashboard/participant?tab=tickets' });
 
         } else if (role === 'user') {
             if (ticket.mentor) {
                 ticket.unreadByMentor = true;
                 // Notify Mentor
-                await Notification.create({ ...notificationData, user: ticket.mentor, link: '/dashboard/mentor?tab=support' });
+                await Notification.create({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
             } else {
                 ticket.unreadByAdmin = true;
                 // Notify Admin (optional, or just rely on unread flag)
