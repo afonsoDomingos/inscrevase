@@ -159,5 +159,17 @@ export const authService = {
 
         // Refresh profile to update UI
         await this.getProfile();
+    },
+
+    async restoreMentor(): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/restore-mentor`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao restaurar modo mentor');
+
+        // Refresh profile to update UI
+        await this.getProfile();
     }
 };

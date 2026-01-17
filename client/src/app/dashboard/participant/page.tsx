@@ -66,6 +66,20 @@ export default function ParticipantDashboard() {
         }
     };
 
+    const handleRestoreMentor = async () => {
+        setUpgradeLoading(true);
+        try {
+            await authService.restoreMentor();
+            toast.success('Modo Mentor restaurado!');
+            router.push('/dashboard/mentor');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Erro ao restaurar modo mentor';
+            toast.error(message);
+        } finally {
+            setUpgradeLoading(false);
+        }
+    };
+
     useEffect(() => {
         const loadProfile = async () => {
             try {
