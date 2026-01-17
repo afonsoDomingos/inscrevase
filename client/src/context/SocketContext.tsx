@@ -17,7 +17,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [userId, setUserId] = useState<string | null>(null);
 
     // Função robusta para buscar usuários online via HTTP (Fallback/Inicialização)
-    const fetchOnlineUsersHTTP = async () => {
+    const fetchOnlineUsersHTTP = React.useCallback(async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'; // Garante /api aqui para o fetch
             // Tratar url para garantir que termine com /api se não tiver (caso a env seja só a base)
@@ -36,7 +36,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
             console.error('📡 [SocketContext] Erro ao buscar usuários online via HTTP:', error);
         }
-    };
+    }, []);
 
     // 1. Efeito de Autenticação e Polling HTTP (Garantia de funcionamento mesmo sem socket)
     useEffect(() => {
@@ -61,7 +61,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             clearInterval(pollingInterval);
             window.removeEventListener('storage', checkAuth);
         };
-    }, [userId]);
+    }, [userId, fetchOnlineUsersHTTP]);
 
     // 2. Efeito do Socket (Tempo Real)
     useEffect(() => {
@@ -128,7 +128,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('🔌 [SocketContext] Limpando conexão...');
             socketInstance.disconnect();
         };
-    }, [userId]); // Removido 'socket' das dependências para evitar loop de reconexão
+    }, [userId, fetchOnlineUsersHTTP]);
 
     return (
         <SocketContext.Provider value={{ socket, onlineUsers }}>
