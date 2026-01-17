@@ -25,6 +25,7 @@ import {
     MapPin,
     Zap,
     MessageCircle,
+    Map as MapIcon,
     LifeBuoy
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
@@ -214,9 +215,9 @@ export default function ParticipantDashboard() {
                         <motion.h2
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: 0 }}
+                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff', margin: 0 }}
                         >
-                            Vibe<span className="gold-text">.Part</span>
+                            Inscreva<span className="gold-text">.se</span>
                         </motion.h2>
                     )}
                     <button
@@ -279,6 +280,34 @@ export default function ParticipantDashboard() {
                             )}
                         </button>
                     ))}
+
+                    <button
+                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                        title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                            gap: '12px',
+                            padding: '0.75rem 1rem',
+                            width: '100%',
+                            borderRadius: '12px',
+                            border: 'none',
+                            background: 'transparent',
+                            color: '#FFD700',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'left',
+                            fontSize: '0.95rem',
+                            marginTop: '0.5rem'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                        <MapIcon size={20} />
+                        {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                    </button>
                 </nav>
 
                 <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
