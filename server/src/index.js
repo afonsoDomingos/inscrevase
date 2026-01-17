@@ -139,15 +139,12 @@ const authLimiter = rateLimit({
         res.status(429).json({ message: 'Muitas tentativas de autenticação. Por favor, tente novamente em uma hora.' });
     }
 });
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
+// Webhook Route - Must be defined BEFORE express.json() to capture raw body
+const stripeController = require('./controllers/stripeController');
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
 
 // Standard Middleware
-app.use(express.json({
-    verify: (req, res, buf) => {
-        req.rawBody = buf;
-    }
-}));
+app.use(express.json()); // No more verify hack needed since webhook is handled above
 app.use(require('./config/passport').initialize());
 
 // Routes

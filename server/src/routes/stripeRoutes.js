@@ -60,7 +60,9 @@ router.post('/subscription/create', authMiddleware, stripeController.createSubsc
  * WEBHOOKS
  */
 
-// Stripe webhooks
-router.post('/webhook', stripeController.handleWebhook);
+
+// Stripe webhooks - Handled in index.js to allow raw body parsing
+// router.post('/webhook', stripeController.handleWebhook);
+
 
 module.exports = router;
