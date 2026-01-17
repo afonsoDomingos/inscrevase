@@ -128,7 +128,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('🔌 [SocketContext] Limpando conexão...');
             socketInstance.disconnect();
         };
-    }, [userId, socket]);
+    }, [userId]); // Removido 'socket' das dependências para evitar loop de reconexão
 
     return (
         <SocketContext.Provider value={{ socket, onlineUsers }}>
