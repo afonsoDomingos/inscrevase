@@ -5,6 +5,7 @@ const Submission = require('../models/Submission');
 exports.getAdminStats = async (req, res) => {
     try {
         const totalMentors = await User.countDocuments({ role: 'mentor' });
+        const totalParticipants = await User.countDocuments({ role: 'participant' });
         const totalForms = await Form.countDocuments();
         const totalSubmissions = await Submission.countDocuments();
         const approvedSubmissions = await Submission.countDocuments({ status: 'approved' });
@@ -20,6 +21,7 @@ exports.getAdminStats = async (req, res) => {
 
         res.json({
             mentors: totalMentors,
+            participants: totalParticipants,
             forms: totalForms,
             submissions: totalSubmissions,
             approved: approvedSubmissions,

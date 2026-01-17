@@ -2,7 +2,7 @@
 import { BadgeCheck, ShieldAlert, Crown, Zap, Briefcase, Star, Gem } from 'lucide-react';
 
 interface PremiumBadgeProps {
-    type: 'verified' | 'admin' | 'superadmin' | 'mentor' | 'free' | 'pro' | 'enterprise' | 'pending';
+    type: 'verified' | 'admin' | 'superadmin' | 'mentor' | 'participant' | 'free' | 'pro' | 'enterprise' | 'pending';
     size?: 'sm' | 'md' | 'lg';
     showLabel?: boolean;
 }
@@ -48,6 +48,14 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
             bg: '#F7FAFC',
             color: '#4A5568',
             border: '1px solid #E2E8F0',
+            shadow: 'none'
+        },
+        participant: {
+            icon: Star,
+            label: 'Participante',
+            bg: '#F0FFF4',
+            color: '#38A169',
+            border: '1px solid #C6F6D5',
             shadow: 'none'
         },
         free: {

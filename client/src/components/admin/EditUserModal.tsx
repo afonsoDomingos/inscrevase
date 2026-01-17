@@ -186,6 +186,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             style={{ padding: '0.6rem' }}
                                         >
                                             <option value="mentor">Mentor</option>
+                                            <option value="participant">Participante</option>
                                             <option value="admin">Admin</option>
                                             <option value="SuperAdmin">SuperAdmin</option>
                                         </select>

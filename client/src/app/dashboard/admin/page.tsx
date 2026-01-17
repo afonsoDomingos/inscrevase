@@ -170,6 +170,7 @@ export default function AdminDashboard() {
         { label: 'Visitas Hoje', value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
         { label: 'Visitantes Únicos', value: trafficStats?.uniqueVisitorsToday || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
         { label: t('dashboard.activeMentors'), value: stats?.mentors || 0, icon: <Users size={24} />, color: '#FFD700', tab: 'users' },
+        { label: 'Participantes Ativos', value: stats?.participants || 0, icon: <Users size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.createdForms'), value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce', tab: 'forms' },
         { label: t('dashboard.totalSubscriptions'), value: stats?.submissions || 0, icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
         { label: t('dashboard.approvedSubscriptions'), value: stats?.approved || 0, icon: <CheckCircle size={24} />, color: '#38a169', tab: 'submissions' },
