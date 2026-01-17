@@ -322,7 +322,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                         </div>
 
                         {/* Main Content */}
-                        <div style={{ background: '#fff', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ background: '#fff', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
                             {view === 'new' && (
                                 <div style={{ padding: '3rem', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
                                     <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>{t('support.openNewTicket')}</h2>
