@@ -14,7 +14,7 @@ export interface SubmissionModel {
         location?: string;
         onlineLink?: string;
     };
-    data: Record<string, any>;
+    data: Record<string, unknown>;
     paymentProof?: string;
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'unpaid' | 'paid' | 'pending';
@@ -61,7 +61,7 @@ export const submissionService = {
         if (!response.ok) throw new Error('Falha ao atualizar status');
     },
 
-    async analyzeReceipt(submissionId: string): Promise<{ success: boolean; analysis: any }> {
+    async analyzeReceipt(submissionId: string): Promise<{ success: boolean; analysis: SubmissionModel['aiAnalysis'] }> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/submissions/${submissionId}/analyze-receipt`, {
             method: 'POST',
