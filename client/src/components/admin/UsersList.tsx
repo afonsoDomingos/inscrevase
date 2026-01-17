@@ -34,6 +34,15 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
 
     useEffect(() => {
         loadUsers();
+
+        // Poll for updates every 10 seconds to keep roles and plans in sync
+        const interval = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                loadUsers();
+            }
+        }, 10000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const loadUsers = async () => {

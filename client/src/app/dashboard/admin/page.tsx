@@ -138,8 +138,14 @@ export default function AdminDashboard() {
         loadDashboard();
         loadUnreadCount();
 
-        // Poll for unread count every 30 seconds
-        const interval = setInterval(loadUnreadCount, 30000);
+        // Poll for updates every 15 seconds (stats, traffic, unread)
+        const interval = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                dashboardService.getAdminStats().then(setStats).catch(err => console.error("Stats polling error", err));
+                dashboardService.getTrafficStats().then(setTrafficStats).catch(err => console.error("Traffic polling error", err));
+                loadUnreadCount();
+            }
+        }, 15000);
         return () => clearInterval(interval);
     }, [router]);
 
