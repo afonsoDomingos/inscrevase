@@ -157,11 +157,21 @@ const getAllSubmissionsAdmin = async (req, res) => {
 const getMySubmissions = async (req, res) => {
     try {
         const userId = req.user.id;
-        const myForms = await Form.find({ creator: userId }).select('_id');
-        const formIds = myForms.map(f => f._id);
+        const userRole = req.user.role;
+        let query = {};
 
-        const submissions = await Submission.find({ form: { $in: formIds } })
-            .populate('form', 'title slug')
+        if (userRole === 'participant') {
+            // If participant, return submissions THEY made
+            query = { user: userId };
+        } else {
+            // If mentor/admin, return submissions for forms THEY created
+            const myForms = await Form.find({ creator: userId }).select('_id');
+            const formIds = myForms.map(f => f._id);
+            query = { form: { $in: formIds } };
+        }
+
+        const submissions = await Submission.find(query)
+            .populate('form', 'title slug coverImage eventDate eventTime location category')
             .sort('-submittedAt');
 
         res.json(submissions);

@@ -32,6 +32,7 @@ import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { supportService } from '@/lib/supportService';
+import { submissionService, SubmissionModel } from '@/lib/submissionService';
 
 type Tab = 'tickets' | 'explore' | 'certificates' | 'profile';
 const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
@@ -56,6 +57,8 @@ export default function ParticipantDashboard() {
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [unreadSupport, setUnreadSupport] = useState(0);
     const [targetMentor, setTargetMentor] = useState<{ id: string, name: string } | null>(null);
+    const [tickets, setTickets] = useState<SubmissionModel[]>([]);
+    const [ticketsLoading, setTicketsLoading] = useState(true);
 
     const participantSteps: Step[] = [
         {
@@ -138,11 +141,16 @@ export default function ParticipantDashboard() {
                 // Fetch unread support
                 const supportData = await supportService.getUnreadCount();
                 setUnreadSupport(supportData.count);
+
+                // Fetch tickets
+                const ticketsData = await submissionService.getParticipantSubmissions();
+                setTickets(ticketsData);
             } catch (error) {
                 console.error("Error loading profile:", error);
                 router.push('/entrar');
             } finally {
                 setLoading(false);
+                setTicketsLoading(false);
             }
         };
         loadProfile();
@@ -439,26 +447,103 @@ export default function ParticipantDashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                         >
-                            <div style={{
-                                padding: '3rem',
-                                background: '#fff',
-                                borderRadius: '20px',
-                                textAlign: 'center',
-                                border: '1px dashed #ddd'
-                            }}>
-                                <div style={{ background: 'rgba(255,215,0,0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                                    <Ticket size={40} color="#DAA520" />
+                            {ticketsLoading ? (
+                                <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                                    <Loader2 className="animate-spin" size={40} color="#FFD700" />
                                 </div>
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Você ainda não tem ingressos</h3>
-                                <p style={{ color: '#666', marginBottom: '2rem' }}>Inscreva-se em eventos para vê-los aqui.</p>
-                                <button
-                                    onClick={() => setActiveTab('explore')}
-                                    className="btn-primary"
-                                    style={{ padding: '0.8rem 2rem', borderRadius: '50px' }}
-                                >
-                                    Explorar Eventos
-                                </button>
-                            </div>
+                            ) : tickets.length > 0 ? (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                                    {tickets.map(ticket => (
+                                        <Link href={`/hub/${ticket._id}`} key={ticket._id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            <div style={{
+                                                background: '#fff',
+                                                borderRadius: '24px',
+                                                overflow: 'hidden',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                                                border: '1px solid #eee',
+                                                transition: 'transform 0.2s',
+                                                cursor: 'pointer'
+                                            }}
+                                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+                                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                            >
+                                                <div style={{ position: 'relative', height: '160px' }}>
+                                                    <Image
+                                                        src={ticket.form.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}
+                                                        alt={ticket.form.title}
+                                                        fill
+                                                        style={{ objectFit: 'cover' }}
+                                                    />
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '12px',
+                                                        right: '12px',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '20px',
+                                                        background: ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b',
+                                                        color: '#fff',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 700
+                                                    }}>
+                                                        {(ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? 'Confirmado' : 'Pendente'}
+                                                    </div>
+                                                </div>
+                                                <div style={{ padding: '1.5rem' }}>
+                                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.8rem', color: '#1a1a1a' }}>{ticket.form.title}</h3>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
+                                                            <Calendar size={16} />
+                                                            {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : 'A definir'} {ticket.form.eventTime ? `às ${ticket.form.eventTime}` : ''}
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
+                                                            <MapPin size={16} />
+                                                            {ticket.form.location || 'Online'}
+                                                        </div>
+                                                    </div>
+                                                    <button style={{
+                                                        width: '100%',
+                                                        marginTop: '1.5rem',
+                                                        padding: '0.8rem',
+                                                        borderRadius: '12px',
+                                                        background: '#1a1a1a',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        fontWeight: 700,
+                                                        fontSize: '0.9rem',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px'
+                                                    }}>
+                                                        <Ticket size={18} /> Ver Meus Acessos
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{
+                                    padding: '3rem',
+                                    background: '#fff',
+                                    borderRadius: '20px',
+                                    textAlign: 'center',
+                                    border: '1px dashed #ddd'
+                                }}>
+                                    <div style={{ background: 'rgba(255,215,0,0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                                        <Ticket size={40} color="#DAA520" />
+                                    </div>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Você ainda não tem ingressos</h3>
+                                    <p style={{ color: '#666', marginBottom: '2rem' }}>Inscreva-se em eventos para vê-los aqui.</p>
+                                    <button
+                                        onClick={() => setActiveTab('explore')}
+                                        className="btn-primary"
+                                        style={{ padding: '0.8rem 2rem', borderRadius: '50px' }}
+                                    >
+                                        Explorar Eventos
+                                    </button>
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
