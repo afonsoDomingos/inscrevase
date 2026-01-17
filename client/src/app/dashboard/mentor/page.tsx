@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -60,6 +60,7 @@ type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earn
 export default function MentorDashboard() {
     const { t } = useTranslate();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [forms, setForms] = useState<FormModel[]>([]);
@@ -114,14 +115,20 @@ export default function MentorDashboard() {
         try {
             const [userProfile, statsData, formsData] = await Promise.all([
                 authService.getProfile(),
-                dashboardService.getMentorStats(),
-                formService.getMyForms()
+                dashboardService.getMentorStats().catch(() => null), // Fail gracefully if not mentor yet
+                formService.getMyForms().catch(() => [])
             ]);
 
             setUser(userProfile);
 
             // Redirect if not a mentor or admin
             if (userProfile.role === 'participant') {
+                const isSubscribing = searchParams.get('subscription') === 'success';
+                if (isSubscribing) {
+                    console.log("Waiting for role update...");
+                    // Don't redirect, let the polling effect handle it
+                    return;
+                }
                 router.push('/dashboard/participant');
                 return;
             }
@@ -135,9 +142,42 @@ export default function MentorDashboard() {
                 router.push('/entrar');
             }
         } finally {
-            setLoading(false);
+            // Only set loading false if we are not waiting for subscription
+            if (searchParams.get('subscription') !== 'success') {
+                setLoading(false);
+            }
         }
-    }, [router]);
+    }, [router, searchParams]);
+
+    // Polling effect for subscription upgrade
+    useEffect(() => {
+        if (searchParams.get('subscription') === 'success') {
+            setLoading(true);
+            const interval = setInterval(async () => {
+                try {
+                    const profile = await authService.getProfile();
+                    if (profile.role === 'mentor') {
+                        setUser(profile);
+                        setLoading(false);
+                        toast.success(t('dashboard.welcomeBack')); // Or specific welcome message
+                        clearInterval(interval);
+                        router.replace('/dashboard/mentor'); // clear param
+                        // Reload data
+                        const [statsData, formsData] = await Promise.all([
+                            dashboardService.getMentorStats(),
+                            formService.getMyForms()
+                        ]);
+                        setStats(statsData);
+                        setForms(formsData);
+                    }
+                } catch (e) {
+                    console.error("Polling error", e);
+                }
+            }, 2000);
+
+            return () => clearInterval(interval);
+        }
+    }, [searchParams, router, t]);
 
     const loadUnreadCounts = useCallback(async () => {
         try {
