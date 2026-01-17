@@ -57,7 +57,9 @@ import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings';
 
-export default function MentorDashboard() {
+import { Suspense } from 'react';
+
+function MentorDashboardContent() {
     const { t } = useTranslate();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -1016,6 +1018,18 @@ export default function MentorDashboard() {
                 <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />
             </main >
         </div >
+    );
+}
+
+export default function MentorDashboard() {
+    return (
+        <Suspense fallback={
+            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Loader2 className="animate-spin" size={48} color="#FFD700" />
+            </div>
+        }>
+            <MentorDashboardContent />
+        </Suspense>
     );
 }
 
