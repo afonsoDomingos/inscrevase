@@ -147,5 +147,17 @@ export const authService = {
 
         // Refresh profile to update UI
         await this.getProfile();
+    },
+
+    async downgrade(): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/downgrade`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao alterar para conta de participante');
+
+        // Refresh profile to update UI
+        await this.getProfile();
     }
 };

@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
-import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail } from 'lucide-react';
+import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import PremiumBadge from '../common/PremiumBadge';
@@ -108,6 +108,22 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 alert('Solicitação enviada! Aguarde a análise.');
             } catch (err) {
                 alert('Erro ao solicitar verificação.');
+            }
+        }
+    };
+
+    const handleDowngrade = async () => {
+        if (confirm('Tem certeza que deseja mudar para conta de participante? Você perderá o acesso às ferramentas de mentor.')) {
+            setLoading(true);
+            try {
+                await authService.downgrade();
+                alert('Sua conta foi alterada para Participante com sucesso.');
+                // authService.downgrade refreshes the profile which will trigger the dashboard redirect if the dashboard has a redirect logic
+                window.location.reload(); // Simplest way to trigger the dashboard's redirect logic
+            } catch (err) {
+                alert('Erro ao alterar tipo de conta.');
+            } finally {
+                setLoading(false);
             }
         }
     };
@@ -318,6 +334,47 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Danger Zone: Account Type Change */}
+                    <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #fee2e2' }}>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#dc2626', borderBottom: '1px solid #fee2e2', paddingBottom: '0.8rem' }}>
+                            <AlertCircle size={18} /> Zona de Perigo
+                        </h4>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem' }}>Mudar para Conta de Participante</p>
+                                <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+                                    Ao voltar a ser participante, você não poderá mais criar eventos e seu plano atual será cancelado.
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleDowngrade}
+                                disabled={loading}
+                                style={{
+                                    padding: '0.6rem 1rem',
+                                    background: '#fff',
+                                    color: '#dc2626',
+                                    border: '1px solid #dc2626',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 700,
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.background = '#dc2626';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.background = '#fff';
+                                    e.currentTarget.style.color = '#dc2626';
+                                }}
+                            >
+                                Alterar
+                            </button>
                         </div>
                     </div>
                 </div>
