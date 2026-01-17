@@ -4,11 +4,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { formService, FormModel } from '@/lib/formService';
+import { financeService } from '@/lib/financeService';
 import { useRouter } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import {
     LogOut,
     Loader2,
@@ -21,9 +23,10 @@ import {
     Calendar,
     Award,
     Search,
-    MapPin
+    MapPin,
+    Zap,
+    CheckCircle
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 type Tab = 'tickets' | 'explore' | 'certificates' | 'profile';
 const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
