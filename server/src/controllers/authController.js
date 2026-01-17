@@ -25,8 +25,21 @@ const register = async (req, res) => {
         await user.save();
 
         // Link existing submissions for this email to the new user account
+        // We search for the email in common field names used in forms
+        const emailRegex = new RegExp(`^${email}$`, 'i');
         await Submission.updateMany(
-            { "data.email": email, user: { $exists: false } },
+            {
+                $or: [
+                    { "data.email": emailRegex },
+                    { "data.Email": emailRegex },
+                    { "data.e-mail": emailRegex },
+                    { "data.E-mail": emailRegex },
+                    { "data.seu-email": emailRegex },
+                    { "data.seu e-mail": emailRegex },
+                    { "data.Seu E-mail": emailRegex }
+                ],
+                user: { $exists: false }
+            },
             { $set: { user: user._id } }
         );
 

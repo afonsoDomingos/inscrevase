@@ -25,9 +25,32 @@ const submitForm = async (req, res) => {
             paymentProof
         };
 
-        // If user is logged in, link the submission
+        // Link the submission
         if (req.user) {
             submissionData.user = req.user.id;
+        } else {
+            // Try to find email in data and link to existing user
+            const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+            let foundEmail = null;
+            for (const key of emailKeys) {
+                if (data[key]) {
+                    foundEmail = data[key];
+                    break;
+                }
+            }
+
+            if (!foundEmail) {
+                // Try searching all keys for something that looks like an email if no common key found
+                const allValues = Object.values(data);
+                foundEmail = allValues.find(v => typeof v === 'string' && v.includes('@') && v.includes('.'));
+            }
+
+            if (foundEmail) {
+                const existingUser = await User.findOne({ email: foundEmail.toLowerCase().trim() });
+                if (existingUser) {
+                    submissionData.user = existingUser._id;
+                }
+            }
         }
 
         const submission = new Submission(submissionData);

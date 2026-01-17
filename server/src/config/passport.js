@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const User = require('../models/User');
+const Submission = require('../models/Submission');
 const axios = require('axios');
 
 // Helper to detect country from profile or IP
@@ -85,6 +86,25 @@ if (googleClientId && googleClientSecret) {
                 });
 
                 await user.save();
+
+                // Link existing submissions for this email
+                const emailRegex = new RegExp(`^${email}$`, 'i');
+                await Submission.updateMany(
+                    {
+                        $or: [
+                            { "data.email": emailRegex },
+                            { "data.Email": emailRegex },
+                            { "data.e-mail": emailRegex },
+                            { "data.E-mail": emailRegex },
+                            { "data.seu-email": emailRegex },
+                            { "data.seu e-mail": emailRegex },
+                            { "data.Seu E-mail": emailRegex }
+                        ],
+                        user: { $exists: false }
+                    },
+                    { $set: { user: user._id } }
+                );
+
                 done(null, user);
             } catch (err) {
                 console.error("Google Auth Error:", err);
@@ -153,6 +173,25 @@ if (linkedinClientId && linkedinClientSecret) {
                 });
 
                 await user.save();
+
+                // Link existing submissions for this email
+                const emailRegex = new RegExp(`^${email}$`, 'i');
+                await Submission.updateMany(
+                    {
+                        $or: [
+                            { "data.email": emailRegex },
+                            { "data.Email": emailRegex },
+                            { "data.e-mail": emailRegex },
+                            { "data.E-mail": emailRegex },
+                            { "data.seu-email": emailRegex },
+                            { "data.seu e-mail": emailRegex },
+                            { "data.Seu E-mail": emailRegex }
+                        ],
+                        user: { $exists: false }
+                    },
+                    { $set: { user: user._id } }
+                );
+
                 done(null, user);
             } catch (err) {
                 console.error("LinkedIn OAuth Error:", err);
