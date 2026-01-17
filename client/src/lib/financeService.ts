@@ -67,5 +67,22 @@ export const financeService = {
             }
         });
         return response.json();
+    },
+
+    async createSubscription(plan: string, currency: string = 'MZN') {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/stripe/subscription/create`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ plan, currency })
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Falha ao criar assinatura');
+        }
+        return response.json();
     }
 };

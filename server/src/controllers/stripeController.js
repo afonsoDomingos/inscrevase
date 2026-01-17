@@ -332,8 +332,12 @@ exports.handleWebhook = async (req, res) => {
             // Plan Upgrade
             const userId = session.metadata.userId;
             const plan = session.metadata.plan;
-            await User.findByIdAndUpdate(userId, { plan: plan });
-            console.log(`User ${userId} upgraded to ${plan}`);
+            await User.findByIdAndUpdate(userId, {
+                plan: plan,
+                role: 'mentor',
+                canCreateEvents: true
+            });
+            console.log(`User ${userId} upgraded to ${plan} and role changed to mentor`);
         } else {
             // Event registration payment
             await completeOrder(session);
@@ -505,12 +509,12 @@ exports.getAdminFinancialSummary = async (req, res) => {
             .sort((a, b) => b.platformFees - a.platformFees)
             .slice(0, 5);
 
-        res.status(200).json({ 
-            success: true, 
-            summary, 
-            monthlyStats, 
+        res.status(200).json({
+            success: true,
+            summary,
+            monthlyStats,
             paymentMethods,
-            topMentors 
+            topMentors
         });
     } catch (error) {
         console.error('Financial Summary Error:', error);

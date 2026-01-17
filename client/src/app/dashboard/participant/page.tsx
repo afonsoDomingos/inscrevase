@@ -42,6 +42,30 @@ export default function ParticipantDashboard() {
     const [selectedCategory, setSelectedCategory] = useState('Todos');
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Upgrade State
+    const [upgradeLoading, setUpgradeLoading] = useState(false);
+
+    const handleUpgrade = async (plan: string) => {
+        if (plan === 'enterprise') {
+            toast.info('Para o plano Enterprise, entre em contacto com a nossa equipa de vendas.');
+            return;
+        }
+
+        setUpgradeLoading(true);
+        try {
+            const response = await financeService.createSubscription(plan);
+            if (response.url) {
+                window.location.href = response.url;
+            }
+        } catch (error: unknown) {
+            console.error('Upgrade Error:', error);
+            const message = error instanceof Error ? error.message : 'Erro ao processar assinatura';
+            toast.error(message);
+        } finally {
+            setUpgradeLoading(false);
+        }
+    };
+
     useEffect(() => {
         const loadProfile = async () => {
             try {
@@ -439,6 +463,81 @@ export default function ParticipantDashboard() {
                                     >
                                         Editar Perfil
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* Upgrade to Mentor Section */}
+                            <div className="luxury-card" style={{ marginTop: '2rem', border: '1px solid #FFD700', background: 'linear-gradient(135deg, #fff 0%, #FFF8E1 100%)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                                    <div style={{ background: 'var(--gold-gradient)', padding: '12px', borderRadius: '12px' }}>
+                                        <Award size={24} color="#000" />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700 }}>Torne-se um Mentor</h3>
+                                        <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>Crie seus próprios eventos e monetize seu conhecimento.</p>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                    {/* Pro Plan */}
+                                    <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                            <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Plano Pro</span>
+                                            <span style={{ background: '#E3F2FD', color: '#1976D2', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700 }}>POPULAR</span>
+                                        </div>
+                                        <div style={{ marginBottom: '1.5rem' }}>
+                                            <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>499 MT</span>
+                                            <span style={{ color: '#666', fontSize: '0.9rem' }}>/mês</span>
+                                        </div>
+                                        <ul style={{ padding: 0, listStyle: 'none', margin: '0 0 2rem 0', flex: 1 }}>
+                                            <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Eventos Ilimitados
+                                            </li>
+                                            <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Taxa de plataforma: 10%
+                                            </li>
+                                            <li style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Suporte Prioritário
+                                            </li>
+                                        </ul>
+                                        <button
+                                            onClick={() => handleUpgrade('pro')}
+                                            disabled={upgradeLoading}
+                                            className="btn-primary"
+                                            style={{ width: '100%', borderRadius: '8px', padding: '0.8rem' }}
+                                        >
+                                            {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : 'Assinar Pro'}
+                                        </button>
+                                    </div>
+
+                                    {/* Enterprise Plan */}
+                                    <div style={{ background: '#1a1a1a', color: '#fff', padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ marginBottom: '1rem' }}>
+                                            <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Enterprise</span>
+                                        </div>
+                                        <div style={{ marginBottom: '1.5rem' }}>
+                                            <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>4.990 MT</span>
+                                            <span style={{ opacity: 0.6, fontSize: '0.9rem' }}>/mês</span>
+                                        </div>
+                                        <ul style={{ padding: 0, listStyle: 'none', margin: '0 0 2rem 0', flex: 1 }}>
+                                            <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Taxa de plataforma: 0%
+                                            </li>
+                                            <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Gestor de Conta Dedicado
+                                            </li>
+                                            <li style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Customização Avançada
+                                            </li>
+                                        </ul>
+                                        <button
+                                            onClick={() => handleUpgrade('enterprise')}
+                                            disabled={upgradeLoading}
+                                            style={{ width: '100%', borderRadius: '8px', padding: '0.8rem', background: '#fff', color: '#000', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+                                        >
+                                            {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : 'Falar com Vendas'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>
