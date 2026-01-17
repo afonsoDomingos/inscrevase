@@ -9,6 +9,8 @@ import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import Countdown from "@/components/Countdown";
 import { useSpotlight } from "@/hooks/useSpotlight";
+import { authService, UserData } from "@/lib/authService";
+import Cookies from "js-cookie";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -23,6 +25,22 @@ export default function Home() {
   const { t } = useTranslate();
   const { currency, setCurrency, formatPrice } = useCurrency();
   const { handleMouseMove } = useSpotlight();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    const currentUser = authService.getCurrentUser();
+    setIsLoggedIn(!!token);
+    setUser(currentUser);
+  }, []);
+
+  const getDashboardLink = () => {
+    if (!user) return '/entrar';
+    if (user.role === 'admin' || user.role === 'SuperAdmin') return '/dashboard/admin';
+    if (user.role === 'participant') return '/dashboard/participant';
+    return '/dashboard/mentor';
+  };
 
   const fadeIn = {
     initial: { opacity: 0, y: 30 },
@@ -168,7 +186,7 @@ export default function Home() {
               {t('landing.hero.description')}
             </p>
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' }}>
-              <Link href="/entrar" style={{
+              <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                 padding: '0.8rem 3.5rem',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
@@ -181,7 +199,7 @@ export default function Home() {
                 letterSpacing: '0.5px',
                 boxShadow: '0 4px 15px rgba(218, 165, 32, 0.2)'
               }}>
-                {t('common.getStarted')}
+                {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
               <Link href="/mentores" style={{
                 padding: '0.8rem 3.5rem',
@@ -307,7 +325,7 @@ export default function Home() {
               <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landing.showcase.masterclasses.title')}</h2>
               <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.masterclasses.description')}</p>
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/cadastro" style={{
+                <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
                   padding: '12px 60px',
                   borderRadius: '4px',
                   fontSize: '0.85rem',
@@ -316,7 +334,7 @@ export default function Home() {
                   textDecoration: 'none',
                   fontWeight: 700
                 }}>
-                  {t('common.getStarted')}
+                  {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
                 </Link>
                 <Link href="/mentores" style={{
                   padding: '12px 60px',
@@ -366,7 +384,7 @@ export default function Home() {
               <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landing.showcase.gala.title')}</h2>
               <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.gala.description')}</p>
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/entrar" style={{
+                <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                   padding: '12px 60px',
                   borderRadius: '4px',
                   fontSize: '0.85rem',
@@ -375,7 +393,7 @@ export default function Home() {
                   textDecoration: 'none',
                   fontWeight: 700
                 }}>
-                  {t('common.participate') || 'Participar'}
+                  {isLoggedIn ? t('nav.dashboard') : (t('common.participate') || 'Participar')}
                 </Link>
                 <Link href="/mentores" style={{
                   padding: '12px 60px',

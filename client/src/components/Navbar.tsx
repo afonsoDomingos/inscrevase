@@ -5,18 +5,22 @@ import Image from 'next/image';
 import { Menu, X, LogIn, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { authService, UserData } from '@/lib/authService';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslate } from '@/context/LanguageContext';
 
 export default function Navbar() {
   const { t } = useTranslate();
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<UserData | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get('token');
+    const currentUser = authService.getCurrentUser();
     setIsLoggedIn(!!token);
+    setUser(currentUser);
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -24,6 +28,13 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const getDashboardLink = () => {
+    if (!user) return '/entrar';
+    if (user.role === 'admin' || user.role === 'SuperAdmin') return '/dashboard/admin';
+    if (user.role === 'participant') return '/dashboard/participant';
+    return '/dashboard/mentor';
+  };
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
@@ -47,7 +58,7 @@ export default function Navbar() {
           <Link href="/mentores" className="nav-item">
             {t('nav.mentors')}
           </Link>
-          <Link href="/dashboard/mentor" className="nav-item">
+          <Link href={getDashboardLink()} className="nav-item">
             {t('nav.events')}
           </Link>
           <Link href="/suporte" className="nav-item">
@@ -59,7 +70,7 @@ export default function Navbar() {
         <div className="nav-right-section">
           <LanguageSwitcher />
           {isLoggedIn ? (
-            <Link href="/dashboard/mentor" className="icon-link" title={t('nav.dashboard')}>
+            <Link href={getDashboardLink()} className="icon-link" title={t('nav.dashboard')}>
               <LayoutDashboard size={20} />
             </Link>
           ) : (
@@ -69,50 +80,50 @@ export default function Navbar() {
           )}
         </div>
 
-      {/* Mobile Toggle Button (Visible only when closed) */}
-      <button 
-        className={`mobile-toggle ${isOpen ? 'hidden' : ''}`} 
-        onClick={() => setIsOpen(true)}
-      >
-        <Menu color={scrolled ? "#000" : "#fff"} size={28} />
-      </button>
+        {/* Mobile Toggle Button (Visible only when closed) */}
+        <button
+          className={`mobile-toggle ${isOpen ? 'hidden' : ''}`}
+          onClick={() => setIsOpen(true)}
+        >
+          <Menu color={scrolled ? "#000" : "#fff"} size={28} />
+        </button>
       </div> {/* Close nav-container */}
 
       {/* Modern Full Screen Mobile Menu */}
       <div className={`mobile-menu-overlay ${isOpen ? 'open' : ''}`}>
-          <div className="mobile-menu-header">
-              <div className="logo-with-text">
-                <span className="tesla-logo-text">INSCR<span className="gold-text">EVA</span></span>
-              </div>
-              <button className="close-menu-btn" onClick={() => setIsOpen(false)}>
-                  <X size={32} color="#FFD700" />
-              </button>
+        <div className="mobile-menu-header">
+          <div className="logo-with-text">
+            <span className="tesla-logo-text">INSCR<span className="gold-text">EVA</span></span>
           </div>
+          <button className="close-menu-btn" onClick={() => setIsOpen(false)}>
+            <X size={32} color="#FFD700" />
+          </button>
+        </div>
 
-          <div className="mobile-links">
-            <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>Home</Link>
-            <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>{t('nav.mentors')}</Link>
-            <Link href="/dashboard/mentor" className="mobile-link" onClick={() => setIsOpen(false)}>{t('nav.events')}</Link>
-            <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>{t('dashboard.support')}</Link>
+        <div className="mobile-links">
+          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>Home</Link>
+          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>{t('nav.mentors')}</Link>
+          <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)}>{t('nav.events')}</Link>
+          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>{t('dashboard.support')}</Link>
 
-            <div className="mobile-divider"></div>
+          <div className="mobile-divider"></div>
 
-            {isLoggedIn ? (
-                <Link href="/dashboard/mentor" className="mobile-link highlight" onClick={() => setIsOpen(false)}>
-                    <LayoutDashboard size={24} style={{ marginRight: '10px' }} />
-                    {t('nav.dashboard')}
-                </Link>
-            ) : (
-                <Link href="/entrar" className="mobile-link highlight" onClick={() => setIsOpen(false)}>
-                    <LogIn size={24} style={{ marginRight: '10px' }} />
-                    {t('auth.login')}
-                </Link>
-            )}
+          {isLoggedIn ? (
+            <Link href={getDashboardLink()} className="mobile-link highlight" onClick={() => setIsOpen(false)}>
+              <LayoutDashboard size={24} style={{ marginRight: '10px' }} />
+              {t('nav.dashboard')}
+            </Link>
+          ) : (
+            <Link href="/entrar" className="mobile-link highlight" onClick={() => setIsOpen(false)}>
+              <LogIn size={24} style={{ marginRight: '10px' }} />
+              {t('auth.login')}
+            </Link>
+          )}
 
-            <div style={{ marginTop: '2rem' }}>
-                <LanguageSwitcher />
-            </div>
+          <div style={{ marginTop: '2rem' }}>
+            <LanguageSwitcher />
           </div>
+        </div>
       </div>
 
       <style jsx>{`
