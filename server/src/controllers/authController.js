@@ -78,6 +78,29 @@ const login = async (req, res) => {
         const isMatch = await user.comparePassword(password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
+        // Link existing submissions for this email (Retroactive fix for existing users)
+        try {
+            const emailRegex = new RegExp(`^${email}$`, 'i');
+            await Submission.updateMany(
+                {
+                    $or: [
+                        { "data.email": emailRegex },
+                        { "data.Email": emailRegex },
+                        { "data.e-mail": emailRegex },
+                        { "data.E-mail": emailRegex },
+                        { "data.seu-email": emailRegex },
+                        { "data.seu e-mail": emailRegex },
+                        { "data.Seu E-mail": emailRegex }
+                    ],
+                    user: { $exists: false }
+                },
+                { $set: { user: user._id } }
+            );
+        } catch (linkError) {
+            console.error("Error auto-linking submissions on login:", linkError);
+            // Non-blocking error
+        }
+
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
         res.json({ token, user: { id: user._id, name: user.name, email, role: user.role } });
     } catch (err) {
