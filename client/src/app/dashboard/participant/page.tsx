@@ -281,7 +281,51 @@ export default function ParticipantDashboard() {
                     ))}
                 </nav>
 
-                <div style={{ padding: '1.5rem' }}>
+                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <button
+                        onClick={() => { setTargetMentor(null); setIsSupportOpen(true); }}
+                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
+                        style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #FFD700',
+                            borderRadius: '12px',
+                            color: '#FFD700',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            transition: 'all 0.2s',
+                            position: 'relative'
+                        }}
+                    >
+                        <LifeBuoy size={18} />
+                        {!isSidebarCollapsed && t('dashboard.support')}
+                        {unreadSupport > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-5px',
+                                right: '-5px',
+                                background: '#ef4444',
+                                color: '#fff',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                border: '2px solid #1a1a1a'
+                            }}>
+                                {unreadSupport}
+                            </span>
+                        )}
+                    </button>
+
                     <button
                         onClick={() => authService.logout()}
                         title={isSidebarCollapsed ? t('common.logout') : ""}
@@ -332,28 +376,7 @@ export default function ParticipantDashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                        <div
-                            onClick={() => { setTargetMentor(null); setIsSupportOpen(true); }}
-                            style={{
-                                width: '40px',
-                                height: '40px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '1px solid #eee',
-                                cursor: 'pointer',
-                                position: 'relative'
-                            }}
-                        >
-                            <LifeBuoy size={20} color="#333" />
-                            {unreadSupport > 0 && (
-                                <span style={{ position: 'absolute', top: -5, right: -5, background: '#e53e3e', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, border: '2px solid #fff' }}>
-                                    {unreadSupport}
-                                </span>
-                            )}
-                        </div>
+
                         <div style={{
                             width: '40px',
                             height: '40px',
