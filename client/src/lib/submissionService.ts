@@ -13,6 +13,11 @@ export interface SubmissionModel {
         eventTime?: string;
         location?: string;
         onlineLink?: string;
+        creator?: {
+            _id: string;
+            name: string;
+            businessName?: string;
+        };
     };
     data: Record<string, unknown>;
     paymentProof?: string;

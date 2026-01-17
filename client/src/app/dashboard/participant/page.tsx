@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+
 import { authService, UserData } from '@/lib/authService';
 import { formService, FormModel } from '@/lib/formService';
 import { financeService } from '@/lib/financeService';
@@ -59,6 +60,16 @@ export default function ParticipantDashboard() {
     const [targetMentor, setTargetMentor] = useState<{ id: string, name: string } | null>(null);
     const [tickets, setTickets] = useState<SubmissionModel[]>([]);
     const [ticketsLoading, setTicketsLoading] = useState(true);
+
+    const availableMentors = useMemo(() => {
+        const mentorsMap = new Map();
+        tickets.forEach(ticket => {
+            if (ticket.form.creator) {
+                mentorsMap.set(ticket.form.creator._id, ticket.form.creator);
+            }
+        });
+        return Array.from(mentorsMap.values());
+    }, [tickets]);
 
     const participantSteps: Step[] = [
         {
@@ -897,6 +908,7 @@ export default function ParticipantDashboard() {
                 mode="user"
                 targetMentorId={targetMentor?.id}
                 targetMentorName={targetMentor?.name}
+                availableMentors={availableMentors}
             />
 
             <OnboardingTour

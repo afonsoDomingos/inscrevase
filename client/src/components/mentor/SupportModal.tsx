@@ -9,6 +9,12 @@ import { supportService, Ticket } from '@/lib/supportService';
 import { useTranslate } from '@/context/LanguageContext';
 import { authService } from '@/lib/authService';
 
+interface MentorInfo {
+    _id: string;
+    name: string;
+    businessName?: string;
+}
+
 interface SupportModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -16,9 +22,10 @@ interface SupportModalProps {
     initialTicket?: Ticket | null;
     targetMentorId?: string;
     targetMentorName?: string;
+    availableMentors?: MentorInfo[];
 }
 
-export default function SupportModal({ isOpen, onClose, mode = 'user', initialTicket, targetMentorId, targetMentorName }: SupportModalProps) {
+export default function SupportModal({ isOpen, onClose, mode = 'user', initialTicket, targetMentorId, targetMentorName, availableMentors = [] }: SupportModalProps) {
     const { t } = useTranslate();
     const [view, setView] = useState<'list' | 'new' | 'chat'>('list');
     const [loading, setLoading] = useState(false);
@@ -29,6 +36,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
     // New Ticket State
     const [subject, setSubject] = useState('');
     const [initialMessage, setInitialMessage] = useState('');
+    const [selectedRecipient, setSelectedRecipient] = useState<string>('platform');
 
     // Chat State
     const [reply, setReply] = useState('');
@@ -47,11 +55,13 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
             if (targetMentorId) {
                 setView('new');
                 setSubject(targetMentorName ? `Conversa com ${targetMentorName}` : '');
+                setSelectedRecipient(targetMentorId);
             } else if (initialTicket) {
                 setSelectedTicket(initialTicket);
                 setView('chat');
             } else {
                 setView('list');
+                setSelectedRecipient('platform'); // Default to platform
             }
         }
     }, [isOpen, initialTicket, targetMentorId, targetMentorName]);
@@ -93,8 +103,9 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
 
         setLoading(true);
         try {
-            await supportService.createTicket(subject, initialMessage, attachment || undefined, targetMentorId);
-            toast.success(targetMentorId ? 'Mensagem enviada ao mentor!' : 'Ticket criado com sucesso!');
+            const mentorId = selectedRecipient === 'platform' ? undefined : selectedRecipient;
+            await supportService.createTicket(subject, initialMessage, attachment || undefined, mentorId);
+            toast.success(mentorId ? 'Mensagem enviada ao mentor!' : 'Ticket criado com sucesso!');
             setSubject('');
             setInitialMessage('');
             setAttachment(null);
@@ -123,6 +134,8 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
             toast.error('Erro ao enviar resposta');
         }
     };
+
+    // ... (rest of handleFileUpload) ...
 
     const handleFileUpload = async (file: File) => {
         if (!file) return;
@@ -231,7 +244,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                         <div style={{ background: '#f8f9fa', borderRight: '1px solid #eee', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                             {mode === 'user' && (
                                 <button
-                                    onClick={() => { setView('new'); setSelectedTicket(null); }}
+                                    onClick={() => { setView('new'); setSelectedTicket(null); setSelectedRecipient('platform'); setSubject(''); setInitialMessage(''); }}
                                     className="btn-primary"
                                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', borderRadius: '12px', marginBottom: '2rem', width: '100%' }}
                                 >
@@ -314,6 +327,27 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                 <div style={{ padding: '3rem', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
                                     <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>{t('support.openNewTicket')}</h2>
                                     <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        {/* Recipient Selection */}
+                                        {mode === 'user' && !targetMentorId && availableMentors.length > 0 && (
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Para quem é a mensagem?</label>
+                                                <select
+                                                    value={selectedRecipient}
+                                                    onChange={(e) => setSelectedRecipient(e.target.value)}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff', cursor: 'pointer' }}
+                                                >
+                                                    <option value="platform">Equipe Inscreva.se (Suporte Geral)</option>
+                                                    <optgroup label="Meus Mentores">
+                                                        {availableMentors.map(mentor => (
+                                                            <option key={mentor._id} value={mentor._id}>
+                                                                {mentor.businessName || mentor.name}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                        )}
+
                                         <div>
                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.subject')}</label>
                                             <input

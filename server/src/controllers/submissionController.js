@@ -238,7 +238,14 @@ const getMySubmissions = async (req, res) => {
         }
 
         const submissions = await Submission.find(query)
-            .populate('form', 'title slug coverImage eventDate eventTime location category')
+            .populate({
+                path: 'form',
+                select: 'title slug coverImage eventDate eventTime location category creator',
+                populate: {
+                    path: 'creator',
+                    select: 'name businessName'
+                }
+            })
             .sort('-submittedAt');
 
         res.json(submissions);
