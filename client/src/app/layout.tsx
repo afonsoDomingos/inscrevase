@@ -45,7 +45,7 @@ export default function RootLayout({
               <ClientLayoutWrapper>
                 <Suspense fallback={null}>
                   <AnalyticsTracker />
-                  <MetaPixel pixelId="1155776770105206" />
+                  <MetaPixel pixelId={process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || ''} />
                 </Suspense>
                 {children}
               </ClientLayoutWrapper>
