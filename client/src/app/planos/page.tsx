@@ -2,13 +2,25 @@
 
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
-import { CheckCircle, Zap, ShieldCheck, Crown } from "lucide-react";
+import { CheckCircle, Zap, ShieldCheck, Crown, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
+import { useEffect, useState } from "react";
+import { authService, UserData } from "@/lib/authService";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function PlansPage() {
     const { currency, setCurrency, formatPrice } = useCurrency();
+    const router = useRouter();
+    const [user, setUser] = useState<UserData | null>(null);
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+    useEffect(() => {
+        const currentUser = authService.getCurrentUser();
+        setUser(currentUser);
+    }, []);
 
     const trackPlan = (plan: string, value: number) => {
         if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -17,6 +29,44 @@ export default function PlansPage() {
                 value: value,
                 currency: currency
             });
+        }
+    };
+
+    const handleSubscribe = async (plan: string, price: number) => {
+        trackPlan(plan, price);
+
+        if (!user) {
+            router.push(`/cadastro?plan=${plan.toLowerCase()}`);
+            return;
+        }
+
+        setLoadingPlan(plan);
+        try {
+            const token = authService.getToken();
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    plan: plan.toLowerCase(),
+                    currency: currency
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                toast.error(data.message || 'Erro ao iniciar assinatura');
+            }
+        } catch (error) {
+            console.error('Subscription error:', error);
+            toast.error('Erro ao conectar com o servidor de pagamentos');
+        } finally {
+            setLoadingPlan(null);
         }
     };
 
@@ -123,21 +173,25 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Formulários Ilimitados</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Gestão de Conteúdo Base</span></div>
                             </div>
-                            <Link href="/cadastro" onClick={() => trackPlan('Free', 0)} style={{
-                                display: 'inline-block',
-                                padding: '14px 0',
-                                borderRadius: '4px',
-                                fontSize: '0.9rem',
-                                background: 'rgba(255,255,255,0.9)',
-                                color: '#393c41',
-                                textDecoration: 'none',
-                                fontWeight: 600,
-                                width: '100%',
-                                maxWidth: '320px',
-                                transition: 'all 0.3s'
-                            }}>
-                                Começar Grátis
-                            </Link>
+                            <button
+                                onClick={() => handleSubscribe('Free', 0)}
+                                disabled={loadingPlan === 'Free'}
+                                style={{
+                                    display: 'inline-block',
+                                    padding: '14px 0',
+                                    borderRadius: '4px',
+                                    fontSize: '0.9rem',
+                                    background: 'rgba(255,255,255,0.9)',
+                                    color: '#393c41',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    width: '100%',
+                                    maxWidth: '320px',
+                                    transition: 'all 0.3s'
+                                }}>
+                                {loadingPlan === 'Free' ? <Loader2 className="animate-spin" /> : 'Começar Grátis'}
+                            </button>
                         </div>
                     </motion.div>
 
@@ -192,21 +246,25 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Destaque Premium no Showcase</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Analytics e Relatórios Avançados</span></div>
                             </div>
-                            <Link href="/cadastro?plan=pro" onClick={() => trackPlan('Pro', currency === 'MZN' ? 499 : 7.99)} style={{
-                                display: 'inline-block',
-                                padding: '14px 0',
-                                borderRadius: '4px',
-                                fontSize: '0.9rem',
-                                background: 'var(--gold-gradient)',
-                                color: '#000',
-                                textDecoration: 'none',
-                                fontWeight: 700,
-                                width: '100%',
-                                maxWidth: '320px',
-                                transition: 'all 0.3s'
-                            }}>
-                                Assinar Pro
-                            </Link>
+                            <button
+                                onClick={() => handleSubscribe('Pro', currency === 'MZN' ? 499 : 7.99)}
+                                disabled={loadingPlan === 'Pro'}
+                                style={{
+                                    display: 'inline-block',
+                                    padding: '14px 0',
+                                    borderRadius: '4px',
+                                    fontSize: '0.9rem',
+                                    background: 'var(--gold-gradient)',
+                                    color: '#000',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: 700,
+                                    width: '100%',
+                                    maxWidth: '320px',
+                                    transition: 'all 0.3s'
+                                }}>
+                                {loadingPlan === 'Pro' ? <Loader2 className="animate-spin" /> : 'Assinar Pro'}
+                            </button>
                         </div>
                     </motion.div>
 
@@ -247,21 +305,25 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Suporte VIP 24/7 com Account Manager</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Customização Total de Branding</span></div>
                             </div>
-                            <Link href="/cadastro?plan=enterprise" onClick={() => trackPlan('Enterprise', currency === 'MZN' ? 4990 : 79.90)} style={{
-                                display: 'inline-block',
-                                padding: '14px 0',
-                                borderRadius: '4px',
-                                fontSize: '0.9rem',
-                                background: '#fff',
-                                color: '#000',
-                                textDecoration: 'none',
-                                fontWeight: 700,
-                                width: '100%',
-                                maxWidth: '320px',
-                                transition: 'all 0.3s'
-                            }}>
-                                Falar com Consultor
-                            </Link>
+                            <button
+                                onClick={() => handleSubscribe('Enterprise', currency === 'MZN' ? 4990 : 79.90)}
+                                disabled={loadingPlan === 'Enterprise'}
+                                style={{
+                                    display: 'inline-block',
+                                    padding: '14px 0',
+                                    borderRadius: '4px',
+                                    fontSize: '0.9rem',
+                                    background: '#fff',
+                                    color: '#000',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: 700,
+                                    width: '100%',
+                                    maxWidth: '320px',
+                                    transition: 'all 0.3s'
+                                }}>
+                                {loadingPlan === 'Enterprise' ? <Loader2 className="animate-spin" /> : 'Falar com Consultor'}
+                            </button>
                         </div>
                     </motion.div>
                 </div>
