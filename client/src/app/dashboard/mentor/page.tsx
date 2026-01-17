@@ -972,7 +972,7 @@ export default function MentorDashboard() {
                     )
                 }
 
-                <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+                <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="mentor" />
                 <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />
             </main >
         </div >
