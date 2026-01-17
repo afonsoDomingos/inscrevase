@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'; // Garante /api aqui para o fetch
             // Tratar url para garantir que termine com /api se não tiver (caso a env seja só a base)
             const baseUrl = apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`;
-            
+
             const response = await fetch(`${baseUrl}/users/status/online`);
             if (response.ok) {
                 const users = await response.json();
@@ -82,7 +82,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         // URL Base limpa (sem /api) para o Socket.IO
         const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         const socketUrl = envUrl.replace(/\/api\/?$/, '');
-        
+
         console.log(`🔌 [SocketContext] Iniciando conexão Socket em: ${socketUrl}`);
 
         const socketInstance = io(socketUrl, {
@@ -98,7 +98,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         socketInstance.on('connect', () => {
             console.log('✅ [SocketContext] CONECTADO AO SERVIDOR! ID:', socketInstance.id);
             // Ao conectar, pede a lista atualizada
-            fetchOnlineUsersHTTP(); 
+            fetchOnlineUsersHTTP();
         });
 
         socketInstance.on('connect_error', (err) => {
@@ -128,7 +128,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('🔌 [SocketContext] Limpando conexão...');
             socketInstance.disconnect();
         };
-    }, [userId]);
+    }, [userId, socket]);
 
     return (
         <SocketContext.Provider value={{ socket, onlineUsers }}>
