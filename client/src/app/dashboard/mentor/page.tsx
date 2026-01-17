@@ -145,7 +145,7 @@ export default function MentorDashboard() {
                 supportService.getUnreadCount(),
                 notificationService.getUnreadCount()
             ]);
-            setUnreadCount(supportData.unreadCount);
+            setUnreadCount(supportData.count);
             setUnreadNotifications(notificationData.count);
         } catch (error) {
             console.error('Error loading unread counts:', error);

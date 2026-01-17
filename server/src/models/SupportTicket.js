@@ -6,6 +6,11 @@ const supportTicketSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    mentor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
     subject: {
         type: String,
         required: true
@@ -16,7 +21,7 @@ const supportTicketSchema = new mongoose.Schema({
         default: 'open'
     },
     messages: [{
-        sender: { type: String, enum: ['user', 'admin'], required: true },
+        sender: { type: String, enum: ['user', 'admin', 'mentor'], required: true },
         content: { type: String, required: true },
         attachment: {
             type: String,
@@ -32,6 +37,9 @@ const supportTicketSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    unreadByUser: { type: Boolean, default: false },
+    unreadByAdmin: { type: Boolean, default: false },
+    unreadByMentor: { type: Boolean, default: false },
     createdAt: {
         type: Date,
         default: Date.now

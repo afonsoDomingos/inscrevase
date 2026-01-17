@@ -23,10 +23,14 @@ import {
     Award,
     Search,
     MapPin,
-    Zap
+    Zap,
+    MessageCircle,
+    LifeBuoy
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
+import SupportModal from '@/components/mentor/SupportModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
+import { supportService } from '@/lib/supportService';
 
 type Tab = 'tickets' | 'explore' | 'certificates' | 'profile';
 const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
@@ -48,6 +52,9 @@ export default function ParticipantDashboard() {
     // Upgrade State
     const [upgradeLoading, setUpgradeLoading] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [isSupportOpen, setIsSupportOpen] = useState(false);
+    const [unreadSupport, setUnreadSupport] = useState(0);
+    const [targetMentor, setTargetMentor] = useState<{ id: string, name: string } | null>(null);
 
     const participantSteps: Step[] = [
         {
@@ -126,6 +133,10 @@ export default function ParticipantDashboard() {
                     return;
                 }
                 setUser(userProfile);
+
+                // Fetch unread support
+                const supportData = await supportService.getUnreadCount();
+                setUnreadSupport(supportData.count);
             } catch (error) {
                 console.error("Error loading profile:", error);
                 router.push('/entrar');
@@ -134,6 +145,16 @@ export default function ParticipantDashboard() {
             }
         };
         loadProfile();
+
+        // Poll for unread count
+        const interval = setInterval(async () => {
+            try {
+                const data = await supportService.getUnreadCount();
+                setUnreadSupport(data.count);
+            } catch { }
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, [router]);
 
     const fetchExploreEvents = useCallback(async () => {
@@ -311,6 +332,28 @@ export default function ParticipantDashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div
+                            onClick={() => { setTargetMentor(null); setIsSupportOpen(true); }}
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                                background: '#fff',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '1px solid #eee',
+                                cursor: 'pointer',
+                                position: 'relative'
+                            }}
+                        >
+                            <LifeBuoy size={20} color="#333" />
+                            {unreadSupport > 0 && (
+                                <span style={{ position: 'absolute', top: -5, right: -5, background: '#e53e3e', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, border: '2px solid #fff' }}>
+                                    {unreadSupport}
+                                </span>
+                            )}
+                        </div>
                         <div style={{
                             width: '40px',
                             height: '40px',
@@ -473,9 +516,24 @@ export default function ParticipantDashboard() {
                                                     </div>
                                                 </div>
 
-                                                <Link href={`/f/${event.slug}`} style={{ display: 'block', textAlign: 'center', padding: '0.8rem', background: '#1a1a1a', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, transition: 'transform 0.2s' }}>
-                                                    Ver Detalhes
-                                                </Link>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    <Link href={`/f/${event.slug}`} style={{ flex: 1, textAlign: 'center', padding: '0.8rem', background: '#1a1a1a', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, transition: 'transform 0.2s' }}>
+                                                        Ver Detalhes
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => {
+                                                            setTargetMentor({
+                                                                id: event.creator?._id || '',
+                                                                name: event.creator?.businessName || event.creator?.name || 'Mentor'
+                                                            });
+                                                            setIsSupportOpen(true);
+                                                        }}
+                                                        style={{ background: '#FFF8E1', border: '1px solid #FFD700', borderRadius: '8px', padding: '0 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        title="Conversar com Mentor"
+                                                    >
+                                                        <MessageCircle size={20} color="#DAA520" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -652,6 +710,14 @@ export default function ParticipantDashboard() {
                     }}
                 />
             )}
+
+            <SupportModal
+                isOpen={isSupportOpen}
+                onClose={() => { setIsSupportOpen(false); setTargetMentor(null); }}
+                mode="user"
+                targetMentorId={targetMentor?.id}
+                targetMentorName={targetMentor?.name}
+            />
 
             <OnboardingTour
                 steps={participantSteps}

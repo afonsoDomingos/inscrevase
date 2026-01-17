@@ -7,20 +7,24 @@ import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, I
 import { toast } from 'sonner';
 import { supportService, Ticket } from '@/lib/supportService';
 import { useTranslate } from '@/context/LanguageContext';
+import { authService } from '@/lib/authService';
 
 interface SupportModalProps {
     isOpen: boolean;
     onClose: () => void;
-    mode?: 'user' | 'admin';
+    mode?: 'user' | 'admin' | 'mentor';
     initialTicket?: Ticket | null;
+    targetMentorId?: string;
+    targetMentorName?: string;
 }
 
-export default function SupportModal({ isOpen, onClose, mode = 'user', initialTicket }: SupportModalProps) {
+export default function SupportModal({ isOpen, onClose, mode = 'user', initialTicket, targetMentorId, targetMentorName }: SupportModalProps) {
     const { t } = useTranslate();
     const [view, setView] = useState<'list' | 'new' | 'chat'>('list');
     const [loading, setLoading] = useState(false);
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
 
     // New Ticket State
     const [subject, setSubject] = useState('');
@@ -36,16 +40,21 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
     useEffect(() => {
         if (isOpen) {
             loadTickets();
+            const user = authService.getCurrentUser();
+            if (user) setUserId(user.id);
 
-            // If initialTicket is provided, set it as selected and switch to chat view
-            if (initialTicket) {
+            // If targetMentorId is provided, automatically switch to 'new' view
+            if (targetMentorId) {
+                setView('new');
+                setSubject(targetMentorName ? `Conversa com ${targetMentorName}` : '');
+            } else if (initialTicket) {
                 setSelectedTicket(initialTicket);
                 setView('chat');
             } else {
                 setView('list');
             }
         }
-    }, [isOpen, initialTicket]);
+    }, [isOpen, initialTicket, targetMentorId, targetMentorName]);
 
     useEffect(() => {
         if (view === 'chat' && selectedTicket) {
@@ -84,8 +93,8 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
 
         setLoading(true);
         try {
-            await supportService.createTicket(subject, initialMessage, attachment || undefined);
-            toast.success('Ticket criado com sucesso!');
+            await supportService.createTicket(subject, initialMessage, attachment || undefined, targetMentorId);
+            toast.success(targetMentorId ? 'Mensagem enviada ao mentor!' : 'Ticket criado com sucesso!');
             setSubject('');
             setInitialMessage('');
             setAttachment(null);
@@ -157,6 +166,17 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
 
     const isMyMessage = (sender: string) => {
         if (mode === 'admin') return sender === 'admin';
+
+        // If we have a selected ticket and know the user ID
+        if (selectedTicket && userId) {
+            // If I am the mentor of this ticket
+            if (selectedTicket.mentor?._id === userId) return sender === 'mentor';
+            // If I am the creator of this ticket
+            if (selectedTicket.user?._id === userId || (typeof selectedTicket.user === 'string' && selectedTicket.user === userId)) return sender === 'user';
+        }
+
+        // Fallback to mode
+        if (mode === 'mentor') return sender === 'mentor';
         return sender === 'user';
     };
 
@@ -196,10 +216,10 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                             </div>
                             <div>
                                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-playfair)' }}>
-                                    {mode === 'admin' ? t('support.adminTitle') : t('support.title')}
+                                    {mode === 'admin' ? t('support.adminTitle') : (mode === 'mentor' ? 'Mensagens dos Participantes' : t('support.title'))}
                                 </h3>
                                 <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                    {mode === 'admin' ? t('support.adminSubtitle') : t('support.userSubtitle')}
+                                    {mode === 'admin' ? t('support.adminSubtitle') : (mode === 'mentor' ? 'Gerencie as conversas com seus alunos' : t('support.userSubtitle'))}
                                 </p>
                             </div>
                         </div>
@@ -245,8 +265,27 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                             }}
                                         >
                                             <div style={{ fontWeight: 600, marginBottom: '4px', fontSize: '0.95rem' }}>{ticket.subject}</div>
+                                            {/* Admin View */}
                                             {mode === 'admin' && ticket.user && (
                                                 <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>{t('support.by')}: {ticket.user.name || t('common.mentor')}</div>
+                                            )}
+
+                                            {/* Mentor/User View */}
+                                            {mode !== 'admin' && userId && (
+                                                <>
+                                                    {/* If I am the mentor */}
+                                                    {ticket.mentor?._id === userId && ticket.user && (
+                                                        <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Participante: {ticket.user.name}</div>
+                                                    )}
+                                                    {/* If I am the creator and talking to a mentor */}
+                                                    {ticket.user?._id === userId && ticket.mentor && (
+                                                        <div style={{ fontSize: '0.75rem', color: '#DAA520', marginBottom: '4px', fontWeight: 600 }}>Mentor: {ticket.mentor.businessName || ticket.mentor.name}</div>
+                                                    )}
+                                                    {/* If I am the creator and talking to Admin */}
+                                                    {ticket.user?._id === userId && !ticket.mentor && (
+                                                        <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Suporte Técnico (Admin)</div>
+                                                    )}
+                                                </>
                                             )}
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <span style={{

@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface Message {
     _id: string;
-    sender: 'user' | 'admin';
+    sender: 'user' | 'admin' | 'mentor';
     content: string;
     attachment?: string | null;
     createdAt: string;
@@ -21,6 +21,11 @@ export interface Ticket {
         name: string;
         email: string;
     };
+    mentor?: {
+        _id: string;
+        name: string;
+        businessName: string;
+    };
 }
 
 const getHeaders = () => {
@@ -32,11 +37,11 @@ const getHeaders = () => {
 };
 
 export const supportService = {
-    createTicket: async (subject: string, message: string, attachment?: string) => {
+    createTicket: async (subject: string, message: string, attachment?: string, mentorId?: string) => {
         const response = await fetch(`${API_URL}/support`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ subject, message, attachment })
+            body: JSON.stringify({ subject, message, attachment, mentorId })
         });
         if (!response.ok) throw new Error('Erro ao criar ticket');
         return response.json();
@@ -68,7 +73,7 @@ export const supportService = {
         return response.json();
     },
 
-    getUnreadCount: async (): Promise<{ unreadCount: number }> => {
+    getUnreadCount: async (): Promise<{ count: number }> => {
         const response = await fetch(`${API_URL}/support/unread-count`, {
             headers: getHeaders()
         });

@@ -2,11 +2,14 @@ const SupportTicket = require('../models/SupportTicket');
 
 exports.createTicket = async (req, res) => {
     try {
-        const { subject, message, attachment } = req.body;
+        const { subject, message, attachment, mentorId } = req.body;
         const ticket = await SupportTicket.create({
             user: req.user.id,
+            mentor: mentorId || null,
             subject,
-            messages: [{ sender: 'user', content: message, attachment: attachment || null }]
+            messages: [{ sender: 'user', content: message, attachment: attachment || null }],
+            unreadByAdmin: !mentorId, // If no mentor, it's for admin
+            unreadByMentor: !!mentorId // If mentor, it's for mentor
         });
         res.status(201).json(ticket);
     } catch (error) {
@@ -16,7 +19,13 @@ exports.createTicket = async (req, res) => {
 
 exports.getMyTickets = async (req, res) => {
     try {
-        const tickets = await SupportTicket.find({ user: req.user.id }).sort({ createdAt: -1 });
+        // Find tickets where I am the user OR I am the mentor
+        const tickets = await SupportTicket.find({
+            $or: [
+                { user: req.user.id },
+                { mentor: req.user.id }
+            ]
+        }).populate('user', 'name email').populate('mentor', 'name businessName').sort({ createdAt: -1 });
         res.status(200).json(tickets);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar tickets', error: error.message });
@@ -37,18 +46,22 @@ exports.addMessage = async (req, res) => {
         const { content, attachment } = req.body;
         const { id } = req.params;
 
-        // Check if user is admin or SuperAdmin
-        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
-        const role = isAdmin ? 'admin' : 'user';
-
         const ticket = await SupportTicket.findById(id);
         if (!ticket) return res.status(404).json({ message: 'Ticket não encontrado' });
 
-        // Handle both ObjectId and populated user object
-        const ticketUserId = ticket.user._id ? ticket.user._id.toString() : ticket.user.toString();
+        // Determine role
+        let role = 'user';
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+        const isMentor = ticket.mentor && ticket.mentor.toString() === req.user.id;
+        const isOwner = ticket.user.toString() === req.user.id;
 
-        // Allow if user owns the ticket OR if user is admin/SuperAdmin
-        if (ticketUserId !== req.user.id && !isAdmin) {
+        if (isAdmin) {
+            role = 'admin';
+        } else if (isMentor) {
+            role = 'mentor';
+        } else if (isOwner) {
+            role = 'user';
+        } else {
             return res.status(403).json({ message: 'Acesso negado' });
         }
 
@@ -58,11 +71,19 @@ exports.addMessage = async (req, res) => {
             attachment: attachment || null
         });
 
-        // If admin is responding, mark as unread for user
+        // Set unread flags
         if (role === 'admin') {
             ticket.unreadByUser = true;
-        } else {
-            ticket.unreadByAdmin = true;
+            ticket.unreadByMentor = ticket.mentor ? true : false;
+        } else if (role === 'mentor') {
+            ticket.unreadByUser = true;
+            ticket.unreadByAdmin = false; // Usually mentors don't talk to admins via participant tickets
+        } else if (role === 'user') {
+            if (ticket.mentor) {
+                ticket.unreadByMentor = true;
+            } else {
+                ticket.unreadByAdmin = true;
+            }
         }
 
         await ticket.save();
@@ -77,16 +98,19 @@ exports.getUnreadCount = async (req, res) => {
         const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
 
         if (isAdmin) {
-            // Count tickets with unread messages by admin
             const count = await SupportTicket.countDocuments({ unreadByAdmin: true });
             return res.status(200).json({ count });
         } else {
-            // Count user's tickets with unread messages
-            const count = await SupportTicket.countDocuments({
+            // Check as user AND check as mentor
+            const userCount = await SupportTicket.countDocuments({
                 user: req.user.id,
                 unreadByUser: true
             });
-            return res.status(200).json({ count });
+            const mentorCount = await SupportTicket.countDocuments({
+                mentor: req.user.id,
+                unreadByMentor: true
+            });
+            return res.status(200).json({ count: userCount + mentorCount });
         }
     } catch (error) {
         res.status(500).json({ message: 'Erro ao contar mensagens não lidas', error: error.message });
@@ -101,18 +125,14 @@ exports.markAsRead = async (req, res) => {
         const ticket = await SupportTicket.findById(id);
         if (!ticket) return res.status(404).json({ message: 'Ticket não encontrado' });
 
-        // Handle both ObjectId and populated user object
-        const ticketUserId = ticket.user._id ? ticket.user._id.toString() : ticket.user.toString();
-
-        // Allow if user owns the ticket OR if user is admin/SuperAdmin
-        if (ticketUserId !== req.user.id && !isAdmin) {
-            return res.status(403).json({ message: 'Acesso negado' });
-        }
-
         if (isAdmin) {
             ticket.unreadByAdmin = false;
-        } else {
+        } else if (ticket.mentor && ticket.mentor.toString() === req.user.id) {
+            ticket.unreadByMentor = false;
+        } else if (ticket.user.toString() === req.user.id) {
             ticket.unreadByUser = false;
+        } else {
+            return res.status(403).json({ message: 'Acesso negado' });
         }
 
         await ticket.save();
