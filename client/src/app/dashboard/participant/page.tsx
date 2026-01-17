@@ -454,72 +454,115 @@ export default function ParticipantDashboard() {
                             ) : tickets.length > 0 ? (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
                                     {tickets.map(ticket => (
-                                        <Link href={`/hub/${ticket._id}`} key={ticket._id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                            <div style={{
-                                                background: '#fff',
-                                                borderRadius: '24px',
-                                                overflow: 'hidden',
-                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                                                border: '1px solid #eee',
-                                                transition: 'transform 0.2s',
-                                                cursor: 'pointer'
-                                            }}
-                                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                        <div key={ticket._id} style={{ position: 'relative' }}>
+                                            <Link href={`/hub/${ticket._id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                                                <div style={{
+                                                    background: '#fff',
+                                                    borderRadius: '24px',
+                                                    overflow: 'hidden',
+                                                    boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                                                    border: '1px solid #eee',
+                                                    transition: 'transform 0.2s',
+                                                    cursor: 'pointer'
+                                                }}
+                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                >
+                                                    <div style={{ position: 'relative', height: '160px' }}>
+                                                        <Image
+                                                            src={ticket.form.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}
+                                                            alt={ticket.form.title}
+                                                            fill
+                                                            style={{ objectFit: 'cover' }}
+                                                        />
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            top: '12px',
+                                                            right: '12px',
+                                                            padding: '4px 12px',
+                                                            borderRadius: '20px',
+                                                            background: ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b',
+                                                            color: '#fff',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 700
+                                                        }}>
+                                                            {(ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? 'Confirmado' : 'Pendente'}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ padding: '1.5rem' }}>
+                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.8rem', color: '#1a1a1a' }}>{ticket.form.title}</h3>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
+                                                                <Calendar size={16} />
+                                                                {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : 'A definir'} {ticket.form.eventTime ? `às ${ticket.form.eventTime}` : ''}
+                                                            </div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
+                                                                <MapPin size={16} />
+                                                                {ticket.form.location || 'Online'}
+                                                            </div>
+                                                        </div>
+                                                        <button style={{
+                                                            width: '100%',
+                                                            marginTop: '1.5rem',
+                                                            padding: '0.8rem',
+                                                            borderRadius: '12px',
+                                                            background: '#1a1a1a',
+                                                            color: '#fff',
+                                                            border: 'none',
+                                                            fontWeight: 700,
+                                                            fontSize: '0.9rem',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '8px'
+                                                        }}>
+                                                            <Ticket size={18} /> Ver Meus Acessos
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </Link>
+
+                                            {/* Delete Button - Outside the Link to avoid collision but positioned absolute */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    if (confirm('Tem certeza que deseja cancelar esta inscrição? Esta ação não pode ser desfeita.')) {
+                                                        const handleDelete = async () => {
+                                                            try {
+                                                                await submissionService.deleteSubmission(ticket._id);
+                                                                setTickets(prev => prev.filter(t => t._id !== ticket._id));
+                                                                toast.success('Inscrição cancelada com sucesso.');
+                                                            } catch (err) {
+                                                                console.error(err);
+                                                                toast.error('Erro ao cancelar inscrição.');
+                                                            }
+                                                        };
+                                                        handleDelete();
+                                                    }
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '12px',
+                                                    left: '12px', // Opposite side of status
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '50%',
+                                                    background: 'rgba(255, 255, 255, 0.9)',
+                                                    border: 'none',
+                                                    color: '#ef4444',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                                                    zIndex: 10
+                                                }}
+                                                title="Cancelar Inscrição"
                                             >
-                                                <div style={{ position: 'relative', height: '160px' }}>
-                                                    <Image
-                                                        src={ticket.form.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}
-                                                        alt={ticket.form.title}
-                                                        fill
-                                                        style={{ objectFit: 'cover' }}
-                                                    />
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        top: '12px',
-                                                        right: '12px',
-                                                        padding: '4px 12px',
-                                                        borderRadius: '20px',
-                                                        background: ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b',
-                                                        color: '#fff',
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: 700
-                                                    }}>
-                                                        {(ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? 'Confirmado' : 'Pendente'}
-                                                    </div>
-                                                </div>
-                                                <div style={{ padding: '1.5rem' }}>
-                                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.8rem', color: '#1a1a1a' }}>{ticket.form.title}</h3>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
-                                                            <Calendar size={16} />
-                                                            {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : 'A definir'} {ticket.form.eventTime ? `às ${ticket.form.eventTime}` : ''}
-                                                        </div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
-                                                            <MapPin size={16} />
-                                                            {ticket.form.location || 'Online'}
-                                                        </div>
-                                                    </div>
-                                                    <button style={{
-                                                        width: '100%',
-                                                        marginTop: '1.5rem',
-                                                        padding: '0.8rem',
-                                                        borderRadius: '12px',
-                                                        background: '#1a1a1a',
-                                                        color: '#fff',
-                                                        border: 'none',
-                                                        fontWeight: 700,
-                                                        fontSize: '0.9rem',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        gap: '8px'
-                                                    }}>
-                                                        <Ticket size={18} /> Ver Meus Acessos
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Link>
+                                                <LogOut size={16} style={{ transform: 'rotate(180deg)' }} />
+                                            </button>
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
