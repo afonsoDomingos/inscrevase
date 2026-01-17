@@ -322,8 +322,12 @@ const deleteSubmission = async (req, res) => {
         const submission = await Submission.findById(req.params.id).populate('form');
         if (!submission) return res.status(404).json({ message: 'Submission not found' });
 
-        // Check ownership
-        if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+        // Check ownership (Mentor, Admin, or the Participant themselves)
+        const isMentor = submission.form.creator.toString() === req.user.id;
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+        const isParticipant = submission.user && submission.user.toString() === req.user.id;
+
+        if (!isMentor && !isAdmin && !isParticipant) {
             return res.status(403).json({ message: 'Not authorized' });
         }
 
