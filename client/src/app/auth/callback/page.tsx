@@ -20,6 +20,8 @@ function CallbackContent() {
             authService.getProfile().then(user => {
                 if (user.role === 'admin' || user.role === 'SuperAdmin') {
                     router.push('/dashboard/admin');
+                } else if (user.role === 'participant') {
+                    router.push('/dashboard/participant');
                 } else {
                     router.push('/dashboard/mentor');
                 }
