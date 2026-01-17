@@ -13,7 +13,7 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
   weight: ['400', '500', '600', '700', '800', '900']
-}); 
+});
 const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-poppins",
@@ -27,7 +27,9 @@ export const metadata: Metadata = {
 
 import { Suspense } from "react";
 
-// ... (imports existentes)
+import MetaPixel from '@/components/MetaPixel';
+
+// ... (existing imports)
 
 export default function RootLayout({
   children,
@@ -41,9 +43,10 @@ export default function RootLayout({
           <CurrencyProvider>
             <SocketProvider>
               <ClientLayoutWrapper>
-                 <Suspense fallback={null}>
-                   <AnalyticsTracker />
-                 </Suspense>
+                <Suspense fallback={null}>
+                  <AnalyticsTracker />
+                  <MetaPixel pixelId="1155776770105206" />
+                </Suspense>
                 {children}
               </ClientLayoutWrapper>
             </SocketProvider>

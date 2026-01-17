@@ -101,6 +101,15 @@ function RegisterContent() {
             await authService.register(formData);
             toast.success(t('auth.registerSuccess'));
 
+            // Meta Pixel Tracking
+            if (typeof window !== 'undefined' && (window as any).fbq) {
+                (window as any).fbq('track', 'CompleteRegistration', {
+                    content_name: formData.role,
+                    status: 'success',
+                    plan: searchParams.get('plan') || 'default'
+                });
+            }
+
             if (redirectUrl) {
                 router.push(redirectUrl);
             } else if (formData.role === 'participant') {
