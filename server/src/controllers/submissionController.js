@@ -11,15 +11,18 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const SupportTicket = require('../models/SupportTicket');
 
 const submitForm = async (req, res) => {
+    console.log('[Submission] Starting submission process for form:', req.body.formId);
     try {
         const { formId, data, paymentProof } = req.body;
 
         if (!data || typeof data !== 'object') {
+            console.error('[Submission] Invalid data provided:', data);
             return res.status(400).json({ message: 'Dados do formulário inválidos' });
         }
 
         const form = await Form.findById(formId);
         if (!form || !form.active) {
+            console.error('[Submission] Form not found or inactive:', formId);
             return res.status(404).json({ message: 'Form not found or inactive' });
         }
 
@@ -31,6 +34,7 @@ const submitForm = async (req, res) => {
 
         // Link the submission
         if (req.user) {
+            console.log('[Submission] User is logged in, linking to:', req.user.id);
             submissionData.user = req.user.id;
         } else {
             // Try to find email in data and link to existing user
@@ -51,9 +55,11 @@ const submitForm = async (req, res) => {
             }
 
             if (foundEmail && typeof foundEmail === 'string') {
+                console.log('[Submission] Found email in submission data:', foundEmail);
                 try {
                     const existingUser = await User.findOne({ email: foundEmail.toLowerCase().trim() });
                     if (existingUser) {
+                        console.log('[Submission] Linking submission to existing user:', existingUser._id);
                         submissionData.user = existingUser._id;
                     }
                 } catch (linkError) {
@@ -64,40 +70,69 @@ const submitForm = async (req, res) => {
 
         const submission = new Submission(submissionData);
         await submission.save();
+        console.log('[Submission] Submission saved successfully:', submission._id);
 
-        // Notify Mentor
+        // Notify Mentor (Non-blocking)
         const participantName = data.nome || data.name || (req.user ? req.user.name : 'Um novo participante');
-        const notification = new Notification({
-            recipient: form.creator,
-            sender: req.user ? req.user.id : form.creator,
-            title: 'Nova Inscrição Recebida! 📩',
-            content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
-            type: 'personal',
-            actionUrl: '/dashboard/mentor'
-        });
-        await notification.save();
-
-        // AUTOMATIC WELCOME MESSAGE
-        // If the participant is a registered user, we send them an automatic message from the mentor
-        if (req.user && req.user.id !== form.creator.toString()) {
-            const welcomeText = form.welcomeMessage || `Olá ${participantName.split(' ')[0]}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
-
-            // Check if there is already a conversation between this user and mentor for this specific event or general
-            // Let's create a new ticket for the event welcome
-            await SupportTicket.create({
-                user: req.user.id,
-                mentor: form.creator,
-                subject: `Bem-vindo: ${form.title}`,
-                messages: [{
-                    sender: 'mentor',
-                    content: welcomeText
-                }],
-                unreadByUser: true
+        try {
+            console.log('[Submission] Sending notification to mentor:', form.creator);
+            const notification = new Notification({
+                recipient: form.creator,
+                sender: req.user ? req.user.id : form.creator, // If guest, sender is self (or system)
+                title: 'Nova Inscrição Recebida! 📩',
+                content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
+                type: 'personal',
+                actionUrl: '/dashboard/mentor'
             });
+            await notification.save();
+        } catch (notifErr) {
+            console.error('[Submission] Error sending notification:', notifErr);
+        }
+
+        // AUTOMATIC WELCOME MESSAGE (Non-blocking)
+        // Only if we have a user to reply to
+        if (req.user && submissionData.user && req.user.id !== form.creator.toString()) {
+            console.log('[Submission] Creating welcome support ticket for user:', submissionData.user);
+            try {
+                const welcomeText = form.welcomeMessage || `Olá ${participantName.split(' ')[0]}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
+
+                await SupportTicket.create({
+                    user: submissionData.user, // Use the linked user ID
+                    mentor: form.creator,
+                    subject: `Bem-vindo: ${form.title}`,
+                    messages: [{
+                        sender: 'mentor',
+                        content: welcomeText
+                    }],
+                    unreadByUser: true
+                });
+            } catch (ticketErr) {
+                console.error('[Submission] Error creating welcome ticket:', ticketErr);
+            }
+        } else if (!req.user && submissionData.user) {
+            // If guest became linked user, we can still try to create ticket
+            console.log('[Submission] Creating welcome support ticket for LINKED guest user:', submissionData.user);
+            try {
+                const welcomeText = form.welcomeMessage || `Olá ${participantName.split(' ')[0]}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
+
+                await SupportTicket.create({
+                    user: submissionData.user,
+                    mentor: form.creator,
+                    subject: `Bem-vindo: ${form.title}`,
+                    messages: [{
+                        sender: 'mentor',
+                        content: welcomeText
+                    }],
+                    unreadByUser: true
+                });
+            } catch (ticketErr) {
+                console.error('[Submission] Error creating welcome ticket (guest):', ticketErr);
+            }
         }
 
         res.status(201).json({ message: 'Inscrição enviada com sucesso', submission });
     } catch (err) {
+        console.error('[Submission] CRITICAL ERROR:', err);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
