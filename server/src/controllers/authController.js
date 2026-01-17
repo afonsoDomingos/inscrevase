@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const Submission = require('../models/Submission');
 
 const register = async (req, res) => {
     try {
@@ -22,6 +23,12 @@ const register = async (req, res) => {
             canCreateEvents
         });
         await user.save();
+
+        // Link existing submissions for this email to the new user account
+        await Submission.updateMany(
+            { "data.email": email, user: { $exists: false } },
+            { $set: { user: user._id } }
+        );
 
         // Send Welcome Notification
         const admin = await User.findOne({ role: 'admin' });

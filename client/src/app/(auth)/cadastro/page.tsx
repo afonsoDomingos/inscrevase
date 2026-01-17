@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Search, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
+import { Suspense } from 'react';
 
 const COUNTRIES = [
     "Moçambique", "Angola", "Brasil", "Portugal", "Cabo Verde", "Guiné-Bissau", "São Tomé e Príncipe", "Timor-Leste",
@@ -35,9 +36,21 @@ const COUNTRIES = [
 ].sort();
 
 export default function Register() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white"><Loader2 className="animate-spin" /></div>}>
+            <RegisterContent />
+        </Suspense>
+    );
+}
+
+function RegisterContent() {
     const { t } = useTranslate();
     const router = useRouter();
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get('redirect');
+    const initialRole = searchParams.get('role') || 'mentor';
 
     const [formData, setFormData] = useState({
         name: '',
@@ -45,8 +58,15 @@ export default function Register() {
         password: '',
         businessName: '',
         country: '',
-        role: 'mentor' // default role
+        role: initialRole
     });
+
+    useEffect(() => {
+        if (initialRole) {
+            setFormData(prev => ({ ...prev, role: initialRole }));
+        }
+    }, [initialRole]);
+
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
@@ -80,7 +100,10 @@ export default function Register() {
         try {
             await authService.register(formData);
             toast.success(t('auth.registerSuccess'));
-            if (formData.role === 'participant') {
+
+            if (redirectUrl) {
+                router.push(redirectUrl);
+            } else if (formData.role === 'participant') {
                 router.push('/dashboard/participant');
             } else {
                 router.push('/dashboard/mentor');

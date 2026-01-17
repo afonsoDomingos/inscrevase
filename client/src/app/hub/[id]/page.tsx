@@ -24,8 +24,11 @@ import {
     Link as LinkIcon,
     Play,
     BookOpen,
-    X
+    X,
+    LayoutDashboard,
+    UserCircle
 } from 'lucide-react';
+import { authService, UserData } from '@/lib/authService';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { generateCertificate } from '@/lib/certificateGenerator';
@@ -129,6 +132,11 @@ function HubContent() {
     const [loading, setLoading] = useState(true);
     const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
+    const [currentUser, setCurrentUser] = useState<UserData | null>(null);
+
+    useEffect(() => {
+        setCurrentUser(authService.getCurrentUser());
+    }, []);
 
     useEffect(() => {
         const fetchSubmission = async () => {
@@ -210,9 +218,53 @@ function HubContent() {
                     <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#171A20' }}>
                         PASSAPORTE <span style={{ fontWeight: 500, color: '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
                     </div>
-                    <button style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', color: '#171A20' }}>
-                        <Share2 size={18} />
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        {currentUser ? (
+                            <button
+                                onClick={() => router.push(currentUser.role === 'mentor' ? '/dashboard/mentor' : currentUser.role === 'participant' ? '/dashboard/participant' : '/dashboard/admin')}
+                                style={{
+                                    background: '#171A20',
+                                    color: '#fff',
+                                    border: 'none',
+                                    padding: '8px 16px',
+                                    borderRadius: '100px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: '0.2s'
+                                }}
+                            >
+                                <LayoutDashboard size={16} /> {t('common.dashboard') || 'Dashboard'}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => router.push(`/cadastro?redirect=/hub/${id}&role=participant`)}
+                                style={{
+                                    background: primaryColor,
+                                    color: '#fff',
+                                    border: 'none',
+                                    padding: '8px 16px',
+                                    borderRadius: '100px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: '0.2s',
+                                    boxShadow: `0 4px 12px ${primaryColor}40`
+                                }}
+                            >
+                                <UserCircle size={16} /> {t('common.createAccount') || 'Criar Conta'}
+                            </button>
+                        )}
+                        <button style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', color: '#171A20' }}>
+                            <Share2 size={18} />
+                        </button>
+                    </div>
                 </div>
             </nav>
 
