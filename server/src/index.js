@@ -9,8 +9,11 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 require('dotenv').config(); // Fallback to current dir
 
 const app = express();
-const server = http.createServer(app); // Create HTTP server
+const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
+
+// Trust Proxy for Render/Proxy environments
+app.set('trust proxy', 1);
 
 // Security Middlewares
 app.use(helmet()); // Set security HTTP headers
@@ -48,7 +51,7 @@ const jwt = require('jsonwebtoken');
 
 io.use((socket, next) => {
     const token = socket.handshake.auth.token;
-    
+
     if (!token) {
         console.error(`[Socket.IO] Conexão recusada (${socket.id}): Token não fornecido.`);
         return next(new Error("Authentication error: Token required"));
@@ -73,7 +76,7 @@ const onlineUsers = new Map();
 io.on('connection', (socket) => {
     // UserId agora vem do middleware de autenticação (seguro)
     const userId = socket.userId;
-    
+
     if (userId) {
         if (!onlineUsers.has(userId)) {
             onlineUsers.set(userId, new Set());
@@ -85,7 +88,7 @@ io.on('connection', (socket) => {
             io.emit('user_status_change', { userId, status: 'online' });
             console.log(`User ${userId} is now ONLINE (${socket.id})`);
         }
-        
+
         // Send current list ONLY to the new client
         socket.emit('online_users_list', Array.from(onlineUsers.keys()));
     } else {
@@ -96,7 +99,7 @@ io.on('connection', (socket) => {
         if (userId && onlineUsers.has(userId)) {
             const userSockets = onlineUsers.get(userId);
             userSockets.delete(socket.id);
-            
+
             // If no more connections for this user, mark as OFFLINE
             if (userSockets.size === 0) {
                 onlineUsers.delete(userId);
@@ -171,7 +174,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.log('MongoDB Connection Error:', err));
 
 // Use server.listen instead of app.listen
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log('--- Verificação de Ambiente ---');
     console.log('PORT:', PORT);
