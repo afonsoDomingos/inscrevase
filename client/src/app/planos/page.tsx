@@ -10,6 +10,16 @@ import { useCurrency } from "@/context/CurrencyContext";
 export default function PlansPage() {
     const { currency, setCurrency, formatPrice } = useCurrency();
 
+    const trackPlan = (plan: string, value: number) => {
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+            (window as any).fbq('track', 'InitiateCheckout', {
+                content_name: `Plano ${plan}`,
+                value: value,
+                currency: currency
+            });
+        }
+    };
+
     return (
         <main style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
             <Navbar />
@@ -113,7 +123,7 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Formulários Ilimitados</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Gestão de Conteúdo Base</span></div>
                             </div>
-                            <Link href="/cadastro" style={{
+                            <Link href="/cadastro" onClick={() => trackPlan('Free', 0)} style={{
                                 display: 'inline-block',
                                 padding: '14px 0',
                                 borderRadius: '4px',
@@ -182,7 +192,7 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Destaque Premium no Showcase</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Analytics e Relatórios Avançados</span></div>
                             </div>
-                            <Link href="/cadastro?plan=pro" style={{
+                            <Link href="/cadastro?plan=pro" onClick={() => trackPlan('Pro', currency === 'MZN' ? 499 : 7.99)} style={{
                                 display: 'inline-block',
                                 padding: '14px 0',
                                 borderRadius: '4px',
@@ -237,7 +247,7 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Suporte VIP 24/7 com Account Manager</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Customização Total de Branding</span></div>
                             </div>
-                            <Link href="/cadastro?plan=enterprise" style={{
+                            <Link href="/cadastro?plan=enterprise" onClick={() => trackPlan('Enterprise', currency === 'MZN' ? 4990 : 79.90)} style={{
                                 display: 'inline-block',
                                 padding: '14px 0',
                                 borderRadius: '4px',

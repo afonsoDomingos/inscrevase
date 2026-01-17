@@ -254,7 +254,9 @@ exports.verifyPayment = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            submission: submission?._id
+            submission: submission?._id,
+            amount: session.amount_total / 100,
+            currency: session.currency.toUpperCase()
         });
     } catch (error) {
         console.error('Verify Payment Error:', error);

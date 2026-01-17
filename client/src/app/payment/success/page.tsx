@@ -33,6 +33,17 @@ function SuccessContent() {
                     setStatus('success');
                     setSubmissionId(data.submission);
                     toast.success('Pagamento confirmado com sucesso!');
+
+                    // Meta Pixel: Track Purchase
+                    if (typeof window !== 'undefined' && (window as any).fbq) {
+                        (window as any).fbq('track', 'Purchase', {
+                            value: data.amount,
+                            currency: data.currency || 'MZN',
+                            content_name: 'Event Registration',
+                            content_ids: [data.submission],
+                            content_type: 'product'
+                        });
+                    }
                 } else {
                     console.error('Verification failed:', data.message);
                     setStatus('error');
