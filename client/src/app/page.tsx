@@ -510,7 +510,7 @@ export default function Home() {
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f1')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f2')}</span>
               </div>
-              <Link href="/cadastro" style={{
+              <Link href={isLoggedIn ? "/planos" : "/cadastro"} style={{
                 display: 'inline-block',
                 padding: '12px 0',
                 borderRadius: '4px',
@@ -580,7 +580,7 @@ export default function Home() {
                 <span style={{ opacity: 0.9 }}>{t('plans.pro.f1')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.pro.f2')}</span>
               </div>
-              <Link href="/cadastro?plan=pro" style={{
+              <Link href={isLoggedIn ? "/planos" : "/cadastro?plan=pro"} style={{
                 display: 'inline-block',
                 padding: '12px 0',
                 borderRadius: '4px',
@@ -637,7 +637,7 @@ export default function Home() {
                 <span style={{ opacity: 0.9 }}>{t('plans.enterprise.f1')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.enterprise.f2')}</span>
               </div>
-              <Link href="/cadastro?plan=enterprise" style={{
+              <Link href={isLoggedIn ? "/planos" : "/cadastro?plan=enterprise"} style={{
                 display: 'inline-block',
                 padding: '12px 0',
                 borderRadius: '4px',

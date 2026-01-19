@@ -310,11 +310,18 @@ function MentorDashboardContent() {
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
+                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/planos' },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => setActiveTab(item.id as Tab)}
+                            onClick={() => {
+                                if ('link' in item && item.link) {
+                                    router.push(item.link);
+                                } else {
+                                    setActiveTab(item.id as Tab);
+                                }
+                            }}
                             title={isSidebarCollapsed ? item.label : ''}
                             style={{
                                 display: 'flex',
