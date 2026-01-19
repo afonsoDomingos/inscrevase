@@ -242,7 +242,7 @@ exports.getExploreEvents = async (req, res) => {
         }
 
         const forms = await Form.find(query)
-            .select('title slug coverImage eventDate eventType category creator location onlineLink')
+            .select('title slug coverImage hubBackgroundImage eventDate eventType category creator location onlineLink')
             .populate('creator', 'name businessName')
             .sort({ createdAt: -1 });
 
