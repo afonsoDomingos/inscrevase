@@ -335,16 +335,40 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                 </div>
                             </div>
                         </div>
+
+                        <div style={{ marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
+                            <button
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                className="btn-primary"
+                                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem' }}
+                            >
+                                {loading ? <Loader2 className="animate-spin" size={16} /> : <><Save size={16} /> {t('events.profile.saveChanges')}</>}
+                            </button>
+                        </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <div style={{
+                        position: 'sticky',
+                        bottom: '20px',
+                        zIndex: 100,
+                        background: 'rgba(255,255,255,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        padding: '1rem',
+                        borderRadius: '16px',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                        border: '1px solid rgba(255, 215, 0, 0.3)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginTop: '2rem'
+                    }}>
                         <button
                             onClick={handleSubmit}
                             disabled={loading}
                             className="btn-primary"
-                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.8rem 2rem', fontSize: '1rem', width: '100%', justifyContent: 'center', boxShadow: '0 4px 14px 0 rgba(0,0,0,0.39)' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.8rem 3rem', fontSize: '1rem', width: '100%', justifyContent: 'center', boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4)' }}
                         >
-                            {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> {t('events.profile.saveChanges')}</>}
+                            {loading ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
                         </button>
                     </div>
 
