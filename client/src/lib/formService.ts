@@ -85,6 +85,7 @@ export interface FormModel {
     };
     welcomeMessage?: string;
     welcomeVideo?: string;
+    hubBackgroundImage?: string;
     customFields?: {
         label: string;
         value: string;
