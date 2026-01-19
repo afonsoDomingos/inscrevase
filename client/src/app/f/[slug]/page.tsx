@@ -23,6 +23,7 @@ import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
+import MetaPixel from '@/components/MetaPixel';
 
 export default function PublicForm({ params }: { params: { slug: string } }) {
     const router = useRouter();
@@ -182,6 +183,7 @@ export default function PublicForm({ params }: { params: { slug: string } }) {
             fontFamily: form.theme?.fontFamily || 'Inter',
             overflow: 'hidden'
         }}>
+            {form.creator?.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Animated Background */}
             <div
                 style={{
