@@ -259,7 +259,7 @@ const getSubmissionPublic = async (req, res) => {
         const submission = await Submission.findById(req.params.id)
             .populate({
                 path: 'form',
-                select: 'title description coverImage hubBackgroundImage logo eventDate eventTime eventType location onlineLink waitingVideo showVideoOnStart whatsappConfig theme creator welcomeMessage welcomeVideo customFields agenda materials certificateConfig',
+                select: 'title description coverImage hubBackgroundImage hubButtonColor showHubButton logo eventDate eventTime eventType location onlineLink waitingVideo showVideoOnStart whatsappConfig theme creator welcomeMessage welcomeVideo customFields agenda materials certificateConfig',
                 populate: {
                     path: 'creator',
                     select: 'name profilePhoto bio socialLinks facebookPixelId'

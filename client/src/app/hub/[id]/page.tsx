@@ -77,6 +77,8 @@ interface SubmissionData {
         welcomeMessage?: string;
         welcomeVideo?: string;
         hubBackgroundImage?: string;
+        hubButtonColor?: string;
+        showHubButton?: boolean;
         customFields?: Array<{
             label: string;
             value: string;
@@ -340,37 +342,38 @@ function HubContent() {
                                     />
                                 </motion.div>
                             ) : (
-                                <motion.button
-                                    key="collapsed"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    onClick={() => setIsPlayerExpanded(true)}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    style={{
-                                        width: '100%',
-                                        padding: '20px',
-                                        borderRadius: '20px',
-                                        background: 'linear-gradient(90deg, #FFD700 0%, #FFC107 100%)',
-                                        border: 'none',
-                                        color: '#000',
-                                        fontSize: '1.2rem',
-                                        fontWeight: 800,
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '15px',
-                                        boxShadow: '0 10px 30px rgba(255, 215, 0, 0.3)',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '1px'
-                                    }}
-                                >
-                                    <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff0000', boxShadow: '0 0 10px #ff0000' }} className="animate-pulse" />
-                                    Assistir Transmissão (Clique para Abrir)
-                                </motion.button>
-                            )}
+                                (form.showHubButton !== false) && (
+                                    <motion.button
+                                        key="collapsed"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        onClick={() => setIsPlayerExpanded(true)}
+                                        whileHover={{ scale: 1.02, boxShadow: `0 15px 40px ${form.hubButtonColor || '#FFD700'}60` }}
+                                        whileTap={{ scale: 0.98 }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '20px',
+                                            borderRadius: '20px',
+                                            background: form.hubButtonColor || 'linear-gradient(90deg, #FFD700 0%, #FFC107 100%)',
+                                            border: 'none',
+                                            color: '#000',
+                                            fontSize: '1.2rem',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '15px',
+                                            boxShadow: `0 10px 30px ${form.hubButtonColor || '#FFD700'}40`,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '1px'
+                                        }}
+                                    >
+                                        <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff0000', boxShadow: '0 0 10px #ff0000' }} className="animate-pulse" />
+                                        Assistir Transmissão (Clique para Abrir)
+                                    </motion.button>
+                                )}
                         </AnimatePresence>
                     </div>
                 )}

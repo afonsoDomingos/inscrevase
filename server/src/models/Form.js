@@ -72,6 +72,8 @@ const FormSchema = new mongoose.Schema({
     },
     // Hub Customization
     hubBackgroundImage: { type: String },
+    hubButtonColor: { type: String, default: '#FFD700' },
+    showHubButton: { type: Boolean, default: true },
     welcomeMessage: { type: String }, // Mensagem personalizada do mentor
     welcomeVideo: { type: String }, // URL do vídeo de boas-vindas (YouTube, Vimeo, etc)
     customFields: [{

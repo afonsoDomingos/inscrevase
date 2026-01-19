@@ -152,6 +152,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [welcomeMessage, setWelcomeMessage] = useState('');
     const [welcomeVideo, setWelcomeVideo] = useState('');
     const [hubBackgroundImage, setHubBackgroundImage] = useState('');
+    const [hubButtonColor, setHubButtonColor] = useState('#FFD700');
+    const [showHubButton, setShowHubButton] = useState(true);
     const [uploadingHubBackground, setUploadingHubBackground] = useState(false);
     const [customFields, setCustomFields] = useState<any[]>([]);
     const [agenda, setAgenda] = useState<any[]>([]);
@@ -234,6 +236,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setWelcomeMessage(form.welcomeMessage || '');
             setWelcomeVideo(form.welcomeVideo || '');
             setHubBackgroundImage(form.hubBackgroundImage || '');
+            setHubButtonColor(form.hubButtonColor || '#FFD700');
+            setShowHubButton(form.showHubButton !== undefined ? form.showHubButton : true);
             setCustomFields(form.customFields || []);
             setAgenda(form.agenda || []);
             setMaterials(form.materials || []);
@@ -363,6 +367,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 welcomeMessage,
                 welcomeVideo,
                 hubBackgroundImage,
+                hubButtonColor,
+                showHubButton,
                 waitingVideo,
                 showVideoOnStart,
                 videoUrl,
@@ -1391,6 +1397,83 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
                                                     Substitui o fundo padrão do Hub. Recomendado: 1920x1080px (Escuro).
                                                 </p>
+                                            </div>
+
+                                            {/* Configuração do Botão Transmissão */}
+                                            <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 700, fontSize: '1rem' }}>
+                                                            🔴 Botão "Assistir Transmissão"
+                                                        </label>
+                                                        <span style={{ fontSize: '0.8rem', color: '#666' }}>Personalize o botão de chamada para ação do Hub</span>
+                                                    </div>
+                                                    <div
+                                                        onClick={() => setShowHubButton(!showHubButton)}
+                                                        style={{
+                                                            width: '50px',
+                                                            height: '26px',
+                                                            background: showHubButton ? '#111' : '#ccc',
+                                                            borderRadius: '100px',
+                                                            cursor: 'pointer',
+                                                            position: 'relative',
+                                                            transition: '0.3s'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            background: '#fff',
+                                                            borderRadius: '50%',
+                                                            position: 'absolute',
+                                                            top: '3px',
+                                                            left: showHubButton ? '27px' : '3px',
+                                                            transition: '0.3s'
+                                                        }} />
+                                                    </div>
+                                                </div>
+
+                                                {showHubButton && (
+                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ overflow: 'hidden' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
+                                                            <div style={{ flex: 1 }}>
+                                                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '5px' }}>Cor do Botão</label>
+                                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={hubButtonColor}
+                                                                        onChange={(e) => setHubButtonColor(e.target.value)}
+                                                                        style={{ width: '40px', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        value={hubButtonColor}
+                                                                        onChange={(e) => setHubButtonColor(e.target.value)}
+                                                                        style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div style={{
+                                                                width: '120px',
+                                                                height: '60px',
+                                                                background: hubButtonColor,
+                                                                borderRadius: '12px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                color: '#000',
+                                                                fontWeight: 700,
+                                                                fontSize: '0.7rem',
+                                                                textTransform: 'uppercase',
+                                                                textAlign: 'center',
+                                                                padding: '5px',
+                                                                boxShadow: `0 4px 12px ${hubButtonColor}40`
+                                                            }}>
+                                                                Preview
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                )}
                                             </div>
 
                                             {/* Mensagem de Boas-Vindas */}

@@ -5,7 +5,7 @@ const Submission = require('../models/Submission');
 
 exports.createForm = async (req, res) => {
     try {
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
 
         let slug = slugify(title, { lower: true, strict: true });
 
@@ -45,6 +45,8 @@ exports.createForm = async (req, res) => {
             location,
             onlineLink,
             hubBackgroundImage,
+            hubButtonColor,
+            showHubButton,
             welcomeMessage,
             welcomeVideo,
             customFields,
@@ -107,7 +109,7 @@ exports.updateForm = async (req, res) => {
         }
 
         // Update fields
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
 
         console.log(`--- Atualizando Formulário ${req.params.id} ---`);
         if (coverImage) console.log(`Nova Capa: ${coverImage}`);
@@ -133,6 +135,8 @@ exports.updateForm = async (req, res) => {
         if (showVideoOnStart !== undefined) form.showVideoOnStart = showVideoOnStart;
         if (videoUrl !== undefined) form.videoUrl = videoUrl;
         if (hubBackgroundImage !== undefined) form.hubBackgroundImage = hubBackgroundImage;
+        if (hubButtonColor !== undefined) form.hubButtonColor = hubButtonColor;
+        if (showHubButton !== undefined) form.showHubButton = showHubButton;
         if (welcomeMessage !== undefined) form.welcomeMessage = welcomeMessage;
         if (welcomeVideo !== undefined) form.welcomeVideo = welcomeVideo;
         if (customFields) form.customFields = customFields;
