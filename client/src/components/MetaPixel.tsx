@@ -40,12 +40,14 @@ export default function MetaPixel({ pixelId }: Props) {
           `,
                 }}
             />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <noscript>
                 <img
                     height="1"
                     width="1"
                     style={{ display: 'none' }}
                     src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+                    alt=""
                 />
             </noscript>
         </>

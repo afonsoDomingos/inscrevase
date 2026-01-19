@@ -21,6 +21,7 @@ export interface FormModel {
             facebook?: string;
             website?: string;
         };
+        facebookPixelId?: string;
     };
     fields: {
         id: string;
