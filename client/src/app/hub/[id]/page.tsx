@@ -373,7 +373,8 @@ function HubContent() {
                                         <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff0000', boxShadow: '0 0 10px #ff0000' }} className="animate-pulse" />
                                         Assistir Transmissão (Clique para Abrir)
                                     </motion.button>
-                                )}
+                                )
+                            )}
                         </AnimatePresence>
                     </div>
                 )}
