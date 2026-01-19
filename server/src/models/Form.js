@@ -71,6 +71,7 @@ const FormSchema = new mongoose.Schema({
         stripeProductId: { type: String }
     },
     // Hub Customization
+    hubBackgroundImage: { type: String },
     welcomeMessage: { type: String }, // Mensagem personalizada do mentor
     welcomeVideo: { type: String }, // URL do vídeo de boas-vindas (YouTube, Vimeo, etc)
     customFields: [{
