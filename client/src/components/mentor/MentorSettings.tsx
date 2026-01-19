@@ -337,6 +337,17 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                         </div>
                     </div>
 
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            className="btn-primary"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.8rem 2rem', fontSize: '1rem', width: '100%', justifyContent: 'center', boxShadow: '0 4px 14px 0 rgba(0,0,0,0.39)' }}
+                        >
+                            {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> {t('events.profile.saveChanges')}</>}
+                        </button>
+                    </div>
+
                     {/* Danger Zone: Account Type Change */}
                     <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #fee2e2' }}>
                         <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#dc2626', borderBottom: '1px solid #fee2e2', paddingBottom: '0.8rem' }}>
