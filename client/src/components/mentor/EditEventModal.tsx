@@ -379,24 +379,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                    style={{
-                        position: 'relative',
-                        width: '100%',
-                        maxWidth: '900px',
-                        background: '#fff',
-                        borderRadius: '30px',
-                        overflow: 'hidden',
-                        display: 'grid',
-                        gridTemplateColumns: '280px 1fr',
-                        height: '85vh',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-                    }}
+                    className="edit-event-modal"
                 >
                     {/* Sidebar */}
-                    <div style={{ background: '#000', padding: '3rem 2rem', color: '#fff' }}>
+                    <div className="edit-event-sidebar custom-scrollbar">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
                             <Layout size={24} />
-                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>{t('events.editEvent')}</span>
+                            <span className="btn-text" style={{ fontWeight: 800, fontSize: '1.2rem' }}>{t('events.editEvent')}</span>
                         </div>
 
                         <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -429,16 +418,14 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                     }}
                                 >
                                     {s.icon}
-                                    {s.label}
+                                    <span className="btn-text">{s.label}</span>
                                 </button>
                             ))}
                         </div>
-
-
                     </div>
 
                     {/* Content Wrapper */}
-                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', background: '#f8f9fa', position: 'relative', overflow: 'hidden' }}>
+                    <div className="edit-event-content">
                         {/* Scrollable Area */}
                         <div style={{ flex: 1, overflowY: 'auto', padding: '3rem', paddingBottom: '120px', minHeight: 0 }} className="custom-scrollbar">
                             <button

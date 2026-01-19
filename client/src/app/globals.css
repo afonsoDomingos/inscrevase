@@ -800,6 +800,103 @@ h6 {
   transition: all 0.3s;
 }
 
+/* Edit Event Modal Responsive Styles */
+.edit-event-modal {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  border-radius: 30px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 85vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.edit-event-sidebar {
+  background: #000;
+  padding: 3rem 2rem;
+  color: #fff;
+  overflow-y: auto;
+  height: 100%;
+  /* Custom Scrollbar for sidebar */
+  scrollbar-width: thin;
+  scrollbar-color: #333 #000;
+}
+
+.edit-event-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  background: #f8f9fa;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 992px) {
+  .edit-event-modal {
+    grid-template-columns: 80px 1fr;
+    height: 90vh;
+  }
+  
+  .edit-event-sidebar {
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Hide text labels in tablet mode, show only icons */
+  .edit-event-sidebar button span.btn-text {
+    display: none;
+  }
+  
+  .edit-event-sidebar button {
+    justify-content: center;
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-event-modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .edit-event-sidebar {
+    padding: 1rem;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    gap: 1rem;
+    background: #000;
+    border-bottom: 1px solid #333;
+  }
+
+  .edit-event-sidebar button {
+    padding: 0.8rem 1.2rem !important;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .edit-event-sidebar button span.btn-text {
+    display: inline; /* Show text again on mobile horizontal list */
+    font-size: 0.9rem;
+  }
+  
+  .edit-event-content {
+    overflow-y: auto;
+  }
+}
+
 .luxury-card:hover .stats-card-icon {
   transform: scale(1.1) rotate(5deg);
   filter: drop-shadow(0 0 10px currentColor);
