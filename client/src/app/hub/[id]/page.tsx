@@ -76,6 +76,7 @@ interface SubmissionData {
         };
         welcomeMessage?: string;
         welcomeVideo?: string;
+        hubBackgroundImage?: string;
         customFields?: Array<{
             label: string;
             value: string;
