@@ -303,7 +303,8 @@ export default function Navbar() {
           color: #FFFFFF !important;
           text-decoration: none !important;
           transition: all 0.3s;
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
         }
         @media (max-width: 768px) {
           .tesla-logo-text {

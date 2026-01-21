@@ -62,34 +62,36 @@ export default function Countdown() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
       style={{
-        background: 'rgba(0, 0, 0, 0.8)',
+        background: 'rgba(0, 0, 0, 0.5)',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         borderRadius: '24px',
-        padding: '2rem 3rem',
+        padding: '2.5rem',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         width: '100%',
         maxWidth: '1200px',
-        margin: '2rem auto',
-        flexWrap: 'wrap',
-        gap: '2rem',
+        margin: '3rem auto',
+        gap: '2.5rem',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        textAlign: 'center'
       }}
-      className="gold-shimmer-sweep"
+      className="gold-shimmer-sweep countdown-container"
       onMouseMove={handleMouseMove}
     >
       <div className="spotlight" />
-      <div style={{ textAlign: 'left', position: 'relative', zIndex: 2 }}>
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: '12px',
-          marginBottom: '8px'
-        }}>
+          marginBottom: '12px'
+        }} className="badge-wrapper">
           <span style={{
             background: 'rgba(59, 130, 246, 0.1)',
             color: '#3b82f6',
@@ -98,45 +100,98 @@ export default function Countdown() {
             fontSize: '0.75rem',
             fontWeight: 800,
             letterSpacing: '1px',
-            border: '1px solid rgba(59, 130, 246, 0.2)'
+            border: '1px solid rgba(59, 130, 246, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3b82f6', boxShadow: '0 0 10px #3b82f6' }} />
             {t('countdown.badge')}
           </span>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', boxShadow: '0 0 10px #3b82f6' }} />
         </div>
-        <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.9rem', fontWeight: 500 }}>
+        <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '1rem', fontWeight: 500, letterSpacing: '0.5px' }} className="subtitle-text">
           {t('countdown.description')}
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+      <div className="timer-items-wrapper" style={{
+        display: 'flex',
+        gap: '2rem',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        position: 'relative',
+        zIndex: 2,
+        width: '100%'
+      }}>
         {timerItems.map((item, idx) => (
-          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.03)',
+              <div className="timer-box" style={{
+                background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '16px',
-                width: '70px',
-                height: '70px',
+                width: '80px',
+                height: '80px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.75rem',
+                fontSize: '2rem',
                 fontWeight: 700,
                 color: '#fff',
-                marginBottom: '10px'
+                marginBottom: '12px',
+                boxShadow: '0 10px 20px rgba(0,0,0,0.2)'
               }}>
                 {String(item.value).padStart(2, '0')}
               </div>
-              <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.75rem', fontWeight: 600 }}>{item.label}</span>
+              <span className="timer-label" style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                {item.label}
+              </span>
             </div>
             {idx < timerItems.length - 1 && (
-              <div style={{ color: '#3b82f6', fontWeight: 700, fontSize: '1.2rem', marginTop: '-20px' }}>:</div>
+              <div className="timer-separator" style={{
+                color: '#3b82f6',
+                fontWeight: 700,
+                fontSize: '1.5rem',
+                height: '80px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>:</div>
             )}
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .countdown-container {
+            padding: 2rem 1rem !important;
+            gap: 1.5rem !important;
+            margin: 1.5rem auto !important;
+          }
+          .timer-items-wrapper {
+            gap: 0.5rem !important;
+          }
+          .timer-box {
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 1.5rem !important;
+            border-radius: 12px !important;
+          }
+          .timer-label {
+            font-size: 0.6rem !important;
+          }
+          .timer-separator {
+            font-size: 1rem !important;
+            height: 60px !important;
+            margin: 0 -2px !important;
+          }
+          .subtitle-text {
+            font-size: 0.85rem !important;
+            padding: 0 10px;
+          }
+        }
+      `}</style>
 
       <motion.button
         whileHover={{ scale: 1.05 }}
