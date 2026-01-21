@@ -253,9 +253,9 @@ export default function Navbar() {
         }
 
         @media (max-width: 992px) {
-           .nav-center-links, .nav-right-section { display: none; }
-           .nav-container { display: flex; justify-content: space-between; }
-           .mobile-toggle { display: block; }
+           .nav-center-links, .nav-right-section { display: none !important; }
+           .nav-container { display: flex !important; justify-content: space-between !important; width: 100% !important; }
+           .mobile-toggle { display: block !important; }
         }
 
         /* --- Existing Desktop Styles preserved below --- */
@@ -296,11 +296,15 @@ export default function Navbar() {
         }
         @media (max-width: 768px) {
           .tesla-logo-text {
-            letter-spacing: 2px;
-            font-size: 1.1rem;
+            letter-spacing: 2px !important;
+            font-size: 1rem !important;
           }
           .logo-with-text {
-            gap: 0.5rem;
+            gap: 0.4rem !important;
+          }
+          .nav-logo-img {
+            width: 32px !important;
+            height: 32px !important;
           }
         }
         .tesla-logo-text .gold-text {

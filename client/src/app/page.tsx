@@ -227,17 +227,27 @@ export default function Home() {
               letter-spacing: 2px !important;
               font-size: 0.65rem !important;
             }
-            .hero-description {
-              font-size: 0.95rem !important;
+            .hero-title {
+              font-size: clamp(1.8rem, 10vw, 3rem) !important;
               padding: 0 10px;
             }
+            .hero-description {
+              font-size: 0.9rem !important;
+              padding: 0 20px !important;
+              line-height: 1.5;
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            }
             .hero-actions {
-              gap: 12px !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 15px !important;
             }
             .hero-btn {
-              padding: 0.7rem 2rem !important;
+              padding: 0.8rem 2rem !important;
               width: 100% !important;
-              max-width: 280px;
+              max-width: 320px !important;
+              margin: 0 auto;
             }
           }
         `}</style>
