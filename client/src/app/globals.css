@@ -420,7 +420,7 @@ h6 {
   animation: float 6s ease-in-out infinite;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .hero h1 {
     font-size: 3rem;
   }
@@ -435,6 +435,67 @@ h6 {
 
   .luxury-card {
     padding: 1.5rem;
+  }
+
+  /* Navbar Mobile Fixes */
+  .nav-center-links,
+  .nav-right-section {
+    display: none !important;
+  }
+
+  .nav-container {
+    display: flex !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .mobile-toggle {
+    display: block !important;
+  }
+
+  /* Hero Mobile Fixes */
+  .hero-subtitle {
+    letter-spacing: 2px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 10vw, 3.5rem) !important;
+    padding: 0 10px;
+    line-height: 1.2 !important;
+  }
+
+  .hero-description {
+    font-size: 1rem !important;
+    padding: 0 1rem !important;
+    line-height: 1.6;
+    overflow-wrap: break-word !important;
+  }
+
+  .hero-actions {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 15px !important;
+  }
+
+  .hero-btn {
+    width: 100% !important;
+    max-width: 300px !important;
+    padding: 0.8rem !important;
+  }
+
+  .tesla-logo-text {
+    letter-spacing: 2px !important;
+    font-size: 1.1rem !important;
+  }
+
+  .logo-with-text {
+    gap: 0.5rem !important;
+  }
+
+  .nav-logo-img {
+    width: 32px !important;
+    height: 32px !important;
   }
 }
 
@@ -841,7 +902,7 @@ h6 {
     grid-template-columns: 80px 1fr;
     height: 90vh;
   }
-  
+
   .edit-event-sidebar {
     padding: 2rem 1rem;
     display: flex;
@@ -853,7 +914,7 @@ h6 {
   .edit-event-sidebar button span.btn-text {
     display: none;
   }
-  
+
   .edit-event-sidebar button {
     justify-content: center;
     padding: 1rem !important;
@@ -864,7 +925,8 @@ h6 {
   .edit-event-modal {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
-    height: 100dvh; /* Dynamic viewport height for mobile */
+    height: 100dvh;
+    /* Dynamic viewport height for mobile */
     border-radius: 0;
     max-width: 100%;
   }
@@ -884,14 +946,15 @@ h6 {
   .edit-event-sidebar button {
     padding: 0.8rem 1.2rem !important;
     flex-shrink: 0;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .edit-event-sidebar button span.btn-text {
-    display: inline; /* Show text again on mobile horizontal list */
+    display: inline;
+    /* Show text again on mobile horizontal list */
     font-size: 0.9rem;
   }
-  
+
   .edit-event-content {
     overflow-y: auto;
   }
