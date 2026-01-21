@@ -43,9 +43,9 @@ export default function StripeCheckout({
             const result = await response.json();
 
             // Meta Pixel Tracking
-            if (typeof window !== 'undefined' && (window as any).fbq) {
-                (window as any).fbq('track', 'InitiateCheckout', {
-                    content_name: eventTitle,
+            if (typeof window !== 'undefined' && (window as unknown as { fbq: (t: string, e: string, p: Record<string, unknown>) => void }).fbq) {
+                (window as unknown as { fbq: (t: string, e: string, p: Record<string, unknown>) => void }).fbq('track', 'InitiateCheckout', {
+                    content_name: eventTitle as string,
                     content_ids: [formId],
                     content_type: 'product',
                     value: price,
