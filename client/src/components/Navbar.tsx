@@ -144,6 +144,14 @@ export default function Navbar() {
           box-shadow: 0 10px 40px rgba(0,0,0,0.08);
           border-bottom: 1px solid rgba(255, 215, 0, 0.2);
         }
+        @media (max-width: 768px) {
+          .navbar {
+            padding: 1rem 1.25rem;
+          }
+          .navbar.scrolled {
+            padding: 0.6rem 1.25rem;
+          }
+        }
         .nav-container {
           max-width: 1400px;
           margin: 0 auto;
@@ -285,6 +293,15 @@ export default function Navbar() {
           overflow: hidden;
           display: inline-block;
           padding: 0.5rem 0;
+        }
+        @media (max-width: 768px) {
+          .tesla-logo-text {
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+          }
+          .logo-with-text {
+            gap: 0.5rem;
+          }
         }
         .tesla-logo-text .gold-text {
           color: #FFD700 !important;

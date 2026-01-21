@@ -170,10 +170,10 @@ export default function Home() {
               fontSize: '0.75rem',
               display: 'block',
               marginBottom: '1rem'
-            }}>
+            }} className="hero-subtitle">
               {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
             </span>
-            <h1 className="hero-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#fff', marginBottom: '1rem', letterSpacing: '-1.5px' }}>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(2rem, 8vw, 4.5rem)', color: '#fff', marginBottom: '1rem', letterSpacing: '-1.5px' }}>
               <span className="luxury-shimmer-hover" style={{ fontWeight: 600 }}>{t('landing.hero.title2')}</span>
             </h1>
             <p style={{
@@ -182,10 +182,10 @@ export default function Home() {
               maxWidth: '800px',
               margin: '0 auto 2.5rem',
               fontWeight: 400
-            }}>
+            }} className="hero-description">
               {t('landing.hero.description')}
             </p>
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' }}>
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' }} className="hero-actions">
               <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                 padding: '0.8rem 3.5rem',
                 borderRadius: '4px',
@@ -198,7 +198,7 @@ export default function Home() {
                 textTransform: 'none',
                 letterSpacing: '0.5px',
                 boxShadow: '0 4px 15px rgba(218, 165, 32, 0.2)'
-              }}>
+              }} className="hero-btn primary">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
               <Link href="/mentores" style={{
@@ -212,7 +212,7 @@ export default function Home() {
                 transition: 'all 0.3s',
                 textTransform: 'none',
                 letterSpacing: '0.5px'
-              }}>
+              }} className="hero-btn secondary">
                 {t('common.seeExamples')}
               </Link>
             </div>
@@ -220,6 +220,27 @@ export default function Home() {
             <Countdown />
           </motion.div>
         </div>
+
+        <style jsx>{`
+          @media (max-width: 768px) {
+            .hero-subtitle {
+              letter-spacing: 2px !important;
+              font-size: 0.65rem !important;
+            }
+            .hero-description {
+              font-size: 0.95rem !important;
+              padding: 0 10px;
+            }
+            .hero-actions {
+              gap: 12px !important;
+            }
+            .hero-btn {
+              padding: 0.7rem 2rem !important;
+              width: 100% !important;
+              max-width: 280px;
+            }
+          }
+        `}</style>
       </section>
 
       {/* Infinite Scroll Gallery with Tilt/Luxury Feel */}
