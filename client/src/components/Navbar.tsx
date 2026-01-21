@@ -137,19 +137,18 @@ export default function Navbar() {
           background: transparent;
         }
         .navbar.scrolled {
-          background: rgba(255, 255, 255, 0.95);
+          background: rgba(0, 0, 0, 0.6);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-          padding: 0.7rem 3rem;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-          border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+          padding: 0.8rem 3rem;
+          border-bottom: 1px solid rgba(212, 175, 55, 0.1);
         }
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
           .navbar {
-            padding: 1rem 1.25rem;
+            padding: 1rem 1.5rem;
           }
           .navbar.scrolled {
-            padding: 0.6rem 1.25rem;
+            padding: 0.8rem 1.5rem;
           }
         }
         .nav-container {
@@ -254,8 +253,23 @@ export default function Navbar() {
 
         @media (max-width: 992px) {
            .nav-center-links, .nav-right-section { display: none !important; }
-           .nav-container { display: flex !important; justify-content: space-between !important; width: 100% !important; }
-           .mobile-toggle { display: block !important; }
+           .nav-container { 
+             display: flex !important; 
+             justify-content: space-between !important; 
+             width: 100% !important; 
+             align-items: center !important;
+           }
+           .mobile-toggle { 
+             display: block !important; 
+             background: rgba(255, 255, 255, 0.1) !important;
+             backdrop-filter: blur(10px);
+             padding: 0.5rem 1rem !important;
+             border-radius: 8px !important;
+             font-size: 0.85rem !important;
+             font-weight: 600 !important;
+             color: #fff !important;
+             border: none !important;
+           }
         }
 
         /* --- Existing Desktop Styles preserved below --- */
@@ -283,16 +297,19 @@ export default function Navbar() {
         }
         .tesla-logo-text {
           font-family: 'Poppins', sans-serif !important;
-          font-weight: 800 !important;
-          letter-spacing: 5px;
-          font-size: 1.3rem;
+          font-weight: 700 !important;
+          letter-spacing: 4px;
+          font-size: 1.2rem;
           color: #FFFFFF !important;
           text-decoration: none !important;
           transition: all 0.3s;
-          position: relative;
-          overflow: hidden;
           display: inline-block;
-          padding: 0.5rem 0;
+        }
+        @media (max-width: 768px) {
+          .tesla-logo-text {
+            letter-spacing: 2px !important;
+            font-size: 1.1rem !important;
+          }
         }
         @media (max-width: 768px) {
           .tesla-logo-text {
