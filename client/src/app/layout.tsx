@@ -8,16 +8,18 @@ import { SocketProvider } from '@/context/SocketContext';
 import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
 import AnalyticsTracker from '@/components/common/AnalyticsTracker';
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap' });
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
-  weight: ['400', '500', '600', '700', '800', '900']
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap'
 });
 const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-poppins",
-  weight: ['400', '600', '700', '800']
+  weight: ['400', '600', '700', '800'],
+  display: 'swap'
 });
 
 export const metadata: Metadata = {
