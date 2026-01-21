@@ -157,97 +157,137 @@ export default function Home() {
         </div>
         */}
 
-        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+        <div className="container" style={{
+          position: 'relative',
+          zIndex: 2,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '120px 2rem 60px'
+        }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            style={{ textAlign: 'center' }}
           >
             <span style={{
               color: '#FFD700',
               textTransform: 'uppercase',
-              letterSpacing: '5px',
-              fontSize: '0.75rem',
+              letterSpacing: '6px',
+              fontSize: '0.8rem',
               display: 'block',
-              marginBottom: '1rem'
+              marginBottom: '0.8rem',
+              fontWeight: 500
             }} className="hero-subtitle">
               {t('landing.hero.subtitle') || 'A Nova Era de Eventos'}
             </span>
-            <h1 className="hero-title" style={{ fontSize: 'clamp(2rem, 8vw, 4.5rem)', color: '#fff', marginBottom: '1rem', letterSpacing: '-1.5px' }}>
-              <span className="luxury-shimmer-hover" style={{ fontWeight: 600 }}>{t('landing.hero.title2')}</span>
+            <h1 className="hero-title" style={{
+              fontSize: 'clamp(2.5rem, 7vw, 5rem)',
+              color: '#fff',
+              marginBottom: '1rem',
+              letterSpacing: '-1.5px',
+              fontWeight: 600
+            }}>
+              <span className="luxury-shimmer-hover">{t('landing.hero.title2')}</span>
             </h1>
             <p style={{
               fontSize: '1.2rem',
-              color: '#fff',
-              maxWidth: '800px',
-              margin: '0 auto 2.5rem',
-              fontWeight: 400
+              color: 'rgba(255,255,255,0.9)',
+              maxWidth: '600px',
+              margin: '0 auto',
+              fontWeight: 400,
+              lineHeight: 1.6
             }} className="hero-description">
               {t('landing.hero.description')}
             </p>
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' }} className="hero-actions">
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <div style={{
+              display: 'flex',
+              gap: '20px',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              width: '100%',
+              maxWidth: '700px',
+              margin: '0 auto 2rem'
+            }} className="hero-actions">
               <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
-                padding: '0.8rem 3.5rem',
-                borderRadius: '4px',
-                fontSize: '0.85rem',
+                flex: 1,
+                minWidth: '240px',
+                padding: '1rem 0',
+                borderRadius: '8px',
+                fontSize: '0.9rem',
                 background: 'var(--gold-gradient)',
                 color: '#000',
                 textDecoration: 'none',
                 fontWeight: 700,
-                transition: 'all 0.3s',
-                textTransform: 'none',
-                letterSpacing: '0.5px',
-                boxShadow: '0 4px 15px rgba(218, 165, 32, 0.2)'
+                transition: 'all 0.3s ease',
+                textAlign: 'center',
+                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
               }} className="hero-btn primary">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
               <Link href="/mentores" style={{
-                padding: '0.8rem 3.5rem',
-                borderRadius: '4px',
-                fontSize: '0.85rem',
-                background: 'rgba(255,255,255,1)',
-                color: '#393c41',
+                flex: 1,
+                minWidth: '240px',
+                padding: '1rem 0',
+                borderRadius: '8px',
+                fontSize: '0.9rem',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                color: '#fff',
                 textDecoration: 'none',
                 fontWeight: 600,
-                transition: 'all 0.3s',
-                textTransform: 'none',
-                letterSpacing: '0.5px'
+                transition: 'all 0.3s ease',
+                textAlign: 'center',
+                border: '1px solid rgba(255,255,255,0.2)'
               }} className="hero-btn secondary">
                 {t('common.seeExamples')}
               </Link>
             </div>
 
-            <Countdown />
+            <div className="hero-scroll-indicator" style={{ textAlign: 'center', color: '#fff', opacity: 0.6 }}>
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                ↓
+              </motion.div>
+            </div>
           </motion.div>
         </div>
 
         <style jsx>{`
           @media (max-width: 768px) {
             .hero-subtitle {
-              letter-spacing: 2px !important;
-              font-size: 0.65rem !important;
+              letter-spacing: 4px !important;
+              font-size: 0.7rem !important;
             }
             .hero-title {
-              font-size: clamp(1.8rem, 10vw, 3rem) !important;
-              padding: 0 10px;
+              font-size: 2.8rem !important;
+              letter-spacing: -1px !important;
             }
             .hero-description {
-              font-size: 0.9rem !important;
-              padding: 0 20px !important;
-              line-height: 1.5;
-              overflow-wrap: break-word;
-              word-wrap: break-word;
+              font-size: 1rem !important;
+              padding: 0 1.5rem !important;
             }
             .hero-actions {
               flex-direction: column !important;
               align-items: center !important;
-              gap: 15px !important;
+              gap: 12px !important;
+              padding: 0 1rem;
             }
             .hero-btn {
-              padding: 0.8rem 2rem !important;
               width: 100% !important;
-              max-width: 320px !important;
-              margin: 0 auto;
+              min-width: unset !important;
+              padding: 0.9rem 0 !important;
             }
           }
         `}</style>
