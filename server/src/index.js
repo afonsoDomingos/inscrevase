@@ -19,7 +19,14 @@ app.set('trust proxy', 1);
 app.use(helmet()); // Set security HTTP headers
 
 // CORS Configuration
-const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'http://localhost:5173', 'https://inscrevase.com', 'https://www.inscrevase.com'];
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:5173',
+    'https://inscrevase.com',
+    'https://www.inscrevase.com',
+    'https://inscreva-se.com',
+    'https://www.inscreva-se.com'
+];
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)

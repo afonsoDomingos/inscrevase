@@ -42,6 +42,17 @@ export default function StripeCheckout({
 
             const result = await response.json();
 
+            // Meta Pixel Tracking
+            if (typeof window !== 'undefined' && (window as any).fbq) {
+                (window as any).fbq('track', 'InitiateCheckout', {
+                    content_name: eventTitle,
+                    content_ids: [formId],
+                    content_type: 'product',
+                    value: price,
+                    currency: currency
+                });
+            }
+
             if (!response.ok) {
                 if (result.message?.includes('not ready')) {
                     alert('Este mentor ainda não configurou completamente os pagamentos via Stripe. Por favor, utilize o método "Manual" para enviar seu comprovativo.');

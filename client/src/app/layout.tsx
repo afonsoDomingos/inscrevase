@@ -23,6 +23,10 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Inscreva-se | Plataforma de Eventos de Luxo",
   description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 import { Suspense } from "react";

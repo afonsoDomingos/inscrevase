@@ -55,7 +55,7 @@ if (googleClientId && googleClientSecret) {
         clientID: googleClientId,
         clientSecret: googleClientSecret,
         callbackURL: process.env.NODE_ENV === 'production'
-            ? 'https://inscrevase.onrender.com/api/auth/google/callback'
+            ? 'https://inscreva-se.com/api/auth/google/callback'
             : 'http://localhost:5000/api/auth/google/callback',
         proxy: true,
         passReqToCallback: true
@@ -123,7 +123,7 @@ if (linkedinClientId && linkedinClientSecret) {
         clientID: linkedinClientId,
         clientSecret: linkedinClientSecret,
         callbackURL: process.env.NODE_ENV === 'production'
-            ? 'https://inscrevase.onrender.com/api/auth/linkedin/callback'
+            ? 'https://inscreva-se.com/api/auth/linkedin/callback'
             : 'http://localhost:5000/api/auth/linkedin/callback',
         scope: ['openid', 'profile', 'email'],
         passReqToCallback: true
