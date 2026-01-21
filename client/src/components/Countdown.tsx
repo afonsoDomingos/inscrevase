@@ -201,16 +201,18 @@ export default function Countdown() {
           color: '#fff',
           border: '1px solid rgba(255, 255, 255, 0.3)',
           borderRadius: '50px',
-          padding: '12px 24px',
+          padding: '12px 32px',
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: '10px',
           fontSize: '0.9rem',
           fontWeight: 600,
           cursor: 'pointer',
           transition: 'border-color 0.3s',
           position: 'relative',
-          zIndex: 2
+          zIndex: 2,
+          margin: '0 auto'
         }}
         onMouseOver={(e) => e.currentTarget.style.borderColor = '#fff'}
         onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
