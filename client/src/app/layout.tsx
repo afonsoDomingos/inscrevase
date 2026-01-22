@@ -3,7 +3,7 @@ import { Inter, Playfair_Display, Poppins } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
-const poppins = Poppins({ subsets: ['latin'], variable: '--font-poppins' });
+const poppins = Poppins({ subsets: ['latin'], weight: ['400','600','700'], variable: '--font-poppins' });
 
 export const metadata = {
   title: "Inscreva-se | Plataforma de Eventos de Luxo",
@@ -20,7 +20,7 @@ import MetaPixel from '@/components/MetaPixel';
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: Readonly<{ 
   children: React.ReactNode;
 }>) {
   return (
