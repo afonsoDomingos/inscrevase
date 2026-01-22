@@ -1,28 +1,11 @@
-import type { Metadata } from "next";
-import { Inter, Playfair_Display, Poppins } from "next/font/google";
-import "./globals.css";
-import { Toaster } from 'sonner';
-import { LanguageProvider } from '@/context/LanguageContext';
-import { CurrencyProvider } from '@/context/CurrencyContext';
-import { SocketProvider } from '@/context/SocketContext';
-import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
-import AnalyticsTracker from '@/components/common/AnalyticsTracker';
+import './globals.css';
+import { Inter, Playfair_Display, Poppins } from 'next/font/google';
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap' });
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  weight: ['400', '500', '600', '700', '800', '900'],
-  display: 'swap'
-});
-const poppins = Poppins({
-  subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ['400', '600', '700', '800'],
-  display: 'swap'
-});
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
+const poppins = Poppins({ subsets: ['latin'], variable: '--font-poppins' });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Inscreva-se | Plataforma de Eventos de Luxo",
   description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
   icons: {
@@ -35,8 +18,6 @@ import { Suspense } from "react";
 
 import MetaPixel from '@/components/MetaPixel';
 
-// ... (existing imports)
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt">
-      <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
+      <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}> 
         <LanguageProvider>
           <CurrencyProvider>
             <SocketProvider>
