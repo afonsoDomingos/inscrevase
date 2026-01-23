@@ -293,7 +293,8 @@ export default function BlogManagement() {
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                         required
-                                        style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px' }}
+                                        placeholder="Ex: Como triplicar suas vendas de ingressos"
+                                        className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none placeholder:text-gray-400"
                                     />
                                 </div>
 
@@ -303,9 +304,10 @@ export default function BlogManagement() {
                                         value={formData.excerpt}
                                         onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                                         required
-                                        rows={2}
+                                        rows={3}
                                         maxLength={300}
-                                        style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px', resize: 'vertical' }}
+                                        placeholder="Um breve resumo que aparecerá nos cards (máx 300 caracteres)..."
+                                        className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none placeholder:text-gray-400 resize-none"
                                     />
                                 </div>
 
@@ -315,8 +317,9 @@ export default function BlogManagement() {
                                         value={formData.content}
                                         onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                                         required
-                                        rows={10}
-                                        style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.9rem', resize: 'vertical' }}
+                                        rows={12}
+                                        placeholder="# Seu Título Aqui&#10;&#10;Escreva seu conteúdo usando Markdown..."
+                                        className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none placeholder:text-gray-400 font-mono text-sm"
                                     />
                                 </div>
 
@@ -326,7 +329,7 @@ export default function BlogManagement() {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
-                                            style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px' }}
+                                            className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none cursor-pointer"
                                         >
                                             <option value="guide">Guias</option>
                                             <option value="marketing">Marketing</option>
@@ -342,7 +345,7 @@ export default function BlogManagement() {
                                             value={formData.readTime}
                                             onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
                                             min={1}
-                                            style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px' }}
+                                            className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none"
                                         />
                                     </div>
                                 </div>
