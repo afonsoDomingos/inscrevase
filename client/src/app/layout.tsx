@@ -9,6 +9,7 @@ import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
 import AnalyticsTracker from '@/components/common/AnalyticsTracker';
 import { Suspense } from "react";
 import MetaPixel from '@/components/MetaPixel';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,6 +51,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
       <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
+        <LoadingScreen />
         <LanguageProvider>
           <CurrencyProvider>
             <SocketProvider>
