@@ -294,7 +294,9 @@ export default function BlogManagement() {
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                         required
                                         placeholder="Ex: Como triplicar suas vendas de ingressos"
-                                        className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none placeholder:text-gray-400"
+                                        style={inputStyle}
+                                        onFocus={handleFocus}
+                                        onBlur={handleBlur}
                                     />
                                 </div>
 
@@ -307,7 +309,9 @@ export default function BlogManagement() {
                                         rows={3}
                                         maxLength={300}
                                         placeholder="Um breve resumo que aparecerá nos cards (máx 300 caracteres)..."
-                                        className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none placeholder:text-gray-400 resize-none"
+                                        style={{ ...inputStyle, resize: 'none' }}
+                                        onFocus={handleFocus}
+                                        onBlur={handleBlur}
                                     />
                                 </div>
 
@@ -319,7 +323,9 @@ export default function BlogManagement() {
                                         required
                                         rows={12}
                                         placeholder="# Seu Título Aqui&#10;&#10;Escreva seu conteúdo usando Markdown..."
-                                        className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none placeholder:text-gray-400 font-mono text-sm"
+                                        style={{ ...inputStyle, fontFamily: 'monospace', fontSize: '0.9rem' }}
+                                        onFocus={handleFocus}
+                                        onBlur={handleBlur}
                                     />
                                 </div>
 
@@ -329,7 +335,9 @@ export default function BlogManagement() {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
-                                            className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none cursor-pointer"
+                                            style={{ ...inputStyle, cursor: 'pointer' }}
+                                            onFocus={handleFocus}
+                                            onBlur={handleBlur}
                                         >
                                             <option value="guide">Guias</option>
                                             <option value="marketing">Marketing</option>
@@ -345,7 +353,9 @@ export default function BlogManagement() {
                                             value={formData.readTime}
                                             onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
                                             min={1}
-                                            className="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/10 transition-all outline-none"
+                                            style={inputStyle}
+                                            onFocus={handleFocus}
+                                            onBlur={handleBlur}
                                         />
                                     </div>
                                 </div>
