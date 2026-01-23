@@ -1167,7 +1167,7 @@ export default function Home() {
               { icon: Youtube, url: 'https://www.youtube.com/@Inscreva-se-events', color: '#FF0000', label: 'YouTube' },
               { icon: Facebook, url: 'https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR', color: '#1877F2', label: 'Facebook' },
               { icon: MessageCircle, url: 'https://wa.me/258856079576', color: '#25D366', label: 'WhatsApp' }
-            ].map((social, i) => (
+            ].map((social) => (
               <motion.a
                 key={social.label}
                 href={social.url}
