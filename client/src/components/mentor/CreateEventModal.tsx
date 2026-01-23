@@ -299,8 +299,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '12px',
+                                        justifyContent: 'center',
+                                        gap: isMobile ? '0' : '12px',
                                         padding: isMobile ? '0.75rem' : '1rem',
+                                        minWidth: isMobile ? '45px' : 'auto',
                                         borderRadius: '12px',
                                         border: 'none',
                                         background: step === s.id ? '#FFD70015' : 'transparent',
