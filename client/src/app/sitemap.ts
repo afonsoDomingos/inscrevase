@@ -48,12 +48,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // For now, we'll try to use explore events which are public.
         const events = await formService.getExploreEvents();
 
-        dynamicRoutes = events.map((event) => ({
-            url: `${BASE_URL}/f/${event.slug}`,
-            lastModified: new Date(event.createdAt), // Or updated date if available
-            changeFrequency: 'daily',
-            priority: 0.7,
-        }));
+        dynamicRoutes = events.map((event) => {
+            // Validate date to prevent invalid time value errors
+            const eventDate = event.createdAt ? new Date(event.createdAt) : new Date();
+            const lastModified = isNaN(eventDate.getTime()) ? new Date() : eventDate;
+
+            return {
+                url: `${BASE_URL}/f/${event.slug}`,
+                lastModified,
+                changeFrequency: 'daily' as const,
+                priority: 0.7,
+            };
+        });
     } catch (error) {
         console.error('Failed to generate sitemap for dynamic routes:', error);
     }
