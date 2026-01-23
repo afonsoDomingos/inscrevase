@@ -499,6 +499,9 @@
             "subtitle": "The New Era of Events",
             "description": "The registration platform designed for mentors and speakers who value luxury branding and the best experience for their clients."
         },
+        "dashboard": {
+            "subtitle": "An intuitive interface designed for mentors and organizers seeking excellence and professionalism in project management."
+        },
         "stats": {
             "s1": "Created Events",
             "s2": "Active Mentors",

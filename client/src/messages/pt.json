@@ -502,6 +502,9 @@
             "subtitle": "A Nova Era de Eventos",
             "description": "A plataforma de inscrições desenhada para mentores e palestrantes que prezam pelo branding de luxo e a melhor experiência para seus clientes."
         },
+        "dashboard": {
+            "subtitle": "Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos."
+        },
         "stats": {
             "s1": "Eventos Criados",
             "s2": "Mentores Ativos",
