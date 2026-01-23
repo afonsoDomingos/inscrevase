@@ -137,6 +137,32 @@ export default function BlogManagement() {
         });
     };
 
+    const inputStyle = {
+        width: '100%',
+        padding: '1rem',
+        borderRadius: '12px',
+        border: '1px solid #e2e8f0',
+        background: '#f8fafc',
+        fontSize: '0.95rem',
+        outline: 'none',
+        transition: 'all 0.2s ease',
+        color: '#1e293b'
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleFocus = (e: any) => {
+        e.target.style.background = '#ffffff';
+        e.target.style.borderColor = '#FFD700';
+        e.target.style.boxShadow = '0 0 0 4px rgba(255, 215, 0, 0.1)';
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleBlur = (e: any) => {
+        e.target.style.background = '#f8fafc';
+        e.target.style.borderColor = '#e2e8f0';
+        e.target.style.boxShadow = 'none';
+    };
+
     return (
         <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
