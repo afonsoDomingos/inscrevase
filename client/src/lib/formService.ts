@@ -59,10 +59,7 @@ export interface FormModel {
         fontFamily: string;
         style: 'luxury' | 'minimalist';
     };
-    visits?: number;
-    submissionCount?: number;
-    createdAt?: string;
-    updatedAt: string;
+
     paymentConfig?: {
         enabled: boolean;
         price?: number;
@@ -115,6 +112,7 @@ export interface FormModel {
         order: number;
     }[];
     createdAt: string;
+    updatedAt: string;
     submissionCount?: number;
     visits?: number;
 }
