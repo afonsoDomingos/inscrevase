@@ -800,28 +800,24 @@ function MentorDashboardContent() {
                                     label={t('dashboard.totalSubscribers')}
                                     value={stats?.submissions || 0}
                                     trend="+12%"
-                                    color="rgba(10, 10, 10, 0.9)"
                                 />
                                 <StatCard
                                     icon={<FileText className="gold-text" />}
                                     label={t('dashboard.activeEvents')}
                                     value={forms.filter(f => f.active).length}
                                     trend="0"
-                                    color="rgba(10, 10, 10, 0.9)"
                                 />
                                 <StatCard
                                     icon={<CheckCircle className="gold-text" />}
                                     label={t('dashboard.approvedSubscriptions')}
                                     value={stats?.approved || 0}
                                     trend="+5%"
-                                    color="rgba(10, 10, 10, 0.9)"
                                 />
                                 <StatCard
                                     icon={<DollarSign className="gold-text" />}
                                     label={t('dashboard.estimatedRevenue')}
                                     value={`MT ${(stats?.revenue || 0).toLocaleString()}`}
                                     trend="+18%"
-                                    color="rgba(10, 10, 10, 0.9)"
                                 />
                             </div>
 
@@ -1187,7 +1183,7 @@ export default function MentorDashboard() {
     );
 }
 
-function StatCard({ icon, label, value, trend, color }: { icon: React.ReactNode, label: string, value: string | number, trend: string, color: string }) {
+function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string | number, trend: string }) {
     return (
         <motion.div
             whileHover={{ y: -5 }}
