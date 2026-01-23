@@ -250,5 +250,8 @@ export const formService = {
         const response = await fetch(`${API_URL}/forms/explore?${params}`);
         if (!response.ok) throw new Error('Failed to fetch events');
         return response.json();
+    },
+    async getPublicForms(): Promise<FormModel[]> {
+        return this.getExploreEvents();
     }
 };
