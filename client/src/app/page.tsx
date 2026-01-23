@@ -539,7 +539,7 @@ export default function Home() {
               Receba Pagamentos de <span className="gold-text">Forma Simples</span>
             </h2>
             <p style={{ color: '#666', marginBottom: '5rem', fontSize: '1.15rem', maxWidth: '750px', margin: '0 auto 5rem', lineHeight: 1.6 }}>
-              Integração completa com as principais carteiras móveis de Moçambique e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
+              Integração completa com as principais carteiras móveis e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
             </p>
 
             {/* Infinite Scroll Payments */}
