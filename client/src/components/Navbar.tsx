@@ -101,7 +101,7 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-links">
-          <div className="mobile-menu-section-title">{t('common.menu') || 'Menu'}</div>
+          <div className="mobile-menu-section-title" style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Menu</div>
 
           <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>
             {t('nav.home') || 'Início'}
@@ -119,11 +119,11 @@ export default function Navbar() {
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)}>
+            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto' }}>
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)}>
+            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto' }}>
               {t('auth.login')}
             </Link>
           )}
@@ -209,7 +209,7 @@ export default function Navbar() {
             border: none;
             cursor: pointer;
             padding: 0.5rem;
-            color: #fff;
+            color: #FFD700;
         }
 
         .mobile-links {
@@ -229,18 +229,38 @@ export default function Navbar() {
 
         .mobile-link {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #ffffff !important;
             text-decoration: none !important;
-            padding: 1.2rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            padding: 1.1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             font-weight: 500;
+            margin-bottom: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-link::after {
+            content: '→';
+            opacity: 0.5;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
 
         .mobile-link:active {
             color: #FFD700 !important;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 215, 0, 0.15);
+            border-color: rgba(255, 215, 0, 0.4) !important;
+            transform: scale(0.97);
+        }
+
+        .mobile-link:active::after {
+            opacity: 1;
+            transform: translateX(5px);
         }
 
         .mobile-menu-spacer {

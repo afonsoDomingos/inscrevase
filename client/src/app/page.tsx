@@ -57,21 +57,8 @@ export default function Home() {
     }
   };
 
-  const [videoSrc, setVideoSrc] = useState("/banner3.mp4");
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setVideoSrc("/banner.mp4");
-      } else {
-        setVideoSrc("/banner3.mp4");
-      }
-    };
-
-    handleResize(); // Initial check
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Video source is constant now
+  const videoSrc = "/banner3.mp4";
 
 
 
@@ -288,8 +275,19 @@ export default function Home() {
             .hero-btn {
               width: 100% !important;
               min-width: unset !important;
-              padding: 1rem 0 !important;
+              padding: 0.9rem 0 !important;
               border-radius: 12px !important;
+              font-size: 0.85rem !important;
+            }
+            .stats-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 15px !important;
+            }
+            .stat-value {
+              font-size: 1.8rem !important;
+            }
+            .stat-label {
+              font-size: 0.65rem !important;
             }
             .dashboard-showcase {
               padding: 60px 0 !important;
@@ -299,10 +297,24 @@ export default function Home() {
               align-items: center !important;
               gap: 12px !important;
               margin-bottom: 3rem !important;
+              padding: 0 1rem;
             }
             .dashboard-actions a {
               width: 100% !important;
               min-width: unset !important;
+              padding: 12px 0 !important;
+            }
+            .payments-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 30px 15px !important;
+            }
+            .payment-card {
+              min-width: unset !important;
+            }
+            .payment-icon {
+              width: 70px !important;
+              height: 70px !important;
+              font-size: 1.5rem !important;
             }
             .hidden-mobile {
               display: none;
@@ -353,7 +365,8 @@ export default function Home() {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px', textAlign: 'center' }}
+            className="stats-grid"
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px', textAlign: 'center' }}
           >
             {[
               { label: t('landing.stats.s1') || 'Eventos Criados', value: '2,500+' },
@@ -361,9 +374,9 @@ export default function Home() {
               { label: t('landing.stats.s3') || 'Inscrições Hoje', value: '1,200+' },
               { label: t('landing.stats.s4') || 'Suporte Online', value: '24/7' },
             ].map((stat, i) => (
-              <motion.div key={i} variants={fadeIn} style={{ padding: '20px' }}>
-                <div className="gold-text" style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>{stat.value}</div>
-                <div style={{ color: '#666', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem' }}>{stat.label}</div>
+              <motion.div key={i} variants={fadeIn} className="stat-card" style={{ padding: '20px' }}>
+                <div className="gold-text stat-value" style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>{stat.value}</div>
+                <div className="stat-label" style={{ color: '#666', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem' }}>{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -458,15 +471,23 @@ export default function Home() {
               borderRadius: '14px',
               overflow: 'hidden',
               background: '#000',
-              lineHeight: 0
+              lineHeight: 0,
+              maxHeight: '450px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}>
               <Image
                 src="/dashboard-preview.png"
                 alt="Dashboard Inscreva-se"
                 width={1200}
                 height={800}
-                className="w-full h-auto"
-                style={{ objectFit: 'contain' }}
+                className="w-full h-auto shadow-2xl"
+                style={{
+                  objectFit: 'contain',
+                  maxHeight: '450px',
+                  width: 'auto'
+                }}
                 priority
               />
             </div>
@@ -513,12 +534,12 @@ export default function Home() {
               Integração completa com as principais carteiras móveis de Moçambique e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
             </p>
 
-            <div style={{
-              display: 'flex',
+            <div className="payments-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: 'clamp(20px, 5vw, 60px)',
-              flexWrap: 'wrap'
+              gap: 'clamp(20px, 5vw, 60px)'
             }}>
               {[
                 { name: 'M-Pesa', color: '#e61c27', icon: 'M' },
@@ -526,13 +547,13 @@ export default function Home() {
                 { name: 'PayPal', color: '#003087', icon: 'P' },
                 { name: 'Stripe', color: '#635bff', icon: 'S' }
               ].map((method, idx) => (
-                <div key={idx} style={{
+                <div key={idx} className="payment-card" style={{
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: '15px'
                 }}>
-                  <div style={{
+                  <div className="payment-icon hover:scale-110" style={{
                     width: 'clamp(70px, 10vw, 90px)',
                     height: 'clamp(70px, 10vw, 90px)',
                     borderRadius: '24px',
@@ -547,7 +568,7 @@ export default function Home() {
                     color: method.color,
                     boxShadow: `0 10px 30px -10px ${method.color}40`,
                     transition: 'transform 0.3s ease'
-                  }} className="hover:scale-110">
+                  }}>
                     {method.icon}
                   </div>
                   <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', letterSpacing: '1px' }}>{method.name}</span>
