@@ -79,15 +79,23 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (socket && socket.connected) return;
 
-        // URL Base limpa (sem /api) para o Socket.IO
-        const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const socketUrl = envUrl.replace(/\/api\/?$/, '');
+        // Detectar se estamos em produção e ajustar URL do socket
+        // Rewrites do Next.js não suportam WS, então precisamos conectar direto no backend
+        const isProduction = process.env.NODE_ENV === 'production';
+        const backendOrigin = 'https://inscrevase.onrender.com';
+
+        // Se houver variável de ambiente explicita para API externa, use-a. 
+        // Senão, em prod use o backend direto, em dev use localhost.
+        const envUrl = process.env.NEXT_PUBLIC_Socket_URL || (isProduction ? backendOrigin : 'http://localhost:5000');
+
+        const socketUrl = envUrl.replace(/\/api\/?$/, ''); // Remove /api se tiver
 
         console.log(`🔌 [SocketContext] Iniciando conexão Socket em: ${socketUrl}`);
 
         const socketInstance = io(socketUrl, {
             auth: { token }, // Autenticação JWT
-            transports: ['websocket', 'polling'], // Tenta WebSocket, cai para polling se falhar (mais compatível)
+            transports: ['polling', 'websocket'], // Polling primeiro para garantir conexão
+            withCredentials: true,
             reconnection: true,
             reconnectionAttempts: 20,
             reconnectionDelay: 2000,
