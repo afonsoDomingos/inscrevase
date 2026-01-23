@@ -10,6 +10,7 @@ import AnalyticsTracker from '@/components/common/AnalyticsTracker';
 import { Suspense } from "react";
 import MetaPixel from '@/components/MetaPixel';
 import LoadingScreen from '@/components/common/LoadingScreen';
+import { ThemeProvider } from '@/context/ThemeContext';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,19 +53,21 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
         <LoadingScreen />
-        <LanguageProvider>
-          <CurrencyProvider>
-            <SocketProvider>
-              <ClientLayoutWrapper>
-                <Suspense fallback={null}>
-                  <AnalyticsTracker />
-                  <MetaPixel pixelId="1313928660767780" />
-                </Suspense>
-                {children}
-              </ClientLayoutWrapper>
-            </SocketProvider>
-          </CurrencyProvider>
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <CurrencyProvider>
+              <SocketProvider>
+                <ClientLayoutWrapper>
+                  <Suspense fallback={null}>
+                    <AnalyticsTracker />
+                    <MetaPixel pixelId="1313928660767780" />
+                  </Suspense>
+                  {children}
+                </ClientLayoutWrapper>
+              </SocketProvider>
+            </CurrencyProvider>
+          </LanguageProvider>
+        </ThemeProvider>
         <Toaster position="top-center" richColors theme="light" />
       </body>
     </html>

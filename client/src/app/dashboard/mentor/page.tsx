@@ -7,6 +7,7 @@ import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
+import ThemeToggle from '@/components/common/ThemeToggle';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
@@ -261,7 +262,7 @@ function MentorDashboardContent() {
 
     if (loading) {
         return (
-            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8f9fa' }}>
+            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)' }}>
                 <Loader2 className="animate-spin" size={48} color="#FFD700" />
             </div>
         );
@@ -273,7 +274,7 @@ function MentorDashboardContent() {
     }
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa', position: 'relative', overflowX: 'hidden' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
             {/* Mobile Toggle Button */}
             {isMobile && (
                 <button
@@ -325,8 +326,8 @@ function MentorDashboardContent() {
                 width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
                 transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                background: '#1a1a1a',
-                color: '#fff',
+                background: 'var(--paper)',
+                color: 'var(--foreground)',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'fixed',
@@ -342,7 +343,7 @@ function MentorDashboardContent() {
                         <motion.h2
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff', margin: 0 }}
+                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}
                         >
                             Inscreva<span className="gold-text">.se</span>
                         </motion.h2>
@@ -575,7 +576,7 @@ function MentorDashboardContent() {
                             {user.profilePhoto ? (
                                 <Image src={user.profilePhoto} alt={user.name} fill style={{ objectFit: 'cover' }} />
                             ) : (
-                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: '#000' }}>
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: 'var(--secondary)' }}>
                                     <UserIcon size={isMobile ? 24 : 32} />
                                 </div>
                             )}
@@ -584,7 +585,7 @@ function MentorDashboardContent() {
                             <motion.h1
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
-                                style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
+                                style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: 'var(--foreground)' }}
                             >
                                 {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name.split(' ')[0]}</span>
                             </motion.h1>
@@ -595,8 +596,8 @@ function MentorDashboardContent() {
                                 {!isMobile && (
                                     <span style={{
                                         marginTop: '4px',
-                                        background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : '#eee',
-                                        color: user.plan === 'enterprise' ? '#FFD700' : '#000',
+                                        background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : 'var(--muted)',
+                                        color: user.plan === 'enterprise' ? '#FFD700' : (user.plan === 'pro' ? '#000' : 'var(--foreground)'),
                                         padding: '2px 10px',
                                         borderRadius: '20px',
                                         fontSize: '0.65rem',
@@ -649,18 +650,18 @@ function MentorDashboardContent() {
                                 alignItems: 'center',
                                 gap: '8px',
                                 padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
-                                background: '#fff',
+                                background: 'var(--paper)',
                                 border: '1px solid #FFD700',
                                 borderRadius: '10px',
-                                color: '#000',
+                                color: 'var(--foreground)',
                                 fontWeight: 700,
                                 textDecoration: 'none',
                                 transition: 'all 0.3s',
                                 fontSize: isMobile ? '0.8rem' : '1rem',
                                 whiteSpace: 'nowrap'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#fffaf0'}
-                            onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--paper-hover)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'var(--paper)'}
                         >
                             <ArrowRight size={18} /> {!isMobile && t('nav.home')}
                         </Link>
@@ -715,7 +716,7 @@ function MentorDashboardContent() {
                                     justifyContent: 'center',
                                     width: '45px',
                                     height: '45px',
-                                    background: '#fff',
+                                    background: 'var(--paper)',
                                     border: '1px solid #FFD700',
                                     borderRadius: '12px',
                                     color: '#000',
@@ -826,7 +827,7 @@ function MentorDashboardContent() {
                                 position: 'relative',
                                 padding: isMobile ? '1.25rem' : '2.5rem',
                                 borderRadius: isMobile ? '24px' : '32px',
-                                background: '#fff',
+                                background: 'var(--paper)',
                                 overflow: 'hidden',
                                 border: '1px solid rgba(255, 215, 0, 0.2)',
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.04)'
@@ -844,11 +845,11 @@ function MentorDashboardContent() {
                                     {forms.length > 0 ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                             {forms.slice(0, 3).map((form) => (
-                                                <div key={form._id} className="luxury-card" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.4)', padding: '0', overflow: 'hidden', boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)' }}>
+                                                <div key={form._id} className="luxury-card" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--border)', padding: '0', overflow: 'hidden', boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)' }}>
                                                     <div style={{ height: '4px', width: '100%', background: 'var(--gold-gradient)' }}></div>
                                                     <div style={{ padding: isMobile ? '1.5rem' : '2rem' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', gap: '1rem' }}>
-                                                            <h4 style={{ fontWeight: 800, fontSize: isMobile ? '1.1rem' : '1.3rem', fontFamily: 'var(--font-playfair)', color: '#1a1a1a', lineHeight: 1.2 }}>{form.title}</h4>
+                                                            <h4 style={{ fontWeight: 800, fontSize: isMobile ? '1.1rem' : '1.3rem', fontFamily: 'var(--font-playfair)', color: 'var(--foreground)', lineHeight: 1.2 }}>{form.title}</h4>
                                                             <span style={{
                                                                 padding: '0.4rem 0.8rem',
                                                                 borderRadius: '8px',
@@ -896,8 +897,8 @@ function MentorDashboardContent() {
                                                                 style={{
                                                                     flex: 1,
                                                                     padding: isMobile ? '0.8rem' : '1rem',
-                                                                    background: '#fff',
-                                                                    border: '1.5px solid #f1f5f9',
+                                                                    background: 'var(--paper)',
+                                                                    border: '1.5px solid var(--border)',
                                                                     borderRadius: '12px',
                                                                     cursor: 'pointer',
                                                                     display: 'flex',
@@ -906,11 +907,11 @@ function MentorDashboardContent() {
                                                                     gap: '8px',
                                                                     fontSize: '0.85rem',
                                                                     fontWeight: 700,
-                                                                    color: '#475569',
+                                                                    color: 'var(--text-muted)',
                                                                     transition: 'all 0.2s'
                                                                 }}
                                                                 onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#000'; }}
-                                                                onMouseOut={(e) => { e.currentTarget.style.borderColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
+                                                                onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                                                             >
                                                                 <Copy size={16} /> {isMobile ? '' : t('common.link')}
                                                             </button>
@@ -930,8 +931,8 @@ function MentorDashboardContent() {
                                                                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                                             >
                                                                 <div style={{
-                                                                    background: '#1a1a1a',
-                                                                    color: '#fff',
+                                                                    background: 'var(--secondary)',
+                                                                    color: 'var(--primary)',
                                                                     flex: 1,
                                                                     borderRadius: '12px 0 0 12px',
                                                                     display: 'flex',
@@ -964,9 +965,9 @@ function MentorDashboardContent() {
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="luxury-card" style={{ background: '#fff', border: 'none', textAlign: 'center', padding: '4rem' }}>
-                                            <FileText size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
-                                            <h4 style={{ color: '#999', marginBottom: '1rem' }}>{t('dashboard.noEventsYet')}</h4>
+                                        <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none', textAlign: 'center', padding: '4rem' }}>
+                                            <FileText size={48} style={{ color: 'var(--muted)', marginBottom: '1rem' }} />
+                                            <h4 style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>{t('dashboard.noEventsYet')}</h4>
                                             <button onClick={() => setIsEventModalOpen(true)} className="btn-primary" style={{ padding: '0.8rem 2rem' }}>{t('dashboard.createFirstEvent')}</button>
                                         </div>
                                     )}
@@ -977,15 +978,15 @@ function MentorDashboardContent() {
 
                     {activeTab === 'forms' && (
                         <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div className="luxury-card" style={{ background: '#fff', border: 'none' }}>
+                            <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none' }}>
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
-                                        <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                                            <th style={{ padding: '1rem', color: '#666' }}>Evento</th>
-                                            <th style={{ padding: '1rem', color: '#666' }}>Status</th>
-                                            <th style={{ padding: '1rem', color: '#666' }}>Inscritos</th>
-                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Visitas</th>
-                                            <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Evento</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Status</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Inscritos</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'center' }}>Visitas</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'right' }}>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1019,7 +1020,7 @@ function MentorDashboardContent() {
                                                     )}
                                                 </td>
                                                 <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '1rem', fontWeight: 600, color: 'var(--foreground)' }}>
                                                         <Eye size={16} color="#B8860B" /> {form.visits || 0}
                                                     </div>
                                                 </td>
@@ -1079,7 +1080,7 @@ function MentorDashboardContent() {
                                 <button
                                     onClick={() => setIsUpgradeModalOpen(true)}
                                     className="btn-secondary"
-                                    style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', cursor: 'pointer', border: '1px solid #ddd', background: '#fff' }}
+                                    style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', cursor: 'pointer', border: '1px solid var(--border)', background: 'var(--paper)', color: 'var(--foreground)' }}
                                 >
                                     Fazer Upgrade de Plano
                                 </button>
