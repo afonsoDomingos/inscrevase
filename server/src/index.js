@@ -165,6 +165,7 @@ app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/stripe', require('./routes/stripeRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/blog', require('./routes/blog'));
 
 // Endpoint to get all online users
 app.get('/api/users/status/online', (req, res) => {
