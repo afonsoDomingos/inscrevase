@@ -357,8 +357,8 @@ export default function AuraConcierge() {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    width: '60px',
-                    height: '60px',
+                    width: '50px',
+                    height: '50px',
                     borderRadius: '50%',
                     background: '#000',
                     color: '#FFD700',
@@ -371,7 +371,7 @@ export default function AuraConcierge() {
                     position: 'relative'
                 }}
             >
-                {isOpen ? <X size={28} /> : <Sparkles size={28} />}
+                {isOpen ? <X size={22} /> : <Sparkles size={22} />}
                 {!isOpen && (
                     <motion.div
                         animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}

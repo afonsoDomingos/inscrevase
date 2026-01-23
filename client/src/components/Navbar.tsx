@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Calendar, LifeBuoy } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -104,26 +104,38 @@ export default function Navbar() {
           <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>Menu</div>
 
           <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>
-            {t('nav.home') || 'Início'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Home size={20} />
+              <span>{t('nav.home') || 'Início'}</span>
+            </div>
           </Link>
           <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>
-            {t('nav.mentors')}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Users size={20} />
+              <span>{t('nav.mentors')}</span>
+            </div>
           </Link>
           <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)}>
-            {t('nav.events')}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Calendar size={20} />
+              <span>{t('nav.events')}</span>
+            </div>
           </Link>
           <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>
-            {t('dashboard.support')}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <LifeBuoy size={20} />
+              <span>{t('dashboard.support')}</span>
+            </div>
           </Link>
 
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)' }}>
+            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#000', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)' }}>
+            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#000', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
               {t('auth.login')}
             </Link>
           )}
