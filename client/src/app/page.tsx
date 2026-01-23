@@ -9,6 +9,7 @@ import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
+import { Linkedin, Youtube, Facebook, MessageCircle } from "lucide-react";
 import Cookies from "js-cookie";
 
 const galleryImages = [
@@ -1060,6 +1061,52 @@ export default function Home() {
                 </p>
               </div>
             </a>
+          </div>
+
+          {/* Social Links */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '30px',
+            marginBottom: '40px'
+          }}>
+            {[
+              { icon: Linkedin, url: 'https://www.linkedin.com/company/inscreva-se', color: '#0077B5', label: 'LinkedIn' },
+              { icon: Youtube, url: 'https://www.youtube.com/@Inscreva-se-events', color: '#FF0000', label: 'YouTube' },
+              { icon: Facebook, url: 'https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR', color: '#1877F2', label: 'Facebook' },
+              { icon: MessageCircle, url: 'https://wa.me/258856079576', color: '#25D366', label: 'WhatsApp' }
+            ].map((social, i) => (
+              <motion.a
+                key={social.label}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{
+                  scale: 1.15,
+                  y: -8,
+                  boxShadow: `0 15px 30px ${social.color}33`,
+                  borderColor: social.color,
+                  color: social.color
+                }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '18px',
+                  background: '#fff',
+                  color: '#444',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.04)',
+                  transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  border: '1px solid #eee'
+                }}
+              >
+                <social.icon size={24} strokeWidth={1.5} />
+              </motion.a>
+            ))}
           </div>
 
           {/* Footer Links */}

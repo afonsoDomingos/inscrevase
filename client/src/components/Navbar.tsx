@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -128,7 +128,13 @@ export default function Navbar() {
             </Link>
           )}
 
-          <div className="mobile-footer">
+          <div className="mobile-footer" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '2rem' }}>
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginBottom: '1.5rem' }}>
+              <a href="https://www.linkedin.com/company/inscreva-se" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><Linkedin size={20} /></a>
+              <a href="https://www.youtube.com/@Inscreva-se-events" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><Youtube size={20} /></a>
+              <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><Facebook size={20} /></a>
+              <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><MessageCircle size={20} /></a>
+            </div>
             <LanguageSwitcher />
           </div>
         </div>
