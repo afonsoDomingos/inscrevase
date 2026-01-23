@@ -5,6 +5,12 @@ import { blogService } from '@/lib/blogService';
 // Base URL for the website
 const BASE_URL = 'https://inscreva-se.com';
 
+const safelyGetDate = (dateString?: string | Date) => {
+    if (!dateString) return new Date();
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? new Date() : date;
+};
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Static Routes
     const staticRoutes: MetadataRoute.Sitemap = [
@@ -50,12 +56,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let formRoutes: MetadataRoute.Sitemap = [];
     try {
         const publicForms = await formService.getPublicForms();
-        formRoutes = publicForms.map((form) => ({
-            url: `${BASE_URL}/f/${form.slug}`,
-            lastModified: new Date(form.updatedAt),
-            changeFrequency: 'daily', // Events can change or sell out
-            priority: 0.9,
-        }));
+        if (Array.isArray(publicForms)) {
+            formRoutes = publicForms.map((form) => ({
+                url: `${BASE_URL}/f/${form.slug}`,
+                lastModified: safelyGetDate(form.updatedAt),
+                changeFrequency: 'daily', // Events can change or sell out
+                priority: 0.9,
+            }));
+        }
     } catch (error) {
         console.error('Error generating sitemap for forms:', error);
     }
@@ -64,12 +72,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let blogRoutes: MetadataRoute.Sitemap = [];
     try {
         const posts = await blogService.getPublishedPosts();
-        blogRoutes = posts.map((post) => ({
-            url: `${BASE_URL}/blog/${post.slug}`,
-            lastModified: new Date(post.updatedAt || post.createdAt),
-            changeFrequency: 'weekly',
-            priority: 0.8,
-        }));
+        if (Array.isArray(posts)) {
+            blogRoutes = posts.map((post) => ({
+                url: `${BASE_URL}/blog/${post.slug}`,
+                lastModified: safelyGetDate(post.updatedAt || post.createdAt),
+                changeFrequency: 'weekly',
+                priority: 0.8,
+            }));
+        }
     } catch (error) {
         console.error('Error generating sitemap for blog posts:', error);
     }
