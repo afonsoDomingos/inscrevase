@@ -101,29 +101,29 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-links">
+          <div className="mobile-menu-section-title">{t('common.menu') || 'Menu'}</div>
+
           <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>
-            <span className="link-number">01</span> {t('nav.home') || 'Home'}
+            {t('nav.home') || 'Início'}
           </Link>
           <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>
-            <span className="link-number">02</span> {t('nav.mentors')}
+            {t('nav.mentors')}
           </Link>
           <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)}>
-            <span className="link-number">03</span> {t('nav.events')}
+            {t('nav.events')}
           </Link>
           <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>
-            <span className="link-number">04</span> {t('dashboard.support')}
+            {t('dashboard.support')}
           </Link>
 
-          <div className="mobile-divider"></div>
+          <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-cta-btn" onClick={() => setIsOpen(false)}>
-              <LayoutDashboard size={20} />
+            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)}>
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-cta-btn" onClick={() => setIsOpen(false)}>
-              <LogIn size={20} />
+            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)}>
               {t('auth.login')}
             </Link>
           )}
@@ -183,116 +183,95 @@ export default function Navbar() {
         .mobile-menu-overlay {
             position: fixed;
             inset: 0;
-            background: #ffffff;
+            background: #000000;
             z-index: 9999;
             display: flex;
             flex-direction: column;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            transform: translateX(100%);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-10px);
         }
         .mobile-menu-overlay.open {
             opacity: 1;
             pointer-events: auto;
-            transform: translateX(0);
+            transform: translateY(0);
         }
 
         .mobile-menu-header {
             padding: 1.5rem 2rem;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-            border-bottom: 1px solid rgba(0,0,0, 0.05);
         }
         .close-menu-btn {
-            background: #f8f8f8;
-            border: 1px solid #eee;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: none;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .close-menu-btn:hover {
-            background: #fff;
-            border-color: #FFD700;
-            transform: rotate(90deg);
+            padding: 0.5rem;
+            color: #fff;
         }
 
         .mobile-links {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            gap: 1.5rem;
+            padding: 0 2rem 3rem;
+        }
+
+        .mobile-menu-section-title {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            font-family: 'Poppins', sans-serif;
         }
 
         .mobile-link {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            color: #1a1a1b !important;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            color: #ffffff !important;
             text-decoration: none !important;
-            transition: all 0.4s ease;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
-        .link-number {
-           font-family: 'Poppins', sans-serif;
-           font-size: 0.85rem;
-           color: #FFD700;
-           font-weight: 700;
-           letter-spacing: 2px;
-        }
-
-        .mobile-link:hover {
+        .mobile-link:active {
             color: #FFD700 !important;
-            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .mobile-cta-btn {
+        .mobile-menu-spacer {
+            flex: 1;
+        }
+
+        .mobile-action-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background: #1a1a1b;
+            background: #4285f4;
             color: #fff !important;
             text-decoration: none !important;
-            padding: 1.2rem;
-            border-radius: 12px;
+            padding: 1rem;
+            border-radius: 8px;
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
         }
 
-        .mobile-cta-btn:active {
+        .mobile-action-btn:active {
             transform: scale(0.98);
-        }
-
-        .mobile-divider {
-            width: 100%;
-            height: 1px;
-            background: #eee;
-            margin: 1rem 0;
+            filter: brightness(1.1);
         }
 
         .mobile-footer {
-          margin-top: auto;
-          padding-top: 2rem;
           display: flex;
           justify-content: center;
+          padding-top: 1rem;
         }
 
         @media (max-width: 992px) {
@@ -305,18 +284,10 @@ export default function Navbar() {
            }
            .mobile-toggle { 
              display: block !important; 
-             background: rgba(255, 255, 255, 0.15) !important;
-             backdrop-filter: blur(15px);
-             -webkit-backdrop-filter: blur(15px);
-             padding: 0.6rem !important;
-             border-radius: 12px !important;
-             border: 1px solid rgba(255,255,255,0.2) !important;
+             background: none !important;
+             padding: 0.5rem !important;
+             border: none !important;
              cursor: pointer;
-             transition: all 0.3s ease;
-           }
-           .navbar.scrolled .mobile-toggle {
-             background: rgba(0, 0, 0, 0.05) !important;
-             border-color: rgba(0,0,0,0.1) !important;
            }
         }
 

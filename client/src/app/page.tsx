@@ -371,7 +371,7 @@ export default function Home() {
       </section>
 
       {/* Dashboard Feature Showcase */}
-      <section className="dashboard-showcase" style={{ padding: '120px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <section className="dashboard-showcase" style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
         {/* Decorative background glow */}
         <div style={{
           position: 'absolute',
@@ -438,45 +438,44 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 80 }}
+            initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="dashboard-mockup-container"
             style={{
               position: 'relative',
-              maxWidth: '1200px',
+              maxWidth: '1100px',
               margin: '0 auto',
-              borderRadius: '24px',
-              padding: '12px',
+              borderRadius: '20px',
+              padding: '8px',
               background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(255, 255, 255, 0.1))',
-              boxShadow: '0 40px 80px -15px rgba(0,0,0,0.1), 0 20px 40px -20px rgba(0,0,0,0.15)',
+              boxShadow: '0 40px 80px -15px rgba(0,0,0,0.1)',
               border: '1px solid rgba(255,255,255,0.5)'
             }}
           >
             <div style={{
-              borderRadius: '16px',
+              borderRadius: '14px',
               overflow: 'hidden',
-              background: '#fff',
-              border: '1px solid rgba(212, 175, 55, 0.1)',
-              lineHeight: 0,
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.8)'
+              background: '#000',
+              lineHeight: 0
             }}>
               <Image
                 src="/dashboard-preview.png"
                 alt="Dashboard Inscreva-se"
-                width={1400}
-                height={875}
+                width={1200}
+                height={800}
                 className="w-full h-auto"
+                style={{ objectFit: 'contain' }}
                 priority
               />
             </div>
-
-            {/* Soft decorative glow effects around the image */}
             <div style={{
               position: 'absolute',
-              top: '-30px',
-              left: '15%',
-              right: '15%',
+              top: '-20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '80%',
               height: '120px',
               background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.12), transparent)',
               filter: 'blur(35px)',
@@ -497,7 +496,67 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Payment Methods Section */}
+      <section style={{ padding: '80px 0', background: '#000', position: 'relative', overflow: 'hidden' }}>
+        <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 1.5rem' }}>
+          <motion.div {...fadeIn}>
+            <h2 style={{
+              fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
+              fontWeight: 800,
+              marginBottom: '1rem',
+              color: '#fff',
+              letterSpacing: '-1px'
+            }}>
+              Receba Pagamentos de <span className="gold-text">Forma Simples</span>
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '4rem', fontSize: '1.1rem', maxWidth: '750px', margin: '0 auto 4rem' }}>
+              Integração completa com as principais carteiras móveis de Moçambique e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
+            </p>
 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 'clamp(20px, 5vw, 60px)',
+              flexWrap: 'wrap'
+            }}>
+              {[
+                { name: 'M-Pesa', color: '#e61c27', icon: 'M' },
+                { name: 'E-Mola', color: '#ff6600', icon: 'E' },
+                { name: 'PayPal', color: '#003087', icon: 'P' },
+                { name: 'Stripe', color: '#635bff', icon: 'S' }
+              ].map((method, idx) => (
+                <div key={idx} style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '15px'
+                }}>
+                  <div style={{
+                    width: 'clamp(70px, 10vw, 90px)',
+                    height: 'clamp(70px, 10vw, 90px)',
+                    borderRadius: '24px',
+                    background: 'rgba(255,255,255,0.05)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(10px)',
+                    fontSize: '2rem',
+                    fontWeight: 900,
+                    color: method.color,
+                    boxShadow: `0 10px 30px -10px ${method.color}40`,
+                    transition: 'transform 0.3s ease'
+                  }} className="hover:scale-110">
+                    {method.icon}
+                  </div>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', letterSpacing: '1px' }}>{method.name}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Tesla-inspired Events Showcase (Original) */}
       <section style={{ padding: '0 20px 80px', background: '#fff' }}>
