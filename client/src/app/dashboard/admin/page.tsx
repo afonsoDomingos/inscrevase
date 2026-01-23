@@ -10,7 +10,7 @@ import SupportTicketList from '@/components/admin/SupportTicketList';
 import AdminFinance from '@/components/admin/AdminFinance';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, Wifi, Globe, Menu, X, ChevronDown, BarChart3 } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -290,6 +290,32 @@ export default function AdminDashboard() {
                             )}
                         </button>
                     ))}
+
+                    <Link
+                        href="/dashboard/admin/blog"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            padding: '0.75rem 1rem',
+                            width: '100%',
+                            borderRadius: '12px',
+                            border: 'none',
+                            background: 'transparent',
+                            color: '#888',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'left',
+                            fontSize: '0.95rem',
+                            position: 'relative',
+                            textDecoration: 'none'
+                        }}
+                        className="hover:bg-gray-100 hover:text-black"
+                    >
+                        <Newspaper size={20} />
+                        Gerenciar Blog
+                    </Link>
                 </nav>
 
                 <button
