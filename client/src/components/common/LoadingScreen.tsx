@@ -64,7 +64,7 @@ export default function LoadingScreen() {
                                 margin: 0,
                             }}
                         >
-                            INSCR<span style={{ color: "var(--gold-primary, #D4AF37)" }}>EVA</span>
+                            INSCR<span style={{ color: "var(--gold-primary, #D4AF37)" }}>EVA-SE</span>
                         </h1>
 
                         {/* Elegant Loading bar */}
