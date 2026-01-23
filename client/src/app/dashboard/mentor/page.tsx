@@ -826,18 +826,18 @@ function MentorDashboardContent() {
                             </div>
 
                             <div style={{
-                                marginTop: isMobile ? '2.5rem' : '4rem',
+                                marginTop: isMobile ? '2rem' : '4rem',
                                 position: 'relative',
-                                padding: isMobile ? '1.5rem' : '2.5rem',
+                                padding: isMobile ? '1.25rem' : '2.5rem',
                                 borderRadius: isMobile ? '24px' : '32px',
-                                background: 'linear-gradient(145deg, #ffffff 0%, #e2e8f0 100%)',
+                                background: '#fff',
                                 overflow: 'hidden',
-                                border: '1px solid rgba(255, 215, 0, 0.3)',
-                                boxShadow: 'inset 0 0 40px rgba(255,255,255,0.8), 0 20px 40px rgba(0,0,0,0.05)'
+                                border: '1px solid rgba(255, 215, 0, 0.2)',
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.04)'
                             }}>
                                 {/* Decorative Elements */}
-                                <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(60px)', pointerEvents: 'none' }} />
-                                <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(50px)', pointerEvents: 'none' }} />
+                                <div style={{ position: 'absolute', top: '-5%', right: '-5%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(40px)', pointerEvents: 'none' }} />
+                                <div style={{ position: 'absolute', bottom: '-5%', left: '-5%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)', pointerEvents: 'none' }} />
 
                                 <div style={{ position: 'relative', zIndex: 1 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -850,91 +850,116 @@ function MentorDashboardContent() {
                                             {forms.slice(0, 3).map((form) => (
                                                 <div key={form._id} className="luxury-card" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.4)', padding: '0', overflow: 'hidden', boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)' }}>
                                                     <div style={{ height: '4px', width: '100%', background: 'var(--gold-gradient)' }}></div>
-                                                    <div style={{ padding: isMobile ? '1.25rem' : '2rem' }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isMobile ? '1.25rem' : '2rem' }}>
-                                                            <h4 style={{ fontWeight: 700, fontSize: isMobile ? '1.1rem' : '1.3rem', fontFamily: 'var(--font-playfair)', maxWidth: '80%' }}>{form.title}</h4>
+                                                    <div style={{ padding: isMobile ? '1.5rem' : '2rem' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', gap: '1rem' }}>
+                                                            <h4 style={{ fontWeight: 800, fontSize: isMobile ? '1.1rem' : '1.3rem', fontFamily: 'var(--font-playfair)', color: '#1a1a1a', lineHeight: 1.2 }}>{form.title}</h4>
                                                             <span style={{
                                                                 padding: '0.4rem 0.8rem',
-                                                                borderRadius: '4px',
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: 800,
-                                                                background: form.active ? '#38a16915' : '#eee',
-                                                                color: form.active ? '#38a169' : '#888',
+                                                                borderRadius: '8px',
+                                                                fontSize: '0.65rem',
+                                                                fontWeight: 900,
+                                                                background: form.active ? '#f0fdf4' : '#f8f9fa',
+                                                                color: form.active ? '#16a34a' : '#94a3b8',
                                                                 textTransform: 'uppercase',
-                                                                letterSpacing: '0.5px'
+                                                                letterSpacing: '1px',
+                                                                flexShrink: 0
                                                             }}>
                                                                 {form.active ? t('dashboard.activeTitle') : t('dashboard.draftTitle')}
                                                             </span>
                                                         </div>
+                                                        <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', marginBottom: '1.5rem' }} />
 
                                                         {form.capacity && (
                                                             <div style={{ marginBottom: '1.5rem' }}>
-                                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
-                                                                    <span>{t('dashboard.registrants')}: <b style={{ color: '#000' }}>{form.submissionCount || 0}</b></span>
-                                                                    <span>{t('dashboard.goal')}: <b>{form.capacity}</b></span>
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
+                                                                    <span style={{ color: '#64748b', fontWeight: 500 }}>{t('dashboard.registrants')}: <b style={{ color: '#1a1a1a', fontWeight: 700 }}>{form.submissionCount || 0}</b></span>
+                                                                    <span style={{ color: '#64748b', fontWeight: 500 }}>{t('dashboard.goal')}: <b style={{ color: '#1a1a1a', fontWeight: 700 }}>{form.capacity}</b></span>
                                                                 </div>
-                                                                <div style={{ width: '100%', height: '8px', background: '#eee', borderRadius: '4px', overflow: 'hidden' }}>
+                                                                <div style={{ width: '100%', height: '8px', background: '#f1f5f9', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
                                                                     <div
                                                                         style={{
                                                                             width: `${Math.min(100, Math.round(((form.submissionCount || 0) / form.capacity) * 100))}%`,
                                                                             height: '100%',
-                                                                            background: 'var(--gold-gradient, linear-gradient(to right, #FFD700, #FDB931))',
-                                                                            borderRadius: '4px',
-                                                                            transition: 'width 1s ease'
+                                                                            background: 'var(--gold-gradient)',
+                                                                            borderRadius: '10px',
+                                                                            transition: 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                                            boxShadow: '0 0 10px rgba(255, 215, 0, 0.4)'
                                                                         }}
                                                                     />
                                                                 </div>
-                                                                <div style={{ textAlign: 'right', fontSize: '0.75rem', marginTop: '4px', color: '#999', fontWeight: 600 }}>
+                                                                <div style={{ textAlign: 'right', fontSize: '0.75rem', marginTop: '0.5rem', color: '#94a3b8', fontWeight: 700, letterSpacing: '0.5px' }}>
                                                                     {Math.round(((form.submissionCount || 0) / form.capacity) * 100)}% {t('dashboard.reached')}
                                                                 </div>
                                                             </div>
                                                         )}
 
-                                                        <div style={{ display: 'flex', gap: '1rem' }}>
-                                                            <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ flex: 1, padding: '1rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>
-                                                                <Copy size={16} /> {t('common.link')}
+                                                        <div style={{ display: 'flex', gap: '0.75rem', flexDirection: isMobile ? 'row' : 'row' }}>
+                                                            <button
+                                                                onClick={() => copyToClipboard(form.slug)}
+                                                                title={t('common.copyLink')}
+                                                                style={{
+                                                                    flex: 1,
+                                                                    padding: isMobile ? '0.8rem' : '1rem',
+                                                                    background: '#fff',
+                                                                    border: '1.5px solid #f1f5f9',
+                                                                    borderRadius: '12px',
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    gap: '8px',
+                                                                    fontSize: '0.85rem',
+                                                                    fontWeight: 700,
+                                                                    color: '#475569',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                                onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#000'; }}
+                                                                onMouseOut={(e) => { e.currentTarget.style.borderColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
+                                                            >
+                                                                <Copy size={16} /> {isMobile ? '' : t('common.link')}
                                                             </button>
                                                             <button
                                                                 onClick={() => window.open(`/f/${form.slug}`, '_blank')}
                                                                 style={{
-                                                                    flex: 3,
+                                                                    flex: isMobile ? 2.5 : 3,
                                                                     padding: 0,
                                                                     background: 'transparent',
                                                                     border: 'none',
                                                                     display: 'flex',
-                                                                    gap: '8px',
-                                                                    height: '40px', // Reduced height
-                                                                    cursor: 'pointer'
+                                                                    height: isMobile ? '45px' : '52px',
+                                                                    cursor: 'pointer',
+                                                                    transition: 'transform 0.2s'
                                                                 }}
+                                                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                                             >
                                                                 <div style={{
                                                                     background: '#1a1a1a',
                                                                     color: '#fff',
                                                                     flex: 1,
-                                                                    borderRadius: '10px',
+                                                                    borderRadius: '12px 0 0 12px',
                                                                     display: 'flex',
                                                                     alignItems: 'center',
                                                                     justifyContent: 'center',
                                                                     fontWeight: 800,
-                                                                    fontSize: '0.75rem', // Smaller font
+                                                                    fontSize: isMobile ? '0.7rem' : '0.85rem',
                                                                     textTransform: 'uppercase',
                                                                     letterSpacing: '1px',
-                                                                    border: '1px solid rgba(255,255,255,0.1)',
-                                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                                                    border: '1px solid #1a1a1a'
                                                                 }}>
                                                                     {t('common.view')}
                                                                 </div>
                                                                 <div style={{
-                                                                    background: '#FFD700',
-                                                                    width: '46px', // Smaller icon part
-                                                                    borderRadius: '10px 14px 4px 10px',
+                                                                    background: 'var(--gold-gradient)',
+                                                                    width: isMobile ? '40px' : '52px',
+                                                                    borderRadius: '0 12px 12px 0',
                                                                     display: 'flex',
                                                                     alignItems: 'center',
                                                                     justifyContent: 'center',
                                                                     color: '#000',
-                                                                    boxShadow: '0 4px 10px rgba(255, 215, 0, 0.2)'
+                                                                    boxShadow: '0 4px 15px rgba(255, 215, 0, 0.2)'
                                                                 }}>
-                                                                    <ArrowRight size={18} strokeWidth={2.5} />
+                                                                    <ArrowRight size={18} strokeWidth={3} />
                                                                 </div>
                                                             </button>
                                                         </div>
@@ -1167,17 +1192,28 @@ function StatCard({ icon, label, value, trend, color }: { icon: React.ReactNode,
         <motion.div
             whileHover={{ y: -5 }}
             className="luxury-card"
-            style={{ background: '#fff', padding: '1.8rem', border: 'none', borderTop: `1px solid ${color}` }}
+            style={{
+                background: '#fff',
+                padding: '1.5rem',
+                border: 'none',
+                borderRadius: '20px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: `rgba(212,175,55,0.1)`, color: '#D4AF37', padding: '0.8rem', borderRadius: '12px' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'var(--gold-gradient)' }}></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                <div style={{ background: `rgba(212,175,55,0.08)`, color: '#D4AF37', padding: '0.6rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {icon}
                 </div>
-                <span style={{ color: '#666', fontWeight: 500, fontSize: '0.95rem' }}>{label}</span>
+                <span style={{ color: '#666', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{value}</h2>
-                <span style={{ fontSize: '0.85rem', color: trend.startsWith('+') ? '#10b981' : '#666', fontWeight: 600 }}>{trend}</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a' }}>{value}</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: trend.startsWith('+') ? '#f0fdf4' : '#fef2f2', padding: '4px 8px', borderRadius: '20px' }}>
+                    <span style={{ fontSize: '0.75rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 800 }}>{trend}</span>
+                </div>
             </div>
         </motion.div>
     );
