@@ -351,6 +351,133 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Dashboard Feature Showcase */}
+      <section style={{ padding: '120px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+        {/* Decorative background glow */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '80%',
+          height: '80%',
+          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <motion.div {...fadeIn}>
+            <h2 style={{
+              fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+              fontWeight: 800,
+              marginBottom: '1.5rem',
+              color: '#1a1a1a',
+              letterSpacing: '-1px',
+              lineHeight: 1.1
+            }}>
+              Crie e Gerencie Seus Eventos <br />
+              <span className="gold-text">Digitais Ou Presenciais</span> de Forma Clara e Simples
+            </h2>
+            <p style={{
+              color: '#666',
+              fontSize: '1.25rem',
+              maxWidth: '850px',
+              margin: '0 auto 3.5rem',
+              fontWeight: 400,
+              lineHeight: 1.6
+            }}>
+              {t('landing.dashboard.subtitle') || 'Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos.'}
+            </p>
+
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '5.5rem' }}>
+              <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
+                padding: '14px 45px',
+                borderRadius: '8px',
+                background: 'var(--gold-gradient)',
+                color: '#000',
+                fontWeight: 700,
+                textDecoration: 'none',
+                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)',
+                transition: 'all 0.3s ease'
+              }} className="hover:scale-105 transform">
+                {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
+              </Link>
+              <Link href="/funcionalidades" style={{
+                padding: '14px 45px',
+                borderRadius: '8px',
+                background: '#f8f8f8',
+                color: '#333',
+                fontWeight: 600,
+                textDecoration: 'none',
+                border: '1px solid #eee',
+                transition: 'all 0.3s ease'
+              }} className="hover:bg-gray-100">
+                {t('common.viewMore') || 'Saiba Mais'}
+              </Link>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'relative',
+              maxWidth: '1200px',
+              margin: '0 auto',
+              borderRadius: '24px',
+              padding: '12px',
+              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(255, 255, 255, 0.1))',
+              boxShadow: '0 40px 80px -15px rgba(0,0,0,0.1), 0 20px 40px -20px rgba(0,0,0,0.15)',
+              border: '1px solid rgba(255,255,255,0.5)'
+            }}
+          >
+            <div style={{
+              borderRadius: '16px',
+              overflow: 'hidden',
+              background: '#fff',
+              border: '1px solid rgba(212, 175, 55, 0.1)',
+              lineHeight: 0,
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.8)'
+            }}>
+              <Image
+                src="/dashboard-preview.png"
+                alt="Dashboard Inscreva-se"
+                width={1400}
+                height={875}
+                className="w-full h-auto"
+                priority
+              />
+            </div>
+
+            {/* Soft decorative glow effects around the image */}
+            <div style={{
+              position: 'absolute',
+              top: '-30px',
+              left: '15%',
+              right: '15%',
+              height: '120px',
+              background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.12), transparent)',
+              filter: 'blur(35px)',
+              zIndex: -1
+            }} />
+            <div style={{
+              position: 'absolute',
+              bottom: '-20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '80%',
+              height: '60px',
+              background: 'rgba(212, 175, 55, 0.1)',
+              filter: 'blur(40px)',
+              zIndex: -1
+            }} />
+          </motion.div>
+        </div>
+      </section>
+
 
 
       {/* Tesla-inspired Events Showcase (Original) */}
