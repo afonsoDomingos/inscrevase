@@ -62,9 +62,10 @@ export default function LoadingScreen() {
                                 letterSpacing: "8px",
                                 textTransform: "uppercase",
                                 margin: 0,
+                                whiteSpace: "nowrap",
                             }}
                         >
-                            INSCR<span style={{ color: "var(--gold-primary, #D4AF37)" }}>EVA-SE</span>
+                            INSCREVA<span style={{ color: "var(--gold-primary, #D4AF37)" }}>-SE</span>
                         </h1>
 
                         {/* Elegant Loading bar */}

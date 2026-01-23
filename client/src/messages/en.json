@@ -261,6 +261,7 @@
         }
     },
     "plans": {
+        "perMonth": "/month",
         "free": {
             "name": "Free Plan",
             "description": "Start your journey at no cost.",

@@ -49,7 +49,7 @@ export default function Navbar() {
               height={40}
               className="nav-logo-img"
             />
-            <span className="tesla-logo-text">INSCR<span className="gold-text">EVA</span></span>
+            <span className="tesla-logo-text">INSCREVA<span className="gold-text">-SE</span></span>
           </div>
         </Link>
 
@@ -93,7 +93,7 @@ export default function Navbar() {
       <div className={`mobile-menu-overlay ${isOpen ? 'open' : ''}`}>
         <div className="mobile-menu-header">
           <div className="logo-with-text">
-            <span className="tesla-logo-text">INSCR<span className="gold-text">EVA</span></span>
+            <span className="tesla-logo-text">INSCREVA<span className="gold-text">-SE</span></span>
           </div>
           <button className="close-menu-btn" onClick={() => setIsOpen(false)}>
             <X size={32} color="#FFD700" />

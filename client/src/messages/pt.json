@@ -264,6 +264,7 @@
         }
     },
     "plans": {
+        "perMonth": "/mês",
         "free": {
             "name": "Plano Free",
             "description": "Comece sua jornada sem custos.",

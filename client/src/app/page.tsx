@@ -451,28 +451,48 @@ export default function Home() {
         />
 
         <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 1.5rem' }}>
-          <motion.div {...fadeIn}>
-            <h2 style={{
-              fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
-              fontWeight: 800,
-              marginBottom: '1.5rem',
-              color: '#1a1a1a',
-              letterSpacing: '-1px',
-              lineHeight: 1.1
-            }}>
+          <motion.div
+            variants={{
+              initial: { opacity: 0 },
+              animate: { opacity: 1, transition: { staggerChildren: 0.2 } }
+            }}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            <motion.h2
+              variants={{
+                initial: { opacity: 0, y: 30 },
+                animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              style={{
+                fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+                fontWeight: 800,
+                marginBottom: '1.5rem',
+                color: '#1a1a1a',
+                letterSpacing: '-1px',
+                lineHeight: 1.1
+              }}
+            >
               Crie e Gerencie Seus Eventos <br className="hidden-mobile" />
               <span className="gold-text">Digitais Ou Presenciais</span> de Forma Clara e Simples
-            </h2>
-            <p style={{
-              color: '#666',
-              fontSize: '1.25rem',
-              maxWidth: '850px',
-              margin: '0 auto 3.5rem',
-              fontWeight: 400,
-              lineHeight: 1.6
-            }}>
+            </motion.h2>
+            <motion.p
+              variants={{
+                initial: { opacity: 0, y: 20 },
+                animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              style={{
+                color: '#666',
+                fontSize: '1.25rem',
+                maxWidth: '850px',
+                margin: '0 auto 3.5rem',
+                fontWeight: 400,
+                lineHeight: 1.6
+              }}
+            >
               {t('landing.dashboard.subtitle') || 'Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos.'}
-            </p>
+            </motion.p>
 
             <div className="dashboard-actions" style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '5.5rem' }}>
               <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
@@ -522,98 +542,97 @@ export default function Home() {
               Integração completa com as principais carteiras móveis de Moçambique e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
             </p>
 
-            <motion.div
-              className="payments-grid"
-              variants={{
-                initial: { opacity: 0 },
-                animate: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.15 }
-                }
-              }}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 'clamp(30px, 6vw, 80px)'
-              }}
-            >
-              {[
-                { name: 'M-Pesa', color: '#e61c27', logo: '/payments/mpesa.png' },
-                { name: 'E-Mola', color: '#ff6600', logo: '/payments/emola.png' },
-                { name: 'PayPal', color: '#003087', logo: '/payments/paypal.png' },
-                { name: 'Stripe', color: '#635bff', logo: '/payments/stripe.png' }
-              ].map((method, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={{
-                    initial: { opacity: 0, y: 30 },
-                    animate: { opacity: 1, y: 0 }
-                  }}
-                  className="payment-card"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '20px'
-                  }}
-                >
-                  <div className="payment-icon-wrapper" style={{ position: 'relative' }}>
-                    <div className="payment-icon" style={{
-                      width: 'clamp(80px, 12vw, 110px)',
-                      height: 'clamp(80px, 12vw, 110px)',
-                      borderRadius: '28px',
-                      background: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '1px solid #f0f0f0',
-                      boxShadow: '0 15px 35px rgba(0,0,0,0.05)',
-                      transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                      padding: '20px',
-                      cursor: 'pointer',
-                      zIndex: 2,
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <Image
-                        src={method.logo}
-                        alt={method.name}
-                        width={80}
-                        height={80}
-                        style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                      />
-                    </div>
-                    {/* Hover Glow Effect */}
-                    <div className="payment-glow" style={{
-                      position: 'absolute',
-                      inset: '-10px',
-                      background: method.color,
-                      opacity: 0,
-                      filter: 'blur(30px)',
-                      borderRadius: '40px',
-                      transition: 'all 0.5s ease',
-                      zIndex: 1
-                    }} />
+            {/* Infinite Scroll Payments */}
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              overflow: 'hidden',
+              padding: '40px 0'
+            }}>
+              <motion.div
+                animate={{ x: ["0%", "-33.33%"] }}
+                transition={{
+                  duration: 25,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                style={{
+                  display: 'flex',
+                  gap: 'clamp(40px, 8vw, 120px)',
+                  width: 'fit-content',
+                  alignItems: 'center'
+                }}
+              >
+                {[...Array(3)].map((_, setIdx) => (
+                  <div key={setIdx} style={{ display: 'flex', gap: 'clamp(40px, 8vw, 120px)' }}>
+                    {[
+                      { name: 'M-Pesa', color: '#e61c27', logo: '/payments/mpesa.png' },
+                      { name: 'E-Mola', color: '#ff6600', logo: '/payments/emola.png' },
+                      { name: 'PayPal', color: '#003087', logo: '/payments/paypal.png' },
+                      { name: 'Stripe', color: '#635bff', logo: '/payments/stripe.png' }
+                    ].map((method, idx) => (
+                      <div key={`${setIdx}-${idx}`} className="payment-card" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '20px',
+                        flexShrink: 0
+                      }}>
+                        <div className="payment-icon-wrapper" style={{ position: 'relative' }}>
+                          <div className="payment-icon" style={{
+                            width: 'clamp(80px, 12vw, 110px)',
+                            height: 'clamp(80px, 12vw, 110px)',
+                            borderRadius: '28px',
+                            background: '#fff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid #f0f0f0',
+                            boxShadow: '0 15px 35px rgba(0,0,0,0.05)',
+                            transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            padding: '20px',
+                            cursor: 'pointer',
+                            zIndex: 2,
+                            position: 'relative',
+                            overflow: 'hidden'
+                          }}>
+                            <Image
+                              src={method.logo}
+                              alt={method.name}
+                              width={80}
+                              height={80}
+                              style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                            />
+                          </div>
+                          <div className="payment-glow" style={{
+                            position: 'absolute',
+                            inset: '-10px',
+                            background: method.color,
+                            opacity: 0,
+                            filter: 'blur(30px)',
+                            borderRadius: '40px',
+                            transition: 'all 0.5s ease',
+                            zIndex: 1
+                          }} />
+                        </div>
+                        <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>{method.name}</span>
+                      </div>
+                    ))}
                   </div>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>{method.name}</span>
-                </motion.div>
-              ))}
-              <style jsx>{`
-                .payment-card:hover .payment-icon {
-                  transform: translateY(-10px) scale(1.05);
-                  border-color: rgba(0,0,0,0.05);
-                  box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-                }
-                .payment-card:hover .payment-glow {
-                  opacity: 0.15;
-                }
-              `}</style>
-            </motion.div>
+                ))}
+              </motion.div>
+            </div>
+
+            <style jsx>{`
+              .payment-card:hover .payment-icon {
+                transform: translateY(-10px) scale(1.05);
+                border-color: rgba(0,0,0,0.05);
+                box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+              }
+              .payment-card:hover .payment-glow {
+                opacity: 0.15;
+              }
+            `}</style>
           </motion.div>
         </div>
       </section>
@@ -906,8 +925,8 @@ export default function Home() {
                 {t('plans.pro.badge')}
               </div>
               <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>{t('plans.pro.name')}</h3>
-              <p style={{ color: 'var(--gold-text)', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                {formatPrice(499, 7.99)}<span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('plans.perMonth')}</span>
+              <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '1px' }}>
+                {formatPrice(499, 7.99)}<span style={{ fontSize: '0.9rem', opacity: 1, marginLeft: '4px' }}>{t('plans.perMonth')}</span>
               </p>
               <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>{t('plans.pro.description')}</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
