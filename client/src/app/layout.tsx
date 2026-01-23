@@ -33,11 +33,55 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Inscreva-se | Plataforma de Eventos de Luxo",
-  description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
+  metadataBase: new URL('https://inscreva-se.com'),
+  title: {
+    default: "Inscreva-se | Plataforma de Eventos de Luxo",
+    template: "%s | Inscreva-se"
+  },
+  description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo. Crie, gerencie e escale seus eventos com elegância.",
+  keywords: ["eventos", "mentoria", "workshop", "tickets", "ingressos", "luxo", "premium", "gestão de eventos"],
+  authors: [{ name: "Inscreva.se Team" }],
+  creator: "Inscreva.se",
+  publisher: "Inscreva.se",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: 'https://inscreva-se.com',
+    title: "Inscreva-se | Plataforma de Eventos de Luxo",
+    description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
+    siteName: "Inscreva-se",
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: "Inscreva-se Platform Preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Inscreva-se | Plataforma de Eventos de Luxo",
+    description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
+    images: ['/og-image.jpg'],
+  },
+  alternates: {
+    canonical: './',
+  },
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

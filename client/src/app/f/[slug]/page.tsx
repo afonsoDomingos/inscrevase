@@ -1,767 +1,115 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+import type { Metadata, ResolvingMetadata } from 'next';
+import { formService } from '@/lib/formService';
+import PublicFormClient from './PublicFormClient';
+import Script from 'next/script';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { formService, FormModel } from '@/lib/formService';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-    CheckCircle,
-    MessageCircle,
-    Eye,
-    Upload,
-    Loader2,
-    ShieldCheck,
-    CreditCard,
-    Instagram,
-    Linkedin,
-    Globe,
-    Zap,
-    ArrowRight
-} from 'lucide-react';
-import StripeCheckout from '@/components/StripeCheckout';
-import Image from 'next/image';
-import { useTranslate } from '@/context/LanguageContext';
-import { toast } from 'sonner';
-import MetaPixel from '@/components/MetaPixel';
-
-export default function PublicForm({ params }: { params: { slug: string } }) {
-    const router = useRouter();
-    const { t } = useTranslate();
+// This is a Server Component
+export default async function Page({ params }: { params: { slug: string } }) {
     const { slug } = params;
-    const [form, setForm] = useState<FormModel | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [formData, setFormData] = useState<Record<string, string>>({});
-    const [file, setFile] = useState<File | null>(null);
-    const [filePreview, setFilePreview] = useState<string | null>(null);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [paymentMode, setPaymentMode] = useState<'stripe' | 'manual' | null>(null);
-    const visitRecorded = useRef(false);
+    let form = null;
+    let eventJsonLd = null;
 
-    // Animation Variants
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.2
-            }
-        }
-    };
+    try {
+        form = await formService.getFormBySlug(slug);
 
-    const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: { type: "spring", stiffness: 50, damping: 15 }
-        }
-    };
-
-    useEffect(() => {
-        if (slug && !visitRecorded.current) {
-            formService.recordVisit(slug);
-            visitRecorded.current = true;
-        }
-    }, [slug]);
-
-    useEffect(() => {
-        const loadForm = async () => {
-            if (!slug || slug === 'undefined') {
-                setLoading(false);
-                return;
-            }
-            try {
-                const data = await formService.getFormBySlug(slug);
-                setForm(data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadForm();
-    }, [slug]);
-
-    const handleInputChange = (id: string, value: string) => {
-        setFormData(prev => ({ ...prev, [id]: value }));
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const selectedFile = e.target.files[0];
-            setFile(selectedFile);
-            setFilePreview(URL.createObjectURL(selectedFile));
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!form) return;
-
-        if (form.paymentConfig?.enabled) {
-            if (!paymentMode) {
-                toast.error('Por favor, selecione um método de pagamento.');
-                return;
-            }
-            if (paymentMode === 'manual' && form.paymentConfig?.requireProof && !file) {
-                toast.error('Por favor, anexe o comprovativo de pagamento para continuar.');
-                return;
-            }
-            if (paymentMode === 'stripe') return;
+        // Prepare JSON-LD Structured Data
+        if (form) {
+            eventJsonLd = {
+                '@context': 'https://schema.org',
+                '@type': 'Event',
+                name: form.title,
+                description: form.description,
+                startDate: form.eventDate ? new Date(`${form.eventDate}T${form.eventTime || '00:00'}`).toISOString() : undefined,
+                endDate: form.eventDate ? new Date(`${form.eventDate}T${form.eventTime || '23:59'}`).toISOString() : undefined, // Approximation if no end time
+                eventStatus: 'https://schema.org/EventScheduled',
+                eventAttendanceMode: form.eventType === 'modeOnline' ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
+                location: form.eventType === 'modeOnline' ? {
+                    '@type': 'VirtualLocation',
+                    url: form.onlineLink || `https://inscreva-se.com/f/${slug}`
+                } : {
+                    '@type': 'Place',
+                    name: form.location,
+                    address: {
+                        '@type': 'PostalAddress',
+                        streetAddress: form.location, // Simplified for now
+                        addressCountry: 'MZ' // Defaulting to MZ/PT context or dynamic if available
+                    }
+                },
+                image: [form.coverImage],
+                organizer: {
+                    '@type': 'Person',
+                    name: form.creator.name,
+                    url: form.creator.socialLinks?.website
+                },
+                offers: form.paymentConfig?.enabled ? {
+                    '@type': 'Offer',
+                    price: form.paymentConfig.price,
+                    priceCurrency: form.paymentConfig.currency,
+                    url: `https://inscreva-se.com/f/${slug}`,
+                    availability: (form.capacity && form.submissionCount && form.capacity > form.submissionCount)
+                        ? 'https://schema.org/InStock'
+                        : 'https://schema.org/SoldOut'
+                } : {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'MZN',
+                    url: `https://inscreva-se.com/f/${slug}`,
+                    availability: 'https://schema.org/InStock'
+                }
+            };
         }
 
-        setSubmitting(true);
-
-        try {
-            let paymentProofUrl = '';
-            if (file && paymentMode === 'manual') {
-                paymentProofUrl = await formService.uploadFile(file);
-            }
-
-            const response = await formService.submitForm({
-                formId: form._id,
-                data: formData,
-                paymentProof: paymentProofUrl
-            });
-
-            const submissionId = response.submission?._id;
-
-            if (submissionId) {
-                toast.success('Inscrição enviada com sucesso!');
-                router.push(`/hub/${submissionId}`);
-            } else {
-                setSuccess(true);
-            }
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message || t('form.submitError'));
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
-                <Loader2 className="animate-spin" size={48} color="#FFD700" />
-            </div>
-        );
+    } catch (error) {
+        console.error("Error fetching form for metadata:", error);
     }
-
-    if (!form) {
-        return (
-            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#fff' }}>
-                <h1 style={{ fontSize: '3rem', fontWeight: 800 }}>404</h1>
-                <p style={{ color: '#888' }}>{t('form.notFound')}</p>
-                <a href="/" className="btn-primary" style={{ marginTop: '2rem', padding: '0.8rem 2rem' }}>{t('form.backToHome')}</a>
-            </div>
-        );
-    }
-
-    const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';
-    const primaryColor = form.theme?.primaryColor || '#FFD700';
-    const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
-    const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : (isLuxury ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/bio-organic.png")` : 'none');
-    const titleColor = form.theme?.titleColor || (isLuxury ? '#fff' : '#111');
-    const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)');
-    const placeholderColor = form.theme?.inputPlaceholderColor || (isLuxury ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)');
-    const isDark = isLuxury || (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x888888);
-    const textColor = isDark ? '#fff' : '#111';
-    const secondaryTextColor = isDark ? '#aaa' : '#666';
-    const cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#fff';
-    const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
 
     return (
-        <main style={{
-            position: 'relative',
-            minHeight: '100vh',
-            color: textColor,
-            fontFamily: form.theme?.fontFamily || 'Inter',
-            overflow: 'hidden'
-        }}>
-            {form.creator?.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
-            {/* Animated Background */}
-            <div
-                style={{
-                    position: 'fixed',
-                    top: -50,
-                    left: -50,
-                    right: -50,
-                    bottom: -50,
-                    backgroundImage: bgImage,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    zIndex: 0,
-                    animation: 'float-bg 30s ease-in-out infinite alternate'
-                }}
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
             />
-
-            {/* Overlay for better text readability if needed, though handled in bgImage logic mostly */}
-            <div style={{ position: 'fixed', inset: 0, background: isLuxury ? 'rgba(0,0,0,0.3)' : 'transparent', zIndex: 1, pointerEvents: 'none' }} />
-
-
-
-            <style jsx global>{`
-                @keyframes pulse-red {
-                    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-                    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-                }
-                @keyframes float-bg {
-                    0% { transform: scale(1.0) translate(0, 0); }
-                    50% { transform: scale(1.25) translate(-2%, -2%); }
-                    100% { transform: scale(1.0) translate(0, 0); }
-                }
-                .scarcity-badge-active {
-                    animation: pulse-red 2s infinite;
-                }
-                .input-transition {
-                    transition: all 0.3s ease;
-                }
-                .input-transition:focus {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                }
-
-                input::placeholder, select::placeholder, textarea::placeholder {
-                    color: ${placeholderColor} !important;
-                }
-                select option {
-                    background: ${bgColor} !important;
-                    color: ${textColor} !important;
-                }
-                .responsive-form-grid {
-                    display: grid;
-                    gap: 30px;
-                    align-items: start;
-                }
-                .responsive-form-grid.has-vsl {
-                    grid-template-columns: 1fr 280px 400px;
-                }
-                .responsive-form-grid.no-vsl {
-                    grid-template-columns: 1fr 420px;
-                }
-                .responsive-form-grid.no-vsl .vsl-column {
-                    display: none;
-                }
-                @media (max-width: 1200px) {
-                    .responsive-form-grid.has-vsl,
-                    .responsive-form-grid.no-vsl {
-                        grid-template-columns: 1fr 1fr;
-                        gap: 25px;
-                    }
-                    .responsive-form-grid.has-vsl .vsl-column {
-                        grid-column: 1 / -1;
-                        justify-self: center;
-                    }
-                }
-                @media (max-width: 768px) {
-                    .responsive-form-grid.has-vsl,
-                    .responsive-form-grid.no-vsl {
-                        grid-template-columns: 1fr;
-                        gap: 25px;
-                    }
-                }
-            `}</style>
-
-            <AnimatePresence mode="wait">
-                {success ? (
-                    <motion.div
-                        key="success"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        style={{ maxWidth: '600px', margin: 'auto', paddingTop: '150px', textAlign: 'center', padding: '3rem' }}
-                    >
-                        <div style={{ background: `${primaryColor}10`, padding: '3rem', borderRadius: '30px', border: `1px solid ${primaryColor}20` }}>
-                            <div style={{ color: primaryColor, marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-                                <CheckCircle size={80} />
-                            </div>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>{t('form.confirmed')}</h2>
-                            <p style={{ color: secondaryTextColor, fontSize: '1.1rem', marginBottom: '2rem' }}>{t('form.successMessage')}</p>
-                            <button
-                                onClick={() => {
-                                    const message = encodeURIComponent(form.whatsappConfig?.message || 'Olá, acabei de me inscrever!');
-                                    window.open(`https://wa.me/${form.whatsappConfig?.phoneNumber}?text=${message}`, '_blank');
-                                }}
-                                className="btn-primary"
-                                style={{ width: '100%', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '16px', fontWeight: 800 }}
-                            >
-                                <MessageCircle size={20} /> {t('form.talkToMentor')}
-                            </button>
-                        </div>
-                    </motion.div>
-                ) : (
-                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px' }}>
-                        <div className={`responsive-form-grid ${(form as any).videoUrl ? 'has-vsl' : 'no-vsl'}`}>
-
-                            {/* Column 1: Info + Banner */}
-                            <motion.div
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                style={{ display: 'flex', flexDirection: 'column' }}
-                            >
-                                {/* Cover Image */}
-                                {form.coverImage && (
-                                    <motion.div
-                                        variants={itemVariants}
-                                        whileHover={{ scale: 1.01 }}
-                                        transition={{ duration: 0.3 }}
-                                        style={{
-                                            position: 'relative',
-                                            width: '100%',
-                                            borderRadius: '24px',
-                                            overflow: 'hidden',
-                                            marginBottom: '1.5rem',
-                                            border: `1px solid ${borderColor}`,
-                                            cursor: 'zoom-in',
-                                            background: 'rgba(0,0,0,0.1)',
-                                            ...(form.coverImageMode === 'banner' ? {
-                                                height: '240px'
-                                            } : {})
-                                        }}
-                                        onClick={() => setSelectedImage(form.coverImage!)}
-                                    >
-                                        <Image
-                                            src={form.coverImage}
-                                            alt={form.title}
-                                            width={800}
-                                            height={600}
-                                            style={{
-                                                width: '100%',
-                                                ...(form.coverImageMode === 'banner' ? {
-                                                    height: '100%',
-                                                    objectFit: 'cover'
-                                                } : {
-                                                    height: 'auto',
-                                                    maxHeight: '400px',
-                                                    objectFit: 'cover'
-                                                }),
-                                                display: 'block'
-                                            }}
-                                        />
-                                    </motion.div>
-                                )}
-
-                                <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                                    <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: secondaryTextColor }}>
-                                        <Eye size={14} /> {form.visits || 0} visitas
-                                    </div>
-                                    {form.capacity && (
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: 800,
-                                                padding: '4px 12px',
-                                                borderRadius: '20px',
-                                                background: (form.capacity - (form.submissionCount || 0)) <= 5 ? '#ef4444' : `${primaryColor}15`,
-                                                color: (form.capacity - (form.submissionCount || 0)) <= 5 ? '#fff' : primaryColor,
-                                                border: (form.capacity - (form.submissionCount || 0)) <= 5 ? 'none' : `1px solid ${primaryColor}30`
-                                            }}
-                                        >
-                                            <Zap size={12} fill="currentColor" />
-                                            {form.capacity - (form.submissionCount || 0) > 0
-                                                ? `APENAS ${form.capacity - (form.submissionCount || 0)} VAGAS`
-                                                : 'VAGAS ESGOTADAS'}
-                                        </div>
-                                    )}
-                                </motion.div>
-
-                                <motion.h1 variants={itemVariants} style={{ fontSize: 'clamp(2rem, 8vw, 3rem)', fontWeight: 900, marginTop: '0', marginBottom: '1rem', color: titleColor }}>{form.title}</motion.h1>
-                                <motion.p variants={itemVariants} style={{ color: secondaryTextColor, fontSize: '1rem', lineHeight: '1.7', marginBottom: '2rem' }}>{form.description}</motion.p>
-
-                                {form.whatsappConfig?.communityUrl && (
-                                    <motion.a
-                                        variants={itemVariants}
-                                        whileHover={{ scale: 1.02, boxShadow: '0 10px 25px rgba(37, 211, 102, 0.3)' }}
-                                        whileTap={{ scale: 0.98 }}
-                                        href={form.whatsappConfig.communityUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '12px',
-                                            padding: '16px 28px',
-                                            background: '#25D366',
-                                            color: '#ffffff',
-                                            textDecoration: 'none',
-                                            borderRadius: '16px',
-                                            fontWeight: 800,
-                                            fontSize: '1rem',
-                                            border: 'none',
-                                            marginBottom: '2rem',
-                                            boxShadow: '0 8px 20px rgba(37, 211, 102, 0.25)',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        <div style={{ background: '#fff', borderRadius: '50%', padding: '4px', display: 'flex' }}>
-                                            <MessageCircle size={20} color="#25D366" fill="#25D366" />
-                                        </div>
-                                        <span>ENTRAR NO GRUPO VIP</span>
-                                    </motion.a>
-                                )}
-
-                                {form.creator && (
-                                    <motion.div
-                                        variants={itemVariants}
-                                        whileHover={{ y: -5, boxShadow: `0 10px 30px ${primaryColor}10` }}
-                                        style={{ background: cardBg, padding: '1.5rem', borderRadius: '24px', border: `1px solid ${borderColor}`, marginBottom: '2rem', transition: 'all 0.3s ease' }}
-                                    >
-                                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                                            <div style={{ width: '60px', height: '60px', borderRadius: '16px', overflow: 'hidden', border: `2px solid ${primaryColor}40`, flexShrink: 0 }}>
-                                                {form.creator.profilePhoto ? (
-                                                    <Image src={form.creator.profilePhoto} alt={form.creator.name} width={60} height={60} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <div style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor, fontSize: '1.5rem', fontWeight: 800 }}>
-                                                        {form.creator.name.charAt(0)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                                    <div>
-                                                        <div style={{ fontSize: '0.7rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Mentor Oficial</div>
-                                                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: titleColor }}>{form.creator.name}</div>
-                                                    </div>
-                                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                                        {form.creator.socialLinks?.instagram && (
-                                                            <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor }} className="hover:opacity-80 transition-opacity">
-                                                                <Instagram size={16} />
-                                                            </a>
-                                                        )}
-                                                        {form.creator.socialLinks?.linkedin && (
-                                                            <a href={form.creator.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor }} className="hover:opacity-80 transition-opacity">
-                                                                <Linkedin size={16} />
-                                                            </a>
-                                                        )}
-                                                        {form.creator.socialLinks?.website && (
-                                                            <a href={form.creator.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor }} className="hover:opacity-80 transition-opacity">
-                                                                <Globe size={16} />
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                {form.creator.bio && <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4' }}>&quot;{form.creator.bio}&quot;</p>}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {form.paymentConfig?.enabled && (
-                                    <motion.div
-                                        variants={itemVariants}
-                                        whileHover={{ scale: 1.02 }}
-                                        style={{ background: cardBg, padding: '1.5rem', borderRadius: '20px', border: `1px solid ${primaryColor}40`, transition: 'all 0.3s ease' }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.5rem' }}>
-                                            <ShieldCheck size={20} color={primaryColor} />
-                                            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Valor da Inscrição</span>
-                                        </div>
-                                        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor }}>
-                                            {form.paymentConfig.price} <small style={{ fontSize: '1rem' }}>{form.paymentConfig.currency}</small>
-                                        </div>
-                                        {form.paymentConfig.instructions && (
-                                            <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor }}>
-                                                {form.paymentConfig.instructions}
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                )}
-                            </motion.div>
-
-                            {/* Column 2: VSL Video */}
-                            <div className="vsl-column" style={{ width: '100%' }}>
-                                {(form as any).videoUrl ? (
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        transition={{ duration: 0.6, delay: 0.2, type: 'spring' }}
-                                        style={{ position: 'sticky', top: '20px' }}
-                                    >
-                                        <div style={{
-                                            position: 'relative',
-                                            borderRadius: '24px',
-                                            overflow: 'hidden',
-                                            border: `3px solid ${primaryColor}`,
-                                            boxShadow: `0 25px 50px rgba(0,0,0,0.4), inset 0 0 0 1px ${primaryColor}30`,
-                                            background: '#000',
-                                            aspectRatio: '9/16',
-                                            width: '100%',
-                                            maxWidth: '300px',
-                                            margin: '0 auto'
-                                        }}>
-                                            {/* Top Gradient Overlay */}
-                                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: `linear-gradient(to bottom, ${primaryColor}30, transparent)`, zIndex: 2, pointerEvents: 'none' }} />
-
-                                            {/* Play Badge */}
-                                            <div style={{ position: 'absolute', top: '12px', left: '12px', background: primaryColor, color: '#000', padding: '6px 12px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', zIndex: 3, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} /> VSL
-                                            </div>
-
-                                            {/* Video Iframe/Element */}
-                                            {(form as any).videoUrl.includes('youtube.com') || (form as any).videoUrl.includes('youtu.be') ? (
-                                                <iframe
-                                                    src={`https://www.youtube.com/embed/${(form as any).videoUrl.includes('youtu.be')
-                                                        ? (form as any).videoUrl.split('/').pop()?.split('?')[0]
-                                                        : new URLSearchParams(new URL((form as any).videoUrl).search).get('v')}?autoplay=0&rel=0&modestbranding=1`}
-                                                    style={{ width: '100%', height: '100%', border: 'none' }}
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                />
-                                            ) : (form as any).videoUrl.includes('vimeo.com') ? (
-                                                <iframe
-                                                    src={`https://player.vimeo.com/video/${(form as any).videoUrl.split('/').pop()?.split('?')[0]}`}
-                                                    style={{ width: '100%', height: '100%', border: 'none' }}
-                                                    allow="autoplay; fullscreen; picture-in-picture"
-                                                    allowFullScreen
-                                                />
-                                            ) : (
-                                                <video
-                                                    src={(form as any).videoUrl}
-                                                    controls
-                                                    playsInline
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                />
-                                            )}
-
-                                            {/* Bottom Gradient Overlay */}
-                                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px', background: `linear-gradient(to top, rgba(0,0,0,0.8), transparent)`, zIndex: 2, pointerEvents: 'none' }} />
-                                        </div>
-                                    </motion.div>
-                                ) : (
-                                    <div style={{ display: 'none' }}></div>
-                                )}
-                            </div>
-
-                            {/* Column 3: Form */}
-                            <motion.div
-                                initial={{ x: 50, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ delay: 0.3, type: 'spring', damping: 20 }}
-                            >
-                                <motion.div
-                                    whileHover={{ y: -5, boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}
-                                    transition={{ duration: 0.3 }}
-                                    style={{ background: cardBg, borderRadius: '30px', border: `1px solid ${borderColor}`, padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}
-                                >
-                                    {form.capacity && (form.capacity - (form.submissionCount || 0)) <= 0 && (
-                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', backdropFilter: 'blur(4px)' }}>
-                                            <div style={{ background: '#ef4444', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', fontWeight: 900, marginBottom: '1rem' }}>INSCRIÇÕES ENCERRADAS</div>
-                                            <p style={{ color: '#fff', fontSize: '1.1rem' }}>Este evento atingiu a capacidade máxima. Fique atento para as próximas edições!</p>
-                                        </div>
-                                    )}
-                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: titleColor }}>{t('form.fillYourData')}</h3>
-
-                                    <motion.form
-                                        onSubmit={handleSubmit}
-                                        variants={containerVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                    >
-                                        {form.fields.map((field) => (
-                                            <motion.div variants={itemVariants} key={field.label} style={{ marginBottom: '1.5rem' }}>
-                                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
-                                                    {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
-                                                </label>
-                                                {field.type === 'select' ? (
-                                                    <motion.select
-                                                        whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
-                                                        required={field.required}
-                                                        onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, border: `1px solid ${borderColor}`, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
-                                                    >
-                                                        <option value="">{t('form.select')}</option>
-                                                        {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                    </motion.select>
-                                                ) : field.type === 'textarea' ? (
-                                                    <motion.textarea
-                                                        whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
-                                                        required={field.required}
-                                                        placeholder={field.label}
-                                                        rows={4}
-                                                        onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, border: `1px solid ${borderColor}`, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', resize: 'none' }}
-                                                    />
-                                                ) : field.type === 'checkbox' ? (
-                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '0.5rem 0' }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            required={field.required}
-                                                            onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
-                                                            style={{ width: '20px', height: '20px', accentColor: primaryColor }}
-                                                        />
-                                                        <span style={{ fontSize: '0.9rem', color: textColor }}>{t('form.acceptOrConfirm')}</span>
-                                                    </label>
-                                                ) : (
-                                                    <motion.input
-                                                        whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
-                                                        type={field.type === 'phone' ? 'tel' : field.type}
-                                                        required={field.required}
-                                                        placeholder={field.label}
-                                                        onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, border: `1px solid ${borderColor}`, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
-                                                    />
-                                                )}
-                                            </motion.div>
-                                        ))}
-
-                                        {form.paymentConfig?.enabled && (
-                                            <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: `1px solid ${borderColor}` }}>
-                                                <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>Escolha o Método de Pagamento</h4>
-
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-                                                    {form.paymentConfig.stripeEnabled && (
-                                                        <motion.div
-                                                            whileHover={{ scale: 1.05, borderColor: primaryColor }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={() => setPaymentMode('stripe')}
-                                                            style={{ padding: '1.5rem', borderRadius: '20px', background: paymentMode === 'stripe' ? `${primaryColor}20` : 'rgba(255,255,255,0.02)', border: `2px solid ${paymentMode === 'stripe' ? primaryColor : borderColor}`, cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s ease' }}
-                                                        >
-                                                            <CreditCard size={24} color={paymentMode === 'stripe' ? primaryColor : '#888'} style={{ margin: '0 auto 10px' }} />
-                                                            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Cartão</div>
-                                                            <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>Instantâneo</div>
-                                                        </motion.div>
-                                                    )}
-                                                    <motion.div
-                                                        whileHover={{ scale: 1.05, borderColor: primaryColor }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                        onClick={() => setPaymentMode('manual')}
-                                                        style={{ padding: '1.5rem', borderRadius: '20px', background: paymentMode === 'manual' ? `${primaryColor}20` : 'rgba(255,255,255,0.02)', border: `2px solid ${paymentMode === 'manual' ? primaryColor : borderColor}`, cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s ease' }}
-                                                    >
-                                                        <Upload size={24} color={paymentMode === 'manual' ? primaryColor : '#888'} style={{ margin: '0 auto 10px' }} />
-                                                        <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Manual</div>
-                                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>Enviando Prova</div>
-                                                    </motion.div>
-                                                </div>
-
-                                                <AnimatePresence mode="wait">
-                                                    {paymentMode === 'stripe' && (
-                                                        <motion.div key="stripe" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                            <StripeCheckout formId={form._id} formData={formData} eventTitle={form.title} price={form.paymentConfig.price || 0} currency={form.paymentConfig.currency || 'USD'} />
-                                                        </motion.div>
-                                                    )}
-                                                    {paymentMode === 'manual' && (
-                                                        <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                            <div style={{ marginBottom: '1.5rem' }}>
-                                                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}`, borderRadius: '20px', cursor: 'pointer' }}>
-                                                                    <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
-                                                                    {filePreview ? (
-                                                                        <div style={{ textAlign: 'center' }}>
-                                                                            <Image src={filePreview} alt="Preview" width={80} height={80} style={{ borderRadius: '10px' }} />
-                                                                            <div style={{ marginTop: '10px', fontSize: '0.8rem', color: primaryColor }}>{file?.name}</div>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <>
-                                                                            <Upload size={32} color={primaryColor} />
-                                                                            <span style={{ marginTop: '10px', fontSize: '0.9rem' }}>Anexar Comprovativo de Pagamento</span>
-                                                                        </>
-                                                                    )}
-                                                                </label>
-                                                            </div>
-                                                            <motion.button
-                                                                whileHover={{ scale: 1.02 }}
-                                                                whileTap={{ scale: 0.98 }}
-                                                                type="submit"
-                                                                disabled={submitting}
-                                                                className="btn-primary"
-                                                                style={{ width: '100%', padding: '1.2rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer' }}
-                                                            >
-                                                                {submitting ? <Loader2 className="animate-spin" /> : 'FINALIZAR INSCRIÇÃO'}
-                                                            </motion.button>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </div>
-                                        )}
-
-                                        {!form.paymentConfig?.enabled && (
-                                            <motion.button
-                                                whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${primaryColor}40` }}
-                                                whileTap={{ scale: 0.98 }}
-                                                type="submit"
-                                                disabled={submitting}
-                                                className="btn-primary"
-                                                style={{ width: '100%', padding: '1.2rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer' }}
-                                            >
-                                                {submitting ? <Loader2 className="animate-spin" /> : 'GARANTIR MINHA VAGA'}
-                                            </motion.button>
-                                        )}
-                                    </motion.form>
-                                </motion.div>
-                            </motion.div>
-                        </div>
-                    </div>
-                )}
-            </AnimatePresence>
-            <AnimatePresence>
-                {selectedImage && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedImage(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                        <Image src={selectedImage} alt="Large" width={1000} height={1000} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} unoptimized />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Floating Discover Platform Button */}
-            <motion.a
-                href="/"
-                target="_blank"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 0.6 }}
-                style={{
-                    position: 'fixed',
-                    bottom: '30px',
-                    right: '30px',
-                    zIndex: 100,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0',
-                    textDecoration: 'none',
-                    filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-            >
-                <div style={{
-                    background: '#1a1a1a',
-                    color: '#fff',
-                    padding: '10px 20px', // Smaller padding
-                    borderRadius: '10px 4px 4px 10px',
-                    fontSize: '0.65rem', // Smaller text
-                    fontWeight: 800,
-                    letterSpacing: '1.2px',
-                    textTransform: 'uppercase',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    whiteSpace: 'nowrap'
-                }}>
-                    {t('common.discoverPlatform')}
-                </div>
-                <div style={{
-                    background: '#FFD700',
-                    width: '42px', // Smaller icon part
-                    height: '42px',
-                    borderRadius: '4px 10px 10px 4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#000',
-                    marginLeft: '-1px',
-                    boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
-                }}>
-                    <ArrowRight size={18} strokeWidth={2.5} />
-                </div>
-            </motion.a>
-        </main>
+            <PublicFormClient params={params} initialForm={form} />
+        </>
     );
+}
+
+// Generate Dynamic Metadata
+export async function generateMetadata(
+    { params }: { params: { slug: string } },
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    const slug = params.slug;
+
+    try {
+        const form = await formService.getFormBySlug(slug);
+
+        const previousImages = (await parent).openGraph?.images || [];
+
+        return {
+            title: form.title,
+            description: form.description.substring(0, 160), // Truncate for optimal SEO
+            openGraph: {
+                title: form.title,
+                description: form.description,
+                url: `https://inscreva-se.com/f/${slug}`,
+                images: form.coverImage ? [form.coverImage, ...previousImages] : previousImages,
+                type: 'website',
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: form.title,
+                description: form.description.substring(0, 200),
+                images: form.coverImage ? [form.coverImage] : [],
+            },
+            alternates: {
+                canonical: `https://inscreva-se.com/f/${slug}`,
+            }
+        };
+    } catch (e) {
+        return {
+            title: 'Evento não encontrado',
+            description: 'O evento que você procura não existe ou foi removido.'
+        };
+    }
 }
