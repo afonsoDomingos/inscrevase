@@ -247,39 +247,29 @@ export default function Navbar() {
 
         .mobile-link {
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            color: #1a1a1a !important;
+            font-size: 1.1rem;
+            color: #000000 !important;
             text-decoration: none !important;
-            padding: 1.1rem 1.5rem;
-            border-radius: 12px;
-            border: 1px solid #f0f0f0 !important;
-            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
             font-weight: 500;
-            margin-bottom: 0.8rem;
-            background: #fcfcfc;
+            margin-bottom: 0.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            border: none !important;
+            background: transparent !important;
         }
 
-        .mobile-link::after {
-            content: '→';
-            opacity: 0.5;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+        .mobile-link span {
+            text-decoration: none !important;
         }
 
         .mobile-link:active {
-            color: #FFD700 !important;
-            background: rgba(255, 215, 0, 0.15);
-            border-color: rgba(255, 215, 0, 0.4) !important;
-            transform: scale(0.97);
-        }
-
-        .mobile-link:active::after {
-            opacity: 1;
+            opacity: 0.7;
             transform: translateX(5px);
         }
+
+
 
         .mobile-menu-spacer {
             flex: 1;
