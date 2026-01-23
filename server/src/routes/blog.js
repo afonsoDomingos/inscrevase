@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const BlogPost = require('../models/BlogPost');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
+const { authMiddleware: protect, adminMiddleware: adminOnly } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

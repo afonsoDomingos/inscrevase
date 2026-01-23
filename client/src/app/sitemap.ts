@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { formService } from '@/lib/formService';
+import { blogService } from '@/lib/blogService';
 
 // Base URL for the website
 const BASE_URL = 'https://inscreva-se.com';
@@ -12,6 +13,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 1.0,
+        },
+        {
+            url: `${BASE_URL}/blog`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.9,
         },
         {
             url: `${BASE_URL}/entrar`,
@@ -28,41 +35,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         {
             url: `${BASE_URL}/planos`,
             lastModified: new Date(),
-            changeFrequency: 'weekly',
-            priority: 0.9,
+            changeFrequency: 'monthly',
+            priority: 0.7,
         },
         {
-            url: `${BASE_URL}/funcionalidades`,
+            url: `${BASE_URL}/mentores`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
-            priority: 0.9,
+            priority: 0.8,
         },
     ];
 
-    // 2. Dynamic Routes (Events)
-    let dynamicRoutes: MetadataRoute.Sitemap = [];
+    // 2. Dynamic Routes - Public Forms (Events)
+    let formRoutes: MetadataRoute.Sitemap = [];
     try {
-        // Fetch public forms/events for the sitemap
-        // Note: You might want to implement a specific method in formService for sitemap
-        // that only returns active, public forms to minimize payload.
-        // For now, we'll try to use explore events which are public.
-        const events = await formService.getExploreEvents();
-
-        dynamicRoutes = events.map((event) => {
-            // Validate date to prevent invalid time value errors
-            const eventDate = event.createdAt ? new Date(event.createdAt) : new Date();
-            const lastModified = isNaN(eventDate.getTime()) ? new Date() : eventDate;
-
-            return {
-                url: `${BASE_URL}/f/${event.slug}`,
-                lastModified,
-                changeFrequency: 'daily' as const,
-                priority: 0.7,
-            };
-        });
+        const publicForms = await formService.getPublicForms();
+        formRoutes = publicForms.map((form) => ({
+            url: `${BASE_URL}/f/${form.slug}`,
+            lastModified: new Date(form.updatedAt),
+            changeFrequency: 'daily', // Events can change or sell out
+            priority: 0.9,
+        }));
     } catch (error) {
-        console.error('Failed to generate sitemap for dynamic routes:', error);
+        console.error('Error generating sitemap for forms:', error);
     }
 
-    return [...staticRoutes, ...dynamicRoutes];
+    // 3. Dynamic Routes - Blog Posts
+    let blogRoutes: MetadataRoute.Sitemap = [];
+    try {
+        const posts = await blogService.getPublishedPosts();
+        blogRoutes = posts.map((post) => ({
+            url: `${BASE_URL}/blog/${post.slug}`,
+            lastModified: new Date(post.updatedAt || post.createdAt),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        }));
+    } catch (error) {
+        console.error('Error generating sitemap for blog posts:', error);
+    }
+
+    return [...staticRoutes, ...formRoutes, ...blogRoutes];
 }
