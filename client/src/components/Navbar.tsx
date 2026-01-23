@@ -101,26 +101,34 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-links">
-          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>{t('nav.mentors')}</Link>
-          <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)}>{t('nav.events')}</Link>
-          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>{t('dashboard.support')}</Link>
+          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>
+            <span className="link-number">01</span> {t('nav.home') || 'Home'}
+          </Link>
+          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>
+            <span className="link-number">02</span> {t('nav.mentors')}
+          </Link>
+          <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)}>
+            <span className="link-number">03</span> {t('nav.events')}
+          </Link>
+          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>
+            <span className="link-number">04</span> {t('dashboard.support')}
+          </Link>
 
           <div className="mobile-divider"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-link highlight" onClick={() => setIsOpen(false)}>
-              <LayoutDashboard size={24} style={{ marginRight: '10px' }} />
+            <Link href={getDashboardLink()} className="mobile-cta-btn" onClick={() => setIsOpen(false)}>
+              <LayoutDashboard size={20} />
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-link highlight" onClick={() => setIsOpen(false)}>
-              <LogIn size={24} style={{ marginRight: '10px' }} />
+            <Link href="/entrar" className="mobile-cta-btn" onClick={() => setIsOpen(false)}>
+              <LogIn size={20} />
               {t('auth.login')}
             </Link>
           )}
 
-          <div style={{ marginTop: '2rem' }}>
+          <div className="mobile-footer">
             <LanguageSwitcher />
           </div>
         </div>
@@ -175,36 +183,43 @@ export default function Navbar() {
         .mobile-menu-overlay {
             position: fixed;
             inset: 0;
-            background: #000000;
+            background: #ffffff;
             z-index: 9999;
             display: flex;
             flex-direction: column;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            transform: translateY(-20px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform: translateX(100%);
         }
         .mobile-menu-overlay.open {
             opacity: 1;
             pointer-events: auto;
-            transform: translateY(0);
+            transform: translateX(0);
         }
 
         .mobile-menu-header {
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,215,0, 0.1);
+            border-bottom: 1px solid rgba(0,0,0, 0.05);
         }
         .close-menu-btn {
-            background: none;
-            border: none;
+            background: #f8f8f8;
+            border: 1px solid #eee;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            padding: 0.5rem;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
         .close-menu-btn:hover {
+            background: #fff;
+            border-color: #FFD700;
             transform: rotate(90deg);
         }
 
@@ -213,42 +228,71 @@ export default function Navbar() {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            padding-bottom: 4rem;
+            padding: 2rem;
+            gap: 1.5rem;
         }
 
         .mobile-link {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            color: #fff;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .mobile-link:hover {
-            color: #FFD700;
-            transform: scale(1.05);
-            letter-spacing: 1px;
-        }
-
-        .mobile-link.highlight {
+            font-size: 2.2rem;
+            color: #1a1a1b !important;
+            text-decoration: none !important;
+            transition: all 0.4s ease;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            color: #FFD700;
+            gap: 1.5rem;
+        }
+
+        .link-number {
+           font-family: 'Poppins', sans-serif;
+           font-size: 0.85rem;
+           color: #FFD700;
+           font-weight: 700;
+           letter-spacing: 2px;
+        }
+
+        .mobile-link:hover {
+            color: #FFD700 !important;
+            transform: translateX(10px);
+        }
+
+        .mobile-cta-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #1a1a1b;
+            color: #fff !important;
+            text-decoration: none !important;
+            padding: 1.2rem;
+            border-radius: 12px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 1rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-cta-btn:active {
+            transform: scale(0.98);
         }
 
         .mobile-divider {
-            width: 40px;
-            height: 2px;
-            background: #333;
+            width: 100%;
+            height: 1px;
+            background: #eee;
             margin: 1rem 0;
+        }
+
+        .mobile-footer {
+          margin-top: auto;
+          padding-top: 2rem;
+          display: flex;
+          justify-content: center;
         }
 
         @media (max-width: 992px) {
@@ -261,14 +305,18 @@ export default function Navbar() {
            }
            .mobile-toggle { 
              display: block !important; 
-             background: rgba(255, 255, 255, 0.1) !important;
-             backdrop-filter: blur(10px);
-             padding: 0.5rem 1rem !important;
-             border-radius: 8px !important;
-             font-size: 0.85rem !important;
-             font-weight: 600 !important;
-             color: #fff !important;
-             border: none !important;
+             background: rgba(255, 255, 255, 0.15) !important;
+             backdrop-filter: blur(15px);
+             -webkit-backdrop-filter: blur(15px);
+             padding: 0.6rem !important;
+             border-radius: 12px !important;
+             border: 1px solid rgba(255,255,255,0.2) !important;
+             cursor: pointer;
+             transition: all 0.3s ease;
+           }
+           .navbar.scrolled .mobile-toggle {
+             background: rgba(0, 0, 0, 0.05) !important;
+             border-color: rgba(0,0,0,0.1) !important;
            }
         }
 
@@ -336,9 +384,12 @@ export default function Navbar() {
         .navbar.scrolled .tesla-logo-text .gold-text {
           color: #B8860B !important;
         }
-        /* Mobile Menu inherits text color from overlay background (black), so we force white for logo inside it */
+        /* Mobile Menu logo colors */
         .mobile-menu-overlay .tesla-logo-text {
-            color: #fff !important;
+            color: #1a1a1b !important;
+        }
+        .mobile-menu-overlay .tesla-logo-text .gold-text {
+            color: #FFD700 !important;
         }
 
         /* Creative Shine Effect on Logo */

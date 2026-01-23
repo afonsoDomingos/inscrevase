@@ -162,8 +162,8 @@ export default function Home() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '120px 2rem 60px'
+          justifyContent: 'center',
+          padding: '120px 1.5rem 60px'
         }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -210,18 +210,18 @@ export default function Home() {
           >
             <div style={{
               display: 'flex',
-              gap: '20px',
+              gap: '15px',
               justifyContent: 'center',
               flexWrap: 'wrap',
               width: '100%',
               maxWidth: '700px',
-              margin: '0 auto 2rem'
+              margin: '0 auto'
             }} className="hero-actions">
               <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                 flex: 1,
-                minWidth: '240px',
-                padding: '1rem 0',
-                borderRadius: '8px',
+                minWidth: '220px',
+                padding: '1.1rem 0',
+                borderRadius: '10px',
                 fontSize: '0.9rem',
                 background: 'var(--gold-gradient)',
                 color: '#000',
@@ -229,18 +229,18 @@ export default function Home() {
                 fontWeight: 700,
                 transition: 'all 0.3s ease',
                 textAlign: 'center',
-                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)'
               }} className="hero-btn primary">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
               <Link href="/mentores" style={{
                 flex: 1,
-                minWidth: '240px',
-                padding: '1rem 0',
-                borderRadius: '8px',
+                minWidth: '220px',
+                padding: '1.1rem 0',
+                borderRadius: '10px',
                 fontSize: '0.9rem',
                 background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
+                backdropFilter: 'blur(15px)',
                 color: '#fff',
                 textDecoration: 'none',
                 fontWeight: 600,
@@ -267,33 +267,52 @@ export default function Home() {
           @media (max-width: 768px) {
             .hero-subtitle {
               letter-spacing: 4px !important;
-              font-size: 0.7rem !important;
+              font-size: 0.75rem !important;
             }
             .hero-title {
-              font-size: 2.8rem !important;
+              font-size: 2.5rem !important;
               letter-spacing: -1px !important;
+              padding: 0 0.5rem;
             }
             .hero-description {
               font-size: 1rem !important;
-              padding: 0 1.5rem !important;
+              padding: 0 1rem !important;
+              margin-bottom: 2.5rem !important;
             }
             .hero-actions {
               flex-direction: column !important;
               align-items: center !important;
               gap: 12px !important;
-              padding: 0 1rem;
+              padding: 0;
             }
             .hero-btn {
               width: 100% !important;
               min-width: unset !important;
-              padding: 0.9rem 0 !important;
+              padding: 1rem 0 !important;
+              border-radius: 12px !important;
+            }
+            .dashboard-showcase {
+              padding: 60px 0 !important;
+            }
+            .dashboard-actions {
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 12px !important;
+              margin-bottom: 3rem !important;
+            }
+            .dashboard-actions a {
+              width: 100% !important;
+              min-width: unset !important;
+            }
+            .hidden-mobile {
+              display: none;
             }
           }
         `}</style>
       </section>
 
       {/* Infinite Scroll Gallery with Tilt/Luxury Feel */}
-      <section style={{ padding: '80px 0', background: '#000', borderTop: '1px solid rgba(255,215,0,0.1)', borderBottom: '1px solid rgba(255,215,0,0.1)', transform: 'skewY(-2deg)', width: '110%', marginLeft: '-5%' }}>
+      <section style={{ padding: '80px 0', background: '#000', borderTop: '1px solid rgba(255,215,0,0.1)', borderBottom: '1px solid rgba(255,215,0,0.1)', transform: 'skewY(-2deg)', width: '100%', overflow: 'hidden' }}>
         <div style={{ transform: 'skewY(2deg)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', overflow: 'hidden' }}>
             <motion.div
@@ -352,7 +371,7 @@ export default function Home() {
       </section>
 
       {/* Dashboard Feature Showcase */}
-      <section style={{ padding: '120px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <section className="dashboard-showcase" style={{ padding: '120px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
         {/* Decorative background glow */}
         <div style={{
           position: 'absolute',
@@ -366,7 +385,7 @@ export default function Home() {
           pointerEvents: 'none'
         }} />
 
-        <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 1.5rem' }}>
           <motion.div {...fadeIn}>
             <h2 style={{
               fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
@@ -376,7 +395,7 @@ export default function Home() {
               letterSpacing: '-1px',
               lineHeight: 1.1
             }}>
-              Crie e Gerencie Seus Eventos <br />
+              Crie e Gerencie Seus Eventos <br className="hidden-mobile" />
               <span className="gold-text">Digitais Ou Presenciais</span> de Forma Clara e Simples
             </h2>
             <p style={{
@@ -390,7 +409,7 @@ export default function Home() {
               {t('landing.dashboard.subtitle') || 'Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos.'}
             </p>
 
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '5.5rem' }}>
+            <div className="dashboard-actions" style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '5.5rem' }}>
               <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
                 padding: '14px 45px',
                 borderRadius: '8px',
