@@ -101,7 +101,7 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-links">
-          <div className="mobile-menu-section-title" style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Menu</div>
+          <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>Menu</div>
 
           <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>
             {t('nav.home') || 'Início'}
@@ -119,21 +119,21 @@ export default function Navbar() {
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto' }}>
+            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)' }}>
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto' }}>
+            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: '#4285f4', color: '#fff', borderRadius: '12px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)' }}>
               {t('auth.login')}
             </Link>
           )}
 
-          <div className="mobile-footer" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '2rem' }}>
+          <div className="mobile-footer" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '2rem' }}>
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginBottom: '1.5rem' }}>
-              <a href="https://www.linkedin.com/company/inscreva-se" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><Linkedin size={20} /></a>
-              <a href="https://www.youtube.com/@Inscreva-se-events" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><Youtube size={20} /></a>
-              <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><Facebook size={20} /></a>
-              <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', display: 'flex' }}><MessageCircle size={20} /></a>
+              <a href="https://www.linkedin.com/company/inscreva-se" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Linkedin size={20} /></a>
+              <a href="https://www.youtube.com/@Inscreva-se-events" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Youtube size={20} /></a>
+              <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Facebook size={20} /></a>
+              <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><MessageCircle size={20} /></a>
             </div>
             <LanguageSwitcher />
           </div>
@@ -189,7 +189,7 @@ export default function Navbar() {
         .mobile-menu-overlay {
             position: fixed;
             inset: 0;
-            background: #000000;
+            background: #ffffff;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -226,7 +226,7 @@ export default function Navbar() {
         }
 
         .mobile-menu-section-title {
-            color: #fff;
+            color: #1a1a1a;
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 2.5rem;
@@ -236,15 +236,15 @@ export default function Navbar() {
         .mobile-link {
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
-            color: #ffffff !important;
+            color: #1a1a1a !important;
             text-decoration: none !important;
             padding: 1.1rem 1.5rem;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid #f0f0f0 !important;
             transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             font-weight: 500;
             margin-bottom: 0.8rem;
-            background: rgba(255, 255, 255, 0.03);
+            background: #fcfcfc;
             display: flex;
             justify-content: space-between;
             align-items: center;

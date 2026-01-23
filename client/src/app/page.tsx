@@ -375,9 +375,33 @@ export default function Home() {
               { label: t('landing.stats.s3') || 'Inscrições Hoje', value: '1,200+' },
               { label: t('landing.stats.s4') || 'Suporte Online', value: '24/7' },
             ].map((stat, i) => (
-              <motion.div key={i} variants={fadeIn} className="stat-card" style={{ padding: '20px' }}>
-                <div className="gold-text stat-value" style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>{stat.value}</div>
-                <div className="stat-label" style={{ color: '#666', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem' }}>{stat.label}</div>
+              <motion.div
+                key={i}
+                variants={fadeIn}
+                whileHover={{ y: -5 }}
+                className="stat-card"
+                style={{
+                  padding: '40px 20px',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #fcfcfc 100%)',
+                  borderRadius: '24px',
+                  border: '1px solid #f0f0f0',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div className="gold-text stat-value" style={{
+                  fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                  fontWeight: 900,
+                  marginBottom: '1rem',
+                  lineHeight: 1
+                }}>{stat.value}</div>
+                <div className="stat-label" style={{
+                  color: '#888',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  fontSize: '0.75rem'
+                }}>{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -386,18 +410,45 @@ export default function Home() {
 
       {/* Dashboard Feature Showcase */}
       <section className="dashboard-showcase" style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
-        {/* Decorative background glow */}
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '80%',
-          height: '80%',
-          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
+        {/* Decorative background orbs */}
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            x: [0, 20, 0],
+            y: [0, -20, 0]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: 'absolute',
+            top: '10%',
+            left: '5%',
+            width: '300px',
+            height: '300px',
+            background: 'radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%)',
+            zIndex: 0,
+            pointerEvents: 'none',
+            filter: 'blur(40px)'
+          }}
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, -30, 0],
+            y: [0, 30, 0]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            right: '5%',
+            width: '400px',
+            height: '400px',
+            background: 'radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%)',
+            zIndex: 0,
+            pointerEvents: 'none',
+            filter: 'blur(50px)'
+          }}
+        />
 
         <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 1.5rem' }}>
           <motion.div {...fadeIn}>
@@ -471,25 +522,46 @@ export default function Home() {
               Integração completa com as principais carteiras móveis de Moçambique e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
             </p>
 
-            <div className="payments-grid" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 'clamp(30px, 6vw, 80px)'
-            }}>
+            <motion.div
+              className="payments-grid"
+              variants={{
+                initial: { opacity: 0 },
+                animate: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.15 }
+                }
+              }}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 'clamp(30px, 6vw, 80px)'
+              }}
+            >
               {[
                 { name: 'M-Pesa', color: '#e61c27', logo: '/payments/mpesa.png' },
                 { name: 'E-Mola', color: '#ff6600', logo: '/payments/emola.png' },
                 { name: 'PayPal', color: '#003087', logo: '/payments/paypal.png' },
                 { name: 'Stripe', color: '#635bff', logo: '/payments/stripe.png' }
               ].map((method, idx) => (
-                <div key={idx} className="payment-card" style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '20px'
-                }}>
+                <motion.div
+                  key={idx}
+                  variants={{
+                    initial: { opacity: 0, y: 30 },
+                    animate: { opacity: 1, y: 0 }
+                  }}
+                  className="payment-card"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '20px'
+                  }}
+                >
                   <div className="payment-icon-wrapper" style={{ position: 'relative' }}>
                     <div className="payment-icon" style={{
                       width: 'clamp(80px, 12vw, 110px)',
@@ -529,7 +601,7 @@ export default function Home() {
                     }} />
                   </div>
                   <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>{method.name}</span>
-                </div>
+                </motion.div>
               ))}
               <style jsx>{`
                 .payment-card:hover .payment-icon {
@@ -541,7 +613,7 @@ export default function Home() {
                   opacity: 0.15;
                 }
               `}</style>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
