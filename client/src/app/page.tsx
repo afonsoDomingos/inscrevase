@@ -11,6 +11,8 @@ import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
 import { Linkedin, Youtube, Facebook, MessageCircle } from "lucide-react";
 import Cookies from "js-cookie";
+import SocialProof from "@/components/home/SocialProof";
+import Testimonials from "@/components/home/Testimonials";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -1072,6 +1074,12 @@ export default function Home() {
           </motion.div>
         </div>
       </section >
+
+      {/* Social Proof Section */}
+      <SocialProof />
+
+      {/* Testimonials Section */}
+      <Testimonials />
 
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
       < footer style={{ padding: '60px 0 40px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
