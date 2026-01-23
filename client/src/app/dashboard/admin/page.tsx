@@ -834,6 +834,13 @@ export default function AdminDashboard() {
                             width: 20px !important;
                             height: 20px !important;
                         }
+                        :global(.luxury-card), .luxury-card {
+                            padding: 1.25rem !important;
+                        }
+                        :global(.stats-grid) {
+                            grid-template-columns: 1fr !important;
+                            gap: 1rem !important;
+                        }
                     }
                 `}</style>
             </main>
