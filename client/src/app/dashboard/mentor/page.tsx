@@ -7,7 +7,6 @@ import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
-import ThemeToggle from '@/components/common/ThemeToggle';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';

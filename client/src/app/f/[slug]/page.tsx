@@ -1,7 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next';
 import { formService } from '@/lib/formService';
 import PublicFormClient from './PublicFormClient';
-import Script from 'next/script';
 
 // This is a Server Component
 export default async function Page({ params }: { params: { slug: string } }) {
@@ -106,7 +105,7 @@ export async function generateMetadata(
                 canonical: `https://inscreva-se.com/f/${slug}`,
             }
         };
-    } catch (e) {
+    } catch {
         return {
             title: 'Evento não encontrado',
             description: 'O evento que você procura não existe ou foi removido.'
