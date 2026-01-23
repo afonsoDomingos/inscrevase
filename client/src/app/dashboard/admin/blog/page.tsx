@@ -59,8 +59,10 @@ export default function BlogManagement() {
             const { url } = await blogService.uploadImage(token, file);
             setFormData({ ...formData, coverImage: url });
             toast.success('Imagem enviada com sucesso!');
-        } catch {
-            toast.error('Erro ao enviar imagem');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Erro ao enviar imagem');
         } finally {
             setUploading(false);
         }
@@ -84,8 +86,10 @@ export default function BlogManagement() {
             setEditingPost(null);
             resetForm();
             fetchPosts();
-        } catch {
-            toast.error('Erro ao salvar artigo');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Erro ao salvar artigo');
         }
     };
 
@@ -355,8 +359,8 @@ export default function BlogManagement() {
                                     />
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                    <div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                                    <div style={{ flex: '1 1 200px' }}>
                                         <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Categoria</label>
                                         <select
                                             value={formData.category}
