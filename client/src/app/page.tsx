@@ -460,57 +460,57 @@ export default function Home() {
               position: 'relative',
               maxWidth: '1100px',
               margin: '0 auto',
-              borderRadius: '20px',
-              padding: '8px',
-              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(255, 255, 255, 0.1))',
-              boxShadow: '0 40px 80px -15px rgba(0,0,0,0.1)',
-              border: '1px solid rgba(255,255,255,0.5)'
+              borderRadius: '24px',
+              padding: '12px',
+              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 255, 255, 0.05))',
+              boxShadow: '0 50px 100px -20px rgba(0,0,0,0.25)',
+              border: '1px solid rgba(255,255,255,0.4)'
             }}
           >
             <div style={{
-              borderRadius: '14px',
+              borderRadius: '16px',
               overflow: 'hidden',
               background: '#000',
               lineHeight: 0,
-              maxHeight: '450px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              boxShadow: '0 0 40px rgba(0,0,0,0.5)'
             }}>
               <Image
                 src="/dashboard-preview.png"
-                alt="Dashboard Inscreva-se"
+                alt="Dashboard Mockup"
                 width={1200}
                 height={800}
-                className="w-full h-auto shadow-2xl"
+                className="w-full h-auto"
                 style={{
                   objectFit: 'contain',
-                  maxHeight: '450px',
-                  width: 'auto'
+                  maxWidth: '100%'
                 }}
                 priority
               />
             </div>
+
+            {/* Restored Decorative Background Glows */}
             <div style={{
               position: 'absolute',
-              top: '-20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '80%',
-              height: '120px',
-              background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.12), transparent)',
-              filter: 'blur(35px)',
+              top: '-30px',
+              left: '10%',
+              right: '10%',
+              height: '140px',
+              background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.15), transparent)',
+              filter: 'blur(45px)',
               zIndex: -1
             }} />
             <div style={{
               position: 'absolute',
-              bottom: '-20px',
+              bottom: '-30px',
               left: '50%',
               transform: 'translateX(-50%)',
-              width: '80%',
-              height: '60px',
-              background: 'rgba(212, 175, 55, 0.1)',
-              filter: 'blur(40px)',
+              width: '90%',
+              height: '80px',
+              background: 'rgba(212, 175, 55, 0.12)',
+              filter: 'blur(50px)',
               zIndex: -1
             }} />
           </motion.div>
