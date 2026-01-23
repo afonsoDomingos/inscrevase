@@ -518,19 +518,19 @@ export default function Home() {
       </section>
 
       {/* Payment Methods Section */}
-      <section style={{ padding: '80px 0', background: '#000', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '120px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }}>
         <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 1.5rem' }}>
           <motion.div {...fadeIn}>
             <h2 style={{
               fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
               fontWeight: 800,
-              marginBottom: '1rem',
-              color: '#fff',
-              letterSpacing: '-1px'
+              marginBottom: '1.5rem',
+              color: '#1a1a1a',
+              letterSpacing: '-1.2px'
             }}>
               Receba Pagamentos de <span className="gold-text">Forma Simples</span>
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '4rem', fontSize: '1.1rem', maxWidth: '750px', margin: '0 auto 4rem' }}>
+            <p style={{ color: '#666', marginBottom: '5rem', fontSize: '1.15rem', maxWidth: '750px', margin: '0 auto 5rem', lineHeight: 1.6 }}>
               Integração completa com as principais carteiras móveis de Moçambique e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
             </p>
 
@@ -539,7 +539,7 @@ export default function Home() {
               gridTemplateColumns: 'repeat(4, 1fr)',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: 'clamp(20px, 5vw, 60px)'
+              gap: 'clamp(30px, 6vw, 80px)'
             }}>
               {[
                 { name: 'M-Pesa', color: '#e61c27', icon: 'M' },
@@ -551,27 +551,26 @@ export default function Home() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '15px'
+                  gap: '20px'
                 }}>
                   <div className="payment-icon hover:scale-110" style={{
-                    width: 'clamp(70px, 10vw, 90px)',
-                    height: 'clamp(70px, 10vw, 90px)',
-                    borderRadius: '24px',
-                    background: 'rgba(255,255,255,0.05)',
+                    width: 'clamp(80px, 12vw, 110px)',
+                    height: 'clamp(80px, 12vw, 110px)',
+                    borderRadius: '28px',
+                    background: '#fff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(10px)',
-                    fontSize: '2rem',
+                    border: '1px solid #eee',
+                    fontSize: '2.5rem',
                     fontWeight: 900,
                     color: method.color,
-                    boxShadow: `0 10px 30px -10px ${method.color}40`,
-                    transition: 'transform 0.3s ease'
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.06)',
+                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                   }}>
                     {method.icon}
                   </div>
-                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', letterSpacing: '1px' }}>{method.name}</span>
+                  <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>{method.name}</span>
                 </div>
               ))}
             </div>
