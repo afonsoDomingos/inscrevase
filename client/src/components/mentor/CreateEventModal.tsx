@@ -29,6 +29,17 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Mobile Detection
+    useState(() => {
+        if (typeof window !== 'undefined') {
+            const checkMobile = () => setIsMobile(window.innerWidth <= 1024);
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+            return () => window.removeEventListener('resize', checkMobile);
+        }
+    });
 
     const handleAiGenerate = async () => {
         if (!title.trim()) {
@@ -238,24 +249,42 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '900px',
+                        maxWidth: isMobile ? '100%' : '900px',
                         background: '#fff',
-                        borderRadius: '30px',
+                        borderRadius: isMobile ? '0' : '30px',
                         overflow: 'hidden',
                         display: 'grid',
-                        gridTemplateColumns: '280px 1fr',
-                        height: '85vh',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                        gridTemplateColumns: isMobile ? '1fr' : '280px 1fr',
+                        height: isMobile ? '100vh' : '85vh',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                        zIndex: 2002
                     }}
                 >
-                    {/* Sidebar */}
-                    <div style={{ background: '#000', padding: '3rem 2rem', color: '#fff' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
-                            <Layout size={24} />
-                            <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>{t('events.newTitle')}</span>
+                    {/* Sidebar / Top Nav */}
+                    <div style={{
+                        background: '#000',
+                        padding: isMobile ? '1.5rem 1rem' : '3rem 2rem',
+                        color: '#fff',
+                        display: isMobile ? 'flex' : 'block',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexDirection: isMobile ? 'column' : 'initial',
+                        gap: isMobile ? '1rem' : '0'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '3rem', color: '#FFD700' }}>
+                            <Layout size={isMobile ? 18 : 24} />
+                            <span style={{ fontWeight: 800, fontSize: isMobile ? '1rem' : '1.2rem' }}>{t('events.newTitle')}</span>
                         </div>
 
-                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: isMobile ? 'row' : 'column',
+                            gap: isMobile ? '0.5rem' : '1.5rem',
+                            overflowX: isMobile ? 'auto' : 'visible',
+                            width: isMobile ? '100%' : 'auto',
+                            paddingBottom: isMobile ? '10px' : '0',
+                            justifyContent: isMobile ? 'center' : 'flex-start'
+                        }} className="no-scrollbar">
                             {[
                                 { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
                                 { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
@@ -266,11 +295,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 <button
                                     key={s.id}
                                     onClick={() => setStep(s.id)}
+                                    title={s.label}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '12px',
-                                        padding: '1rem',
+                                        padding: isMobile ? '0.75rem' : '1rem',
                                         borderRadius: '12px',
                                         border: 'none',
                                         background: step === s.id ? '#FFD70015' : 'transparent',
@@ -278,29 +308,37 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         fontWeight: 600,
                                         cursor: 'pointer',
                                         textAlign: 'left',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        whiteSpace: 'nowrap'
                                     }}
                                 >
                                     {s.icon}
-                                    {s.label}
+                                    {!isMobile && s.label}
                                 </button>
                             ))}
                         </div>
 
-                        <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
-                            <button
-                                onClick={step === 5 ? handleSubmit : () => setStep(step + 1)}
-                                disabled={loading}
-                                className="btn-primary"
-                                style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                            >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
-                            </button>
-                        </div>
+                        {!isMobile && (
+                            <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
+                                <button
+                                    onClick={step === 5 ? handleSubmit : () => setStep(step + 1)}
+                                    disabled={loading}
+                                    className="btn-primary"
+                                    style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Content */}
-                    <div style={{ padding: '3rem', overflowY: 'auto', background: '#f8f9fa' }}>
+                    <div style={{
+                        padding: isMobile ? '1.5rem' : '3rem',
+                        paddingBottom: isMobile ? '7rem' : '3rem',
+                        overflowY: 'auto',
+                        background: '#f8f9fa'
+                    }}>
                         <button
                             onClick={onClose}
                             style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -347,7 +385,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.capacityLabel')}</label>
                                                 <input
@@ -389,7 +427,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             </select>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.locationPhysical')}</label>
                                                 <input
@@ -531,7 +569,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 </div>
                                             )}
 
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                                                 {/* Upload Option */}
                                                 <label htmlFor="video-upload" style={{
                                                     display: 'flex',
@@ -614,7 +652,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     <div style={{ display: 'grid', gap: '1rem' }}>
                                         {fields.map((field) => (
                                             <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
                                                     <input
                                                         type="text"
                                                         value={field.label}
@@ -672,7 +710,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                     <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.customization')}</h2>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem', alignItems: 'start' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 300px', gap: '2rem', alignItems: 'start' }}>
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.primaryColor')}</label>
@@ -802,7 +840,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                         {paymentConfig.enabled && (
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                                                     <div>
                                                         <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
                                                         <input
@@ -1057,7 +1095,51 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 </motion.div>
                             )}
                         </AnimatePresence>
+
+                        {/* Mobile Footer Action */}
+                        {isMobile && (
+                            <div style={{
+                                position: 'fixed',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                padding: '1.25rem',
+                                background: '#fff',
+                                borderTop: '1px solid #eee',
+                                zIndex: 2005,
+                                boxShadow: '0 -4px 20px rgba(0,0,0,0.05)'
+                            }}>
+                                <button
+                                    onClick={step === 5 ? handleSubmit : () => setStep(step + 1)}
+                                    disabled={loading}
+                                    className="btn-primary"
+                                    style={{
+                                        width: '100%',
+                                        borderRadius: '14px',
+                                        padding: '1.1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px',
+                                        fontSize: '1rem',
+                                        fontWeight: 700
+                                    }}
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
+                                </button>
+                            </div>
+                        )}
                     </div >
+
+                    <style jsx>{`
+                        .no-scrollbar::-webkit-scrollbar {
+                            display: none;
+                        }
+                        .no-scrollbar {
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;
+                        }
+                    `}</style>
                 </motion.div >
             </div >
         </AnimatePresence >
