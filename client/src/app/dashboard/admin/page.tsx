@@ -349,22 +349,42 @@ export default function AdminDashboard() {
             {/* Main Content */}
             <main className="admin-main">
                 {/* Header */}
-                <header className="admin-header">
-                    <div>
+                <header className="admin-header" style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: '1.5rem',
+                    marginBottom: '3rem',
+                    flexWrap: 'wrap'
+                }}>
+                    <div style={{ flex: '1 1 300px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
                             <ShieldAlert size={16} />
-                            <span style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{user.role} Dashboard</span>
+                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{user.role} Dashboard</span>
                         </div>
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
+                            style={{
+                                fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
+                                fontWeight: 800,
+                                fontFamily: 'var(--font-playfair)',
+                                lineHeight: 1.1,
+                                color: '#1a1a1a',
+                                overflowWrap: 'break-word',
+                                wordWrap: 'break-word'
+                            }}
                         >
                             {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name?.split(' ')[0] || 'Admin'}</span>
                         </motion.h1>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div className="admin-actions-group" style={{
+                        display: 'flex',
+                        gap: '0.75rem',
+                        flexWrap: 'wrap',
+                        alignItems: 'center'
+                    }}>
                         <button
                             onClick={() => {
                                 setSelectedRecipient(undefined);
@@ -372,10 +392,10 @@ export default function AdminDashboard() {
                             }}
                             id="admin-global-msg"
                             style={{
-                                padding: '0.9rem 1.5rem',
+                                padding: '0.7rem 1.2rem',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '0.8rem',
+                                gap: '0.6rem',
                                 borderRadius: '50px',
                                 background: '#000',
                                 color: '#FFD700',
@@ -384,33 +404,25 @@ export default function AdminDashboard() {
                                 fontWeight: 700,
                                 cursor: 'pointer',
                                 transition: 'all 0.3s',
-                                fontSize: '0.85rem',
-                                letterSpacing: '0.5px'
+                                fontSize: '0.75rem',
+                                letterSpacing: '0.3px'
                             }}
-                            onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
-                            }}
-                            onMouseOut={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}
+                            className="hover:translate-y-[-2px] hover:shadow-lg"
                         >
-                            <Send size={18} /> Comunicado Global
+                            <Send size={16} /> Comunicado
                         </button>
                         <Link
                             href="/"
                             target="_blank"
                             id="admin-view-visitor"
-                            title="Visualize a plataforma como um usuário não logado ou mentor"
                             style={{
-                                padding: '0.9rem 1.5rem',
+                                padding: '0.7rem 1.2rem',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '0.8rem',
+                                gap: '0.6rem',
                                 textTransform: 'uppercase',
-                                fontSize: '0.8rem',
-                                letterSpacing: '1px',
+                                fontSize: '0.7rem',
+                                letterSpacing: '0.5px',
                                 borderRadius: '50px',
                                 background: 'transparent',
                                 border: '1px solid #FFD700',
@@ -420,18 +432,9 @@ export default function AdminDashboard() {
                                 textDecoration: 'none',
                                 transition: 'all 0.3s'
                             }}
-                            onMouseOver={(e) => {
-                                e.currentTarget.style.background = '#FFD700';
-                                e.currentTarget.style.color = '#000';
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                            }}
-                            onMouseOut={(e) => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = '#000';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }}
+                            className="hover:bg-[#FFD700] hover:translate-y-[-2px]"
                         >
-                            <Eye size={18} /> Ver como Visitante
+                            <Eye size={16} /> Visitante
                         </Link>
                         <button
                             onClick={() => authService.logout()}
@@ -440,20 +443,17 @@ export default function AdminDashboard() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: '45px',
-                                height: '45px',
+                                width: '40px',
+                                height: '40px',
                                 background: '#fff',
                                 border: '1px solid #fed7d7',
-                                borderRadius: '50px',
+                                borderRadius: '50%',
                                 color: '#e53e3e',
                                 cursor: 'pointer',
-                                transition: 'all 0.3s',
-                                boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
+                                transition: 'all 0.3s'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#fff5f5'}
-                            onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
                         >
-                            <LogOut size={20} />
+                            <LogOut size={18} />
                         </button>
                     </div>
                 </header>
@@ -813,6 +813,29 @@ export default function AdminDashboard() {
                 />
 
                 <OnboardingTour steps={adminSteps} storageKey="inscrevase_admin_tour_completed" />
+
+                <style jsx>{`
+                    @media (max-width: 768px) {
+                        .admin-header h1 {
+                            font-size: 1.8rem !important;
+                            letter-spacing: -0.5px;
+                        }
+                        .admin-actions-group {
+                            width: 100%;
+                            justify-content: flex-start;
+                        }
+                        #admin-support-fab {
+                            width: 45px !important;
+                            height: 45px !important;
+                            right: 1.5rem !important;
+                            bottom: 1.5rem !important;
+                        }
+                        #admin-support-fab :global(svg) {
+                            width: 20px !important;
+                            height: 20px !important;
+                        }
+                    }
+                `}</style>
             </main>
         </div >
     );
