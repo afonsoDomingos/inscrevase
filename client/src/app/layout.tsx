@@ -1,11 +1,36 @@
-import './globals.css';
-import { Inter, Playfair_Display, Poppins } from 'next/font/google';
+import type { Metadata } from "next";
+import { Inter, Playfair_Display, Poppins } from "next/font/google";
+import "./globals.css";
+import { Toaster } from 'sonner';
+import { LanguageProvider } from '@/context/LanguageContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
+import { SocketProvider } from '@/context/SocketContext';
+import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
+import AnalyticsTracker from '@/components/common/AnalyticsTracker';
+import { Suspense } from "react";
+import MetaPixel from '@/components/MetaPixel';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
-const poppins = Poppins({ subsets: ['latin'], weight: ['400','600','700'], variable: '--font-poppins' });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: 'swap'
+});
 
-export const metadata = {
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap'
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  weight: ['400', '600', '700', '800'],
+  display: 'swap'
+});
+
+export const metadata: Metadata = {
   title: "Inscreva-se | Plataforma de Eventos de Luxo",
   description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
   icons: {
@@ -14,13 +39,9 @@ export const metadata = {
   },
 };
 
-import { Suspense } from "react";
-
-import MetaPixel from '@/components/MetaPixel';
-
 export default function RootLayout({
   children,
-}: Readonly<{ 
+}: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
@@ -28,7 +49,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}> 
+      <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
         <LanguageProvider>
           <CurrencyProvider>
             <SocketProvider>

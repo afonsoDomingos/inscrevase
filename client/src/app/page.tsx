@@ -7,7 +7,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
-import Countdown from "@/components/Countdown";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
 import Cookies from "js-cookie";
