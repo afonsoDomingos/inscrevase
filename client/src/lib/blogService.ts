@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface BlogPost {
     _id: string;
@@ -25,13 +25,13 @@ export interface BlogPost {
 export const blogService = {
     // Get all published posts (public)
     async getPublishedPosts(): Promise<BlogPost[]> {
-        const response = await axios.get(`${API_URL}/api/blog`);
+        const response = await axios.get(`${API_URL}/blog`);
         return response.data;
     },
 
     // Get all posts including drafts (admin only)
     async getAllPosts(token: string): Promise<BlogPost[]> {
-        const response = await axios.get(`${API_URL}/api/blog/admin/all`, {
+        const response = await axios.get(`${API_URL}/blog/admin/all`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;
@@ -39,13 +39,13 @@ export const blogService = {
 
     // Get single post by slug
     async getPostBySlug(slug: string): Promise<BlogPost> {
-        const response = await axios.get(`${API_URL}/api/blog/${slug}`);
+        const response = await axios.get(`${API_URL}/blog/${slug}`);
         return response.data;
     },
 
     // Create new post (admin only)
     async createPost(token: string, postData: Partial<BlogPost>): Promise<BlogPost> {
-        const response = await axios.post(`${API_URL}/api/blog`, postData, {
+        const response = await axios.post(`${API_URL}/blog`, postData, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;
@@ -53,7 +53,7 @@ export const blogService = {
 
     // Update post (admin only)
     async updatePost(token: string, id: string, postData: Partial<BlogPost>): Promise<BlogPost> {
-        const response = await axios.put(`${API_URL}/api/blog/${id}`, postData, {
+        const response = await axios.put(`${API_URL}/blog/${id}`, postData, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;
@@ -61,7 +61,7 @@ export const blogService = {
 
     // Delete post (admin only)
     async deletePost(token: string, id: string): Promise<void> {
-        await axios.delete(`${API_URL}/api/blog/${id}`, {
+        await axios.delete(`${API_URL}/blog/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
     },
@@ -71,7 +71,7 @@ export const blogService = {
         const formData = new FormData();
         formData.append('image', file);
 
-        const response = await axios.post(`${API_URL}/api/blog/upload-image`, formData, {
+        const response = await axios.post(`${API_URL}/blog/upload-image`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data',
