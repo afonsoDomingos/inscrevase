@@ -78,7 +78,9 @@ function MentorDashboardContent() {
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // New State
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     const steps: Step[] = [
         {
@@ -150,6 +152,20 @@ function MentorDashboardContent() {
             }
         }
     }, [router, searchParams]);
+
+    // Handle initial mobile check and window resize
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 1024);
+            if (window.innerWidth > 1024) {
+                setIsMobileSidebarOpen(false);
+            }
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Polling effect for subscription upgrade
     useEffect(() => {
@@ -257,12 +273,58 @@ function MentorDashboardContent() {
     }
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa', position: 'relative', overflowX: 'hidden' }}>
+            {/* Mobile Toggle Button */}
+            {isMobile && (
+                <button
+                    className="mobile-sidebar-toggle"
+                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    style={{
+                        position: 'fixed',
+                        top: '1.25rem',
+                        left: '1.25rem',
+                        zIndex: 2001,
+                        background: '#1a1a1a',
+                        color: '#FFD700',
+                        border: '1px solid #FFD700',
+                        borderRadius: '10px',
+                        padding: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    {isMobileSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
+                </button>
+            )}
+
+            {/* Mobile Overlay */}
+            <AnimatePresence>
+                {isMobile && isMobileSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.5)',
+                            backdropFilter: 'blur(4px)',
+                            zIndex: 1999
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Sidebar */}
             {/* Sidebar */}
             <aside style={{
-                width: isSidebarCollapsed ? '80px' : '280px',
-                transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
+                transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 background: '#1a1a1a',
                 color: '#fff',
                 display: 'flex',
@@ -271,8 +333,8 @@ function MentorDashboardContent() {
                 height: '100vh',
                 left: 0,
                 top: 0,
-                zIndex: 1000,
-                boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+                zIndex: 2000,
+                boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 20px rgba(0,0,0,0.2)',
                 overflowX: 'hidden'
             }}>
                 <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid #333' }}>
@@ -285,22 +347,24 @@ function MentorDashboardContent() {
                             Inscreva<span className="gold-text">.se</span>
                         </motion.h2>
                     )}
-                    <button
-                        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: isSidebarCollapsed ? '#FFD700' : '#666',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: '4px',
-                            transition: 'color 0.2s'
-                        }}
-                    >
-                        {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
-                    </button>
+                    {!isMobile && (
+                        <button
+                            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: isSidebarCollapsed ? '#FFD700' : '#666',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '4px',
+                                transition: 'color 0.2s'
+                            }}
+                        >
+                            {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
+                        </button>
+                    )}
                 </div>
 
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
@@ -484,26 +548,35 @@ function MentorDashboardContent() {
 
             {/* Main Content */}
             <main style={{
-                marginLeft: isSidebarCollapsed ? '80px' : '280px',
+                marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
-                padding: '2.5rem',
+                padding: isMobile ? '1.5rem' : '2.5rem',
+                paddingTop: isMobile ? '5rem' : '2.5rem',
                 minHeight: '100vh',
-                maxWidth: `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`
+                maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
+                overflowX: 'hidden'
             }}>
                 {/* Header */}
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                <header style={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    justifyContent: 'space-between',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    gap: isMobile ? '1.5rem' : '3rem',
+                    marginBottom: '3rem'
+                }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div
                             id="mentor-profile-photo"
                             onClick={() => setIsProfileModalOpen(true)}
-                            style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
+                            style={{ position: 'relative', width: isMobile ? '50px' : '64px', height: isMobile ? '50px' : '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', flexShrink: 0 }}
                         >
                             {user.profilePhoto ? (
                                 <Image src={user.profilePhoto} alt={user.name} fill style={{ objectFit: 'cover' }} />
                             ) : (
                                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: '#000' }}>
-                                    <UserIcon size={32} />
+                                    <UserIcon size={isMobile ? 24 : 32} />
                                 </div>
                             )}
                         </div>
@@ -511,27 +584,29 @@ function MentorDashboardContent() {
                             <motion.h1
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
-                                style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
+                                style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
                             >
                                 {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name.split(' ')[0]}</span>
                             </motion.h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <p style={{ color: '#666', marginTop: '0.4rem', fontSize: '1.05rem', fontWeight: 500 }}>
+                                <p style={{ color: '#666', marginTop: '0.4rem', fontSize: isMobile ? '0.9rem' : '1.05rem', fontWeight: 500 }}>
                                     {t('dashboard.readyToManage')}
                                 </p>
-                                <span style={{
-                                    marginTop: '4px',
-                                    background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : '#eee',
-                                    color: user.plan === 'enterprise' ? '#FFD700' : '#000',
-                                    padding: '2px 10px',
-                                    borderRadius: '20px',
-                                    fontSize: '0.65rem',
-                                    fontWeight: 900,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px'
-                                }}>
-                                    {user.plan} {t('dashboard.account')}
-                                </span>
+                                {!isMobile && (
+                                    <span style={{
+                                        marginTop: '4px',
+                                        background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : '#eee',
+                                        color: user.plan === 'enterprise' ? '#FFD700' : '#000',
+                                        padding: '2px 10px',
+                                        borderRadius: '20px',
+                                        fontSize: '0.65rem',
+                                        fontWeight: 900,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px'
+                                    }}>
+                                        {user.plan} {t('dashboard.account')}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -566,26 +641,28 @@ function MentorDashboardContent() {
                         )
                     }
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0' }} className="no-scrollbar">
                         <Link
                             href="/"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '0.75rem 1.5rem',
+                                padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
                                 background: '#fff',
                                 border: '1px solid #FFD700',
-                                borderRadius: '12px',
+                                borderRadius: '10px',
                                 color: '#000',
                                 fontWeight: 700,
                                 textDecoration: 'none',
-                                transition: 'all 0.3s'
+                                transition: 'all 0.3s',
+                                fontSize: isMobile ? '0.8rem' : '1rem',
+                                whiteSpace: 'nowrap'
                             }}
                             onMouseOver={(e) => e.currentTarget.style.background = '#fffaf0'}
                             onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
                         >
-                            <ArrowRight size={18} /> {t('nav.home')}
+                            <ArrowRight size={18} /> {!isMobile && t('nav.home')}
                         </Link>
                         {user.canCreateEvents !== false ? (
                             <button
@@ -595,15 +672,17 @@ function MentorDashboardContent() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
-                                    padding: '0.75rem 1.5rem',
+                                    padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
                                     background: 'var(--gold-gradient)',
                                     border: 'none',
-                                    borderRadius: '12px',
+                                    borderRadius: '10px',
                                     color: '#000',
                                     fontWeight: 700,
                                     cursor: 'pointer',
                                     boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
-                                    transition: 'all 0.3s'
+                                    transition: 'all 0.3s',
+                                    fontSize: isMobile ? '0.8rem' : '1rem',
+                                    whiteSpace: 'nowrap'
                                 }}
                                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
@@ -715,7 +794,7 @@ function MentorDashboardContent() {
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div id="mentor-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div id="mentor-stats-grid" className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'} mb-8`}>
                                 <StatCard
                                     icon={<Users className="gold-text" />}
                                     label={t('dashboard.totalSubscribers')}
@@ -747,10 +826,10 @@ function MentorDashboardContent() {
                             </div>
 
                             <div style={{
-                                marginTop: '4rem',
+                                marginTop: isMobile ? '2.5rem' : '4rem',
                                 position: 'relative',
-                                padding: '2.5rem',
-                                borderRadius: '32px',
+                                padding: isMobile ? '1.5rem' : '2.5rem',
+                                borderRadius: isMobile ? '24px' : '32px',
                                 background: 'linear-gradient(145deg, #ffffff 0%, #e2e8f0 100%)',
                                 overflow: 'hidden',
                                 border: '1px solid rgba(255, 215, 0, 0.3)',
@@ -771,9 +850,9 @@ function MentorDashboardContent() {
                                             {forms.slice(0, 3).map((form) => (
                                                 <div key={form._id} className="luxury-card" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.4)', padding: '0', overflow: 'hidden', boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)' }}>
                                                     <div style={{ height: '4px', width: '100%', background: 'var(--gold-gradient)' }}></div>
-                                                    <div style={{ padding: '2rem' }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-                                                            <h4 style={{ fontWeight: 700, fontSize: '1.3rem', fontFamily: 'var(--font-playfair)', maxWidth: '80%' }}>{form.title}</h4>
+                                                    <div style={{ padding: isMobile ? '1.25rem' : '2rem' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isMobile ? '1.25rem' : '2rem' }}>
+                                                            <h4 style={{ fontWeight: 700, fontSize: isMobile ? '1.1rem' : '1.3rem', fontFamily: 'var(--font-playfair)', maxWidth: '80%' }}>{form.title}</h4>
                                                             <span style={{
                                                                 padding: '0.4rem 0.8rem',
                                                                 borderRadius: '4px',
@@ -1034,6 +1113,38 @@ function MentorDashboardContent() {
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="mentor" />
                 <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />
+
+                <style jsx>{`
+                    .no-scrollbar::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .no-scrollbar {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+
+                    @media (max-width: 768px) {
+                        .luxury-card {
+                            padding: 1.5rem !important;
+                        }
+                        
+                        table {
+                            display: block;
+                            overflow-x: auto;
+                            white-space: nowrap;
+                        }
+
+                        .grid-cols-1 {
+                            gap: 1rem !important;
+                        }
+                    }
+
+                    @media (min-width: 1025px) {
+                        .mobile-sidebar-toggle {
+                            display: none !important;
+                        }
+                    }
+                `}</style>
             </main >
         </div >
     );

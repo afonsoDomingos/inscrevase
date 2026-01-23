@@ -28,7 +28,8 @@ import {
     Zap,
     MessageCircle,
     Map as MapIcon,
-    LifeBuoy
+    LifeBuoy,
+    Plus
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
@@ -46,6 +47,8 @@ export default function ParticipantDashboard() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<Tab>('tickets');
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     // Explore State
     const [exploreEvents, setExploreEvents] = useState<FormModel[]>([]);
@@ -178,6 +181,20 @@ export default function ParticipantDashboard() {
         return () => clearInterval(interval);
     }, [router]);
 
+    // Handle initial mobile check and window resize
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 1024);
+            if (window.innerWidth > 1024) {
+                setIsMobileSidebarOpen(false);
+            }
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const fetchExploreEvents = useCallback(async () => {
         setExploreLoading(true);
         try {
@@ -213,11 +230,56 @@ export default function ParticipantDashboard() {
     if (!user) return null;
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa', position: 'relative', overflowX: 'hidden' }}>
+            {/* Mobile Toggle Button */}
+            {isMobile && (
+                <button
+                    className="mobile-sidebar-toggle"
+                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    style={{
+                        position: 'fixed',
+                        top: '1.25rem',
+                        left: '1.25rem',
+                        zIndex: 2001,
+                        background: '#1a1a1a',
+                        color: '#FFD700',
+                        border: '1px solid #FFD700',
+                        borderRadius: '10px',
+                        padding: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    {isMobileSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
+                </button>
+            )}
+
+            {/* Mobile Overlay */}
+            <AnimatePresence>
+                {isMobile && isMobileSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.5)',
+                            backdropFilter: 'blur(4px)',
+                            zIndex: 1999
+                        }}
+                    />
+                )}
+            </AnimatePresence>
             {/* Sidebar */}
             <aside style={{
-                width: isSidebarCollapsed ? '80px' : '280px',
-                transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
+                transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 background: '#1a1a1a',
                 color: '#fff',
                 display: 'flex',
@@ -226,8 +288,8 @@ export default function ParticipantDashboard() {
                 height: '100vh',
                 left: 0,
                 top: 0,
-                zIndex: 1000,
-                boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+                zIndex: 2000,
+                boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 20px rgba(0,0,0,0.2)',
                 overflowX: 'hidden'
             }}>
                 <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid #333' }}>
@@ -240,22 +302,24 @@ export default function ParticipantDashboard() {
                             Inscreva<span className="gold-text">.se</span>
                         </motion.h2>
                     )}
-                    <button
-                        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: isSidebarCollapsed ? '#FFD700' : '#666',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: '4px',
-                            transition: 'color 0.2s'
-                        }}
-                    >
-                        {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
-                    </button>
+                    {!isMobile && (
+                        <button
+                            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: isSidebarCollapsed ? '#FFD700' : '#666',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '4px',
+                                transition: 'color 0.2s'
+                            }}
+                        >
+                            {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
+                        </button>
+                    )}
                 </div>
 
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -409,24 +473,33 @@ export default function ParticipantDashboard() {
 
             {/* Main Content */}
             <main style={{
-                marginLeft: isSidebarCollapsed ? '80px' : '280px',
+                marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
-                padding: '2.5rem',
+                padding: isMobile ? '1.5rem' : '2.5rem',
+                paddingTop: isMobile ? '5rem' : '2.5rem',
                 minHeight: '100vh',
-                maxWidth: `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`
+                maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
+                overflowX: 'hidden'
             }}>
                 {/* Header */}
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                <header style={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    justifyContent: 'space-between',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    gap: isMobile ? '1.5rem' : '3rem',
+                    marginBottom: '3rem'
+                }}>
                     <div>
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
+                            style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: '#1a1a1a' }}
                         >
                             Olá, <span className="gold-text">{user.name.split(' ')[0]}</span>
                         </motion.h1>
-                        <p style={{ color: '#666', marginTop: '0.4rem', fontSize: '1.05rem', fontWeight: 500 }}>
+                        <p style={{ color: '#666', marginTop: '0.4rem', fontSize: isMobile ? '0.9rem' : '1.05rem', fontWeight: 500 }}>
                             Explore eventos incríveis e gerencie suas inscrições.
                         </p>
                     </div>
@@ -471,7 +544,7 @@ export default function ParticipantDashboard() {
                                     <Loader2 className="animate-spin" size={40} color="#FFD700" />
                                 </div>
                             ) : tickets.length > 0 ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
                                     {tickets.map(ticket => (
                                         <div key={ticket._id} style={{ position: 'relative' }}>
                                             <Link href={`/hub/${ticket._id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
@@ -678,7 +751,7 @@ export default function ParticipantDashboard() {
                                     <p>Tente buscar por outro termo ou categoria.</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-3'} gap-6`}>
                                     {exploreEvents.map(event => (
                                         <div key={event._id} className="luxury-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
                                             <div style={{ height: '200px', background: '#f0f0f0', position: 'relative' }}>
@@ -787,7 +860,7 @@ export default function ParticipantDashboard() {
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: user && user.plan && user.plan !== 'free' ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (user && user.plan && user.plan !== 'free' ? '1fr' : '1fr 1fr'), gap: '1.5rem' }}>
                                     {user && user.plan && user.plan !== 'free' ? (
                                         /* Restore Access if already has a plan */
                                         <div style={{ background: '#fff', padding: '2rem', borderRadius: '16px', border: '1px solid #FFD700', textAlign: 'center', width: '100%' }}>
@@ -923,6 +996,28 @@ export default function ParticipantDashboard() {
                 steps={participantSteps}
                 storageKey="participant-tour-seen"
             />
+
+            <style jsx>{`
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+
+                @media (max-width: 768px) {
+                    .luxury-card {
+                        padding: 1.5rem !important;
+                    }
+                }
+
+                @media (min-width: 1025px) {
+                    .mobile-sidebar-toggle {
+                        display: none !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
