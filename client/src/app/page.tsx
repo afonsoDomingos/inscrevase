@@ -478,10 +478,10 @@ export default function Home() {
               gap: 'clamp(30px, 6vw, 80px)'
             }}>
               {[
-                { name: 'M-Pesa', color: '#e61c27', icon: 'M' },
-                { name: 'E-Mola', color: '#ff6600', icon: 'E' },
-                { name: 'PayPal', color: '#003087', icon: 'P' },
-                { name: 'Stripe', color: '#635bff', icon: 'S' }
+                { name: 'M-Pesa', color: '#e61c27', logo: '/payments/mpesa.png' },
+                { name: 'E-Mola', color: '#ff6600', logo: '/payments/emola.png' },
+                { name: 'PayPal', color: '#003087', logo: '/payments/paypal.png' },
+                { name: 'Stripe', color: '#635bff', logo: '/payments/stripe.png' }
               ].map((method, idx) => (
                 <div key={idx} className="payment-card" style={{
                   display: 'flex',
@@ -489,26 +489,57 @@ export default function Home() {
                   alignItems: 'center',
                   gap: '20px'
                 }}>
-                  <div className="payment-icon hover:scale-110" style={{
-                    width: 'clamp(80px, 12vw, 110px)',
-                    height: 'clamp(80px, 12vw, 110px)',
-                    borderRadius: '28px',
-                    background: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #eee',
-                    fontSize: '2.5rem',
-                    fontWeight: 900,
-                    color: method.color,
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.06)',
-                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                  }}>
-                    {method.icon}
+                  <div className="payment-icon-wrapper" style={{ position: 'relative' }}>
+                    <div className="payment-icon" style={{
+                      width: 'clamp(80px, 12vw, 110px)',
+                      height: 'clamp(80px, 12vw, 110px)',
+                      borderRadius: '28px',
+                      background: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '1px solid #f0f0f0',
+                      boxShadow: '0 15px 35px rgba(0,0,0,0.05)',
+                      transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                      padding: '20px',
+                      cursor: 'pointer',
+                      zIndex: 2,
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}>
+                      <Image
+                        src={method.logo}
+                        alt={method.name}
+                        width={80}
+                        height={80}
+                        style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                      />
+                    </div>
+                    {/* Hover Glow Effect */}
+                    <div className="payment-glow" style={{
+                      position: 'absolute',
+                      inset: '-10px',
+                      background: method.color,
+                      opacity: 0,
+                      filter: 'blur(30px)',
+                      borderRadius: '40px',
+                      transition: 'all 0.5s ease',
+                      zIndex: 1
+                    }} />
                   </div>
                   <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>{method.name}</span>
                 </div>
               ))}
+              <style jsx>{`
+                .payment-card:hover .payment-icon {
+                  transform: translateY(-10px) scale(1.05);
+                  border-color: rgba(0,0,0,0.05);
+                  box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+                }
+                .payment-card:hover .payment-glow {
+                  opacity: 0.15;
+                }
+              `}</style>
             </div>
           </motion.div>
         </div>
