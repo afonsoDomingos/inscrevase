@@ -93,7 +93,7 @@ export default function Testimonials() {
                                 opacity: 0.2,
                                 fontFamily: 'Georgia, serif'
                             }}>
-                                "
+                                &quot;
                             </div>
 
                             {/* Rating */}

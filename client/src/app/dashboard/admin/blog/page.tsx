@@ -40,7 +40,7 @@ export default function BlogManagement() {
 
             const data = await blogService.getAllPosts(token);
             setPosts(data);
-        } catch (error) {
+        } catch {
             toast.error('Erro ao carregar artigos');
         } finally {
             setLoading(false);
@@ -59,7 +59,7 @@ export default function BlogManagement() {
             const { url } = await blogService.uploadImage(token, file);
             setFormData({ ...formData, coverImage: url });
             toast.success('Imagem enviada com sucesso!');
-        } catch (error) {
+        } catch {
             toast.error('Erro ao enviar imagem');
         } finally {
             setUploading(false);
@@ -84,7 +84,7 @@ export default function BlogManagement() {
             setEditingPost(null);
             resetForm();
             fetchPosts();
-        } catch (error) {
+        } catch {
             toast.error('Erro ao salvar artigo');
         }
     };
@@ -99,7 +99,7 @@ export default function BlogManagement() {
             await blogService.deletePost(token, id);
             toast.success('Artigo deletado com sucesso!');
             fetchPosts();
-        } catch (error) {
+        } catch {
             toast.error('Erro ao deletar artigo');
         }
     };
@@ -325,7 +325,7 @@ export default function BlogManagement() {
                                         <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Categoria</label>
                                         <select
                                             value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
+                                            onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
                                             style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px' }}
                                         >
                                             <option value="guide">Guias</option>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { BlogPost, blogService } from '@/lib/blogService';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Clock, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Clock, Facebook, Twitter, Linkedin } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { notFound } from 'next/navigation';
 
@@ -169,11 +169,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 <article className="prose prose-lg prose-headings:font-bold prose-headings:text-black prose-p:text-gray-600 prose-a:text-yellow-600">
                     <ReactMarkdown
                         components={{
-                            h2: ({ node, ...props }) => <h2 style={{ fontSize: '2rem', marginTop: '2em', marginBottom: '1em' }} {...props} />,
-                            p: ({ node, ...props }) => <p style={{ fontSize: '1.125rem', lineHeight: '1.8', marginBottom: '1.5em' }} {...props} />,
-                            ul: ({ node, ...props }) => <ul style={{ marginLeft: '1.5em', marginBottom: '1.5em', listStyleType: 'disc' }} {...props} />,
-                            li: ({ node, ...props }) => <li style={{ marginBottom: '0.5em' }} {...props} />,
-                            blockquote: ({ node, ...props }) => (
+                            h2: ({ ...props }) => <h2 style={{ fontSize: '2rem', marginTop: '2em', marginBottom: '1em' }} {...props} />,
+                            p: ({ ...props }) => <p style={{ fontSize: '1.125rem', lineHeight: '1.8', marginBottom: '1.5em' }} {...props} />,
+                            ul: ({ ...props }) => <ul style={{ marginLeft: '1.5em', marginBottom: '1.5em', listStyleType: 'disc' }} {...props} />,
+                            li: ({ ...props }) => <li style={{ marginBottom: '0.5em' }} {...props} />,
+                            blockquote: ({ ...props }) => (
                                 <blockquote style={{
                                     borderLeft: '4px solid #FFD700',
                                     paddingLeft: '1em',
