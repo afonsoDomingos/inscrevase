@@ -103,28 +103,28 @@ export default function Navbar() {
         <div className="mobile-links">
           <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>Menu</div>
 
-          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Home size={20} />
-              <span>{t('nav.home') || 'Início'}</span>
+          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
+              <Home size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.home') || 'Início'}</span>
             </div>
           </Link>
-          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Users size={20} />
-              <span>{t('nav.mentors')}</span>
+          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
+              <Users size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.mentors')}</span>
             </div>
           </Link>
-          <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Calendar size={20} />
-              <span>{t('nav.events')}</span>
+          <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
+              <Calendar size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.events')}</span>
             </div>
           </Link>
-          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <LifeBuoy size={20} />
-              <span>{t('dashboard.support')}</span>
+          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
+              <LifeBuoy size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('dashboard.support')}</span>
             </div>
           </Link>
 
