@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie } from 'recharts';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
@@ -612,49 +612,62 @@ export default function AdminDashboard() {
                                         >
                                             <div style={{ paddingTop: '2rem' }}>
 
-                                                {/* Data is Power Section */}
+                                                {/* User Acquisition Section */}
                                                 <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="split-grid">
                                                     <div className="luxury-card" style={{ padding: '2rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
                                                             <Database className="gold-text" size={20} /> Distribuição por Origem
                                                         </h3>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                                                            {[
-                                                                { label: 'E-mail Nativo', count: stats?.authStats?.native || 0, icon: <Mail size={16} />, color: '#666' },
-                                                                {
-                                                                    label: 'Google Auth', count: stats?.authStats?.google || 0, icon: (
-                                                                        <svg width="16" height="16" viewBox="0 0 24 24" style={{ marginRight: '4px' }}>
-                                                                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                                                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                                                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                                                                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                                                                        </svg>
-                                                                    ), color: '#db4437'
-                                                                },
-                                                                { label: 'LinkedIn Connect', count: stats?.authStats?.linkedin || 0, icon: <Linkedin size={16} />, color: '#0077b5' }
-                                                            ].map((item, idx) => {
-                                                                const total = (stats?.authStats?.native || 0) + (stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0);
-                                                                const percentage = total > 0 ? (item.count / total) * 100 : 0;
-                                                                return (
-                                                                    <div key={idx}>
-                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: item.color }}>
-                                                                                {item.icon} {item.label}
+                                                        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                                            <div style={{ flex: 1, minWidth: '250px' }}>
+                                                                {[
+                                                                    { label: 'E-mail Nativo', count: stats?.authStats?.native || 0, color: '#1a1a1a' },
+                                                                    { label: 'Google Auth', count: stats?.authStats?.google || 0, color: '#db4437' },
+                                                                    { label: 'LinkedIn Connect', count: stats?.authStats?.linkedin || 0, color: '#0077b5' }
+                                                                ].map((item, idx) => {
+                                                                    const total = (stats?.authStats?.native || 0) + (stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0);
+                                                                    const percentage = total > 0 ? (item.count / total) * 100 : 0;
+                                                                    return (
+                                                                        <div key={idx} style={{ marginBottom: '1rem' }}>
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
+                                                                                <span style={{ fontWeight: 700, color: item.color }}>{item.label}</span>
+                                                                                <span style={{ fontWeight: 800 }}>{item.count} ({Math.round(percentage)}%)</span>
                                                                             </div>
-                                                                            <span style={{ fontWeight: 700 }}>{item.count} ({Math.round(percentage)}%)</span>
+                                                                            <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '10px', overflow: 'hidden' }}>
+                                                                                <motion.div
+                                                                                    initial={{ width: 0 }}
+                                                                                    animate={{ width: `${percentage}%` }}
+                                                                                    transition={{ duration: 1, delay: idx * 0.1 }}
+                                                                                    style={{ height: '100%', background: item.color }}
+                                                                                />
+                                                                            </div>
                                                                         </div>
-                                                                        <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '10px', overflow: 'hidden' }}>
-                                                                            <motion.div
-                                                                                initial={{ width: 0 }}
-                                                                                animate={{ width: `${percentage}%` }}
-                                                                                transition={{ duration: 1, delay: 0.5 + idx * 0.2 }}
-                                                                                style={{ height: '100%', background: item.color }}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            })}
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                            <div style={{ width: '180px', height: '180px' }}>
+                                                                <ResponsiveContainer width="100%" height="100%">
+                                                                    <PieChart>
+                                                                        <Pie
+                                                                            data={[
+                                                                                { name: 'Nativo', value: stats?.authStats?.native || 0 },
+                                                                                { name: 'Google', value: stats?.authStats?.google || 0 },
+                                                                                { name: 'LinkedIn', value: stats?.authStats?.linkedin || 0 },
+                                                                            ]}
+                                                                            innerRadius={50}
+                                                                            outerRadius={70}
+                                                                            paddingAngle={5}
+                                                                            dataKey="value"
+                                                                        >
+                                                                            <Cell fill="#1a1a1a" />
+                                                                            <Cell fill="#db4437" />
+                                                                            <Cell fill="#0077b5" />
+                                                                        </Pie>
+                                                                        <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                                                                    </PieChart>
+                                                                </ResponsiveContainer>
+                                                            </div>
                                                         </div>
                                                     </div>
 
@@ -662,175 +675,92 @@ export default function AdminDashboard() {
                                                         <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>💡 Insight de Crescimento</h3>
                                                         <p style={{ fontSize: '1rem', lineHeight: 1.5, opacity: 0.9 }}>
                                                             {(stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0) > (stats?.authStats?.native || 0)
-                                                                ? "O login social está dominando! Considere simplificar ainda mais o fluxo removendo campos desnecessários no cadastro nativo."
-                                                                : "A maioria prefere o e-mail tradicional. Pode ser uma boa oportunidade para destacar os benefícios de um clique dos logins sociais."
+                                                                ? "O login social está dominando! Os usuários preferem praticidade. Considere priorizar integrações OAuth."
+                                                                : "A maioria prefere o e-mail tradicional. Mantenha o fluxo de login nativo o mais seguro e rápido possível."
                                                             }
                                                         </p>
-                                                        <div style={{ marginTop: '1.5rem', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                            <TrendingUp size={16} /> Dado é poder. Use com sabedoria.
-                                                        </div>
                                                     </div>
                                                 </motion.div>
 
-                                                {/* Traffic Section - PAGES */}
-                                                <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2rem', marginBottom: '3rem' }}>
-                                                    <div className="spotlight" />
-                                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                        <Globe className="gold-text" size={20} /> Páginas Mais Acessadas Hoje
-                                                    </h3>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 100px', gap: '1rem', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '0.5rem', fontWeight: 600, color: '#888', fontSize: '0.9rem', position: 'relative' }}>
-                                                        <span>Página</span>
-                                                        <span style={{ textAlign: 'right' }}>Visitas</span>
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1rem', position: 'relative' }}>
-                                                        {trafficStats?.topPages?.map((page, idx) => (
-                                                            <div key={idx} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 100px', gap: '1rem', fontSize: '0.95rem', alignItems: 'center' }}>
-                                                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#1a1a1a', fontWeight: 500 }}>
-                                                                    {page.page === '/' ? 'Página Inicial (Home)' : page.page}
-                                                                </span>
-                                                                <span style={{ textAlign: 'right', fontWeight: 700, color: '#D4AF37' }}>
-                                                                    {page.count}
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                        {(!trafficStats?.topPages || trafficStats.topPages.length === 0) && (
-                                                            <div style={{ color: '#888', fontStyle: 'italic', padding: '1rem 0' }}>Nenhuma visita registrada ainda hoje.</div>
-                                                        )}
-                                                    </div>
-                                                </motion.div>
-
-                                                {/* NEW: Traffic Peaks and Geolocation */}
                                                 <div className="charts-grid">
                                                     {/* Traffic Peaks Chart */}
                                                     <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <TrendingUp className="gold-text" size={20} /> Picos de Tráfego (24h)
+                                                            <TrendingUp className="gold-text" size={20} /> Picos de Tráfego (Hoje)
                                                         </h3>
                                                         <div style={{ height: '300px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <BarChart data={trafficStats?.trafficByHour || []}>
-                                                                    <XAxis
-                                                                        dataKey="hour"
-                                                                        tickFormatter={(hour: number) => `${hour}h`}
-                                                                        stroke="#888"
-                                                                        fontSize={12}
-                                                                        tickLine={false}
-                                                                        axisLine={false}
-                                                                    />
-                                                                    <Tooltip
-                                                                        cursor={{ fill: '#f4f4f4' }}
-                                                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                                                        labelStyle={{ fontWeight: 'bold', color: '#000' }}
-                                                                    />
+                                                                    <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                                                                    <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                                                                    <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                                                                     <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                                                                        {(trafficStats?.trafficByHour || []).map((entry, index) => (
+                                                                        {(trafficStats?.trafficByHour || []).map((_, index) => (
                                                                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#1a1a1a' : '#FFD700'} />
                                                                         ))}
                                                                     </Bar>
                                                                 </BarChart>
                                                             </ResponsiveContainer>
-                                                            {(!trafficStats?.trafficByHour || trafficStats.trafficByHour.length === 0) && (
-                                                                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
-                                                                    Sem dados de tráfego horário ainda.
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </motion.div>
 
-                                                    {/* Top Countries List */}
+                                                    {/* Monthly Growth Chart */}
                                                     <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <Globe className="gold-text" size={20} /> Top Países
+                                                            <BarChart3 className="gold-text" size={20} /> Evolução de Acessos (Ano)
                                                         </h3>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                            {(trafficStats?.topCountries || []).map((item, idx) => {
-                                                                const getFlagEmoji = (countryCode: string) => {
-                                                                    if (!countryCode) return '🌍';
-                                                                    const codePoints = countryCode
-                                                                        .toUpperCase()
-                                                                        .split('')
-                                                                        .map(char => 127397 + char.charCodeAt(0));
-                                                                    return String.fromCodePoint(...codePoints);
-                                                                };
-
-                                                                const percentage = trafficStats?.totalVisits ? Math.round((item.count / trafficStats.totalVisits) * 100) : 0;
-
-                                                                return (
-                                                                    <div key={idx} style={{ padding: '0.8rem', borderRadius: '12px', background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                                            <span style={{ fontSize: '1.5rem' }}>{getFlagEmoji(item.country)}</span>
-                                                                            <div>
-                                                                                <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{item.country}</div>
-                                                                                <div style={{ fontSize: '0.75rem', color: '#888' }}>{percentage > 0 ? `${percentage}% do tráfego` : 'Visitante Recente'}</div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1a1a1a' }}>
-                                                                            {item.count} <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>VISITAS</span>
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                            {(!trafficStats?.topCountries || trafficStats.topCountries.length === 0) && (
-                                                                <div style={{ textAlign: 'center', padding: '2rem', color: '#999' }}>
-                                                                    Nenhum país identificado ainda.
-                                                                </div>
-                                                            )}
+                                                        <div style={{ height: '300px', width: '100%' }}>
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                <AreaChart data={trafficStats?.trafficByMonth?.map(m => ({ name: monthNames[m.month - 1], count: m.count })) || []}>
+                                                                    <defs>
+                                                                        <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                                                                            <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8} />
+                                                                            <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
+                                                                        </linearGradient>
+                                                                    </defs>
+                                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                                                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
+                                                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
+                                                                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                                                                    <Area type="monotone" dataKey="count" stroke="#B8860B" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
+                                                                </AreaChart>
+                                                            </ResponsiveContainer>
                                                         </div>
                                                     </motion.div>
                                                 </div>
 
-                                                <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '2rem', marginBottom: '3rem' }}>
-                                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                        <TrendingUp className="gold-text" size={20} /> Crescimento Mensal (Este Ano)
-                                                    </h3>
-                                                    <div style={{ height: '350px', width: '100%' }}>
-                                                        <ResponsiveContainer width="100%" height="100%">
-                                                            <AreaChart data={trafficStats?.trafficByMonth || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                                                <defs>
-                                                                    <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                                                                        <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8} />
-                                                                        <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
-                                                                    </linearGradient>
-                                                                </defs>
-                                                                <XAxis
-                                                                    dataKey="month"
-                                                                    tickFormatter={(month: number) => monthNames[month - 1]}
-                                                                    stroke="#888"
-                                                                    fontSize={12}
-                                                                    tickLine={false}
-                                                                    axisLine={false}
-                                                                />
-                                                                <YAxis
-                                                                    stroke="#888"
-                                                                    fontSize={12}
-                                                                    tickLine={false}
-                                                                    axisLine={false}
-                                                                    tickFormatter={(value: number) => value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(value)}
-                                                                />
-                                                                <CartesianGrid vertical={false} stroke="#f5f5f5" />
-                                                                <Tooltip
-                                                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                                                    labelFormatter={(month: number) => monthNames[month - 1]}
-                                                                />
-                                                                <Area
-                                                                    type="monotone"
-                                                                    dataKey="count"
-                                                                    stroke="#FFD700"
-                                                                    strokeWidth={3}
-                                                                    fillOpacity={1}
-                                                                    fill="url(#colorVisits)"
-                                                                />
-                                                            </AreaChart>
-                                                        </ResponsiveContainer>
-                                                        {(!trafficStats?.trafficByMonth || trafficStats.trafficByMonth.length === 0) && (
-                                                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
-                                                                Sem dados suficientes para gráfico mensal.
-                                                            </div>
-                                                        )}
+                                                {/* Pages and Geography */}
+                                                <div className="split-grid" style={{ marginTop: '2rem' }}>
+                                                    <div className="luxury-card" style={{ padding: '2rem' }}>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <Globe className="gold-text" size={18} /> Top Países
+                                                        </h3>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                                            {(trafficStats?.topCountries || []).slice(0, 5).map((item, idx) => (
+                                                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f5f5f5' }}>
+                                                                    <span style={{ fontWeight: 600 }}>{item.country}</span>
+                                                                    <span style={{ fontWeight: 800, color: '#FFD700' }}>{item.count}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                </motion.div>
+
+                                                    <div className="luxury-card" style={{ padding: '2rem' }}>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <FileText className="gold-text" size={18} /> Páginas Ativas
+                                                        </h3>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                                            {(trafficStats?.topPages || []).slice(0, 5).map((page, idx) => (
+                                                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f5f5f5' }}>
+                                                                    <span style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{page.page}</span>
+                                                                    <span style={{ fontWeight: 800 }}>{page.count}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </motion.div>
                                     )}
@@ -996,6 +926,23 @@ export default function AdminDashboard() {
                     :global(.admin-main input), :global(.admin-main select) {
                         color: #000 !important;
                         border-color: #ccc !important;
+                    }
+                    .split-grid {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr;
+                        gap: 1.5rem;
+                        margin-bottom: 2rem;
+                    }
+                    .charts-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                        gap: 1.5rem;
+                        margin-bottom: 2rem;
+                    }
+                    @media (max-width: 1024px) {
+                        .split-grid {
+                            grid-template-columns: 1fr;
+                        }
                     }
                 `}</style>
             </main>
