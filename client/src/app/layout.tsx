@@ -35,42 +35,51 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL('https://inscreva-se.com'),
   title: {
-    default: "Inscreva-se | Plataforma de Eventos de Luxo",
+    default: "Inscreva-se | A Melhor Plataforma de Eventos de Luxo e Gestão de Ingressos",
     template: "%s | Inscreva-se"
   },
-  description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo. Crie, gerencie e escale seus eventos com elegância.",
-  keywords: ["eventos", "mentoria", "workshop", "tickets", "ingressos", "luxo", "premium", "gestão de eventos"],
-  authors: [{ name: "Inscreva.se Team" }],
+  description: "Crie, gerencie e escale seus eventos com a plataforma líder em Moçambique. Gestão premium de ingressos para mentores, palestrantes e organizações de prestígio.",
+  keywords: [
+    "eventos", "mentoria", "workshop", "tickets", "ingressos", "luxo", "premium", "gestão de eventos",
+    "Moçambique", "venda de ingressos online", "organização de palestras", "plataforma de eventos",
+    "Inscreva-se", "Inscrevase", "Maputo eventos", "bilhetes online"
+  ],
+  authors: [{ name: "Inscreva.se" }],
   creator: "Inscreva.se",
   publisher: "Inscreva.se",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: 'https://inscreva-se.com',
-    title: "Inscreva-se | Plataforma de Eventos de Luxo",
-    description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
+    title: "Inscreva-se | Plataforma Premium de Gestão de Eventos",
+    description: "A solução completa para organizar eventos de luxo e gerir inscrições com elegância e segurança.",
     siteName: "Inscreva-se",
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.png',
         width: 1200,
-        height: 630,
-        alt: "Inscreva-se Platform Preview",
+        height: 1200,
+        alt: "Inscreva-se Logo Premium",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inscreva-se | Plataforma de Eventos de Luxo",
-    description: "Plataforma premium para mentores, palestrantes e organizadores de eventos em todo o mundo.",
-    images: ['/og-image.jpg'],
+    title: "Inscreva-se | Gestão de Eventos de Luxo",
+    description: "Organize seus workshops e palestras com a plataforma mais sofisticada do mercado moçambicano.",
+    images: ['/og-image.png'],
   },
   alternates: {
-    canonical: './',
+    canonical: 'https://inscreva-se.com',
   },
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon.png' },
+    ],
   },
   robots: {
     index: true,
@@ -100,6 +109,40 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Inscreva.se",
+              "url": "https://inscreva-se.com",
+              "logo": "https://inscreva-se.com/logo.png",
+              "sameAs": [
+                "https://facebook.com/inscrevase",
+                "https://instagram.com/inscrevase",
+                "https://linkedin.com/company/inscrevase"
+              ],
+              "description": "A plataforma líder em gestão de eventos e venda de ingressos premium em Moçambique."
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Inscreva.se",
+              "url": "https://inscreva-se.com",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://inscreva-se.com/mentores?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
         <LoadingScreen />
         <ThemeProvider>
           <LanguageProvider>
