@@ -28,6 +28,13 @@ export default function BlogManagement() {
         published: false,
     });
     const [uploading, setUploading] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
 
     useEffect(() => {
         fetchPosts();
@@ -51,18 +58,29 @@ export default function BlogManagement() {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Validar tamanho (máx 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Imagem muito grande. Máximo 5MB.');
+            return;
+        }
+
+        // Criar preview local imediato
+        const localUrl = URL.createObjectURL(file);
+        setPreviewUrl(localUrl);
+
         setUploading(true);
         try {
             const token = Cookies.get('token');
             if (!token) throw new Error('Token não encontrado');
 
             const { url } = await blogService.uploadImage(token, file);
-            setFormData({ ...formData, coverImage: url });
+            setFormData(prev => ({ ...prev, coverImage: url }));
             toast.success('Imagem enviada com sucesso!');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error(error);
             toast.error(error.response?.data?.message || 'Erro ao enviar imagem');
+            setPreviewUrl(null); // Limpar preview em caso de erro
         } finally {
             setUploading(false);
         }
@@ -139,6 +157,7 @@ export default function BlogManagement() {
             tags: [],
             published: false,
         });
+        setPreviewUrl(null);
     };
 
     const inputStyle = {
@@ -298,163 +317,310 @@ export default function BlogManagement() {
                             onClick={(e) => e.stopPropagation()}
                             style={{
                                 background: '#fff',
-                                borderRadius: '16px',
+                                borderRadius: '24px',
                                 padding: '2rem',
-                                maxWidth: '800px',
-                                width: '100%',
+                                maxWidth: '900px',
+                                width: '95%',
                                 maxHeight: '90vh',
-                                overflow: 'auto',
+                                overflowY: 'auto',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                                position: 'relative'
                             }}
                         >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>
-                                    {editingPost ? 'Editar Artigo' : 'Novo Artigo'}
-                                </h2>
-                                <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                                    <X size={24} />
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '2rem',
+                                position: 'sticky',
+                                top: 0,
+                                background: '#fff',
+                                zIndex: 10,
+                                paddingBottom: '1rem',
+                                borderBottom: '1px solid #f1f5f9'
+                            }}>
+                                <div>
+                                    <h2 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                                        {editingPost ? '✏️ Editar Artigo' : '📝 Novo Artigo'}
+                                    </h2>
+                                    <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                                        Preencha todos os campos para garantir a melhor experiência de leitura.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    style={{
+                                        background: '#f1f5f9',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        padding: '0.5rem',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    <X size={24} color="#64748b" />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Título</label>
-                                    <input
-                                        type="text"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        required
-                                        placeholder="Ex: Como triplicar suas vendas de ingressos"
-                                        style={inputStyle}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
-                                    />
-                                </div>
+                            <form onSubmit={handleSubmit}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                                    {/* Lado Esquerdo: Conteúdo Principal */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: '#334155' }}>Título do Artigo</label>
+                                            <input
+                                                type="text"
+                                                value={formData.title}
+                                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                                required
+                                                placeholder="Ex: Como triplicar suas vendas de ingressos"
+                                                style={inputStyle}
+                                                onFocus={handleFocus}
+                                                onBlur={handleBlur}
+                                            />
+                                        </div>
 
-                                <div>
-                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Resumo</label>
-                                    <textarea
-                                        value={formData.excerpt}
-                                        onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                                        required
-                                        rows={3}
-                                        maxLength={300}
-                                        placeholder="Um breve resumo que aparecerá nos cards (máx 300 caracteres)..."
-                                        style={{ ...inputStyle, resize: 'none' }}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
-                                    />
-                                </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: '#334155' }}>Resumo (Excerpt)</label>
+                                            <textarea
+                                                value={formData.excerpt}
+                                                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                                                required
+                                                rows={3}
+                                                maxLength={300}
+                                                placeholder="Um breve resumo que aparecerá nos cards (máx 300 caracteres)..."
+                                                style={{ ...inputStyle, resize: 'none' }}
+                                                onFocus={handleFocus}
+                                                onBlur={handleBlur}
+                                            />
+                                        </div>
 
-                                <div>
-                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Conteúdo (Markdown)</label>
-                                    <textarea
-                                        value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        required
-                                        rows={12}
-                                        placeholder="# Seu Título Aqui&#10;&#10;Escreva seu conteúdo usando Markdown..."
-                                        style={{ ...inputStyle, fontFamily: 'monospace', fontSize: '0.9rem' }}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
-                                    />
-                                </div>
-
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-                                    <div style={{ flex: '1 1 200px' }}>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Categoria</label>
-                                        <select
-                                            value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
-                                            style={{ ...inputStyle, cursor: 'pointer' }}
-                                            onFocus={handleFocus}
-                                            onBlur={handleBlur}
-                                        >
-                                            <option value="guide">Guias</option>
-                                            <option value="marketing">Marketing</option>
-                                            <option value="mentoring">Mentoria</option>
-                                            <option value="engagement">Engajamento</option>
-                                        </select>
+                                        <div>
+                                            <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: '#334155' }}>Conteúdo Completo (Markdown)</label>
+                                            <textarea
+                                                value={formData.content}
+                                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                                required
+                                                rows={15}
+                                                placeholder="# Use Markdown para formatar seu texto..."
+                                                style={{ ...inputStyle, fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: '1.6' }}
+                                                onFocus={handleFocus}
+                                                onBlur={handleBlur}
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Tempo de Leitura (min)</label>
-                                        <input
-                                            type="number"
-                                            value={formData.readTime}
-                                            onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
-                                            min={1}
-                                            style={inputStyle}
-                                            onFocus={handleFocus}
-                                            onBlur={handleBlur}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Imagem de Capa</label>
-                                    {formData.coverImage && (
-                                        <Image src={formData.coverImage} alt="Preview" width={300} height={150} style={{ marginBottom: '0.5rem', borderRadius: '8px' }} />
-                                    )}
-                                    <label
-                                        style={{
+                                    {/* Lado Direito: Metadados e Imagem */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        <div style={{
+                                            background: '#f8fafc',
+                                            padding: '1.5rem',
+                                            borderRadius: '16px',
+                                            border: '1px solid #e2e8f0',
                                             display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '0.5rem',
-                                            padding: '0.75rem',
-                                            border: '2px dashed #ddd',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                            background: uploading ? '#f9f9f9' : 'transparent',
-                                        }}
-                                    >
-                                        <Upload size={20} />
-                                        <span>{uploading ? 'Enviando...' : 'Fazer Upload'}</span>
-                                        <input type="file" accept="image/*" onChange={handleImageUpload} hidden disabled={uploading} />
-                                    </label>
+                                            flexDirection: 'column',
+                                            gap: '1rem'
+                                        }}>
+                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: '#1e293b' }}>Imagens e Mídia</h3>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Imagem de Capa</label>
+                                                <div style={{
+                                                    position: 'relative',
+                                                    width: '100%',
+                                                    aspectRatio: '16/9',
+                                                    background: '#f1f5f9',
+                                                    borderRadius: '12px',
+                                                    overflow: 'hidden',
+                                                    marginBottom: '1rem',
+                                                    border: '2px dashed #cbd5e1',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    {(previewUrl || formData.coverImage) ? (
+                                                        <>
+                                                            <Image
+                                                                src={previewUrl || formData.coverImage}
+                                                                alt="Preview"
+                                                                fill
+                                                                style={{ objectFit: 'cover' }}
+                                                            />
+                                                            <div style={{
+                                                                position: 'absolute',
+                                                                inset: 0,
+                                                                background: 'rgba(0,0,0,0.4)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                opacity: 0,
+                                                                transition: 'opacity 0.2s',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                                                                onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+                                                                onClick={() => (document.getElementById('file-upload') as HTMLInputElement)?.click()}
+                                                            >
+                                                                <Upload color="#fff" size={32} />
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div style={{ textAlign: 'center', color: '#64748b' }}>
+                                                            <Upload size={32} style={{ margin: '0 auto 0.5rem' }} />
+                                                            <p style={{ fontSize: '0.8rem' }}>Recomendado: 1200x630px</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <label
+                                                    className="upload-btn"
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '0.5rem',
+                                                        padding: '0.75rem',
+                                                        background: uploading ? '#e2e8f0' : '#fff',
+                                                        border: '1px solid #cbd5e1',
+                                                        borderRadius: '10px',
+                                                        cursor: uploading ? 'not-allowed' : 'pointer',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.9rem',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                >
+                                                    {uploading ? 'Enviando...' : 'Alterar Imagem'}
+                                                    <input id="file-upload" type="file" accept="image/*" onChange={handleImageUpload} hidden disabled={uploading} />
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div style={{
+                                            background: '#f8fafc',
+                                            padding: '1.5rem',
+                                            borderRadius: '16px',
+                                            border: '1px solid #e2e8f0',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '1.25rem'
+                                        }}>
+                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Configurações</h3>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
+                                                    <select
+                                                        value={formData.category}
+                                                        onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
+                                                        style={{ ...inputStyle, padding: '0.75rem' }}
+                                                        onFocus={handleFocus}
+                                                        onBlur={handleBlur}
+                                                    >
+                                                        <option value="guide">Guias</option>
+                                                        <option value="marketing">Marketing</option>
+                                                        <option value="mentoring">Mentoria</option>
+                                                        <option value="engagement">Engajamento</option>
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Tempo (min)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={formData.readTime}
+                                                        onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
+                                                        min={1}
+                                                        style={{ ...inputStyle, padding: '0.75rem' }}
+                                                        onFocus={handleFocus}
+                                                        onBlur={handleBlur}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Tags (separadas por vírgula)</label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.tags.join(', ')}
+                                                    onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(t => t !== '') })}
+                                                    placeholder="marketing, vendas, growth"
+                                                    style={{ ...inputStyle, padding: '0.75rem' }}
+                                                    onFocus={handleFocus}
+                                                    onBlur={handleBlur}
+                                                />
+                                            </div>
+
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.75rem',
+                                                background: '#fff',
+                                                padding: '1rem',
+                                                borderRadius: '12px',
+                                                border: '1px solid #e2e8f0'
+                                            }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.published}
+                                                    onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                                                    id="published"
+                                                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#FFD700' }}
+                                                />
+                                                <label htmlFor="published" style={{ fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem' }}>
+                                                    Publicar imediatamente
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.published}
-                                        onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                                        id="published"
-                                    />
-                                    <label htmlFor="published" style={{ fontWeight: 600 }}>
-                                        Publicar imediatamente
-                                    </label>
-                                </div>
-
-                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '1rem',
+                                    marginTop: '2rem',
+                                    paddingTop: '1.5rem',
+                                    borderTop: '1px solid #f1f5f9',
+                                    position: 'sticky',
+                                    bottom: 0,
+                                    background: '#fff',
+                                    zIndex: 10
+                                }}>
                                     <button
                                         type="submit"
+                                        disabled={uploading}
                                         style={{
-                                            flex: 1,
+                                            flex: 2,
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '0.5rem',
-                                            padding: '0.75rem',
-                                            background: '#FFD700',
+                                            padding: '1rem',
+                                            background: uploading ? '#cbd5e1' : '#FFD700',
                                             color: '#000',
                                             border: 'none',
-                                            borderRadius: '8px',
-                                            fontWeight: 700,
-                                            cursor: 'pointer',
+                                            borderRadius: '12px',
+                                            fontWeight: 800,
+                                            cursor: uploading ? 'not-allowed' : 'pointer',
+                                            fontSize: '1rem',
+                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                            transition: 'all 0.2s'
                                         }}
                                     >
-                                        <Save size={20} /> Salvar Artigo
+                                        <Save size={20} /> {editingPost ? 'Salvar Alterações' : 'Publicar Artigo'}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setShowModal(false)}
                                         style={{
-                                            padding: '0.75rem 1.5rem',
-                                            background: '#f3f4f6',
+                                            flex: 1,
+                                            padding: '1rem',
+                                            background: '#f1f5f9',
+                                            color: '#64748b',
                                             border: 'none',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
+                                            fontWeight: 600,
                                             cursor: 'pointer',
+                                            transition: 'all 0.2s'
                                         }}
                                     >
                                         Cancelar
@@ -465,6 +631,6 @@ export default function BlogManagement() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 }
