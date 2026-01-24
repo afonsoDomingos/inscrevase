@@ -131,11 +131,11 @@ export default function SupportTicketList() {
                                         {ticket.subject}
                                     </h3>
                                     {ticket.user && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 500 }}>
                                             <User size={14} />
                                             <span>{ticket.user.name}</span>
                                             <span>•</span>
-                                            <span>{ticket.user.email}</span>
+                                            <span style={{ fontWeight: 700 }}>{ticket.user.email}</span>
                                         </div>
                                     )}
                                 </div>
@@ -146,7 +146,7 @@ export default function SupportTicketList() {
                                 </div>
                             </div>
 
-                            <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+                            <p style={{ color: '#000', fontSize: '0.95rem', marginBottom: '0.75rem', lineHeight: 1.5, fontWeight: 500 }}>
                                 {ticket.messages[0]?.content.substring(0, 150)}
                                 {ticket.messages[0]?.content.length > 150 ? '...' : ''}
                             </p>

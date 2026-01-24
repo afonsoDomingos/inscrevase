@@ -975,6 +975,23 @@ export default function AdminDashboard() {
                             gap: 1rem !important;
                         }
                     }
+
+                    /* Readability Boost */
+                    :global(.admin-main h1), :global(.admin-main h2), :global(.admin-main h3), :global(.admin-main h4) {
+                        color: #1a1a1a !important;
+                        text-shadow: none !important;
+                    }
+                    :global(.admin-main p), :global(.admin-main span:not(.gold-text)), :global(.admin-main td) {
+                        color: #333 !important;
+                    }
+                    :global(.gold-text) {
+                        color: #B8860B !important; /* Darker gold for better contrast on white/light grey */
+                        font-weight: 800 !important;
+                    }
+                    :global(.admin-main input), :global(.admin-main select) {
+                        color: #000 !important;
+                        border-color: #ccc !important;
+                    }
                 `}</style>
             </main>
         </div >

@@ -146,7 +146,7 @@ export default function AdminFinance() {
                     <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Crescimento de Receita</h3>
-                            <p style={{ fontSize: '0.8rem', color: '#888' }}>Taxas da Plataforma (MT) por mês</p>
+                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Taxas da Plataforma (MT) por mês</p>
                         </div>
                     </div>
                     <div style={{ width: '100%', height: '300px' }}>
@@ -266,12 +266,12 @@ export default function AdminFinance() {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', background: '#fcfcfc', borderBottom: '1px solid #eee' }}>
-                            <th style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem' }}>Mentor / Business</th>
-                            <th style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem' }}>Evento / Método</th>
-                            <th style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem' }}>Valor Total</th>
-                            <th style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem' }}>Taxa Plataforma</th>
-                            <th style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem' }}>Status</th>
-                            <th style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem', textAlign: 'right' }}>Ação</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Mentor / Business</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Evento / Método</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Valor Total</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Taxa Plataforma</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Status</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800, textAlign: 'right' }}>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -429,13 +429,13 @@ function StatsCard({ title, value, icon, color, subtitle }: { title: string, val
                     {icon}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.8rem', color: '#999', fontWeight: 600 }}>{title}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#000', fontWeight: 800 }}>{title}</div>
                     <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>
                         {value.toLocaleString()} <span style={{ fontSize: '0.85rem' }}>MT</span>
                     </div>
                 </div>
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#888', borderTop: '1px solid #f5f5f5', paddingTop: '0.8rem' }}>{subtitle}</p>
+            <p style={{ fontSize: '0.8rem', color: '#333', borderTop: '1px solid #f5f5f5', paddingTop: '0.8rem', fontWeight: 600 }}>{subtitle}</p>
         </div>
     );
 }

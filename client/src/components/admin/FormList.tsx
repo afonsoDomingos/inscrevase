@@ -83,12 +83,12 @@ export default function FormList() {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                            <th style={{ padding: '1rem', color: '#666' }}>Título do Evento</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Criador (Mentor)</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Status</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Data</th>
-                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Visitas</th>
-                            <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Título do Evento</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Criador (Mentor)</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Data</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Visitas</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>Ações</th>
                         </tr>
                     </thead>
                     <tbody>

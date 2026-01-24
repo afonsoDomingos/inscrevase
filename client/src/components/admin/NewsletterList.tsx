@@ -78,8 +78,8 @@ export default function NewsletterList() {
         <div style={{ padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' }}>
                 <div>
-                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '5px' }}>Assinantes da Newsletter</h2>
-                    <p style={{ color: '#666' }}>Gerencie as pessoas que se inscreveram para receber atualizações do blog.</p>
+                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '5px', color: '#000' }}>Assinantes da Newsletter</h2>
+                    <p style={{ color: '#333', fontWeight: 500 }}>Gerencie as pessoas que se inscreveram para receber atualizações do blog.</p>
                 </div>
 
                 <div style={{ display: 'flex', gap: '15px' }}>
@@ -167,10 +167,10 @@ export default function NewsletterList() {
             </div>
 
             <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 10px' }}>
-                <p style={{ fontSize: '0.85rem', color: '#666' }}>Total: <strong>{subscribers.length}</strong> assinantes</p>
+                <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Total: <strong>{subscribers.length}</strong> assinantes</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#0694a2' }}></div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Crescimento orgânico via Blog</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#000' }}>Crescimento orgânico via Blog</span>
                 </div>
             </div>
         </div>

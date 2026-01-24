@@ -238,14 +238,14 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                            <th style={{ padding: '1rem', color: '#666' }}>Nome</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Origem</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Cargo</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Plano</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Visibilidade</th>
-                            <th style={{ padding: '1rem', color: '#666' }}>Status</th>
-                            <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Online</th>
-                            <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Nome</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Origem</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Cargo</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Plano</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Visibilidade</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Online</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
