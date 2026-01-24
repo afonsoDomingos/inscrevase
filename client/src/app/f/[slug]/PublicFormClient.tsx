@@ -17,7 +17,9 @@ import {
     Linkedin,
     Globe,
     Zap,
-    ArrowRight
+    ArrowRight,
+    Phone,
+    Info
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -699,6 +701,62 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     )}
                                                     {paymentMode === 'manual' && (
                                                         <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                            {/* Manual Payment Details Card */}
+                                                            <div style={{
+                                                                background: isDark ? 'rgba(255,215,0,0.05)' : '#fff9e6',
+                                                                border: `1px solid ${primaryColor}40`,
+                                                                borderRadius: '16px',
+                                                                padding: '1.5rem',
+                                                                marginBottom: '1.5rem',
+                                                                fontSize: '0.9rem'
+                                                            }}>
+                                                                <h5 style={{ fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px', color: primaryColor }}>
+                                                                    <Info size={18} /> Detalhes para Pagamento
+                                                                </h5>
+
+                                                                <div style={{ display: 'grid', gap: '12px' }}>
+                                                                    {form.paymentConfig?.mpesaNumber && (
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> M-Pesa:</span>
+                                                                            <span style={{ fontWeight: 700 }}>{form.paymentConfig.mpesaNumber}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {form.paymentConfig?.emolaNumber && (
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> e-Mola:</span>
+                                                                            <span style={{ fontWeight: 700 }}>{form.paymentConfig.emolaNumber}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {form.paymentConfig?.bankAccount && (
+                                                                        <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '10px', marginTop: '5px' }}>
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                                                <span style={{ color: secondaryTextColor }}>Banco:</span>
+                                                                                <span style={{ fontWeight: 700, textAlign: 'right' }}>{form.paymentConfig.bankAccount}</span>
+                                                                            </div>
+                                                                            {form.paymentConfig.accountHolder && (
+                                                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                                    <span style={{ color: secondaryTextColor }}>Titular:</span>
+                                                                                    <span style={{ fontWeight: 600, fontSize: '0.8rem', textAlign: 'right' }}>{form.paymentConfig.accountHolder}</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                    {form.paymentConfig?.instructions && (
+                                                                        <div style={{
+                                                                            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                                                            padding: '10px',
+                                                                            borderRadius: '8px',
+                                                                            marginTop: '5px',
+                                                                            fontSize: '0.8rem',
+                                                                            fontStyle: 'italic',
+                                                                            color: secondaryTextColor
+                                                                        }}>
+                                                                            {form.paymentConfig.instructions}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
                                                             <div style={{ marginBottom: '1.5rem' }}>
                                                                 <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}`, borderRadius: '20px', cursor: 'pointer' }}>
                                                                     <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />

@@ -283,11 +283,21 @@ exports.getEarningsDashboard = async (req, res) => {
             return acc;
         }, { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 });
 
-        // Calculate chart data (last 30 days)
+        // Calculate chart data (last 14 days for cleaner view, with 30 day history)
         const dailyRevenue = {};
+
+        // Pre-initialize last 14 days with 0
+        for (let i = 13; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+            dailyRevenue[dateStr] = 0;
+        }
+
         transactions.forEach(tx => {
             if (tx.status === 'completed') {
                 const date = new Date(tx.createdAt).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+                // Only add if within our display window or just allow dynamic growth
                 dailyRevenue[date] = (dailyRevenue[date] || 0) + tx.amount;
             }
         });

@@ -6,13 +6,14 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     BarChart, Bar, Cell
 } from 'recharts';
-import { Loader2, TrendingUp, MapPin } from 'lucide-react';
+import { Loader2, TrendingUp, MapPin, Eye, Zap, Globe } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 export default function AnalyticsCharts() {
     const { t } = useTranslate();
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadAnalytics = async () => {
@@ -21,6 +22,7 @@ export default function AnalyticsCharts() {
                 setData(result);
             } catch (error) {
                 console.error("Dashboard analytics error:", error);
+                setError("Falha ao carregar dados analíticos.");
             } finally {
                 setLoading(false);
             }
@@ -31,58 +33,110 @@ export default function AnalyticsCharts() {
     if (loading) {
         return (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#888' }}>
-                <Loader2 className="animate-spin" style={{ margin: '0 auto', marginBottom: '1rem' }} />
-                {t('dashboard.analytics.loading')}
+                <Loader2 className="animate-spin" size={32} style={{ margin: '0 auto', marginBottom: '1rem' }} />
+                <p>{t('dashboard.analytics.loading') || 'Carregando insights...'}</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#e53e3e', border: '1px dashed #feb2b2', borderRadius: '15px' }}>
+                <p>{error}</p>
+                <button onClick={() => window.location.reload()} style={{ marginTop: '1rem', background: '#e53e3e', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>Tentar Novamente</button>
             </div>
         );
     }
 
     if (!data) return null;
 
+    // Calculate Global Conversion Rate
+    const totalVisits = data.dailyStats.reduce((acc, curr) => acc + (curr.visits || 0), 0);
+    const totalSubmissions = data.dailyStats.reduce((acc, curr) => acc + curr.count, 0);
+    const conversionRate = totalVisits > 0 ? ((totalSubmissions / totalVisits) * 100).toFixed(1) : 0;
+
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
+
+            {/* Summary Insights */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+                <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ color: '#FFD700', marginBottom: '0.5rem' }}><Eye size={20} /></div>
+                    <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600, textTransform: 'uppercase' }}>Visualizações Totais</div>
+                    <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{totalVisits}</div>
+                    <div style={{ fontSize: '0.7rem', color: '#38a169', marginTop: '0.5rem' }}>Últimos 14 dias</div>
+                </div>
+
+                <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0' }}>
+                    <div style={{ color: '#805ad5', marginBottom: '0.5rem' }}><TrendingUp size={20} /></div>
+                    <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600, textTransform: 'uppercase' }}>Taxa de Conversão</div>
+                    <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{conversionRate}%</div>
+                    <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.5rem' }}>Visitas vs Inscrições</p>
+                </div>
+
+                <div className="luxury-card" style={{ background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)', padding: '1.5rem', border: 'none', color: '#fff' }}>
+                    <div style={{ color: '#FFD700', marginBottom: '0.5rem' }}><Zap size={20} /></div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.7, fontWeight: 600, textTransform: 'uppercase' }}>Insight da Semana</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '0.5rem', lineHeight: 1.4 }}>
+                        {parseFloat(conversionRate.toString()) > 10
+                            ? "Sua conversão está excelente! Continue impulsionando tráfego."
+                            : "Dica: Melhore a descrição ou imagem de capa para aumentar conversões."}
+                    </div>
+                </div>
+            </div>
+
             {/* Chart 1: Evolution */}
             <div className="luxury-card" style={{ background: '#fff', border: 'none', padding: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-                    <div style={{ padding: '0.8rem', background: '#FFD70020', borderRadius: '10px', color: '#B8860B' }}>
-                        <TrendingUp size={24} />
-                    </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('dashboard.analytics.evolution')}</h3>
-                        <p style={{ color: '#666', fontSize: '0.85rem' }}>{t('dashboard.analytics.last7Days')}</p>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <TrendingUp size={20} className="gold-text" /> {t('dashboard.analytics.evolution')}
+                        </h3>
+                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Tráfego e Conversões (Últimos 14 dias)</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 600 }}>
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FFD700' }} /> Inscrições
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 600 }}>
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ddd' }} /> Visitas
+                        </div>
                     </div>
                 </div>
 
                 <div style={{ height: '300px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={data.dailyStats}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                             <XAxis
                                 dataKey="date"
-                                tick={{ fontSize: 12, fill: '#888' }}
-                                stroke="#ddd"
+                                tick={{ fontSize: 11, fill: '#888' }}
+                                axisLine={false}
+                                tickLine={false}
                                 tickFormatter={(value) => new Date(value).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
                             />
-                            <YAxis tick={{ fontSize: 12, fill: '#888' }} stroke="#ddd" />
+                            <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
                             <Tooltip
-                                contentStyle={{ background: '#000', border: 'none', borderRadius: '8px', color: '#fff' }}
-                                itemStyle={{ color: '#FFD700' }}
-                                labelStyle={{ color: '#888', marginBottom: '0.5rem' }}
+                                contentStyle={{ background: '#000', border: 'none', borderRadius: '15px', color: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}
+                                itemStyle={{ fontSize: '0.8rem' }}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="visits"
+                                name="Visitas"
+                                stroke="#ddd"
+                                strokeWidth={2}
+                                dot={false}
                             />
                             <Line
                                 type="monotone"
                                 dataKey="count"
-                                stroke="url(#gradientStroke)"
+                                name="Inscrições"
+                                stroke="#FFD700"
                                 strokeWidth={4}
                                 dot={{ fill: '#FFD700', strokeWidth: 0, r: 4 }}
                                 activeDot={{ r: 8, fill: '#fff', stroke: '#FFD700', strokeWidth: 2 }}
                             />
-                            <defs>
-                                <linearGradient id="gradientStroke" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0%" stopColor="#FFD700" />
-                                    <stop offset="100%" stopColor="#B8860B" />
-                                </linearGradient>
-                            </defs>
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -96,7 +150,7 @@ export default function AnalyticsCharts() {
                     </div>
                     <div>
                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('dashboard.analytics.participantOrigin')}</h3>
-                        <p style={{ color: '#666', fontSize: '0.85rem' }}>{t('dashboard.analytics.topProvincesHelp')}</p>
+                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Distribuição geográfica por província</p>
                     </div>
                 </div>
 
@@ -117,7 +171,7 @@ export default function AnalyticsCharts() {
                                     cursor={{ fill: 'transparent' }}
                                     contentStyle={{ background: '#000', border: 'none', borderRadius: '8px', color: '#fff' }}
                                 />
-                                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
+                                <Bar dataKey="value" name="Participantes" radius={[0, 4, 4, 0]} barSize={20}>
                                     {data.geoStats.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#FFD700' : '#E5C100'} />
                                     ))}
@@ -127,8 +181,9 @@ export default function AnalyticsCharts() {
                     </div>
                 ) : (
                     <div style={{ textAlign: 'center', padding: '2rem', color: '#999', border: '2px dashed #eee', borderRadius: '12px' }}>
-                        <p>{t('dashboard.analytics.noGeoData')}</p>
-                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{t('dashboard.analytics.geoDataHelp')}</p>
+                        <Globe size={48} style={{ margin: '0 auto 1rem', opacity: 0.2 }} />
+                        <p>{t('dashboard.analytics.noGeoData') || 'Sem dados geográficos ainda.'}</p>
+                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{t('dashboard.analytics.geoDataHelp') || 'Os dados aparecerão quando os participantes preencherem campos de morada.'}</p>
                     </div>
                 )}
             </div>

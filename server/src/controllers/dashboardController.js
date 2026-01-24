@@ -110,33 +110,46 @@ exports.getMentorStats = async (req, res) => {
     }
 };
 
+const Visit = require('../models/Visit');
+
 exports.getAnalytics = async (req, res) => {
     try {
         const userId = req.user.id;
         const myForms = await Form.find({ creator: userId });
         const formIds = myForms.map(f => f._id);
+        const slugs = myForms.map(f => f.slug);
+        const formPages = slugs.map(s => `/f/${s}`);
+
         const formsMap = {};
         myForms.forEach(f => { formsMap[f._id.toString()] = f; });
 
-        // Get submissions from the last 30 days
+        // Get window for analytics (last 30 days)
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        const submissions = await Submission.find({
-            form: { $in: formIds },
-            submittedAt: { $gte: thirtyDaysAgo }
-        }).lean(); // Use lean for performance
+        // Fetch data in parallel
+        const [submissions, visits] = await Promise.all([
+            Submission.find({
+                form: { $in: formIds },
+                submittedAt: { $gte: thirtyDaysAgo }
+            }).lean(),
+            Visit.find({
+                page: { $in: formPages },
+                timestamp: { $gte: thirtyDaysAgo }
+            }).lean()
+        ]);
 
         // 1. Daily Stats (Evolution)
         const dailyMap = {};
-        // Initialize last 7 days with 0
-        for (let i = 6; i >= 0; i--) {
+        // Initialize last 14 days with 0 (increased from 7 for better visibility)
+        for (let i = 13; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
             const dateStr = d.toISOString().split('T')[0];
-            dailyMap[dateStr] = { date: dateStr, count: 0, revenue: 0 };
+            dailyMap[dateStr] = { date: dateStr, count: 0, visits: 0, revenue: 0 };
         }
 
+        // Process Submissions
         submissions.forEach(sub => {
             const dateStr = sub.submittedAt.toISOString().split('T')[0];
             if (dailyMap[dateStr]) {
@@ -147,6 +160,14 @@ exports.getAnalytics = async (req, res) => {
                         dailyMap[dateStr].revenue += (form.paymentConfig.price || 0);
                     }
                 }
+            }
+        });
+
+        // Process Visits
+        visits.forEach(v => {
+            const dateStr = v.timestamp.toISOString().split('T')[0];
+            if (dailyMap[dateStr]) {
+                dailyMap[dateStr].visits += 1;
             }
         });
 
@@ -161,13 +182,17 @@ exports.getAnalytics = async (req, res) => {
         MOZ_PROVINCES.forEach(p => geoMap[p] = 0);
 
         submissions.forEach(sub => {
-            // Search in all values of the data map
             if (sub.data) {
-                const values = Object.values(sub.data).map(v => String(v).toLowerCase());
+                // Check Map values
+                let found = false;
+                const searchValues = sub.data instanceof Map ? Array.from(sub.data.values()) : Object.values(sub.data);
+
+                const values = searchValues.map(v => String(v).toLowerCase());
                 for (const p of MOZ_PROVINCES) {
                     if (values.some(v => v.includes(p.toLowerCase()))) {
                         geoMap[p] += 1;
-                        break; // Count user for only one province if multiple match (simple heuristic)
+                        found = true;
+                        break;
                     }
                 }
             }
@@ -181,7 +206,7 @@ exports.getAnalytics = async (req, res) => {
         res.json({ dailyStats, geoStats });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Error fetching analytics' });
+        console.error("Mentor Analytics Error:", err);
+        res.status(500).json({ message: 'Error fetching analytics', error: err.message });
     }
 };

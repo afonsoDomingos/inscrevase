@@ -30,7 +30,7 @@ export interface RecentForm {
 }
 
 export interface AnalyticsData {
-    dailyStats: { date: string; count: number; revenue: number }[];
+    dailyStats: { date: string; count: number; visits: number; revenue: number }[];
     geoStats: { name: string; value: number }[];
 }
 
