@@ -43,7 +43,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             if (currentUser && data.likes?.includes(currentUser.id)) {
                 setIsLiked(true);
             }
-        } catch (_error) {
+        } catch {
             console.error('Error loading post');
         } finally {
             setLoading(false);
@@ -72,7 +72,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
             const response = await blogService.likePost(token, post._id);
             setLikeCount(response.likes.length);
-        } catch (_error) {
+        } catch {
             // Revert on error
             setIsLiked(!isLiked);
             setLikeCount(prev => isLiked ? prev + 1 : prev - 1);
@@ -102,7 +102,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             setPost(prev => prev ? { ...prev, comments } : null);
             setCommentText('');
             toast.success('Comentário enviado!');
-        } catch (_error) {
+        } catch {
             toast.error('Erro ao enviar comentário');
         } finally {
             setSubmittingComment(false);
@@ -260,7 +260,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                                 h2: ({ ...props }) => <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '2.5rem', marginBottom: '1.2rem', color: '#0f172a' }} {...props} />,
                                 h3: ({ ...props }) => <h3 style={{ fontSize: '1.7rem', fontWeight: 700, marginTop: '2rem', marginBottom: '1rem', color: '#1e293b' }} {...props} />,
                                 p: ({ ...props }) => <p style={{ fontSize: '1.25rem', lineHeight: '1.9', marginBottom: '1.8rem', color: '#334155' }} {...props} />,
-                                img: ({ ...props }) => <img {...props} style={{ maxWidth: '100%', borderRadius: '16px', margin: '2rem 0', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />,
+                                img: ({ ...props }) => <img alt="" {...props} style={{ maxWidth: '100%', borderRadius: '16px', margin: '2rem 0', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />,
                                 blockquote: ({ ...props }) => (
                                     <blockquote style={{ borderLeft: '6px solid #FFD700', padding: '30px', fontStyle: 'italic', fontSize: '1.4rem', color: '#475569', margin: '3rem 0', background: '#f8fafc', borderRadius: '0 16px 16px 0' }} {...props} />
                                 )
