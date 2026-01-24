@@ -111,10 +111,19 @@ router.post('/', protect, adminOnly, async (req, res) => {
         res.status(201).json(savedPost);
     } catch (error) {
         console.error('Error creating blog post:', error);
+
+        // Handle MongoDB duplicate key error
         if (error.code === 11000) {
-            return res.status(400).json({ message: 'Já existe um artigo com este slug' });
+            return res.status(400).json({ message: 'Já existe um artigo com este slug (título duplicado)' });
         }
-        res.status(500).json({ message: 'Erro ao criar artigo' });
+
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: `Erro de validação: ${messages.join(', ')}` });
+        }
+
+        res.status(500).json({ message: 'Erro interno ao criar artigo. Verifique se todos os campos estão preenchidos corretamente.' });
     }
 });
 
@@ -143,6 +152,12 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
         res.json(updatedPost);
     } catch (error) {
         console.error('Error updating blog post:', error);
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: `Erro de validação: ${messages.join(', ')}` });
+        }
+
         res.status(500).json({ message: 'Erro ao atualizar artigo' });
     }
 });

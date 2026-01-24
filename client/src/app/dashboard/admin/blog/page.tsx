@@ -508,11 +508,11 @@ export default function BlogManagement() {
 
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
+                                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>Categoria</label>
                                                     <select
                                                         value={formData.category}
                                                         onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
-                                                        style={{ ...inputStyle, padding: '0.75rem' }}
+                                                        style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
                                                         onFocus={handleFocus}
                                                         onBlur={handleBlur}
                                                     >
@@ -524,13 +524,13 @@ export default function BlogManagement() {
                                                 </div>
 
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Tempo (min)</label>
+                                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>Tempo (min)</label>
                                                     <input
                                                         type="number"
                                                         value={formData.readTime}
                                                         onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
                                                         min={1}
-                                                        style={{ ...inputStyle, padding: '0.75rem' }}
+                                                        style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
                                                         onFocus={handleFocus}
                                                         onBlur={handleBlur}
                                                     />
@@ -538,13 +538,13 @@ export default function BlogManagement() {
                                             </div>
 
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Tags (separadas por vírgula)</label>
+                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>Tags (separadas por vírgula)</label>
                                                 <input
                                                     type="text"
                                                     value={formData.tags.join(', ')}
                                                     onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(t => t !== '') })}
                                                     placeholder="marketing, vendas, growth"
-                                                    style={{ ...inputStyle, padding: '0.75rem' }}
+                                                    style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
                                                     onFocus={handleFocus}
                                                     onBlur={handleBlur}
                                                 />
@@ -557,7 +557,8 @@ export default function BlogManagement() {
                                                 background: '#fff',
                                                 padding: '1rem',
                                                 borderRadius: '12px',
-                                                border: '1px solid #e2e8f0'
+                                                border: '1px solid #e2e8f0',
+                                                marginTop: '0.5rem'
                                             }}>
                                                 <input
                                                     type="checkbox"
@@ -566,7 +567,7 @@ export default function BlogManagement() {
                                                     id="published"
                                                     style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#FFD700' }}
                                                 />
-                                                <label htmlFor="published" style={{ fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem' }}>
+                                                <label htmlFor="published" style={{ fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', color: '#1e293b' }}>
                                                     Publicar imediatamente
                                                 </label>
                                             </div>

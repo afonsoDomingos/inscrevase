@@ -66,7 +66,7 @@ const BlogPostSchema = new Schema(
 );
 
 // Auto-generate slug from title if not provided
-BlogPostSchema.pre('save', function (next) {
+BlogPostSchema.pre('validate', function (next) {
     if (!this.slug && this.title) {
         this.slug = this.title
             .toLowerCase()
