@@ -2,6 +2,7 @@ const { Router } = require('express');
 const BlogPost = require('../models/BlogPost');
 const { authMiddleware: protect, adminMiddleware: adminOnly } = require('../middleware/authMiddleware');
 const multer = require('multer');
+const path = require('path');
 const { uploadToCloudinary } = require('../config/cloudinaryService');
 
 const router = Router();
