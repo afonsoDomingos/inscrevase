@@ -112,54 +112,68 @@ exports.updateForm = async (req, res) => {
         const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
 
         console.log(`--- Atualizando Formulário ${req.params.id} ---`);
-        if (coverImage) console.log(`Nova Capa: ${coverImage}`);
-        if (logo) console.log(`Novo Logo: ${logo}`);
-        if (onlineLink) console.log(`Novo Link Online: ${onlineLink}`);
 
-        if (title) form.title = title;
+        // Basic Fields
+        if (title !== undefined) form.title = title;
         if (description !== undefined) form.description = description;
-        if (fields) form.fields = fields;
-        if (theme) form.theme = theme;
+        if (fields !== undefined) form.fields = fields;
         if (active !== undefined) form.active = active;
         if (coverImage !== undefined) form.coverImage = coverImage;
         if (coverImageMode !== undefined) form.coverImageMode = coverImageMode;
         if (logo !== undefined) form.logo = logo;
-        if (capacity !== undefined) form.capacity = capacity ? parseInt(capacity) : undefined;
 
+        // Event Info
         if (location !== undefined) form.location = location;
         if (onlineLink !== undefined) form.onlineLink = onlineLink;
         if (eventTime !== undefined) form.eventTime = eventTime;
         if (eventType !== undefined) form.eventType = eventType;
         if (category !== undefined) form.category = category;
+        if (eventDate !== undefined) form.eventDate = (eventDate === "" || eventDate === null) ? undefined : eventDate;
+
+        // Capacity - allow clearing with null or empty string
+        if (capacity !== undefined) {
+            form.capacity = (capacity === "" || capacity === null) ? undefined : parseInt(capacity);
+        }
+
+        // Video & Display
         if (waitingVideo !== undefined) form.waitingVideo = waitingVideo;
         if (showVideoOnStart !== undefined) form.showVideoOnStart = showVideoOnStart;
         if (videoUrl !== undefined) form.videoUrl = videoUrl;
+
+        // Hub Customization
         if (hubBackgroundImage !== undefined) form.hubBackgroundImage = hubBackgroundImage;
         if (hubButtonColor !== undefined) form.hubButtonColor = hubButtonColor;
         if (showHubButton !== undefined) form.showHubButton = showHubButton;
         if (welcomeMessage !== undefined) form.welcomeMessage = welcomeMessage;
         if (welcomeVideo !== undefined) form.welcomeVideo = welcomeVideo;
-        if (customFields) form.customFields = customFields;
-        if (agenda) form.agenda = agenda;
-        if (materials) form.materials = materials;
-        if (certificateConfig) form.certificateConfig = certificateConfig;
 
-        if (whatsappConfig) {
-            form.whatsappConfig = {
-                phoneNumber: whatsappConfig.phoneNumber !== undefined ? whatsappConfig.phoneNumber : form.whatsappConfig?.phoneNumber,
-                message: whatsappConfig.message !== undefined ? whatsappConfig.message : form.whatsappConfig?.message,
-                communityUrl: whatsappConfig.communityUrl !== undefined ? whatsappConfig.communityUrl : form.whatsappConfig?.communityUrl
+        // Arrays - replace if provided
+        if (customFields !== undefined) form.customFields = customFields;
+        if (agenda !== undefined) form.agenda = agenda;
+        if (materials !== undefined) form.materials = materials;
+
+        // Theme - Merge to avoid wiping advanced settings
+        if (theme) {
+            form.theme = {
+                ...form.theme?.toObject(),
+                ...theme
             };
         }
 
-        // Handle Date Upgrade
-        if (eventDate !== undefined) {
-            form.eventDate = eventDate === "" ? undefined : eventDate;
+        // WhatsApp - Merge
+        if (whatsappConfig) {
+            form.whatsappConfig = {
+                ...form.whatsappConfig?.toObject(),
+                ...whatsappConfig
+            };
         }
 
-        // Handle Payment Config
+        // Payment Config - Merge
         if (paymentConfig) {
-            let sanitizedConfig = { ...paymentConfig };
+            let sanitizedConfig = {
+                ...form.paymentConfig?.toObject(),
+                ...paymentConfig
+            };
             if (sanitizedConfig.enabled) {
                 const price = parseFloat(sanitizedConfig.price);
                 sanitizedConfig.price = isNaN(price) ? 0 : price;
@@ -167,11 +181,24 @@ exports.updateForm = async (req, res) => {
             form.paymentConfig = sanitizedConfig;
         }
 
+        // Certificate Config - Merge
+        if (certificateConfig) {
+            form.certificateConfig = {
+                ...form.certificateConfig?.toObject(),
+                ...certificateConfig
+            };
+        }
+
         await form.save();
         console.log('Formulário salvo com sucesso!');
         res.json(form);
     } catch (err) {
-        console.error("Update Form Error:", err);
+        console.error("Update Form Error Details:", {
+            message: err.message,
+            stack: err.stack,
+            id: req.params.id,
+            body: req.body
+        });
         res.status(500).json({ message: 'Erro ao atualizar formulário', error: err.message });
     }
 };

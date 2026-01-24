@@ -209,7 +209,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     fontFamily: theme.fontFamily // Use theme.fontFamily directly
                 },
                 paymentConfig,
-                capacity: capacity ? parseInt(capacity) : undefined,
+                capacity: capacity ? parseInt(capacity) : null,
                 location,
                 onlineLink,
                 eventTime,

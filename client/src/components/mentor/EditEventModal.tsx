@@ -350,7 +350,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 eventTime,
                 eventType,
                 category,
-                capacity: capacity ? parseInt(capacity) : undefined,
+                capacity: capacity ? parseInt(capacity) : null,
                 location,
                 onlineLink,
                 fields: cleanedFields as FormModel['fields'],
@@ -372,9 +372,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 waitingVideo,
                 showVideoOnStart,
                 videoUrl,
-                customFields,
-                agenda,
-                materials,
+                customFields: customFields.filter(f => f.label.trim() && f.value.trim()),
+                agenda: agenda.filter(a => a.time.trim() && a.activity.trim()),
+                materials: materials.filter(m => m.name.trim() && m.url.trim()),
                 certificateConfig,
                 active: form.active
             });
