@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { BlogPost, blogService } from '@/lib/blogService';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
     Calendar, User, ArrowLeft, Clock, Facebook, Twitter, Linkedin,
-    Heart, MessageCircle, Share2, Copy, Check, Eye, Send, Lock
+    Heart, MessageCircle, Copy, Check, Eye, Send, Lock
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { notFound } from 'next/navigation';
@@ -33,13 +33,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         restDelta: 0.001
     });
 
-    useEffect(() => {
-        const currentUser = authService.getCurrentUser();
-        setUser(currentUser);
-        fetchPost();
-    }, [params.slug]);
-
-    const fetchPost = async () => {
+    const fetchPost = useCallback(async () => {
         try {
             const data = await blogService.getPostBySlug(params.slug);
             setPost(data);
@@ -49,12 +43,18 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             if (currentUser && data.likes?.includes(currentUser.id)) {
                 setIsLiked(true);
             }
-        } catch (error) {
-            console.error('Error loading post:', error);
+        } catch (_error) {
+            console.error('Error loading post');
         } finally {
             setLoading(false);
         }
-    };
+    }, [params.slug]);
+
+    useEffect(() => {
+        const currentUser = authService.getCurrentUser();
+        setUser(currentUser);
+        fetchPost();
+    }, [fetchPost]);
 
     const handleLike = async () => {
         const token = Cookies.get('token');
@@ -72,7 +72,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
             const response = await blogService.likePost(token, post._id);
             setLikeCount(response.likes.length);
-        } catch (error) {
+        } catch (_error) {
             // Revert on error
             setIsLiked(!isLiked);
             setLikeCount(prev => isLiked ? prev + 1 : prev - 1);
@@ -102,7 +102,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             setPost(prev => prev ? { ...prev, comments } : null);
             setCommentText('');
             toast.success('Comentário enviado!');
-        } catch (error) {
+        } catch (_error) {
             toast.error('Erro ao enviar comentário');
         } finally {
             setSubmittingComment(false);
@@ -169,7 +169,6 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     icon={<Heart size={20} fill={isLiked ? "#ef4444" : "none"} color={isLiked ? "#ef4444" : "#64748b"} />}
                     label={likeCount.toString()}
                     onClick={handleLike}
-                    active={isLiked}
                 />
                 <InteractionButton
                     icon={<MessageCircle size={20} color="#64748b" />}
@@ -435,7 +434,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     );
 }
 
-function InteractionButton({ icon, label, onClick, active }: { icon: React.ReactNode, label?: string, onClick: () => void, active?: boolean }) {
+function InteractionButton({ icon, label, onClick }: { icon: React.ReactNode, label?: string, onClick: () => void }) {
     return (
         <button
             onClick={onClick}

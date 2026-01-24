@@ -100,7 +100,7 @@ export const blogService = {
     },
 
     // Add comment to a post
-    async addComment(token: string, id: string, commentData: { text: string; userName?: string; userAvatar?: string }): Promise<any> {
+    async addComment(token: string, id: string, commentData: { text: string; userName?: string; userAvatar?: string }): Promise<BlogPost['comments']> {
         const response = await axios.post(`${API_URL}/blog/${id}/comment`, commentData, {
             headers: { Authorization: `Bearer ${token}` },
         });

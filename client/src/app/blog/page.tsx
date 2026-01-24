@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Calendar, TrendingUp, Users, Lightbulb, Eye, Heart, MessageCircle, ArrowRight } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Lightbulb, Eye, Heart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { blogService, BlogPost } from '@/lib/blogService';
 import { motion } from 'framer-motion';
