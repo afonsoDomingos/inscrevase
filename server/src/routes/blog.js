@@ -123,7 +123,11 @@ router.post('/', protect, adminOnly, async (req, res) => {
             return res.status(400).json({ message: `Erro de validação: ${messages.join(', ')}` });
         }
 
-        res.status(500).json({ message: 'Erro interno ao criar artigo. Verifique se todos os campos estão preenchidos corretamente.' });
+        res.status(500).json({
+            message: 'Erro interno ao criar artigo no servidor.',
+            error: error.message,
+            details: error.name
+        });
     }
 });
 
