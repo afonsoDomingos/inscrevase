@@ -66,7 +66,7 @@ const BlogPostSchema = new Schema(
 );
 
 // Auto-generate slug from title if not provided
-BlogPostSchema.pre('validate', function (next) {
+BlogPostSchema.pre('validate', function () {
     if (!this.slug && this.title) {
         this.slug = this.title
             .toLowerCase()
@@ -77,7 +77,6 @@ BlogPostSchema.pre('validate', function (next) {
             .replace(/-+/g, '-')
             .trim();
     }
-    next();
 });
 
 module.exports = models.BlogPost || model('BlogPost', BlogPostSchema);
