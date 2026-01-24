@@ -146,9 +146,9 @@ exports.updateForm = async (req, res) => {
 
         if (whatsappConfig) {
             form.whatsappConfig = {
-                phoneNumber: whatsappConfig.phoneNumber || form.whatsappConfig?.phoneNumber,
-                message: whatsappConfig.message || form.whatsappConfig?.message,
-                communityUrl: whatsappConfig.communityUrl || form.whatsappConfig?.communityUrl
+                phoneNumber: whatsappConfig.phoneNumber !== undefined ? whatsappConfig.phoneNumber : form.whatsappConfig?.phoneNumber,
+                message: whatsappConfig.message !== undefined ? whatsappConfig.message : form.whatsappConfig?.message,
+                communityUrl: whatsappConfig.communityUrl !== undefined ? whatsappConfig.communityUrl : form.whatsappConfig?.communityUrl
             };
         }
 
