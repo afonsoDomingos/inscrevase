@@ -26,6 +26,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     const [likeCount, setLikeCount] = useState(0);
     const [commentText, setCommentText] = useState('');
     const [submittingComment, setSubmittingComment] = useState(false);
+    const [newsletterEmail, setNewsletterEmail] = useState('');
+    const [submittingNewsletter, setSubmittingNewsletter] = useState(false);
 
     // Scroll progress bar
     const { scrollYProgress } = useScroll();
@@ -108,6 +110,22 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             toast.error('Erro ao enviar comentário');
         } finally {
             setSubmittingComment(false);
+        }
+    };
+
+    const handleNewsletterSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newsletterEmail.trim()) return;
+
+        setSubmittingNewsletter(true);
+        try {
+            const response = await blogService.subscribeToNewsletter(newsletterEmail);
+            toast.success(response.message);
+            setNewsletterEmail('');
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Erro ao realizar inscrição');
+        } finally {
+            setSubmittingNewsletter(false);
         }
     };
 
@@ -452,14 +470,27 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 {/* Sidebar (Tablet/Desktop) */}
                 <aside style={{ display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'block' }}>
                     <div style={{ position: 'sticky', top: '100px' }}>
-                        <div style={{ padding: '30px', background: '#0f172a', borderRadius: '24px', color: '#fff', marginBottom: '30px' }}>
+                        <form onSubmit={handleNewsletterSubmit} style={{ padding: '30px', background: '#0f172a', borderRadius: '24px', color: '#fff', marginBottom: '30px' }}>
                             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '15px', color: '#FFD700' }}>Inscreva-se</h3>
                             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '25px' }}>
                                 Receba as melhores estratégias de eventos e marketing direto no seu e-mail.
                             </p>
-                            <input type="email" placeholder="Seu melhor e-mail" style={{ width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', marginBottom: '15px', outline: 'none' }} />
-                            <button style={{ width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#FFD700', color: '#000', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>Inscrição Premium</button>
-                        </div>
+                            <input
+                                type="email"
+                                value={newsletterEmail}
+                                onChange={(e) => setNewsletterEmail(e.target.value)}
+                                placeholder="Seu melhor e-mail"
+                                required
+                                style={{ width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', marginBottom: '15px', outline: 'none' }}
+                            />
+                            <button
+                                type="submit"
+                                disabled={submittingNewsletter}
+                                style={{ width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#FFD700', color: '#000', fontWeight: 800, cursor: submittingNewsletter ? 'not-allowed' : 'pointer', fontSize: '1rem', opacity: submittingNewsletter ? 0.7 : 1 }}
+                            >
+                                {submittingNewsletter ? 'Inscrevendo...' : 'Inscrição Premium'}
+                            </button>
+                        </form>
 
                         {post.tags && post.tags.length > 0 && (
                             <div style={{ padding: '30px', background: '#f8fafc', borderRadius: '24px' }}>

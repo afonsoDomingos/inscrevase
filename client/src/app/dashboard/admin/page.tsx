@@ -8,6 +8,7 @@ import FormList from '@/components/admin/FormList';
 import SubmissionList from '@/components/admin/SubmissionList';
 import SupportTicketList from '@/components/admin/SupportTicketList';
 import AdminFinance from '@/components/admin/AdminFinance';
+import NewsletterList from '@/components/admin/NewsletterList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper } from 'lucide-react';
@@ -24,7 +25,7 @@ import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -205,6 +206,7 @@ export default function AdminDashboard() {
         { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
         { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
         { id: 'finance', label: t('dashboard.finance.title'), icon: <Wallet size={20} /> },
+        { id: 'newsletter', label: 'Newsletter', icon: <Mail size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ];
 
@@ -884,6 +886,12 @@ export default function AdminDashboard() {
                     {activeTab === 'finance' && (
                         <motion.div key="finance" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                             <AdminFinance />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'newsletter' && (
+                        <motion.div key="newsletter" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <NewsletterList />
                         </motion.div>
                     )}
                 </AnimatePresence>

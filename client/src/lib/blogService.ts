@@ -106,4 +106,10 @@ export const blogService = {
         });
         return response.data;
     },
+
+    // Subscribe to newsletter
+    async subscribeToNewsletter(email: string): Promise<{ message: string }> {
+        const response = await axios.post(`${API_URL}/newsletter/subscribe`, { email });
+        return response.data;
+    },
 };
