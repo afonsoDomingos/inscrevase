@@ -106,7 +106,7 @@ export default function BlogManagement() {
             fetchPosts();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-            console.error(error);
+            console.error('Erro detalhado:', error.response?.data);
             toast.error(error.response?.data?.message || 'Erro ao salvar artigo');
         }
     };

@@ -30,7 +30,7 @@ const BlogPostSchema = new Schema(
         },
         coverImage: {
             type: String,
-            required: true,
+            default: '',
         },
         author: {
             name: {
