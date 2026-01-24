@@ -60,10 +60,15 @@ const FormSchema = new mongoose.Schema({
         enabled: { type: Boolean, default: false },
         price: { type: Number },
         currency: { type: String, default: 'MT' },
-        mpesaNumber: { type: String },
-        emolaNumber: { type: String },
+        mpesaNumber: { type: String }, // Keep for backward compatibility
+        emolaNumber: { type: String }, // Keep for backward compatibility
         bankAccount: { type: String },
         accountHolder: { type: String },
+        manualMethods: [{
+            label: { type: String, required: true },
+            value: { type: String, required: true },
+            icon: { type: String } // 'phone', 'bank', 'generic'
+        }],
         instructions: { type: String },
         requireProof: { type: Boolean, default: false },
         stripeEnabled: { type: Boolean, default: false },

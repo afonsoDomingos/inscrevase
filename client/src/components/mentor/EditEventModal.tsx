@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -145,7 +145,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         requireProof: false,
         stripeEnabled: false,
         stripePriceId: '',
-        stripeProductId: ''
+        stripeProductId: '',
+        manualMethods: [] as { label: string; value: string; icon?: string }[]
     });
 
     // Hub Customization State
@@ -222,7 +223,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     requireProof: form.paymentConfig?.requireProof || false,
                     stripeEnabled: form.paymentConfig?.stripeEnabled || false,
                     stripePriceId: form.paymentConfig?.stripePriceId || '',
-                    stripeProductId: form.paymentConfig?.stripeProductId || ''
+                    stripeProductId: form.paymentConfig?.stripeProductId || '',
+                    manualMethods: form.paymentConfig?.manualMethods || []
                 });
             }
             if (form.theme) {
@@ -971,7 +973,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 borderRadius: '16px',
                                                 padding: '1.5rem',
                                                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                                border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.1)' : '#eee'}`,
+                                                border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.1)' : '#eee'} `,
                                                 color: theme.style === 'luxury' ? '#fff' : '#000',
                                                 marginTop: '0'
                                             }}>
@@ -985,7 +987,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                     width: '100%',
                                                     padding: '0.8rem',
                                                     borderRadius: '8px',
-                                                    background: `linear-gradient(45deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
+                                                    background: `linear - gradient(45deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
                                                     color: '#000',
                                                     border: 'none',
                                                     fontWeight: 700,
@@ -1115,75 +1117,119 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem' }}>{t('events.paymentMethodsHelp')}</p>
 
                                                         <div style={{ display: 'grid', gap: '1rem' }}>
-                                                            {/* Titular da Conta */}
-                                                            <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
-                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                                                                        <circle cx="12" cy="7" r="4" />
-                                                                    </svg>
-                                                                    {t('events.accountHolderLabel')}
+                                                            {/* Bank Account */}
+                                                            <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '1rem', fontSize: '0.85rem', color: '#1a1a1b' }}>
+                                                                    <Database size={16} className="gold-text" /> {t('events.bankAccount')}
                                                                 </label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.accountHolder || ''}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, accountHolder: e.target.value })}
-                                                                    placeholder="Ex: Nome do Titular da Conta"
-                                                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                                />
+                                                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={paymentConfig.accountHolder || ''}
+                                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, accountHolder: e.target.value })}
+                                                                        placeholder={t('events.accountHolderPlaceholder')}
+                                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        value={paymentConfig.bankAccount || ''}
+                                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, bankAccount: e.target.value })}
+                                                                        placeholder={t('events.bankAccountPlaceholder')}
+                                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                                    />
+                                                                </div>
                                                             </div>
 
-                                                            {/* NIB / Conta Bancária */}
-                                                            <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
-                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                        <rect x="2" y="5" width="20" height="14" rx="2" />
-                                                                        <line x1="2" y1="10" x2="22" y2="10" />
-                                                                    </svg>
-                                                                    NIB / Conta Bancária
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.bankAccount || ''}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, bankAccount: e.target.value })}
-                                                                    placeholder="Ex: 0000 0000 0000 0000 0000 0000 0"
-                                                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                                />
-                                                            </div>
+                                                            {/* Dynamic Manual Methods (Global Support) */}
+                                                            <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '0.85rem', color: '#1a1a1b' }}>
+                                                                        <Coins size={16} className="gold-text" /> Pagamentos Customizados
+                                                                    </label>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setPaymentConfig({
+                                                                            ...paymentConfig,
+                                                                            manualMethods: [...(paymentConfig.manualMethods || []), { label: '', value: '', icon: 'phone' }]
+                                                                        })}
+                                                                        style={{ padding: '4px 10px', fontSize: '0.7rem', fontWeight: 700, borderRadius: '20px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                                    >
+                                                                        <Plus size={12} /> Adicionar Método
+                                                                    </button>
+                                                                </div>
 
-                                                            {/* MPesa */}
-                                                            <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
-                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-                                                                    </svg>
-                                                                    M-Pesa (Número)
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.mpesaNumber || ''}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, mpesaNumber: e.target.value })}
-                                                                    placeholder="Ex: +258 84 123 4567"
-                                                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                                />
-                                                            </div>
+                                                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                                                    {paymentConfig.manualMethods?.length === 0 && (
+                                                                        <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', fontStyle: 'italic', padding: '1rem' }}>
+                                                                            Nenhum método personalizado. Ex: M-Pesa, MTN, PayPal Manual, etc.
+                                                                        </p>
+                                                                    )}
 
-                                                            {/* eMola */}
-                                                            <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '12px', border: '1px solid #eee' }}>
-                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                        <circle cx="12" cy="12" r="10" />
-                                                                        <path d="M12 6v6l4 2" />
-                                                                    </svg>
-                                                                    e-Mola (Número)
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.emolaNumber || ''}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, emolaNumber: e.target.value })}
-                                                                    placeholder="Ex: +258 86 123 4567"
-                                                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                                />
+                                                                    {paymentConfig.manualMethods?.map((method, idx) => (
+                                                                        <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#f9f9f9', padding: '10px', borderRadius: '12px' }}>
+                                                                            <div style={{ flex: 1, display: 'grid', gap: '8px' }}>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    placeholder="Nome (Ex: M-Pesa, Orange Money)"
+                                                                                    value={method.label}
+                                                                                    onChange={(e) => {
+                                                                                        const newMethods = [...paymentConfig.manualMethods];
+                                                                                        newMethods[idx].label = e.target.value;
+                                                                                        setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                    }}
+                                                                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                                                                />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    placeholder="Número ou Identificador"
+                                                                                    value={method.value}
+                                                                                    onChange={(e) => {
+                                                                                        const newMethods = [...paymentConfig.manualMethods];
+                                                                                        newMethods[idx].value = e.target.value;
+                                                                                        setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                    }}
+                                                                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                                                                />
+                                                                            </div>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    const newMethods = paymentConfig.manualMethods.filter((_, i) => i !== idx);
+                                                                                    setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                }}
+                                                                                style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+                                                                            >
+                                                                                <Minus size={14} />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+
+                                                                    {/* Backward Compatibility Checkbox / Simple Fields if needed */}
+                                                                    {(paymentConfig.mpesaNumber || paymentConfig.emolaNumber) && (
+                                                                        <div style={{ padding: '10px', border: '1px dashed #FFD700', borderRadius: '12px', background: '#fffef0' }}>
+                                                                            <p style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600, marginBottom: '8px' }}>MÉTODOS LEGADOS (MOÇAMBIQUE):</p>
+                                                                            {paymentConfig.mpesaNumber && <div style={{ fontSize: '0.8rem' }}><strong>M-Pesa:</strong> {paymentConfig.mpesaNumber}</div>}
+                                                                            {paymentConfig.emolaNumber && <div style={{ fontSize: '0.8rem' }}><strong>e-Mola:</strong> {paymentConfig.emolaNumber}</div>}
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    const newMethods = [...(paymentConfig.manualMethods || [])];
+                                                                                    if (paymentConfig.mpesaNumber) newMethods.push({ label: 'M-Pesa', value: paymentConfig.mpesaNumber, icon: 'phone' });
+                                                                                    if (paymentConfig.emolaNumber) newMethods.push({ label: 'e-Mola', value: paymentConfig.emolaNumber, icon: 'phone' });
+                                                                                    setPaymentConfig({
+                                                                                        ...paymentConfig,
+                                                                                        manualMethods: newMethods,
+                                                                                        mpesaNumber: '',
+                                                                                        emolaNumber: ''
+                                                                                    });
+                                                                                }}
+                                                                                style={{ marginTop: '10px', fontSize: '0.7rem', color: '#B8860B', background: 'none', border: '1px solid #B8860B', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                                                                            >
+                                                                                Migrar para Novo Sistema
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1371,7 +1417,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 <div style={{
                                                     width: '100%',
                                                     height: '150px',
-                                                    background: hubBackgroundImage ? `url(${hubBackgroundImage}) center/cover` : '#eee',
+                                                    background: hubBackgroundImage ? `url(${hubBackgroundImage}) center / cover` : '#eee',
                                                     borderRadius: '20px',
                                                     border: '2px dashed #ccc',
                                                     display: 'flex',
@@ -1473,7 +1519,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                 textTransform: 'uppercase',
                                                                 textAlign: 'center',
                                                                 padding: '5px',
-                                                                boxShadow: `0 4px 12px ${hubButtonColor}40`
+                                                                boxShadow: `0 4px 12px ${hubButtonColor} 40`
                                                             }}>
                                                                 Preview
                                                             </div>

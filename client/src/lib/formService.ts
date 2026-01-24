@@ -73,6 +73,11 @@ export interface FormModel {
         stripePriceId?: string;
         stripeProductId?: string;
         requireProof: boolean;
+        manualMethods?: {
+            label: string;
+            value: string;
+            icon?: string;
+        }[];
     };
     certificateConfig?: {
         enabled: boolean;

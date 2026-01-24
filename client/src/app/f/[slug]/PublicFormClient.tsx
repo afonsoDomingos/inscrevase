@@ -19,7 +19,8 @@ import {
     Zap,
     ArrowRight,
     Phone,
-    Info
+    Info,
+    Coins
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -715,18 +716,31 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 </h5>
 
                                                                 <div style={{ display: 'grid', gap: '12px' }}>
-                                                                    {form.paymentConfig?.mpesaNumber && (
+                                                                    {/* Legacy M-Pesa/eMola for backward compatibility */}
+                                                                    {form.paymentConfig?.mpesaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('M-Pesa')) && (
                                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                             <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> M-Pesa:</span>
                                                                             <span style={{ fontWeight: 700 }}>{form.paymentConfig.mpesaNumber}</span>
                                                                         </div>
                                                                     )}
-                                                                    {form.paymentConfig?.emolaNumber && (
+                                                                    {form.paymentConfig?.emolaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('e-Mola')) && (
                                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                             <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> e-Mola:</span>
                                                                             <span style={{ fontWeight: 700 }}>{form.paymentConfig.emolaNumber}</span>
                                                                         </div>
                                                                     )}
+
+                                                                    {/* Dynamic Custom Methods */}
+                                                                    {form.paymentConfig?.manualMethods?.map((method, idx) => (
+                                                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                                {method.label.toLowerCase().includes('mobile') || method.label.toLowerCase().includes('money') || method.label.toLowerCase().includes('phone') ? <Phone size={14} /> : <Coins size={14} />}
+                                                                                {method.label}:
+                                                                            </span>
+                                                                            <span style={{ fontWeight: 700 }}>{method.value}</span>
+                                                                        </div>
+                                                                    ))}
+
                                                                     {form.paymentConfig?.bankAccount && (
                                                                         <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '10px', marginTop: '5px' }}>
                                                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -741,6 +755,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                             )}
                                                                         </div>
                                                                     )}
+
                                                                     {form.paymentConfig?.instructions && (
                                                                         <div style={{
                                                                             background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',

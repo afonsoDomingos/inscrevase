@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -110,7 +110,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         requireProof: false,
         stripeEnabled: false,
         stripePriceId: '',
-        stripeProductId: ''
+        stripeProductId: '',
+        manualMethods: [] as { label: string; value: string; icon?: string }[]
     });
 
     const handleAddField = () => {
@@ -476,7 +477,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         cursor: 'pointer'
                                                     }}
                                                 >
-                                                    {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                                                    {aiLoading ? <Loader2 className="animate-spin" size={12} /> : <Wand2 size={12} />}
                                                     {t('ai.buttonDescribe')}
                                                 </motion.button>
                                             </div>
@@ -931,86 +932,97 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem' }}>{t('events.paymentMethodsHelp')}</p>
 
                                                     <div style={{ display: 'grid', gap: '1rem' }}>
-                                                        {/* Titular da Conta */}
-                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                                                                    <circle cx="12" cy="7" r="4" />
-                                                                </svg>
-                                                                {t('events.accountHolderLabel')}
+                                                        {/* Bank Account */}
+                                                        <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '1rem', fontSize: '0.85rem', color: '#1a1a1b' }}>
+                                                                <Database size={16} className="gold-text" /> {t('events.bankAccount')}
                                                             </label>
-                                                            <input
-                                                                type="text"
-                                                                value={paymentConfig.accountHolder || ''}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, accountHolder: e.target.value })}
-                                                                placeholder="Ex: Nome do Titular da Conta"
-                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                            />
+                                                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                                                <input
+                                                                    type="text"
+                                                                    value={paymentConfig.accountHolder || ''}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, accountHolder: e.target.value })}
+                                                                    placeholder={t('events.accountHolderPlaceholder')}
+                                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    value={paymentConfig.bankAccount || ''}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, bankAccount: e.target.value })}
+                                                                    placeholder={t('events.bankAccountPlaceholder')}
+                                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                                />
+                                                            </div>
                                                         </div>
 
-                                                        {/* NIB / Conta Bancária */}
-                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                    <rect x="2" y="5" width="20" height="14" rx="2" />
-                                                                    <line x1="2" y1="10" x2="22" y2="10" />
-                                                                </svg>
-                                                                {t('events.nibLabel')}
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                value={paymentConfig.bankAccount || ''}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, bankAccount: e.target.value })}
-                                                                placeholder="Ex: 0000 0000 0000 0000 0000 0000 0"
-                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                            />
+                                                        {/* Dynamic Manual Methods (Global Support) */}
+                                                        <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '0.85rem', color: '#1a1a1b' }}>
+                                                                    <Coins size={16} className="gold-text" /> Pagamentos Customizados
+                                                                </label>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setPaymentConfig({
+                                                                        ...paymentConfig,
+                                                                        manualMethods: [...(paymentConfig.manualMethods || []), { label: '', value: '', icon: 'phone' }]
+                                                                    })}
+                                                                    style={{ padding: '4px 10px', fontSize: '0.7rem', fontWeight: 700, borderRadius: '20px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                                >
+                                                                    <Plus size={12} /> Adicionar Método
+                                                                </button>
+                                                            </div>
+
+                                                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                                                {paymentConfig.manualMethods?.length === 0 && (
+                                                                    <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', fontStyle: 'italic', padding: '1rem' }}>
+                                                                        Nenhum método personalizado. Ex: M-Pesa, MTN, PayPal Manual, etc.
+                                                                    </p>
+                                                                )}
+
+                                                                {paymentConfig.manualMethods?.map((method, idx) => (
+                                                                    <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#f9f9f9', padding: '10px', borderRadius: '12px' }}>
+                                                                        <div style={{ flex: 1, display: 'grid', gap: '8px' }}>
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="Nome (Ex: M-Pesa, Orange Money)"
+                                                                                value={method.label}
+                                                                                onChange={(e) => {
+                                                                                    const newMethods = [...paymentConfig.manualMethods];
+                                                                                    newMethods[idx].label = e.target.value;
+                                                                                    setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                }}
+                                                                                style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                                                            />
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="Número ou Identificador"
+                                                                                value={method.value}
+                                                                                onChange={(e) => {
+                                                                                    const newMethods = [...paymentConfig.manualMethods];
+                                                                                    newMethods[idx].value = e.target.value;
+                                                                                    setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                }}
+                                                                                style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                                                            />
+                                                                        </div>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const newMethods = paymentConfig.manualMethods.filter((_, i) => i !== idx);
+                                                                                setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                            }}
+                                                                            style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+                                                                        >
+                                                                            <Minus size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         </div>
 
-                                                        {/* MPesa */}
-                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-                                                                </svg>
-                                                                {t('events.mpesaLabel')}
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                value={paymentConfig.mpesaNumber || ''}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, mpesaNumber: e.target.value })}
-                                                                placeholder="Ex: +258 84 123 4567"
-                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                            />
-                                                        </div>
-
-                                                        {/* eMola */}
-                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                    <circle cx="12" cy="12" r="10" />
-                                                                    <path d="M12 6v6l4 2" />
-                                                                </svg>
-                                                                {t('events.emolaLabel')}
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                value={paymentConfig.emolaNumber || ''}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, emolaNumber: e.target.value })}
-                                                                placeholder="Ex: +258 86 123 4567"
-                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                            />
-                                                        </div>
-
-                                                        {/* Outras Instruções */}
-                                                        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                                                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                                                </svg>
-                                                                {t('events.otherInstructionsLabel')}
-                                                            </label>
+                                                        <div>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.otherInstructionsLabel')}</label>
                                                             <textarea
                                                                 value={paymentConfig.instructions || ''}
                                                                 onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
