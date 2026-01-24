@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
@@ -671,36 +671,98 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="luxury-card" style={{ background: 'var(--gold-gradient)', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', color: '#000' }}>
-                                                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>💡 Insight de Crescimento</h3>
-                                                        <p style={{ fontSize: '1rem', lineHeight: 1.5, opacity: 0.9 }}>
+                                                    <div className="luxury-card" style={{ background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', color: '#000', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+                                                        <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1 }}>
+                                                            <Database size={150} />
+                                                        </div>
+                                                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', position: 'relative' }}>💡 Insight de Crescimento</h3>
+                                                        <p style={{ fontSize: '1.05rem', lineHeight: 1.6, opacity: 0.9, fontWeight: 500, position: 'relative' }}>
                                                             {(stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0) > (stats?.authStats?.native || 0)
-                                                                ? "O login social está dominando! Os usuários preferem praticidade. Considere priorizar integrações OAuth."
-                                                                : "A maioria prefere o e-mail tradicional. Mantenha o fluxo de login nativo o mais seguro e rápido possível."
+                                                                ? "O login social está sendo o caminho preferido dos seus usuários! Simplifique ainda mais o registro nativo."
+                                                                : "O e-mail tradicional ainda é o mais confiável para sua audiência. Otimize a segurança do fluxo nativo."
                                                             }
                                                         </p>
+                                                        <div style={{ marginTop: '1.5rem', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px', position: 'relative', background: 'rgba(0,0,0,0.1)', padding: '8px 15px', borderRadius: '50px', width: 'fit-content' }}>
+                                                            <TrendingUp size={16} /> DADO É PODER
+                                                        </div>
                                                     </div>
                                                 </motion.div>
 
-                                                <div className="charts-grid">
-                                                    {/* Traffic Peaks Chart */}
-                                                    <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2rem' }}>
+                                                {/* NEW: Health & Progress Dashboard */}
+                                                <div className="charts-grid" style={{ marginBottom: '2.5rem' }}>
+                                                    {/* Radar Chart: Platform Health */}
+                                                    <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
                                                         <div className="spotlight" />
-                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <TrendingUp className="gold-text" size={20} /> Picos de Tráfego (Hoje)
+                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
+                                                            <LayoutDashboard className="gold-text" size={20} /> Equilíbrio de Engagement
                                                         </h3>
-                                                        <div style={{ height: '300px', width: '100%' }}>
+                                                        <div style={{ height: '320px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
-                                                                <BarChart data={trafficStats?.trafficByHour || []}>
-                                                                    <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                                                                    <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                                                                    <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                                                                    <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                                                                        {(trafficStats?.trafficByHour || []).map((_, index) => (
-                                                                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#1a1a1a' : '#FFD700'} />
-                                                                        ))}
-                                                                    </Bar>
-                                                                </BarChart>
+                                                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
+                                                                    { subject: 'Mentores', A: stats?.mentors || 0, fullMark: 100 },
+                                                                    { subject: 'Eventos', A: stats?.forms || 0, fullMark: 100 },
+                                                                    { subject: 'Participantes', A: stats?.participants || 0, fullMark: 100 },
+                                                                    { subject: 'Inscrições', A: stats?.submissions || 0, fullMark: 100 },
+                                                                    { subject: 'Receita', A: (stats?.revenue || 0) / 1000, fullMark: 100 },
+                                                                ]}>
+                                                                    <PolarGrid stroke="#eee" />
+                                                                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#666', fontSize: 11, fontWeight: 600 }} />
+                                                                    <Radar name="Plataforma" dataKey="A" stroke="#B8860B" fill="#FFD700" fillOpacity={0.6} />
+                                                                    <Tooltip />
+                                                                </RadarChart>
+                                                            </ResponsiveContainer>
+                                                        </div>
+                                                    </motion.div>
+
+                                                    {/* Radial Bar: Goals Progress */}
+                                                    <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
+                                                        <div className="spotlight" />
+                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
+                                                            <CheckCircle className="gold-text" size={20} /> Metas Mensais
+                                                        </h3>
+                                                        <div style={{ height: '320px', width: '100%' }}>
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                <RadialBarChart
+                                                                    cx="50%" cy="50%"
+                                                                    innerRadius="20%" outerRadius="100%"
+                                                                    barSize={15}
+                                                                    data={[
+                                                                        { name: 'Inscrições', uv: stats?.submissions || 0, fill: '#805ad5' },
+                                                                        { name: 'Receita', uv: (stats?.revenue || 0) / 100, fill: '#B8860B' },
+                                                                        { name: 'Mentores', uv: (stats?.mentors || 0) * 10, fill: '#1a1a1a' },
+                                                                        { name: 'Visitas', uv: (trafficStats?.visitsToday || 0), fill: '#ed8936' }
+                                                                    ]}
+                                                                >
+                                                                    <RadialBar
+                                                                        label={{ position: 'insideStart', fill: '#fff' }}
+                                                                        background
+                                                                        dataKey="uv"
+                                                                    />
+                                                                    <Legend iconSize={10} layout="vertical" verticalAlign="middle" align="right" />
+                                                                    <Tooltip />
+                                                                </RadialBarChart>
+                                                            </ResponsiveContainer>
+                                                        </div>
+                                                    </motion.div>
+                                                </div>
+
+                                                <div className="charts-grid" style={{ marginBottom: '2.5rem' }}>
+                                                    {/* Traffic & Conversion Composed Chart */}
+                                                    <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
+                                                        <div className="spotlight" />
+                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
+                                                            <TrendingUp className="gold-text" size={20} /> Tráfego vs Atividade (Hoje)
+                                                        </h3>
+                                                        <div style={{ height: '320px', width: '100%' }}>
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                <ComposedChart data={trafficStats?.trafficByHour || []}>
+                                                                    <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
+                                                                    <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
+                                                                    <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                                                    <Bar dataKey="count" fill="#FFD700" radius={[4, 4, 0, 0]} name="Visitas" />
+                                                                    <Line type="monotone" dataKey="count" stroke="#1a1a1a" strokeWidth={3} dot={{ r: 4 }} name="Tendência" />
+                                                                </ComposedChart>
                                                             </ResponsiveContainer>
                                                         </div>
                                                     </motion.div>
@@ -930,18 +992,23 @@ export default function AdminDashboard() {
                     .split-grid {
                         display: grid;
                         grid-template-columns: 2fr 1fr;
-                        gap: 1.5rem;
-                        margin-bottom: 2rem;
+                        gap: 2rem;
+                        margin-bottom: 2.5rem;
                     }
                     .charts-grid {
                         display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-                        gap: 1.5rem;
-                        margin-bottom: 2rem;
+                        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+                        gap: 2rem;
+                    }
+                    :global(.luxury-card), .luxury-card {
+                        padding: 2.5rem !important;
+                        border-radius: 20px !important;
+                        box-shadow: 0 15px 35px rgba(0,0,0,0.06) !important;
                     }
                     @media (max-width: 1024px) {
-                        .split-grid {
+                        .split-grid, .charts-grid {
                             grid-template-columns: 1fr;
+                            gap: 1.5rem;
                         }
                     }
                 `}</style>
