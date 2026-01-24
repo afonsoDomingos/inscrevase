@@ -1,24 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
 
 :root {
-  /* Light Theme (Default) */
-  --background: #fdfdfd;
-  --foreground: #101010;
+  /* Light Theme (Presential Premium) */
+  --background: #fcfcfc;
+  --foreground: #0a0a0a;
   --paper: #ffffff;
-  --paper-hover: #f8f9fa;
-  --primary: #D4AF37;
-  --primary-glow: rgba(212, 175, 55, 0.4);
-  --secondary: #1a1a1a;
-  --accent: #FFD700;
-  --muted: #f5f5f5;
-  --text-muted: #666666;
-  --border: rgba(212, 175, 55, 0.15);
+  --paper-hover: #f5f5f5;
+  --primary: #c9a528;
+  --primary-glow: rgba(201, 165, 40, 0.2);
+  --secondary: #000000;
+  --accent: #DAA520;
+  --muted: #f0f0f0;
+  --text-muted: #4a4a4a;
+  --border: rgba(0, 0, 0, 0.08);
   --gold-gradient: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8860B 100%);
-  --shadow-luxury: 0 10px 40px rgba(0, 0, 0, 0.08);
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --spotlight-color: rgba(255, 215, 0, 0.1);
-  --input-bg: #fdfdfd;
-  --input-border: #e0e0e0;
+  --shadow-luxury: 0 10px 40px rgba(0, 0, 0, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --spotlight-color: rgba(212, 175, 55, 0.08);
+  --input-bg: #ffffff;
+  --input-border: #e2e2e2;
 }
 
 [data-theme='dark'] {

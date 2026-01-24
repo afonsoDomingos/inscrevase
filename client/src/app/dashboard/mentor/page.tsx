@@ -56,7 +56,10 @@ import StripeConnect from '../../../components/StripeConnect';
 import EarningsDashboard from '../../../components/EarningsDashboard';
 import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings';
+import InternalBlogView from '@/components/common/InternalBlogView';
+import ThemeToggle from '@/components/common/ThemeToggle';
+
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog';
 
 import { Suspense } from 'react';
 
@@ -372,7 +375,7 @@ function MentorDashboardContent() {
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
-                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} />, link: '/blog' },
+                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} /> },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
@@ -707,89 +710,92 @@ function MentorDashboardContent() {
                                 <Lock size={16} /> {t('dashboard.restrictedAccess')}
                             </div>
                         )}
-                        <div style={{ position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            {!isMobile && <ThemeToggle />}
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                    title={t('dashboard.notifications')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '45px',
+                                        height: '45px',
+                                        background: 'var(--paper)',
+                                        border: '1px solid #FFD700',
+                                        borderRadius: '12px',
+                                        color: '#000',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <Bell size={20} />
+                                    {unreadNotifications > 0 && (
+                                        <span style={{
+                                            position: 'absolute',
+                                            top: '-5px',
+                                            right: '-5px',
+                                            background: 'var(--gold-gradient)',
+                                            color: '#000',
+                                            width: '20px',
+                                            height: '20px',
+                                            borderRadius: '50%',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            border: '2px solid #fff'
+                                        }}>
+                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                        </span>
+                                    )}
+                                </button>
+
+                                <AnimatePresence>
+                                    {isNotificationsOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '55px',
+                                                right: 0,
+                                                zIndex: 2000
+                                            }}
+                                        >
+                                            <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
                             <button
-                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                                title={t('dashboard.notifications')}
+                                onClick={() => authService.logout()}
+                                title={t('common.logout')}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     width: '45px',
                                     height: '45px',
-                                    background: 'var(--paper)',
-                                    border: '1px solid #FFD700',
+                                    background: '#fff',
+                                    border: '1px solid #fed7d7',
                                     borderRadius: '12px',
-                                    color: '#000',
+                                    color: '#e53e3e',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s',
-                                    position: 'relative'
+                                    boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
                                 }}
+                                onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
+                                onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
                             >
-                                <Bell size={20} />
-                                {unreadNotifications > 0 && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        top: '-5px',
-                                        right: '-5px',
-                                        background: 'var(--gold-gradient)',
-                                        color: '#000',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 900,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: '2px solid #fff'
-                                    }}>
-                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                    </span>
-                                )}
+                                <LogOut size={20} />
                             </button>
-
-                            <AnimatePresence>
-                                {isNotificationsOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '55px',
-                                            right: 0,
-                                            zIndex: 2000
-                                        }}
-                                    >
-                                        <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </div>
-
-                        <button
-                            onClick={() => authService.logout()}
-                            title={t('common.logout')}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '45px',
-                                height: '45px',
-                                background: '#fff',
-                                border: '1px solid #fed7d7',
-                                borderRadius: '12px',
-                                color: '#e53e3e',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s',
-                                boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
-                            }}
-                            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
-                            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
-                        >
-                            <LogOut size={20} />
-                        </button>
                     </div>
                 </header >
 
@@ -1070,13 +1076,6 @@ function MentorDashboardContent() {
                     {activeTab === 'earnings' && (
                         <motion.div key="earnings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <EarningsDashboard />
-                        </motion.div>
-                    )}
-
-                    {activeTab === 'settings' && (
-                        <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <StripeConnect />
-                            <MentorSettings user={user} onUpdate={loadDashboard} />
                             <div style={{ marginTop: '2rem' }}>
                                 <button
                                     onClick={() => setIsUpgradeModalOpen(true)}
@@ -1086,6 +1085,19 @@ function MentorDashboardContent() {
                                     Fazer Upgrade de Plano
                                 </button>
                             </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'settings' && (
+                        <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <StripeConnect />
+                            <MentorSettings user={user} onUpdate={loadDashboard} />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'blog' && (
+                        <motion.div key="blog" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <InternalBlogView />
                         </motion.div>
                     )}
                 </AnimatePresence>

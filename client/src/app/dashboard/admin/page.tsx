@@ -24,6 +24,7 @@ import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, Cartes
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
+import ThemeToggle from '@/components/common/ThemeToggle';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog';
 
@@ -105,12 +106,22 @@ export default function AdminDashboard() {
         activity: false
     });
     const [showValues, setShowValues] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
 
     const toggleSection = (section: string) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
     const { handleMouseMove } = useSpotlight();
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -405,6 +416,7 @@ export default function AdminDashboard() {
                         flexWrap: 'wrap',
                         alignItems: 'center'
                     }}>
+                        {!isMobile && <ThemeToggle />}
                         <button
                             onClick={() => setShowValues(!showValues)}
                             style={{

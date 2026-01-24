@@ -38,8 +38,9 @@ import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { supportService } from '@/lib/supportService';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
 import ThemeToggle from '@/components/common/ThemeToggle';
+import InternalBlogView from '@/components/common/InternalBlogView';
 
-type Tab = 'tickets' | 'explore' | 'certificates' | 'profile';
+type Tab = 'tickets' | 'explore' | 'certificates' | 'profile' | 'blog';
 const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
 
 export default function ParticipantDashboard() {
@@ -277,8 +278,6 @@ export default function ParticipantDashboard() {
                     />
                 )}
             </AnimatePresence>
-            {/* Theme Toggle */}
-            <ThemeToggle />
             {/* Sidebar */}
             <aside style={{
                 width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
@@ -331,7 +330,7 @@ export default function ParticipantDashboard() {
                         { id: 'tickets', label: 'Meus Ingressos', icon: <Ticket size={20} /> },
                         { id: 'explore', label: 'Explorar Eventos', icon: <Compass size={20} /> },
                         { id: 'certificates', label: 'Meus Certificados', icon: <Award size={20} /> },
-                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} />, link: '/blog' },
+                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/planos' },
                         { id: 'profile', label: 'Minha Conta', icon: <User size={20} /> },
                     ].map((item) => (
@@ -510,7 +509,7 @@ export default function ParticipantDashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-
+                        {!isMobile && <ThemeToggle />}
                         <div style={{
                             width: '40px',
                             height: '40px',
@@ -965,14 +964,25 @@ export default function ParticipantDashboard() {
                             <div style={{
                                 textAlign: 'center',
                                 padding: '4rem 2rem',
-                                background: '#fff',
+                                background: 'var(--paper)',
                                 borderRadius: '20px',
-                                color: '#666'
+                                color: 'var(--text-muted)'
                             }}>
                                 <Award size={48} style={{ marginBottom: '1rem', color: '#DAA520', opacity: 0.5 }} />
                                 <h3>Nenhum certificado disponível</h3>
                                 <p>Participe de eventos que emitem certificados para vê-los aqui.</p>
                             </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'blog' && (
+                        <motion.div
+                            key="blog"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <InternalBlogView />
                         </motion.div>
                     )}
                 </AnimatePresence>
