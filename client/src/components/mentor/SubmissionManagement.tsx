@@ -797,9 +797,49 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><XCircle size={24} /></button>
                             </div>
 
-                            <div style={{ flex: 1, overflow: 'auto', display: 'flex', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px' }}>
-                                {selectedProof.toLowerCase().endsWith('.pdf') ? (
-                                    <iframe src={selectedProof} style={{ width: '100%', height: '600px', border: 'none' }} title="PDF Viewer" />
+                            <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px', position: 'relative' }}>
+                                {selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('pdf') ? (
+                                    <>
+                                        {/* Primary PDF Viewer with Google Docs fallback */}
+                                        <iframe
+                                            src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedProof)}&embedded=true`}
+                                            style={{ width: '100%', height: '600px', border: 'none' }}
+                                            title="PDF Viewer"
+                                            onError={(e) => {
+                                                // Fallback to direct embed if Google Viewer fails
+                                                e.currentTarget.src = selectedProof;
+                                            }}
+                                        />
+                                        <div style={{
+                                            position: 'absolute',
+                                            bottom: '20px',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            background: 'rgba(0,0,0,0.8)',
+                                            padding: '12px 24px',
+                                            borderRadius: '50px',
+                                            display: 'flex',
+                                            gap: '10px',
+                                            alignItems: 'center'
+                                        }}>
+                                            <a
+                                                href={selectedProof}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    color: '#FFD700',
+                                                    textDecoration: 'none',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 700
+                                                }}
+                                            >
+                                                <Eye size={16} /> Abrir PDF em Nova Aba
+                                            </a>
+                                        </div>
+                                    </>
                                 ) : (
                                     <div style={{ position: 'relative', width: '100%', height: '600px' }}>
                                         <Image src={selectedProof} alt="Comprovativo" fill style={{ objectFit: 'contain' }} />
