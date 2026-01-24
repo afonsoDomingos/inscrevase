@@ -27,6 +27,21 @@ const nextConfig = {
                 hostname: 'media.licdn.com',
                 pathname: '/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'inscreva-se.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'inscrevase.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'inscrevase.onrender.com',
+                pathname: '/**',
+            },
         ],
     },
     async rewrites() {
@@ -34,6 +49,10 @@ const nextConfig = {
             {
                 source: '/api/:path*',
                 destination: `${process.env.BACKEND_API_URL || 'https://inscrevase.onrender.com/api'}/:path*`,
+            },
+            {
+                source: '/uploads/:path*',
+                destination: `${(process.env.BACKEND_API_URL || 'https://inscrevase.onrender.com/api').replace('/api', '')}/uploads/:path*`,
             },
         ];
     },
