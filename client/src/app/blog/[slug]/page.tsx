@@ -14,6 +14,7 @@ import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { authService, UserData } from '@/lib/authService';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import axios from 'axios';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -123,7 +124,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             toast.success(response.message);
             setNewsletterEmail('');
         } catch (error: unknown) {
-            const message = (error as any).response?.data?.message || 'Erro ao realizar inscrição';
+            let message = 'Erro ao realizar inscrição';
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                message = error.response.data.message;
+            }
             toast.error(message);
         } finally {
             setSubmittingNewsletter(false);
