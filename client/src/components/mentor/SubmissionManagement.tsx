@@ -798,7 +798,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                             </div>
 
                             <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px', position: 'relative', minHeight: '600px' }}>
-                                {(selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('.pdf') || selectedProof.includes('/image/upload/')) && !selectedProof.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                {selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('.pdf') ? (
                                     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                                         {/* PDF Icon and Info */}
                                         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
