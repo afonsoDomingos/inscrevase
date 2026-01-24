@@ -93,9 +93,6 @@ export default function Login() {
                 </Link>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                <h1 style={{ fontSize: '1.5rem', margin: 0, color: '#fff', fontWeight: 700, letterSpacing: '-0.5px' }}>Entrar</h1>
-            </div>
 
             {error && (
                 <div style={{ background: 'rgba(229, 62, 62, 0.15)', color: '#fc8181', padding: '0.5rem', borderRadius: '8px', marginBottom: '0.8rem', textAlign: 'center', fontSize: '0.75rem', border: '1px solid rgba(229, 62, 62, 0.2)' }}>

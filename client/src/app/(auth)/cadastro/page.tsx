@@ -166,9 +166,6 @@ function RegisterContent() {
                 </div>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                <h1 style={{ fontSize: '1.5rem', margin: 0, color: '#fff', fontWeight: 700 }}>Criar Conta</h1>
-            </div>
 
             {/* Role Selector */}
             <div style={{ display: 'flex', gap: '0.8rem', marginBottom: '1rem' }}>

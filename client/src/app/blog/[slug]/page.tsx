@@ -208,8 +208,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 />
             </div>
 
-            {/* Hero Header */}
-            <div style={{ position: 'relative', height: '70vh', minHeight: '500px', width: '100%', overflow: 'hidden' }}>
+            {/* Hero Header - Compact & Elegant */}
+            <div style={{ position: 'relative', height: '55vh', minHeight: '400px', width: '100%', overflow: 'hidden' }}>
                 <motion.div
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
@@ -243,7 +243,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                                 </span>
                             </div>
 
-                            <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: '25px', textShadow: '0 2px 10px rgba(0,0,0,0.3)', fontFamily: 'var(--font-playfair, serif)' }}>
+                            <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '20px', textShadow: '0 2px 10px rgba(0,0,0,0.3)', fontFamily: 'var(--font-playfair, serif)' }}>
                                 {post.title}
                             </h1>
 
@@ -272,8 +272,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 </div>
             </div>
 
-            {/* Content Section */}
-            <div style={{ maxWidth: '1240px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 740px) 320px', gap: '100px', padding: '100px 20px' }}>
+            {/* Content Section - Improved Layout & Width */}
+            <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: '60px', padding: '60px 20px' }}>
 
                 {/* Long Form Article */}
                 <motion.div
