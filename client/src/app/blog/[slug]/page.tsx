@@ -122,8 +122,9 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             const response = await blogService.subscribeToNewsletter(newsletterEmail);
             toast.success(response.message);
             setNewsletterEmail('');
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Erro ao realizar inscrição');
+        } catch (error: unknown) {
+            const message = (error as any).response?.data?.message || 'Erro ao realizar inscrição';
+            toast.error(message);
         } finally {
             setSubmittingNewsletter(false);
         }
@@ -355,6 +356,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                                 ),
                                 img: ({ ...props }) => (
                                     <div style={{ margin: '4rem 0' }}>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img alt="" {...props} style={{ maxWidth: '100%', borderRadius: '32px', boxShadow: '0 30px 60px rgba(0,0,0,0.12)' }} />
                                         {props.title && <span style={{ display: 'block', textAlign: 'center', marginTop: '15px', fontSize: '0.9rem', color: '#94a3b8' }}>{props.title}</span>}
                                     </div>
