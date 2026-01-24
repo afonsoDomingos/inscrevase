@@ -59,7 +59,11 @@ router.get('/admin/all', protect, adminOnly, async (req, res) => {
 // @access  Public
 router.get('/:slug', async (req, res) => {
     try {
-        const post = await BlogPost.findOne({ slug: req.params.slug, published: true });
+        const post = await BlogPost.findOneAndUpdate(
+            { slug: req.params.slug, published: true },
+            { $inc: { views: 1 } },
+            { new: true }
+        );
 
         if (!post) {
             return res.status(404).json({ message: 'Artigo não encontrado' });
@@ -192,5 +196,60 @@ router.post(
         }
     }
 );
+
+// @route   POST /api/blog/:id/like
+// @desc    Like/Unlike a blog post
+// @access  Private
+router.post('/:id/like', protect, async (req, res) => {
+    try {
+        const post = await BlogPost.findById(req.params.id);
+        if (!post) return res.status(404).json({ message: 'Artigo não encontrado' });
+
+        const userId = req.user.id;
+        const likeIndex = post.likes.indexOf(userId);
+
+        if (likeIndex > -1) {
+            post.likes.splice(likeIndex, 1); // Unlike
+        } else {
+            post.likes.push(userId); // Like
+        }
+
+        await post.save();
+        res.json({ likes: post.likes });
+    } catch (error) {
+        console.error('Error liking post:', error);
+        res.status(500).json({ message: 'Erro ao processar curtida' });
+    }
+});
+
+// @route   POST /api/blog/:id/comment
+// @desc    Comment on a blog post
+// @access  Private
+router.post('/:id/comment', protect, async (req, res) => {
+    try {
+        const post = await BlogPost.findById(req.params.id);
+        if (!post) return res.status(404).json({ message: 'Artigo não encontrado' });
+
+        const { text, userName, userAvatar } = req.body;
+        if (!text) return res.status(400).json({ message: 'Texto do comentário é obrigatório' });
+
+        const newComment = {
+            user: {
+                id: req.user.id,
+                name: userName || 'Usuário',
+                avatar: userAvatar || '',
+            },
+            text,
+            createdAt: new Date(),
+        };
+
+        post.comments.unshift(newComment);
+        await post.save();
+        res.status(201).json(post.comments);
+    } catch (error) {
+        console.error('Error commenting on post:', error);
+        res.status(500).json({ message: 'Erro ao enviar comentário' });
+    }
+});
 
 module.exports = router;

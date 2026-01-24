@@ -59,6 +59,27 @@ const BlogPostSchema = new Schema(
         publishedAt: {
             type: Date,
         },
+        likes: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+            },
+        ],
+        comments: [
+            {
+                user: {
+                    id: { type: Schema.Types.ObjectId, ref: 'User' },
+                    name: String,
+                    avatar: String,
+                },
+                text: { type: String, required: true },
+                createdAt: { type: Date, default: Date.now },
+            },
+        ],
+        views: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         timestamps: true,

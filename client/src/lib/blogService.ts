@@ -18,6 +18,17 @@ export interface BlogPost {
     tags: string[];
     published: boolean;
     publishedAt?: string;
+    likes?: string[];
+    comments?: {
+        user: {
+            id: string;
+            name: string;
+            avatar: string;
+        };
+        text: string;
+        createdAt: string;
+    }[];
+    views: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -76,6 +87,22 @@ export const blogService = {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data',
             },
+        });
+        return response.data;
+    },
+
+    // Like/Unlike a post
+    async likePost(token: string, id: string): Promise<{ likes: string[] }> {
+        const response = await axios.post(`${API_URL}/blog/${id}/like`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    },
+
+    // Add comment to a post
+    async addComment(token: string, id: string, commentData: { text: string; userName?: string; userAvatar?: string }): Promise<any> {
+        const response = await axios.post(`${API_URL}/blog/${id}/comment`, commentData, {
+            headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;
     },
