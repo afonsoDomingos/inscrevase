@@ -9,15 +9,15 @@ import SubmissionList from '@/components/admin/SubmissionList';
 import SupportTicketList from '@/components/admin/SupportTicketList';
 import AdminFinance from '@/components/admin/AdminFinance';
 import NewsletterList from '@/components/admin/NewsletterList';
+import BlogManager from '@/components/admin/BlogManager';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Linkedin } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
-import { Linkedin, Mail, Send } from 'lucide-react';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis } from 'recharts';
@@ -25,7 +25,7 @@ import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -104,6 +104,7 @@ export default function AdminDashboard() {
         performance: false,
         activity: false
     });
+    const [showValues, setShowValues] = useState(true);
 
     const toggleSection = (section: string) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -185,19 +186,19 @@ export default function AdminDashboard() {
     const vitalCards = [
         { label: 'Online Agora', value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: 'Visitas Hoje', value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: 'Receita Total', value: (stats?.revenue || 0).toLocaleString() + ' MT', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
-        { label: 'Inscrições', value: stats?.submissions || 0, icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
+        { label: 'Receita Total', value: showValues ? (stats?.revenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { label: 'Inscrições', value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
     // Removed unused cards to fix lint errors
 
     const financialCards = [
-        { label: 'Assinaturas Planos', value: (stats?.subscriptionRevenue || 0).toLocaleString() + ' MT', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
+        { label: 'Assinaturas Planos', value: showValues ? (stats?.subscriptionRevenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
     ];
 
     const activityCards = [
         { label: t('dashboard.createdForms'), value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce', tab: 'forms' },
-        { label: t('dashboard.approvedSubscriptions'), value: stats?.approved || 0, icon: <CheckCircle size={24} />, color: '#10b981', tab: 'submissions' },
+        { label: t('dashboard.approvedSubscriptions'), value: showValues ? stats?.approved || 0 : '••', icon: <CheckCircle size={24} />, color: '#10b981', tab: 'submissions' },
     ];
 
     const menuItems = [
@@ -207,6 +208,7 @@ export default function AdminDashboard() {
         { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
         { id: 'finance', label: t('dashboard.finance.title'), icon: <Wallet size={20} /> },
         { id: 'newsletter', label: 'Newsletter', icon: <Mail size={20} /> },
+        { id: 'blog', label: 'Gerenciar Blog', icon: <Newspaper size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ];
 
@@ -293,31 +295,6 @@ export default function AdminDashboard() {
                         </button>
                     ))}
 
-                    <Link
-                        href="/dashboard/admin/blog"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            padding: '0.75rem 1rem',
-                            width: '100%',
-                            borderRadius: '12px',
-                            border: 'none',
-                            background: 'transparent',
-                            color: '#888',
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            textAlign: 'left',
-                            fontSize: '0.95rem',
-                            position: 'relative',
-                            textDecoration: 'none'
-                        }}
-                        className="hover:bg-gray-100 hover:text-black"
-                    >
-                        <Newspaper size={20} />
-                        Gerenciar Blog
-                    </Link>
                 </nav>
 
                 <button
@@ -428,6 +405,28 @@ export default function AdminDashboard() {
                         flexWrap: 'wrap',
                         alignItems: 'center'
                     }}>
+                        <button
+                            onClick={() => setShowValues(!showValues)}
+                            style={{
+                                padding: '0.7rem 1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.6rem',
+                                borderRadius: '50px',
+                                background: '#fff',
+                                color: '#000',
+                                border: '2px solid #000',
+                                whiteSpace: 'nowrap',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                fontSize: '0.75rem',
+                                letterSpacing: '0.3px'
+                            }}
+                        >
+                            {showValues ? <EyeOff size={16} /> : <Eye size={16} />}
+                            {showValues ? 'Ocultar Valores' : 'Mostrar Valores'}
+                        </button>
                         <button
                             onClick={() => {
                                 setSelectedRecipient(undefined);
@@ -892,6 +891,12 @@ export default function AdminDashboard() {
                     {activeTab === 'newsletter' && (
                         <motion.div key="newsletter" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                             <NewsletterList />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'blog' && (
+                        <motion.div key="blog" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <BlogManager />
                         </motion.div>
                     )}
                 </AnimatePresence>
