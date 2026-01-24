@@ -166,7 +166,7 @@ function RegisterContent() {
                 </div>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '0.8rem' }}>
                 <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
                     <Image src="/logo.png" alt="Logo" width={36} height={36} style={{ margin: '0 auto 0.6rem' }} />
                 </motion.div>
@@ -175,12 +175,12 @@ function RegisterContent() {
             </div>
 
             {/* Role Selector */}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.8rem', marginBottom: '1rem' }}>
                 <div
                     onClick={() => setFormData({ ...formData, role: 'mentor' })}
                     style={{
                         flex: 1,
-                        padding: '1rem',
+                        padding: '0.7rem',
                         borderRadius: '12px',
                         background: formData.role === 'mentor' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
                         border: formData.role === 'mentor' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
@@ -202,7 +202,7 @@ function RegisterContent() {
                     onClick={() => setFormData({ ...formData, role: 'participant' })}
                     style={{
                         flex: 1,
-                        padding: '1rem',
+                        padding: '0.7rem',
                         borderRadius: '12px',
                         background: formData.role === 'participant' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
                         border: formData.role === 'participant' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
@@ -228,7 +228,7 @@ function RegisterContent() {
             )}
 
             <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '0.7rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '0.6rem' }}>
                     {/* Full Name */}
                     <div>
                         <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.fullName')}</label>
@@ -241,7 +241,7 @@ function RegisterContent() {
                             >
                                 <User size={14} />
                             </motion.div>
-                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} onFocus={() => setFocusedField('name')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.6rem', fontSize: '0.85rem', border: focusedField === 'name' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
+                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} onFocus={() => setFocusedField('name')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: focusedField === 'name' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
                             <AnimatePresence>{focusedField === 'name' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
                         </motion.div>
                     </div>
@@ -253,13 +253,13 @@ function RegisterContent() {
                             <motion.div variants={iconVariants} animate={focusedField === 'business' ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
                                 <Briefcase size={14} />
                             </motion.div>
-                            <input type="text" value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} onFocus={() => setFocusedField('business')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.6rem', fontSize: '0.85rem', border: focusedField === 'business' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
+                            <input type="text" value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} onFocus={() => setFocusedField('business')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: focusedField === 'business' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
                             <AnimatePresence>{focusedField === 'business' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
                         </motion.div>
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '0.7rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '0.6rem' }}>
                     {/* Country Searchable Picker */}
                     <div style={{ position: 'relative' }} ref={dropdownRef}>
                         <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.country')}</label>
@@ -272,7 +272,7 @@ function RegisterContent() {
                             <motion.div variants={iconVariants} animate={showCountryPicker ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
                                 <Globe size={14} />
                             </motion.div>
-                            <div className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.6rem', fontSize: '0.85rem', border: showCountryPicker ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff' }}>
+                            <div className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: showCountryPicker ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff' }}>
                                 <span style={{ color: formData.country ? '#fff' : '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formData.country || "Selecione..."}</span>
                             </div>
                             <AnimatePresence>{showCountryPicker && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
@@ -350,7 +350,7 @@ function RegisterContent() {
                             <motion.div variants={iconVariants} animate={focusedField === 'email' ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
                                 <Mail size={14} />
                             </motion.div>
-                            <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.6rem', fontSize: '0.85rem', border: focusedField === 'email' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
+                            <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: focusedField === 'email' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
                             <AnimatePresence>{focusedField === 'email' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
                         </motion.div>
                     </div>
@@ -363,7 +363,7 @@ function RegisterContent() {
                         <motion.div variants={iconVariants} animate={focusedField === 'password' ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
                             <Lock size={14} />
                         </motion.div>
-                        <input type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} onFocus={() => setFocusedField('password')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', paddingBlock: '0.6rem', fontSize: '0.95rem', border: focusedField === 'password' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
+                        <input type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} onFocus={() => setFocusedField('password')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.95rem', border: focusedField === 'password' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
                         <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888', zIndex: 3 }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                         <AnimatePresence>{focusedField === 'password' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
                     </motion.div>
@@ -395,7 +395,7 @@ function RegisterContent() {
                     {loading ? <Loader2 className="animate-spin" size={18} /> : <>{t('auth.createAccount')} <ArrowRight size={18} /></>}
                 </motion.button>
 
-                <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', margin: '0.8rem 0' }}>
                     <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
                     <span style={{ padding: '0 10px', color: '#666', fontSize: '0.75rem' }}>OU</span>
                     <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
@@ -428,7 +428,7 @@ function RegisterContent() {
                 </div>
             </form>
 
-            <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#888', fontSize: '0.8rem' }}>
+            <p style={{ marginTop: '1rem', textAlign: 'center', color: '#888', fontSize: '0.8rem' }}>
                 {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: '#FFD700', fontWeight: 600, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
             </p>
 
