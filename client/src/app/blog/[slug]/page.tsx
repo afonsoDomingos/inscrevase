@@ -259,20 +259,6 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     viewport={{ once: true }}
                     style={{ position: 'relative' }}
                 >
-                    <style jsx global>{`
-                        .blog-content p:first-of-type::first-letter {
-                            float: left;
-                            font-size: 5rem;
-                            line-height: 1;
-                            font-weight: 800;
-                            padding-right: 15px;
-                            color: #000;
-                            font-family: var(--font-playfair, serif);
-                        }
-                        .blog-content {
-                            letter-spacing: -0.01em;
-                        }
-                    `}</style>
                     <article className="blog-content">
                         <ReactMarkdown
                             components={{
@@ -344,9 +330,9 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                                         textAlign: 'center',
                                         fontFamily: 'var(--font-playfair, serif)'
                                     }}>
-                                        <span style={{ position: 'absolute', top: '20px', left: '20px', fontSize: '4rem', color: '#FFD700', opacity: 0.3, lineHeight: 1 }}>"</span>
+                                        <span style={{ position: 'absolute', top: '20px', left: '20px', fontSize: '4rem', color: '#FFD700', opacity: 0.3, lineHeight: 1 }}>&ldquo;</span>
                                         {props.children}
-                                        <span style={{ position: 'absolute', bottom: '-10px', right: '20px', fontSize: '4rem', color: '#FFD700', opacity: 0.3, lineHeight: 1 }}>"</span>
+                                        <span style={{ position: 'absolute', bottom: '-10px', right: '20px', fontSize: '4rem', color: '#FFD700', opacity: 0.3, lineHeight: 1 }}>&rdquo;</span>
                                     </blockquote>
                                 ),
                                 img: ({ ...props }) => (
@@ -521,6 +507,18 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 
                 :global(.blog-content p) {
                     margin-bottom: 2rem !important;
+                }
+                :global(.blog-content p:first-of-type::first-letter) {
+                    float: left;
+                    font-size: 5rem;
+                    line-height: 1;
+                    font-weight: 800;
+                    padding-right: 15px;
+                    color: #000;
+                    font-family: var(--font-playfair, serif);
+                }
+                :global(.blog-content) {
+                    letter-spacing: -0.01em;
                 }
             `}</style>
         </main>

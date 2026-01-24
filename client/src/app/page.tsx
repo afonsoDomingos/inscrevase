@@ -9,7 +9,6 @@ import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
-import { Linkedin, Youtube, Facebook, MessageCircle } from "lucide-react";
 import Cookies from "js-cookie";
 import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
