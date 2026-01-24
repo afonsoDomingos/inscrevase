@@ -207,13 +207,18 @@ const posts = [
     }
 ];
 
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+let MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+// Detectar placeholder e forçar localhost
+if (!MONGO_URI || MONGO_URI.includes('example.mongodb.net') || MONGO_URI.includes('<password>')) {
+    console.warn('⚠️  Aviso: MONGO_URI no arquivo .env parece ser um exemplo/placeholder.');
+    console.warn('🔄 Tentando conectar em localhost (mongodb://127.0.0.1:27017/inscrevase)...');
+    MONGO_URI = 'mongodb://127.0.0.1:27017/inscrevase';
+}
 
 async function seed() {
     try {
-        if (!MONGO_URI) {
-            throw new Error('MONGO_URI is defined as ' + MONGO_URI + '. Please check your .env file.');
-        }
+        console.log('🚀 Connecting to Database...');
         await mongoose.connect(MONGO_URI);
         console.log('Connected to MongoDB');
 

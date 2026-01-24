@@ -61,17 +61,17 @@ export default function Login() {
             exit={{ opacity: 0, x: 40, rotateY: 8 }}
             transition={{ type: 'spring', damping: 20, stiffness: 100 }}
             style={{
-                maxWidth: '420px',
+                maxWidth: '400px', // Slightly narrower
                 width: '100%',
                 margin: '0 auto',
-                padding: '1.8rem',
+                padding: '1.5rem', // Reduced padding
                 perspective: '1000px',
-                background: 'rgba(0, 0, 0, 0.65)',
-                backdropFilter: 'blur(16px)',
-                borderRadius: '20px',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                minHeight: '540px',
+                background: '#121212', // Solid elegant dark
+                // backdropFilter: 'blur(16px)', // Removed blur for "lighter" performance feel
+                borderRadius: '16px', // Slightly smaller radius
+                border: '1px solid #222', // Cleaner border
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)', // Softer shadow
+                // minHeight removed to let content dictate height
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center'
