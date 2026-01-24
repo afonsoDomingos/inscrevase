@@ -797,49 +797,84 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><XCircle size={24} /></button>
                             </div>
 
-                            <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px', position: 'relative' }}>
-                                {selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('pdf') ? (
-                                    <>
-                                        {/* Primary PDF Viewer with Google Docs fallback */}
-                                        <iframe
-                                            src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedProof)}&embedded=true`}
-                                            style={{ width: '100%', height: '600px', border: 'none' }}
-                                            title="PDF Viewer"
-                                            onError={(e) => {
-                                                // Fallback to direct embed if Google Viewer fails
-                                                e.currentTarget.src = selectedProof;
-                                            }}
-                                        />
-                                        <div style={{
-                                            position: 'absolute',
-                                            bottom: '20px',
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                            background: 'rgba(0,0,0,0.8)',
-                                            padding: '12px 24px',
-                                            borderRadius: '50px',
-                                            display: 'flex',
-                                            gap: '10px',
-                                            alignItems: 'center'
-                                        }}>
+                            <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px', position: 'relative', minHeight: '600px' }}>
+                                {(selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('.pdf') || selectedProof.includes('/image/upload/')) && !selectedProof.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                                        {/* PDF Icon and Info */}
+                                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                                            <div style={{
+                                                width: '80px',
+                                                height: '80px',
+                                                background: '#ef4444',
+                                                borderRadius: '16px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                margin: '0 auto 1rem',
+                                                boxShadow: '0 10px 30px rgba(239, 68, 68, 0.3)'
+                                            }}>
+                                                <FileText size={40} color="#fff" />
+                                            </div>
+                                            <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#000' }}>
+                                                Comprovativo em PDF
+                                            </h4>
+                                            <p style={{ fontSize: '0.85rem', color: '#666', maxWidth: '400px', margin: '0 auto' }}>
+                                                Por questões de segurança, alguns navegadores bloqueiam PDFs inline. Clique no botão abaixo para visualizar.
+                                            </p>
+                                        </div>
+
+                                        {/* Primary Action Buttons */}
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '400px' }}>
                                             <a
                                                 href={selectedProof}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 style={{
+                                                    padding: '1rem 2rem',
+                                                    background: '#000',
                                                     color: '#FFD700',
+                                                    borderRadius: '12px',
                                                     textDecoration: 'none',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '6px',
-                                                    fontSize: '0.9rem',
-                                                    fontWeight: 700
+                                                    justifyContent: 'center',
+                                                    gap: '10px',
+                                                    fontSize: '1rem',
+                                                    fontWeight: 700,
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                                    transition: 'all 0.2s'
                                                 }}
+                                                onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'}
+                                                onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'}
                                             >
-                                                <Eye size={16} /> Abrir PDF em Nova Aba
+                                                <Eye size={20} /> Abrir PDF em Nova Aba
+                                            </a>
+
+                                            <a
+                                                href={selectedProof}
+                                                download
+                                                style={{
+                                                    padding: '1rem 2rem',
+                                                    background: '#fff',
+                                                    color: '#000',
+                                                    border: '2px solid #000',
+                                                    borderRadius: '12px',
+                                                    textDecoration: 'none',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '10px',
+                                                    fontSize: '1rem',
+                                                    fontWeight: 700,
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#f8f8f8'}
+                                                onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#fff'}
+                                            >
+                                                <Download size={20} /> Baixar PDF
                                             </a>
                                         </div>
-                                    </>
+                                    </div>
                                 ) : (
                                     <div style={{ position: 'relative', width: '100%', height: '600px' }}>
                                         <Image src={selectedProof} alt="Comprovativo" fill style={{ objectFit: 'contain' }} />
