@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const NewsletterSubscriber = require('../models/NewsletterSubscriber');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { authMiddleware: protect, adminMiddleware: admin } = require('../middleware/authMiddleware');
 
 // @desc    Subscribe to newsletter
 // @route   POST /api/newsletter/subscribe
