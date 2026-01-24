@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
