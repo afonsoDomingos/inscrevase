@@ -29,7 +29,8 @@ import {
     MessageCircle,
     Map as MapIcon,
     LifeBuoy,
-    Plus
+    Plus,
+    Newspaper
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
@@ -330,6 +331,7 @@ export default function ParticipantDashboard() {
                         { id: 'tickets', label: 'Meus Ingressos', icon: <Ticket size={20} /> },
                         { id: 'explore', label: 'Explorar Eventos', icon: <Compass size={20} /> },
                         { id: 'certificates', label: 'Meus Certificados', icon: <Award size={20} /> },
+                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} />, link: '/blog' },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/planos' },
                         { id: 'profile', label: 'Minha Conta', icon: <User size={20} /> },
                     ].map((item) => (

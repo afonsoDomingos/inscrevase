@@ -48,7 +48,8 @@ import {
     Bell,
     Map,
     ChevronLeft,
-    Menu
+    Menu,
+    Newspaper
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -371,6 +372,7 @@ function MentorDashboardContent() {
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
+                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} />, link: '/blog' },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
