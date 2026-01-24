@@ -528,7 +528,7 @@ export default function AdminDashboard() {
                                             <div style={{ background: `${card.color}15`, color: card.color, padding: '0.6rem', borderRadius: '10px' }}>
                                                 {card.icon}
                                             </div>
-                                            <span style={{ color: '#666', fontWeight: 600, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{card.label}</span>
+                                            <span style={{ color: '#1a1a1a', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{card.label}</span>
                                         </div>
                                         <h2 style={{ fontSize: '2.2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', position: 'relative' }}>{card.value}</h2>
                                     </motion.div>
@@ -560,21 +560,21 @@ export default function AdminDashboard() {
                                         >
                                             <div className="stats-grid" style={{ padding: '1rem 0' }}>
                                                 {activityCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: 'rgba(255,255,255,0.4)', padding: '1.5rem' }}>
+                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem' }}>
                                                             <div style={{ color: card.color }}>{card.icon}</div>
-                                                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#666' }}>{card.label}</span>
+                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1a1a1a' }}>{card.label}</span>
                                                         </div>
-                                                        <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{card.value}</div>
+                                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>{card.value}</div>
                                                     </div>
                                                 ))}
                                                 {financialCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: 'rgba(255,255,255,0.4)', padding: '1.5rem' }}>
+                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem' }}>
                                                             <div style={{ color: card.color }}>{card.icon}</div>
-                                                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#666' }}>{card.label}</span>
+                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1a1a1a' }}>{card.label}</span>
                                                         </div>
-                                                        <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{card.value}</div>
+                                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>{card.value}</div>
                                                     </div>
                                                 ))}
                                             </div>
