@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle, Zap, ShieldCheck, Crown, Loader2, Info } from "lucide-react";
-import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
@@ -67,7 +66,7 @@ export default function InternalPlansView() {
                     {['MZN', 'USD'].map((c) => (
                         <button
                             key={c}
-                            onClick={() => setCurrency(c as any)}
+                            onClick={() => setCurrency(c as 'MZN' | 'USD')}
                             style={{
                                 padding: '8px 25px',
                                 borderRadius: '50px',

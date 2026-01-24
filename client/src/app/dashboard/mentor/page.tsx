@@ -12,6 +12,7 @@ import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
+import { useCurrency } from "@/context/CurrencyContext";
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { Pencil } from 'lucide-react';
@@ -580,7 +581,13 @@ function MentorDashboardContent() {
                             style={{ position: 'relative', width: isMobile ? '50px' : '64px', height: isMobile ? '50px' : '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', flexShrink: 0 }}
                         >
                             {user.profilePhoto ? (
-                                <img src={user.profilePhoto} alt={user.name} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                                <Image
+                                    src={user.profilePhoto}
+                                    alt={user.name}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    unoptimized={user.profilePhoto.startsWith('http')}
+                                />
                             ) : (
                                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: 'var(--secondary)' }}>
                                     <UserIcon size={isMobile ? 24 : 32} />
