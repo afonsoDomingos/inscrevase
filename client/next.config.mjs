@@ -50,10 +50,6 @@ const nextConfig = {
                 source: '/api/:path*',
                 destination: `${process.env.BACKEND_API_URL || 'https://inscrevase.onrender.com/api'}/:path*`,
             },
-            {
-                source: '/uploads/:path*',
-                destination: `${(process.env.BACKEND_API_URL || 'https://inscrevase.onrender.com/api').replace('/api', '')}/uploads/:path*`,
-            },
         ];
     },
 };

@@ -2,27 +2,12 @@ const { Router } = require('express');
 const BlogPost = require('../models/BlogPost');
 const { authMiddleware: protect, adminMiddleware: adminOnly } = require('../middleware/authMiddleware');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { uploadToCloudinary } = require('../config/cloudinaryService');
 
 const router = Router();
 
-// Configure multer for blog image uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '../../uploads/blog');
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(
-            file.originalname
-        )}`;
-        cb(null, uniqueName);
-    },
-});
+// Configure multer for memory storage (for Cloudinary)
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
@@ -198,11 +183,11 @@ router.post(
                 return res.status(400).json({ message: 'Nenhuma imagem enviada' });
             }
 
-            const imageUrl = `/uploads/blog/${req.file.filename}`;
-            res.json({ url: imageUrl });
+            const result = await uploadToCloudinary(req.file.buffer, 'blog');
+            res.json({ url: result.secure_url });
         } catch (error) {
-            console.error('Error uploading image:', error);
-            res.status(500).json({ message: 'Erro ao fazer upload da imagem' });
+            console.error('Error uploading image to Cloudinary:', error);
+            res.status(500).json({ message: 'Erro ao fazer upload da imagem para o Cloudinary' });
         }
     }
 );
