@@ -8,6 +8,7 @@ import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 
 interface ProfileModalProps {
     isOpen: boolean;
@@ -38,7 +39,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                 const url = await formService.uploadFile(e.target.files[0], 'profiles');
                 setProfilePhoto(url);
             } catch (err) {
-                alert(t('events.profile.uploadError'));
+                console.error("Profile image upload error (Modal):", err);
+                toast.error(t('events.profile.uploadError'));
             } finally {
                 setUploading(false);
             }
@@ -58,11 +60,13 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                 socialLinks,
                 facebookPixelId
             });
+            toast.success(t('events.profile.updateSuccess') || 'Perfil atualizado com sucesso!');
             onSuccess();
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || t('events.profile.updateError'));
+            console.error("Profile update error (Modal):", error);
+            toast.error(error.message || t('events.profile.updateError'));
         } finally {
             setLoading(false);
         }

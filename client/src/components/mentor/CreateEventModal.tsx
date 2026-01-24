@@ -143,8 +143,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 const url = await formService.uploadFile(e.target.files[0], 'covers');
                 setCoverImage(url);
             } catch (err: unknown) {
-                console.error(err);
-                alert(t('common.error'));
+                console.error("Cover Upload Error:", err);
+                toast.error(t('common.error'));
             } finally {
                 setUploadingImage(false);
             }
@@ -174,7 +174,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
     const handleSubmit = async () => {
         if (!title || !description) {
-            alert(t('events.fillTitleDescAlert'));
+            toast.error(t('events.fillTitleDescAlert'));
             setStep(1);
             return;
         }
@@ -182,7 +182,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         // Validate Fields
         const hasEmptyFields = fields.some(f => !f.label.trim());
         if (hasEmptyFields) {
-            alert(t('events.emptyFieldsAlert'));
+            toast.error(t('events.emptyFieldsAlert'));
             setStep(2);
             return;
         }
@@ -223,6 +223,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
+            console.error("Create Event Error:", error);
             toast.error(error.message || t('common.error'));
         } finally {
             setLoading(false);
@@ -482,13 +483,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             <textarea
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}
-                                                maxLength={500}
+                                                maxLength={3000}
                                                 rows={4}
                                                 placeholder={t('events.descriptionPlaceholder')}
                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
                                             />
                                             <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
-                                                {description.length}/500
+                                                {description.length}/3000
                                             </div>
 
                                         </div>

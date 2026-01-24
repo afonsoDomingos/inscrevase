@@ -7,6 +7,7 @@ import { formService } from '@/lib/formService';
 import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 import PremiumBadge from '../common/PremiumBadge';
 
 interface MentorSettingsProps {
@@ -71,7 +72,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 const url = await formService.uploadFile(e.target.files[0], 'profiles');
                 setFormData(prev => ({ ...prev, profilePhoto: url }));
             } catch (err) {
-                alert(t('events.profile.uploadError'));
+                console.error("Profile image upload error:", err);
+                toast.error(t('events.profile.uploadError'));
             } finally {
                 setUploading(false);
             }
@@ -92,9 +94,10 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 socialLinks: formData.socialLinks
             });
             onUpdate();
-            alert(t('dashboard.settings.updateSuccess'));
+            toast.success(t('dashboard.settings.updateSuccess'));
         } catch (err) {
-            alert(t('dashboard.settings.updateError'));
+            console.error("Profile update error:", err);
+            toast.error(t('dashboard.settings.updateError'));
         } finally {
             setLoading(false);
         }
@@ -105,9 +108,10 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
             try {
                 await authService.requestVerification();
                 onUpdate(); // Refresh parent
-                alert('Solicitação enviada! Aguarde a análise.');
+                toast.success('Solicitação enviada! Aguarde a análise.');
             } catch (err) {
-                alert('Erro ao solicitar verificação.');
+                console.error("Verification request error:", err);
+                toast.error('Erro ao solicitar verificação.');
             }
         }
     };
@@ -117,11 +121,12 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
             setLoading(true);
             try {
                 await authService.downgrade();
-                alert('Sua conta foi alterada para Participante com sucesso.');
+                toast.success('Sua conta foi alterada para Participante com sucesso.');
                 // authService.downgrade refreshes the profile which will trigger the dashboard redirect if the dashboard has a redirect logic
                 window.location.reload(); // Simplest way to trigger the dashboard's redirect logic
             } catch (err) {
-                alert('Erro ao alterar tipo de conta.');
+                console.error("Downgrade error:", err);
+                toast.error('Erro ao alterar tipo de conta.');
             } finally {
                 setLoading(false);
             }

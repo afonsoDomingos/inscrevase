@@ -2,6 +2,10 @@ import type { Metadata, ResolvingMetadata } from 'next';
 import { formService } from '@/lib/formService';
 import PublicFormClient from './PublicFormClient';
 
+// Force dynamic rendering to prevent stale data (e.g. seeing deleted events)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // This is a Server Component
 export default async function Page({ params }: { params: { slug: string } }) {
     const { slug } = params;

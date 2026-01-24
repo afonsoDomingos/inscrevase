@@ -32,12 +32,10 @@ exports.createForm = async (req, res) => {
             slug,
             fields,
             theme,
-            eventDate: eventDate === "" ? undefined : eventDate,
             eventTime,
             eventType,
             category: category || 'Outros',
             paymentConfig: sanitizedPaymentConfig,
-            capacity: capacity ? parseInt(capacity) : undefined,
             whatsappConfig,
             videoUrl,
             coverImage,
@@ -53,14 +51,34 @@ exports.createForm = async (req, res) => {
             agenda,
             materials,
             certificateConfig,
-            active
+            active: active !== undefined ? active : true
         });
+
+        // Handle Date explicitly
+        if (eventDate === "" || eventDate === null) {
+            newForm.eventDate = undefined;
+        } else if (eventDate) {
+            const d = new Date(eventDate);
+            if (!isNaN(d.getTime())) newForm.eventDate = d;
+        }
+
+        // Handle Capacity explicitly
+        if (capacity === "" || capacity === null) {
+            newForm.capacity = undefined;
+        } else if (capacity) {
+            const cap = parseInt(capacity);
+            if (!isNaN(cap)) newForm.capacity = cap;
+        }
 
         const form = await newForm.save();
         res.status(201).json(form);
     } catch (err) {
-        console.error("Create Form Error:", err);
-        res.status(500).json({ message: 'Server Error' });
+        console.error("CRITICAL Create Form Error:", err);
+        res.status(500).json({
+            message: 'Erro interno ao criar formulário',
+            error: err.message,
+            details: err.errors
+        });
     }
 };
 
@@ -128,11 +146,31 @@ exports.updateForm = async (req, res) => {
         if (eventTime !== undefined) form.eventTime = eventTime;
         if (eventType !== undefined) form.eventType = eventType;
         if (category !== undefined) form.category = category;
-        if (eventDate !== undefined) form.eventDate = (eventDate === "" || eventDate === null) ? undefined : eventDate;
+
+        // Date handling
+        if (eventDate !== undefined) {
+            if (eventDate === "" || eventDate === null) {
+                form.eventDate = undefined;
+            } else {
+                const dateParsed = new Date(eventDate);
+                if (!isNaN(dateParsed.getTime())) {
+                    form.eventDate = dateParsed;
+                } else {
+                    console.warn(`Data inválida recebida: ${eventDate}`);
+                }
+            }
+        }
 
         // Capacity - allow clearing with null or empty string
         if (capacity !== undefined) {
-            form.capacity = (capacity === "" || capacity === null) ? undefined : parseInt(capacity);
+            if (capacity === "" || capacity === null) {
+                form.capacity = undefined;
+            } else {
+                const cap = parseInt(capacity);
+                if (!isNaN(cap)) {
+                    form.capacity = cap;
+                }
+            }
         }
 
         // Video & Display
@@ -152,74 +190,86 @@ exports.updateForm = async (req, res) => {
         if (agenda !== undefined) form.agenda = agenda;
         if (materials !== undefined) form.materials = materials;
 
-        // Theme - Merge to avoid wiping advanced settings
+        // Theme - Deep Merge
         if (theme) {
+            const currentTheme = form.theme ? (typeof form.theme.toObject === 'function' ? form.theme.toObject() : form.theme) : {};
             form.theme = {
-                ...form.theme?.toObject(),
+                ...currentTheme,
                 ...theme
             };
         }
 
-        // WhatsApp - Merge
+        // WhatsApp - Deep Merge
         if (whatsappConfig) {
+            const currentWA = form.whatsappConfig ? (typeof form.whatsappConfig.toObject === 'function' ? form.whatsappConfig.toObject() : form.whatsappConfig) : {};
             form.whatsappConfig = {
-                ...form.whatsappConfig?.toObject(),
+                ...currentWA,
                 ...whatsappConfig
             };
         }
 
-        // Payment Config - Merge
+        // Payment Config - Deep Merge
         if (paymentConfig) {
+            const currentPayment = form.paymentConfig ? (typeof form.paymentConfig.toObject === 'function' ? form.paymentConfig.toObject() : form.paymentConfig) : {};
             let sanitizedConfig = {
-                ...form.paymentConfig?.toObject(),
+                ...currentPayment,
                 ...paymentConfig
             };
             if (sanitizedConfig.enabled) {
-                const price = parseFloat(sanitizedConfig.price);
-                sanitizedConfig.price = isNaN(price) ? 0 : price;
+                const priceValue = parseFloat(sanitizedConfig.price);
+                sanitizedConfig.price = isNaN(priceValue) ? 0 : priceValue;
             }
             form.paymentConfig = sanitizedConfig;
         }
 
-        // Certificate Config - Merge
+        // Certificate Config - Deep Merge
         if (certificateConfig) {
+            const currentCert = form.certificateConfig ? (typeof form.certificateConfig.toObject === 'function' ? form.certificateConfig.toObject() : form.certificateConfig) : {};
             form.certificateConfig = {
-                ...form.certificateConfig?.toObject(),
+                ...currentCert,
                 ...certificateConfig
             };
         }
 
         await form.save();
-        console.log('Formulário salvo com sucesso!');
+        console.log('--- Formulário salvo com sucesso! ---');
         res.json(form);
     } catch (err) {
-        console.error("Update Form Error Details:", {
-            message: err.message,
-            stack: err.stack,
-            id: req.params.id,
-            body: req.body
+        console.error("CRITICAL Update Form Error:", err);
+        res.status(500).json({
+            message: 'Erro interno ao atualizar formulário',
+            error: err.message,
+            details: err.errors // Include validation errors if available
         });
-        res.status(500).json({ message: 'Erro ao atualizar formulário', error: err.message });
     }
 };
 
 exports.deleteForm = async (req, res) => {
     try {
-        const form = await Form.findById(req.params.id);
-        if (!form) return res.status(404).json({ message: 'Form not found' });
+        const formId = req.params.id;
+        const form = await Form.findById(formId);
 
+        if (!form) return res.status(404).json({ message: 'Formulário não encontrado' });
+
+        // Ensure user owns the form OR is an admin
         if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
-            return res.status(401).json({ message: 'Not authorized' });
+            return res.status(401).json({ message: 'Não autorizado' });
         }
 
-        // Delete associated submissions? Or keep them? Usually delete.
-        // await Submission.deleteMany({ form: form._id }); // Add Submission model if needed
+        console.log(`--- Excluindo Formulário: ${formId} (${form.title}) ---`);
 
-        await form.deleteOne();
-        res.json({ message: 'Form removed' });
+        // 1. Delete all associated submissions
+        const subResult = await Submission.deleteMany({ form: formId });
+        console.log(`Removidas ${subResult.deletedCount} inscrições associadas.`);
+
+        // 2. Delete the form itself
+        await Form.findByIdAndDelete(formId);
+
+        console.log('Formulário excluído com sucesso do banco de dados.');
+        res.json({ message: 'Evento e todas as inscrições foram excluídos permanentemente.' });
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error("CRITICAL Delete Form Error:", err);
+        res.status(500).json({ message: 'Erro ao excluir o evento do servidor', error: err.message });
     }
 };
 

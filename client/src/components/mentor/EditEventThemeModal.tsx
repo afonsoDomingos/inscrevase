@@ -126,6 +126,7 @@ export default function EditEventThemeModal({ isOpen, onClose, form, onSuccess }
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
+            console.error("Theme Update Error:", error);
             toast.error(error.message || t('events.theme.updateError'));
         } finally {
             setLoading(false);

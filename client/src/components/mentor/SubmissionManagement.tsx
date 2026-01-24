@@ -69,7 +69,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             }
         } catch (error) {
             console.error('Error updating status:', error);
-            alert(t('common.updateStatusError'));
+            toast.error(t('common.updateStatusError'));
         }
     };
 

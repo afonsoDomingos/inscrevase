@@ -21,7 +21,7 @@ const FormSchema = new mongoose.Schema({
     creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
-    description: { type: String, maxLength: 500 },
+    description: { type: String, maxLength: 3000 },
     logo: { type: String },
     coverImage: { type: String },
     coverImageMode: { type: String, enum: ['full', 'banner'], default: 'full' }, // full = imagem completa, banner = cortada

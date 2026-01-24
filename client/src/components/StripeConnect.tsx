@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { CreditCard, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
+import { toast } from 'sonner';
+
 interface StripeStatus {
     onboardingComplete: boolean;
     connected: boolean;
@@ -64,9 +66,10 @@ export default function StripeConnect() {
             } else {
                 throw new Error(result.message || 'Falha ao gerar link');
             }
-        } catch (error) {
-            console.error('Connection error:', error);
-            alert('Erro ao conectar com Stripe. Verifique os logs.');
+        } catch (error: unknown) {
+            const err = error as Error;
+            console.error('Stripe Connection error:', err);
+            toast.error(err.message || 'Erro ao conectar com Stripe. Verifique sua conexão.');
             setConnecting(false);
         }
     };
