@@ -514,8 +514,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             <ShieldCheck size={20} color={primaryColor} />
                                             <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Valor da Inscrição</span>
                                         </div>
-                                        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor }}>
-                                            {form.paymentConfig.price} <small style={{ fontSize: '1rem' }}>{form.paymentConfig.currency}</small>
+                                        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor, wordBreak: 'break-word', lineHeight: '1.1' }}>
+                                            {form.paymentConfig.price?.toLocaleString('pt-PT')} <small style={{ fontSize: '1rem', fontWeight: 700 }}>{form.paymentConfig.currency}</small>
                                         </div>
                                         {form.paymentConfig.instructions && (
                                             <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor }}>
