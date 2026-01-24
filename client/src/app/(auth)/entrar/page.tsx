@@ -93,15 +93,8 @@ export default function Login() {
                 </Link>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
-                <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                >
-                    <Image src="/logo.png" alt="Logo" width={36} height={36} style={{ margin: '0 auto 0.6rem' }} />
-                </motion.div>
-                <h1 style={{ fontSize: '1.4rem', margin: 0, color: '#fff', fontWeight: 700, letterSpacing: '-0.5px' }}>{t('auth.loginTitle')}</h1>
-                <p style={{ color: '#888', fontSize: '0.8rem', marginTop: '0.2rem' }}>Bem-vindo de volta.</p>
+            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                <h1 style={{ fontSize: '1.5rem', margin: 0, color: '#fff', fontWeight: 700, letterSpacing: '-0.5px' }}>Entrar</h1>
             </div>
 
             {error && (

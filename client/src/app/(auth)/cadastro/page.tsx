@@ -166,12 +166,8 @@ function RegisterContent() {
                 </div>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '0.8rem' }}>
-                <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-                    <Image src="/logo.png" alt="Logo" width={36} height={36} style={{ margin: '0 auto 0.6rem' }} />
-                </motion.div>
-                <h1 style={{ fontSize: '1.4rem', margin: 0, color: '#fff', fontWeight: 700 }}>{t('auth.registerTitle')}</h1>
-                <p style={{ color: '#888', fontSize: '0.8rem', marginTop: '0.2rem' }}>Comece sua jornada.</p>
+            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                <h1 style={{ fontSize: '1.5rem', margin: 0, color: '#fff', fontWeight: 700 }}>Criar Conta</h1>
             </div>
 
             {/* Role Selector */}
