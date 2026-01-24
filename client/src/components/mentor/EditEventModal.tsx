@@ -1055,8 +1055,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
                                                             <input
                                                                 type="number"
+                                                                min="0"
+                                                                step="0.01"
                                                                 value={paymentConfig.price}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, price: parseFloat(e.target.value) })}
+                                                                onChange={(e) => {
+                                                                    const val = parseFloat(e.target.value);
+                                                                    setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
+                                                                }}
                                                                 placeholder={t('events.pricePlaceholder')}
                                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                                             />

@@ -848,7 +848,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         <input
                                                             type="number"
                                                             value={paymentConfig.price}
-                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, price: parseFloat(e.target.value) })}
+                                                            onChange={(e) => {
+                                                                const val = parseFloat(e.target.value);
+                                                                setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
+                                                            }}
                                                             placeholder={t('events.pricePlaceholder')}
                                                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                                         />
