@@ -12,7 +12,6 @@ import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
-import { useCurrency } from "@/context/CurrencyContext";
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { Pencil } from 'lucide-react';
