@@ -246,23 +246,110 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             </div>
 
             {/* Content Section */}
-            <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 800px) 300px', gap: '60px', padding: '80px 20px' }}>
+            <div style={{ maxWidth: '1240px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 740px) 320px', gap: '100px', padding: '100px 20px' }}>
 
                 {/* Long Form Article */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
+                    style={{ position: 'relative' }}
                 >
+                    <style jsx global>{`
+                        .blog-content p:first-of-type::first-letter {
+                            float: left;
+                            font-size: 5rem;
+                            line-height: 1;
+                            font-weight: 800;
+                            padding-right: 15px;
+                            color: #000;
+                            font-family: var(--font-playfair, serif);
+                        }
+                        .blog-content {
+                            letter-spacing: -0.01em;
+                        }
+                    `}</style>
                     <article className="blog-content">
                         <ReactMarkdown
                             components={{
-                                h2: ({ ...props }) => <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '2.5rem', marginBottom: '1.2rem', color: '#0f172a' }} {...props} />,
-                                h3: ({ ...props }) => <h3 style={{ fontSize: '1.7rem', fontWeight: 700, marginTop: '2rem', marginBottom: '1rem', color: '#1e293b' }} {...props} />,
-                                p: ({ ...props }) => <p style={{ fontSize: '1.25rem', lineHeight: '1.9', marginBottom: '1.8rem', color: '#334155' }} {...props} />,
-                                img: ({ ...props }) => <img alt="" {...props} style={{ maxWidth: '100%', borderRadius: '16px', margin: '2rem 0', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />,
+                                h2: ({ ...props }) => (
+                                    <h2 style={{
+                                        fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
+                                        fontWeight: 800,
+                                        marginTop: '4rem',
+                                        marginBottom: '1.5rem',
+                                        color: '#000',
+                                        fontFamily: 'var(--font-playfair, serif)',
+                                        position: 'relative',
+                                        display: 'inline-block'
+                                    }} {...props}>
+                                        {props.children}
+                                        <span style={{ position: 'absolute', bottom: '-8px', left: 0, width: '60px', height: '4px', background: 'var(--gold-gradient, #FFD700)', borderRadius: '2px' }} />
+                                    </h2>
+                                ),
+                                h3: ({ ...props }) => (
+                                    <h3 style={{
+                                        fontSize: '1.5rem',
+                                        fontWeight: 700,
+                                        marginTop: '3rem',
+                                        marginBottom: '1rem',
+                                        color: '#1e293b',
+                                        letterSpacing: '-0.5px'
+                                    }} {...props} />
+                                ),
+                                p: ({ ...props }) => (
+                                    <p style={{
+                                        fontSize: '1.2rem',
+                                        lineHeight: '2',
+                                        marginBottom: '2rem',
+                                        color: '#334155',
+                                        fontWeight: 400
+                                    }} {...props} />
+                                ),
+                                ul: ({ ...props }) => (
+                                    <ul style={{
+                                        margin: '2rem 0',
+                                        paddingLeft: '1.5rem',
+                                        listStyle: 'none'
+                                    }} {...props} />
+                                ),
+                                li: ({ ...props }) => (
+                                    <li style={{
+                                        marginBottom: '1rem',
+                                        fontSize: '1.15rem',
+                                        color: '#475569',
+                                        position: 'relative',
+                                        paddingLeft: '25px',
+                                        lineHeight: '1.6'
+                                    }}>
+                                        <span style={{ position: 'absolute', left: 0, top: '10px', width: '8px', height: '8px', background: '#FFD700', borderRadius: '50%' }} />
+                                        {props.children}
+                                    </li>
+                                ),
                                 blockquote: ({ ...props }) => (
-                                    <blockquote style={{ borderLeft: '6px solid #FFD700', padding: '30px', fontStyle: 'italic', fontSize: '1.4rem', color: '#475569', margin: '3rem 0', background: '#f8fafc', borderRadius: '0 16px 16px 0' }} {...props} />
+                                    <blockquote style={{
+                                        borderLeft: 'none',
+                                        padding: '40px',
+                                        fontStyle: 'italic',
+                                        fontSize: '1.5rem',
+                                        color: '#0f172a',
+                                        margin: '4rem 0',
+                                        background: '#f8fafc',
+                                        borderRadius: '24px',
+                                        position: 'relative',
+                                        textAlign: 'center',
+                                        fontFamily: 'var(--font-playfair, serif)'
+                                    }}>
+                                        <span style={{ position: 'absolute', top: '20px', left: '20px', fontSize: '4rem', color: '#FFD700', opacity: 0.3, lineHeight: 1 }}>"</span>
+                                        {props.children}
+                                        <span style={{ position: 'absolute', bottom: '-10px', right: '20px', fontSize: '4rem', color: '#FFD700', opacity: 0.3, lineHeight: 1 }}>"</span>
+                                    </blockquote>
+                                ),
+                                img: ({ ...props }) => (
+                                    <div style={{ margin: '4rem 0' }}>
+                                        <img alt="" {...props} style={{ maxWidth: '100%', borderRadius: '32px', boxShadow: '0 30px 60px rgba(0,0,0,0.12)' }} />
+                                        {props.title && <span style={{ display: 'block', textAlign: 'center', marginTop: '15px', fontSize: '0.9rem', color: '#94a3b8' }}>{props.title}</span>}
+                                    </div>
                                 )
                             }}
                         >
