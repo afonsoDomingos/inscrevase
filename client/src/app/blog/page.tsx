@@ -6,6 +6,8 @@ import { Calendar, TrendingUp, Users, Lightbulb, Eye, Heart, ArrowRight } from '
 import Image from 'next/image';
 import { blogService, BlogPost } from '@/lib/blogService';
 import { motion } from 'framer-motion';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const categoryIcons = {
     guide: Calendar,
@@ -35,27 +37,41 @@ export default function BlogPage() {
 
     return (
         <main style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
+            <Navbar />
+
             {/* Hero Section */}
             <section style={{
-                background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
-                padding: '160px 20px 100px',
+                height: '70vh',
+                minHeight: '500px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 textAlign: 'center',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                background: '#000'
             }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 70% 30%, rgba(255,215,0,0.05) 0%, transparent 70%)' }} />
+                <Image
+                    src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop"
+                    alt="Blog Banner"
+                    fill
+                    style={{ objectFit: 'cover', opacity: 0.5 }}
+                    priority
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 100%)' }} />
 
-                <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+                <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1, padding: '0 20px' }}>
                     <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         style={{
-                            fontSize: 'clamp(3rem, 8vw, 5rem)',
+                            fontSize: 'clamp(3.5rem, 10vw, 6rem)',
                             fontWeight: 900,
                             color: '#fff',
                             marginBottom: '1.5rem',
                             letterSpacing: '-2px',
-                            fontFamily: 'var(--font-playfair, serif)'
+                            fontFamily: 'var(--font-playfair, serif)',
+                            lineHeight: 1
                         }}
                     >
                         Expanda seus <span style={{ color: '#FFD700' }}>Horizontes</span>
@@ -63,13 +79,14 @@ export default function BlogPage() {
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
+                        transition={{ delay: 0.2 }}
                         style={{
-                            fontSize: '1.3rem',
-                            color: '#94a3b8',
+                            fontSize: '1.5rem',
+                            color: 'rgba(255,255,255,0.9)',
                             lineHeight: '1.8',
-                            maxWidth: '700px',
-                            margin: '0 auto'
+                            maxWidth: '750px',
+                            margin: '0 auto',
+                            fontWeight: 300
                         }}
                     >
                         Estratégias exclusivas de mentoria, marketing e gestão de eventos para profissionais que buscam a excelência.
@@ -168,6 +185,8 @@ export default function BlogPage() {
                     </div>
                 )}
             </section>
+
+            <Footer />
 
             <style jsx>{`
                 .post-card:hover {

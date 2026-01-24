@@ -14,6 +14,8 @@ import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { authService, UserData } from '@/lib/authService';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
     const [post, setPost] = useState<BlogPost | null>(null);
@@ -137,6 +139,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
     return (
         <main style={{ background: '#fff', minHeight: '100vh', position: 'relative' }}>
+            <Navbar />
+
             {/* Reading Progress Bar */}
             <motion.div
                 style={{
@@ -486,6 +490,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     </div>
                 </aside>
             </div>
+
+            <Footer />
 
             <style jsx>{`
                 .blog-content {
