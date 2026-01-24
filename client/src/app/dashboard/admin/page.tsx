@@ -620,7 +620,7 @@ export default function AdminDashboard() {
                                     {expandedSections.performance && (
                                         <motion.div
                                             initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                                            style={{ overflow: 'hidden' }}
+                                            style={{ overflow: 'visible' }}
                                         >
                                             <div style={{ paddingTop: '2rem' }}>
 
@@ -710,7 +710,7 @@ export default function AdminDashboard() {
                                                         </h3>
                                                         <div style={{ height: '320px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
-                                                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
+                                                                <RadarChart key={`radar-${expandedSections.performance}`} cx="50%" cy="50%" outerRadius="80%" data={[
                                                                     { subject: 'Mentores', A: stats?.mentors || 0, fullMark: 100 },
                                                                     { subject: 'Eventos', A: stats?.forms || 0, fullMark: 100 },
                                                                     { subject: 'Participantes', A: stats?.participants || 0, fullMark: 100 },
@@ -735,6 +735,7 @@ export default function AdminDashboard() {
                                                         <div style={{ height: '320px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <RadialBarChart
+                                                                    key={`radial-${expandedSections.performance}`}
                                                                     cx="50%" cy="50%"
                                                                     innerRadius="20%" outerRadius="100%"
                                                                     barSize={15}
@@ -767,7 +768,7 @@ export default function AdminDashboard() {
                                                         </h3>
                                                         <div style={{ height: '320px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
-                                                                <ComposedChart data={trafficStats?.trafficByHour || []}>
+                                                                <ComposedChart key={`composed-${expandedSections.performance}`} data={trafficStats?.trafficByHour || []}>
                                                                     <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
                                                                     <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
                                                                     <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
@@ -787,7 +788,7 @@ export default function AdminDashboard() {
                                                         </h3>
                                                         <div style={{ height: '300px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
-                                                                <AreaChart data={trafficStats?.trafficByMonth?.map(m => ({ name: monthNames[m.month - 1], count: m.count })) || []}>
+                                                                <AreaChart key={`area-${expandedSections.performance}`} data={trafficStats?.trafficByMonth?.map(m => ({ name: monthNames[m.month - 1], count: m.count })) || []}>
                                                                     <defs>
                                                                         <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
                                                                             <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8} />

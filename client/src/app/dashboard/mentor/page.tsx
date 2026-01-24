@@ -56,10 +56,11 @@ import StripeConnect from '../../../components/StripeConnect';
 import EarningsDashboard from '../../../components/EarningsDashboard';
 import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
+import InternalPlansView from '@/components/common/InternalPlansView';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans';
 
 import { Suspense } from 'react';
 
@@ -379,13 +380,14 @@ function MentorDashboardContent() {
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
-                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/planos' },
+                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
-                    ].map((item) => (
+                    ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
                             key={item.id}
+                            id={`mentor-nav-${item.id}`}
                             onClick={() => {
-                                if ('link' in item && item.link) {
+                                if (item.link) {
                                     router.push(item.link);
                                 } else {
                                     setActiveTab(item.id as Tab);
@@ -578,7 +580,7 @@ function MentorDashboardContent() {
                             style={{ position: 'relative', width: isMobile ? '50px' : '64px', height: isMobile ? '50px' : '64px', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: '2px solid #FFD700', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', flexShrink: 0 }}
                         >
                             {user.profilePhoto ? (
-                                <Image src={user.profilePhoto} alt={user.name} fill style={{ objectFit: 'cover' }} />
+                                <img src={user.profilePhoto} alt={user.name} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                             ) : (
                                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', background: 'var(--secondary)' }}>
                                     <UserIcon size={isMobile ? 24 : 32} />
@@ -1098,6 +1100,12 @@ function MentorDashboardContent() {
                     {activeTab === 'blog' && (
                         <motion.div key="blog" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <InternalBlogView />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'plans' && (
+                        <motion.div key="plans" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <InternalPlansView />
                         </motion.div>
                     )}
                 </AnimatePresence>

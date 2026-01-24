@@ -40,7 +40,9 @@ import { submissionService, SubmissionModel } from '@/lib/submissionService';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import InternalBlogView from '@/components/common/InternalBlogView';
 
-type Tab = 'tickets' | 'explore' | 'certificates' | 'profile' | 'blog';
+import InternalPlansView from '@/components/common/InternalPlansView';
+
+type Tab = 'tickets' | 'explore' | 'certificates' | 'profile' | 'blog' | 'plans';
 const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
 
 export default function ParticipantDashboard() {
@@ -331,14 +333,14 @@ export default function ParticipantDashboard() {
                         { id: 'explore', label: 'Explorar Eventos', icon: <Compass size={20} /> },
                         { id: 'certificates', label: 'Meus Certificados', icon: <Award size={20} /> },
                         { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} /> },
-                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/planos' },
+                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: 'Minha Conta', icon: <User size={20} /> },
-                    ].map((item) => (
+                    ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
                             key={item.id}
                             id={`participant-nav-${item.id}`}
                             onClick={() => {
-                                if ('link' in item && item.link) {
+                                if (item.link) {
                                     router.push(item.link);
                                 } else {
                                     setActiveTab(item.id as Tab);
@@ -983,6 +985,17 @@ export default function ParticipantDashboard() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <InternalBlogView />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'plans' && (
+                        <motion.div
+                            key="plans"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <InternalPlansView />
                         </motion.div>
                     )}
                 </AnimatePresence>
