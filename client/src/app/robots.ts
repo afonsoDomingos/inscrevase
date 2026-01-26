@@ -1,14 +1,12 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://inscreva-se.com';
-
 export default function robots(): MetadataRoute.Robots {
     return {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: ['/dashboard/', '/hub/', '/admin/'],
+            disallow: ['/dashboard/', '/admin/', '/api/', '/private/'],
         },
-        sitemap: `${BASE_URL}/sitemap.xml`,
+        sitemap: 'https://inscreva-se.com/sitemap.xml',
     };
 }
