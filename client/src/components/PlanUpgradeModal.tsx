@@ -143,9 +143,10 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                                     Efetue o pagamento de <b>{manualPlan.amount} {currency}</b> por um dos canais abaixo e suba o comprovativo:
                                 </p>
                                 <div style={{ background: '#fff', padding: '15px', borderRadius: '16px', textAlign: 'left', fontSize: '0.85rem' }}>
-                                    <div style={{ marginBottom: '8px' }}>💰 <b>M-Pesa:</b> 84XXXXXXXX (Afonso D.)</div>
-                                    <div style={{ marginBottom: '8px' }}>💰 <b>e-Mola:</b> 87XXXXXXXX (Afonso D.)</div>
-                                    <div>🏦 <b>IBAN:</b> MZ59 0000 0000 0000 0000 0</div>
+                                    <div style={{ marginBottom: '8px' }}>🇲🇿 <b>M-Pesa:</b> 847877405 (Afonso Domingos)</div>
+                                    <div style={{ marginBottom: '8px' }}>🇲🇿 <b>e-Mola:</b> 879642412 (Afonso Domingos)</div>
+                                    <div style={{ marginBottom: '8px' }}>🌍 <b>PayPal:</b> karinganastudio23@gmail.com</div>
+                                    <div>🏦 <b>NIB:</b> 000100000074301049557</div>
                                 </div>
                             </div>
 
