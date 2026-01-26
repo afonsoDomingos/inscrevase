@@ -621,7 +621,7 @@ exports.getAdminTransactions = async (req, res) => {
 exports.confirmTransactionPayment = async (req, res) => {
     try {
         const { transactionId } = req.params;
-        const transaction = await Transaction.findById(transactionId);
+        const transaction = await Transaction.findById(transactionId).populate('user');
 
         if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
         if (transaction.status === 'completed') return res.status(400).json({ message: 'Transaction already completed' });
@@ -629,7 +629,42 @@ exports.confirmTransactionPayment = async (req, res) => {
         transaction.status = 'completed';
         await transaction.save();
 
-        res.status(200).json({ success: true, message: 'Pagamento confirmado com sucesso' });
+        // If it's a subscription, upgrade the user
+        if (transaction.type === 'subscription') {
+            const plan = transaction.metadata.get('plan') || 'pro';
+            await User.findByIdAndUpdate(transaction.user._id, {
+                plan: plan,
+                role: 'mentor',
+                canCreateEvents: true
+            });
+            console.log(`User ${transaction.user._id} manually upgraded to ${plan}`);
+        }
+
+        res.status(200).json({ success: true, message: 'Pagamento confirmado e plano atualizado.' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.submitManualSubscription = async (req, res) => {
+    try {
+        const { plan, amount, proofUrl, currency = 'MT' } = req.body;
+        const userId = req.user.id;
+
+        const transaction = new Transaction({
+            type: 'subscription',
+            user: userId,
+            amount: Number(amount),
+            currency,
+            platformFee: Number(amount),
+            status: 'pending',
+            paymentMethod: 'manual',
+            proofUrl,
+            metadata: { plan }
+        });
+
+        await transaction.save();
+        res.status(201).json({ success: true, message: 'Solicitação de assinatura enviada com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

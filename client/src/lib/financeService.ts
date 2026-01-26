@@ -21,8 +21,9 @@ export interface TransactionModel {
     mentorEarnings?: number;
     status: 'pending' | 'completed' | 'failed';
     paymentMethod: 'stripe' | 'manual';
+    proofUrl?: string;
     createdAt: string;
-    metadata?: Record<string, unknown>;
+    metadata?: Record<string, string>;
 }
 
 export interface FinancialSummary {

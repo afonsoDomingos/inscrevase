@@ -57,6 +57,7 @@ router.patch('/admin/confirm-payment/:transactionId', authMiddleware, adminMiddl
 router.post('/subscription/create', authMiddleware, stripeController.createSubscription);
 router.post('/subscription/sync', authMiddleware, stripeController.syncSubscription);
 router.post('/subscription/portal', authMiddleware, stripeController.createPortalSession);
+router.post('/subscription/manual', authMiddleware, stripeController.submitManualSubscription);
 
 // Refund route
 router.post('/refund/:submissionId', authMiddleware, stripeController.refundPayment);

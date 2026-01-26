@@ -8,8 +8,13 @@ import {
     TrendingUp,
     FileText,
     ArrowUpRight,
-    Search
+    Search,
+    Eye,
+    X,
+    ExternalLink,
+    Download
 } from 'lucide-react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import {
@@ -33,6 +38,7 @@ export default function AdminFinance() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [selectedProof, setSelectedProof] = useState<string | null>(null);
 
     const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -323,27 +329,41 @@ export default function AdminFinance() {
                                         </div>
                                     </td>
                                     <td style={{ padding: '1.2rem', textAlign: 'right' }}>
-                                        {tx.status === 'pending' && (
-                                            <button
-                                                onClick={() => handleConfirmPayment(tx._id)}
-                                                style={{
-                                                    background: '#000',
-                                                    color: '#FFD700',
-                                                    border: 'none',
-                                                    padding: '0.6rem 1rem',
-                                                    borderRadius: '8px',
-                                                    fontSize: '0.75rem',
-                                                    fontWeight: 800,
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '5px',
-                                                    marginLeft: 'auto'
-                                                }}
-                                            >
-                                                <ArrowUpRight size={14} /> CONFIRMAR RECEBIMENTO
-                                            </button>
-                                        )}
+                                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                            {tx.proofUrl && (
+                                                <button
+                                                    onClick={() => setSelectedProof(tx.proofUrl!)}
+                                                    style={{
+                                                        background: '#fff', border: '1px solid #ddd', padding: '0.6rem',
+                                                        borderRadius: '8px', cursor: 'pointer', color: '#1a1a1a',
+                                                        display: 'flex', alignItems: 'center', gap: '5px'
+                                                    }}
+                                                    title="Ver Comprovativo"
+                                                >
+                                                    <Eye size={14} />
+                                                </button>
+                                            )}
+                                            {tx.status === 'pending' && (
+                                                <button
+                                                    onClick={() => handleConfirmPayment(tx._id)}
+                                                    style={{
+                                                        background: '#000',
+                                                        color: '#FFD700',
+                                                        border: 'none',
+                                                        padding: '0.6rem 1rem',
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 800,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px'
+                                                    }}
+                                                >
+                                                    <ArrowUpRight size={14} /> CONFIRMAR
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </motion.tr>
                             ))}
@@ -417,6 +437,40 @@ export default function AdminFinance() {
                     </div>
                 </div>
             )}
+            {/* Proof Modal */}
+            <AnimatePresence>
+                {selectedProof && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProof(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(5px)' }} />
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={{ position: 'relative', background: '#fff', borderRadius: '24px', maxWidth: '800px', width: '100%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Comprovativo de Pagamento</h3>
+                                <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><X size={24} /></button>
+                            </div>
+                            <div style={{ flex: 1, overflow: 'auto', background: '#f8f9fa', padding: '2rem', display: 'flex', justifyContent: 'center' }}>
+                                {selectedProof.toLowerCase().includes('.pdf') ? (
+                                    <div style={{ textAlign: 'center' }}>
+                                        <FileText size={64} color="#666" style={{ marginBottom: '1rem' }} />
+                                        <p>Ficheiro PDF detectado.</p>
+                                        <a href={selectedProof} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.8rem 1.5rem', background: '#000', color: '#FFD700', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, marginTop: '1rem' }}>
+                                            <ExternalLink size={18} /> ABRIR PDF
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <div style={{ position: 'relative', width: '100%', minHeight: '500px' }}>
+                                        <Image src={selectedProof} alt="Proof" fill style={{ objectFit: 'contain' }} unoptimized />
+                                    </div>
+                                )}
+                            </div>
+                            <div style={{ padding: '1.5rem', borderTop: '1px solid #eee', textAlign: 'right' }}>
+                                <a href={selectedProof} download style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.7rem 1.2rem', background: '#f0f0f0', color: '#000', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '0.85rem' }}>
+                                    <Download size={16} /> DOWNLOAD ORIGINAL
+                                </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

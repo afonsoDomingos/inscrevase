@@ -62,6 +62,9 @@ const transactionSchema = new mongoose.Schema({
         enum: ['stripe', 'manual'],
         default: 'manual'
     },
+    proofUrl: {
+        type: String
+    },
     metadata: {
         type: Map,
         of: String
