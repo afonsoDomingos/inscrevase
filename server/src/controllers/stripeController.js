@@ -654,6 +654,7 @@ exports.getAdminTransactions = async (req, res) => {
 
         const transactions = await Transaction.find(query)
             .populate('mentor', 'name email businessName')
+            .populate('user', 'name email businessName')
             .populate('form', 'title')
             .sort({ createdAt: -1 });
 
@@ -844,6 +845,26 @@ exports.getPlans = async (req, res) => {
             plans: dynamicPlans,
             rate: mznRate,
             lastUpdate: lastRateFetch
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getMySubscriptionStatus = async (req, res) => {
+    try {
+        const pendingTx = await Transaction.findOne({
+            user: req.user.id,
+            type: 'subscription',
+            status: 'pending',
+            paymentMethod: 'manual'
+        }).sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            pending: !!pendingTx,
+            plan: pendingTx ? pendingTx.metadata.get('plan') : null,
+            date: pendingTx ? pendingTx.createdAt : null
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

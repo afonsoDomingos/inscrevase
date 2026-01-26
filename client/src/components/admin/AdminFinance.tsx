@@ -292,8 +292,8 @@ export default function AdminFinance() {
                                     style={{ borderBottom: '1px solid #f9f9f9', fontSize: '0.9rem' }}
                                 >
                                     <td style={{ padding: '1.2rem' }}>
-                                        <div style={{ fontWeight: 700 }}>{tx.mentor?.name || 'Sistema'}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{tx.mentor?.businessName || tx.mentor?.email || 'Assinatura Direta'}</div>
+                                        <div style={{ fontWeight: 700 }}>{tx.mentor?.name || tx.user?.name || 'Sistema'}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{tx.mentor?.businessName || tx.user?.businessName || tx.mentor?.email || tx.user?.email || 'Assinatura Direta'}</div>
                                     </td>
                                     <td style={{ padding: '1.2rem' }}>
                                         <div style={{ fontWeight: 600 }}>{tx.type === 'subscription' ? `Assinatura: ${tx.metadata?.plan || 'Upgrade'}` : (tx.form?.title || 'Evento')}</div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, Zap, ShieldCheck, Crown, Loader2, Info } from "lucide-react";
+import { CheckCircle, Zap, ShieldCheck, Crown, Loader2, Info, Clock } from "lucide-react";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
@@ -13,10 +13,26 @@ export default function InternalPlansView() {
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [pendingSub, setPendingSub] = useState<{ pending: boolean; plan: string | null } | null>(null);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
+
+        const checkPendingSub = async () => {
+            try {
+                const token = authService.getToken();
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/my-subscription-status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) setPendingSub(data);
+            } catch (err) {
+                console.error('Error checking pending sub:', err);
+            }
+        };
+
+        checkPendingSub();
     }, []);
 
     const handleSubscribe = async (plan: string) => {
@@ -58,6 +74,34 @@ export default function InternalPlansView() {
                 <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
                     Selecione a moeda e o nível de parceria que melhor atende às suas necessidades atuais.
                 </p>
+
+                {pendingSub?.pending && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        style={{
+                            background: 'rgba(212, 175, 55, 0.1)',
+                            border: '1px solid #D4AF37',
+                            padding: '1.5rem',
+                            borderRadius: '16px',
+                            maxWidth: '600px',
+                            margin: '0 auto 2rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '15px'
+                        }}
+                    >
+                        <div style={{ background: '#D4AF37', color: '#000', padding: '10px', borderRadius: '50%', display: 'flex' }}>
+                            <Clock size={20} />
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                            <div style={{ fontWeight: 800, color: '#D4AF37', fontSize: '0.9rem', marginBottom: '4px' }}>STATUS DE PAGAMENTO: EM ANÁLISE</div>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+                                Recebemos o comprovativo do plano <b>{pendingSub.plan?.toUpperCase()}</b>. A nossa equipa está a validar e a tua conta será atualizada em breve.
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
                     {['MZN', 'USD'].map((c) => (

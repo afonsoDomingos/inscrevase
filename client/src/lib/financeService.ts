@@ -11,6 +11,12 @@ export interface TransactionModel {
         email: string;
         businessName?: string;
     };
+    user?: {
+        _id: string;
+        name: string;
+        email: string;
+        businessName?: string;
+    };
     form?: {
         _id: string;
         title: string;
