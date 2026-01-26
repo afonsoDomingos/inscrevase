@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
 export default function InternalPlansView() {
-    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
+    const { currency, setCurrency, formatPrice } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
