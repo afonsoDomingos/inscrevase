@@ -509,7 +509,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 )}
 
                                 {/* Middle Ad Slot */}
-                                <AdBanner slot="1234567890" format="horizontal" />
+                                <AdBanner slot="3569850277" format="horizontal" />
 
                                 {form.paymentConfig?.enabled && (
                                     <motion.div
@@ -827,7 +827,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                         {/* Bottom Ad Slot */}
                         <div style={{ marginTop: '3rem' }}>
-                            <AdBanner slot="0987654321" format="fluid" />
+                            <AdBanner slot="3569850277" format="fluid" />
                         </div>
                     </div>
                 )}
