@@ -6,11 +6,13 @@ import { useCurrency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
 import { toast } from "sonner";
+import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
 export default function InternalPlansView() {
     const { currency, setCurrency, formatPrice } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
@@ -121,14 +123,24 @@ export default function InternalPlansView() {
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> Analytics Detalhado</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> Marketing Automático</li>
                     </ul>
-                    <button
-                        onClick={() => handleSubscribe('pro')}
-                        disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
-                        className="btn-primary"
-                        style={{ width: '100%', borderRadius: '12px' }}
-                    >
-                        {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'pro' ? 'Plano Atual' : 'Atualizar para Pro')}
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <button
+                            onClick={() => handleSubscribe('pro')}
+                            disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
+                            className="btn-primary"
+                            style={{ width: '100%', borderRadius: '12px' }}
+                        >
+                            {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'pro' ? 'Plano Atual' : 'Pagar com Cartão (Stripe)')}
+                        </button>
+                        {user?.plan !== 'pro' && (
+                            <button
+                                onClick={() => setIsUpgradeModalOpen(true)}
+                                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontWeight: 600, cursor: 'pointer' }}
+                            >
+                                M-Pesa / Transferência
+                            </button>
+                        )}
+                    </div>
                 </motion.div>
 
                 {/* Enterprise Plan */}
@@ -161,6 +173,7 @@ export default function InternalPlansView() {
                     Todos os planos incluem acesso a ferramentas de gestão financeira e suporte básico. As taxas de plataforma são aplicadas apenas sobre o valor líquido das inscrições processadas. O upgrade é imediato e a cobrança é pro-rata.
                 </p>
             </div>
+            <PlanUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
         </div>
     );
 }

@@ -9,12 +9,14 @@ import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
 export default function PlansPage() {
     const { currency, setCurrency, formatPrice } = useCurrency();
     const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
@@ -245,25 +247,43 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Destaque Premium no Showcase</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Analytics e Relatórios Avançados</span></div>
                             </div>
-                            <button
-                                onClick={() => handleSubscribe('Pro', currency === 'MZN' ? 499 : 7.99)}
-                                disabled={loadingPlan === 'Pro'}
-                                style={{
-                                    display: 'inline-block',
-                                    padding: '14px 0',
-                                    borderRadius: '4px',
-                                    fontSize: '0.9rem',
-                                    background: 'var(--gold-gradient)',
-                                    color: '#000',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontWeight: 700,
-                                    width: '100%',
-                                    maxWidth: '320px',
-                                    transition: 'all 0.3s'
-                                }}>
-                                {loadingPlan === 'Pro' ? <Loader2 className="animate-spin" /> : 'Assinar Pro'}
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px', margin: '0 auto' }}>
+                                <button
+                                    onClick={() => handleSubscribe('Pro', currency === 'MZN' ? 499 : 7.99)}
+                                    disabled={loadingPlan === 'Pro'}
+                                    style={{
+                                        display: 'inline-block',
+                                        padding: '14px 0',
+                                        borderRadius: '4px',
+                                        fontSize: '0.9rem',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontWeight: 700,
+                                        width: '100%',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                    {loadingPlan === 'Pro' ? <Loader2 className="animate-spin" /> : 'Pagar com Cartão'}
+                                </button>
+                                <button
+                                    onClick={() => user ? setIsUpgradeModalOpen(true) : router.push('/cadastro?plan=pro')}
+                                    style={{
+                                        display: 'inline-block',
+                                        padding: '12px 0',
+                                        borderRadius: '4px',
+                                        fontSize: '0.85rem',
+                                        background: 'rgba(255,255,255,0.1)',
+                                        color: '#fff',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        width: '100%',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                    M-Pesa / Transferência
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
 
@@ -304,25 +324,43 @@ export default function PlansPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Suporte VIP 24/7 com Account Manager</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Customização Total de Branding</span></div>
                             </div>
-                            <button
-                                onClick={() => handleSubscribe('Enterprise', currency === 'MZN' ? 4990 : 79.90)}
-                                disabled={loadingPlan === 'Enterprise'}
-                                style={{
-                                    display: 'inline-block',
-                                    padding: '14px 0',
-                                    borderRadius: '4px',
-                                    fontSize: '0.9rem',
-                                    background: '#fff',
-                                    color: '#000',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontWeight: 700,
-                                    width: '100%',
-                                    maxWidth: '320px',
-                                    transition: 'all 0.3s'
-                                }}>
-                                {loadingPlan === 'Enterprise' ? <Loader2 className="animate-spin" /> : 'Falar com Consultor'}
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px', margin: '0 auto' }}>
+                                <button
+                                    onClick={() => handleSubscribe('Enterprise', currency === 'MZN' ? 4990 : 79.90)}
+                                    disabled={loadingPlan === 'Enterprise'}
+                                    style={{
+                                        display: 'inline-block',
+                                        padding: '14px 0',
+                                        borderRadius: '4px',
+                                        fontSize: '0.9rem',
+                                        background: '#fff',
+                                        color: '#000',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontWeight: 700,
+                                        width: '100%',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                    {loadingPlan === 'Enterprise' ? <Loader2 className="animate-spin" /> : 'Pagar com Cartão'}
+                                </button>
+                                <button
+                                    onClick={() => user ? setIsUpgradeModalOpen(true) : router.push('/cadastro?plan=enterprise')}
+                                    style={{
+                                        display: 'inline-block',
+                                        padding: '12px 0',
+                                        borderRadius: '4px',
+                                        fontSize: '0.85rem',
+                                        background: 'rgba(255,255,255,0.1)',
+                                        color: '#fff',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        width: '100%',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                    M-Pesa / Transferência
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </div>
@@ -351,6 +389,7 @@ export default function PlansPage() {
             <footer style={{ padding: '60px 0', background: '#000', color: '#fff', textAlign: 'center' }}>
                 <p style={{ opacity: 0.5 }}>© 2026 Inscreva-se • A Excelência em Eventos</p>
             </footer>
+            <PlanUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
         </main>
     );
 }
