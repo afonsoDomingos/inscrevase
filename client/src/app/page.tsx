@@ -928,7 +928,7 @@ export default function Home() {
               </div>
               <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>{t('plans.pro.name')}</h3>
               <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '1px' }}>
-                {formatPrice(499, 7.99)}<span style={{ fontSize: '0.9rem', opacity: 1, marginLeft: '4px' }}>{t('plans.perMonth')}</span>
+                {formatPrice(499)}<span style={{ fontSize: '0.9rem', opacity: 1, marginLeft: '4px' }}>{t('plans.perMonth')}</span>
               </p>
               <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>{t('plans.pro.description')}</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
@@ -985,7 +985,7 @@ export default function Home() {
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>{t('plans.enterprise.name')}</h3>
               <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                {formatPrice(4990, 79.90)}<span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('plans.perMonth')}</span>
+                {formatPrice(4990)}<span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('plans.perMonth')}</span>
               </p>
               <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>{t('plans.enterprise.description')}</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>

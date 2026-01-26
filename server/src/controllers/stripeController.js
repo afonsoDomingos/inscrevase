@@ -754,3 +754,53 @@ exports.getAdminFinancialSummary = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+/**
+ * DYNAMIC PLANS & EXCHANGE RATE
+ */
+const axios = require('axios');
+let cachedExchangeRate = 63.8; // Fallback rate
+let lastRateFetch = 0;
+const RATE_TTL = 1000 * 60 * 60 * 12; // 12 hours
+
+const getLatestRate = async () => {
+    const now = Date.now();
+    if (now - lastRateFetch < RATE_TTL) return cachedExchangeRate;
+
+    try {
+        const response = await axios.get('https://open.er-api.com/v6/latest/USD');
+        if (response.data && response.data.rates && response.data.rates.MZN) {
+            cachedExchangeRate = response.data.rates.MZN;
+            lastRateFetch = now;
+            console.log(`[CURRENCY] Real-time rate updated: 1 USD = ${cachedExchangeRate} MZN`);
+        }
+    } catch (error) {
+        console.error('[CURRENCY] Failed to fetch live rate, using cache/fallback:', error.message);
+    }
+    return cachedExchangeRate;
+};
+
+exports.getPlans = async (req, res) => {
+    try {
+        const mznRate = await getLatestRate();
+        const basePlans = require('../config/stripe').PLANS;
+
+        // Clone and adjust based on current rate
+        const dynamicPlans = JSON.parse(JSON.stringify(basePlans));
+
+        // Let's assume MZN is the fixed base in Mozambique
+        // Pro: 499 MT -> Calculate USD
+        dynamicPlans.pro.prices.USD = Math.round((dynamicPlans.pro.prices.MZN / 100) / mznRate * 100);
+        // Enterprise: 4990 MT -> Calculate USD
+        dynamicPlans.enterprise.prices.USD = Math.round((dynamicPlans.enterprise.prices.MZN / 100) / mznRate * 100);
+
+        res.status(200).json({
+            success: true,
+            plans: dynamicPlans,
+            rate: mznRate,
+            lastUpdate: lastRateFetch
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

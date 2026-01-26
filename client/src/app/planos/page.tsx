@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
 export default function PlansPage() {
-    const { currency, setCurrency, formatPrice } = useCurrency();
+    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -239,7 +239,7 @@ export default function PlansPage() {
                             </div>
                             <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>Plano Pro</h3>
                             <p style={{ color: '#FFD700', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                                {formatPrice(499, 7.99)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
+                                {formatPrice(499)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>Para profissionais em ascensão.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
@@ -249,7 +249,7 @@ export default function PlansPage() {
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px', margin: '0 auto' }}>
                                 <button
-                                    onClick={() => handleSubscribe('Pro', currency === 'MZN' ? 499 : 7.99)}
+                                    onClick={() => handleSubscribe('Pro', getPlanPrice('pro'))}
                                     disabled={loadingPlan === 'Pro'}
                                     style={{
                                         display: 'inline-block',
@@ -316,7 +316,7 @@ export default function PlansPage() {
                         <div style={{ position: 'relative', zIndex: 2 }}>
                             <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>Enterprise</h3>
                             <p style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                                {formatPrice(4990, 79.90)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
+                                {formatPrice(4990)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>O topo da performance estratégica.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
@@ -326,7 +326,7 @@ export default function PlansPage() {
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px', margin: '0 auto' }}>
                                 <button
-                                    onClick={() => handleSubscribe('Enterprise', currency === 'MZN' ? 4990 : 79.90)}
+                                    onClick={() => handleSubscribe('Enterprise', getPlanPrice('enterprise'))}
                                     disabled={loadingPlan === 'Enterprise'}
                                     style={{
                                         display: 'inline-block',

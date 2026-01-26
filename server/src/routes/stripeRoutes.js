@@ -58,6 +58,7 @@ router.post('/subscription/create', authMiddleware, stripeController.createSubsc
 router.post('/subscription/sync', authMiddleware, stripeController.syncSubscription);
 router.post('/subscription/portal', authMiddleware, stripeController.createPortalSession);
 router.post('/subscription/manual', authMiddleware, stripeController.submitManualSubscription);
+router.get('/plans', stripeController.getPlans);
 
 // Refund route
 router.post('/refund/:submissionId', authMiddleware, stripeController.refundPayment);

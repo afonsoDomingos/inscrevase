@@ -13,8 +13,11 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
     const [loading, setLoading] = useState<string | null>(null);
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(null);
     const [uploading, setUploading] = useState(false);
-    const { currency, setCurrency, formatPrice } = useCurrency();
+    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const { t } = useTranslate();
+
+    const proPrice = getPlanPrice('pro');
+    const enterprisePrice = getPlanPrice('enterprise');
 
     const handleUpgradeStripe = async (plan: string) => {
         try {
@@ -106,26 +109,26 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                             <PlanCard
                                 id="pro"
                                 name="Pro"
-                                amount={currency === 'MZN' ? 499 : 7.99}
-                                price={formatPrice(499, 7.99)}
+                                amount={proPrice}
+                                price={formatPrice(499)}
                                 color="#D4AF37"
                                 icon={<Sparkles size={24} />}
                                 features={[t('dashboard.plans.f1'), t('dashboard.plans.f2'), t('dashboard.plans.f3')]}
                                 onSelect={() => handleUpgradeStripe('pro')}
-                                onManual={() => setManualPlan({ id: 'pro', amount: currency === 'MZN' ? 499 : 7.99 })}
+                                onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
                                 loading={loading === 'pro'}
                                 t={t}
                             />
                             <PlanCard
                                 id="enterprise"
                                 name="Enterprise"
-                                amount={currency === 'MZN' ? 4990 : 79.90}
-                                price={formatPrice(4990, 79.90)}
+                                amount={enterprisePrice}
+                                price={formatPrice(4990)}
                                 color="#000"
                                 icon={<Crown size={24} />}
                                 features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
                                 onSelect={() => handleUpgradeStripe('enterprise')}
-                                onManual={() => setManualPlan({ id: 'enterprise', amount: currency === 'MZN' ? 4990 : 79.90 })}
+                                onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
                                 loading={loading === 'enterprise'}
                                 t={t}
                             />
