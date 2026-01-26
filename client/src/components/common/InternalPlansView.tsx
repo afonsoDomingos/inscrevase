@@ -20,11 +20,6 @@ export default function InternalPlansView() {
     }, []);
 
     const handleSubscribe = async (plan: string) => {
-        if (plan === 'enterprise') {
-            toast.info('Para o plano Enterprise, entre em contato com o nosso suporte prioritário.');
-            return;
-        }
-
         setLoadingPlan(plan);
         try {
             const token = authService.getToken();
@@ -158,12 +153,27 @@ export default function InternalPlansView() {
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><ShieldCheck size={18} /> Branding Customizado</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} /> API de Integração</li>
                     </ul>
-                    <button
-                        onClick={() => handleSubscribe('enterprise')}
-                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'var(--paper)', color: 'var(--secondary)', border: 'none', fontWeight: 900, cursor: 'pointer' }}
-                    >
-                        Contactar Consultor
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <button
+                            onClick={() => handleSubscribe('enterprise')}
+                            disabled={loadingPlan === 'enterprise' || user?.plan === 'enterprise'}
+                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'var(--paper)', color: 'var(--secondary)', border: 'none', fontWeight: 900, cursor: 'pointer' }}
+                        >
+                            {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'enterprise' ? 'Plano Atual' : 'Pagar com Cartão')}
+                        </button>
+                        {user?.plan !== 'enterprise' && (
+                            <button
+                                onClick={() => setIsUpgradeModalOpen(true)}
+                                style={{
+                                    width: '100%', padding: '0.8rem', borderRadius: '12px',
+                                    background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                                    color: '#fff', fontWeight: 600, cursor: 'pointer'
+                                }}
+                            >
+                                M-Pesa / Transferência
+                            </button>
+                        )}
+                    </div>
                 </motion.div>
             </div>
 
