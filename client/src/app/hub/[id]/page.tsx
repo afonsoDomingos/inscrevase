@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import Image from 'next/image';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { generateCertificate } from '@/lib/certificateGenerator';
 import { useTranslate } from '@/context/LanguageContext';
@@ -788,9 +789,9 @@ function HubContent() {
                 <footer style={{ marginTop: '100px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '40px', textAlign: 'center' }}>
                     <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '20px' }}>{t('hub.footerCopyright')}</p>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
-                        <a href="#" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.support')}</a>
-                        <a href="#" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.privacy')}</a>
-                        <a href="#" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.terms')}</a>
+                        <Link href="/suporte" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.support')}</Link>
+                        <Link href="/privacidade" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.privacy')}</Link>
+                        <Link href="/privacidade#termos" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.terms')}</Link>
                     </div>
                 </footer>
 

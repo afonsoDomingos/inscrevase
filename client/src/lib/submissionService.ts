@@ -21,8 +21,9 @@ export interface SubmissionModel {
     };
     data: Record<string, unknown>;
     paymentProof?: string;
+    paymentMethod?: 'manual' | 'stripe';
     status: 'pending' | 'approved' | 'rejected';
-    paymentStatus: 'unpaid' | 'paid' | 'pending';
+    paymentStatus: 'unpaid' | 'paid' | 'pending' | 'refunded';
     aiAnalysis?: {
         isValid: boolean;
         transactionId?: string;

@@ -56,6 +56,10 @@ router.patch('/admin/confirm-payment/:transactionId', authMiddleware, adminMiddl
 // Create subscription for plan upgrade
 router.post('/subscription/create', authMiddleware, stripeController.createSubscription);
 router.post('/subscription/sync', authMiddleware, stripeController.syncSubscription);
+router.post('/subscription/portal', authMiddleware, stripeController.createPortalSession);
+
+// Refund route
+router.post('/refund/:submissionId', authMiddleware, stripeController.refundPayment);
 
 /**
  * WEBHOOKS

@@ -350,19 +350,20 @@ exports.handleWebhook = async (req, res) => {
             // Plan Upgrade
             const userId = session.metadata.userId;
             const plan = session.metadata.plan;
+
             await User.findByIdAndUpdate(userId, {
                 plan: plan,
                 role: 'mentor',
-                canCreateEvents: true
+                canCreateEvents: true,
+                stripeCustomerId: session.customer
             });
 
-            // Record this as a transaction for the admin
             const tx = new Transaction({
                 type: 'subscription',
                 user: userId,
                 amount: session.amount_total / 100,
                 currency: session.currency.toUpperCase(),
-                platformFee: session.amount_total / 100, // For subscriptions, the whole amount is platform fee
+                platformFee: session.amount_total / 100,
                 status: 'completed',
                 stripeSessionId: session.id,
                 subscriptionId: session.subscription,
@@ -370,11 +371,18 @@ exports.handleWebhook = async (req, res) => {
                 metadata: { plan }
             });
             await tx.save();
-
-            console.log(`User ${userId} upgraded to ${plan} and transaction recorded`);
         } else {
-            // Event registration payment
             await completeOrder(session);
+        }
+    } else if (event.type === 'customer.subscription.deleted') {
+        const subscription = event.data.object;
+        const customerId = subscription.customer;
+        const user = await User.findOne({ stripeCustomerId: customerId });
+        if (user) {
+            user.plan = 'free';
+            user.role = 'participant'; // Or keep as mentor but restricted
+            await user.save();
+            console.log(`User ${user._id} downgraded due to subscription cancellation`);
         }
     } else if (event.type === 'account.updated') {
         const account = event.data.object;
@@ -382,7 +390,6 @@ exports.handleWebhook = async (req, res) => {
         if (user) {
             user.stripeOnboardingComplete = account.details_submitted && account.charges_enabled;
             await user.save();
-            console.log(`Mentor ${user._id} onboarding status updated: ${user.stripeOnboardingComplete}`);
         }
     }
 
@@ -405,6 +412,78 @@ exports.whoami = async (req, res) => {
     }
 };
 
+exports.createPortalSession = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Search for customer by email if not stored
+        let customerId = user.stripeCustomerId;
+        if (!customerId) {
+            const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+            if (customers.data.length > 0) {
+                customerId = customers.data[0].id;
+                user.stripeCustomerId = customerId;
+                await user.save();
+            }
+        }
+
+        if (!customerId) {
+            return res.status(400).json({ message: 'No active Stripe billing found for this account.' });
+        }
+
+        const portalSession = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: `${process.env.CLIENT_URL}/dashboard/mentor`,
+        });
+
+        res.status(200).json({ success: true, url: portalSession.url });
+    } catch (error) {
+        console.error('Portal Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.refundPayment = async (req, res) => {
+    try {
+        const { submissionId } = req.params;
+        const submission = await Submission.findById(submissionId).populate('form');
+
+        if (!submission || !submission.stripePaymentIntentId) {
+            return res.status(404).json({ message: 'Stripe transaction not found for this submission.' });
+        }
+
+        // Check permissions: Admin or the Mentor who owns the form
+        if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin' && submission.form.creator.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Unauthorized to refund this payment.' });
+        }
+
+        const refund = await stripe.refunds.create({
+            payment_intent: submission.stripePaymentIntentId,
+            // refund_application_fee: true, // Optional: if you want to lose your platform fee too
+        });
+
+        if (refund.status === 'succeeded' || refund.status === 'pending') {
+            submission.status = 'rejected';
+            submission.paymentStatus = 'refunded';
+            await submission.save();
+
+            // Update transaction
+            await Transaction.findOneAndUpdate(
+                { stripePaymentIntentId: submission.stripePaymentIntentId },
+                { status: 'refunded' }
+            );
+
+            return res.status(200).json({ success: true, message: 'Reembolso processado com sucesso.' });
+        }
+
+        res.status(400).json({ message: 'Erro ao processar reembolso no Stripe.' });
+    } catch (error) {
+        console.error('Refund Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.createSubscription = async (req, res) => {
     try {
         const { plan, currency = 'MZN' } = req.body;
@@ -420,7 +499,8 @@ exports.createSubscription = async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             mode: 'subscription',
             payment_method_types: ['card'],
-            customer_email: user.email,
+            customer_email: !user.stripeCustomerId ? user.email : undefined,
+            customer: user.stripeCustomerId || undefined,
             line_items: [{
                 price_data: {
                     currency: currency.toLowerCase(),

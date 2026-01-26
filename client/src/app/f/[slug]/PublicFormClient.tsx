@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import MetaPixel from '@/components/MetaPixel';
@@ -828,6 +829,15 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         {/* Bottom Ad Slot */}
                         <div style={{ marginTop: '3rem' }}>
                             <AdBanner slot="3569850277" format="fluid" />
+                        </div>
+
+                        {/* Mini Footer for AdSense Compliance */}
+                        <div style={{ marginTop: '3rem', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>
+                            <p style={{ marginBottom: '10px' }}>{t('form.poweredBy')} © {new Date().getFullYear()}</p>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                                <Link href="/privacidade" style={{ color: 'inherit', textDecoration: 'underline' }}>{t('hub.privacy')}</Link>
+                                <Link href="/privacidade#termos" style={{ color: 'inherit', textDecoration: 'underline' }}>{t('hub.terms')}</Link>
+                            </div>
                         </div>
                     </div>
                 )}

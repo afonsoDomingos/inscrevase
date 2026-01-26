@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react';
 import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
-import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, AlertCircle } from 'lucide-react';
+import { stripeService } from '@/lib/stripeService';
+import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, AlertCircle, CreditCard, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -377,12 +378,50 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                         </button>
                     </div>
 
+                    {/* Subscription Management */}
+                    {user.plan && user.plan !== 'free' && (
+                        <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #e0e0e0' }}>
+                            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#1a1a1a', borderBottom: '1px solid #f0f0f0', paddingBottom: '0.8rem' }}>
+                                <CreditCard size={18} /> Plano e Faturamento
+                            </h4>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem' }}>Plano {user.plan.toUpperCase()}</p>
+                                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+                                        Gerencie sua assinatura, veja faturas e atualize seu método de pagamento.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            setLoading(true);
+                                            const { url } = await stripeService.createPortalSession();
+                                            window.location.href = url;
+                                        } catch (err: any) {
+                                            toast.error(err.message || 'Erro ao carregar portal de faturação');
+                                            setLoading(false);
+                                        }
+                                    }}
+                                    disabled={loading}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                        padding: '0.6rem 1rem', background: '#f8f9fa',
+                                        color: '#333', border: '1px solid #ddd',
+                                        borderRadius: '8px', cursor: 'pointer',
+                                        fontSize: '0.85rem', fontWeight: 700
+                                    }}
+                                >
+                                    Portal Financeiro <ExternalLink size={14} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Danger Zone: Account Type Change */}
                     <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #fee2e2' }}>
                         <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#dc2626', borderBottom: '1px solid #fee2e2', paddingBottom: '0.8rem' }}>
                             <AlertCircle size={18} /> Zona de Perigo
                         </h4>
-
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
                                 <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem' }}>Mudar para Conta de Participante</p>

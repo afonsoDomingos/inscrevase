@@ -21,8 +21,10 @@ import {
     Trash2,
     Award,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    RotateCcw
 } from 'lucide-react';
+import { stripeService } from '@/lib/stripeService';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
@@ -87,6 +89,22 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             toast.error('Erro ao analisar recibo');
         } finally {
             setAnalyzingId(null);
+        }
+    };
+
+    const handleRefund = async (id: string) => {
+        if (confirm('Deseja realmente reembolsar este pagamento via Stripe? O valor será devolvido ao cliente e a inscrição será cancelada.')) {
+            try {
+                toast.loading('Processando reembolso...');
+                await stripeService.refundPayment(id);
+                setSubmissions(prev => prev.map(s => s._id === id ? { ...s, status: 'rejected', paymentStatus: 'refunded' } : s));
+                toast.dismiss();
+                toast.success('Reembolso processado com sucesso!');
+            } catch (error: any) {
+                toast.dismiss();
+                console.error('Error refunding payment:', error);
+                toast.error(error.message || 'Erro ao processar reembolso');
+            }
         }
     };
 
@@ -291,10 +309,10 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                     borderRadius: '20px',
                                                     fontSize: '0.75rem',
                                                     fontWeight: 700,
-                                                    background: submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
-                                                    color: submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
+                                                    background: (submission as any).paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
+                                                    color: (submission as any).paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
                                                 }}>
-                                                    {submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
+                                                    {(submission as any).paymentStatus === 'refunded' ? 'REEMBOLSADO' : submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'center' }}>
@@ -361,6 +379,15 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                             style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: '#D4AF37', color: '#000', cursor: 'pointer' }}
                                                         >
                                                             <Award size={16} />
+                                                        </button>
+                                                    )}
+                                                    {submission.paymentMethod === 'stripe' && (submission as any).paymentStatus !== 'refunded' && (
+                                                        <button
+                                                            onClick={() => handleRefund(submission._id)}
+                                                            title="Reembolsar Transação"
+                                                            style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #718096', background: '#fff', color: '#718096', cursor: 'pointer' }}
+                                                        >
+                                                            <RotateCcw size={16} />
                                                         </button>
                                                     )}
                                                     <button
@@ -777,6 +804,24 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     Rejeitar
                                 </button>
                             </div>
+                            {selectedSubmission.paymentMethod === 'stripe' && (selectedSubmission as any).paymentStatus !== 'refunded' && (
+                                <div style={{ padding: '0 2rem 1.5rem' }}>
+                                    <button
+                                        onClick={() => {
+                                            handleRefund(selectedSubmission._id);
+                                            setSelectedSubmission(null);
+                                        }}
+                                        style={{
+                                            width: '100%', padding: '0.8rem', borderRadius: '10px',
+                                            border: '1px solid #718096', background: '#fff',
+                                            color: '#718096', fontWeight: 700, cursor: 'pointer',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                        }}
+                                    >
+                                        <RotateCcw size={18} /> Reembolsar Integralmente (Stripe)
+                                    </button>
+                                </div>
+                            )}
                         </motion.div>
                     </div>
                 )}
