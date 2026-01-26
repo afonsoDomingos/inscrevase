@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
                             <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Introdução</h2>
                         </div>
                         <p>
-                            A Inscreva-se ("nós", "plataforma") está empenhada em proteger a privacidade dos seus utilizadores.
+                            A Inscreva-se (&quot;nós&quot;, &quot;plataforma&quot;) está empenhada em proteger a privacidade dos seus utilizadores.
                             Esta Política de Privacidade explica como recolhemos, utilizamos e protegemos as informações quando utiliza
                             o nosso site e serviços. Ao utilizar a nossa plataforma, concorda com as práticas descritas nesta política.
                         </p>

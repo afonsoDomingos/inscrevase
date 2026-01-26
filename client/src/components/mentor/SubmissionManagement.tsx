@@ -100,10 +100,10 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                 setSubmissions(prev => prev.map(s => s._id === id ? { ...s, status: 'rejected', paymentStatus: 'refunded' } : s));
                 toast.dismiss();
                 toast.success('Reembolso processado com sucesso!');
-            } catch (error: any) {
+            } catch (error: unknown) {
                 toast.dismiss();
                 console.error('Error refunding payment:', error);
-                toast.error(error.message || 'Erro ao processar reembolso');
+                toast.error(error instanceof Error ? error.message : 'Erro ao processar reembolso');
             }
         }
     };
@@ -307,12 +307,12 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                 <span style={{
                                                     padding: '0.3rem 0.6rem',
                                                     borderRadius: '20px',
-                                                    fontSize: '0.75rem',
+                                                    fontSize: '0.7rem',
                                                     fontWeight: 700,
-                                                    background: (submission as any).paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
-                                                    color: (submission as any).paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
+                                                    background: submission.paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
+                                                    color: submission.paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
                                                 }}>
-                                                    {(submission as any).paymentStatus === 'refunded' ? 'REEMBOLSADO' : submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
+                                                    {submission.paymentStatus === 'refunded' ? 'Reembolsado' : submission.status === 'approved' ? 'Aprovado' : submission.status === 'rejected' ? 'Rejeitado' : 'Pendente'}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'center' }}>
@@ -381,7 +381,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                             <Award size={16} />
                                                         </button>
                                                     )}
-                                                    {submission.paymentMethod === 'stripe' && (submission as any).paymentStatus !== 'refunded' && (
+                                                    {submission.paymentMethod === 'stripe' && submission.paymentStatus !== 'refunded' && (
                                                         <button
                                                             onClick={() => handleRefund(submission._id)}
                                                             title="Reembolsar Transação"
@@ -473,10 +473,10 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             borderRadius: '20px',
                                             fontSize: '0.7rem',
                                             fontWeight: 700,
-                                            background: submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
-                                            color: submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
+                                            background: submission.paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
+                                            color: submission.paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
                                         }}>
-                                            {submission.status === 'approved' ? 'Aprovado' : submission.status === 'rejected' ? 'Rejeitado' : 'Pendente'}
+                                            {submission.paymentStatus === 'refunded' ? 'Reembolsado' : submission.status === 'approved' ? 'Aprovado' : submission.status === 'rejected' ? 'Rejeitado' : 'Pendente'}
                                         </span>
                                     </div>
 
@@ -804,7 +804,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     Rejeitar
                                 </button>
                             </div>
-                            {selectedSubmission.paymentMethod === 'stripe' && (selectedSubmission as any).paymentStatus !== 'refunded' && (
+                            {selectedSubmission.paymentMethod === 'stripe' && selectedSubmission.paymentStatus !== 'refunded' && (
                                 <div style={{ padding: '0 2rem 1.5rem' }}>
                                     <button
                                         onClick={() => {

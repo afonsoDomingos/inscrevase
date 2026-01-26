@@ -17,15 +17,13 @@ interface AdBannerProps {
 }
 
 export default function AdBanner({ slot, format = 'auto', customAd, className = "" }: AdBannerProps) {
-    const [adLoaded, setAdLoaded] = useState(false);
 
     useEffect(() => {
         // Only try to load Google Ads if there's a slot and NO custom ad
         if (!customAd && slot && typeof window !== 'undefined') {
             try {
-                // @ts-ignore
+                // @ts-expect-error - adsbygoogle might not be defined on window yet
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
-                setAdLoaded(true);
             } catch (err) {
                 console.error("AdSense Error:", err);
             }
