@@ -28,6 +28,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import MetaPixel from '@/components/MetaPixel';
 import { useMetaPixelEvents } from '@/hooks/useMetaPixelEvents';
+import AdBanner from '@/components/common/AdBanner';
 
 // Update Props
 interface PublicFormProps {
@@ -507,6 +508,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     </motion.div>
                                 )}
 
+                                {/* Middle Ad Slot */}
+                                <AdBanner slot="1234567890" format="horizontal" />
+
                                 {form.paymentConfig?.enabled && (
                                     <motion.div
                                         variants={itemVariants}
@@ -819,6 +823,11 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     </motion.form>
                                 </motion.div>
                             </motion.div>
+                        </div>
+
+                        {/* Bottom Ad Slot */}
+                        <div style={{ marginTop: '3rem' }}>
+                            <AdBanner slot="0987654321" format="fluid" />
                         </div>
                     </div>
                 )}

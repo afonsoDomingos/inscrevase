@@ -34,6 +34,7 @@ import { toast } from 'sonner';
 import { generateCertificate } from '@/lib/certificateGenerator';
 import { useTranslate } from '@/context/LanguageContext';
 import MetaPixel from '@/components/MetaPixel';
+import AdBanner from '@/components/common/AdBanner';
 
 const getEmbedUrl = (url?: string) => {
     if (!url) return undefined;
@@ -378,6 +379,11 @@ function HubContent() {
                         </AnimatePresence>
                     </div>
                 )}
+
+                {/* Top Hub Ad Slot */}
+                <div style={{ maxWidth: '900px', margin: '0 auto 40px' }}>
+                    <AdBanner slot="1122334455" format="horizontal" />
+                </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '40px', alignItems: 'start' }} className="hub-grid">
 
@@ -772,6 +778,10 @@ function HubContent() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div style={{ marginTop: '4rem' }}>
+                    <AdBanner slot="5544332211" format="fluid" />
                 </div>
 
                 {/* Footer Section */}
