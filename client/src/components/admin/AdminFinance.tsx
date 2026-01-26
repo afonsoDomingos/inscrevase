@@ -7,15 +7,13 @@ import {
     CheckCircle,
     TrendingUp,
     FileText,
-    ArrowUpRight,
     Search,
     Eye,
     X,
     ExternalLink,
     Download,
     Trash2,
-    XCircle,
-    RotateCcw
+    XCircle
 } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
