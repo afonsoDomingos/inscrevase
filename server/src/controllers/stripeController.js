@@ -347,32 +347,74 @@ exports.handleWebhook = async (req, res) => {
         const session = event.data.object;
 
         if (session.mode === 'subscription') {
-            // Plan Upgrade
+            console.log('💎 [Stripe Webhook] Processing Subscription Session:', session.id);
             const userId = session.metadata.userId;
             const plan = session.metadata.plan;
 
-            await User.findByIdAndUpdate(userId, {
-                plan: plan,
-                role: 'mentor',
-                canCreateEvents: true,
-                stripeCustomerId: session.customer
-            });
+            if (userId) {
+                await User.findByIdAndUpdate(userId, {
+                    plan: plan,
+                    role: 'mentor',
+                    canCreateEvents: true,
+                    stripeCustomerId: session.customer
+                });
+                console.log(`✅ [Stripe Webhook] User ${userId} upgraded to ${plan}`);
 
-            const tx = new Transaction({
-                type: 'subscription',
-                user: userId,
-                amount: session.amount_total / 100,
-                currency: session.currency.toUpperCase(),
-                platformFee: session.amount_total / 100,
-                status: 'completed',
-                stripeSessionId: session.id,
-                subscriptionId: session.subscription,
-                paymentMethod: 'stripe',
-                metadata: { plan }
-            });
-            await tx.save();
+                // Check if transaction already created by invoice.paid
+                const existingTx = await Transaction.findOne({ stripeSessionId: session.id });
+                if (!existingTx) {
+                    const tx = new Transaction({
+                        type: 'subscription',
+                        user: userId,
+                        amount: session.amount_total / 100,
+                        currency: session.currency.toUpperCase(),
+                        platformFee: session.amount_total / 100,
+                        status: 'completed',
+                        stripeSessionId: session.id,
+                        subscriptionId: session.subscription,
+                        paymentMethod: 'stripe',
+                        metadata: { plan }
+                    });
+                    await tx.save();
+                    console.log('💰 [Stripe Webhook] Transaction created via Session');
+                }
+            }
         } else {
             await completeOrder(session);
+        }
+    } else if (event.type === 'invoice.paid') {
+        const invoice = event.data.object;
+        // Only process if it's a subscription and has our metadata (might be in subscription metadata)
+        if (invoice.subscription) {
+            const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+            const userId = subscription.metadata.userId;
+            const plan = subscription.metadata.plan;
+
+            if (userId) {
+                await User.findByIdAndUpdate(userId, {
+                    plan: plan,
+                    role: 'mentor',
+                    canCreateEvents: true,
+                    stripeCustomerId: invoice.customer
+                });
+
+                const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
+                if (!existingTx) {
+                    const tx = new Transaction({
+                        type: 'subscription',
+                        user: userId,
+                        amount: invoice.amount_paid / 100,
+                        currency: invoice.currency.toUpperCase(),
+                        platformFee: invoice.amount_paid / 100,
+                        status: 'completed',
+                        subscriptionId: invoice.subscription,
+                        paymentMethod: 'stripe',
+                        metadata: { plan, invoiceId: invoice.id }
+                    });
+                    await tx.save();
+                    console.log('💰 [Stripe Webhook] Transaction created/verified via Invoice');
+                }
+            }
         }
     } else if (event.type === 'customer.subscription.deleted') {
         const subscription = event.data.object;
@@ -510,6 +552,9 @@ exports.createSubscription = async (req, res) => {
                 },
                 quantity: 1,
             }],
+            subscription_data: {
+                metadata: { userId: user._id.toString(), plan }
+            },
             metadata: { userId: user._id.toString(), plan },
             success_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=success&plan=${plan}`,
             cancel_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=cancel`,

@@ -86,6 +86,7 @@ function MentorDashboardContent() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
 
     const steps: Step[] = [
         {
@@ -190,16 +191,17 @@ function MentorDashboardContent() {
                     }
 
                     const profile = await authService.getProfile();
-                    if (profile.role === 'mentor') {
+                    if (profile.role === 'mentor' && profile.plan !== 'free') {
                         setUser(profile);
                         setLoading(false);
-                        toast.success(t('dashboard.welcomeBack')); // Or specific welcome message
+                        setShowUpgradeSuccess(true);
                         clearInterval(interval);
                         router.replace('/dashboard/mentor'); // clear param
+
                         // Reload data
                         const [statsData, formsData] = await Promise.all([
-                            dashboardService.getMentorStats(),
-                            formService.getMyForms()
+                            dashboardService.getMentorStats().catch(() => null),
+                            formService.getMyForms().catch(() => [])
                         ]);
                         setStats(statsData);
                         setForms(formsData);
@@ -1162,6 +1164,38 @@ function MentorDashboardContent() {
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="mentor" />
                 <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />
+
+                <AnimatePresence>
+                    {showUpgradeSuccess && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(10px)' }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.8, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                style={{ background: '#fff', borderRadius: '30px', padding: '40px', maxWidth: '500px', width: '100%', textAlign: 'center', position: 'relative' }}
+                            >
+                                <div style={{ width: '80px', height: '80px', background: 'var(--gold-gradient)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                                    <Crown size={40} color="#000" />
+                                </div>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '10px', color: '#000' }}>Parabéns! 🎉</h2>
+                                <p style={{ color: '#666', marginBottom: '30px', fontSize: '1.1rem' }}>
+                                    A tua subscrição foi ativada com sucesso. Agora és um parceiro <strong style={{ color: '#D4AF37' }}>{user.plan?.toUpperCase()}</strong> e tens acesso total às ferramentas de Mentor.
+                                </p>
+                                <button
+                                    onClick={() => setShowUpgradeSuccess(false)}
+                                    className="btn-primary"
+                                    style={{ width: '100%', padding: '1rem', borderRadius: '15px', fontWeight: 700 }}
+                                >
+                                    Começar a Explorar
+                                </button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <style jsx>{`
                     .no-scrollbar::-webkit-scrollbar {
