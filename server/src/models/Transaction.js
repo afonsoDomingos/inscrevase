@@ -26,24 +26,40 @@ const transactionSchema = new mongoose.Schema({
         ref: 'Submission'
     },
     amount: {
-        type: Number,
+        type: Number, // Original amount (could be USD or MZN)
         required: true
     },
     currency: {
         type: String,
-        default: 'MT'
+        default: 'MZN'
+    },
+    baseAmount: {
+        type: Number, // Amount always converted to MZN for internal accounting
+        required: true
+    },
+    exchangeRate: {
+        type: Number,
+        default: 1
     },
     platformFee: {
-        type: Number,
+        type: Number, // In original currency
+        default: 0
+    },
+    basePlatformFee: {
+        type: Number, // In MZN
         default: 0
     },
     mentorEarnings: {
-        type: Number,
+        type: Number, // In original currency
         required: function () { return this.type === 'event_registration'; }
+    },
+    baseMentorEarnings: {
+        type: Number, // In MZN
+        default: 0
     },
     status: {
         type: String,
-        enum: ['pending', 'completed', 'failed'],
+        enum: ['pending', 'completed', 'failed', 'rejected'],
         default: 'pending'
     },
     stripePaymentIntentId: {

@@ -215,16 +215,25 @@ const completeOrder = async (session) => {
         console.log('Submission created:', submission._id);
 
         // 5. Create transaction for mentor dashboard
+        const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+        const amount = expandedSession.amount_total / 100;
+        const platformFee = (paymentIntent.application_fee_amount || 0) / 100;
+        const mentorEarnings = (expandedSession.amount_total - (paymentIntent.application_fee_amount || 0)) / 100;
+
         const transaction = new Transaction({
             type: 'event_registration',
-            user: paymentIntent.metadata.mentorId, // Required field in schema
+            user: paymentIntent.metadata.mentorId,
             mentor: paymentIntent.metadata.mentorId,
             form: formId,
             submission: submission._id,
-            amount: expandedSession.amount_total / 100,
+            amount: amount,
             currency: expandedSession.currency.toUpperCase(),
-            platformFee: (paymentIntent.application_fee_amount || 0) / 100,
-            mentorEarnings: (expandedSession.amount_total - (paymentIntent.application_fee_amount || 0)) / 100,
+            baseAmount: amount * rate,
+            exchangeRate: rate,
+            platformFee: platformFee,
+            basePlatformFee: platformFee * rate,
+            mentorEarnings: mentorEarnings,
+            baseMentorEarnings: mentorEarnings * rate,
             status: 'completed',
             stripePaymentIntentId: paymentIntent.id,
             paymentMethod: 'stripe'
@@ -363,12 +372,18 @@ exports.handleWebhook = async (req, res) => {
                 // Check if transaction already created by invoice.paid
                 const existingTx = await Transaction.findOne({ stripeSessionId: session.id });
                 if (!existingTx) {
+                    const rate = session.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const amount = session.amount_total / 100;
+
                     const tx = new Transaction({
                         type: 'subscription',
                         user: userId,
-                        amount: session.amount_total / 100,
+                        amount: amount,
                         currency: session.currency.toUpperCase(),
-                        platformFee: session.amount_total / 100,
+                        baseAmount: amount * rate,
+                        exchangeRate: rate,
+                        platformFee: amount,
+                        basePlatformFee: amount * rate,
                         status: 'completed',
                         stripeSessionId: session.id,
                         subscriptionId: session.subscription,
@@ -400,12 +415,18 @@ exports.handleWebhook = async (req, res) => {
 
                 const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
                 if (!existingTx) {
+                    const rate = invoice.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const amount = invoice.amount_paid / 100;
+
                     const tx = new Transaction({
                         type: 'subscription',
                         user: userId,
-                        amount: invoice.amount_paid / 100,
+                        amount: amount,
                         currency: invoice.currency.toUpperCase(),
-                        platformFee: invoice.amount_paid / 100,
+                        baseAmount: amount * rate,
+                        exchangeRate: rate,
+                        platformFee: amount,
+                        basePlatformFee: amount * rate,
                         status: 'completed',
                         subscriptionId: invoice.subscription,
                         paymentMethod: 'stripe',
@@ -615,13 +636,18 @@ exports.syncSubscription = async (req, res) => {
             if (!existingTx) {
                 const priceItem = activeSub.items.data[0].price;
                 const amount = priceItem.unit_amount / 100;
+                const currency = activeSub.currency.toUpperCase();
+                const rate = currency === 'USD' ? await getLatestRate() : 1;
 
                 const tx = new Transaction({
                     type: 'subscription',
                     user: user._id,
                     amount: amount,
-                    currency: activeSub.currency.toUpperCase(),
+                    currency: currency,
+                    baseAmount: amount * rate,
+                    exchangeRate: rate,
                     platformFee: amount, // For subscriptions, 100% is platform revenue
+                    basePlatformFee: amount * rate,
                     status: 'completed',
                     subscriptionId: activeSub.id,
                     paymentMethod: 'stripe',
@@ -692,17 +718,55 @@ exports.confirmTransactionPayment = async (req, res) => {
     }
 };
 
+exports.rejectTransactionPayment = async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const transaction = await Transaction.findById(transactionId);
+
+        if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
+        if (transaction.status === 'completed') return res.status(400).json({ message: 'Cannot reject a completed transaction' });
+
+        transaction.status = 'rejected';
+        await transaction.save();
+
+        res.status(200).json({ success: true, message: 'Pagamento rejeitado.' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.deleteTransaction = async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const transaction = await Transaction.findById(transactionId);
+
+        if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
+
+        // If completed registration, it's safer not to delete, but user asked for it. 
+        // We'll allow it for admins.
+        await Transaction.findByIdAndDelete(transactionId);
+
+        res.status(200).json({ success: true, message: 'Transação eliminada com sucesso.' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.submitManualSubscription = async (req, res) => {
     try {
-        const { plan, amount, proofUrl, currency = 'MT' } = req.body;
+        const { plan, amount, proofUrl, currency = 'MZN' } = req.body;
         const userId = req.user.id;
+        const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 
         const transaction = new Transaction({
             type: 'subscription',
             user: userId,
             amount: Number(amount),
-            currency,
+            currency: currency.toUpperCase(),
+            baseAmount: Number(amount) * rate,
+            exchangeRate: rate,
             platformFee: Number(amount),
+            basePlatformFee: Number(amount) * rate,
             status: 'pending',
             paymentMethod: 'manual',
             proofUrl,
@@ -722,16 +786,19 @@ exports.getAdminFinancialSummary = async (req, res) => {
 
         const summary = allTransactions.reduce((acc, tx) => {
             if (tx.status === 'completed') {
-                acc.totalRevenue += tx.amount;
+                const amount = tx.baseAmount || tx.amount; // Fallback for old transactions
+                const platformFee = tx.basePlatformFee || tx.platformFee;
+
+                acc.totalRevenue += amount;
                 if (tx.type === 'subscription') {
-                    acc.subscriptionRevenue += tx.amount;
-                    acc.collectedFees += tx.amount; // Subscriptions are pure fee
+                    acc.subscriptionRevenue += amount;
+                    acc.collectedFees += amount;
                 } else {
-                    acc.eventFeeRevenue += tx.platformFee;
-                    acc.collectedFees += tx.platformFee;
+                    acc.eventFeeRevenue += platformFee;
+                    acc.collectedFees += platformFee;
                 }
             } else if (tx.status === 'pending') {
-                acc.pendingFees += tx.platformFee;
+                acc.pendingFees += tx.basePlatformFee || tx.platformFee;
             }
             return acc;
         }, { collectedFees: 0, pendingFees: 0, totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
@@ -748,11 +815,14 @@ exports.getAdminFinancialSummary = async (req, res) => {
             const date = new Date(tx.createdAt);
             if (date.getFullYear() === currentYear && tx.status === 'completed') {
                 const month = date.getMonth();
-                monthlyStats[month].revenue += tx.amount;
+                const amount = tx.baseAmount || tx.amount;
+                const platformFee = tx.basePlatformFee || tx.platformFee;
+
+                monthlyStats[month].revenue += amount;
                 if (tx.type === 'subscription') {
-                    monthlyStats[month].platformFees += tx.amount;
+                    monthlyStats[month].platformFees += amount;
                 } else {
-                    monthlyStats[month].platformFees += tx.platformFee;
+                    monthlyStats[month].platformFees += platformFee;
                 }
             }
         });
@@ -771,6 +841,9 @@ exports.getAdminFinancialSummary = async (req, res) => {
         allTransactions.forEach(tx => {
             if (tx.status === 'completed' && tx.mentor) {
                 const mentorId = tx.mentor._id.toString();
+                const amount = tx.baseAmount || tx.amount;
+                const platformFee = tx.basePlatformFee || tx.platformFee;
+
                 if (!mentorRevenue[mentorId]) {
                     mentorRevenue[mentorId] = {
                         name: tx.mentor.name || 'Unknown',
@@ -779,8 +852,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
                         platformFees: 0
                     };
                 }
-                mentorRevenue[mentorId].totalGenerated += tx.amount;
-                mentorRevenue[mentorId].platformFees += tx.platformFee;
+                mentorRevenue[mentorId].totalGenerated += amount;
+                mentorRevenue[mentorId].platformFees += platformFee;
             }
         });
 
@@ -788,12 +861,15 @@ exports.getAdminFinancialSummary = async (req, res) => {
             .sort((a, b) => b.platformFees - a.platformFees)
             .slice(0, 5);
 
+        const currentRate = await getLatestRate();
+
         res.status(200).json({
             success: true,
             summary,
             monthlyStats,
             paymentMethods,
-            topMentors
+            topMentors,
+            currentRate
         });
     } catch (error) {
         console.error('Financial Summary Error:', error);

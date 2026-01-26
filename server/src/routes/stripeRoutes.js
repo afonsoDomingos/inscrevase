@@ -61,6 +61,11 @@ router.post('/subscription/manual', authMiddleware, stripeController.submitManua
 router.get('/plans', stripeController.getPlans);
 router.get('/my-subscription-status', authMiddleware, stripeController.getMySubscriptionStatus);
 
+// Management routes
+router.patch('/admin/confirm-payment/:transactionId', authMiddleware, stripeController.confirmTransactionPayment);
+router.patch('/admin/reject-payment/:transactionId', authMiddleware, stripeController.rejectTransactionPayment);
+router.delete('/admin/transaction/:transactionId', authMiddleware, stripeController.deleteTransaction);
+
 // Refund route
 router.post('/refund/:submissionId', authMiddleware, stripeController.refundPayment);
 

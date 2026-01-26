@@ -23,9 +23,13 @@ export interface TransactionModel {
     };
     amount: number;
     currency: string;
+    baseAmount: number;
+    exchangeRate: number;
     platformFee: number;
+    basePlatformFee: number;
     mentorEarnings?: number;
-    status: 'pending' | 'completed' | 'failed';
+    baseMentorEarnings?: number;
+    status: 'pending' | 'completed' | 'failed' | 'rejected';
     paymentMethod: 'stripe' | 'manual';
     proofUrl?: string;
     createdAt: string;
@@ -41,6 +45,7 @@ export interface FinancialSummary {
     monthlyStats?: { month: number; platformFees: number; revenue: number }[];
     paymentMethods?: { [key: string]: number };
     topMentors?: { name: string; business: string; totalGenerated: number; platformFees: number }[];
+    exchangeRate?: number;
 }
 
 export const financeService = {
@@ -65,7 +70,7 @@ export const financeService = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        return data.summary as FinancialSummary;
+        return { ...data.summary, exchangeRate: data.currentRate } as FinancialSummary;
     },
 
     async confirmPayment(transactionId: string) {
@@ -75,6 +80,29 @@ export const financeService = {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
+            }
+        });
+        return response.json();
+    },
+
+    async rejectPayment(transactionId: string) {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/stripe/admin/reject-payment/${transactionId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.json();
+    },
+
+    async deleteTransaction(transactionId: string) {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/stripe/admin/transaction/${transactionId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         });
         return response.json();

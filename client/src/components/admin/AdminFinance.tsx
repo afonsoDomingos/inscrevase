@@ -12,7 +12,10 @@ import {
     Eye,
     X,
     ExternalLink,
-    Download
+    Download,
+    Trash2,
+    XCircle,
+    RotateCcw
 } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,8 +42,23 @@ export default function AdminFinance() {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
+    const [displayCurrency, setDisplayCurrency] = useState<'MZN' | 'USD'>('MZN');
 
     const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+    const getConvertedValue = useCallback((valueMZN: number) => {
+        if (displayCurrency === 'MZN') return valueMZN;
+        const rate = summary?.exchangeRate || 64; // Fallback rate
+        return valueMZN / rate;
+    }, [displayCurrency, summary?.exchangeRate]);
+
+    const formatCurrency = useCallback((value: number) => {
+        const converted = getConvertedValue(value);
+        return new Intl.NumberFormat(displayCurrency === 'MZN' ? 'pt-MZ' : 'en-US', {
+            style: 'currency',
+            currency: displayCurrency
+        }).format(converted);
+    }, [displayCurrency, getConvertedValue]);
 
     const loadData = useCallback(async () => {
         try {
@@ -65,16 +83,47 @@ export default function AdminFinance() {
     }, [loadData]);
 
     const handleConfirmPayment = async (id: string) => {
+        if (!confirm('Tem certeza que deseja confirmar este pagamento?')) return;
         try {
             const res = await financeService.confirmPayment(id);
             if (res.success) {
-                toast.success("Pagamento confirmado!");
+                toast.success("Pagamento confirmado e plano ativado!");
                 loadData();
             } else {
                 toast.error(res.message);
             }
         } catch {
             toast.error("Erro ao confirmar pagamento");
+        }
+    };
+
+    const handleRejectPayment = async (id: string) => {
+        if (!confirm('Tem certeza que deseja REJEITAR este pagamento?')) return;
+        try {
+            const res = await financeService.rejectPayment(id);
+            if (res.success) {
+                toast.success("Pagamento rejeitado.");
+                loadData();
+            } else {
+                toast.error(res.message);
+            }
+        } catch {
+            toast.error("Erro ao rejeitar pagamento");
+        }
+    };
+
+    const handleDeleteTransaction = async (id: string) => {
+        if (!confirm('ATENÇÃO: Isso excluirá permanentemente o registro financeiro. Continuar?')) return;
+        try {
+            const res = await financeService.deleteTransaction(id);
+            if (res.success) {
+                toast.success("Transação eliminada.");
+                loadData();
+            } else {
+                toast.error(res.message);
+            }
+        } catch {
+            toast.error("Erro ao eliminar transação");
         }
     };
 
@@ -102,8 +151,8 @@ export default function AdminFinance() {
 
     const chartData = summary?.monthlyStats?.map((s: { month: number; platformFees: number; revenue: number }) => ({
         name: monthNames[s.month],
-        fees: s.platformFees,
-        revenue: s.revenue
+        fees: getConvertedValue(s.platformFees),
+        revenue: getConvertedValue(s.revenue)
     })) || [];
 
     const pieData = summary?.paymentMethods ? Object.entries(summary.paymentMethods).map(([name, value]: [string, number]) => ({
@@ -121,6 +170,7 @@ export default function AdminFinance() {
                     icon={<TrendingUp size={24} />}
                     color="#D4AF37"
                     subtitle="Total processado (Stripe + Manual)"
+                    formattedValue={formatCurrency(summary?.totalRevenue || 0)}
                 />
                 <StatsCard
                     title={t('dashboard.finance.subscriptionRevenue')}
@@ -128,6 +178,7 @@ export default function AdminFinance() {
                     icon={<TrendingUp size={24} />}
                     color="#6366f1"
                     subtitle="Upgrades de planos Mentores"
+                    formattedValue={formatCurrency(summary?.subscriptionRevenue || 0)}
                 />
                 <StatsCard
                     title={t('dashboard.finance.eventFeeRevenue')}
@@ -135,6 +186,7 @@ export default function AdminFinance() {
                     icon={<TrendingUp size={24} />}
                     color="#10b981"
                     subtitle="Taxas coletadas de inscrições"
+                    formattedValue={formatCurrency(summary?.eventFeeRevenue || 0)}
                 />
                 <StatsCard
                     title="Taxas Pendentes"
@@ -142,6 +194,7 @@ export default function AdminFinance() {
                     icon={<Clock size={24} />}
                     color="#f59e0b"
                     subtitle="Cobranças manuais a mentores"
+                    formattedValue={formatCurrency(summary?.pendingFees || 0)}
                 />
             </div>
 
@@ -152,7 +205,11 @@ export default function AdminFinance() {
                     <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Crescimento de Receita</h3>
-                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Taxas da Plataforma (MT) por mês</p>
+                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Taxas da Plataforma ({displayCurrency}) por mês</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '5px', background: '#f5f5f5', padding: '4px', borderRadius: '8px' }}>
+                            <button onClick={() => setDisplayCurrency('MZN')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'MZN' ? '#fff' : 'transparent', fontWeight: 700, cursor: 'pointer', boxShadow: displayCurrency === 'MZN' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none' }}>MZN</button>
+                            <button onClick={() => setDisplayCurrency('USD')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'USD' ? '#000' : 'transparent', color: displayCurrency === 'USD' ? '#fff' : '#666', fontWeight: 700, cursor: 'pointer' }}>USD</button>
                         </div>
                     </div>
                     <div style={{ width: '100%', height: '300px' }}>
@@ -169,7 +226,7 @@ export default function AdminFinance() {
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-                                    formatter={(value: string | number | undefined) => [`${Number(value || 0).toLocaleString()} MT`, 'Taxa Plataforma']}
+                                    formatter={(value: string | number | undefined) => [`${Number(value || 0).toLocaleString()} ${displayCurrency}`, 'Taxa Plataforma']}
                                 />
                                 <Area type="monotone" dataKey="fees" stroke="#FFD700" strokeWidth={3} fillOpacity={1} fill="url(#colorFees)" />
                             </AreaChart>
@@ -216,7 +273,7 @@ export default function AdminFinance() {
                                         <div style={{ fontSize: '0.7rem', color: '#999' }}>{m.business}</div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
-                                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#10b981' }}>+{m.platformFees.toLocaleString()} MT</div>
+                                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#10b981' }}>+{formatCurrency(m.platformFees)}</div>
                                         <div style={{ fontSize: '0.7rem', color: '#ccc' }}>Taxas geradas</div>
                                     </div>
                                 </div>
@@ -243,7 +300,7 @@ export default function AdminFinance() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.8rem' }}>
-                    {['all', 'pending', 'completed'].map(status => (
+                    {['all', 'pending', 'completed', 'rejected'].map(status => (
                         <button
                             key={status}
                             onClick={() => {
@@ -261,7 +318,7 @@ export default function AdminFinance() {
                                 textTransform: 'capitalize'
                             }}
                         >
-                            {status === 'all' ? 'Ver Todos' : status === 'pending' ? 'Pendentes' : 'Conciliados'}
+                            {status === 'all' ? 'Ver Todos' : status === 'pending' ? 'Pendentes' : status === 'rejected' ? 'Rejeitados' : 'Conciliados'}
                         </button>
                     ))}
                 </div>
@@ -321,11 +378,11 @@ export default function AdminFinance() {
                                             borderRadius: '20px',
                                             fontSize: '0.75rem',
                                             fontWeight: 700,
-                                            background: tx.status === 'completed' ? '#38a16915' : '#f59e0b15',
-                                            color: tx.status === 'completed' ? '#38a169' : '#b45309'
+                                            background: tx.status === 'completed' ? '#38a16915' : tx.status === 'rejected' ? '#e53e3e15' : '#f59e0b15',
+                                            color: tx.status === 'completed' ? '#38a169' : tx.status === 'rejected' ? '#e53e3e' : '#b45309'
                                         }}>
-                                            {tx.status === 'completed' ? <CheckCircle size={12} /> : <Clock size={12} />}
-                                            {tx.status === 'completed' ? 'CONCILIADO' : 'AGUARDANDO MENTOR'}
+                                            {tx.status === 'completed' ? <CheckCircle size={12} /> : tx.status === 'rejected' ? <XCircle size={12} /> : <Clock size={12} />}
+                                            {tx.status === 'completed' ? 'CONCILIADO' : tx.status === 'rejected' ? 'REJEITADO' : 'AGUARDANDO MENTOR'}
                                         </div>
                                     </td>
                                     <td style={{ padding: '1.2rem', textAlign: 'right' }}>
@@ -344,25 +401,41 @@ export default function AdminFinance() {
                                                 </button>
                                             )}
                                             {tx.status === 'pending' && (
-                                                <button
-                                                    onClick={() => handleConfirmPayment(tx._id)}
-                                                    style={{
-                                                        background: '#000',
-                                                        color: '#FFD700',
-                                                        border: 'none',
-                                                        padding: '0.6rem 1rem',
-                                                        borderRadius: '8px',
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: 800,
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '5px'
-                                                    }}
-                                                >
-                                                    <ArrowUpRight size={14} /> CONFIRMAR
-                                                </button>
+                                                <>
+                                                    <button
+                                                        onClick={() => handleConfirmPayment(tx._id)}
+                                                        style={{
+                                                            background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 0.8rem',
+                                                            borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
+                                                            display: 'flex', alignItems: 'center', gap: '5px'
+                                                        }}
+                                                        title="Aprovar"
+                                                    >
+                                                        <CheckCircle size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRejectPayment(tx._id)}
+                                                        style={{
+                                                            background: '#fee2e2', color: '#ef4444', border: 'none', padding: '0.6rem 0.8rem',
+                                                            borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
+                                                            display: 'flex', alignItems: 'center', gap: '5px'
+                                                        }}
+                                                        title="Rejeitar"
+                                                    >
+                                                        <XCircle size={14} />
+                                                    </button>
+                                                </>
                                             )}
+                                            <button
+                                                onClick={() => handleDeleteTransaction(tx._id)}
+                                                style={{
+                                                    background: '#fff', border: '1px solid #ddd', color: '#999', padding: '0.6rem',
+                                                    borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
+                                                }}
+                                                title="Eliminar Registro"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
                                         </div>
                                     </td>
                                 </motion.tr>
@@ -475,7 +548,7 @@ export default function AdminFinance() {
     );
 }
 
-function StatsCard({ title, value, icon, color, subtitle }: { title: string, value: number, icon: React.ReactNode, color: string, subtitle: string }) {
+function StatsCard({ title, value, icon, color, subtitle, formattedValue }: { title: string, value: number, icon: React.ReactNode, color: string, subtitle: string, formattedValue?: string }) {
     return (
         <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #eee', position: 'relative', overflow: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -485,7 +558,7 @@ function StatsCard({ title, value, icon, color, subtitle }: { title: string, val
                 <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '0.85rem', color: '#000', fontWeight: 800 }}>{title}</div>
                     <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>
-                        {value.toLocaleString()} <span style={{ fontSize: '0.85rem' }}>MT</span>
+                        {formattedValue ? formattedValue : `${value.toLocaleString()} MT`}
                     </div>
                 </div>
             </div>
