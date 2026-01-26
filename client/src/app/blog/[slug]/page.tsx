@@ -9,6 +9,7 @@ import {
     Heart, MessageCircle, Copy, Check, Eye, Send, Lock
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import AdBanner from '@/components/common/AdBanner';
 import { notFound } from 'next/navigation';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { authService, UserData } from '@/lib/authService';
@@ -471,6 +472,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                             </AnimatePresence>
                         </div>
                     </section>
+
+                    {/* Article Bottom Ad Slot */}
+                    <div style={{ marginTop: '40px' }}>
+                        <AdBanner slot="1748533691" format="horizontal" />
+                    </div>
                 </motion.div>
 
                 {/* Sidebar (Tablet/Desktop) */}
@@ -510,6 +516,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                                 </div>
                             </div>
                         )}
+
+                        {/* Sidebar Ad Slot */}
+                        <div style={{ marginTop: '30px' }}>
+                            <AdBanner slot="1748533691" format="rectangle" />
+                        </div>
                     </div>
                 </aside>
             </div>

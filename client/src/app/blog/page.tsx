@@ -8,6 +8,7 @@ import { blogService, BlogPost } from '@/lib/blogService';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import AdBanner from '@/components/common/AdBanner';
 
 const categoryIcons = {
     guide: Calendar,
@@ -101,6 +102,11 @@ export default function BlogPage() {
                         {[1, 2, 3].map(i => (
                             <div key={i} style={{ height: '450px', background: '#f8fafc', borderRadius: '32px', border: '1px solid #f1f5f9' }} className="animate-pulse" />
                         ))}
+
+                        {/* Sidebar Ad Slot */}
+                        <div style={{ marginTop: '30px' }}>
+                            <AdBanner slot="1748533691" format="rectangle" />
+                        </div>
                     </div>
                 ) : posts.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '6rem 2rem', background: '#f8fafc', borderRadius: '32px' }}>
@@ -184,6 +190,11 @@ export default function BlogPage() {
                         })}
                     </div>
                 )}
+
+                {/* Blog Listing Ad Slot */}
+                <div style={{ marginTop: '60px' }}>
+                    <AdBanner slot="1748533691" format="horizontal" />
+                </div>
             </section>
 
             <Footer />
