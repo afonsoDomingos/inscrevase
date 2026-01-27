@@ -96,6 +96,13 @@ export default function Navbar() {
       <div className={`mobile-menu-overlay ${isOpen ? 'open' : ''}`}>
         <div className="mobile-menu-header">
           <div className="logo-with-text">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="nav-logo-img"
+            />
             <span className="tesla-logo-text">INSCREVA<span className="gold-text">-SE</span></span>
           </div>
           <button className="close-menu-btn" onClick={() => setIsOpen(false)}>
