@@ -361,7 +361,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section style={{ padding: '100px 0', background: '#fff' }}>
+      <section style={{ padding: '80px 0', background: '#fff' }}>
         <div className="container">
           <motion.div
             variants={staggerContainer}
@@ -411,7 +411,7 @@ export default function Home() {
       </section>
 
       {/* Dashboard Feature Showcase */}
-      <section className="dashboard-showcase" style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <section className="dashboard-showcase" style={{ padding: '90px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
         {/* Decorative background orbs */}
         <motion.div
           animate={{
@@ -489,21 +489,36 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <motion.h2
-              variants={{
-                initial: { opacity: 0, y: 30 },
-                animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-              }}
+              initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
                 fontWeight: 800,
                 marginBottom: '1.5rem',
                 color: '#1a1a1a',
                 letterSpacing: '-1px',
-                lineHeight: 1.1
+                lineHeight: 1.1,
+                textShadow: '0 0 40px rgba(212, 175, 55, 0.1)'
               }}
             >
               Crie e Gerencie Seus Eventos <br className="hidden-mobile" />
-              <span className="gold-text">Digitais Ou Presenciais</span> de Forma Clara e Simples
+              <motion.span
+                initial={{ backgroundSize: '0% 100%' }}
+                whileInView={{ backgroundSize: '100% 100%' }}
+                transition={{ duration: 1, delay: 0.5, ease: "circOut" }}
+                style={{
+                  background: 'linear-gradient(120deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%)',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'left bottom',
+                  padding: '0 10px',
+                  borderRadius: '4px'
+                }}
+                className="gold-text"
+              >
+                Digitais Ou Presenciais
+              </motion.span> de Forma Clara e Simples
             </motion.h2>
             <motion.p
               variants={{
@@ -554,7 +569,7 @@ export default function Home() {
       </section>
 
       {/* Payment Methods Section */}
-      <section style={{ padding: '120px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }}>
+      <section style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }}>
         <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 1.5rem' }}>
           <motion.div {...fadeIn}>
             <h2 style={{
@@ -669,10 +684,11 @@ export default function Home() {
       <section style={{ padding: '0 20px 80px', background: '#fff' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '24px',
           maxWidth: '1600px',
-          margin: '0 auto'
+          margin: '0 auto',
+          justifyContent: 'center'
         }}>
           {/* Block 1: Masterclasses */}
           <motion.div
@@ -850,10 +866,11 @@ export default function Home() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px',
           maxWidth: '1600px',
-          margin: '0 auto'
+          margin: '0 auto',
+          justifyContent: 'center'
         }}>
           {/* Package 1: Free */}
           <motion.div
@@ -863,13 +880,14 @@ export default function Home() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             style={{
               position: 'relative',
-              height: '700px',
+              height: 'auto',
+              minHeight: '520px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '40px',
+              padding: '30px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -917,13 +935,14 @@ export default function Home() {
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
             style={{
               position: 'relative',
-              height: '700px',
+              height: 'auto',
+              minHeight: '540px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '40px',
+              padding: '30px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -987,13 +1006,14 @@ export default function Home() {
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
             style={{
               position: 'relative',
-              height: '700px',
+              height: 'auto',
+              minHeight: '520px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '40px',
+              padding: '30px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"

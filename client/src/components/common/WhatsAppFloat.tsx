@@ -34,12 +34,12 @@ export default function WhatsAppFloat() {
                     style={{
                         position: 'fixed',
                         bottom: '20px',
-                        right: '30px',
-                        width: '60px',
-                        height: '60px',
+                        right: '25px',
+                        width: '50px',
+                        height: '50px',
                         borderRadius: '50%',
                         background: '#25D366',
-                        boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
+                        boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -49,7 +49,7 @@ export default function WhatsAppFloat() {
                         border: '2px solid #fff'
                     }}
                 >
-                    <MessageCircle size={32} fill="white" />
+                    <MessageCircle size={24} fill="white" />
                 </motion.a>
             )}
         </AnimatePresence>

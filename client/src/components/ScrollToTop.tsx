@@ -38,26 +38,26 @@ export default function ScrollToTop() {
                     title="Scroll to Top"
                     style={{
                         position: 'fixed',
-                        bottom: '90px',
-                        right: '30px',
+                        bottom: '80px',
+                        right: '25px',
                         zIndex: 1000,
-                        width: '60px',
-                        height: '60px',
+                        width: '45px',
+                        height: '45px',
                         borderRadius: '50%',
                         background: '#000',
                         color: '#FFD700',
-                        border: '2px solid #FFD700',
+                        border: '1px solid #FFD700',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
                         transition: 'transform 0.2s',
                     }}
                     onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
                     onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                    <ChevronUp size={28} strokeWidth={3} />
+                    <ChevronUp size={24} strokeWidth={2.5} />
                 </motion.button>
             )}
         </AnimatePresence>
