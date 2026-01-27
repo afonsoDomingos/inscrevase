@@ -420,17 +420,7 @@ export default function Home() {
             y: [0, -20, 0]
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          style={{
-            position: 'absolute',
-            top: '10%',
-            left: '5%',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%)',
-            zIndex: 0,
-            pointerEvents: 'none',
-            filter: 'blur(40px)'
-          }}
+          className="aura-orb aura-orb-1"
         />
         <motion.div
           animate={{
@@ -439,18 +429,54 @@ export default function Home() {
             y: [0, 30, 0]
           }}
           transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          style={{
-            position: 'absolute',
-            bottom: '10%',
-            right: '5%',
-            width: '400px',
-            height: '400px',
-            background: 'radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%)',
-            zIndex: 0,
-            pointerEvents: 'none',
-            filter: 'blur(50px)'
-          }}
+          className="aura-orb aura-orb-2"
         />
+
+        <style jsx>{`
+  .aura-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .aura-orb-1 {
+    top: 10%;
+    left: 5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    filter: blur(40px);
+  }
+  .aura-orb-2 {
+    bottom: 10%;
+    right: 5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+    filter: blur(50px);
+  }
+  @media (max-width: 768px) {
+    .aura-orb-1 {
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%) !important;
+      width: 80vw;
+      height: 80vw;
+      max-width: 300px;
+      max-height: 300px;
+    }
+    .aura-orb-2 {
+      bottom: 5%;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%) !important;
+      width: 90vw;
+      height: 90vw;
+      max-width: 400px;
+      max-height: 400px;
+    }
+  }
+`}</style>
 
         <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 1.5rem' }}>
           <motion.div

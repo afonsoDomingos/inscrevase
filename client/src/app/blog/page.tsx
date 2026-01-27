@@ -127,7 +127,7 @@ export default function BlogPage() {
                                 >
                                     <Link
                                         href={`/blog/${post.slug}`}
-                                        style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%', background: '#fff', borderRadius: '32px', overflow: 'hidden', border: '1px solid #f1f5f9', transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+                                        style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%', background: '#1a1a1a', borderRadius: '32px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                                         className="post-card"
                                     >
                                         {/* Image Container */}
@@ -147,40 +147,36 @@ export default function BlogPage() {
                                         </div>
 
                                         {/* Content Container */}
-                                        <div style={{ padding: '35px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px', color: '#64748b', fontSize: '0.85rem', fontWeight: 600 }}>
+                                        <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px', color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    <Icon size={16} />
+                                                    <Icon size={14} />
                                                     <span>{post.readTime} min</span>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    <Eye size={16} />
+                                                    <Eye size={14} />
                                                     <span>{post.views}</span>
-                                                </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    <Heart size={16} />
-                                                    <span>{post.likes?.length || 0}</span>
                                                 </div>
                                             </div>
 
-                                            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', marginBottom: '15px', lineHeight: '1.25', fontFamily: 'var(--font-playfair, serif)' }}>
+                                            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: '12px', lineHeight: '1.3', fontFamily: 'var(--font-playfair, serif)' }}>
                                                 {post.title}
                                             </h2>
 
-                                            <p style={{ fontSize: '1.1rem', color: '#444', lineHeight: '1.6', marginBottom: '25px', display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>
+                                            <p style={{ fontSize: '1rem', color: '#ccc', lineHeight: '1.6', marginBottom: '20px', display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>
                                                 {post.excerpt}
                                             </p>
 
-                                            <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
+                                            <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f1f5f9', overflow: 'hidden' }}>
-                                                        {post.author.avatar ? <Image src={post.author.avatar} alt={post.author.name} width={32} height={32} /> : <Users size={16} style={{ padding: '6px' }} />}
+                                                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#333', overflow: 'hidden' }}>
+                                                        {post.author.avatar ? <Image src={post.author.avatar} alt={post.author.name} width={30} height={30} /> : <Users size={16} color="#fff" style={{ padding: '6px' }} />}
                                                     </div>
-                                                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>{post.author.name}</span>
+                                                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e2e8f0' }}>{post.author.name}</span>
                                                 </div>
 
-                                                <div style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    Ler <ArrowRight size={18} />
+                                                <div style={{ color: '#FFD700', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    LER ARTIGO <ArrowRight size={14} />
                                                 </div>
                                             </div>
                                         </div>
@@ -201,14 +197,23 @@ export default function BlogPage() {
 
             <style jsx>{`
                 .post-card:hover {
-                    transform: translateY(-10px);
-                    box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.15), 0 18px 36px -18px rgba(0, 0, 0, 0.2);
+                    border-color: #FFD700;
+                    transform: translateY(-8px);
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
                 }
                 .post-card:hover .post-image {
                     transform: scale(1.05);
                 }
-                .post-card:hover .text-gold {
-                    color: #000;
+                @media (max-width: 768px) {
+                    div[style*="grid-template-columns"] {
+                        grid-template-columns: 1fr !important;
+                        gap: 30px !important;
+                    }
+                    h1 { font-size: 2.5rem !important; }
+                    section[style*="height: 70vh"] {
+                        height: 50vh !important;
+                        min-height: 400px !important;
+                    }
                 }
             `}</style>
         </main>

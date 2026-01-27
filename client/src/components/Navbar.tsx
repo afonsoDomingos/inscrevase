@@ -140,11 +140,11 @@ export default function Navbar() {
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#000', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
+            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#000', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
+            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
               {t('auth.login')}
             </Link>
           )}

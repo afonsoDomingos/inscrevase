@@ -11,6 +11,7 @@ import { Suspense } from "react";
 import MetaPixel from '@/components/MetaPixel';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { ThemeProvider } from '@/context/ThemeContext';
+import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -161,6 +162,7 @@ export default function RootLayout({
                     <MetaPixel pixelId="1313928660767780" />
                   </Suspense>
                   {children}
+                  <WhatsAppFloat />
                 </ClientLayoutWrapper>
               </SocketProvider>
             </CurrencyProvider>
