@@ -13,6 +13,7 @@ import Cookies from "js-cookie";
 import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
 import Footer from "@/components/Footer";
+import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -360,50 +361,123 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section style={{ padding: '80px 0', background: '#fff' }}>
-        <div className="container">
+      {/* Stats Section - Luxury Dark Mode */}
+      <section style={{ padding: '100px 0', background: '#050505', position: 'relative' }}>
+        {/* Subtle background grid/mesh effect */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px)',
+          backgroundSize: '50px 50px',
+          opacity: 0.2,
+          pointerEvents: 'none'
+        }} />
+
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            style={{ textAlign: 'center', marginBottom: '60px' }}
+          >
+            <h2 style={{
+              fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+              color: '#fff',
+              marginBottom: '1rem',
+              fontFamily: 'var(--font-playfair)'
+            }}>
+              Resultados que <span className="gold-text">Falam</span>
+            </h2>
+            <p style={{ color: '#888', fontSize: '1.1rem' }}>
+              Milhares de mentores confiam na Inscreva.se para escalar seus eventos
+            </p>
+          </motion.div>
+
           <motion.div
             variants={staggerContainer}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             className="stats-grid"
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px', textAlign: 'center' }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '30px',
+              textAlign: 'center'
+            }}
           >
             {[
-              { label: t('landing.stats.s1') || 'Eventos Criados', value: '2,500+' },
-              { label: t('landing.stats.s2') || 'Mentores Ativos', value: '450+' },
-              { label: t('landing.stats.s3') || 'Inscrições Hoje', value: '1,200+' },
-              { label: t('landing.stats.s4') || 'Suporte Online', value: '24/7' },
+              { icon: Calendar, label: t('landing.stats.s1') || 'Eventos Criados', value: '2,500+', color: '#FFD700' },
+              { icon: Users, label: t('landing.stats.s2') || 'Participantes', value: '150k+', color: '#00f2ea' },
+              { icon: TrendingUp, label: t('landing.stats.s3') || 'Mentores Ativos', value: '450+', color: '#ff0080' },
+              { icon: Star, label: t('landing.stats.s4') || 'Avaliação Média', value: '4.9', color: '#FFD700' },
             ].map((stat, i) => (
               <motion.div
                 key={i}
                 variants={fadeIn}
-                whileHover={{ y: -5 }}
-                className="stat-card"
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="stat-card-luxury"
                 style={{
-                  padding: '40px 20px',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #fcfcfc 100%)',
-                  borderRadius: '24px',
-                  border: '1px solid #f0f0f0',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
-                  transition: 'all 0.3s ease'
+                  padding: '50px 30px',
+                  background: 'rgba(20, 20, 20, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '30px',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '20px',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
-                <div className="gold-text stat-value" style={{
-                  fontSize: 'clamp(2rem, 4vw, 3.2rem)',
-                  fontWeight: 900,
-                  marginBottom: '1rem',
-                  lineHeight: 1
-                }}>{stat.value}</div>
-                <div className="stat-label" style={{
-                  color: '#888',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '2px',
-                  fontSize: '0.75rem'
-                }}>{stat.label}</div>
+                {/* Hover Glow Effect */}
+                <div
+                  className="card-glow"
+                  style={{
+                    position: 'absolute',
+                    top: '-50%',
+                    left: '-50%',
+                    width: '200%',
+                    height: '200%',
+                    background: `radial-gradient(circle at center, ${stat.color}15 0%, transparent 70%)`,
+                    opacity: 0,
+                    transition: 'opacity 0.4s ease',
+                    pointerEvents: 'none'
+                  }}
+                />
+
+                <style jsx>{`
+                  .stat-card-luxury:hover .card-glow { opacity: 1; }
+                  .stat-card-luxury:hover { border-color: rgba(255,255,255,0.15) !important; }
+                  .stat-icon-wrapper svg { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                  .stat-card-luxury:hover .stat-icon-wrapper svg { transform: scale(1.2) rotate(5deg); }
+                `}</style>
+
+                <div className="stat-icon-wrapper" style={{
+                  marginBottom: '10px'
+                }}>
+                  <stat.icon size={48} color={stat.color} strokeWidth={1.5} />
+                </div>
+
+                <div>
+                  <div className="stat-value" style={{
+                    fontSize: '3.5rem',
+                    fontWeight: 700,
+                    color: '#fff',
+                    marginBottom: '5px',
+                    lineHeight: 1,
+                    fontFamily: 'var(--font-inter)'
+                  }}>{stat.value}</div>
+                  <div className="stat-label" style={{
+                    color: '#666',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '2px'
+                  }}>{stat.label}</div>
+                </div>
               </motion.div>
             ))}
           </motion.div>
