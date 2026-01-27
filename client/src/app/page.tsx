@@ -485,7 +485,7 @@ export default function Home() {
       </section>
 
       {/* Dashboard Feature Showcase */}
-      <section className="dashboard-showcase" style={{ padding: '90px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <section className="dashboard-showcase" style={{ padding: '50px 0 90px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
         {/* Decorative background orbs */}
         <motion.div
           animate={{
@@ -578,21 +578,23 @@ export default function Home() {
               }}
             >
               Crie e Gerencie Seus Eventos <br className="hidden-mobile" />
-              <motion.span
-                initial={{ backgroundSize: '0% 100%' }}
-                whileInView={{ backgroundSize: '100% 100%' }}
-                transition={{ duration: 1, delay: 0.5, ease: "circOut" }}
-                style={{
-                  background: 'linear-gradient(120deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%)',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'left bottom',
-                  padding: '0 10px',
-                  borderRadius: '4px'
-                }}
-                className="gold-text"
-              >
-                Digitais Ou Presenciais
-              </motion.span> de Forma Clara e Simples
+              <span style={{ position: 'relative', display: 'inline-block' }}>
+                <span className="gold-text relative z-10">Digitais Ou Presenciais</span>
+                <motion.span
+                  initial={{ width: '0%' }}
+                  whileInView={{ width: '100%' }}
+                  transition={{ duration: 0.8, delay: 0.4, ease: "cubicBezier(0.17, 0.55, 0.55, 1)" }}
+                  style={{
+                    position: 'absolute',
+                    bottom: '8px',
+                    left: 0,
+                    height: '14px',
+                    background: 'rgba(255, 215, 0, 0.25)',
+                    zIndex: -1,
+                    borderRadius: '2px'
+                  }}
+                />
+              </span> de Forma Clara e Simples
             </motion.h2>
             <motion.p
               variants={{
@@ -611,29 +613,38 @@ export default function Home() {
               {t('landing.dashboard.subtitle') || 'Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos.'}
             </motion.p>
 
-            <div className="dashboard-actions" style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '5.5rem' }}>
+            <div className="dashboard-actions" style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '4rem', flexWrap: 'wrap' }}>
               <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
-                padding: '14px 45px',
-                borderRadius: '8px',
+                padding: '16px 48px',
+                borderRadius: '50px',
                 background: 'var(--gold-gradient)',
                 color: '#000',
                 fontWeight: 700,
+                fontSize: '1rem',
                 textDecoration: 'none',
-                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)',
-                transition: 'all 0.3s ease'
-              }} className="hover:scale-105 transform">
+                boxShadow: '0 10px 30px rgba(212, 175, 55, 0.3)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              }} className="hover:scale-105 hover:-translate-y-1">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
               <Link href="/funcionalidades" style={{
-                padding: '14px 45px',
-                borderRadius: '8px',
-                background: '#f8f8f8',
-                color: '#333',
+                padding: '16px 48px',
+                borderRadius: '50px',
+                background: '#fff',
+                color: '#1a1a1a',
                 fontWeight: 600,
+                fontSize: '1rem',
                 textDecoration: 'none',
-                border: '1px solid #eee',
+                border: '1px solid #e0e0e0',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
                 transition: 'all 0.3s ease'
-              }} className="hover:bg-gray-100">
+              }} className="hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg">
                 {t('common.viewMore') || 'Saiba Mais'}
               </Link>
             </div>
