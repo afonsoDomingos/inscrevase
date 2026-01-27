@@ -3,7 +3,7 @@
 Plataforma moderna para criação de formulários de inscrição personalizados e gestão de eventos.
 
 ## 🌐 Link do Projeto
-Acesse a versão live aqui: **[https://inscrevase.vercel.app/](https://inscrevase.vercel.app/)**
+Acesse a versão live aqui: **[https://inscreva-se.com](https://inscreva-se.com)**
 
 ---
 
