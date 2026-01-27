@@ -387,10 +387,10 @@ export default function Navbar() {
           text-decoration: none !important;
         }
         .navbar.scrolled .tesla-logo-text {
-          color: #000000 !important;
+          color: #FFFFFF !important;
         }
         .navbar.scrolled .tesla-logo-text .gold-text {
-          color: #B8860B !important;
+          color: #FFD700 !important;
         }
         /* Mobile Menu logo colors */
         .mobile-menu-overlay .tesla-logo-text {
