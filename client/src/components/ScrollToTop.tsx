@@ -38,7 +38,7 @@ export default function ScrollToTop() {
                     title="Scroll to Top"
                     style={{
                         position: 'fixed',
-                        bottom: '30px',
+                        bottom: '90px',
                         right: '30px',
                         zIndex: 1000,
                         width: '50px',

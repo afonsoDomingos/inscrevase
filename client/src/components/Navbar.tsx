@@ -259,10 +259,10 @@ export default function Navbar() {
             font-size: 1.1rem;
             color: #000000 !important;
             text-decoration: none !important;
-            padding: 1rem 0;
+            padding: 1.2rem 0;
             transition: all 0.3s ease;
             font-weight: 500;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             border: none !important;
@@ -394,7 +394,7 @@ export default function Navbar() {
         }
         /* Mobile Menu logo colors */
         .mobile-menu-overlay .tesla-logo-text {
-            color: #1a1a1b !important;
+            color: #FFFFFF !important;
         }
         .mobile-menu-overlay .tesla-logo-text .gold-text {
             color: #FFD700 !important;
