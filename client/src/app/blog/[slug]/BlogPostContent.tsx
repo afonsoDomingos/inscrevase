@@ -271,31 +271,31 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                 </div>
             </header>
 
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '60px 20px', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '60px' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px', display: 'flex', flexDirection: 'column', gap: '60px' }}>
                 {/* Main Content */}
                 <article>
-                    <div className="blog-content" style={{ fontSize: '1.15rem', lineHeight: 1.8, color: '#333' }}>
-                        <p style={{ fontSize: '1.3rem', fontWeight: 500, color: '#555', marginBottom: '2rem', borderLeft: '4px solid #FFD700', paddingLeft: '20px', fontStyle: 'italic' }}>
+                    <div className="blog-content" style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#333', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+                        <p style={{ fontSize: '1.2rem', fontWeight: 500, color: '#555', marginBottom: '2rem', borderLeft: '4px solid #FFD700', paddingLeft: '20px', fontStyle: 'italic' }}>
                             {post.excerpt}
                         </p>
 
                         <ReactMarkdown
                             components={{
-                                h2: ({ ...props }) => <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '2.5rem 0 1.5rem', color: '#000', fontFamily: 'var(--font-playfair)' }} {...props} />,
-                                h3: ({ ...props }) => <h3 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '2rem 0 1rem', color: '#000' }} {...props} />,
-                                p: ({ ...props }) => <p style={{ marginBottom: '1.5rem' }} {...props} />,
-                                ul: ({ ...props }) => <ul style={{ marginBottom: '1.5rem', paddingLeft: '20px' }} {...props} />,
+                                h2: ({ ...props }) => <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, margin: '2.5rem 0 1.5rem', color: '#000', fontFamily: 'var(--font-playfair)', lineHeight: 1.3 }} {...props} />,
+                                h3: ({ ...props }) => <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '2rem 0 1rem', color: '#000' }} {...props} />,
+                                p: ({ ...props }) => <p style={{ marginBottom: '1.5rem', maxWidth: '100%' }} {...props} />,
+                                ul: ({ ...props }) => <ul style={{ marginBottom: '1.5rem', paddingLeft: '20px', maxWidth: '100%' }} {...props} />,
                                 li: ({ ...props }) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
                                 img: ({ ...props }) => (
-                                    <div style={{ margin: '2rem 0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                                    <div style={{ margin: '2rem 0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', width: '100%' }}>
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img style={{ width: '100%', height: 'auto', display: 'block' }} alt={props.alt || 'Blog image'} {...props} />
                                     </div>
                                 ),
                                 blockquote: ({ ...props }) => (
-                                    <blockquote style={{ background: '#f9f9f9', borderLeft: '4px solid #FFD700', padding: '1.5rem', margin: '2rem 0', borderRadius: '0 8px 8px 0', fontStyle: 'italic', color: '#555' }} {...props} />
+                                    <blockquote style={{ background: '#f9f9f9', borderLeft: '4px solid #FFD700', padding: '1.5rem', margin: '2rem 0', borderRadius: '0 8px 8px 0', fontStyle: 'italic', color: '#555', overflowWrap: 'break-word' }} {...props} />
                                 ),
-                                a: ({ ...props }) => <a style={{ color: '#000', textDecoration: 'underline', textDecorationColor: '#FFD700', textUnderlineOffset: '3px', fontWeight: 600 }} {...props} />
+                                a: ({ ...props }) => <a style={{ color: '#000', textDecoration: 'underline', textDecorationColor: '#FFD700', textUnderlineOffset: '3px', fontWeight: 600, overflowWrap: 'break-word' }} {...props} />
                             }}
                         >
                             {post.content}
@@ -303,8 +303,8 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                     </div>
 
                     {/* Interaction Bar */}
-                    <div style={{ marginTop: '4rem', padding: '2rem 0', borderTop: '1px solid #eee', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ marginTop: '4rem', padding: '2rem 0', borderTop: '1px solid #eee', borderBottom: '1px solid #eee', display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                             <button
                                 onClick={handleLike}
                                 style={{
@@ -318,11 +318,12 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                                     cursor: 'pointer',
                                     color: isLiked ? '#e53e3e' : '#666',
                                     fontWeight: 700,
-                                    transition: 'all 0.2s'
+                                    transition: 'all 0.2s',
+                                    fontSize: '0.9rem'
                                 }}
                             >
-                                <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
-                                {likeCount} Curtidas
+                                <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+                                {likeCount}
                             </button>
                             <button
                                 onClick={() => document.getElementById('comments-section')?.scrollIntoView({ behavior: 'smooth' })}
@@ -336,27 +337,28 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                                     borderRadius: '50px',
                                     cursor: 'pointer',
                                     color: '#666',
-                                    fontWeight: 700
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem'
                                 }}
                             >
-                                <MessageCircle size={20} />
-                                {post.comments?.length || 0} Comentários
+                                <MessageCircle size={18} />
+                                {post.comments?.length || 0}
                             </button>
                         </div>
 
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank')} className="social-share-btn"><Facebook size={20} /></button>
-                            <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${post.title}`, '_blank')} className="social-share-btn"><Twitter size={20} /></button>
-                            <button onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank')} className="social-share-btn"><Linkedin size={20} /></button>
+                            <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank')} className="social-share-btn"><Facebook size={18} /></button>
+                            <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${post.title}`, '_blank')} className="social-share-btn"><Twitter size={18} /></button>
+                            <button onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank')} className="social-share-btn"><Linkedin size={18} /></button>
                             <button onClick={copyLink} className="social-share-btn" title="Copiar Link">
-                                {copied ? <Check size={20} color="#10b981" /> : <Copy size={20} />}
+                                {copied ? <Check size={18} color="#10b981" /> : <Copy size={18} />}
                             </button>
                         </div>
                     </div>
 
                     {/* Author Bio */}
-                    <div style={{ marginTop: '3rem', background: '#f9f9f9', padding: '2rem', borderRadius: '16px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
+                    <div style={{ marginTop: '3rem', background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center' }}>
+                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', position: 'relative', flexShrink: 0, border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
                             <Image
                                 src={post.author.avatar || 'https://ui-avatars.com/api/?name=Author'}
                                 alt={post.author.name}
@@ -370,11 +372,20 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                         </div>
                     </div>
 
+                    <style jsx>{`
+                         @media (min-width: 768px) {
+                            div[style*="flex-direction: column"] {
+                                flex-direction: row !important;
+                                text-align: left !important;
+                            }
+                         }
+                    `}</style>
+
                     {/* Add Banner In-line */}
-                    <div style={{ margin: '3rem 0', background: 'linear-gradient(135deg, #000 0%, #333 100%)', borderRadius: '20px', padding: '2rem', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ margin: '3rem 0', background: 'linear-gradient(135deg, #000 0%, #333 100%)', borderRadius: '20px', padding: '2rem 1.5rem', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', zIndex: 10 }}>
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: '#FFD700' }}>Organize eventos como um profissional</h3>
-                            <p style={{ opacity: 0.9, marginBottom: '1.5rem', fontSize: '1rem' }}>Use a mesma plataforma que os maiores organizadores de Moçambique.</p>
+                            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.5rem', color: '#FFD700' }}>Organize eventos como um profissional</h3>
+                            <p style={{ opacity: 0.9, marginBottom: '1.5rem', fontSize: '0.95rem' }}>Use a mesma plataforma que os maiores organizadores de Moçambique.</p>
                             <Link href="/cadastro" style={{ display: 'inline-block', background: '#FFD700', color: '#000', padding: '12px 30px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none' }}>
                                 Começar Agora
                             </Link>
@@ -383,14 +394,17 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
 
                     {/* Comments Section */}
                     <div id="comments-section" style={{ marginTop: '4rem' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Comentários ({post.comments?.length || 0})</h3>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>Comentários ({post.comments?.length || 0})</h3>
 
                         {/* Comment Form */}
                         {user ? (
                             <form onSubmit={handleCommentSubmit} style={{ marginBottom: '3rem' }}>
-                                <div style={{ display: 'flex', gap: '15px' }}>
-                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
-                                        <Image src={user.profilePhoto || 'https://ui-avatars.com/api/?name=User'} alt={user.name} fill style={{ objectFit: 'cover' }} />
+                                <div className="comment-form-container" style={{ display: 'flex', gap: '15px', flexDirection: 'column' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
+                                            <Image src={user.profilePhoto || 'https://ui-avatars.com/api/?name=User'} alt={user.name} fill style={{ objectFit: 'cover' }} />
+                                        </div>
+                                        <span style={{ fontWeight: 600 }}>{user.name}</span>
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <textarea
@@ -411,6 +425,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                             <button
                                                 type="submit"
+                                                className="submit-btn"
                                                 disabled={submittingComment || !commentText.trim()}
                                                 style={{
                                                     background: '#000',
@@ -423,10 +438,12 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                                                     opacity: submittingComment || !commentText.trim() ? 0.7 : 1,
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '8px'
+                                                    gap: '8px',
+                                                    width: '100%',
+                                                    justifyContent: 'center'
                                                 }}
                                             >
-                                                {submittingComment ? 'Enviando...' : <><Send size={16} /> Publicar Comentário</>}
+                                                {submittingComment ? 'Enviando...' : <><Send size={16} /> Publicar</>}
                                             </button>
                                         </div>
                                     </div>
@@ -436,8 +453,8 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                             <div style={{ background: '#f5f5f5', padding: '2rem', borderRadius: '12px', textAlign: 'center', marginBottom: '3rem' }}>
                                 <Lock size={32} color="#999" style={{ marginBottom: '1rem' }} />
                                 <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Faça login para comentar</h4>
-                                <p style={{ color: '#666', marginBottom: '1.5rem' }}>Junte-se à nossa comunidade de organizadores.</p>
-                                <Link href="/entrar" className="btn-primary" style={{ display: 'inline-block' }}>Entrar na minha conta</Link>
+                                <p style={{ color: '#666', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Junte-se à nossa comunidade.</p>
+                                <Link href="/entrar" className="btn-primary" style={{ display: 'inline-block', width: '100%' }}>Entrar na minha conta</Link>
                             </div>
                         )}
 
@@ -449,12 +466,12 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                                     <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                                         <Image src={comment.user.avatar || 'https://ui-avatars.com/api/?name=' + comment.user.name} alt={comment.user.name} fill style={{ objectFit: 'cover' }} />
                                     </div>
-                                    <div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
                                             <span style={{ fontWeight: 700 }}>{comment.user.name}</span>
                                             <span style={{ fontSize: '0.8rem', color: '#999' }}>{new Date(comment.createdAt).toLocaleDateString()}</span>
                                         </div>
-                                        <p style={{ color: '#444', lineHeight: 1.5 }}>{comment.text}</p>
+                                        <p style={{ color: '#444', lineHeight: 1.5, wordWrap: 'break-word' }}>{comment.text}</p>
                                     </div>
                                 </div>
                             ))}
@@ -462,50 +479,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                     </div>
                 </article>
 
-                {/* Sidebar */}
-                <aside className="blog-sidebar" style={{ position: 'sticky', top: '20px', display: 'flex', flexDirection: 'column', gap: '30px', height: 'fit-content' }}>
-                    <div style={{ background: '#000', color: '#fff', padding: '2rem', borderRadius: '16px', backgroundImage: 'url("/pattern.png")', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#FFD700' }}>Newsletter</h3>
-                        <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '1.5rem' }}>Receba as melhores dicas de organização de eventos semanalmente.</p>
-                        <form onSubmit={handleNewsletterSubmit}>
-                            <input
-                                type="email"
-                                placeholder="Seu melhor email"
-                                value={newsletterEmail}
-                                onChange={(e) => setNewsletterEmail(e.target.value)}
-                                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', marginBottom: '10px' }}
-                            />
-                            <button
-                                type="submit"
-                                disabled={submittingNewsletter}
-                                style={{ width: '100%', background: '#FFD700', color: '#000', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
-                            >
-                                {submittingNewsletter ? 'Inscrevendo...' : 'Inscrever-se'}
-                            </button>
-                        </form>
-                    </div>
-
-                    <div style={{ background: '#fff', border: '1px solid #eee', padding: '1.5rem', borderRadius: '16px' }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem' }}>Tópicos Populares</h3>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            {['Marketing', 'Vendas', 'Planejamento', 'Tecnologia', 'Case Studies'].map(tag => (
-                                <span key={tag} style={{ border: '1px solid #eee', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', color: '#666', cursor: 'pointer' }} onClick={() => window.location.href = `/blog?tag=${tag}`}>
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </aside>
-
                 <style jsx>{`
-                    @media (max-width: 900px) {
-                        div[style*="grid-template-columns"] {
-                            grid-template-columns: 1fr !important;
-                        }
-                        .blog-sidebar {
-                            display: none !important;
-                        }
-                    }
                     .social-share-btn {
                         width: 40px;
                         height: 40px;
@@ -524,6 +498,14 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                         color: #FFD700;
                         border-color: #000;
                         transform: translateY(-2px);
+                    }
+                    @media (min-width: 768px) {
+                        .comment-form-container {
+                            flex-direction: row !important;
+                        }
+                        .submit-btn {
+                            width: auto !important;
+                        }
                     }
                 `}</style>
             </div>
