@@ -363,7 +363,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section - Luxury Dark Mode */}
-      <section style={{ padding: '60px 0', background: '#050505', position: 'relative' }}>
+      <section style={{ paddingTop: '30px', paddingBottom: '90px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
         {/* Subtle background grid/mesh effect */}
         <div style={{
           position: 'absolute',
@@ -379,7 +379,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            style={{ textAlign: 'center', marginBottom: '60px' }}
+            style={{ textAlign: 'center', marginBottom: '40px' }}
           >
 
 
@@ -419,7 +419,7 @@ export default function Home() {
                 whileHover={{ y: -10, scale: 1.02 }}
                 className="stat-card-luxury"
                 style={{
-                  padding: '50px 30px',
+                  padding: '30px 20px',
                   background: 'rgba(20, 20, 20, 0.6)',
                   backdropFilter: 'blur(10px)',
                   borderRadius: '30px',
@@ -428,7 +428,7 @@ export default function Home() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '20px',
+                  gap: '10px',
                   position: 'relative',
                   overflow: 'hidden'
                 }}
@@ -457,14 +457,14 @@ export default function Home() {
                 `}</style>
 
                 <div className="stat-icon-wrapper" style={{
-                  marginBottom: '10px'
+                  marginBottom: '5px'
                 }}>
                   <stat.icon size={48} color={stat.color} strokeWidth={1.5} />
                 </div>
 
                 <div>
                   <div className="stat-value" style={{
-                    fontSize: '3.5rem',
+                    fontSize: '2.5rem',
                     fontWeight: 700,
                     color: '#fff',
                     marginBottom: '5px',
@@ -482,6 +482,31 @@ export default function Home() {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+
+        {/* Curved Divider to White Section */}
+        <div style={{
+          position: 'absolute',
+          bottom: '-1px',
+          left: 0,
+          width: '100%',
+          overflow: 'hidden',
+          lineHeight: 0,
+          transform: 'rotate(180deg)'
+        }}>
+          <svg
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+            style={{
+              position: 'relative',
+              display: 'block',
+              width: 'calc(100% + 1.3px)',
+              height: '100px',
+              fill: '#fff'
+            }}
+          >
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+          </svg>
         </div>
       </section>
 
@@ -552,6 +577,51 @@ export default function Home() {
     }
   }
 `}</style>
+
+        {/* Scattered Event Images for Visual Flair */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          {[
+            { top: '10%', left: '5%', size: '120px', rotate: -15, delay: 0 },
+            { top: '60%', left: '8%', size: '100px', rotate: 10, delay: 0.5 },
+            { top: '15%', right: '5%', size: '110px', rotate: 12, delay: 1 },
+            { top: '55%', right: '10%', size: '130px', rotate: -8, delay: 1.5 },
+          ].map((img, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              whileInView={{ opacity: 0.6, scale: 1, y: 0 }}
+              animate={{
+                y: [0, -15, 0],
+                rotate: [img.rotate, img.rotate + 5, img.rotate]
+              }}
+              transition={{
+                opacity: { duration: 1 },
+                y: { duration: 4 + idx, repeat: Infinity, ease: "easeInOut" },
+                rotate: { duration: 5 + idx, repeat: Infinity, ease: "easeInOut" }
+              }}
+              style={{
+                position: 'absolute',
+                top: img.top,
+                left: img.left,
+                right: img.right,
+                width: img.size,
+                height: img.size,
+                borderRadius: '20px',
+                overflow: 'hidden',
+                border: '1px solid rgba(0,0,0,0.1)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                zIndex: 0
+              }}
+            >
+              <Image
+                src={`https://images.unsplash.com/photo-${idx === 0 ? '1540575467063-178a50c2df87' : idx === 1 ? '1505373877841-8d25f7d46678' : idx === 2 ? '1511795409834-ef04bbd61622' : '1556761175-5973dc0f32e7'}?auto=format&fit=crop&q=80&w=300`}
+                alt="Evento"
+                fill
+                style={{ objectFit: 'cover' }}
+              />
+            </motion.div>
+          ))}
+        </div>
 
         <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 1.5rem' }}>
           <motion.div
@@ -764,10 +834,11 @@ export default function Home() {
             </defs>
           </svg>
         </div>
-      </section>
+      </section >
 
       {/* Payment Methods Section */}
-      <section style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }}>
+      < section style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }
+      }>
         <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 1.5rem' }}>
           <motion.div {...fadeIn}>
             <h2 style={{
@@ -876,10 +947,10 @@ export default function Home() {
             `}</style>
           </motion.div>
         </div>
-      </section>
+      </section >
 
       {/* Tesla-inspired Events Showcase (Original) */}
-      <section style={{ padding: '0 20px 80px', background: '#fff' }}>
+      < section style={{ padding: '0 20px 80px', background: '#fff' }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -1006,10 +1077,10 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section >
 
       {/* Tesla-inspired Packages Showcase */}
-      <section style={{ padding: '40px 20px 80px', background: '#fff' }}>
+      < section style={{ padding: '40px 20px 80px', background: '#fff' }}>
         <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <motion.div {...fadeIn}>
             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1rem', fontWeight: 700 }}>
@@ -1254,10 +1325,10 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section >
 
       {/* Features CTA Section (Tesla Inspired) - Placed at the end */}
-      <section style={{
+      < section style={{
         height: '70vh',
         position: 'relative',
         display: 'flex',
@@ -1320,13 +1391,13 @@ export default function Home() {
       </section >
 
       {/* Social Proof Section */}
-      <SocialProof />
+      < SocialProof />
 
       {/* Testimonials Section */}
-      <Testimonials />
+      < Testimonials />
 
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
-      <Footer />
+      < Footer />
     </main >
   );
 }
