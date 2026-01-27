@@ -14,6 +14,7 @@ import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
 import Footer from "@/components/Footer";
 import { Calendar, Users, TrendingUp, Star } from "lucide-react";
+import { TextDispersion } from "@/components/TextDispersion";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
