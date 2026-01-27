@@ -36,13 +36,12 @@ export default function ScrollToTop() {
                     exit={{ opacity: 0, scale: 0.5, y: 20 }}
                     onClick={scrollToTop}
                     title="Scroll to Top"
+                    className="responsive-float-btn"
                     style={{
                         position: 'fixed',
                         bottom: '90px',
                         right: '30px',
                         zIndex: 1000,
-                        width: '60px',
-                        height: '60px',
                         borderRadius: '50%',
                         background: '#000',
                         color: '#FFD700',

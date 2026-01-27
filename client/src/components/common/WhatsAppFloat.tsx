@@ -31,12 +31,11 @@ export default function WhatsAppFloat() {
                     exit={{ scale: 0, opacity: 0 }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
+                    className="responsive-float-btn"
                     style={{
                         position: 'fixed',
                         bottom: '20px',
                         right: '30px',
-                        width: '60px',
-                        height: '60px',
                         borderRadius: '50%',
                         background: '#25D366',
                         boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
@@ -48,6 +47,7 @@ export default function WhatsAppFloat() {
                         cursor: 'pointer',
                         border: '2px solid #fff'
                     }}
+
                 >
                     <MessageCircle size={32} fill="white" />
                 </motion.a>
