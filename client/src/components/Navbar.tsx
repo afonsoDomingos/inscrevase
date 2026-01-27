@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslate } from '@/context/LanguageContext';
+import InstallPrompt from './common/InstallPrompt';
 
 export default function Navbar() {
   const { t } = useTranslate();
@@ -71,6 +72,7 @@ export default function Navbar() {
 
         {/* Right Icons/Auth (Desktop) */}
         <div className="nav-right-section">
+          <InstallPrompt />
           <LanguageSwitcher />
           {isLoggedIn ? (
             <Link href={getDashboardLink()} className="icon-link" title={t('nav.dashboard')}>
@@ -143,6 +145,8 @@ export default function Navbar() {
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('dashboard.support')}</span>
             </div>
           </Link>
+
+          <InstallPrompt isMobile={true} />
 
           <div className="mobile-menu-spacer"></div>
 
