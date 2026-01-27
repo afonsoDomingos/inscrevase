@@ -169,8 +169,14 @@ export default function BlogPage() {
 
                                             <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#333', overflow: 'hidden' }}>
-                                                        {post.author.avatar ? <Image src={post.author.avatar} alt={post.author.name} width={30} height={30} /> : <Users size={16} color="#fff" style={{ padding: '6px' }} />}
+                                                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#333', overflow: 'hidden', position: 'relative' }}>
+                                                        <Image
+                                                            src={(post.author.name === 'Equipe Inscreva.se' || !post.author.avatar) ? '/icon-192x192.png' : post.author.avatar}
+                                                            alt={post.author.name}
+                                                            width={30}
+                                                            height={30}
+                                                            style={{ objectFit: 'cover' }}
+                                                        />
                                                     </div>
                                                     <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e2e8f0' }}>{post.author.name}</span>
                                                 </div>
