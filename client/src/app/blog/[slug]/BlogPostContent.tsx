@@ -271,7 +271,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                 </div>
             </header>
 
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px', display: 'flex', flexDirection: 'column', gap: '60px' }}>
+            <div className="blog-post-content-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px', display: 'flex', flexDirection: 'column', gap: '60px' }}>
                 {/* Main Content */}
                 <article>
                     <div className="blog-content" style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#333', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
@@ -479,8 +479,9 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                     </div>
                 </article>
 
-                <style jsx>{`
-                    .social-share-btn {
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                    .blog-post-content-container .social-share-btn {
                         width: 40px;
                         height: 40px;
                         border-radius: 50%;
@@ -493,21 +494,21 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                         color: #555;
                         transition: all 0.2s;
                     }
-                    .social-share-btn:hover {
+                    .blog-post-content-container .social-share-btn:hover {
                         background: #000;
                         color: #FFD700;
                         border-color: #000;
                         transform: translateY(-2px);
                     }
                     @media (min-width: 768px) {
-                        .comment-form-container {
+                        .blog-post-content-container .comment-form-container {
                             flex-direction: row !important;
                         }
-                        .submit-btn {
+                        .blog-post-content-container .submit-btn {
                             width: auto !important;
                         }
                     }
-                `}</style>
+                `}} />
             </div>
             <Footer />
         </main>
