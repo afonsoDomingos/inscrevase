@@ -648,8 +648,120 @@ export default function Home() {
                 {t('common.viewMore') || 'Saiba Mais'}
               </Link>
             </div>
-          </motion.div>
 
+            {/* Dynamic Event Images Cloud */}
+            <div style={{
+              position: 'relative',
+              height: '300px',
+              marginTop: '40px',
+              maxWidth: '1200px',
+              margin: '0 auto',
+              display: 'flex',
+              justifyContent: 'center',
+              perspective: '1000px'
+            }}>
+              {/* Image 1: Digital/Webinar */}
+              <motion.div
+                initial={{ opacity: 0, x: -50, rotate: -5 }}
+                whileInView={{ opacity: 1, x: 0, rotate: -5 }}
+                transition={{ duration: 0.8 }}
+                style={{
+                  position: 'absolute',
+                  left: '10%',
+                  top: '20%',
+                  width: '280px',
+                  height: '180px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                  border: '4px solid #fff',
+                  zIndex: 2
+                }}
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop"
+                  alt="Evento Digital"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </motion.div>
+
+              {/* Image 2: Presential/Auditorium (Center Main) */}
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                style={{
+                  position: 'relative',
+                  width: '320px',
+                  height: '220px',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  boxShadow: '0 30px 60px rgba(0,0,0,0.2)',
+                  border: '4px solid #fff',
+                  zIndex: 10
+                }}
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=1000&auto=format&fit=crop"
+                  alt="Evento Presencial"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </motion.div>
+
+              {/* Image 3: Hybrid/Laptop */}
+              <motion.div
+                initial={{ opacity: 0, x: 50, rotate: 5 }}
+                whileInView={{ opacity: 1, x: 0, rotate: 5 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
+                style={{
+                  position: 'absolute',
+                  right: '10%',
+                  top: '10%',
+                  width: '260px',
+                  height: '170px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                  border: '4px solid #fff',
+                  zIndex: 2
+                }}
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1000&auto=format&fit=crop"
+                  alt="Evento Híbrido"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </motion.div>
+            </div>
+
+          </motion.div>
+        </div>
+
+        {/* Modern Static Curved Divider - Sem movimento, fluido e orgânico */}
+        <div style={{ position: 'absolute', bottom: -1, left: 0, width: '100%', lineHeight: 0, zIndex: 10 }}>
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style={{ width: '100%', height: '80px' }}>
+            <path d="M0,60 C480,120 960,0 1440,60 L1440,120 L0,120 Z" fill="#fff" />
+            {/* The fill above matches the next section background which is white, effectively masking the content behind it. 
+                However, looking at the layout, the next section is Payment Methods which has border-top. 
+                Let's make sure the divider sits physically inside this section as a mask-like effect or just a separator.
+                If the *next* section is white, filling this with white creates a transition from this section's content.
+                Wait, this section has white background too. That won't show anything.
+                
+                Correction: Assuming the next section (Payment Methods) might have a slightly different tone or border. 
+                Actually, the user wants a "curved line". A line suggests a stroke.
+                Let's draw a nice golden curve that sits at the bottom.*/}
+            <path d="M0,80 C320,130 1120,-30 1440,60" stroke="url(#goldLineGradient)" strokeWidth="3" fill="none" opacity="0.6" />
+            <defs>
+              <linearGradient id="goldLineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#FFD700" stopOpacity="0" />
+                <stop offset="50%" stopColor="#FFD700" stopOpacity="1" />
+                <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
       </section>
 

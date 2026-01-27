@@ -230,7 +230,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', position: 'relative', border: '2px solid #fff' }}>
                                     <Image
-                                        src={post.author.avatar || 'https://ui-avatars.com/api/?name=Admin'}
+                                        src={(post.author.name === 'Equipe Inscreva.se' || !post.author.avatar) ? '/icon-192x192.png' : post.author.avatar}
                                         alt={post.author.name}
                                         fill
                                         style={{ objectFit: 'cover' }}
@@ -342,7 +342,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                     <div style={{ marginTop: '3rem', background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center' }}>
                         <div style={{ width: '80px', height: '80px', borderRadius: '20px', overflow: 'hidden', position: 'relative', flexShrink: 0, border: '1px solid #eee', background: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: '8px' }}>
                             <Image
-                                src={post.author.avatar || '/icon.png'}
+                                src={(post.author.name === 'Equipe Inscreva.se' || !post.author.avatar) ? '/icon-192x192.png' : post.author.avatar}
                                 alt={post.author.name}
                                 fill
                                 style={{ objectFit: 'contain', padding: '4px' }}
