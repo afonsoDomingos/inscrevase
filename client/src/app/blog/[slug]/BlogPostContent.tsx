@@ -25,8 +25,6 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
     const [likeCount, setLikeCount] = useState(0);
     const [commentText, setCommentText] = useState('');
     const [submittingComment, setSubmittingComment] = useState(false);
-    const [newsletterEmail, setNewsletterEmail] = useState('');
-    const [submittingNewsletter, setSubmittingNewsletter] = useState(false);
 
     // Scroll progress bar
     const { scrollYProgress } = useScroll();
@@ -118,22 +116,6 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
         toast.success('Link copiado!');
-    };
-
-    const handleNewsletterSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newsletterEmail) return;
-
-        setSubmittingNewsletter(true);
-        try {
-            await blogService.subscribeToNewsletter(newsletterEmail);
-            toast.success('Inscrição confirmada! Obrigado.');
-            setNewsletterEmail('');
-        } catch {
-            toast.error('Erro ao se inscrever. Tente novamente.');
-        } finally {
-            setSubmittingNewsletter(false);
-        }
     };
 
     if (loading) {
