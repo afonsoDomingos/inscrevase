@@ -129,7 +129,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
             await blogService.subscribeToNewsletter(newsletterEmail);
             toast.success('Inscrição confirmada! Obrigado.');
             setNewsletterEmail('');
-        } catch (error) {
+        } catch {
             toast.error('Erro ao se inscrever. Tente novamente.');
         } finally {
             setSubmittingNewsletter(false);
@@ -281,21 +281,21 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
 
                         <ReactMarkdown
                             components={{
-                                h2: ({ node, ...props }) => <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '2.5rem 0 1.5rem', color: '#000', fontFamily: 'var(--font-playfair)' }} {...props} />,
-                                h3: ({ node, ...props }) => <h3 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '2rem 0 1rem', color: '#000' }} {...props} />,
-                                p: ({ node, ...props }) => <p style={{ marginBottom: '1.5rem' }} {...props} />,
-                                ul: ({ node, ...props }) => <ul style={{ marginBottom: '1.5rem', paddingLeft: '20px' }} {...props} />,
-                                li: ({ node, ...props }) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
-                                img: ({ node, ...props }) => (
+                                h2: ({ ...props }) => <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '2.5rem 0 1.5rem', color: '#000', fontFamily: 'var(--font-playfair)' }} {...props} />,
+                                h3: ({ ...props }) => <h3 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '2rem 0 1rem', color: '#000' }} {...props} />,
+                                p: ({ ...props }) => <p style={{ marginBottom: '1.5rem' }} {...props} />,
+                                ul: ({ ...props }) => <ul style={{ marginBottom: '1.5rem', paddingLeft: '20px' }} {...props} />,
+                                li: ({ ...props }) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
+                                img: ({ ...props }) => (
                                     <div style={{ margin: '2rem 0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img style={{ width: '100%', height: 'auto', display: 'block' }} alt={props.alt || 'Blog image'} {...props} />
                                     </div>
                                 ),
-                                blockquote: ({ node, ...props }) => (
+                                blockquote: ({ ...props }) => (
                                     <blockquote style={{ background: '#f9f9f9', borderLeft: '4px solid #FFD700', padding: '1.5rem', margin: '2rem 0', borderRadius: '0 8px 8px 0', fontStyle: 'italic', color: '#555' }} {...props} />
                                 ),
-                                a: ({ node, ...props }) => <a style={{ color: '#000', textDecoration: 'underline', textDecorationColor: '#FFD700', textUnderlineOffset: '3px', fontWeight: 600 }} {...props} />
+                                a: ({ ...props }) => <a style={{ color: '#000', textDecoration: 'underline', textDecorationColor: '#FFD700', textUnderlineOffset: '3px', fontWeight: 600 }} {...props} />
                             }}
                         >
                             {post.content}
