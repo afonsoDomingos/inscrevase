@@ -380,6 +380,8 @@ export default function Home() {
             viewport={{ once: true }}
             style={{ textAlign: 'center', marginBottom: '60px' }}
           >
+
+
             <h2 style={{
               fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
               color: '#fff',
@@ -388,9 +390,7 @@ export default function Home() {
             }}>
               Resultados que <span className="gold-text">Falam</span>
             </h2>
-            <p style={{ color: '#888', fontSize: '1.1rem' }}>
-              Milhares de mentores confiam na Inscreva.se para escalar seus eventos
-            </p>
+            <TextDispersion text="Milhares de mentores confiam na Inscreva.se para escalar seus eventos" />
           </motion.div>
 
           <motion.div
@@ -1326,6 +1326,6 @@ export default function Home() {
 
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
       <Footer />
-    </main>
+    </main >
   );
 }
