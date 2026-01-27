@@ -42,7 +42,7 @@ export async function generateMetadata(
                 images: images,
             },
         };
-    } catch (error) {
+    } catch {
         return {
             title: 'Blog | Inscreva-se',
             description: 'Dicas e novidades sobre gestão de eventos em Moçambique.'

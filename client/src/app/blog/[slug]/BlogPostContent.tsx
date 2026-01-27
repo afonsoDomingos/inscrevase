@@ -5,11 +5,11 @@ import { BlogPost, blogService } from '@/lib/blogService';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-    Calendar, User, ArrowLeft, Clock, Facebook, Twitter, Linkedin,
-    Heart, MessageCircle, Copy, Check, Eye, Send, Lock
+    Calendar, ArrowLeft, Clock, Facebook, Twitter, Linkedin,
+    Heart, MessageCircle, Copy, Check, Send, Lock
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { authService, UserData } from '@/lib/authService';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
@@ -106,8 +106,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
             setPost(prev => prev ? { ...prev, comments: commentsDisplay } : null);
             setCommentText('');
             toast.success('Comentário enviado!');
-        } catch (error) {
-            console.error(error);
+        } catch {
             toast.error('Erro ao enviar comentário');
         } finally {
             setSubmittingComment(false);
@@ -289,7 +288,8 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                                 li: ({ node, ...props }) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
                                 img: ({ node, ...props }) => (
                                     <div style={{ margin: '2rem 0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                                        <img style={{ width: '100%', height: 'auto', display: 'block' }} {...props} />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img style={{ width: '100%', height: 'auto', display: 'block' }} alt={props.alt || 'Blog image'} {...props} />
                                     </div>
                                 ),
                                 blockquote: ({ node, ...props }) => (
