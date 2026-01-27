@@ -34,7 +34,7 @@ export default function WhatsAppFloat() {
                     style={{
                         position: 'fixed',
                         bottom: '20px',
-                        right: '20px',
+                        right: '30px',
                         width: '60px',
                         height: '60px',
                         borderRadius: '50%',
