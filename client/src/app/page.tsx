@@ -363,7 +363,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section - Luxury Dark Mode */}
-      <section style={{ padding: '100px 0', background: '#050505', position: 'relative' }}>
+      <section style={{ padding: '60px 0', background: '#050505', position: 'relative' }}>
         {/* Subtle background grid/mesh effect */}
         <div style={{
           position: 'absolute',

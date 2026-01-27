@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useMemo } from 'react';
-import { motion, useScroll, useTransform, useSpring, MotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, MotionValue, useVelocity } from 'framer-motion';
 
 interface TextDispersionProps {
     text: string;
@@ -13,10 +13,10 @@ interface DispersedWordProps {
 }
 
 const DispersedWord: React.FC<DispersedWordProps> = ({ word, index, progress }) => {
-    // Generate constant random values for each word based on its index
-    // This avoids random changes on re-renders while keeping the "random" feel
+    // We use velocity to increase the scattering intensity if the user scrolls fast
+    const velocity = useVelocity(progress);
+
     const { xDir, yDir, rotateDir } = useMemo(() => {
-        // Simple seedable-like random based on index
         const pseudoRandom = (seed: number) => {
             const x = Math.sin(seed) * 10000;
             return x - Math.floor(x);
@@ -33,11 +33,21 @@ const DispersedWord: React.FC<DispersedWordProps> = ({ word, index, progress }) 
         };
     }, [index]);
 
-    const x = useTransform(progress, [0.4, 1], [0, xDir * 200]);
-    const y = useTransform(progress, [0.4, 1], [0, yDir * 100]);
-    const rotate = useTransform(progress, [0.4, 1], [0, rotateDir]);
-    const opacity = useTransform(progress, [0.5, 0.9], [1, 0]);
-    const blur = useTransform(progress, [0.5, 0.9], ["0px", "10px"]);
+    // Define base transforms based on progress
+    const baseX = useTransform(progress, [0.4, 0.9], [0, xDir * 150]);
+    const baseY = useTransform(progress, [0.4, 0.9], [0, yDir * 80]);
+    const baseRotate = useTransform(progress, [0.4, 0.9], [0, rotateDir]);
+
+    // Add velocity-based skew/offset for more "impact"
+    // When velocity is high, we multiply the offset
+    const velocityFactor = useTransform(velocity, [-2, 0, 2], [1.5, 1, 1.5]);
+
+    const x = useTransform(() => baseX.get() * velocityFactor.get());
+    const y = useTransform(() => baseY.get() * velocityFactor.get());
+    const rotate = useTransform(() => baseRotate.get() * velocityFactor.get());
+
+    const opacity = useTransform(progress, [0.5, 0.85], [1, 0]);
+    const blur = useTransform(progress, [0.5, 0.85], ["0px", "8px"]);
 
     return (
         <motion.span
@@ -65,7 +75,8 @@ export const TextDispersion: React.FC<TextDispersionProps> = ({ text }) => {
         offset: ["start end", "end start"]
     });
 
-    const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+    // We keep a light spring to avoid "jitter", but make it very stiff so it follows scroll tightly
+    const smoothProgress = useSpring(scrollYProgress, { stiffness: 400, damping: 40 });
     const words = useMemo(() => text.split(" "), [text]);
 
     return (
