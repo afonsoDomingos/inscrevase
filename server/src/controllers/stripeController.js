@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
 const Form = require('../models/Form');
@@ -276,57 +277,78 @@ exports.verifyPayment = async (req, res) => {
 exports.getEarningsDashboard = async (req, res) => {
     try {
         const mentorId = req.user.id;
-        const transactions = await Transaction.find({
-            mentor: mentorId
-        }).populate('form', 'title slug').sort({ createdAt: -1 });
 
-        // Simple aggregation
-        const summary = transactions.reduce((acc, tx) => {
-            if (tx.status === 'completed') {
-                acc.totalRevenue += tx.amount;
-                acc.totalEarnings += tx.mentorEarnings;
-                acc.totalFees += tx.platformFee;
-            } else if (tx.status === 'pending') {
-                acc.pendingFees += tx.platformFee;
-            }
-            return acc;
-        }, { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 });
+        // 1. Fetch summary stats using aggregation
+        const [summaryArr, dailyStats, recentTransactions] = await Promise.all([
+            Transaction.aggregate([
+                { $match: { mentor: new mongoose.Types.ObjectId(mentorId) } },
+                {
+                    $group: {
+                        _id: null,
+                        totalRevenue: {
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$amount", 0] }
+                        },
+                        totalEarnings: {
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$mentorEarnings", 0] }
+                        },
+                        totalFees: {
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$platformFee", 0] }
+                        },
+                        pendingFees: {
+                            $sum: { $cond: [{ $eq: ["$status", "pending"] }, "$platformFee", 0] }
+                        }
+                    }
+                }
+            ]),
+            // 2. Fetch daily revenue for chart (last 30 days, grouped by date)
+            Transaction.aggregate([
+                {
+                    $match: {
+                        mentor: new mongoose.Types.ObjectId(mentorId),
+                        status: "completed",
+                        createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%d/%m", date: "$createdAt" } },
+                        revenue: { $sum: "$amount" },
+                        fullDate: { $min: "$createdAt" }
+                    }
+                },
+                { $sort: { fullDate: 1 } }
+            ]),
+            // 3. Last 10 transactions
+            Transaction.find({ mentor: mentorId, status: 'completed' })
+                .populate('form', 'title slug')
+                .sort({ createdAt: -1 })
+                .limit(10)
+                .lean()
+        ]);
 
-        // Calculate chart data (last 14 days for cleaner view, with 30 day history)
-        const dailyRevenue = {};
+        const summary = summaryArr.length > 0 ? summaryArr[0] : { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 };
+        delete summary._id; // Remove _id null
 
-        // Pre-initialize last 14 days with 0
+        // Prepare chart data (ensure last 14 days are present if missing)
+        const chartMap = {};
+        dailyStats.forEach(s => chartMap[s._id] = s.revenue);
+
+        const finalChartData = [];
         for (let i = 13; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
             const dateStr = d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
-            dailyRevenue[dateStr] = 0;
+            finalChartData.push({
+                date: dateStr,
+                revenue: chartMap[dateStr] || 0
+            });
         }
-
-        transactions.forEach(tx => {
-            if (tx.status === 'completed') {
-                const date = new Date(tx.createdAt).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
-                // Only add if within our display window or just allow dynamic growth
-                dailyRevenue[date] = (dailyRevenue[date] || 0) + tx.amount;
-            }
-        });
-
-        const chartData = Object.keys(dailyRevenue)
-            .sort((a, b) => {
-                const [dayA, monthA] = a.split('/').map(Number);
-                const [dayB, monthB] = b.split('/').map(Number);
-                return monthA !== monthB ? monthA - monthB : dayA - dayB;
-            })
-            .map(date => ({
-                date,
-                revenue: dailyRevenue[date]
-            }));
 
         res.status(200).json({
             success: true,
             summary,
-            chartData,
-            transactions: transactions.filter(t => t.status === 'completed').slice(0, 10)
+            chartData: finalChartData,
+            transactions: recentTransactions
         });
     } catch (error) {
         console.error('Earnings Error:', error);

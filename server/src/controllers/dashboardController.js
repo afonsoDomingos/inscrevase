@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
@@ -115,7 +116,11 @@ const Visit = require('../models/Visit');
 exports.getAnalytics = async (req, res) => {
     try {
         const userId = req.user.id;
-        const myForms = await Form.find({ creator: userId });
+        const myForms = await Form.find({ creator: userId }).lean();
+        if (!myForms.length) {
+            return res.json({ dailyStats: [], geoStats: [] });
+        }
+
         const formIds = myForms.map(f => f._id);
         const slugs = myForms.map(f => f.slug);
         const formPages = slugs.map(s => `/f/${s}`);
@@ -127,21 +132,42 @@ exports.getAnalytics = async (req, res) => {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        // Fetch data in parallel
-        const [submissions, visits] = await Promise.all([
-            Submission.find({
-                form: { $in: formIds },
-                submittedAt: { $gte: thirtyDaysAgo }
-            }).lean(),
-            Visit.find({
-                page: { $in: formPages },
-                timestamp: { $gte: thirtyDaysAgo }
-            }).lean()
+        // Fetch data using AGGREGATION for speed and memory efficiency
+        const [submissionStats, visitStats, geoRawData] = await Promise.all([
+            // 1. Daily Submissions & Status (for revenue calculation)
+            Submission.aggregate([
+                { $match: { form: { $in: formIds }, submittedAt: { $gte: thirtyDaysAgo } } },
+                {
+                    $group: {
+                        _id: {
+                            date: { $dateToString: { format: "%Y-%m-%d", date: "$submittedAt" } },
+                            formId: "$form",
+                            status: "$status"
+                        },
+                        count: { $sum: 1 }
+                    }
+                }
+            ]),
+            // 2. Daily Visits
+            Visit.aggregate([
+                { $match: { page: { $in: formPages }, timestamp: { $gte: thirtyDaysAgo } } },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
+                        count: { $sum: 1 }
+                    }
+                }
+            ]),
+            // 3. Geo data - We still need to process this in JS because data is in a Map, 
+            // but we only fetch what's needed (just the 'data' field)
+            Submission.find(
+                { form: { $in: formIds }, submittedAt: { $gte: thirtyDaysAgo } },
+                { data: 1 }
+            ).lean()
         ]);
 
-        // 1. Daily Stats (Evolution)
+        // Process results into final format
         const dailyMap = {};
-        // Initialize last 14 days with 0 (increased from 7 for better visibility)
         for (let i = 13; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
@@ -149,25 +175,26 @@ exports.getAnalytics = async (req, res) => {
             dailyMap[dateStr] = { date: dateStr, count: 0, visits: 0, revenue: 0 };
         }
 
-        // Process Submissions
-        submissions.forEach(sub => {
-            const dateStr = sub.submittedAt.toISOString().split('T')[0];
-            if (dailyMap[dateStr]) {
-                dailyMap[dateStr].count += 1;
-                if (sub.status === 'approved') {
-                    const form = formsMap[sub.form.toString()];
+        // Merge Submission Stats
+        submissionStats.forEach(stat => {
+            const { date, formId, status } = stat._id;
+            if (dailyMap[date]) {
+                dailyMap[date].count += stat.count;
+                // Revenue calculation
+                if (status === 'approved') {
+                    const form = formsMap[formId.toString()];
                     if (form && form.paymentConfig?.enabled) {
-                        dailyMap[dateStr].revenue += (form.paymentConfig.price || 0);
+                        dailyMap[date].revenue += (form.paymentConfig.price || 0) * stat.count;
                     }
                 }
             }
         });
 
-        // Process Visits
-        visits.forEach(v => {
-            const dateStr = v.timestamp.toISOString().split('T')[0];
-            if (dailyMap[dateStr]) {
-                dailyMap[dateStr].visits += 1;
+        // Merge Visit Stats
+        visitStats.forEach(stat => {
+            const date = stat._id;
+            if (dailyMap[date]) {
+                dailyMap[date].visits = stat.count;
             }
         });
 
@@ -177,21 +204,18 @@ exports.getAnalytics = async (req, res) => {
         const MOZ_PROVINCES = [
             'Maputo', 'Gaza', 'Inhambane', 'Sofala', 'Manica', 'Tete', 'Zambézia', 'Nampula', 'Cabo Delgado', 'Niassa'
         ];
-
         const geoMap = {};
         MOZ_PROVINCES.forEach(p => geoMap[p] = 0);
 
-        submissions.forEach(sub => {
+        geoRawData.forEach(sub => {
             if (sub.data) {
-                // Check Map values
-                let found = false;
                 const searchValues = sub.data instanceof Map ? Array.from(sub.data.values()) : Object.values(sub.data);
-
                 const values = searchValues.map(v => String(v).toLowerCase());
+
                 for (const p of MOZ_PROVINCES) {
-                    if (values.some(v => v.includes(p.toLowerCase()))) {
+                    const pLower = p.toLowerCase();
+                    if (values.some(v => v.includes(pLower))) {
                         geoMap[p] += 1;
-                        found = true;
                         break;
                     }
                 }
@@ -204,7 +228,6 @@ exports.getAnalytics = async (req, res) => {
             .sort((a, b) => b.value - a.value);
 
         res.json({ dailyStats, geoStats });
-
     } catch (err) {
         console.error("Mentor Analytics Error:", err);
         res.status(500).json({ message: 'Error fetching analytics', error: err.message });

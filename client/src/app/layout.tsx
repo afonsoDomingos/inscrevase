@@ -12,6 +12,7 @@ import MetaPixel from '@/components/MetaPixel';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { ThemeProvider } from '@/context/ThemeContext';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
+import HealthCheck from '@/components/common/HealthCheck';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -152,6 +153,7 @@ export default function RootLayout({
           }}
         />
         <LoadingScreen />
+        <HealthCheck />
         <ThemeProvider>
           <LanguageProvider>
             <CurrencyProvider>

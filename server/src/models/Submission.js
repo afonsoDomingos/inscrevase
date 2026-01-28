@@ -31,4 +31,8 @@ const SubmissionSchema = new mongoose.Schema({
     submittedAt: { type: Date, default: Date.now }
 });
 
+// Índices para performance em analytics
+SubmissionSchema.index({ form: 1, submittedAt: -1 });
+SubmissionSchema.index({ submittedAt: -1 });
+
 module.exports = mongoose.model('Submission', SubmissionSchema);
