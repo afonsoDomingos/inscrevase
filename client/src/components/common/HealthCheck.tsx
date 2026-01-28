@@ -24,7 +24,7 @@ export default function HealthCheck() {
                 if (!isLocal) {
                     console.log("Health ping sent to keep server awake.");
                 }
-            } catch (err) {
+            } catch {
                 // Ignoramos erros de rede, o importante é a tentativa de conexão chegar ao servidor
             }
         };
