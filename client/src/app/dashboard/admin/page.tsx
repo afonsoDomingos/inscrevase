@@ -548,19 +548,34 @@ export default function AdminDashboard() {
 
                             {/* Collapsible Secondary Stats */}
                             {/* Operational Details */}
-                            <div className="accordion-section">
+                            <div className="accordion-section" style={{ marginBottom: '1.2rem' }}>
                                 <button
                                     onClick={() => toggleSection('activity')}
                                     style={{
-                                        width: '100%', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                        background: '#fff', border: '1px solid #f0f0f0', borderRadius: '15px', color: '#1a1a1a', fontWeight: 700, cursor: 'pointer'
+                                        width: '100%',
+                                        padding: '1.2rem 1.8rem',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        background: '#fff',
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: '18px',
+                                        color: '#1a1a1a',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                                        transition: 'all 0.3s ease'
                                     }}
+                                    className="hover:shadow-md"
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <FileText size={18} className="gold-text" /> Atividade Operacional
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                                        <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '8px', borderRadius: '10px' }}>
+                                            <FileText size={20} className="gold-text" />
+                                        </div>
+                                        Atividade Operacional
                                     </div>
                                     <motion.div animate={{ rotate: expandedSections.activity ? 180 : 0 }}>
-                                        <ChevronDown size={20} />
+                                        <ChevronDown size={22} />
                                     </motion.div>
                                 </button>
                                 <AnimatePresence>
@@ -569,23 +584,23 @@ export default function AdminDashboard() {
                                             initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                             style={{ overflow: 'hidden' }}
                                         >
-                                            <div className="stats-grid" style={{ padding: '1rem 0' }}>
+                                            <div className="stats-grid" style={{ padding: '1.5rem 0.5rem' }}>
                                                 {activityCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem' }}>
-                                                            <div style={{ color: card.color }}>{card.icon}</div>
-                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1a1a1a' }}>{card.label}</span>
+                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', borderRadius: '20px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '8px', borderRadius: '10px' }}>{card.icon}</div>
+                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</span>
                                                         </div>
-                                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>{card.value}</div>
+                                                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
                                                     </div>
                                                 ))}
                                                 {financialCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem' }}>
-                                                            <div style={{ color: card.color }}>{card.icon}</div>
-                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1a1a1a' }}>{card.label}</span>
+                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', borderRadius: '20px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '8px', borderRadius: '10px' }}>{card.icon}</div>
+                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</span>
                                                         </div>
-                                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>{card.value}</div>
+                                                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -596,22 +611,34 @@ export default function AdminDashboard() {
 
 
                             {/* Advanced Insights Drawer */}
-                            <div className="accordion-section" style={{ marginBottom: '3rem' }}>
+                            <div className="accordion-section" style={{ marginBottom: '1.5rem' }}>
                                 <button
                                     onClick={() => toggleSection('performance')}
                                     style={{
-                                        width: '100%', padding: '1.2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                        background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)', borderRadius: '15px', color: '#FFD700', fontWeight: 800, cursor: 'pointer',
-                                        boxShadow: '0 10px 20px rgba(0,0,0,0.1)', border: 'none'
+                                        width: '100%',
+                                        padding: '1.4rem 1.8rem',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        background: 'linear-gradient(135deg, #0a0a0a 0%, #151515 100%)',
+                                        borderRadius: '18px',
+                                        color: '#FFD700',
+                                        fontWeight: 900,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                                        border: '1px solid rgba(255, 215, 0, 0.1)',
+                                        transition: 'all 0.3s ease'
                                     }}
+                                    className="hover:scale-[1.01]"
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', letterSpacing: '1px' }}>
-                                        <BarChart3 size={22} /> ANALYTICS E INSIGHTS
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.1rem', letterSpacing: '1.5px' }}>
+                                        <BarChart3 size={24} style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.4))' }} />
+                                        <span className="luxury-shimmer-hover">ANALYTICS E INSIGHTS</span>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{expandedSections.performance ? 'RECOLHER' : 'EXPANDIR'}</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.5, letterSpacing: '1px' }}>{expandedSections.performance ? 'MINIMIZAR' : 'EXPLORAR'}</span>
                                         <motion.div animate={{ rotate: expandedSections.performance ? 180 : 0 }}>
-                                            <ChevronDown size={20} />
+                                            <ChevronDown size={22} />
                                         </motion.div>
                                     </div>
                                 </button>
@@ -843,15 +870,109 @@ export default function AdminDashboard() {
                             </div>
 
                             <motion.div variants={itemVariants} onMouseMove={handleMouseMove} style={{ marginTop: '2.5rem' }}>
-                                <div className="luxury-card" style={{ background: 'rgba(0,0,0,0.85)', color: '#fff', padding: '3rem', textAlign: 'center', border: '1px solid #333' }}>
-                                    <div className="spotlight" />
-                                    <h2 className="gold-text" style={{ fontSize: '2.5rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair)', position: 'relative' }}>Modo Super Administrador Ativo</h2>
-                                    <p style={{ color: '#aaa', maxWidth: '600px', margin: '0 auto 2rem', fontSize: '1.1rem', lineHeight: 1.6, position: 'relative' }}>
-                                        Você tem controle total sobre todos os mentores, formulários de inscrição e pagamentos realizados na plataforma Inscreva-se.
-                                    </p>
-                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', position: 'relative' }}>
-                                        <button onClick={() => setActiveTab('users')} className="btn-primary" style={{ padding: '0.9rem 2rem', fontSize: '0.9rem' }}>Gerenciar Usuários</button>
-                                        <button onClick={() => setActiveTab('forms')} className="gold-border-btn" style={{ padding: '0.9rem 2rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>Ver Atividades</button>
+                                <div className="luxury-card" style={{
+                                    position: 'relative',
+                                    background: '#000',
+                                    color: '#fff',
+                                    padding: '4rem 2rem',
+                                    textAlign: 'center',
+                                    border: '1px solid rgba(255, 215, 0, 0.2)',
+                                    overflow: 'hidden',
+                                    borderRadius: '30px'
+                                }}>
+                                    {/* Image Background Wrapper */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        backgroundImage: 'url("/admin-card-bg.png")',
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        opacity: 0.4,
+                                        zIndex: 0
+                                    }} />
+                                    <div style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        background: 'linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 100%)',
+                                        zIndex: 0
+                                    }} />
+
+                                    <div className="spotlight" style={{ zIndex: 1 }} />
+
+                                    <div style={{ position: 'relative', zIndex: 10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            background: 'rgba(255,215,0,0.1)',
+                                            padding: '8px 20px',
+                                            borderRadius: '50px',
+                                            border: '1px solid rgba(255,215,0,0.3)',
+                                            marginBottom: '2rem'
+                                        }}>
+                                            <ShieldAlert size={18} className="gold-text" />
+                                            <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase' }}>Sistema Elite</span>
+                                        </div>
+
+                                        <h2 style={{
+                                            fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+                                            marginBottom: '1.2rem',
+                                            fontFamily: 'var(--font-playfair)',
+                                            background: 'linear-gradient(to right, #fff, #60a5fa)',
+                                            WebkitBackgroundClip: 'text',
+                                            WebkitTextFillColor: 'transparent',
+                                            fontWeight: 900
+                                        }}>
+                                            Modo Super Administrador Ativo
+                                        </h2>
+
+                                        <p style={{
+                                            color: 'rgba(255,255,255,0.85)',
+                                            maxWidth: '650px',
+                                            margin: '0 auto 3rem',
+                                            fontSize: '1.2rem',
+                                            lineHeight: 1.6,
+                                            fontWeight: 400
+                                        }}>
+                                            Gestão centralizada de mentores, formulários inteligentes e fluxos financeiros.
+                                            Bem-vindo ao centro de comando da <span className="gold-text" style={{ fontWeight: 700 }}>Inscreva-se</span>.
+                                        </p>
+
+                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                            <button
+                                                onClick={() => setActiveTab('users')}
+                                                className="btn-primary"
+                                                style={{
+                                                    padding: '1.1rem 2.8rem',
+                                                    fontSize: '0.95rem',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px',
+                                                    borderRadius: '12px'
+                                                }}
+                                            >
+                                                <Users size={20} /> Gerenciar Usuários
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveTab('forms')}
+                                                className="gold-border-btn"
+                                                style={{
+                                                    padding: '1.1rem 2.8rem',
+                                                    borderRadius: '12px',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 700,
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '1px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px',
+                                                    background: 'rgba(0,0,0,0.3)',
+                                                    backdropFilter: 'blur(5px)'
+                                                }}
+                                            >
+                                                <BarChart3 size={20} /> Estatísticas Elite
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -910,10 +1031,10 @@ export default function AdminDashboard() {
                     id="admin-support-fab"
                     style={{
                         position: 'fixed',
-                        bottom: '2rem',
-                        right: '5rem',
-                        width: '60px',
-                        height: '60px',
+                        bottom: '140px',
+                        right: '25px',
+                        width: '50px',
+                        height: '50px',
                         borderRadius: '50%',
                         background: '#000',
                         color: '#FFD700',
