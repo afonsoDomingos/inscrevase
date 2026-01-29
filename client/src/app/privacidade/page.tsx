@@ -11,18 +11,66 @@ export default function PrivacyPolicy() {
             <Navbar />
 
             {/* Header Section */}
-            <div style={{ background: '#000', color: '#fff', padding: '120px 20px 80px', textAlign: 'center' }}>
+            <div style={{
+                position: 'relative',
+                background: '#000',
+                color: '#fff',
+                padding: '160px 20px 100px',
+                textAlign: 'center',
+                overflow: 'hidden'
+            }}>
+                {/* Background Effect */}
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'radial-gradient(circle at 50% 50%, rgba(20, 82, 173, 0.3) 0%, #000 70%)',
+                    zIndex: 0
+                }}></div>
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0.1,
+                    backgroundImage: 'url("/hero-bg.png")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    zIndex: 0
+                }}></div>
+
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    style={{ maxWidth: '800px', margin: '0 auto' }}
+                    transition={{ duration: 0.8 }}
+                    style={{ position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto' }}
                 >
-                    <Shield size={60} color="#FFD700" style={{ marginBottom: '20px' }} />
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, marginBottom: '20px', fontFamily: 'var(--font-playfair, serif)' }}>
-                        Política de <span style={{ color: '#FFD700' }}>Privacidade</span>
+                    <Shield size={70} color="#FFD700" style={{ marginBottom: '25px', filter: 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.3))' }} />
+                    <h1 style={{
+                        fontSize: 'clamp(3rem, 6vw, 5rem)',
+                        fontWeight: 900,
+                        marginBottom: '25px',
+                        fontFamily: 'var(--font-playfair, serif)',
+                        textShadow: '0 4px 10px rgba(0,0,0,0.5)',
+                        lineHeight: 1.1
+                    }}>
+                        Política de <span style={{
+                            color: '#FFD700',
+                            textShadow: '0 0 20px rgba(255, 215, 0, 0.3)'
+                        }}>Privacidade</span>
                     </h1>
-                    <p style={{ fontSize: '1.2rem', color: '#888', maxWidth: '600px', margin: '0 auto' }}>
-                        Na Inscreva-se, a sua privacidade é a nossa prioridade. Conheça como protegemos os seus dados.
+                    <p style={{
+                        fontSize: 'clamp(1.2rem, 2vw, 1.4rem)',
+                        color: '#f0f0f0',
+                        maxWidth: '700px',
+                        margin: '0 auto',
+                        lineHeight: 1.6,
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                    }}>
+                        Na Inscreva-se, a sua privacidade é a nossa prioridade. Conheça como protegemos os seus dados com segurança de nível bancário.
                     </p>
                 </motion.div>
             </div>

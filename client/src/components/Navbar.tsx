@@ -457,7 +457,7 @@ export default function Navbar() {
           overflow: hidden;
         }
         .navbar.scrolled :global(.nav-item) {
-          color: #8B6508 !important;
+          color: #FFF !important;
         }
         /* Creative Background Hover Effect */
         :global(.nav-item)::before {
@@ -480,12 +480,12 @@ export default function Navbar() {
         }
         /* Hover State */
         :global(.nav-item):hover {
-          color: #fff !important;
+          color: #FFD700 !important;
           transform: translateY(-3px);
           text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
         }
         .navbar.scrolled :global(.nav-item):hover {
-          color: #000 !important;
+          color: #FFD700 !important;
         }
         /* Creative Floating Line */
         :global(.nav-item)::after {
