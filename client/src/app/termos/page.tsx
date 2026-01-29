@@ -190,8 +190,8 @@ Se qualquer disposição destes Termos for considerada inválida ou inexequível
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    opacity: 0.1,
-                    backgroundImage: 'url("/hero-bg.png")',
+                    opacity: 0.5,
+                    backgroundImage: 'url("/header-bg-new.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     zIndex: 0
@@ -210,7 +210,8 @@ Se qualquer disposição destes Termos for considerada inválida ou inexequível
                         marginBottom: '25px',
                         fontFamily: 'var(--font-playfair, serif)',
                         textShadow: '0 4px 10px rgba(0,0,0,0.5)',
-                        lineHeight: 1.1
+                        lineHeight: 1.1,
+                        color: '#60a5fa'
                     }}>
                         Termos de <span style={{
                             color: '#FFD700',
