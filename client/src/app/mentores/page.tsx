@@ -50,26 +50,26 @@ export default function MentorsShowcase() {
                 borderBottom: '2px solid #FFD700',
                 boxShadow: '0 10px 30px rgba(255,215,0,0.1)'
             }}>
-                {/* Dynamic Background Elements */}
+                {/* Background Image with Overlay */}
                 <div style={{
                     position: 'absolute',
-                    top: '-10%',
-                    left: '-5%',
-                    width: '40%',
-                    height: '60%',
-                    background: 'radial-gradient(circle, rgba(255, 215, 0, 0.03) 0%, transparent 70%)',
-                    zIndex: 0,
-                    filter: 'blur(60px)'
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundImage: 'url("/mentors-bg.png")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    zIndex: 0
                 }} />
                 <div style={{
                     position: 'absolute',
-                    bottom: '-10%',
-                    right: '-5%',
-                    width: '40%',
-                    height: '60%',
-                    background: 'radial-gradient(circle, rgba(255, 215, 0, 0.03) 0%, transparent 70%)',
-                    zIndex: 0,
-                    filter: 'blur(60px)'
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.9) 100%)',
+                    zIndex: 0
                 }} />
 
                 <motion.div
