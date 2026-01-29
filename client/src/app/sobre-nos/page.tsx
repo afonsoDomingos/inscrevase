@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Users, Target, Rocket, Heart, Globe, Award, CheckCircle, Zap } from 'lucide-react';
-import Image from 'next/image';
 
 export default function SobreNos() {
     const values = [
