@@ -389,9 +389,9 @@ export default function Home() {
               marginBottom: '1rem',
               fontFamily: 'var(--font-playfair)'
             }}>
-              Resultados que <span className="gold-text">Falam</span>
+              Results that <span className="gold-text">Matter</span>
             </h2>
-            <TextDispersion text="Milhares de mentores confiam na Inscreva.se para escalar seus eventos" />
+            <TextDispersion text="Thousands of creators worldwide trust Inscreva-se to scale their events" />
           </motion.div>
 
           <motion.div
@@ -648,9 +648,9 @@ export default function Home() {
                 textShadow: '0 0 40px rgba(212, 175, 55, 0.1)'
               }}
             >
-              Crie e Gerencie Seus Eventos <br className="hidden-mobile" />
+              Create and Manage Your Events <br className="hidden-mobile" />
               <span style={{ position: 'relative', display: 'inline-block' }}>
-                <span className="gold-text relative z-10">Digitais Ou Presenciais</span>
+                <span className="gold-text relative z-10">Digital or In-Person</span>
                 <motion.span
                   initial={{ width: '0%' }}
                   whileInView={{ width: '100%' }}
@@ -665,7 +665,7 @@ export default function Home() {
                     borderRadius: '2px'
                   }}
                 />
-              </span> de Forma Clara e Simples
+              </span> with Simplicity & Style
             </motion.h2>
             <motion.p
               variants={{
@@ -681,7 +681,7 @@ export default function Home() {
                 lineHeight: 1.6
               }}
             >
-              {t('landing.dashboard.subtitle') || 'Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos.'}
+              {t('landing.dashboard.subtitle') || 'An intuitive interface designed for mentors and organizers seeking excellence and professionalism in event management.'}
             </motion.p>
 
             <div className="dashboard-actions" style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '4rem', flexWrap: 'wrap' }}>
@@ -848,10 +848,10 @@ export default function Home() {
               color: '#1a1a1a',
               letterSpacing: '-1.2px'
             }}>
-              Receba Pagamentos de <span className="gold-text">Forma Simples</span>
+              Accept Payments <span className="gold-text">Seamlessly</span>
             </h2>
             <p style={{ color: '#666', marginBottom: '5rem', fontSize: '1.15rem', maxWidth: '750px', margin: '0 auto 5rem', lineHeight: 1.6 }}>
-              Integração completa com as principais carteiras móveis e métodos globais de pagamento: M-Pesa, E-Mola, PayPal e Stripe.
+              Full integration with major global payment methods and mobile wallets, providing a frictionless experience for your attendees worldwide.
             </p>
 
             {/* Infinite Scroll Payments */}

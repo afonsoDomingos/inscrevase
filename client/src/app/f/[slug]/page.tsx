@@ -34,11 +34,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
                     name: form.location,
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: form.location, // Simplified for now
-                        addressCountry: 'MZ' // Defaulting to MZ/PT context or dynamic if available
+                        streetAddress: form.location,
+                        // Removed hardcoded MZ country to be global
                     }
                 },
-                image: [form.coverImage],
+                image: [form.coverImage || 'https://inscreva-se.com/og-image.png'],
                 organizer: {
                     '@type': 'Person',
                     name: form.creator.name,
@@ -47,7 +47,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 offers: form.paymentConfig?.enabled ? {
                     '@type': 'Offer',
                     price: form.paymentConfig.price,
-                    priceCurrency: form.paymentConfig.currency,
+                    priceCurrency: form.paymentConfig.currency || 'USD',
                     url: `https://inscreva-se.com/f/${slug}`,
                     availability: (form.capacity && form.submissionCount && form.capacity > form.submissionCount)
                         ? 'https://schema.org/InStock'
@@ -55,7 +55,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 } : {
                     '@type': 'Offer',
                     price: '0',
-                    priceCurrency: 'MZN',
+                    priceCurrency: form.paymentConfig?.currency || 'USD',
                     url: `https://inscreva-se.com/f/${slug}`,
                     availability: 'https://schema.org/InStock'
                 }
@@ -87,23 +87,26 @@ export async function generateMetadata(
     try {
         const form = await formService.getFormBySlug(slug);
 
+        if (!form) throw new Error("Form not found");
+
         const previousImages = (await parent).openGraph?.images || [];
+        const coverImage = form.coverImage || 'https://inscreva-se.com/og-image.png';
 
         return {
-            title: form.title,
-            description: form.description.substring(0, 160), // Truncate for optimal SEO
+            title: `${form.title} | Inscreva-se`,
+            description: form.description?.substring(0, 160) || "Join this amazing event on Inscreva-se.",
             openGraph: {
                 title: form.title,
                 description: form.description,
                 url: `https://inscreva-se.com/f/${slug}`,
-                images: form.coverImage ? [form.coverImage, ...previousImages] : previousImages,
+                images: [coverImage, ...previousImages],
                 type: 'website',
             },
             twitter: {
                 card: 'summary_large_image',
                 title: form.title,
-                description: form.description.substring(0, 200),
-                images: form.coverImage ? [form.coverImage] : [],
+                description: form.description?.substring(0, 200),
+                images: [coverImage],
             },
             alternates: {
                 canonical: `https://inscreva-se.com/f/${slug}`,
@@ -111,8 +114,8 @@ export async function generateMetadata(
         };
     } catch {
         return {
-            title: 'Evento não encontrado',
-            description: 'O evento que você procura não existe ou foi removido.'
+            title: 'Event Not Found | Inscreva-se',
+            description: 'The event you are looking for does not exist or has been removed.'
         };
     }
 }

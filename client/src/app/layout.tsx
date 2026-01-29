@@ -37,38 +37,38 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL('https://inscreva-se.com'),
   title: {
-    default: "Inscreva-se | A Melhor Plataforma de Eventos de Luxo e Gestão de Ingressos",
+    default: "Inscreva-se | Create, Manage & Scale Your Global Events",
     template: "%s | Inscreva-se"
   },
-  description: "Crie, gerencie e escale seus eventos com a plataforma líder em Moçambique. Gestão premium de ingressos para mentores, palestrantes e organizações de prestígio.",
+  description: "The all-in-one platform to create premium event registration forms, manage attendees, and process payments globally. Perfect for mentors, coaches, and luxury event organizers.",
   keywords: [
-    "eventos", "mentoria", "workshop", "tickets", "ingressos", "luxo", "premium", "gestão de eventos",
-    "Moçambique", "venda de ingressos online", "organização de palestras", "plataforma de eventos",
-    "Inscreva-se", "Inscrevase", "Maputo eventos", "bilhetes online"
+    "event management", "online registration", "mentorship workshops", "ticket sales",
+    "premium events", "luxury event platform", "attendee management", "global events",
+    "Inscreva-se", "event forms", "seminar management", "online tickets", "course registration"
   ],
   authors: [{ name: "Inscreva.se" }],
   creator: "Inscreva.se",
   publisher: "Inscreva.se",
   openGraph: {
     type: "website",
-    locale: "pt_BR",
+    locale: "en_US",
     url: 'https://inscreva-se.com',
-    title: "Inscreva-se | Plataforma Premium de Gestão de Eventos",
-    description: "A solução completa para organizar eventos de luxo e gerir inscrições com elegância e segurança.",
+    title: "Inscreva-se | The Premium Global Event Management Platform",
+    description: "Empowering creators and organizations to deliver world-class event experiences with seamless registration and secure payments.",
     siteName: "Inscreva-se",
     images: [
       {
         url: '/og-image.png',
         width: 1200,
-        height: 1200,
-        alt: "Inscreva-se Logo Premium",
+        height: 630,
+        alt: "Inscreva-se - Premium Event Management",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inscreva-se | Gestão de Eventos de Luxo",
-    description: "Organize seus workshops e palestras com a plataforma mais sofisticada do mercado moçambicano.",
+    title: "Inscreva-se | Professional Event Management Reimagined",
+    description: "Launch your next event with a platform designed for excellence. Global reach, local expertise, premium feel.",
     images: ['/og-image.png'],
   },
   alternates: {
@@ -132,7 +132,7 @@ export default function RootLayout({
                 "https://instagram.com/inscrevase",
                 "https://linkedin.com/company/inscrevase"
               ],
-              "description": "A plataforma líder em gestão de eventos e venda de ingressos premium em Moçambique."
+              "description": "The leading professional event management and premium ticket registration platform for creators worldwide."
             })
           }}
         />
