@@ -1,0 +1,3 @@
+# Prevent Vercel from overriding our custom favicon
+!public/favicon.ico
+!src/app/favicon.ico

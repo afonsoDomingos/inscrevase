@@ -6,17 +6,17 @@
   --foreground: #0a0a0a;
   --paper: #ffffff;
   --paper-hover: #f5f5f5;
-  --primary: #c9a528;
-  --primary-glow: rgba(201, 165, 40, 0.2);
+  --primary: #1452AD;
+  --primary-glow: rgba(20, 82, 173, 0.2);
   --secondary: #000000;
-  --accent: #DAA520;
+  --accent: #0D3D7A;
   --muted: #f0f0f0;
   --text-muted: #4a4a4a;
   --border: rgba(0, 0, 0, 0.08);
-  --gold-gradient: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8860B 100%);
-  --shadow-luxury: 0 10px 40px rgba(0, 0, 0, 0.05);
+  --blue-gradient: linear-gradient(135deg, #1452AD 0%, #0D3D7A 50%, #082952 100%);
+  --shadow-luxury: 0 10px 40px rgba(20, 82, 173, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.9);
-  --spotlight-color: rgba(212, 175, 55, 0.08);
+  --spotlight-color: rgba(20, 82, 173, 0.08);
   --input-bg: #ffffff;
   --input-border: #e2e2e2;
 }
@@ -26,17 +26,17 @@
   --foreground: #ffffff;
   --paper: #1a1a1a;
   --paper-hover: #222222;
-  --primary: #FFD700;
-  --primary-glow: rgba(255, 215, 0, 0.2);
+  --primary: #1452AD;
+  --primary-glow: rgba(20, 82, 173, 0.3);
   --secondary: #fdfdfd;
-  --accent: #D4AF37;
+  --accent: #0D3D7A;
   --muted: #111111;
   --text-muted: #a0a0a0;
-  --border: rgba(255, 215, 0, 0.2);
-  --gold-gradient: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8860B 100%);
-  --shadow-luxury: 0 10px 40px rgba(0, 0, 0, 0.3);
+  --border: rgba(20, 82, 173, 0.2);
+  --blue-gradient: linear-gradient(135deg, #1452AD 0%, #0D3D7A 50%, #082952 100%);
+  --shadow-luxury: 0 10px 40px rgba(20, 82, 173, 0.2);
   --glass-bg: rgba(20, 20, 20, 0.75);
-  --spotlight-color: rgba(255, 215, 0, 0.05);
+  --spotlight-color: rgba(20, 82, 173, 0.08);
   --input-bg: #111111;
   --input-border: #333333;
 }
@@ -69,7 +69,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--gold-gradient);
+  background: var(--blue-gradient);
   border-radius: 10px;
   border: 2px solid #1a1a1a;
 }
@@ -113,7 +113,7 @@ h6 {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gold-gradient);
+  background: var(--blue-gradient);
   opacity: 0.8;
   z-index: 2;
 }
@@ -122,8 +122,8 @@ h6 {
   transform: translateY(-10px) scale(1.01);
   box-shadow:
     0 30px 60px rgba(0, 0, 0, 0.1),
-    0 0 40px rgba(212, 175, 55, 0.15);
-  border-color: rgba(212, 175, 55, 0.3);
+    0 0 40px rgba(20, 82, 173, 0.15);
+  border-color: rgba(20, 82, 173, 0.3);
 }
 
 /* Spotlight Effect */
@@ -147,20 +147,20 @@ h6 {
   opacity: 0;
   z-index: 1;
   background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(212, 175, 55, 0.15),
+      rgba(20, 82, 173, 0.15),
       transparent 40%);
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .spotlight-low {
   background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(212, 175, 55, 0.08),
+      rgba(20, 82, 173, 0.08),
       transparent 40%);
 }
 
 .spotlight-high {
   background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(212, 175, 55, 0.25),
+      rgba(20, 82, 173, 0.25),
       transparent 40%);
 }
 
@@ -192,8 +192,8 @@ h6 {
   height: 200%;
   background: linear-gradient(90deg,
       transparent,
-      rgba(255, 215, 0, 0.1) 0%,
-      rgba(255, 215, 0, 0.6) 50%,
+      rgba(20, 82, 173, 0.1) 0%,
+      rgba(20, 82, 173, 0.6) 50%,
       transparent 100%);
   transform: rotate(25deg);
   pointer-events: none;
@@ -214,7 +214,7 @@ h6 {
   background: linear-gradient(90deg,
       #000 0%,
       #000 40%,
-      #D4AF37 50%,
+      #1452AD 50%,
       #000 60%,
       #000 100%);
   background-size: 200% auto;
@@ -232,7 +232,7 @@ h6 {
   background: linear-gradient(90deg,
       #fff 0%,
       #fff 40%,
-      #FFD700 50%,
+      #1452AD 50%,
       #fff 60%,
       #fff 100%);
   background-size: 200% auto;
@@ -241,7 +241,7 @@ h6 {
 }
 
 .btn-primary {
-  background: var(--gold-gradient);
+  background: var(--blue-gradient);
   color: #fff;
   padding: 0.8rem 1.5rem;
   border-radius: 4px;
@@ -256,7 +256,7 @@ h6 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 5px 15px rgba(20, 82, 173, 0.3);
 }
 
 .paper-edge {
@@ -308,7 +308,7 @@ h6 {
 }
 
 .hero .gold-text {
-  background: var(--gold-gradient);
+  background: var(--blue-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -329,7 +329,7 @@ h6 {
 
 .gold-text {
   color: var(--primary);
-  background: var(--gold-gradient);
+  background: var(--blue-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -347,16 +347,16 @@ h6 {
 
 .hero-title:hover {
   transform: scale(1.03);
-  filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.2));
+  filter: drop-shadow(0 15px 30px rgba(20, 82, 173, 0.2));
 }
 
 .luxury-shimmer-hover {
   background: linear-gradient(90deg,
       #fff 0%,
       #fff 40%,
-      #FFD700 45%,
-      #FFF8DC 50%,
-      #FFD700 55%,
+      #1452AD 45%,
+      #5A8FD6 50%,
+      #1452AD 55%,
       #fff 60%,
       #fff 100%);
   background-size: 300% 100%;
@@ -413,7 +413,7 @@ h6 {
 .input-luxury:focus {
   border-color: var(--primary);
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+  box-shadow: 0 0 0 4px rgba(20, 82, 173, 0.1);
 }
 
 .bg-auth {
@@ -537,22 +537,22 @@ h6 {
 }
 
 .luxury-button {
-  background: var(--gold-gradient);
-  color: #000;
+  background: var(--blue-gradient);
+  color: #fff;
   padding: 1rem 2rem;
   border-radius: 12px;
   font-weight: 700;
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(20, 82, 173, 0.2);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .luxury-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 8px 25px rgba(20, 82, 173, 0.4);
   filter: brightness(1.1);
 }
 
@@ -637,7 +637,7 @@ h6 {
   left: 15px;
   z-index: 1100;
   background: #1a1a1a;
-  color: #FFD700;
+  color: #1452AD;
   border: 1px solid #333;
   border-radius: 50%;
   width: 45px;
@@ -1005,7 +1005,7 @@ h6 {
     width: 45px !important;
     height: 45px !important;
   }
-  
+
   .responsive-float-btn svg {
     width: 24px !important;
     height: 24px !important;

@@ -76,11 +76,21 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/logo.png?v=2', type: 'image/png' },
-      { url: '/favicon.ico?v=2' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', type: 'image/png', sizes: '512x512' },
+      { url: '/icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512x512.png', type: 'image/png', sizes: '512x512' },
     ],
+    shortcut: ['/favicon.ico'],
     apple: [
-      { url: '/logo.png?v=2' },
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/logo.png',
+      },
     ],
   },
   robots: {
@@ -106,9 +116,19 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#FFD700" />
+        <meta name="theme-color" content="#1452AD" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        {/* Favicon - Explicit references to prevent Vercel default */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.png" />
+        <link rel="apple-touch-icon-precomposed" href="/logo.png" />
+
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <script
             async
