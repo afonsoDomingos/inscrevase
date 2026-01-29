@@ -416,7 +416,7 @@ export default function AdminDashboard() {
                         flexWrap: 'wrap',
                         alignItems: 'center'
                     }}>
-                        {!isMobile && <ThemeToggle />}
+                        <ThemeToggle />
                         <button
                             onClick={() => setShowValues(!showValues)}
                             style={{

@@ -511,7 +511,7 @@ export default function ParticipantDashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                        {!isMobile && <ThemeToggle />}
+                        <ThemeToggle />
                         <div style={{
                             width: '40px',
                             height: '40px',

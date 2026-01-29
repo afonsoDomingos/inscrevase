@@ -721,7 +721,7 @@ function MentorDashboardContent() {
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            {!isMobile && <ThemeToggle />}
+                            <ThemeToggle />
                             <div style={{ position: 'relative' }}>
                                 <button
                                     onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}

@@ -13,21 +13,17 @@ export default function ThemeToggle() {
             className={`theme-toggle ${theme === 'dark' ? 'dark-active' : ''}`}
             aria-label="Toggle Theme"
             style={{
-                position: 'fixed',
-                bottom: '2rem',
-                left: '2rem',
-                width: '50px',
-                height: '50px',
-                borderRadius: '50%',
-                border: '1px solid var(--border)',
+                width: '45px',
+                height: '45px',
+                borderRadius: '12px',
+                border: '1px solid #FFD700',
                 background: 'var(--paper)',
                 color: 'var(--foreground)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                zIndex: 9999,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                 transition: 'all 0.3s ease'
             }}
         >

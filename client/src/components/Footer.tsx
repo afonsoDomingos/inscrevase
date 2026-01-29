@@ -157,13 +157,13 @@ export default function Footer() {
             </div>
             <style jsx>{`
                 .footer-link {
-                    text-decoration: none;
-                    color: inherit;
-                    transition: color 0.2s ease;
+                    text-decoration: none !important;
+                    color: #5c5e62;
+                    transition: all 0.2s ease;
                 }
                 .footer-link:hover {
-                    color: #1452AD;
-                    text-decoration: underline;
+                    color: #1a1a1a;
+                    text-decoration: none !important;
                 }
             `}</style>
         </footer>
