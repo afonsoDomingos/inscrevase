@@ -147,14 +147,25 @@ export default function Footer() {
                     color: '#5c5e62',
                     fontWeight: 600
                 }}>
-                    <span>Inscreva-se © {new Date().getFullYear()}</span>
-                    <Link href="/privacidade" style={{ textDecoration: 'none', color: 'inherit' }}>{t('landing.footer.privacyTerms')}</Link>
-                    <Link href="/mentores" style={{ textDecoration: 'none', color: 'inherit' }}>{t('landing.footer.events')}</Link>
-                    <Link href="/suporte" style={{ textDecoration: 'none', color: 'inherit' }}>{t('landing.footer.support')}</Link>
-                    <Link href="/entrar" style={{ textDecoration: 'none', color: 'inherit' }}>{t('landing.footer.login')}</Link>
-                    <Link href="/cadastro" style={{ textDecoration: 'none', color: 'inherit' }}>{t('landing.footer.startNow')}</Link>
+                    <span>Inscreva-se &copy; {new Date().getFullYear()}</span>
+                    <Link href="/sobre-nos" className="footer-link">Sobre Nós</Link>
+                    <Link href="/termos" className="footer-link">Termos de Uso</Link>
+                    <Link href="/privacidade" className="footer-link">Privacidade</Link>
+                    <Link href="/blog" className="footer-link">Blog</Link>
+                    <Link href="/suporte" className="footer-link">Suporte</Link>
                 </div>
             </div>
+            <style jsx>{`
+                .footer-link {
+                    text-decoration: none;
+                    color: inherit;
+                    transition: color 0.2s ease;
+                }
+                .footer-link:hover {
+                    color: #1452AD;
+                    text-decoration: underline;
+                }
+            `}</style>
         </footer>
     );
 }
