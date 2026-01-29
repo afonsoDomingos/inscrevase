@@ -45,7 +45,12 @@ const itemVariants = {
 
 export default function AdminDashboard() {
     const { t } = useTranslate();
-    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const monthNames = [
+        t('common.months.jan'), t('common.months.feb'), t('common.months.mar'),
+        t('common.months.apr'), t('common.months.may'), t('common.months.jun'),
+        t('common.months.jul'), t('common.months.aug'), t('common.months.sep'),
+        t('common.months.oct'), t('common.months.nov'), t('common.months.dec')
+    ];
 
     const adminSteps: Step[] = [
         {
@@ -195,16 +200,16 @@ export default function AdminDashboard() {
     }
 
     const vitalCards = [
-        { label: 'Online Agora', value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
-        { label: 'Visitas Hoje', value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: 'Receita Total', value: showValues ? (stats?.revenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
-        { label: 'Inscrições', value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
+        { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
+        { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
+        { label: t('dashboard.finance.totalRevenue'), value: showValues ? (stats?.revenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
     // Removed unused cards to fix lint errors
 
     const financialCards = [
-        { label: 'Assinaturas Planos', value: showValues ? (stats?.subscriptionRevenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
+        { label: t('dashboard.planSubscriptions'), value: showValues ? (stats?.subscriptionRevenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
     ];
 
     const activityCards = [
@@ -218,8 +223,8 @@ export default function AdminDashboard() {
         { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
         { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
         { id: 'finance', label: t('dashboard.finance.title'), icon: <Wallet size={20} /> },
-        { id: 'newsletter', label: 'Newsletter', icon: <Mail size={20} /> },
-        { id: 'blog', label: 'Gerenciar Blog', icon: <Newspaper size={20} /> },
+        { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={20} /> },
+        { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ];
 
@@ -329,7 +334,7 @@ export default function AdminDashboard() {
                     onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                     <HelpCircle size={20} />
-                    Tour Guiado
+                    {t('dashboard.settings.guidedTour')}
                 </button>
 
                 <div style={{ padding: '1.5rem' }}>
@@ -391,7 +396,7 @@ export default function AdminDashboard() {
                     <div style={{ flex: '1 1 300px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
                             <ShieldAlert size={16} />
-                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{user.role} Dashboard</span>
+                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{user.role === 'admin' ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
                         </div>
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}
@@ -437,7 +442,7 @@ export default function AdminDashboard() {
                             }}
                         >
                             {showValues ? <EyeOff size={16} /> : <Eye size={16} />}
-                            {showValues ? 'Ocultar Valores' : 'Mostrar Valores'}
+                            {showValues ? t('dashboard.hideValues') : t('dashboard.showValues')}
                         </button>
                         <button
                             onClick={() => {
@@ -463,7 +468,7 @@ export default function AdminDashboard() {
                             }}
                             className="hover:translate-y-[-2px] hover:shadow-lg"
                         >
-                            <Send size={16} /> Comunicado
+                            <Send size={16} /> {t('dashboard.broadcast')}
                         </button>
                         <Link
                             href="/"
@@ -488,7 +493,7 @@ export default function AdminDashboard() {
                             }}
                             className="hover:bg-[#FFD700] hover:translate-y-[-2px]"
                         >
-                            <Eye size={16} /> Visitante
+                            <Eye size={16} /> {t('dashboard.visitor')}
                         </Link>
                         <button
                             onClick={() => authService.logout()}
@@ -572,7 +577,7 @@ export default function AdminDashboard() {
                                         <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '8px', borderRadius: '10px' }}>
                                             <FileText size={20} className="gold-text" />
                                         </div>
-                                        Atividade Operacional
+                                        {t('dashboard.operationalActivity')}
                                     </div>
                                     <motion.div animate={{ rotate: expandedSections.activity ? 180 : 0 }}>
                                         <ChevronDown size={22} />
@@ -633,10 +638,10 @@ export default function AdminDashboard() {
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.1rem', letterSpacing: '1.5px' }}>
                                         <BarChart3 size={24} style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.4))' }} />
-                                        <span className="luxury-shimmer-hover">ANALYTICS E INSIGHTS</span>
+                                        <span className="luxury-shimmer-hover">{t('dashboard.analyticsAndInsights')}</span>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.5, letterSpacing: '1px' }}>{expandedSections.performance ? 'MINIMIZAR' : 'EXPLORAR'}</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.5, letterSpacing: '1px' }}>{expandedSections.performance ? t('common.minimize') : t('common.explore')}</span>
                                         <motion.div animate={{ rotate: expandedSections.performance ? 180 : 0 }}>
                                             <ChevronDown size={22} />
                                         </motion.div>
@@ -656,14 +661,14 @@ export default function AdminDashboard() {
                                                     <div className="luxury-card" style={{ padding: '2rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <Database className="gold-text" size={20} /> Distribuição por Origem
+                                                            <Database className="gold-text" size={20} /> {t('dashboard.originDistribution')}
                                                         </h3>
                                                         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
                                                             <div style={{ flex: 1, minWidth: '250px' }}>
                                                                 {[
-                                                                    { label: 'E-mail Nativo', count: stats?.authStats?.native || 0, color: '#1a1a1a' },
-                                                                    { label: 'Google Auth', count: stats?.authStats?.google || 0, color: '#db4437' },
-                                                                    { label: 'LinkedIn Connect', count: stats?.authStats?.linkedin || 0, color: '#0077b5' }
+                                                                    { label: t('dashboard.nativeEmail'), count: stats?.authStats?.native || 0, color: '#1a1a1a' },
+                                                                    { label: t('dashboard.googleAuth'), count: stats?.authStats?.google || 0, color: '#db4437' },
+                                                                    { label: t('dashboard.linkedinConnect'), count: stats?.authStats?.linkedin || 0, color: '#0077b5' }
                                                                 ].map((item, idx) => {
                                                                     const total = (stats?.authStats?.native || 0) + (stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0);
                                                                     const percentage = total > 0 ? (item.count / total) * 100 : 0;
@@ -714,15 +719,15 @@ export default function AdminDashboard() {
                                                         <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1 }}>
                                                             <Database size={150} />
                                                         </div>
-                                                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', position: 'relative' }}>💡 Insight de Crescimento</h3>
+                                                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', position: 'relative' }}>💡 {t('dashboard.growthInsight')}</h3>
                                                         <p style={{ fontSize: '1.05rem', lineHeight: 1.6, opacity: 0.9, fontWeight: 500, position: 'relative' }}>
                                                             {(stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0) > (stats?.authStats?.native || 0)
-                                                                ? "O login social está sendo o caminho preferido dos seus usuários! Simplifique ainda mais o registro nativo."
-                                                                : "O e-mail tradicional ainda é o mais confiável para sua audiência. Otimize a segurança do fluxo nativo."
+                                                                ? t('dashboard.socialLoginInsight')
+                                                                : t('dashboard.nativeEmailInsight')
                                                             }
                                                         </p>
                                                         <div style={{ marginTop: '1.5rem', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px', position: 'relative', background: 'rgba(0,0,0,0.1)', padding: '8px 15px', borderRadius: '50px', width: 'fit-content' }}>
-                                                            <TrendingUp size={16} /> DADO É PODER
+                                                            <TrendingUp size={16} /> {t('common.dataIsPower')}
                                                         </div>
                                                     </div>
                                                 </motion.div>
@@ -733,16 +738,16 @@ export default function AdminDashboard() {
                                                     <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <LayoutDashboard className="gold-text" size={20} /> Equilíbrio de Engagement
+                                                            <LayoutDashboard className="gold-text" size={20} /> {t('dashboard.engagementBalance')}
                                                         </h3>
                                                         <div style={{ height: '320px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <RadarChart key={`radar-${expandedSections.performance}`} cx="50%" cy="50%" outerRadius="80%" data={[
-                                                                    { subject: 'Mentores', A: stats?.mentors || 0, fullMark: 100 },
-                                                                    { subject: 'Eventos', A: stats?.forms || 0, fullMark: 100 },
-                                                                    { subject: 'Participantes', A: stats?.participants || 0, fullMark: 100 },
-                                                                    { subject: 'Inscrições', A: stats?.submissions || 0, fullMark: 100 },
-                                                                    { subject: 'Receita', A: (stats?.revenue || 0) / 1000, fullMark: 100 },
+                                                                    { subject: t('dashboard.mentors'), A: stats?.mentors || 0, fullMark: 100 },
+                                                                    { subject: t('dashboard.events'), A: stats?.forms || 0, fullMark: 100 },
+                                                                    { subject: t('dashboard.participants'), A: stats?.participants || 0, fullMark: 100 },
+                                                                    { subject: t('dashboard.submissions'), A: stats?.submissions || 0, fullMark: 100 },
+                                                                    { subject: t('dashboard.revenue'), A: (stats?.revenue || 0) / 1000, fullMark: 100 },
                                                                 ]}>
                                                                     <PolarGrid stroke="#eee" />
                                                                     <PolarAngleAxis dataKey="subject" tick={{ fill: '#666', fontSize: 11, fontWeight: 600 }} />

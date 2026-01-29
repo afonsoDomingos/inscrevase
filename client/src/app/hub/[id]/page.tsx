@@ -157,11 +157,11 @@ function HubContent() {
                     }
                     document.title = `${data.form.title} - Hub`;
                 } else {
-                    toast.error("Inscrição não encontrada");
+                    toast.error(t('dashboard.submissionNotFound'));
                 }
             } catch (err) {
                 console.error(err);
-                toast.error("Erro ao carregar dados");
+                toast.error(t('dashboard.cancelError'));
             } finally {
                 setLoading(false);
             }
@@ -205,8 +205,8 @@ function HubContent() {
 
     if (!submission) return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#171A20' }}>
-            <h1>Inscrição não encontrada</h1>
-            <button onClick={() => router.push('/')} style={{ marginTop: '1rem', color: '#171A20', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>Voltar ao início</button>
+            <h1>{t('dashboard.submissionNotFound')}</h1>
+            <button onClick={() => router.push('/')} style={{ marginTop: '1rem', color: '#171A20', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>{t('common.backToHome')}</button>
         </div>
     );
 
@@ -224,7 +224,7 @@ function HubContent() {
                         <ArrowLeft size={18} /> {t('common.back')}
                     </button>
                     <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#171A20' }}>
-                        PASSAPORTE <span style={{ fontWeight: 500, color: '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
+                        {t('hub.passport')} <span style={{ fontWeight: 500, color: '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                         {currentUser ? (
@@ -290,7 +290,7 @@ function HubContent() {
                         {isApproved ? t('events.confirmedStatus') : t('events.processingStatus')}
                     </motion.div>
                     <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-2px', marginBottom: '15px', color: '#fff', lineHeight: 1.1, textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>{form.title}</h1>
-                    <p style={{ color: '#d4d4d8', fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>Seu acesso exclusivo à plataforma de experiência.</p>
+                    <p style={{ color: '#d4d4d8', fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>{t('hub.exclusiveAccess')}</p>
                 </div>
 
                 {/* Live Stream Hero - Prioridade: Live -> Espera -> Default Aquecimento */}
@@ -340,7 +340,7 @@ function HubContent() {
                                         frameBorder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
-                                        title="Transmissão Ao Vivo"
+                                        title={t('hub.liveBroadcast')}
                                     />
                                 </motion.div>
                             ) : (
@@ -373,7 +373,7 @@ function HubContent() {
                                         }}
                                     >
                                         <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff0000', boxShadow: '0 0 10px #ff0000' }} className="animate-pulse" />
-                                        Assistir Transmissão (Clique para Abrir)
+                                        {t('hub.watchBroadcast')}
                                     </motion.button>
                                 )
                             )}
@@ -409,12 +409,12 @@ function HubContent() {
                                     <div style={{ display: 'flex', gap: '40px' }}>
                                         <div>
                                             <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('submissions.date')}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : 'A definir'}</div>
+                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
                                         </div>
                                         <div>
                                             <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventTimeLabel') || 'Horário'}</div>
                                             <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                                                {form.eventTime || (form.eventDate ? new Date(form.eventDate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : 'A definir')}
+                                                {form.eventTime || (form.eventDate ? new Date(form.eventDate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : t('common.toBeDefined'))}
                                             </div>
                                         </div>
                                         <div>
@@ -439,7 +439,7 @@ function HubContent() {
                                         <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '6px' }}>{t('mentors.location')}</div>
                                         <div style={{ fontSize: '0.95rem', color: '#666', lineHeight: 1.6 }}>{form.location}</div>
                                     </div>
-                                    <button style={{ marginTop: 'auto', background: '#f4f4f4', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: '0.2s' }}>Explorar Rota</button>
+                                    <button style={{ marginTop: 'auto', background: '#f4f4f4', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: '0.2s' }}>{t('hub.exploreRoute')}</button>
                                 </div>
                             ) : <div />}
 
@@ -450,7 +450,7 @@ function HubContent() {
                                     </div>
                                     <div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '6px' }}>{t('events.onlineLink')}</div>
-                                        <div style={{ fontSize: '0.95rem', color: '#666' }}>Link disponível na sua cabine</div>
+                                        <div style={{ fontSize: '0.95rem', color: '#666' }}>{t('hub.linkAvailableInCabin')}</div>
                                     </div>
                                     <a href={form.onlineLink} target="_blank" style={{ marginTop: 'auto', background: '#111', color: '#fff', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                                         {form.onlineLink.includes('meet.google') || form.onlineLink.includes('zoom.us') || form.onlineLink.includes('teams') ? t('events.joinRoom') : t('events.accessLink')}
@@ -620,7 +620,7 @@ function HubContent() {
                                                     <Download size={20} />
                                                 </a>
                                             ) : (
-                                                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Disponível após o evento">
+                                                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.availableAfterEvent')}>
                                                     <div style={{ fontSize: '1.2rem' }}>🔒</div>
                                                 </div>
                                             )}
@@ -721,12 +721,12 @@ function HubContent() {
                                                     k.toLowerCase().includes('nome') ||
                                                     k.toLowerCase().includes('name')
                                                 );
-                                                const participantName = nameKey ? dataMap[nameKey] : "Participante";
+                                                const participantName = nameKey ? dataMap[nameKey] : t('hub.defaultParticipantName');
 
                                                 generateCertificate({
                                                     participantName: String(participantName),
                                                     eventTitle: form.title,
-                                                    date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : 'A definir',
+                                                    date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : t('common.toBeDefined'),
                                                     mentorName: form.creator.name,
                                                     id: submission._id,
                                                     config: form.certificateConfig

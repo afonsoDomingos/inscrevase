@@ -42,11 +42,17 @@ import InternalBlogView from '@/components/common/InternalBlogView';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
 
-type Tab = 'tickets' | 'explore' | 'certificates' | 'profile' | 'blog' | 'plans';
-const CATEGORIES = ['Todos', 'Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'];
-
 export default function ParticipantDashboard() {
     const { t } = useTranslate();
+    const CATEGORIES = [
+        { id: 'Todos', label: t('categories.all') },
+        { id: 'Negócios', label: t('categories.business') },
+        { id: 'Tecnologia', label: t('categories.technology') },
+        { id: 'Arte & Música', label: t('categories.artMusic') },
+        { id: 'Educação', label: t('categories.education') },
+        { id: 'Saúde & Bem-estar', label: t('categories.healthWellness') },
+        { id: 'Outros', label: t('categories.others') }
+    ];
     const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -115,7 +121,7 @@ export default function ParticipantDashboard() {
 
     const handleUpgrade = async (plan: string) => {
         if (plan === 'enterprise') {
-            toast.info('Para o plano Enterprise, entre em contacto com a nossa equipa de vendas.');
+            toast.info(t('plans.enterpriseContact'));
             return;
         }
 
@@ -138,7 +144,7 @@ export default function ParticipantDashboard() {
         setUpgradeLoading(true);
         try {
             await authService.restoreMentor();
-            toast.success('Modo Mentor restaurado!');
+            toast.success(t('dashboard.mentorModeRestored'));
             router.push('/dashboard/mentor');
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Erro ao restaurar modo mentor';
@@ -329,12 +335,12 @@ export default function ParticipantDashboard() {
 
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {[
-                        { id: 'tickets', label: 'Meus Ingressos', icon: <Ticket size={20} /> },
-                        { id: 'explore', label: 'Explorar Eventos', icon: <Compass size={20} /> },
-                        { id: 'certificates', label: 'Meus Certificados', icon: <Award size={20} /> },
-                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} /> },
+                        { id: 'tickets', label: t('dashboard.myTickets'), icon: <Ticket size={20} /> },
+                        { id: 'explore', label: t('dashboard.exploreEvents'), icon: <Compass size={20} /> },
+                        { id: 'certificates', label: t('dashboard.myCertificates'), icon: <Award size={20} /> },
+                        { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
-                        { id: 'profile', label: 'Minha Conta', icon: <User size={20} /> },
+                        { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
                             key={item.id}
@@ -503,10 +509,10 @@ export default function ParticipantDashboard() {
                             animate={{ x: 0, opacity: 1 }}
                             style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: 'var(--foreground)' }}
                         >
-                            Olá, <span className="gold-text">{(user?.name || 'Usuário').split(' ')[0]}</span>
+                            {t('common.hello')}, <span className="gold-text">{(user?.name || t('common.user')).split(' ')[0]}</span>
                         </motion.h1>
                         <p style={{ color: '#666', marginTop: '0.4rem', fontSize: isMobile ? '0.9rem' : '1.05rem', fontWeight: 500 }}>
-                            Explore eventos incríveis e gerencie suas inscrições.
+                            {t('dashboard.participantWelcomeDesc')}
                         </p>
                     </div>
 
@@ -586,7 +592,7 @@ export default function ParticipantDashboard() {
                                                                 fontSize: '0.75rem',
                                                                 fontWeight: 700
                                                             }}>
-                                                                {ticket.status === 'rejected' ? 'Recusado' : ((ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? 'Confirmado' : 'Pendente')}
+                                                                {ticket.status === 'rejected' ? t('hub.status.rejected') : ((ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? t('hub.status.confirmed') : t('hub.status.pending'))}
                                                             </div>
                                                         </div>
                                                         <div style={{ padding: '1.5rem' }}>
@@ -594,7 +600,7 @@ export default function ParticipantDashboard() {
                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                                                                     <Calendar size={16} />
-                                                                    {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : 'A definir'} {ticket.form.eventTime ? `às ${ticket.form.eventTime}` : ''}
+                                                                    {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : t('common.toBeDefined')} {ticket.form.eventTime ? `${t('common.atTime')} ${ticket.form.eventTime}` : ''}
                                                                 </div>
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
                                                                     <MapPin size={16} />
@@ -616,7 +622,7 @@ export default function ParticipantDashboard() {
                                                                 justifyContent: 'center',
                                                                 gap: '8px'
                                                             }}>
-                                                                <Ticket size={18} /> Ver Meus Acessos
+                                                                <Ticket size={18} /> {t('hub.viewAccess')}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -627,15 +633,15 @@ export default function ParticipantDashboard() {
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        if (confirm('Tem certeza que deseja cancelar esta inscrição? Esta ação não pode ser desfeita.')) {
+                                                        if (confirm(t('dashboard.cancelAlert'))) {
                                                             const handleDelete = async () => {
                                                                 try {
                                                                     await submissionService.deleteSubmission(ticket._id);
                                                                     setTickets(prev => prev.filter(t => t._id !== ticket._id));
-                                                                    toast.success('Inscrição cancelada com sucesso.');
+                                                                    toast.success(t('dashboard.cancelSuccess'));
                                                                 } catch (err) {
                                                                     console.error(err);
-                                                                    toast.error('Erro ao cancelar inscrição.');
+                                                                    toast.error(t('dashboard.cancelError'));
                                                                 }
                                                             };
                                                             handleDelete();
@@ -727,22 +733,22 @@ export default function ParticipantDashboard() {
                                 <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px', scrollbarWidth: 'none' }}>
                                     {CATEGORIES.map(cat => (
                                         <button
-                                            key={cat}
-                                            onClick={() => setSelectedCategory(cat)}
+                                            key={cat.id}
+                                            onClick={() => setSelectedCategory(cat.id)}
                                             style={{
                                                 padding: '8px 16px',
                                                 borderRadius: '20px',
-                                                border: selectedCategory === cat ? '1px solid #FFD700' : '1px solid #ddd',
-                                                background: selectedCategory === cat ? '#FFF8E1' : '#fff',
-                                                color: selectedCategory === cat ? '#B8860B' : '#666',
+                                                border: selectedCategory === cat.id ? '1px solid #FFD700' : '1px solid #ddd',
+                                                background: selectedCategory === cat.id ? '#FFF8E1' : '#fff',
+                                                color: selectedCategory === cat.id ? '#B8860B' : '#666',
                                                 cursor: 'pointer',
                                                 whiteSpace: 'nowrap',
                                                 fontSize: '0.9rem',
-                                                fontWeight: selectedCategory === cat ? 600 : 400,
+                                                fontWeight: selectedCategory === cat.id ? 600 : 400,
                                                 transition: 'all 0.2s'
                                             }}
                                         >
-                                            {cat}
+                                            {cat.label}
                                         </button>
                                     ))}
                                 </div>
@@ -756,8 +762,8 @@ export default function ParticipantDashboard() {
                             ) : exploreEvents.length === 0 ? (
                                 <div style={{ textAlign: 'center', padding: '4rem', color: '#666' }}>
                                     <Compass size={48} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-                                    <h3>Nenhum evento encontrado</h3>
-                                    <p>Tente buscar por outro termo ou categoria.</p>
+                                    <h3>{t('common.explorePage.noEventsTitle')}</h3>
+                                    <p>{t('common.explorePage.noEventsDesc')}</p>
                                 </div>
                             ) : (
                                 <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-3'} gap-6`}>
@@ -772,12 +778,12 @@ export default function ParticipantDashboard() {
                                                     </div>
                                                 )}
                                                 <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: '#FFD700', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                                    {event.eventType === 'modeOnline' ? 'ONLINE' : 'PRESENCIAL'}
+                                                    {event.eventType === 'modeOnline' ? 'ONLINE' : (event.eventType === 'modeHybrid' ? 'HYBRID' : 'OFFLINE')}
                                                 </div>
                                             </div>
                                             <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                                 <div style={{ fontSize: '0.75rem', color: '#DAA520', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                    {event.category || 'Geral'}
+                                                    {event.category || t('common.general')}
                                                 </div>
                                                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', lineHeight: 1.3, flex: 1 }}>{event.title}</h3>
 
@@ -793,24 +799,24 @@ export default function ParticipantDashboard() {
                                                         </div>
                                                     )}
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <User size={14} /> {event.creator?.businessName || event.creator?.name || 'Organizador'}
+                                                        <User size={14} /> {event.creator?.businessName || event.creator?.name || t('common.organizer')}
                                                     </div>
                                                 </div>
 
                                                 <div style={{ display: 'flex', gap: '10px' }}>
                                                     <Link href={`/f/${event.slug}`} style={{ flex: 1, textAlign: 'center', padding: '0.8rem', background: 'var(--secondary)', color: 'var(--primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, transition: 'transform 0.2s' }}>
-                                                        Ver Detalhes
+                                                        {t('common.explorePage.viewDetails')}
                                                     </Link>
                                                     <button
                                                         onClick={() => {
                                                             setTargetMentor({
                                                                 id: event.creator?._id || '',
-                                                                name: event.creator?.businessName || event.creator?.name || 'Mentor'
+                                                                name: event.creator?.businessName || event.creator?.name || t('common.mentor')
                                                             });
                                                             setIsSupportOpen(true);
                                                         }}
                                                         style={{ background: '#FFF8E1', border: '1px solid #FFD700', borderRadius: '8px', padding: '0 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                        title="Conversar com Mentor"
+                                                        title={t('common.explorePage.chatWithMentor')}
                                                     >
                                                         <MessageCircle size={20} color="#DAA520" />
                                                     </button>
@@ -831,7 +837,7 @@ export default function ParticipantDashboard() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <div className="luxury-card">
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Minha Conta</h3>
+                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>{t('dashboard.myAccount')}</h3>
                                 <div style={{ display: 'grid', gap: '1rem', width: '100%', maxWidth: '500px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                         <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#f0f0f0', overflow: 'hidden' }}>
@@ -844,15 +850,15 @@ export default function ParticipantDashboard() {
                                     </div>
 
                                     <div style={{ marginTop: '1rem', padding: '1rem', background: '#f9f9f9', borderRadius: '8px' }}>
-                                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>Tipo de Conta</p>
-                                        <p style={{ margin: 0, fontWeight: 700, textTransform: 'capitalize' }}>{user.role}</p>
+                                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>{t('dashboard.accountType')}</p>
+                                        <p style={{ margin: 0, fontWeight: 700, textTransform: 'capitalize' }}>{user.role === 'mentor' ? t('dashboard.mentor') : t('dashboard.visitor')}</p>
                                     </div>
 
                                     <button
                                         onClick={() => setIsProfileModalOpen(true)}
                                         style={{ padding: '0.8rem', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
                                     >
-                                        Editar Perfil
+                                        {t('dashboard.editProfile')}
                                     </button>
                                 </div>
                             </div>
@@ -864,8 +870,8 @@ export default function ParticipantDashboard() {
                                         <Award size={24} color="#000" />
                                     </div>
                                     <div>
-                                        <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700 }}>Torne-se um Mentor</h3>
-                                        <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>Crie seus próprios eventos e monetize seu conhecimento.</p>
+                                        <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700 }}>{t('dashboard.becomeMentor')}</h3>
+                                        <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>{t('dashboard.becomeMentorDesc')}</p>
                                     </div>
                                 </div>
 
@@ -874,10 +880,9 @@ export default function ParticipantDashboard() {
                                         /* Restore Access if already has a plan */
                                         <div style={{ background: '#fff', padding: '2rem', borderRadius: '16px', border: '1px solid #FFD700', textAlign: 'center', width: '100%' }}>
                                             <Zap size={32} color="#DAA520" style={{ marginBottom: '1rem' }} />
-                                            <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Assinatura Ativa detetada!</h4>
+                                            <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>{t('dashboard.activeSubscriptionDetected')}</h4>
                                             <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-                                                Vimos que já possui um plano <b>{user.plan}</b> ativo.
-                                                Deseja voltar para as suas ferramentas de mentor?
+                                                {t('dashboard.activeSubscriptionMessage', { plan: user.plan })}
                                             </p>
                                             <button
                                                 onClick={handleRestoreMentor}
@@ -885,7 +890,7 @@ export default function ParticipantDashboard() {
                                                 className="btn-primary"
                                                 style={{ padding: '0.8rem 2.5rem', borderRadius: '50px' }}
                                             >
-                                                {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : 'Restaurar Modo Mentor'}
+                                                {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : t('dashboard.restoreMentorMode')}
                                             </button>
                                         </div>
                                     ) : (
@@ -893,7 +898,7 @@ export default function ParticipantDashboard() {
                                             {/* Pro Plan */}
                                             <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', flexDirection: 'column' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                                    <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Plano Pro</span>
+                                                    <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{t('plans.pro.name')}</span>
                                                     <span style={{ background: '#E3F2FD', color: '#1976D2', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700 }}>POPULAR</span>
                                                 </div>
                                                 <div style={{ marginBottom: '1.5rem' }}>
@@ -902,13 +907,13 @@ export default function ParticipantDashboard() {
                                                 </div>
                                                 <ul style={{ padding: 0, listStyle: 'none', margin: '0 0 2rem 0', flex: 1 }}>
                                                     <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Eventos Ilimitados
+                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.unlimitedEvents')}
                                                     </li>
                                                     <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Taxa de plataforma: 10%
+                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.platformFee')}: 10%
                                                     </li>
                                                     <li style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Suporte Prioritário
+                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.plans.f3')}
                                                     </li>
                                                 </ul>
                                                 <button
@@ -917,7 +922,7 @@ export default function ParticipantDashboard() {
                                                     className="btn-primary"
                                                     style={{ width: '100%', borderRadius: '8px', padding: '0.8rem' }}
                                                 >
-                                                    {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : 'Assinar Pro'}
+                                                    {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : t('dashboard.subscribePro')}
                                                 </button>
                                             </div>
 
@@ -932,13 +937,13 @@ export default function ParticipantDashboard() {
                                                 </div>
                                                 <ul style={{ padding: 0, listStyle: 'none', margin: '0 0 2rem 0', flex: 1 }}>
                                                     <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Taxa de plataforma: 0%
+                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.platformFee')}: 0%
                                                     </li>
                                                     <li style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Gestor de Conta Dedicado
+                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.dedicatedAccountManager')}
                                                     </li>
                                                     <li style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> Customização Avançada
+                                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.advancedCustomization')}
                                                     </li>
                                                 </ul>
                                                 <button
@@ -946,7 +951,7 @@ export default function ParticipantDashboard() {
                                                     disabled={upgradeLoading}
                                                     style={{ width: '100%', borderRadius: '8px', padding: '0.8rem', background: '#fff', color: '#000', border: 'none', fontWeight: 700, cursor: 'pointer' }}
                                                 >
-                                                    {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : 'Falar com Vendas'}
+                                                    {upgradeLoading ? <Loader2 className="animate-spin" size={20} /> : t('dashboard.talkToSales')}
                                                 </button>
                                             </div>
                                         </>
@@ -971,8 +976,8 @@ export default function ParticipantDashboard() {
                                 color: 'var(--text-muted)'
                             }}>
                                 <Award size={48} style={{ marginBottom: '1rem', color: '#DAA520', opacity: 0.5 }} />
-                                <h3>Nenhum certificado disponível</h3>
-                                <p>Participe de eventos que emitem certificados para vê-los aqui.</p>
+                                <h3>{t('dashboard.noCertificatesYet')}</h3>
+                                <p>{t('dashboard.noCertificatesDesc')}</p>
                             </div>
                         </motion.div>
                     )}

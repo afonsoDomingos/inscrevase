@@ -246,12 +246,12 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 <thead>
                                     <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.75rem', color: '#666' }}>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '150px' }}>{t('events.submissions.registrant')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '110px' }}>Contato</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '110px' }}>{t('events.submissions.contact')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '130px' }}>{t('events.submissions.event')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.date')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.proof')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '90px' }}>{t('events.submissions.status')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '120px', textAlign: 'center' }}>Inscrição</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '120px', textAlign: 'center' }}>{t('events.submissions.registration')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '160px', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
                                     </tr>
                                 </thead>
@@ -295,7 +295,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                                 onClick={() => handleAnalyzeReceipt(submission._id)}
                                                                 style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.65rem', fontWeight: 800, color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                                                             >
-                                                                {analyzingId === submission._id ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />} ANALISAR IA
+                                                                {analyzingId === submission._id ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />} {t('events.submissions.analyzeAi')}
                                                             </button>
                                                         )}
                                                     </div>
@@ -312,7 +312,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                     background: submission.paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
                                                     color: submission.paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
                                                 }}>
-                                                    {submission.paymentStatus === 'refunded' ? 'Reembolsado' : submission.status === 'approved' ? 'Aprovado' : submission.status === 'rejected' ? 'Rejeitado' : 'Pendente'}
+                                                    {submission.paymentStatus === 'refunded' ? t('events.submissions.refundedLabel') : submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'center' }}>
@@ -384,7 +384,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                     {submission.paymentMethod === 'stripe' && submission.paymentStatus !== 'refunded' && (
                                                         <button
                                                             onClick={() => handleRefund(submission._id)}
-                                                            title="Reembolsar Transação"
+                                                            title={t('events.submissions.refunding')}
                                                             style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #718096', background: '#fff', color: '#718096', cursor: 'pointer' }}
                                                         >
                                                             <RotateCcw size={16} />
@@ -392,7 +392,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                     )}
                                                     <button
                                                         onClick={() => handleDelete(submission._id)}
-                                                        title="Excluir Inscrição"
+                                                        title={t('events.submissions.deleteSubmission')}
                                                         style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #ffcccb', background: '#fff', color: '#e53e3e', cursor: 'pointer' }}
                                                     >
                                                         <Trash2 size={16} />
@@ -416,7 +416,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 background: '#f8f9fa'
                             }}>
                                 <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                                    Mostrando {startIndex + 1}-{Math.min(endIndex, filteredSubmissions.length)} de {filteredSubmissions.length} inscrições
+                                    {t('events.submissions.showing')} {startIndex + 1}-{Math.min(endIndex, filteredSubmissions.length)} {t('events.submissions.of')} {filteredSubmissions.length} {t('dashboard.submissions')}
                                 </div>
                                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                     <button
@@ -436,7 +436,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         <ChevronLeft size={18} />
                                     </button>
                                     <span style={{ fontSize: '0.85rem', fontWeight: 600, minWidth: '80px', textAlign: 'center' }}>
-                                        Página {currentPage} de {totalPages}
+                                        {t('events.submissions.page')} {currentPage} {t('events.submissions.of')} {totalPages}
                                     </span>
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
@@ -476,15 +476,15 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             background: submission.paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
                                             color: submission.paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
                                         }}>
-                                            {submission.paymentStatus === 'refunded' ? 'Reembolsado' : submission.status === 'approved' ? 'Aprovado' : submission.status === 'rejected' ? 'Rejeitado' : 'Pendente'}
+                                            {submission.paymentStatus === 'refunded' ? t('events.submissions.refundedLabel') : submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                         </span>
                                     </div>
 
                                     <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>
-                                        <strong>Evento:</strong> {submission.form.title}
+                                        <strong>{t('events.submissions.event')}:</strong> {submission.form.title}
                                     </div>
                                     <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
-                                        <strong>Data:</strong> {formatDate(submission.submittedAt)}
+                                        <strong>{t('events.submissions.date')}:</strong> {formatDate(submission.submittedAt)}
                                     </div>
 
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -504,7 +504,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                 gap: '5px'
                                             }}
                                         >
-                                            <Eye size={16} /> Ver Detalhes
+                                            <Eye size={16} /> {t('events.submissions.viewDetails')}
                                         </button>
                                         <a
                                             href={`/hub/${submission._id}`}
@@ -550,7 +550,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                 gap: '5px'
                                             }}
                                         >
-                                            <CheckCircle size={16} /> Aprovar
+                                            <CheckCircle size={16} /> {t('events.submissions.approve')}
                                         </button>
                                         <button
                                             onClick={() => handleUpdateStatus(submission._id, 'rejected')}
@@ -571,7 +571,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                 gap: '5px'
                                             }}
                                         >
-                                            <XCircle size={16} /> Rejeitar
+                                            <XCircle size={16} /> {t('events.submissions.reject')}
                                         </button>
                                         <button
                                             onClick={() => handleDelete(submission._id)}
@@ -702,16 +702,16 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
                                             <Sparkles size={18} color={selectedSubmission.aiAnalysis.isValid ? '#10b981' : '#ef4444'} />
-                                            <h4 style={{ fontWeight: 800, color: selectedSubmission.aiAnalysis.isValid ? '#166534' : '#991b1b', fontSize: '0.9rem' }}>Análise Inteligente (Aura AI)</h4>
+                                            <h4 style={{ fontWeight: 800, color: selectedSubmission.aiAnalysis.isValid ? '#166534' : '#991b1b', fontSize: '0.9rem' }}>{t('events.submissions.aiAnalysisTitle')}</h4>
                                         </div>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                             <div>
-                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>ID Transação</div>
+                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>{t('events.submissions.transactionId')}</div>
                                                 <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.transactionId || '---'}</div>
                                             </div>
                                             <div>
-                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>Valor Identificado</div>
+                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>{t('events.submissions.identifiedValue')}</div>
                                                 <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.amount} {selectedSubmission.aiAnalysis.currency}</div>
                                             </div>
                                         </div>
@@ -724,7 +724,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         )}
 
                                         <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ fontSize: '0.7rem', color: '#666' }}>Confiança da IA: <b>{selectedSubmission.aiAnalysis.confidence}%</b></div>
+                                            <div style={{ fontSize: '0.7rem', color: '#666' }}>{t('events.submissions.aiConfidence')}: <b>{selectedSubmission.aiAnalysis.confidence}%</b></div>
                                             {selectedSubmission.aiAnalysis.isValid && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#10b981', fontWeight: 800 }}><ShieldCheck size={14} /> VERIFICADO</div>}
                                         </div>
                                     </div>
@@ -787,7 +787,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         color: '#fff', fontWeight: 700, cursor: 'pointer'
                                     }}
                                 >
-                                    Aprovar
+                                    {t('events.submissions.approve')}
                                 </button>
                                 <button
                                     onClick={() => {
@@ -801,7 +801,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         color: '#fff', fontWeight: 700, cursor: 'pointer'
                                     }}
                                 >
-                                    Rejeitar
+                                    {t('events.submissions.reject')}
                                 </button>
                             </div>
                             {selectedSubmission.paymentMethod === 'stripe' && selectedSubmission.paymentStatus !== 'refunded' && (

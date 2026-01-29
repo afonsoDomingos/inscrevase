@@ -148,11 +148,11 @@ export default function Footer() {
                     fontWeight: 600
                 }}>
                     <span>Inscreva-se &copy; {new Date().getFullYear()}</span>
-                    <Link href="/sobre-nos" className="footer-link">Sobre Nós</Link>
-                    <Link href="/termos" className="footer-link">Termos de Uso</Link>
-                    <Link href="/privacidade" className="footer-link">Privacidade</Link>
-                    <Link href="/blog" className="footer-link">Blog</Link>
-                    <Link href="/suporte" className="footer-link">Suporte</Link>
+                    <Link href="/sobre-nos" className="footer-link">{t('landing.footer.aboutUs')}</Link>
+                    <Link href="/termos" className="footer-link">{t('landing.footer.terms')}</Link>
+                    <Link href="/privacidade" className="footer-link">{t('landing.footer.privacy')}</Link>
+                    <Link href="/blog" className="footer-link">{t('landing.footer.blog')}</Link>
+                    <Link href="/suporte" className="footer-link">{t('landing.footer.support')}</Link>
                 </div>
             </div>
             <style jsx>{`

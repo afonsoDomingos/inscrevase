@@ -11,7 +11,7 @@ const translations = { pt, en };
 
 interface LanguageContextType {
     locale: Locale;
-    t: (key: string) => string;
+    t: (key: string, variables?: Record<string, string | number>) => string;
     setLocale: (locale: Locale) => void;
 }
 
@@ -32,7 +32,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         Cookies.set('NEXT_LOCALE', newLocale, { expires: 365 });
     };
 
-    const t = (path: string) => {
+    const t = (path: string, variables?: Record<string, string | number>) => {
         const keys = path.split('.');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let current: any = translations[locale];
@@ -46,9 +46,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
                     if (fallback[fbKey] === undefined) return path;
                     fallback = fallback[fbKey];
                 }
-                return fallback;
+                current = fallback;
+                break;
             }
             current = current[key];
+        }
+
+        if (typeof current === 'string' && variables) {
+            let result = current;
+            Object.entries(variables).forEach(([key, value]) => {
+                result = result.replace(new RegExp(`{${key}}`, 'g'), String(value));
+            });
+            return result;
         }
 
         return current;

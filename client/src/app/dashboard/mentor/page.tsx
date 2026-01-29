@@ -378,7 +378,7 @@ function MentorDashboardContent() {
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
-                        { id: 'blog', label: 'Artigos do Blog', icon: <Newspaper size={20} /> },
+                        { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
@@ -1181,16 +1181,16 @@ function MentorDashboardContent() {
                                 <div style={{ width: '80px', height: '80px', background: 'var(--gold-gradient)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                                     <Crown size={40} color="#000" />
                                 </div>
-                                <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '10px', color: '#000' }}>Parabéns! 🎉</h2>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '10px', color: '#000' }}>{t('dashboard.plans.upgradeSuccess')}</h2>
                                 <p style={{ color: '#666', marginBottom: '30px', fontSize: '1.1rem' }}>
-                                    A tua subscrição foi ativada com sucesso. Agora és um parceiro <strong style={{ color: '#D4AF37' }}>{user.plan?.toUpperCase()}</strong> e tens acesso total às ferramentas de Mentor.
+                                    {t('dashboard.plans.upgradeSuccessMessage').replace('{plan}', (user?.plan || 'Free').toUpperCase())}
                                 </p>
                                 <button
                                     onClick={() => setShowUpgradeSuccess(false)}
                                     className="btn-primary"
                                     style={{ width: '100%', padding: '1rem', borderRadius: '15px', fontWeight: 700 }}
                                 >
-                                    Começar a Explorar
+                                    {t('dashboard.plans.startExploring')}
                                 </button>
                             </motion.div>
                         </motion.div>

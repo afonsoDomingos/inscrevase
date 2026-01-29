@@ -5,8 +5,10 @@ import { blogService, BlogPost } from '@/lib/blogService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, ArrowLeft, Clock, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function InternalBlogView() {
+    const { t } = useTranslate();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
     const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ export default function InternalBlogView() {
                             onMouseOver={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)'}
                             onMouseOut={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)'}
                         >
-                            <ArrowLeft size={18} /> Voltar para Artigos
+                            <ArrowLeft size={18} /> {t('blog.backToArticles')}
                         </button>
 
                         <article className="luxury-card" style={{ padding: '0', overflow: 'visible', background: 'var(--paper)', border: 'none', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}>
@@ -83,10 +85,10 @@ export default function InternalBlogView() {
                                         {selectedPost.category}
                                     </span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                                        <Clock size={16} /> {selectedPost.readTime} min de leitura
+                                        <Clock size={16} /> {selectedPost.readTime} {t('blog.readTime')}
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                                        <Eye size={16} /> {selectedPost.views} visualizações
+                                        <Eye size={16} /> {selectedPost.views} {t('blog.views')}
                                     </div>
                                 </div>
 
@@ -153,7 +155,7 @@ export default function InternalBlogView() {
                                             </div>
                                             <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{post.author.name}</span>
                                         </div>
-                                        <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '0.9rem' }}>Ligar &rarr;</span>
+                                        <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '0.9rem' }}>{t('blog.readMore')} &rarr;</span>
                                     </div>
                                 </div>
                             </motion.div>

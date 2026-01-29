@@ -677,7 +677,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         <option value="checkbox">{t('events.typeCheckbox')}</option>
                                                         <option value="date">{t('events.typeDate')}</option>
                                                         <option value="file">{t('events.typeFile')}</option>
-                                                        <option value="textarea">Área de Texto (Grande)</option>
+                                                        <option value="textarea">{t('events.typeTextarea')}</option>
                                                     </select>
                                                     <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
                                                         <input
@@ -959,7 +959,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
                                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
                                                                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '0.85rem', color: '#1a1a1b' }}>
-                                                                    <Coins size={16} className="gold-text" /> Pagamentos Customizados
+                                                                    <Coins size={16} className="gold-text" /> {t('events.customPayments')}
                                                                 </label>
                                                                 <button
                                                                     type="button"
@@ -969,14 +969,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                                     })}
                                                                     style={{ padding: '4px 10px', fontSize: '0.7rem', fontWeight: 700, borderRadius: '20px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                                                                 >
-                                                                    <Plus size={12} /> Adicionar Método
+                                                                    <Plus size={12} /> {t('events.addMethod')}
                                                                 </button>
                                                             </div>
 
                                                             <div style={{ display: 'grid', gap: '1rem' }}>
                                                                 {paymentConfig.manualMethods?.length === 0 && (
                                                                     <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', fontStyle: 'italic', padding: '1rem' }}>
-                                                                        Nenhum método personalizado. Ex: M-Pesa, MTN, PayPal Manual, etc.
+                                                                        {t('events.noCustomMethods')}
                                                                     </p>
                                                                 )}
 
@@ -985,7 +985,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                                         <div style={{ flex: 1, display: 'grid', gap: '8px' }}>
                                                                             <input
                                                                                 type="text"
-                                                                                placeholder="Nome (Ex: M-Pesa, Orange Money)"
+                                                                                placeholder={t('events.methodNamePlaceholder')}
                                                                                 value={method.label}
                                                                                 onChange={(e) => {
                                                                                     const newMethods = [...paymentConfig.manualMethods];
@@ -996,7 +996,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                                             />
                                                                             <input
                                                                                 type="text"
-                                                                                placeholder="Número ou Identificador"
+                                                                                placeholder={t('events.methodValuePlaceholder')}
                                                                                 value={method.value}
                                                                                 onChange={(e) => {
                                                                                     const newMethods = [...paymentConfig.manualMethods];
