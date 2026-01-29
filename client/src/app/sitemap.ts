@@ -12,7 +12,7 @@ const safelyGetDate = (dateString?: string | Date) => {
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    // 1. Static Routes
+    // 1. Static Routes - Main pages that could appear as sitelinks
     const staticRoutes: MetadataRoute.Sitemap = [
         {
             url: BASE_URL,
@@ -21,34 +21,70 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 1.0,
         },
         {
+            url: `${BASE_URL}/eventos`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.95,
+        },
+        {
+            url: `${BASE_URL}/mentores`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9,
+        },
+        {
             url: `${BASE_URL}/blog`,
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 0.9,
         },
         {
-            url: `${BASE_URL}/entrar`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
-            url: `${BASE_URL}/cadastro`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
             url: `${BASE_URL}/planos`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.85,
+        },
+        {
+            url: `${BASE_URL}/sobre-nos`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/contactos`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/ajuda`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.7,
         },
         {
-            url: `${BASE_URL}/mentores`,
+            url: `${BASE_URL}/entrar`,
             lastModified: new Date(),
-            changeFrequency: 'weekly',
-            priority: 0.8,
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${BASE_URL}/cadastro`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${BASE_URL}/termos`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.5,
+        },
+        {
+            url: `${BASE_URL}/privacidade`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.5,
         },
     ];
 
