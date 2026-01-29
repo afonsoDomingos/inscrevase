@@ -37,24 +37,24 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL('https://inscreva-se.com'),
   title: {
-    default: "Inscreva-se | Create, Manage & Scale Your Global Events",
+    default: "Inscreva-se | Plataforma de Criação e Gestão de Eventos",
     template: "%s | Inscreva-se"
   },
-  description: "The all-in-one platform to create premium event registration forms, manage attendees, and process payments globally. Perfect for mentors, coaches, and luxury event organizers.",
+  description: "Plataforma completa para criar formulários de inscrição premium, gerir participantes e processar pagamentos. Perfeita para mentores, palestrantes e organizadores de eventos.",
   keywords: [
     "event management", "online registration", "mentorship workshops", "ticket sales",
     "premium events", "luxury event platform", "attendee management", "global events",
     "Inscreva-se", "event forms", "seminar management", "online tickets", "course registration"
   ],
-  authors: [{ name: "Inscreva.se" }],
-  creator: "Inscreva.se",
-  publisher: "Inscreva.se",
+  authors: [{ name: "Inscreva-se" }],
+  creator: "Inscreva-se",
+  publisher: "Inscreva-se",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: 'https://inscreva-se.com',
-    title: "Inscreva-se | The Premium Global Event Management Platform",
-    description: "Empowering creators and organizations to deliver world-class event experiences with seamless registration and secure payments.",
+    title: "Inscreva-se | Plataforma de Criação e Gestão de Eventos",
+    description: "Plataforma completa para criar formulários de inscrição premium, gerir participantes e processar pagamentos. Perfeita para mentores, palestrantes e organizadores de eventos.",
     siteName: "Inscreva-se",
     images: [
       {
@@ -67,8 +67,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inscreva-se | Professional Event Management Reimagined",
-    description: "Launch your next event with a platform designed for excellence. Global reach, local expertise, premium feel.",
+    title: "Inscreva-se | Plataforma de Criação e Gestão de Eventos",
+    description: "Plataforma completa para criar formulários de inscrição premium, gerir participantes e processar pagamentos. Perfeita para mentores, palestrantes e organizadores de eventos.",
     images: ['/og-image.png'],
   },
   alternates: {
@@ -144,7 +144,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Inscreva.se",
+              "name": "Inscreva-se",
               "url": "https://inscreva-se.com",
               "logo": "https://inscreva-se.com/logo.png",
               "sameAs": [
@@ -152,7 +152,7 @@ export default function RootLayout({
                 "https://instagram.com/inscrevase",
                 "https://linkedin.com/company/inscrevase"
               ],
-              "description": "The leading professional event management and premium ticket registration platform for creators worldwide."
+              "description": "Plataforma completa para criar formulários de inscrição premium, gerir participantes e processar pagamentos."
             })
           }}
         />
@@ -162,7 +162,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "name": "Inscreva.se",
+              "name": "Inscreva-se",
               "url": "https://inscreva-se.com",
               "potentialAction": {
                 "@type": "SearchAction",

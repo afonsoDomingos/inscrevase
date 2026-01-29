@@ -1,7 +1,7 @@
 {
-    "name": "Inscreva.se - Plataforma de Eventos Premium",
-    "short_name": "Inscreva.se",
-    "description": "Professional event management platform for creators and organizations worldwide.",
+    "name": "Inscreva-se | Plataforma de Criação e Gestão de Eventos",
+    "short_name": "Inscreva-se",
+    "description": "Plataforma completa para criar formulários de inscrição premium, gerir participantes e processar pagamentos.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#000000",
