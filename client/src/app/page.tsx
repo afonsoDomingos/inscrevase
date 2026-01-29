@@ -212,34 +212,38 @@ export default function Home() {
               <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                 flex: 1,
                 minWidth: '220px',
-                padding: '1.1rem 0',
-                borderRadius: '10px',
-                fontSize: '0.9rem',
+                padding: '1.2rem 0',
+                borderRadius: '12px',
+                fontSize: '1rem',
                 background: 'var(--gold-gradient)',
                 color: '#000',
                 textDecoration: 'none',
-                fontWeight: 700,
-                transition: 'all 0.3s ease',
+                fontWeight: 800,
+                transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
                 textAlign: 'center',
-                boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)'
-              }} className="hero-btn primary">
+                boxShadow: '0 10px 30px rgba(212, 175, 55, 0.3)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }} className="hero-btn primary hover-glow">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
               <Link href="/mentores" style={{
                 flex: 1,
                 minWidth: '220px',
-                padding: '1.1rem 0',
-                borderRadius: '10px',
-                fontSize: '0.9rem',
-                background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(15px)',
+                padding: '1.2rem 0',
+                borderRadius: '12px',
+                fontSize: '1rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(10px)',
                 color: '#fff',
                 textDecoration: 'none',
                 fontWeight: 600,
-                transition: 'all 0.3s ease',
+                transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
                 textAlign: 'center',
-                border: '1px solid rgba(255,255,255,0.2)'
-              }} className="hero-btn secondary">
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }} className="hero-btn secondary hover-glow">
                 {t('common.seeExamples')}
               </Link>
             </div>
@@ -323,6 +327,16 @@ export default function Home() {
             }
             .hidden-mobile {
               display: none;
+            }
+            .hero-btn.hover-glow:hover {
+              transform: translateY(-5px) scale(1.05);
+              filter: brightness(1.1);
+              box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+            }
+            .hero-btn.secondary.hover-glow:hover {
+              background: rgba(255, 255, 255, 0.15);
+              border-color: rgba(255, 255, 255, 0.5);
+              box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
             }
           }
         `}</style>

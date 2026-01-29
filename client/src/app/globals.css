@@ -19,6 +19,8 @@
   --spotlight-color: rgba(20, 82, 173, 0.08);
   --input-bg: #ffffff;
   --input-border: #e2e2e2;
+  --gold-gradient: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #FFD700 100%);
+  --gold-gradient-hover: linear-gradient(135deg, #FFE44D 0%, #FFC857 50%, #FFE44D 100%);
 }
 
 [data-theme='dark'] {
