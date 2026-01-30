@@ -137,7 +137,7 @@ export default function TeamSection() {
                                     <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '5px', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
                                         {member.name}
                                     </h3>
-                                    <div style={{
+                                    <div className="role-text" style={{
                                         display: 'inline-block',
                                         background: 'linear-gradient(90deg, #D4AF37, #F1D37E)',
                                         WebkitBackgroundClip: 'text',
@@ -161,7 +161,7 @@ export default function TeamSection() {
                                     {member.summary}
                                 </p>
 
-                                <div style={{
+                                <div className="social-links" style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '25px',
@@ -201,21 +201,57 @@ export default function TeamSection() {
 
             <style jsx global>{`
                 @media (max-width: 960px) {
+                    section {
+                        padding: 40px 0 !important;
+                    }
                     .team-card-inner {
                         flex-direction: column !important;
-                        padding: 40px !important;
+                        padding: 25px 15px !important;
                         text-align: center !important;
-                        gap: 30px !important;
+                        gap: 15px !important;
+                        border-radius: 24px !important;
+                        width: 92% !important;
+                        margin: 0 auto !important;
+                    }
+                    .team-card-inner > div:first-child {
+                        width: 180px !important;
+                        height: 180px !important;
+                        margin: 0 auto !important;
+                    }
+                    .team-card-inner > div:first-child > div {
+                        width: 180px !important;
+                        height: 180px !important;
                     }
                     .team-card-inner > div:last-child {
                         text-align: center !important;
+                        padding: 0 !important;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
                     }
-                    .team-card-inner div {
+                    .team-card-inner h3 {
+                        font-size: 1.6rem !important;
+                        margin-bottom: 2px !important;
+                    }
+                    .team-card-inner .role-text {
+                        font-size: 0.8rem !important;
+                    }
+                    .team-card-inner p {
+                        font-size: 0.95rem !important;
+                        margin-bottom: 15px !important;
+                        line-height: 1.5 !important;
+                    }
+                    .team-card-inner .social-links {
+                        gap: 15px !important;
+                        margin-bottom: 20px !important;
                         justify-content: center !important;
                     }
                     .read-more-btn {
                         width: 100% !important;
+                        max-width: 250px;
                         justify-content: center !important;
+                        padding: 10px 20px !important;
+                        font-size: 0.85rem !important;
                     }
                 }
                 .read-more-btn:hover {
