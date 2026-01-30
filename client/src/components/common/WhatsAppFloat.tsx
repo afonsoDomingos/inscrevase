@@ -3,13 +3,15 @@
 import { MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function WhatsAppFloat() {
     const [isVisible, setIsVisible] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         const checkScroll = () => {
-            if (window.scrollY > 200) {
+            if (window.scrollY > 200 && !pathname?.startsWith('/hub/')) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);
@@ -17,7 +19,7 @@ export default function WhatsAppFloat() {
         };
         window.addEventListener('scroll', checkScroll);
         return () => window.removeEventListener('scroll', checkScroll);
-    }, []);
+    }, [pathname]);
 
     return (
         <AnimatePresence>

@@ -116,6 +116,7 @@ interface SubmissionData {
             order: number;
         }>;
         creator: {
+            _id: string;
             name: string;
             profilePhoto: string;
             bio: string;
@@ -216,6 +217,7 @@ function HubContent() {
     const { form } = submission;
     const primaryColor = form.theme?.primaryColor || '#E82127'; // Tesla Red if not defined
     const isApproved = submission.status === 'approved' || submission.paymentStatus === 'paid';
+    const isCreatorOrAdmin = currentUser?.id === form.creator?._id || currentUser?._id === form.creator?._id || currentUser?.role === 'admin';
 
     return (
         <main style={{ minHeight: '100vh', background: `linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(5,5,5,0.95)), url('${form.hubBackgroundImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}')`, backgroundSize: 'cover', backgroundAttachment: 'fixed', color: '#fff', fontFamily: 'var(--font-inter), sans-serif', padding: '0' }}>
@@ -805,7 +807,7 @@ function HubContent() {
 
             <CommunityChat
                 formId={String(submission.form._id)}
-                isApproved={isApproved}
+                isApproved={isApproved || isCreatorOrAdmin}
                 primaryColor={primaryColor}
                 eventTitle={form.title}
             />

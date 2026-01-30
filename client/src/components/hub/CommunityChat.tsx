@@ -147,7 +147,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
     return (
         <>
             {/* Toggle Button */}
-            <div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ position: 'fixed', bottom: '110px', right: '30px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <AnimatePresence>
                     {!isOpen && (
                         <motion.button
@@ -316,14 +316,21 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                                 <div style={{ marginTop: '12px' }}>
                                                     <button
                                                         onClick={() => window.location.href = `/register?role=participant&redirect=${encodeURIComponent(window.location.pathname)}`}
-                                                        style={{ background: '#000', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                                                        style={{ background: primaryColor, color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 15px ${primaryColor}40` }}
                                                     >
-                                                        {t('auth.registerNow')}
+                                                        {t('auth.registerNow') || 'Criar conta agora'}
                                                     </button>
                                                 </div>
                                             </>
                                         ) : (
-                                            t('hub.chatSubscribersOnly') || 'Apenas participantes inscritos podem interagir neste chat.'
+                                            <>
+                                                {t('hub.chatSubscribersOnly') || 'Apenas participantes inscritos podem interagir neste chat.'}
+                                                <div style={{ marginTop: '12px' }}>
+                                                    <p style={{ fontSize: '0.75rem', color: '#888' }}>
+                                                        {t('hub.chatEnrollPrompt') || 'Inscreva-se no evento para participar da conversa.'}
+                                                    </p>
+                                                </div>
+                                            </>
                                         )}
                                     </p>
                                 </div>
