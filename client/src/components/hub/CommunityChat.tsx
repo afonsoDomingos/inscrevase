@@ -147,7 +147,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
     return (
         <>
             {/* Toggle Button */}
-            <div style={{ position: 'fixed', bottom: '110px', right: '30px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ position: 'fixed', bottom: '160px', right: '30px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <AnimatePresence>
                     {!isOpen && (
                         <motion.button
