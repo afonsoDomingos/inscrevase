@@ -169,7 +169,7 @@ function HubContent() {
             }
         };
         fetchSubmission();
-    }, [id]);
+    }, [id, t]);
 
     // Countdown Timer
     useEffect(() => {

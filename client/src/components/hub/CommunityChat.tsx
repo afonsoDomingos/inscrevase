@@ -1,19 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Send,
     MessageCircle,
     Lock,
-    UserPlus,
     Users,
-    X,
-    ChevronDown,
-    ShieldCheck,
-    Sparkles,
-    MoreVertical,
-    Trash2
+    X
 } from 'lucide-react';
 import { useSocket } from '@/context/SocketContext';
 import { useTranslate } from '@/context/LanguageContext';
@@ -53,43 +47,11 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [unreadCount, setUnreadCount] = useState(0);
 
-    const scrollToBottom = () => {
+    const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    }, []);
 
-    useEffect(() => {
-        setCurrentUser(authService.getCurrentUser());
-        fetchHistory();
-    }, [formId]);
-
-    useEffect(() => {
-        if (isOpen) {
-            scrollToBottom();
-            setUnreadCount(0);
-        }
-    }, [isOpen, messages]);
-
-    useEffect(() => {
-        if (!socket || !formId) return;
-
-        socket.emit('join_community', formId);
-
-        const handleNewMessage = (message: Message) => {
-            setMessages(prev => [...prev, message]);
-            if (!isOpen) {
-                setUnreadCount(count => count + 1);
-            }
-        };
-
-        socket.on('community_message', handleNewMessage);
-
-        return () => {
-            socket.emit('leave_community', formId);
-            socket.off('community_message', handleNewMessage);
-        };
-    }, [socket, formId, isOpen]);
-
-    const fetchHistory = async () => {
+    const fetchHistory = useCallback(async () => {
         try {
             setIsLoading(true);
             const token = authService.getToken();
@@ -113,7 +75,39 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [formId]);
+
+    useEffect(() => {
+        setCurrentUser(authService.getCurrentUser());
+        fetchHistory();
+    }, [formId, fetchHistory]);
+
+    useEffect(() => {
+        if (isOpen) {
+            scrollToBottom();
+            setUnreadCount(0);
+        }
+    }, [isOpen, messages, scrollToBottom]);
+
+    useEffect(() => {
+        if (!socket || !formId) return;
+
+        socket.emit('join_community', formId);
+
+        const handleNewMessage = (message: Message) => {
+            setMessages(prev => [...prev, message]);
+            if (!isOpen) {
+                setUnreadCount(count => count + 1);
+            }
+        };
+
+        socket.on('community_message', handleNewMessage);
+
+        return () => {
+            socket.emit('leave_community', formId);
+            socket.off('community_message', handleNewMessage);
+        };
+    }, [socket, formId, isOpen]);
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
