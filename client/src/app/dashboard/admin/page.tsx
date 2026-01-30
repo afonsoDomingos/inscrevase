@@ -111,7 +111,6 @@ export default function AdminDashboard() {
         activity: false
     });
     const [showValues, setShowValues] = useState(true);
-    const [showValues, setShowValues] = useState(true);
 
     const toggleSection = (section: string) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
