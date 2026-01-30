@@ -64,6 +64,7 @@ export interface FormModel {
     paymentConfig?: {
         enabled: boolean;
         price?: number;
+        originalPrice?: number;
         currency?: string;
         mpesaNumber?: string;
         emolaNumber?: string;

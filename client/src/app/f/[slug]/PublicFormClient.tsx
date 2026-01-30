@@ -589,8 +589,29 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 >USD</button>
                                             </div>
                                         </div>
-                                        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor, wordBreak: 'break-word', lineHeight: '1.1' }}>
-                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency)}
+                                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
+                                            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor, wordBreak: 'break-word', lineHeight: '1.1' }}>
+                                                {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency)}
+                                            </div>
+                                            {form.paymentConfig.originalPrice && form.paymentConfig.originalPrice > (form.paymentConfig.price || 0) && (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '4px' }}>
+                                                    <div style={{ fontSize: '1rem', color: secondaryTextColor, textDecoration: 'line-through', fontWeight: 600, opacity: 0.6 }}>
+                                                        {formatPrice(form.paymentConfig.originalPrice, form.paymentConfig.currency)}
+                                                    </div>
+                                                    <div style={{
+                                                        background: '#ef4444',
+                                                        color: '#fff',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 900,
+                                                        padding: '2px 6px',
+                                                        borderRadius: '4px',
+                                                        textTransform: 'uppercase',
+                                                        width: 'fit-content'
+                                                    }}>
+                                                        -{Math.round(((form.paymentConfig.originalPrice - (form.paymentConfig.price || 0)) / form.paymentConfig.originalPrice) * 100)}%
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         {/* Alternative Currency Hint */}
                                         <div style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontWeight: 600, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>

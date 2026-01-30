@@ -35,7 +35,7 @@ export default function WhatsAppFloat() {
                     whileTap={{ scale: 0.9 }}
                     style={{
                         position: 'fixed',
-                        bottom: '20px',
+                        bottom: '90px',
                         right: '25px',
                         width: '50px',
                         height: '50px',
