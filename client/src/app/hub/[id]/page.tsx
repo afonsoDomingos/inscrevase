@@ -26,7 +26,8 @@ import {
     BookOpen,
     X,
     LayoutDashboard,
-    UserCircle
+    UserCircle,
+    Home
 } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import Image from 'next/image';
@@ -225,9 +226,15 @@ function HubContent() {
             {/* Top Navigation Bar - Glass White */}
             <nav style={{ position: 'sticky', top: 0, background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', zIndex: 100, padding: '15px 24px', borderBottom: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button onClick={() => router.back()} style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#171A20', transition: '0.2s' }}>
-                        <ArrowLeft size={18} /> {t('common.back')}
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#171A20', transition: '0.2s' }}>
+                            <ArrowLeft size={18} /> {t('common.back')}
+                        </button>
+                        <div style={{ width: '1px', height: '20px', background: 'rgba(0,0,0,0.1)' }} />
+                        <Link href="/" style={{ textDecoration: 'none', color: '#171A20', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Home size={18} /> {t('common.backToHome') || 'Visitar Plataforma'}
+                        </Link>
+                    </div>
                     <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#171A20' }}>
                         {t('hub.passport')} <span style={{ fontWeight: 500, color: '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
                     </div>
