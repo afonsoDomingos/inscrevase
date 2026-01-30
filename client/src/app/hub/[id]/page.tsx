@@ -501,42 +501,71 @@ function HubContent() {
 
                         {/* NOVAS SEÇÕES DE PERSONALIZAÇÃO */}
 
-                        {/* 1. Mensagem de Boas-Vindas */}
                         {form.welcomeMessage && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 style={{
-                                    background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                                    borderRadius: '32px',
-                                    padding: '45px',
+                                    background: 'rgba(255, 255, 255, 0.03)',
+                                    backdropFilter: 'blur(20px)',
+                                    borderRadius: '48px',
+                                    padding: '60px',
                                     color: '#fff',
                                     position: 'relative',
                                     overflow: 'hidden',
-                                    boxShadow: '0 15px 40px rgba(0,0,0,0.1)'
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    boxShadow: '0 40px 80px rgba(0,0,0,0.3)'
                                 }}
                             >
+                                {/* Decorative Glow */}
+                                <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: `${primaryColor}20`, filter: 'blur(80px)', borderRadius: '50%' }} />
+
                                 <div style={{ position: 'relative', zIndex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '25px' }}>
-                                        <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '14px' }}>
-                                            <Sparkles size={24} color="#fbbf24" />
-                                        </div>
-                                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 700 }}>{t('hub.welcome')}</h2>
-                                    </div>
-                                    <p style={{ fontSize: '1.15rem', lineHeight: '1.7', whiteSpace: 'pre-wrap', opacity: 0.9 }}>
-                                        &ldquo;{form.welcomeMessage}&rdquo;
+                                    <h2 style={{
+                                        margin: '0 0 30px 0',
+                                        fontSize: '2.5rem',
+                                        fontWeight: 800,
+                                        fontFamily: 'var(--font-playfair), serif',
+                                        background: `linear-gradient(to right, #fff, ${primaryColor}80)`,
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent'
+                                    }}>
+                                        {t('hub.welcome') || 'Boas-vindas'}
+                                    </h2>
+
+                                    <p style={{
+                                        fontSize: '1.25rem',
+                                        lineHeight: '1.8',
+                                        whiteSpace: 'pre-wrap',
+                                        opacity: 0.9,
+                                        fontWeight: 500,
+                                        color: '#f4f4f5'
+                                    }}>
+                                        {form.welcomeMessage}
                                     </p>
-                                    <div style={{ marginTop: '25px', display: 'flex', alignItems: 'center', gap: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
-                                        <Image
-                                            src={form.creator.profilePhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(form.creator.name)}
-                                            alt={form.creator.name}
-                                            width={44}
-                                            height={44}
-                                            style={{ borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)' }}
-                                        />
+
+                                    <div style={{
+                                        marginTop: '45px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '16px',
+                                        padding: '16px 24px',
+                                        background: 'rgba(255,255,255,0.03)',
+                                        borderRadius: '24px',
+                                        width: 'fit-content',
+                                        border: '1px solid rgba(255,255,255,0.05)'
+                                    }}>
+                                        <div style={{ position: 'relative', width: '50px', height: '50px' }}>
+                                            <Image
+                                                src={form.creator.profilePhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(form.creator.name)}
+                                                alt={form.creator.name}
+                                                fill
+                                                style={{ borderRadius: '16px', objectFit: 'cover', border: `2px solid ${primaryColor}40` }}
+                                            />
+                                        </div>
                                         <div>
-                                            <div style={{ fontSize: '0.95rem', fontWeight: 700 }}>{form.creator.name}</div>
-                                            <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>{t('hub.eventMentor')}</div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{form.creator.name}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('hub.eventMentor')}</div>
                                         </div>
                                     </div>
                                 </div>
