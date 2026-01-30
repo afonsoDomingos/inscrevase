@@ -43,6 +43,8 @@ import InternalBlogView from '@/components/common/InternalBlogView';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
 
+type Tab = 'tickets' | 'explore' | 'certificates' | 'blog' | 'plans' | 'profile';
+
 export default function ParticipantDashboard() {
     const { t } = useTranslate();
     const CATEGORIES = [
