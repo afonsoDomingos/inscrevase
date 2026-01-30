@@ -7,27 +7,27 @@ import { ArrowRight, Linkedin, Instagram, Globe } from "lucide-react";
 
 const team = [
     {
-        id: "jose-faustino",
-        name: "José Faustino",
-        role: "Fundador & Presidente - ABM & CCA",
-        summary: "Especialista em Desenvolvimento Infantil e Liderança Juvenil com mais de 10 anos de experiência. Fundador da ODEI e Afrobiz Network, atuando em 11 países africanos.",
-        image: "https://res.cloudinary.com/dff9fsh9k/image/upload/v1738233631/jose-faustino.png", // Using a stable link if possible, or reference the uploaded one
-        social: {
-            linkedin: "https://linkedin.com",
-            instagram: "https://instagram.com",
-            website: "https://afrobiznetwork.com"
-        }
-    },
-    {
         id: "afonso-domingos",
         name: "Afonso Domingos",
-        role: "Coordenador de TI & Especialista em IA",
-        summary: "Profissional de TI e autodidata em inovação com mais de 6 anos de experiência em desenvolvimento web e soluções digitais. Lidera a RPA Moçambique e é formador em IA aplicada aos negócios.",
-        image: "https://res.cloudinary.com/dff9fsh9k/image/upload/v1738240000/afonso-domingos.png", // URL ilustrativa baseada no padrão do usuário
+        role: "Fundador - Inscreva-se & RPA Moçambique",
+        summary: "Profissional moçambicano de TI e autodidata em inovação com mais de 6 anos de experiência. Formado em Multimédia, lidera a RPA Moçambique e é especialista em IA e soluções digitais escaláveis.",
+        image: "/afonso-domingos.jpg",
         social: {
             linkedin: "https://linkedin.com",
             instagram: "https://instagram.com",
             website: "https://afonso-domingos.com"
+        }
+    },
+    {
+        id: "jose-faustino",
+        name: "José Faustino",
+        role: "Presidente - ABN & CCA",
+        summary: "Especialista em Desenvolvimento Infantil e Liderança Juvenil com mais de 10 anos de experiência. Fundador da ODEI e Afrobiz Network, atuando em 11 países africanos.",
+        image: "/jose-faustino.png",
+        social: {
+            linkedin: "https://linkedin.com",
+            instagram: "https://instagram.com",
+            website: "https://afrobiznetwork.com"
         }
     }
 ];
