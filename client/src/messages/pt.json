@@ -813,7 +813,13 @@
             "pending": "Pendente",
             "confirmed": "Confirmado",
             "rejected": "Recusado"
-        }
+        },
+        "communityTitle": "Comunidade",
+        "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",
+        "chatEmpty": "Comece a conversa! Seja o primeiro a enviar uma mensagem.",
+        "chatLockedTitle": "Chat Restrito",
+        "chatLoginRequired": "Crie uma conta como participante para interagir com a comunidade.",
+        "chatPlaceholder": "Escreva algo para a comunidade..."
     },
     "cookies": {
         "title": "Ajude-nos a melhorar o nosso website com cookies",

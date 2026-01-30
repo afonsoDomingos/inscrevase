@@ -102,6 +102,17 @@ io.on('connection', (socket) => {
         console.log('Socket connection without userId (should be caught by middleware)');
     }
 
+    // Community Chat Rooms
+    socket.on('join_community', (formId) => {
+        socket.join(`community_${formId}`);
+        console.log(`User ${userId} joined community room: community_${formId}`);
+    });
+
+    socket.on('leave_community', (formId) => {
+        socket.leave(`community_${formId}`);
+        console.log(`User ${userId} left community room: community_${formId}`);
+    });
+
     socket.on('disconnect', () => {
         if (userId && onlineUsers.has(userId)) {
             const userSockets = onlineUsers.get(userId);
@@ -167,6 +178,7 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/blog', require('./routes/blog'));
 app.use('/api/newsletter', require('./routes/newsletter'));
+app.use('/api/community', require('./routes/communityRoutes'));
 
 // Endpoint to get all online users
 app.get('/api/users/status/online', (req, res) => {

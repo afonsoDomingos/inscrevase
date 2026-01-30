@@ -57,6 +57,7 @@ import EarningsDashboard from '../../../components/EarningsDashboard';
 import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
+import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
@@ -594,14 +595,20 @@ function MentorDashboardContent() {
                                     <UserIcon size={isMobile ? 24 : 32} />
                                 </div>
                             )}
+                            {user.isVerified && (
+                                <div style={{ position: 'absolute', bottom: '0', right: '0', zIndex: 10 }}>
+                                    <PremiumBadge type="verified" size="sm" showLabel={false} />
+                                </div>
+                            )}
                         </div>
                         <div>
                             <motion.h1
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
-                                style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: 'var(--foreground)' }}
+                                style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '8px' }}
                             >
-                                {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name.split(' ')[0]}</span>
+                                {t('dashboard.welcomeBack')}, <span className="gold-text">{(user.businessName || user.name).split(' ')[0]}</span>
+                                {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
                             </motion.h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <p style={{ color: '#666', marginTop: '0.4rem', fontSize: isMobile ? '0.9rem' : '1.05rem', fontWeight: 500 }}>

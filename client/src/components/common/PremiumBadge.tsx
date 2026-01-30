@@ -13,10 +13,10 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         verified: {
             icon: BadgeCheck,
             label: 'Verificado',
-            bg: 'linear-gradient(135deg, #1877F2 0%, #0056b3 100%)',
+            bg: '#0066FF', // Vibrant blue from images
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.2)',
-            shadow: '0 2px 4px rgba(24, 119, 242, 0.3)'
+            border: '2px solid #fff',
+            shadow: '0 2px 8px rgba(0, 102, 255, 0.4)'
         },
         pending: {
             icon: Star,
@@ -96,8 +96,8 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
     // If verified type and no label, just show the circular badge
     if (type === 'verified' && !showLabel) {
         return (
-            <div title="Verificado Oficialmente" style={{ display: 'inline-flex', filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.1))' }}>
-                <BadgeCheck size={iconSizes[size] + 4} fill="#1877F2" color="#fff" />
+            <div title="Verificado Oficialmente" style={{ display: 'inline-flex', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>
+                <BadgeCheck size={iconSizes[size] + 6} fill="#0066FF" color="#fff" strokeWidth={2.5} />
             </div>
         );
     }

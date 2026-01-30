@@ -22,6 +22,7 @@ export interface FormModel {
             website?: string;
         };
         facebookPixelId?: string;
+        isVerified?: boolean;
     };
     fields: {
         id: string;

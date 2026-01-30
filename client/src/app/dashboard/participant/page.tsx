@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import PremiumBadge from '@/components/common/PremiumBadge';
 import {
     LogOut,
     Loader2,
@@ -800,6 +801,7 @@ export default function ParticipantDashboard() {
                                                     )}
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                         <User size={14} /> {event.creator?.businessName || event.creator?.name || t('common.organizer')}
+                                                        {event.creator?.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
                                                     </div>
                                                 </div>
 
@@ -844,7 +846,10 @@ export default function ParticipantDashboard() {
                                             {user.profilePhoto ? <Image src={user.profilePhoto} alt="" width={80} height={80} style={{ objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={30} /></div>}
                                         </div>
                                         <div>
-                                            <h4 style={{ margin: 0, fontSize: '1.2rem' }}>{user.name}</h4>
+                                            <h4 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                {user.name}
+                                                {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
+                                            </h4>
                                             <p style={{ color: '#666', margin: 0 }}>{user.email}</p>
                                         </div>
                                     </div>

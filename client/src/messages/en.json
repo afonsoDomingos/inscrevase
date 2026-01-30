@@ -809,7 +809,13 @@
             "pending": "Pending",
             "confirmed": "Confirmed",
             "rejected": "Rejected"
-        }
+        },
+        "communityTitle": "Community",
+        "chatSubscribersOnly": "Only enrolled participants can interact in the chat.",
+        "chatEmpty": "Start the conversation! Be the first to send a message.",
+        "chatLockedTitle": "Restricted Chat",
+        "chatLoginRequired": "Create a participant account to interact with the community.",
+        "chatPlaceholder": "Write something to the community..."
     },
     "cookies": {
         "title": "Help us improve our website with cookies",

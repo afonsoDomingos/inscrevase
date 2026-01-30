@@ -36,6 +36,8 @@ import { generateCertificate } from '@/lib/certificateGenerator';
 import { useTranslate } from '@/context/LanguageContext';
 import MetaPixel from '@/components/MetaPixel';
 import AdBanner from '@/components/common/AdBanner';
+import PremiumBadge from '@/components/common/PremiumBadge';
+import CommunityChat from '@/components/hub/CommunityChat';
 
 const getEmbedUrl = (url?: string) => {
     if (!url) return undefined;
@@ -122,7 +124,7 @@ interface SubmissionData {
                 linkedin?: string;
                 website?: string;
             };
-            facebookPixelId?: string;
+            isVerified?: boolean;
         };
         theme: {
             primaryColor: string;
@@ -475,7 +477,10 @@ function HubContent() {
                             </div>
                             <div>
                                 <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.5, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1.5px' }}>{t('hub.responsibleMentor')}</div>
-                                <div style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '10px' }}>{form.creator.name}</div>
+                                <div style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    {form.creator.name}
+                                    {form.creator.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
+                                </div>
                                 <p style={{ fontSize: '1rem', opacity: 0.7, lineHeight: 1.6, maxWidth: '500px' }}>{form.creator.bio || t('hub.mentorDefaultBio')}</p>
                                 <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
                                     {form.creator.socialLinks?.instagram && <a href={form.creator.socialLinks.instagram} style={{ color: '#fff', opacity: 0.8, transition: '0.2s' }}><Instagram size={20} /></a>}
@@ -796,6 +801,13 @@ function HubContent() {
                 </footer>
 
             </div>
+
+            <CommunityChat
+                formId={String(submission.form._id)}
+                isApproved={isApproved}
+                primaryColor={primaryColor}
+                eventTitle={form.title}
+            />
 
             <style jsx>{`
                 @media (max-width: 900px) {
