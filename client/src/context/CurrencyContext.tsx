@@ -18,7 +18,7 @@ interface Plan {
 interface CurrencyContextType {
     currency: Currency;
     setCurrency: (currency: Currency) => void;
-    formatPrice: (amount: number, fromCurrency?: Currency) => string;
+    formatPrice: (amount: number, fromCurrency?: Currency, targetCurrency?: Currency) => string;
     getPlanPrice: (planId: 'pro' | 'enterprise') => number;
     exchangeRate: number;
     loading: boolean;
@@ -72,19 +72,19 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         return rawAmount / 100; // Convert cents to units
     };
 
-    const formatPrice = (amount: number, fromCurrency: Currency = 'MZN') => {
+    const formatPrice = (amount: number, fromCurrency: Currency = 'MZN', targetCurrency: Currency = currency) => {
         let displayAmount = amount;
 
         // If we are displaying in a different currency than the source, convert it
-        if (fromCurrency !== currency) {
-            if (fromCurrency === 'MZN' && currency === 'USD') {
+        if (fromCurrency !== targetCurrency) {
+            if (fromCurrency === 'MZN' && targetCurrency === 'USD') {
                 displayAmount = amount / exchangeRate;
-            } else if (fromCurrency === 'USD' && currency === 'MZN') {
+            } else if (fromCurrency === 'USD' && targetCurrency === 'MZN') {
                 displayAmount = amount * exchangeRate;
             }
         }
 
-        if (currency === 'MZN') {
+        if (targetCurrency === 'MZN') {
             return new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' })
                 .format(displayAmount)
                 .replace('MTn', 'MT');

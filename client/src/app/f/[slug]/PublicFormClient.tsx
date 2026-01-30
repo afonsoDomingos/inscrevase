@@ -30,6 +30,7 @@ import { toast } from 'sonner';
 import MetaPixel from '@/components/MetaPixel';
 import { useMetaPixelEvents } from '@/hooks/useMetaPixelEvents';
 import AdBanner from '@/components/common/AdBanner';
+import { useCurrency } from '@/context/CurrencyContext';
 
 // Update Props
 interface PublicFormProps {
@@ -40,6 +41,7 @@ interface PublicFormProps {
 export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const router = useRouter();
     const { t } = useTranslate();
+    const { currency, setCurrency, formatPrice } = useCurrency();
     const { slug } = params;
     const [form, setForm] = useState<FormModel | null>(initialForm || null);
     const [loading, setLoading] = useState(!initialForm);
@@ -518,12 +520,50 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         whileHover={{ scale: 1.02 }}
                                         style={{ background: cardBg, padding: '1.5rem', borderRadius: '20px', border: `1px solid ${primaryColor}40`, transition: 'all 0.3s ease' }}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.5rem' }}>
-                                            <ShieldCheck size={20} color={primaryColor} />
-                                            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Valor da Inscrição</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <ShieldCheck size={20} color={primaryColor} />
+                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Valor da Inscrição</span>
+                                            </div>
+                                            {/* Currency Toggle */}
+                                            <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', borderRadius: '100px', padding: '2px' }}>
+                                                <button
+                                                    onClick={(e) => { e.preventDefault(); setCurrency('MZN'); }}
+                                                    style={{
+                                                        padding: '4px 12px',
+                                                        borderRadius: '100px',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 800,
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        background: currency === 'MZN' ? primaryColor : 'transparent',
+                                                        color: currency === 'MZN' ? (isDark ? '#000' : '#fff') : secondaryTextColor,
+                                                        transition: '0.2s'
+                                                    }}
+                                                >MT</button>
+                                                <button
+                                                    onClick={(e) => { e.preventDefault(); setCurrency('USD'); }}
+                                                    style={{
+                                                        padding: '4px 12px',
+                                                        borderRadius: '100px',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 800,
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        background: currency === 'USD' ? primaryColor : 'transparent',
+                                                        color: currency === 'USD' ? (isDark ? '#000' : '#fff') : secondaryTextColor,
+                                                        transition: '0.2s'
+                                                    }}
+                                                >USD</button>
+                                            </div>
                                         </div>
                                         <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor, wordBreak: 'break-word', lineHeight: '1.1' }}>
-                                            {form.paymentConfig.price?.toLocaleString('pt-PT')} <small style={{ fontSize: '1rem', fontWeight: 700 }}>{form.paymentConfig.currency}</small>
+                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency as any)}
+                                        </div>
+                                        {/* Alternative Currency Hint */}
+                                        <div style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontWeight: 600, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                                            <span style={{ opacity: 0.6 }}>Aprox. </span>
+                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency as any === 'MZN' ? 'MZN' : 'USD', currency === 'MZN' ? 'USD' : 'MZN')}
                                         </div>
                                         {form.paymentConfig.instructions && (
                                             <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor }}>
