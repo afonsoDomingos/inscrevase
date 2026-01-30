@@ -125,6 +125,7 @@ interface SubmissionData {
                 website?: string;
             };
             isVerified?: boolean;
+            facebookPixelId?: string;
         };
         theme: {
             primaryColor: string;
