@@ -17,7 +17,6 @@ import {
     Navigation,
     Info,
     Award,
-    Sparkles,
     Calendar,
     Download,
     FileText,
