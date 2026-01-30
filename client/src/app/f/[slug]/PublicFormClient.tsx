@@ -288,6 +288,38 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     background: ${bgColor} !important;
                     color: ${textColor} !important;
                 }
+                .payment-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 15px;
+                }
+                @media (max-width: 500px) {
+                    .payment-row {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 4px;
+                        border-bottom: 1px solid rgba(255,255,255,0.05);
+                        padding-bottom: 10px;
+                        margin-bottom: 5px;
+                    }
+                    .payment-row:last-child {
+                        border-bottom: none;
+                        padding-bottom: 0;
+                        margin-bottom: 0;
+                    }
+                    .payment-row span:last-child {
+                        word-break: break-all;
+                        font-family: inherit;
+                        font-size: 0.95rem;
+                        font-weight: 800;
+                        background: rgba(255,255,255,0.05);
+                        padding: 6px 10px;
+                        border-radius: 8px;
+                        width: 100%;
+                        color: #fff;
+                    }
+                }
                 .responsive-form-grid {
                     display: grid;
                     gap: 30px;
@@ -763,13 +795,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 <div style={{ display: 'grid', gap: '12px' }}>
                                                                     {/* Legacy M-Pesa/eMola for backward compatibility */}
                                                                     {form.paymentConfig?.mpesaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('M-Pesa')) && (
-                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                        <div className="payment-row">
                                                                             <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> M-Pesa:</span>
                                                                             <span style={{ fontWeight: 700 }}>{form.paymentConfig.mpesaNumber}</span>
                                                                         </div>
                                                                     )}
                                                                     {form.paymentConfig?.emolaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('e-Mola')) && (
-                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                        <div className="payment-row">
                                                                             <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> e-Mola:</span>
                                                                             <span style={{ fontWeight: 700 }}>{form.paymentConfig.emolaNumber}</span>
                                                                         </div>
@@ -777,8 +809,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                                                     {/* Dynamic Custom Methods */}
                                                                     {form.paymentConfig?.manualMethods?.map((method, idx) => (
-                                                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                        <div key={idx} className="payment-row">
+                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                                                                                 {method.label.toLowerCase().includes('mobile') || method.label.toLowerCase().includes('money') || method.label.toLowerCase().includes('phone') ? <Phone size={14} /> : <Coins size={14} />}
                                                                                 {method.label}:
                                                                             </span>
@@ -787,13 +819,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                     ))}
 
                                                                     {form.paymentConfig?.bankAccount && (
-                                                                        <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '10px', marginTop: '5px' }}>
-                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                                        <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '10px', marginTop: '5px', display: 'grid', gap: '8px' }}>
+                                                                            <div className="payment-row">
                                                                                 <span style={{ color: secondaryTextColor }}>Banco:</span>
                                                                                 <span style={{ fontWeight: 700, textAlign: 'right' }}>{form.paymentConfig.bankAccount}</span>
                                                                             </div>
                                                                             {form.paymentConfig.accountHolder && (
-                                                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                                <div className="payment-row">
                                                                                     <span style={{ color: secondaryTextColor }}>Titular:</span>
                                                                                     <span style={{ fontWeight: 600, fontSize: '0.8rem', textAlign: 'right' }}>{form.paymentConfig.accountHolder}</span>
                                                                                 </div>
