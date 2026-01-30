@@ -15,7 +15,7 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     return (
         <>
             {children}
-            {!isPublicForm && !isHub && <ScrollToTop />}
+            {!isPublicForm && <ScrollToTop />}
             {!isPublicForm && !isHub && <AuraConcierge />}
             <CookieConsent />
         </>
