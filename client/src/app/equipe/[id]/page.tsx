@@ -3,8 +3,8 @@
 import { useParams, useRouter } from 'next/navigation';
 import {
     Instagram, Linkedin, Globe, Briefcase,
-    Calendar, ChevronLeft, MapPin, Award,
-    MessageCircle, ExternalLink, X
+    ChevronLeft, MapPin,
+    MessageCircle, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
