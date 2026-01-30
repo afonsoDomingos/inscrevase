@@ -590,12 +590,12 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             </div>
                                         </div>
                                         <div style={{ fontSize: '2.5rem', fontWeight: 900, color: primaryColor, wordBreak: 'break-word', lineHeight: '1.1' }}>
-                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency as any)}
+                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency)}
                                         </div>
                                         {/* Alternative Currency Hint */}
                                         <div style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontWeight: 600, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
                                             <span style={{ opacity: 0.6 }}>Aprox. </span>
-                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency as any === 'MZN' ? 'MZN' : 'USD', currency === 'MZN' ? 'USD' : 'MZN')}
+                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency, currency === 'MZN' ? 'USD' : 'MZN')}
                                         </div>
                                         {form.paymentConfig.instructions && (
                                             <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor }}>

@@ -18,7 +18,7 @@ interface Plan {
 interface CurrencyContextType {
     currency: Currency;
     setCurrency: (currency: Currency) => void;
-    formatPrice: (amount: number, fromCurrency?: Currency, targetCurrency?: Currency) => string;
+    formatPrice: (amount: number, fromCurrency?: string, targetCurrency?: string) => string;
     getPlanPrice: (planId: 'pro' | 'enterprise') => number;
     exchangeRate: number;
     loading: boolean;
@@ -72,24 +72,46 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         return rawAmount / 100; // Convert cents to units
     };
 
-    const formatPrice = (amount: number, fromCurrency: Currency = 'MZN', targetCurrency: Currency = currency) => {
+    const formatPrice = (amount: number, fromCurrency: string = 'MZN', targetCurrency: string = currency) => {
         let displayAmount = amount;
 
+        // Normalize input currencies
+        const normalize = (c: string): Currency => {
+            if (!c) return 'MZN';
+            const up = c.toString().toUpperCase().trim();
+            if (up === 'MZN' || up === 'MT' || up === 'MTN' || up === 'METICAIS' || up === 'METICAL') return 'MZN';
+            if (up === 'USD' || up === 'DOLAR' || up === 'DOLLAR' || up === '$') return 'USD';
+            return 'MZN';
+        };
+
+        const from = normalize(fromCurrency);
+        const target = normalize(targetCurrency);
+
         // If we are displaying in a different currency than the source, convert it
-        if (fromCurrency !== targetCurrency) {
-            if (fromCurrency === 'MZN' && targetCurrency === 'USD') {
+        if (from !== target) {
+            if (from === 'MZN' && target === 'USD') {
                 displayAmount = amount / exchangeRate;
-            } else if (fromCurrency === 'USD' && targetCurrency === 'MZN') {
+            } else if (from === 'USD' && target === 'MZN') {
                 displayAmount = amount * exchangeRate;
             }
         }
 
-        if (targetCurrency === 'MZN') {
-            return new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' })
+        if (target === 'MZN') {
+            return new Intl.NumberFormat('pt-MZ', {
+                style: 'currency',
+                currency: 'MZN',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })
                 .format(displayAmount)
                 .replace('MTn', 'MT');
         } else {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })
                 .format(displayAmount);
         }
     };
