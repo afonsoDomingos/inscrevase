@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Play,
@@ -39,6 +39,12 @@ interface Stats {
     published: number;
     unpublished: number;
     totalViews: number;
+}
+
+interface VideoUploadResult {
+    videoUrl: string;
+    thumbnailUrl: string;
+    duration: number;
 }
 
 export default function LessonsManager() {
@@ -87,7 +93,7 @@ export default function LessonsManager() {
         }
     };
 
-    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleVideoUpload = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -112,7 +118,7 @@ export default function LessonsManager() {
             xhr.addEventListener('load', () => {
                 if (xhr.status === 200) {
                     const result = JSON.parse(xhr.responseText);
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                         ...prev,
                         videoUrl: result.videoUrl,
                         thumbnailUrl: result.thumbnailUrl,
@@ -135,7 +141,7 @@ export default function LessonsManager() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         try {

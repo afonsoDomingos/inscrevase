@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
@@ -57,7 +57,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     const [comments, setComments] = useState<Comment[]>(lesson.comments || []);
     const [newComment, setNewComment] = useState('');
     const [loadingComments, setLoadingComments] = useState(false);
-    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [currentUser, setCurrentUser] = useState<{ id: string, name: string, role: string } | null>(null);
 
     // Fetch initial data (user, progress, favorites)
     useEffect(() => {
@@ -79,8 +79,8 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                 const progRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/progress/my-progress`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const progData = await progRes.json();
-                const lessonProg = progData.progress?.find((p: any) => p.lesson._id === lesson._id);
+                const progData: { progress: { lesson: { _id: string }, completed: boolean, watchTime: number }[] } = await progRes.json();
+                const lessonProg = progData.progress?.find(p => p.lesson._id === lesson._id);
                 if (lessonProg) {
                     setIsCompleted(lessonProg.completed);
                     if (videoRef.current && lessonProg.watchTime) {
@@ -95,8 +95,8 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                 const favRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/favorites/my-favorites`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const favData = await favRes.json();
-                setIsFavorite(favData.some((l: any) => l._id === lesson._id));
+                const favData: { _id: string }[] = await favRes.json();
+                setIsFavorite(favData.some(l => l._id === lesson._id));
             } catch (err) { console.error(err); }
 
             // Fetch comments explicitly if not passed
@@ -177,7 +177,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
         }
     };
 
-    const handleCommentSubmit = async (e: React.FormEvent) => {
+    const handleCommentSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (!newComment.trim()) return;
 
