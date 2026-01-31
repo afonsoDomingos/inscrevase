@@ -863,10 +863,10 @@ export default function Home() {
               color: '#1a1a1a',
               letterSpacing: '-1.2px'
             }}>
-              Accept Payments <span className="gold-text">Seamlessly</span>
+              {t('home.payments.title')} <span className="gold-text">{t('home.payments.titleHighlight')}</span>
             </h2>
             <p style={{ color: '#666', marginBottom: '5rem', fontSize: '1.15rem', maxWidth: '750px', margin: '0 auto 5rem', lineHeight: 1.6 }}>
-              Full integration with major global payment methods and mobile wallets, providing a frictionless experience for your attendees worldwide.
+              {t('home.payments.description')}
             </p>
 
             {/* Infinite Scroll Payments */}

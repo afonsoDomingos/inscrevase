@@ -1,4 +1,11 @@
 {
+    "home": {
+        "payments": {
+            "title": "Aceite Pagamentos",
+            "titleHighlight": "Sem Fricção",
+            "description": "Integração total com os principais métodos de pagamento globais e carteiras móveis, proporcionando uma experiência fluida para os seus participantes em todo o mundo."
+        }
+    },
     "common": {
         "language": "Português",
         "welcome": "Bem-vindo",

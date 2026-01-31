@@ -1,4 +1,11 @@
 {
+    "home": {
+        "payments": {
+            "title": "Accept Payments",
+            "titleHighlight": "Seamlessly",
+            "description": "Full integration with major global payment methods and mobile wallets, providing a frictionless experience for your attendees worldwide."
+        }
+    },
     "common": {
         "language": "English",
         "welcome": "Welcome",
