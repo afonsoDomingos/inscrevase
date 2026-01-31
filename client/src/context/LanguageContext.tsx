@@ -35,11 +35,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const t = (path: string, variables?: Record<string, string | number>) => {
         const keys = path.split('.');
 
-        const getNestedValue = (obj: any, keysArray: string[]) => {
+        const getNestedValue = (obj: unknown, keysArray: string[]): unknown => {
             let current = obj;
             for (const key of keysArray) {
-                if (current && typeof current === 'object' && key in current) {
-                    current = current[key];
+                if (current && typeof current === 'object' && !Array.isArray(current) && key in current) {
+                    current = (current as Record<string, unknown>)[key];
                 } else {
                     return undefined;
                 }
@@ -65,7 +65,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             return result;
         }
 
-        return value;
+        return typeof value === 'string' ? value : path;
     };
 
     return (
