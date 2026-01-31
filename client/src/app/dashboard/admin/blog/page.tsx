@@ -77,7 +77,7 @@ export default function BlogManagement() {
             setFormData(prev => ({ ...prev, coverImage: url }));
             toast.success('Imagem enviada com sucesso!');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
             toast.error(error.response?.data?.message || 'Erro ao enviar imagem');
             setPreviewUrl(null); // Limpar preview em caso de erro
@@ -105,7 +105,7 @@ export default function BlogManagement() {
             resetForm();
             fetchPosts();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Erro detalhado:', error.response?.data);
             toast.error(error.response?.data?.message || 'Erro ao salvar artigo');
         }
@@ -173,14 +173,14 @@ export default function BlogManagement() {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFocus = (e: any) => {
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         e.target.style.background = '#ffffff';
         e.target.style.borderColor = '#FFD700';
         e.target.style.boxShadow = '0 0 0 4px rgba(255, 215, 0, 0.1)';
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleBlur = (e: any) => {
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         e.target.style.background = '#f8fafc';
         e.target.style.borderColor = '#e2e8f0';
         e.target.style.boxShadow = 'none';
