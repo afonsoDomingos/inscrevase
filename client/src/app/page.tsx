@@ -1194,6 +1194,9 @@ export default function Home() {
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f1')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f2')}</span>
               </div>
+              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '2rem' }}>
+                {t('common.free') || 'Gratis'}
+              </p>
               <Link href={isLoggedIn ? "/planos" : "/cadastro"} style={{
                 display: 'inline-block',
                 padding: '12px 0',
@@ -1255,15 +1258,50 @@ export default function Home() {
               }}>
                 {t('plans.pro.badge')}
               </div>
-              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>{t('plans.pro.name')}</h3>
-              <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '1px' }}>
-                {formatPrice(499)}<span style={{ fontSize: '0.9rem', opacity: 1, marginLeft: '4px' }}>{t('plans.perMonth')}</span>
+              <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                🔥 {t('plans.limitedOffer') || 'Oferta por tempo limitado'}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontWeight: 500, textDecoration: 'line-through' }}>
+                  {formatPrice(650)}
+                </span>
+                <p style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center' }}>
+                  {formatPrice(499)}
+                </p>
+                <div style={{
+                  background: '#ef4444',
+                  color: '#fff',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: 900,
+                  boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  lineHeight: 1
+                }}>
+                  <span>-{Math.round(((650 - 499) / 650) * 100)}%</span>
+                </div>
+                <div style={{
+                  background: 'rgba(255,215,0,0.2)',
+                  color: '#FFD700',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  border: '1px solid rgba(255,215,0,0.3)'
+                }}>
+                  {t('plans.save') || 'Poupe'} {formatPrice(151)}
+                </div>
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
+                {t('plans.perMonth')}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>{t('plans.pro.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
-                <span style={{ opacity: 0.9 }}>{t('plans.pro.fee')}</span>
-                <span style={{ opacity: 0.9 }}>{t('plans.pro.f1')}</span>
-                <span style={{ opacity: 0.9 }}>{t('plans.pro.f2')}</span>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem', lineHeight: 1.4 }}>{t('plans.pro.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.95rem' }}>
+                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.fee')}</div>
+                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f1')}</div>
+                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f2')}</div>
               </div>
               <Link href={isLoggedIn ? "/planos" : "/cadastro?plan=pro"} style={{
                 display: 'inline-block',
@@ -1313,15 +1351,36 @@ export default function Home() {
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
-              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>{t('plans.enterprise.name')}</h3>
-              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                {formatPrice(4990)}<span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('plans.perMonth')}</span>
+              <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                👑 {t('plans.exclusiveAccess') || 'Acesso Exclusivo'}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: 500, textDecoration: 'line-through' }}>
+                  {formatPrice(7500)}
+                </span>
+                <p style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, display: 'flex', alignItems: 'center' }}>
+                  {formatPrice(4990)}
+                </p>
+                <div style={{
+                  background: '#ef4444',
+                  color: '#fff',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 900,
+                  boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
+                }}>
+                  -{Math.round(((7500 - 4990) / 7500) * 100)}%
+                </div>
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
+                {t('plans.perMonth')}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>{t('plans.enterprise.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
-                <span style={{ fontWeight: 800, color: '#FFD700' }}>{t('plans.enterprise.fee')}</span>
-                <span style={{ opacity: 0.9 }}>{t('plans.enterprise.f1')}</span>
-                <span style={{ opacity: 0.9 }}>{t('plans.enterprise.f2')}</span>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem', lineHeight: 1.4 }}>{t('plans.enterprise.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.95rem' }}>
+                <div style={{ padding: '6px 16px', background: 'var(--gold-gradient)', color: '#000', borderRadius: '20px', width: '100%', maxWidth: '250px', fontWeight: 800 }}>{t('plans.enterprise.fee')}</div>
+                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.enterprise.f1')}</div>
+                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.enterprise.f2')}</div>
               </div>
               <Link href={isLoggedIn ? "/planos" : "/cadastro?plan=enterprise"} style={{
                 display: 'inline-block',

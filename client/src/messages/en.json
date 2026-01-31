@@ -377,6 +377,10 @@
         }
     },
     "plans": {
+        "discountLabel": "OFF",
+        "save": "Save",
+        "limitedOffer": "Limited time offer",
+        "exclusiveAccess": "Exclusive Access",
         "perMonth": "/month",
         "free": {
             "name": "Free Plan",

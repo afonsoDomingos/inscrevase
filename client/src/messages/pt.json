@@ -364,6 +364,7 @@
             "eventFeeRevenue": "Comissões de Eventos"
         },
         "plans": {
+            "discountLabel": "DE DESCONTO",
             "choosePlan": "Escolha seu Plano 💎",
             "boostReach": "Aumente seu alcance e reduza comissões",
             "perMonth": "/mês",
@@ -380,6 +381,10 @@
         }
     },
     "plans": {
+        "discountLabel": "DE DESCONTO",
+        "save": "Poupe",
+        "limitedOffer": "Oferta por tempo limitado",
+        "exclusiveAccess": "Acesso Exclusivo",
         "perMonth": "/mês",
         "free": {
             "name": "Plano Free",
