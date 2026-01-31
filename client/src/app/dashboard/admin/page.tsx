@@ -10,9 +10,10 @@ import SupportTicketList from '@/components/admin/SupportTicketList';
 import AdminFinance from '@/components/admin/AdminFinance';
 import NewsletterList from '@/components/admin/NewsletterList';
 import BlogManager from '@/components/admin/BlogManager';
+import LessonsManager from '@/components/admin/LessonsManager';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -26,7 +27,7 @@ import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -209,6 +210,7 @@ export default function AdminDashboard() {
 
     const menuItems = [
         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
+        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
         { id: 'users', label: t('dashboard.users'), icon: <Users size={20} /> },
         { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
         { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
@@ -1018,6 +1020,12 @@ export default function AdminDashboard() {
                     {activeTab === 'blog' && (
                         <motion.div key="blog" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                             <BlogManager />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'lessons' && (
+                        <motion.div key="lessons" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <LessonsManager />
                         </motion.div>
                     )}
                 </AnimatePresence>

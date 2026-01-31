@@ -49,7 +49,9 @@ import {
     Map,
     ChevronLeft,
     Menu,
-    Newspaper
+    Newspaper,
+    Video,
+    Award
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -384,6 +386,8 @@ function MentorDashboardContent() {
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
+                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
+                        { id: 'certificates', label: 'Certificados', icon: <Award size={20} />, link: '/dashboard/mentor/certificates' },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
