@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
