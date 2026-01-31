@@ -12,6 +12,10 @@
             "title": "Accept Payments",
             "titleHighlight": "Seamlessly",
             "description": "Full integration with major global payment methods and mobile wallets, providing a frictionless experience for your attendees worldwide."
+        },
+        "testimonials": {
+            "title": "What Our Mentors Say",
+            "description": "Join hundreds of professionals who have already transformed their events"
         }
     },
     "common": {
@@ -954,7 +958,8 @@
     },
     "team": {
         "title": "Our Leadership",
-        "subtitle": "Minds Behind the Impact",
+        "subtitle": "Minds Behind the",
+        "subtitleHighlight": "Impact",
         "description": "A dedicated team transforming event management in Africa.",
         "viewBio": "View Full Biography",
         "afonso": {

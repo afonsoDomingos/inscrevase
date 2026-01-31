@@ -12,6 +12,10 @@
             "title": "Aceite Pagamentos",
             "titleHighlight": "Sem Fricção",
             "description": "Integração total com os principais métodos de pagamento globais e carteiras móveis, proporcionando uma experiência fluida para os seus participantes em todo o mundo."
+        },
+        "testimonials": {
+            "title": "O Que Nossos Mentores Dizem",
+            "description": "Junte-se a centenas de profissionais que já transformaram seus eventos"
         }
     },
     "common": {
@@ -958,7 +962,8 @@
     },
     "team": {
         "title": "Nossa Liderança",
-        "subtitle": "Mentes por trás do Impacto",
+        "subtitle": "Mentes por trás do",
+        "subtitleHighlight": "Impacto",
         "description": "Uma equipe dedicada a transformar a gestão de eventos na África.",
         "viewBio": "Ver Biografia Completa",
         "afonso": {

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
+import { useTranslate } from "@/context/LanguageContext";
 
 const testimonials = [
     {
@@ -27,6 +28,7 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
+    const { t } = useTranslate();
     return (
         <section style={{
             background: '#fff',
@@ -48,7 +50,7 @@ export default function Testimonials() {
                         marginBottom: '1rem',
                         letterSpacing: '-1px'
                     }}>
-                        O Que Nossos Mentores Dizem
+                        {t('home.testimonials.title')}
                     </h2>
                     <p style={{
                         fontSize: '1.1rem',
@@ -56,7 +58,7 @@ export default function Testimonials() {
                         maxWidth: '600px',
                         margin: '0 auto'
                     }}>
-                        Junte-se a centenas de profissionais que já transformaram seus eventos
+                        {t('home.testimonials.description')}
                     </p>
                 </motion.div>
 

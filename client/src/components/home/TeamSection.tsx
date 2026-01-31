@@ -72,7 +72,7 @@ export default function TeamSection() {
                             letterSpacing: '-1px'
                         }}
                     >
-                        {t('team.subtitle').split('Impacto')[0]} <span className="gold-text">{t('team.subtitle').includes('Impacto') ? 'Impacto' : 'Impact'}</span>
+                        {t('team.subtitle')} <span className="gold-text">{t('team.subtitleHighlight')}</span>
                     </motion.h2>
                 </div>
 

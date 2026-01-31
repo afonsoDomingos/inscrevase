@@ -2,8 +2,10 @@ import { Users, Calendar, Star, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { statsService } from '@/lib/statsService';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function SocialProof() {
+    const { t } = useTranslate();
     const [stats, setStats] = useState({
         totalEvents: 150,
         totalParticipants: 2500,
@@ -19,25 +21,25 @@ export default function SocialProof() {
         {
             icon: Calendar,
             value: `${stats.totalEvents}+`,
-            label: 'Eventos Criados',
+            label: t('home.stats.createdEvents'),
             color: '#FFD700'
         },
         {
             icon: Users,
             value: `${stats.totalParticipants.toLocaleString()}+`,
-            label: 'Participantes Inscritos',
+            label: t('home.stats.subscribers'),
             color: '#00D4FF'
         },
         {
             icon: TrendingUp,
             value: `${stats.totalMentors}+`,
-            label: 'Mentores Ativos',
+            label: t('home.stats.activeMentors'),
             color: '#FF6B9D'
         },
         {
             icon: Star,
             value: stats.averageRating.toFixed(1),
-            label: 'Avaliação Média',
+            label: t('home.stats.averageRating'),
             color: '#FFD700'
         }
     ];
@@ -73,7 +75,7 @@ export default function SocialProof() {
                         marginBottom: '1rem',
                         letterSpacing: '-1px'
                     }}>
-                        Resultados que Falam
+                        {t('home.stats.title')}
                     </h2>
                     <p style={{
                         fontSize: '1.1rem',
@@ -81,7 +83,7 @@ export default function SocialProof() {
                         maxWidth: '600px',
                         margin: '0 auto'
                     }}>
-                        Milhares de mentores confiam na Inscreva.se para escalar seus eventos
+                        {t('home.stats.description')}
                     </p>
                 </motion.div>
 
