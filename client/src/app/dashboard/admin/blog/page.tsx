@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import axios from 'axios';
 
 export default function BlogManagement() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -79,7 +80,10 @@ export default function BlogManagement() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: unknown) {
             console.error(error);
-            toast.error(error.response?.data?.message || 'Erro ao enviar imagem');
+            const errorMessage = axios.isAxiosError(error)
+                ? error.response?.data?.message
+                : (error instanceof Error ? error.message : 'Erro ao enviar imagem');
+            toast.error(errorMessage || 'Erro ao enviar imagem');
             setPreviewUrl(null); // Limpar preview em caso de erro
         } finally {
             setUploading(false);
@@ -106,8 +110,11 @@ export default function BlogManagement() {
             fetchPosts();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: unknown) {
-            console.error('Erro detalhado:', error.response?.data);
-            toast.error(error.response?.data?.message || 'Erro ao salvar artigo');
+            console.error('Erro detalhado:', axios.isAxiosError(error) ? error.response?.data : error);
+            const errorMessage = axios.isAxiosError(error)
+                ? error.response?.data?.message
+                : (error instanceof Error ? error.message : 'Erro ao salvar artigo');
+            toast.error(errorMessage || 'Erro ao salvar artigo');
         }
     };
 
