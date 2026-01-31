@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const Certificate = require('../models/Certificate');
 const LessonProgress = require('../models/LessonProgress');
 const User = require('../models/User');
-const { protect } = require('../middleware/authMiddleware');
+const { authMiddleware: protect } = require('../middleware/authMiddleware');
 
 // @route   POST /api/certificates/generate
 // @desc    Generate a new certificate based on current progress
