@@ -141,29 +141,35 @@ export default function Footer() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    gap: '24px',
+                    gap: '12px',
                     flexWrap: 'wrap',
                     fontSize: '0.8rem',
-                    color: '#5c5e62',
                     fontWeight: 600
                 }}>
-                    <span>Inscreva-se &copy; {new Date().getFullYear()}</span>
-                    <Link href="/sobre-nos" className="footer-link">{t('landing.footer.aboutUs')}</Link>
-                    <Link href="/termos" className="footer-link">{t('landing.footer.terms')}</Link>
-                    <Link href="/privacidade" className="footer-link">{t('landing.footer.privacy')}</Link>
-                    <Link href="/blog" className="footer-link">{t('landing.footer.blog')}</Link>
-                    <Link href="/suporte" className="footer-link">{t('landing.footer.support')}</Link>
+                    <span style={{ color: '#5c5e62' }}>Inscreva-se &copy; {new Date().getFullYear()}</span>
+                    <Link href="/sobre-nos" className="footer-btn">{t('landing.footer.aboutUs')}</Link>
+                    <Link href="/termos" className="footer-btn">{t('landing.footer.terms')}</Link>
+                    <Link href="/privacidade" className="footer-btn">{t('landing.footer.privacy')}</Link>
+                    <Link href="/blog" className="footer-btn">{t('landing.footer.blog')}</Link>
+                    <Link href="/suporte" className="footer-btn">{t('landing.footer.support')}</Link>
                 </div>
             </div>
             <style jsx>{`
-                .footer-link {
+                .footer-btn {
                     text-decoration: none !important;
                     color: #5c5e62;
-                    transition: all 0.2s ease;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    background: transparent;
+                    transition: all 0.3s ease;
+                    border: 1px solid transparent;
                 }
-                .footer-link:hover {
+                .footer-btn:hover {
                     color: #1a1a1a;
+                    background: #f5f5f5;
+                    border-color: #e0e0e0;
                     text-decoration: none !important;
+                    transform: translateY(-2px);
                 }
             `}</style>
         </footer>
