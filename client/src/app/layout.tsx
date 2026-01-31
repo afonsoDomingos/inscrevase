@@ -398,12 +398,12 @@ export default function RootLayout({
             })
           }}
         />
-        <LoadingScreen />
-        <HealthCheck />
         <ThemeProvider>
           <LanguageProvider>
             <CurrencyProvider>
               <SocketProvider>
+                <LoadingScreen />
+                <HealthCheck />
                 <ClientLayoutWrapper>
                   <Suspense fallback={null}>
                     <AnalyticsTracker />
