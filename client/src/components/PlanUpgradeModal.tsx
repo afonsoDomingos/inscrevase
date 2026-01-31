@@ -36,7 +36,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
         } catch (error) {
             console.error('Upgrade error:', error);
             setLoading(null);
-            toast.error('Erro ao iniciar pagamento Stripe');
+            toast.error(t('plans.manualUpgrade.stripeError'));
         }
     };
 
@@ -61,14 +61,14 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                 })
             });
 
-            if (!response.ok) throw new Error('Erro ao processar solicitação');
+            if (!response.ok) throw new Error(t('common.toasts.saveError'));
 
-            toast.success('Comprovativo enviado! Nossa equipe analisará e ativará sua conta Pro em breve.');
+            toast.success(t('plans.manualUpgrade.uploadSuccess'));
             setManualPlan(null);
             onClose();
         } catch (error) {
             console.error('Manual upload error:', error);
-            toast.error('Erro ao enviar comprovativo');
+            toast.error(t('plans.manualUpgrade.uploadError'));
         } finally {
             setUploading(false);
         }
@@ -85,9 +85,9 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
 
                 <div style={{ textAlign: 'center', marginBottom: manualPlan ? '20px' : '40px' }}>
                     <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem', fontFamily: 'var(--font-playfair)' }}>
-                        {manualPlan ? 'Enviar Comprovativo' : t('dashboard.plans.choosePlan')}
+                        {manualPlan ? t('plans.manualUpgrade.title') : t('dashboard.plans.choosePlan')}
                     </h2>
-                    <p style={{ color: '#666' }}>{manualPlan ? `Pano Selecionado: ${manualPlan.id.toUpperCase()}` : t('dashboard.plans.boostReach')}</p>
+                    <p style={{ color: '#666' }}>{manualPlan ? t('plans.manualUpgrade.selectedPlan', { plan: manualPlan.id.toUpperCase() }) : t('dashboard.plans.boostReach')}</p>
 
                     {!manualPlan && (
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '1.5rem' }}>
@@ -142,8 +142,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                             style={{ maxWidth: '500px', margin: '0 auto', background: '#f8f9fa', padding: '30px', borderRadius: '24px', border: '1px dashed #ddd' }}>
 
                             <div style={{ marginBottom: '25px', textAlign: 'center' }}>
-                                <p style={{ fontSize: '0.9rem', color: '#555', marginBottom: '15px' }}>
-                                    Efetue o pagamento de <b>{manualPlan.amount} {currency}</b> por um dos canais abaixo e suba o comprovativo:
+                                <p style={{ fontSize: '0.9rem', color: '#555', marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: t('plans.manualUpgrade.paymentInstructions', { amount: String(manualPlan.amount), currency }) }}>
                                 </p>
                                 <div style={{ background: '#fff', padding: '15px', borderRadius: '16px', textAlign: 'left', fontSize: '0.85rem' }}>
                                     <div style={{ marginBottom: '8px' }}>🇲🇿 <b>M-Pesa:</b> 847877405 (Afonso Domingos)</div>
@@ -160,13 +159,13 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                             }}>
                                 {uploading ? <Loader2 className="animate-spin" size={32} color="#D4AF37" /> : <Upload size={32} color="#D4AF37" />}
                                 <div style={{ textAlign: 'center' }}>
-                                    <span style={{ fontWeight: 800, color: '#000', display: 'block' }}>Subir Comprovativo</span>
-                                    <span style={{ fontSize: '0.75rem', color: '#999' }}>PNG, JPG ou PDF (Máx 5MB)</span>
+                                    <span style={{ fontWeight: 800, color: '#000', display: 'block' }}>{t('plans.manualUpgrade.uploadLabel')}</span>
+                                    <span style={{ fontSize: '0.75rem', color: '#999' }}>{t('plans.manualUpgrade.uploadHint')}</span>
                                 </div>
                                 <input type="file" hidden accept="image/*,application/pdf" onChange={handleManualUpload} disabled={uploading} />
                             </label>
 
-                            <button onClick={() => setManualPlan(null)} style={{ width: '100%', marginTop: '20px', background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontWeight: 600 }}>Voltar aos planos</button>
+                            <button onClick={() => setManualPlan(null)} style={{ width: '100%', marginTop: '20px', background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontWeight: 600 }}>{t('plans.manualUpgrade.backToPlans')}</button>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -215,13 +214,13 @@ function PlanCard({ name, price, color, icon, features, onSelect, onManual, load
                     disabled={loading}
                     style={{ width: '100%', padding: '1.1rem', background: color, color: color === '#000' ? '#fff' : '#000', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: `0 8px 20px ${color}33` }}
                 >
-                    {loading ? <Loader2 size={18} className="animate-spin" /> : <><CreditCard size={18} /> Pagar com Cartão</>}
+                    {loading ? <Loader2 size={18} className="animate-spin" /> : <><CreditCard size={18} /> {t('plans.manualUpgrade.payWithCard')}</>}
                 </button>
                 <button
                     onClick={onManual}
                     style={{ width: '100%', padding: '0.9rem', background: 'none', color: '#666', borderRadius: '16px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem' }}
                 >
-                    M-Pesa / E-Mola / Transferência
+                    {t('plans.manualUpgrade.mpesaTransfer')}
                 </button>
             </div>
         </div>

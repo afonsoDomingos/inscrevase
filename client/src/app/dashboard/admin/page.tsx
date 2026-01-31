@@ -192,14 +192,14 @@ export default function AdminDashboard() {
     const vitalCards = [
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: t('dashboard.finance.totalRevenue'), value: showValues ? (stats?.revenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { label: t('dashboard.finance.totalRevenue'), value: showValues ? (stats?.revenue || 0).toLocaleString() + ' ' + t('currency.mzn') : '•••• ' + t('currency.mzn'), icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
     // Removed unused cards to fix lint errors
 
     const financialCards = [
-        { label: t('dashboard.planSubscriptions'), value: showValues ? (stats?.subscriptionRevenue || 0).toLocaleString() + ' MT' : '•••• MT', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
+        { label: t('dashboard.planSubscriptions'), value: showValues ? (stats?.subscriptionRevenue || 0).toLocaleString() + ' ' + t('currency.mzn') : '•••• ' + t('currency.mzn'), icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
     ];
 
     const activityCards = [
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <Settings size={18} /> {t('events.profile.title') || 'Perfil'}
+                        <Settings size={18} /> {t('events.profile.title')}
                     </button>
                     <button
                         onClick={() => authService.logout()}
@@ -752,7 +752,7 @@ export default function AdminDashboard() {
                                                     <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <CheckCircle className="gold-text" size={20} /> Metas Mensais
+                                                            <CheckCircle className="gold-text" size={20} /> {t('dashboard.monthlyGoals')}
                                                         </h3>
                                                         <div style={{ height: '320px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
@@ -762,10 +762,10 @@ export default function AdminDashboard() {
                                                                     innerRadius="20%" outerRadius="100%"
                                                                     barSize={15}
                                                                     data={[
-                                                                        { name: 'Inscrições', uv: stats?.submissions || 0, fill: '#805ad5' },
-                                                                        { name: 'Receita', uv: (stats?.revenue || 0) / 100, fill: '#B8860B' },
-                                                                        { name: 'Mentores', uv: (stats?.mentors || 0) * 10, fill: '#1a1a1a' },
-                                                                        { name: 'Visitas', uv: (trafficStats?.visitsToday || 0), fill: '#ed8936' }
+                                                                        { name: t('dashboard.submissions'), uv: stats?.submissions || 0, fill: '#805ad5' },
+                                                                        { name: t('dashboard.finance.revenue'), uv: (stats?.revenue || 0) / 100, fill: '#B8860B' },
+                                                                        { name: t('dashboard.mentors'), uv: (stats?.mentors || 0) * 10, fill: '#1a1a1a' },
+                                                                        { name: t('dashboard.visitsToday'), uv: (trafficStats?.visitsToday || 0), fill: '#ed8936' }
                                                                     ]}
                                                                 >
                                                                     <RadialBar
@@ -786,7 +786,7 @@ export default function AdminDashboard() {
                                                     <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
                                                         <div className="spotlight" />
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                            <TrendingUp className="gold-text" size={20} /> Tráfego vs Atividade (Hoje)
+                                                            <TrendingUp className="gold-text" size={20} /> {t('dashboard.trafficVsActivityToday')}
                                                         </h3>
                                                         <div style={{ height: '320px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
@@ -795,8 +795,8 @@ export default function AdminDashboard() {
                                                                     <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
                                                                     <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
                                                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                                                    <Bar dataKey="count" fill="#FFD700" radius={[4, 4, 0, 0]} name="Visitas" />
-                                                                    <Line type="monotone" dataKey="count" stroke="#1a1a1a" strokeWidth={3} dot={{ r: 4 }} name="Tendência" />
+                                                                    <Bar dataKey="count" fill="#FFD700" radius={[4, 4, 0, 0]} name={t('dashboard.visitsToday')} />
+                                                                    <Line type="monotone" dataKey="count" stroke="#1a1a1a" strokeWidth={3} dot={{ r: 4 }} name={t('dashboard.trend')} />
                                                                 </ComposedChart>
                                                             </ResponsiveContainer>
                                                         </div>

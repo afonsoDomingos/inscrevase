@@ -70,7 +70,7 @@ export default function AuraConcierge() {
         try {
             // If there's an attachment, we might want to tell Aura about it in the prompt
             const contextualMessage = attachment
-                ? `${message} (O usuário anexou um arquivo: ${attachment})`
+                ? t('aura.attachmentInfo', { attachment })
                 : message;
 
             const data = await aiService.chat(contextualMessage, locale);
@@ -103,7 +103,7 @@ export default function AuraConcierge() {
 
         const maxSize = 10 * 1024 * 1024; // 10MB
         if (file.size > maxSize) {
-            toast.error('Arquivo muito grande. Máximo: 10MB');
+            toast.error(t('aura.fileTooLarge'));
             return;
         }
 
@@ -117,14 +117,14 @@ export default function AuraConcierge() {
                 body: formData
             });
 
-            if (!response.ok) throw new Error('Erro no upload');
+            if (!response.ok) throw new Error(t('aura.uploadError'));
 
             const data = await response.json();
             setAttachment(data.url);
-            toast.success('Arquivo anexado com sucesso!');
+            toast.success(t('aura.uploadSuccess'));
         } catch (error) {
             console.error(error);
-            toast.error('Erro ao fazer upload do arquivo');
+            toast.error(t('aura.uploadFailed'));
         } finally {
             setUploadingFile(false);
         }
@@ -229,7 +229,7 @@ export default function AuraConcierge() {
                                                         {msg.attachment.endsWith('.pdf') ? (
                                                             <a href={msg.attachment} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFD700', textDecoration: 'none', fontSize: '0.8rem' }}>
                                                                 <FileText size={16} />
-                                                                Ver Documento PDF
+                                                                {t('aura.viewPdf')}
                                                             </a>
                                                         ) : (
                                                             <div style={{ position: 'relative', width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer' }} onClick={() => window.open(msg.attachment, '_blank')}>

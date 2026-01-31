@@ -1,5 +1,6 @@
 
 import { BadgeCheck, ShieldAlert, Crown, Zap, Briefcase, Star, Gem } from 'lucide-react';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface PremiumBadgeProps {
     type: 'verified' | 'admin' | 'superadmin' | 'mentor' | 'participant' | 'free' | 'pro' | 'enterprise' | 'pending';
@@ -8,11 +9,12 @@ interface PremiumBadgeProps {
 }
 
 export default function PremiumBadge({ type, size = 'md', showLabel = true }: PremiumBadgeProps) {
+    const { t } = useTranslate();
 
     const configs = {
         verified: {
             icon: BadgeCheck,
-            label: 'Verificado',
+            label: t('common.badges.verified'),
             bg: '#0066FF', // Vibrant blue from images
             color: '#fff',
             border: '2px solid #fff',
@@ -20,7 +22,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         pending: {
             icon: Star,
-            label: 'Pendente',
+            label: t('common.badges.pending'),
             bg: '#FFF4E5',
             color: '#FF8C00',
             border: '1px solid #FFE4B5',
@@ -28,7 +30,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         admin: {
             icon: ShieldAlert,
-            label: 'Admin',
+            label: t('common.badges.admin'),
             bg: 'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)',
             color: '#FBD38D',
             border: '1px solid rgba(251, 211, 141, 0.3)',
@@ -36,7 +38,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         superadmin: {
             icon: Crown,
-            label: 'Super Admin',
+            label: t('common.badges.superadmin'),
             bg: 'linear-gradient(135deg, #000 0%, #222 100%)',
             color: '#FFD700',
             border: '1px solid #FFD700',
@@ -44,7 +46,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         mentor: {
             icon: Briefcase,
-            label: 'Mentor',
+            label: t('common.badges.mentor'),
             bg: '#F7FAFC',
             color: '#4A5568',
             border: '1px solid #E2E8F0',
@@ -52,7 +54,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         participant: {
             icon: Star,
-            label: 'Participante',
+            label: t('common.badges.participant'),
             bg: '#F0FFF4',
             color: '#38A169',
             border: '1px solid #C6F6D5',
@@ -60,7 +62,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         free: {
             icon: Star,
-            label: 'Free',
+            label: t('common.badges.free'),
             bg: '#EDF2F7',
             color: '#718096',
             border: '1px solid #CBD5E0',
@@ -68,7 +70,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         pro: {
             icon: Zap,
-            label: 'Pro',
+            label: t('common.badges.pro'),
             bg: 'linear-gradient(135deg, #FFD700 0%, #F6AD55 100%)',
             color: '#fff',
             border: 'none',
@@ -76,7 +78,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
         },
         enterprise: {
             icon: Gem,
-            label: 'Enterprise',
+            label: t('common.badges.enterprise'),
             bg: 'linear-gradient(135deg, #805AD5 0%, #553C9A 100%)',
             color: '#fff',
             border: 'none',
@@ -96,7 +98,7 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
     // If verified type and no label, just show the circular badge
     if (type === 'verified' && !showLabel) {
         return (
-            <div title="Verificado Oficialmente" style={{ display: 'inline-flex', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>
+            <div title={t('common.badges.verified')} style={{ display: 'inline-flex', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>
                 <BadgeCheck size={iconSizes[size] + 6} fill="#0066FF" color="#fff" strokeWidth={2.5} />
             </div>
         );

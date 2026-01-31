@@ -79,6 +79,30 @@
             "oct": "Out",
             "nov": "Nov",
             "dec": "Dez"
+        },
+        "newEra": "A Nova Era de Eventos",
+        "menu": "Menu",
+        "badges": {
+            "verified": "Verificado",
+            "pending": "Pendente",
+            "admin": "Admin",
+            "superadmin": "Super Admin",
+            "mentor": "Mentor",
+            "participant": "Participante",
+            "free": "Livre",
+            "pro": "Pro",
+            "enterprise": "Enterprise"
+        },
+        "toasts": {
+            "loadError": "Erro ao carregar os dados",
+            "saveError": "Erro ao salvar as alterações",
+            "deleteError": "Erro ao excluir o item",
+            "saveSuccess": "Salvo com sucesso!",
+            "deleteSuccess": "Excluído com sucesso!",
+            "generalError": "Ocorreu um erro inesperado",
+            "loginRequired": "Você precisa estar logado para realizar esta ação",
+            "uploadError": "Erro ao fazer upload do arquivo",
+            "uploadSuccess": "Upload concluído com sucesso!"
         }
     },
     "nav": {
@@ -89,7 +113,8 @@
         "dashboard": "Painel",
         "profile": "Perfil",
         "settings": "Configurações",
-        "mentors": "Explorar Mentores"
+        "mentors": "Explorar Mentores",
+        "blog": "Blog"
     },
     "auth": {
         "signIn": "Entrar",
@@ -194,11 +219,14 @@
         "hideValues": "Ocultar Valores",
         "showValues": "Mostrar Valores",
         "operationalActivity": "Atividade Operacional",
+        "monthlyGoals": "Metas Mensais",
+        "analyticsAndInsights": "ANÁLITICS & INSIGHTS",
+        "trafficVsActivityToday": "Tráfego vs Atividade (Hoje)",
+        "trend": "Tendência",
         "planSubscriptions": "Assinaturas Planos",
         "newsletter": "Newsletter",
         "manageBlog": "Gerenciar Blog",
         "submissionNotFound": "Inscrição não encontrada",
-        "analyticsAndInsights": "ANALYTICS E INSIGHTS",
         "cancelAlert": "Tem certeza que deseja cancelar esta inscrição? Esta ação não pode ser desfeita.",
         "cancelSuccess": "Inscrição cancelada com sucesso.",
         "cancelError": "Erro ao cancelar inscrição.",
@@ -388,7 +416,20 @@
         "currentPlan": "Plano Atual",
         "payWithCardStripe": "Pagar com Cartão (Stripe)",
         "alternativePayment": "M-Pesa / Transferência",
-        "footerInfo": "Todos os planos incluem acesso a ferramentas de gestão financeira e suporte básico. As taxas de plataforma são aplicadas apenas sobre o valor líquido das inscrições processadas. O upgrade é imediato e a cobrança é pro-rata."
+        "footerInfo": "Todos os planos incluem acesso a ferramentas de gestão financeira e suporte básico. As taxas de plataforma são aplicadas apenas sobre o valor líquido das inscrições processadas. O upgrade é imediato e a cobrança é pro-rata.",
+        "manualUpgrade": {
+            "title": "Enviar Comprovativo",
+            "selectedPlan": "Plano Selecionado: {plan}",
+            "paymentInstructions": "Efetue o pagamento de <b>{amount} {currency}</b> por um dos canais abaixo e suba o comprovativo:",
+            "uploadLabel": "Subir Comprovativo",
+            "uploadHint": "PNG, JPG ou PDF (Máx 5MB)",
+            "backToPlans": "Voltar aos planos",
+            "stripeError": "Erro ao iniciar pagamento Stripe",
+            "uploadError": "Erro ao enviar comprovativo",
+            "uploadSuccess": "Comprovativo enviado! Nossa equipe analisará e ativará sua conta em breve.",
+            "payWithCard": "Pagar com Cartão",
+            "mpesaTransfer": "M-Pesa / E-Mola / Transferência"
+        }
     },
     "blog": {
         "title": "Blog",
@@ -427,6 +468,13 @@
     },
     "events": {
         "title": "Eventos",
+        "public": {
+            "officialMentor": "Mentor Oficial",
+            "registrationValue": "Valor da Inscrição",
+            "registrationsClosed": "INSCRIÇÕES ENCERRADAS",
+            "capacityReachedDesc": "Este evento atingiu a capacidade máxima. Fique atento para as próximas edições!",
+            "vipGroup": "ENTRAR NO GRUPO VIP"
+        },
         "createEvent": "Criar Evento",
         "editEvent": "Editar Evento",
         "eventName": "Nome do Evento",
@@ -513,7 +561,6 @@
         "processingStatus": "PROCESSANDO INSCRIÇÃO",
         "eventTimeLabel": "Horário",
         "ticketPrice": "Preço do Ingresso",
-        "currency": "Moeda",
         "accountHolderLabel": "Titular da Conta",
         "stripeHeader": "Habilitar Pagamento com Cartão (Stripe)",
         "stripeHelp": "Para usar o Stripe, você precisa criar um Produto e um Preço no seu painel do Stripe e colar o Price ID abaixo.",
@@ -596,7 +643,20 @@
             "reject": "Rejeitar",
             "proofTitle": "Comprovativo de Pagamento",
             "paymentProof": "Comprovativo de Pagamento",
-            "downloadOriginal": "Baixar Original"
+            "downloadOriginal": "Baixar Original",
+            "aiAnalysisDone": "Análise de IA concluída!",
+            "aiStatusValid": "VÁLIDO",
+            "aiStatusSuspect": "SUSPEITO",
+            "refundConfirm": "Deseja realmente reembolsar este pagamento via Stripe? O valor será devolvido ao cliente e a inscrição será cancelada.",
+            "processingRefund": "Processando reembolso...",
+            "refundSuccess": "Reembolso processado com sucesso!",
+            "refundError": "Erro ao processar reembolso",
+            "deleteConfirm": "Tem certeza que deseja excluir esta inscrição? Esta ação é irreversível.",
+            "copySuccess": "Dados copiados!",
+            "copyBtn": "COPIAR",
+            "whatsappBtn": "Chamar no WhatsApp",
+            "verifiedLabel": "VERIFICADO",
+            "downloadCertificate": "Baixar Certificado"
         },
         "theme": {
             "title": "Personalizar Aparência",
@@ -626,8 +686,12 @@
             "bioPlaceholder": "Uma pequena descrição sobre si...",
             "saveChanges": "Salvar Alterações",
             "uploadError": "Erro no upload da foto",
-            "updateError": "Erro ao atualizar perfil"
+            "updateError": "Erro ao carregar o arquivo"
         }
+    },
+    "currency": {
+        "mzn": "MT",
+        "usd": "USD"
     },
     "landing": {
         "hero": {
@@ -635,16 +699,21 @@
             "title2": "Elegância e Exclusividade",
             "title3": "na Inscreva-se",
             "subtitle": "A Nova Era de Eventos",
-            "description": "Esta plataforma foi criada para quem decidiu mudar de atitude. A transformação começa pela ação. Crie seus eventos conosco, profissionalize suas inscrições, fortaleça sua marca e transforme autoridade em faturamento real. Quem age hoje constrói os resultados de amanhã"
+            "description": "A plataforma definitiva para mentores e organizadores que buscam excelência, automação e impacto real."
         },
         "dashboard": {
-            "subtitle": "Uma interface intuitiva desenhada para mentores e organizadores que buscam excelência e profissionalismo na gestão de seus projetos."
+            "title": "Crie e Gerencie Seus Eventos",
+            "titleHighlight": "Digitais ou Presenciais",
+            "titleEnd": "com Simplicidade & Estilo",
+            "subtitle": "Uma interface intuitiva projetada para mentores e organizadores que buscam excelência e profissionalismo na gestão de eventos."
         },
         "stats": {
+            "title": "Resultados que Importam",
+            "description": "Milhares de criadores em todo o mundo confiam no Inscreva-se para escalar seus eventos",
             "s1": "Eventos Criados",
-            "s2": "Mentores Ativos",
-            "s3": "Inscrições Hoje",
-            "s4": "Suporte Online"
+            "s2": "Participantes",
+            "s3": "Mentores Ativos",
+            "s4": "Avaliação Média"
         },
         "cta": {
             "title": "Pronto para elevar o nível dos seus eventos?",
@@ -748,7 +817,13 @@
         "brandingTitle": "Consultoria de Branding",
         "hypeTitle": "Gerador de Hype",
         "globalGuideTitle": "Guia Global",
-        "error": "Desculpe, tive um soluço digital. Pode repetir?"
+        "error": "Desculpe, tive um soluço digital. Pode repetir?",
+        "attachmentInfo": "(O usuário anexou um arquivo: {attachment})",
+        "fileTooLarge": "Arquivo muito grande. Máximo: 10MB",
+        "uploadError": "Erro no upload",
+        "uploadSuccess": "Arquivo anexado com sucesso!",
+        "uploadFailed": "Erro ao fazer upload do arquivo",
+        "viewPdf": "Ver Documento PDF"
     },
     "mentors": {
         "title": "Elite de Mentores",
@@ -819,7 +894,8 @@
         "chatEmpty": "Comece a conversa! Seja o primeiro a enviar uma mensagem.",
         "chatLockedTitle": "Chat Restrito",
         "chatLoginRequired": "Crie uma conta como participante para interagir com a comunidade.",
-        "chatPlaceholder": "Escreva algo para a comunidade..."
+        "chatPlaceholder": "Escreva algo para a comunidade...",
+        "chatEnrollPrompt": "Inscreva-se no evento para participar da conversa."
     },
     "cookies": {
         "title": "Ajude-nos a melhorar o nosso website com cookies",
@@ -859,5 +935,29 @@
         "education": "Educação",
         "healthWellness": "Saúde & Bem-estar",
         "others": "Outros"
+    },
+    "team": {
+        "title": "Nossa Liderança",
+        "subtitle": "Mentes por trás do Impacto",
+        "description": "Uma equipe dedicada a transformar a gestão de eventos na África.",
+        "viewBio": "Ver Biografia Completa",
+        "afonso": {
+            "role": "Fundador - Inscreva-se & RPA Moçambique",
+            "summary": "Profissional moçambicano de TI e autodidata em inovação com mais de 6 anos de experiência. Formado em Multimédia, lidera a RPA Moçambique e é especialista em IA e soluções digitais escaláveis.",
+            "bio": "Afonso Domingos é um profissional moçambicano de TI e autodidata em inovação com mais de 6 anos de experiência. Formado em Multimédia, lidera a RPA Moçambique e é especialista em IA e soluções digitais escaláveis.\n\nAo longo de sua jornada, Afonso tem se destacado na criação de ecossistemas tecnológicos que resolvem problemas reais. Como fundador do Inscreva-se, ele trouxe uma visão de simplificação e eficiência para o mercado africano de eventos, integrando inteligência artificial e processos automatizados para maximizar resultados.\n\nSuas especialidades incluem desenvolvimento de software, automação de processos (RPA), estratégia de produto e liderança de equipes técnicas. Ele acredita que a tecnologia deve ser um facilitador do progresso humano e trabalha incansavelmente para democratizar o acesso a soluções de ponta."
+        },
+        "jose": {
+            "role": "Presidente - ABN & CCA",
+            "summary": "Especialista em Desenvolvimento Infantil e Liderança Juvenil com mais de 10 anos de experiência. Fundador da ODEI e Afrobiz Network, atuando em 11 países africanos.",
+            "bio": "José Faustino é Especialista em Desenvolvimento Infantil e Liderança Juvenil com mais de 10 anos de experiência. Fundador da ODEI e Afrobiz Network, ele atua em 11 países africanos, promovendo o empreendedorismo e o crescimento econômico no continente.\n\nCom uma visão estratégica focada no potencial da juventude africana, José tem liderado iniciativas que conectam investidores, mentores e empreendedores. Sua atuação na Afrobiz Network tem sido fundamental para o fortalecimento do ecossistema de negócios em diversos países, criando pontes entre a África e a diáspora.\n\nEle é reconhecido por sua habilidade em liderar transformações sociais e por seu compromisso com a educação e o desenvolvimento de competências para o século XXI."
+        },
+        "notfound": "Membro não encontrado",
+        "bioTitle": "Biografia",
+        "strategicInfo": "Informações Estratégicas",
+        "base": "Base",
+        "organization": "Organização",
+        "professionalNetwork": "Rede Profissional",
+        "contact": "Entrar em Contato",
+        "rights": "© 2026 INSCRIVA-SE • LIDERANÇA & IMPACTO"
     }
 }

@@ -36,7 +36,7 @@ interface SubmissionManagementProps {
 }
 
 export default function SubmissionManagement({ formId }: SubmissionManagementProps) {
-    const { t } = useTranslate();
+    const { t, locale } = useTranslate();
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
@@ -83,41 +83,41 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             if (selectedSubmission?._id === submissionId) {
                 setSelectedSubmission({ ...selectedSubmission, aiAnalysis: result.analysis });
             }
-            toast.success('Análise de IA concluída!');
+            toast.success(t('events.submissions.aiAnalysisDone'));
         } catch (error) {
             console.error('Error analyzing receipt:', error);
-            toast.error('Erro ao analisar recibo');
+            toast.error(t('common.toasts.generalError'));
         } finally {
             setAnalyzingId(null);
         }
     };
 
     const handleRefund = async (id: string) => {
-        if (confirm('Deseja realmente reembolsar este pagamento via Stripe? O valor será devolvido ao cliente e a inscrição será cancelada.')) {
+        if (confirm(t('events.submissions.refundConfirm'))) {
             try {
-                toast.loading('Processando reembolso...');
+                toast.loading(t('events.submissions.processingRefund'));
                 await stripeService.refundPayment(id);
                 setSubmissions(prev => prev.map(s => s._id === id ? { ...s, status: 'rejected', paymentStatus: 'refunded' } : s));
                 toast.dismiss();
-                toast.success('Reembolso processado com sucesso!');
+                toast.success(t('events.submissions.refundSuccess'));
             } catch (error: unknown) {
                 toast.dismiss();
                 console.error('Error refunding payment:', error);
-                toast.error(error instanceof Error ? error.message : 'Erro ao processar reembolso');
+                toast.error(error instanceof Error ? error.message : t('events.submissions.refundError'));
             }
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm('Tem certeza que deseja excluir esta inscrição? Esta ação é irreversível.')) {
+        if (confirm(t('events.submissions.deleteConfirm'))) {
             try {
                 await submissionService.deleteSubmission(id);
                 setSubmissions(prev => prev.filter(s => s._id !== id));
-                toast.success('Inscrição excluída com sucesso');
+                toast.success(t('common.toasts.deleteSuccess'));
                 if (selectedSubmission?._id === id) setSelectedSubmission(null);
             } catch (error) {
                 console.error('Error deleting submission:', error);
-                toast.error('Erro ao excluir inscrição');
+                toast.error(t('common.toasts.deleteError'));
             }
         }
     };
@@ -164,7 +164,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('pt-BR', {
+        return new Date(dateString).toLocaleDateString(locale === 'pt' ? 'pt-BR' : 'en-US', {
             day: '2-digit',
             month: '2-digit',
             year: '2-digit',
@@ -287,7 +287,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                         </button>
                                                         {submission.aiAnalysis ? (
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', fontWeight: 800, color: submission.aiAnalysis.isValid ? '#10b981' : '#ef4444' }}>
-                                                                <Sparkles size={10} /> IA: {submission.aiAnalysis.isValid ? 'VÁLIDO' : 'SUSPEITO'}
+                                                                <Sparkles size={10} /> IA: {submission.aiAnalysis.isValid ? t('events.submissions.aiStatusValid') : t('events.submissions.aiStatusSuspect')}
                                                             </div>
                                                         ) : (
                                                             <button
@@ -375,7 +375,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                                     id: submission._id
                                                                 });
                                                             }}
-                                                            title="Baixar Certificado"
+                                                            title={t('events.submissions.downloadCertificate')}
                                                             style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: '#D4AF37', color: '#000', cursor: 'pointer' }}
                                                         >
                                                             <Award size={16} />
@@ -641,11 +641,11 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                             const text = Object.entries(selectedSubmission.data || {})
                                                 .map(([k, v]) => `${k}: ${v}`).join('\n');
                                             navigator.clipboard.writeText(text);
-                                            toast.success('Dados copiados!');
+                                            toast.success(t('events.submissions.copySuccess'));
                                         }}
                                         style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 700 }}
                                     >
-                                        <Copy size={14} /> COPIAR
+                                        <Copy size={14} /> {t('events.submissions.copyBtn')}
                                     </button>
                                     <button
                                         onClick={() => setSelectedSubmission(null)}
@@ -725,7 +725,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
                                         <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ fontSize: '0.7rem', color: '#666' }}>{t('events.submissions.aiConfidence')}: <b>{selectedSubmission.aiAnalysis.confidence}%</b></div>
-                                            {selectedSubmission.aiAnalysis.isValid && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#10b981', fontWeight: 800 }}><ShieldCheck size={14} /> VERIFICADO</div>}
+                                            {selectedSubmission.aiAnalysis.isValid && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#10b981', fontWeight: 800 }}><ShieldCheck size={14} /> {t('events.submissions.verifiedLabel')}</div>}
                                         </div>
                                     </div>
                                 )}

@@ -404,9 +404,9 @@ export default function Home() {
               marginBottom: '1rem',
               fontFamily: 'var(--font-playfair)'
             }}>
-              Results that <span className="gold-text">Matter</span>
+              {t('landing.stats.title')}
             </h2>
-            <TextDispersion text="Thousands of creators worldwide trust Inscreva-se to scale their events" />
+            <TextDispersion text={t('landing.stats.description')} />
           </motion.div>
 
           <motion.div
@@ -663,9 +663,9 @@ export default function Home() {
                 textShadow: '0 0 40px rgba(212, 175, 55, 0.1)'
               }}
             >
-              Create and Manage Your Events <br className="hidden-mobile" />
+              {t('landing.dashboard.title')} <br className="hidden-mobile" />
               <span style={{ position: 'relative', display: 'inline-block' }}>
-                <span className="gold-text relative z-10">Digital or In-Person</span>
+                <span className="gold-text relative z-10">{t('landing.dashboard.titleHighlight')}</span>
                 <motion.span
                   initial={{ width: '0%' }}
                   whileInView={{ width: '100%' }}
@@ -680,7 +680,7 @@ export default function Home() {
                     borderRadius: '2px'
                   }}
                 />
-              </span> with Simplicity & Style
+              </span> {t('landing.dashboard.titleEnd')}
             </motion.h2>
             <motion.p
               variants={{
@@ -731,7 +731,7 @@ export default function Home() {
                 gap: '8px',
                 transition: 'all 0.3s ease'
               }} className="hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg">
-                {t('common.viewMore') || 'Saiba Mais'}
+                {t('common.viewMore')}
               </Link>
             </div>
 

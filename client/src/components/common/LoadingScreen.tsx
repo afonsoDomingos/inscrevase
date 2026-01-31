@@ -2,8 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useTranslate } from "@/context/LanguageContext";
 
 export default function LoadingScreen() {
+    const { t } = useTranslate();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -96,7 +98,7 @@ export default function LoadingScreen() {
                             fontWeight: 500,
                         }}
                     >
-                        A Nova Era de Eventos
+                        {t('common.newEra')}
                     </motion.p>
                 </motion.div>
             )}

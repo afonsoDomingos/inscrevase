@@ -63,7 +63,7 @@ export default function Navbar() {
             {t('nav.events')}
           </Link>
           <Link href="/blog" className="nav-item">
-            Blog
+            {t('nav.blog')}
           </Link>
           <Link href="/suporte" className="nav-item">
             {t('dashboard.support')}
@@ -113,12 +113,12 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-links">
-          <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>Menu</div>
+          <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>{t('common.menu')}</div>
 
           <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
               <Home size={20} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.home') || 'Início'}</span>
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.home')}</span>
             </div>
           </Link>
           <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
@@ -136,7 +136,7 @@ export default function Navbar() {
           <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
               <Newspaper size={20} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>Blog</span>
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.blog')}</span>
             </div>
           </Link>
           <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>

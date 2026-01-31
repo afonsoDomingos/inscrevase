@@ -114,7 +114,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
         if (!newMessage.trim()) return;
 
         if (!isApproved) {
-            toast.error(t('hub.chatSubscribersOnly') || 'Apenas participantes inscritos podem interagir no chat.');
+            toast.error(t('hub.chatSubscribersOnly'));
             return;
         }
 
@@ -248,7 +248,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                             ) : messages.length === 0 ? (
                                 <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
                                     <div style={{ marginBottom: '15px', color: '#eee' }}><Users size={48} style={{ margin: '0 auto' }} /></div>
-                                    <p style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t('hub.chatEmpty') || 'Comece a conversa! Seja o primeiro a enviar uma mensagem.'}</p>
+                                    <p style={{ fontSize: '0.95rem', fontWeight: 600 }}>{t('hub.chatEmpty')}</p>
                                 </div>
                             ) : (
                                 messages.map((msg, idx) => {
@@ -276,7 +276,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                                     <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         {msg.sender.name}
                                                         {msg.sender.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
-                                                        {msg.sender.role === 'admin' && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>ADMIN</span>}
+                                                        {msg.sender.role === 'admin' && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>{t('common.badges.admin').toUpperCase()}</span>}
                                                     </div>
                                                 )}
                                                 <div style={{
@@ -308,26 +308,26 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                             {!isApproved ? (
                                 <div style={{ padding: '20px', background: '#fff8f0', border: '1px solid #ffe8cc', borderRadius: '16px', textAlign: 'center' }}>
                                     <div style={{ color: '#f59e0b', marginBottom: '8px' }}><Lock size={20} style={{ margin: '0 auto' }} /></div>
-                                    <h4 style={{ margin: '0 0 5px', fontSize: '0.9rem', fontWeight: 800 }}>{t('hub.chatLockedTitle') || 'Chat Restrito'}</h4>
+                                    <h4 style={{ margin: '0 0 5px', fontSize: '0.9rem', fontWeight: 800 }}>{t('hub.chatLockedTitle')}</h4>
                                     <p style={{ margin: 0, fontSize: '0.8rem', color: '#666', lineHeight: 1.4 }}>
                                         {!currentUser ? (
                                             <>
-                                                {t('hub.chatLoginRequired') || 'Crie uma conta como participante para interagir com a comunidade.'}
+                                                {t('hub.chatLoginRequired')}
                                                 <div style={{ marginTop: '12px' }}>
                                                     <button
                                                         onClick={() => window.location.href = `/register?role=participant&redirect=${encodeURIComponent(window.location.pathname)}`}
                                                         style={{ background: primaryColor, color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 15px ${primaryColor}40` }}
                                                     >
-                                                        {t('auth.registerNow') || 'Criar conta agora'}
+                                                        {t('auth.registerNow')}
                                                     </button>
                                                 </div>
                                             </>
                                         ) : (
                                             <>
-                                                {t('hub.chatSubscribersOnly') || 'Apenas participantes inscritos podem interagir neste chat.'}
+                                                {t('hub.chatSubscribersOnly')}
                                                 <div style={{ marginTop: '12px' }}>
                                                     <p style={{ fontSize: '0.75rem', color: '#888' }}>
-                                                        {t('hub.chatEnrollPrompt') || 'Inscreva-se no evento para participar da conversa.'}
+                                                        {t('hub.chatEnrollPrompt')}
                                                     </p>
                                                 </div>
                                             </>
@@ -340,7 +340,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
-                                        placeholder={t('hub.chatPlaceholder') || 'Escreva algo para a comunidade...'}
+                                        placeholder={t('hub.chatPlaceholder')}
                                         style={{ flex: 1, padding: '14px 20px', borderRadius: '14px', border: '1px solid #eee', background: '#f9f9f9', fontSize: '0.9rem', outline: 'none', transition: '0.2s' }}
                                         onFocus={(e) => e.target.style.borderColor = primaryColor}
                                         onBlur={(e) => e.target.style.borderColor = '#eee'}

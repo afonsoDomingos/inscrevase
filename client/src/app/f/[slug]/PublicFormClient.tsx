@@ -493,7 +493,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         <div style={{ background: '#fff', borderRadius: '50%', padding: '4px', display: 'flex' }}>
                                             <MessageCircle size={20} color="#25D366" fill="#25D366" />
                                         </div>
-                                        <span>ENTRAR NO GRUPO VIP</span>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: titleColor }}>{t('events.public.vipGroup')}</span>
                                     </motion.a>
                                 )}
 
@@ -516,7 +516,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                     <div>
-                                                        <div style={{ fontSize: '0.7rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Mentor Oficial</div>
+                                                        <div style={{ fontSize: '0.7rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{t('events.public.officialMentor')}</div>
                                                         <div style={{ fontWeight: 800, fontSize: '1.1rem', color: titleColor }}>{form.creator.name}</div>
                                                     </div>
                                                     <div style={{ display: 'flex', gap: '8px' }}>
@@ -555,7 +555,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                 <ShieldCheck size={20} color={primaryColor} />
-                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Valor da Inscrição</span>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('events.public.registrationValue')}</span>
                                             </div>
                                             {/* Currency Toggle */}
                                             <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', borderRadius: '100px', padding: '2px' }}>
@@ -704,8 +704,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 >
                                     {form.capacity && (form.capacity - (form.submissionCount || 0)) <= 0 && (
                                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', backdropFilter: 'blur(4px)' }}>
-                                            <div style={{ background: '#ef4444', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', fontWeight: 900, marginBottom: '1rem' }}>INSCRIÇÕES ENCERRADAS</div>
-                                            <p style={{ color: '#fff', fontSize: '1.1rem' }}>Este evento atingiu a capacidade máxima. Fique atento para as próximas edições!</p>
+                                            <div style={{ background: '#ef4444', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', fontWeight: 900, marginBottom: '1rem' }}>{t('events.public.registrationsClosed')}</div>
+                                            <p style={{ color: '#fff', fontSize: '1.1rem' }}>{t('events.public.capacityReachedDesc')}</p>
                                         </div>
                                     )}
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: titleColor }}>{t('form.fillYourData')}</h3>

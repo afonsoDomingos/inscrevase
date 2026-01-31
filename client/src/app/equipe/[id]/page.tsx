@@ -10,58 +10,50 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import { useState } from 'react';
-
-// Dados estáticos para a equipe (podem ser movidos para um arquivo de mock/config)
-const teamData = {
-    "afonso-domingos": {
-        name: "Afonso Domingos",
-        role: "Fundador - Inscreva-se & RPA Moçambique",
-        bio: `Afonso Domingos é um profissional moçambicano de TI e autodidata em inovação com mais de 6 anos de experiência. Formado em Multimédia, lidera a RPA Moçambique e é especialista em IA e soluções digitais escaláveis.
-
-Ao longo de sua jornada, Afonso tem se destacado na criação de ecossistemas tecnológicos que resolvem problemas reais. Como fundador do Inscreva-se, ele trouxe uma visão de simplificação e eficiência para o mercado africano de eventos, integrando inteligência artificial e processos automatizados para maximizar resultados.
-
-Suas especialidades incluem desenvolvimento de software, automação de processos (RPA), estratégia de produto e liderança de equipes técnicas. Ele acredita que a tecnologia deve ser um facilitador do progresso humano e trabalha incansavelmente para democratizar o acesso a soluções de ponta.`,
-        image: "/afonso-domingos.jpg",
-        country: "Moçambique",
-        businessName: "Inscreva-se & RPA Moçambique",
-        socialLinks: {
-            linkedin: "https://linkedin.com",
-            instagram: "https://instagram.com",
-            website: "https://afonso-domingos.com"
-        },
-        badges: [{ name: "Fundador", color: "#D4AF37" }, { name: "Elite", color: "#000" }]
-    },
-    "jose-faustino": {
-        name: "José Faustino",
-        role: "Presidente - ABN & CCA",
-        bio: `José Faustino é Especialista em Desenvolvimento Infantil e Liderança Juvenil com mais de 10 anos de experiência. Fundador da ODEI e Afrobiz Network, ele atua em 11 países africanos, promovendo o empreendedorismo e o crescimento econômico no continente.
-
-Com uma visão estratégica focada no potencial da juventude africana, José tem liderado iniciativas que conectam investidores, mentores e empreendedores. Sua atuação na Afrobiz Network tem sido fundamental para o fortalecimento do ecossistema de negócios em diversos países, criando pontes entre a África e a diáspora.
-
-Ele é reconhecido por sua habilidade em liderar transformações sociais e por seu compromisso com a educação e o desenvolvimento de competências para o século XXI.`,
-        image: "/jose-faustino.png",
-        country: "África (Múltiplas Regiões)",
-        businessName: "Afrobiz Network",
-        socialLinks: {
-            linkedin: "https://linkedin.com",
-            instagram: "https://instagram.com",
-            website: "https://afrobiznetwork.com"
-        },
-        badges: [{ name: "Presidente", color: "#D4AF37" }, { name: "Premium", color: "#000" }]
-    }
-};
-
+import { useTranslate } from '@/context/LanguageContext';
 export default function TeamProfilePage() {
     const { id } = useParams();
     const router = useRouter();
+    const { t } = useTranslate();
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    const teamData = {
+        "afonso-domingos": {
+            name: "Afonso Domingos",
+            role: t('team.afonso.role'),
+            bio: t('team.afonso.bio'),
+            image: "/afonso-domingos.jpg",
+            country: "Moçambique",
+            businessName: "Inscreva-se & RPA Moçambique",
+            socialLinks: {
+                linkedin: "https://linkedin.com",
+                instagram: "https://instagram.com",
+                website: "https://afonso-domingos.com"
+            },
+            badges: [{ name: t('common.mentor'), color: "#D4AF37" }, { name: "Elite", color: "#000" }]
+        },
+        "jose-faustino": {
+            name: "José Faustino",
+            role: t('team.jose.role'),
+            bio: t('team.jose.bio'),
+            image: "/jose-faustino.png",
+            country: "África (Múltiplas Regiões)",
+            businessName: "Afrobiz Network",
+            socialLinks: {
+                linkedin: "https://linkedin.com",
+                instagram: "https://instagram.com",
+                website: "https://afrobiznetwork.com"
+            },
+            badges: [{ name: t('common.mentor'), color: "#D4AF37" }, { name: "Premium", color: "#000" }]
+        }
+    };
 
     const member = teamData[id as keyof typeof teamData];
 
     if (!member) {
         return (
             <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px', background: '#fdfdfd' }}>
-                <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '2rem' }}>Membro não encontrado</h2>
+                <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '2rem' }}>{t('team.notfound')}</h2>
                 <button
                     onClick={() => router.push('/')}
                     style={{
@@ -69,7 +61,7 @@ export default function TeamProfilePage() {
                         borderRadius: '50px', border: 'none', fontWeight: 700, cursor: 'pointer'
                     }}
                 >
-                    Voltar ao Início
+                    {t('common.backToHome')}
                 </button>
             </div>
         );
@@ -110,7 +102,7 @@ export default function TeamProfilePage() {
                             marginBottom: '2rem'
                         }}
                     >
-                        <ChevronLeft size={18} /> Voltar
+                        <ChevronLeft size={18} /> {t('common.back')}
                     </motion.button>
 
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3rem', flexWrap: 'wrap' }}>
@@ -191,7 +183,7 @@ export default function TeamProfilePage() {
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2.5rem' }}>
                             <div style={{ width: '4px', height: '30px', background: 'var(--gold-gradient)' }} />
-                            <h2 style={{ fontSize: '2.2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>Biografia</h2>
+                            <h2 style={{ fontSize: '2.2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>{t('team.bioTitle')}</h2>
                         </div>
                         <div style={{ fontSize: '1.15rem', lineHeight: 2, color: '#444', whiteSpace: 'pre-line' }}>
                             {member.bio}
@@ -207,7 +199,7 @@ export default function TeamProfilePage() {
                             style={{ background: '#fff', padding: '3rem', borderRadius: '32px', boxShadow: '0 20px 40px rgba(0,0,0,0.05)', border: '1px solid #eee' }}
                         >
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '2rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#888' }}>
-                                Informações Estratégicas
+                                {t('team.strategicInfo')}
                             </h3>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -216,7 +208,7 @@ export default function TeamProfilePage() {
                                         <MapPin size={24} />
                                     </div>
                                     <div>
-                                        <span style={{ display: 'block', fontSize: '0.8rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>Base</span>
+                                        <span style={{ display: 'block', fontSize: '0.8rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>{t('team.base')}</span>
                                         <span style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '1.1rem' }}>{member.country}</span>
                                     </div>
                                 </div>
@@ -226,7 +218,7 @@ export default function TeamProfilePage() {
                                         <Briefcase size={24} />
                                     </div>
                                     <div>
-                                        <span style={{ display: 'block', fontSize: '0.8rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>Organização</span>
+                                        <span style={{ display: 'block', fontSize: '0.8rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>{t('team.organization')}</span>
                                         <span style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '1.1rem' }}>{member.businessName}</span>
                                     </div>
                                 </div>
@@ -234,7 +226,7 @@ export default function TeamProfilePage() {
 
                             <div style={{ marginTop: '3.5rem' }}>
                                 <h3 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#888' }}>
-                                    Rede Profissional
+                                    {t('team.professionalNetwork')}
                                 </h3>
                                 <div style={{ display: 'flex', gap: '15px' }}>
                                     <a href={member.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#0077B5', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
@@ -264,7 +256,7 @@ export default function TeamProfilePage() {
                             }}
                             className="hover:scale-105"
                         >
-                            <MessageCircle size={26} /> Entrar em Contato
+                            <MessageCircle size={26} /> {t('team.contact')}
                         </motion.button>
                     </aside>
                 </div>
@@ -273,7 +265,7 @@ export default function TeamProfilePage() {
             {/* Footer */}
             <div style={{ padding: '60px', background: '#0a0a0a', color: 'rgba(255,255,255,0.3)', textAlign: 'center', borderTop: '1px solid rgba(212,175,55,0.1)' }}>
                 <p style={{ letterSpacing: '3px', textTransform: 'uppercase', fontSize: '0.8rem' }}>
-                    © 2026 INSCRIVA-SE • LIDERANÇA & IMPACTO
+                    {t('team.rights')}
                 </p>
             </div>
 

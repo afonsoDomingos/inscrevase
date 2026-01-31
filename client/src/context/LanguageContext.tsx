@@ -34,33 +34,38 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     const t = (path: string, variables?: Record<string, string | number>) => {
         const keys = path.split('.');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let current: any = translations[locale];
 
-        for (const key of keys) {
-            if (current[key] === undefined) {
-                // Fallback to PT if key not found in EN
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let fallback: any = translations['pt'];
-                for (const fbKey of keys) {
-                    if (fallback[fbKey] === undefined) return path;
-                    fallback = fallback[fbKey];
+        const getNestedValue = (obj: any, keysArray: string[]) => {
+            let current = obj;
+            for (const key of keysArray) {
+                if (current && typeof current === 'object' && key in current) {
+                    current = current[key];
+                } else {
+                    return undefined;
                 }
-                current = fallback;
-                break;
             }
-            current = current[key];
+            return current;
+        };
+
+        let value = getNestedValue(translations[locale], keys);
+
+        if (value === undefined && locale !== 'pt') {
+            value = getNestedValue(translations['pt'], keys);
         }
 
-        if (typeof current === 'string' && variables) {
-            let result = current;
-            Object.entries(variables).forEach(([key, value]) => {
-                result = result.replace(new RegExp(`{${key}}`, 'g'), String(value));
+        if (value === undefined) {
+            return path;
+        }
+
+        if (typeof value === 'string' && variables) {
+            let result = value;
+            Object.entries(variables).forEach(([key, val]) => {
+                result = result.replace(new RegExp(`{${key}}`, 'g'), String(val));
             });
             return result;
         }
 
-        return current;
+        return value;
     };
 
     return (
