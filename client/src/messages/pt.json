@@ -1,5 +1,13 @@
 {
     "home": {
+        "stats": {
+            "title": "Resultados que Falam",
+            "description": "Milhares de mentores confiam na Inscreva.se para escalar seus eventos",
+            "createdEvents": "Eventos Criados",
+            "subscribers": "Participantes Inscritos",
+            "activeMentors": "Mentores Ativos",
+            "averageRating": "Avaliação Média"
+        },
         "payments": {
             "title": "Aceite Pagamentos",
             "titleHighlight": "Sem Fricção",

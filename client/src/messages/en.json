@@ -1,5 +1,13 @@
 {
     "home": {
+        "stats": {
+            "title": "Results that Speak",
+            "description": "Thousands of mentors trust Inscreva.se to scale their events",
+            "createdEvents": "Events Created",
+            "subscribers": "Registered Participants",
+            "activeMentors": "Active Mentors",
+            "averageRating": "Average Rating"
+        },
         "payments": {
             "title": "Accept Payments",
             "titleHighlight": "Seamlessly",

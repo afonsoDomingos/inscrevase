@@ -404,9 +404,9 @@ export default function Home() {
               marginBottom: '1rem',
               fontFamily: 'var(--font-playfair)'
             }}>
-              {t('landing.stats.title')}
+              {t('home.stats.title')}
             </h2>
-            <TextDispersion text={t('landing.stats.description')} />
+            <TextDispersion text={t('home.stats.description')} />
           </motion.div>
 
           <motion.div
@@ -423,10 +423,10 @@ export default function Home() {
             }}
           >
             {[
-              { icon: Calendar, label: t('landing.stats.s1') || 'Eventos Criados', value: '2,500+', color: '#FFD700' },
-              { icon: Users, label: t('landing.stats.s2') || 'Participantes', value: '150k+', color: '#00f2ea' },
-              { icon: TrendingUp, label: t('landing.stats.s3') || 'Mentores Ativos', value: '450+', color: '#ff0080' },
-              { icon: Star, label: t('landing.stats.s4') || 'Avaliação Média', value: '4.9', color: '#FFD700' },
+              { icon: Calendar, label: t('home.stats.createdEvents'), value: '2,500+', color: '#FFD700' },
+              { icon: Users, label: t('home.stats.subscribers'), value: '150k+', color: '#00f2ea' },
+              { icon: TrendingUp, label: t('home.stats.activeMentors'), value: '450+', color: '#ff0080' },
+              { icon: Star, label: t('home.stats.averageRating'), value: '4.9', color: '#FFD700' },
             ].map((stat, i) => (
               <motion.div
                 key={i}
