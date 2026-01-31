@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, FormEvent } from 'react';
+import React, { useState, useEffect, useRef, FormEvent, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
@@ -9,12 +9,7 @@ import {
     Send,
     Trash2,
     CheckCircle,
-    Play,
-    Pause,
-    Maximize,
-    Volume2,
-    VolumeX,
-    MoreVertical
+    Play
 } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -46,18 +41,27 @@ interface LessonPlayerModalProps {
 }
 
 export default function LessonPlayerModal({ lesson, onClose, onComplete }: LessonPlayerModalProps) {
-    const { t } = useTranslate();
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [duration, setDuration] = useState(0);
     const [isCompleted, setIsCompleted] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState<Comment[]>(lesson.comments || []);
     const [newComment, setNewComment] = useState('');
-    const [loadingComments, setLoadingComments] = useState(false);
     const [currentUser, setCurrentUser] = useState<{ id: string, name: string, role: string } | null>(null);
+
+    const fetchComments = useCallback(async () => {
+        try {
+            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.comments) setComments(data.comments);
+        } catch (error) {
+            console.error(error);
+        }
+    }, [lesson._id]);
 
     // Fetch initial data (user, progress, favorites)
     useEffect(() => {
@@ -104,26 +108,12 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
         };
 
         fetchInitialData();
-    }, [lesson._id]);
-
-    const fetchComments = async () => {
-        try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.comments) setComments(data.comments);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    }, [lesson._id, lesson.duration, fetchComments]);
 
     const handleTimeUpdate = () => {
         if (videoRef.current) {
             const current = videoRef.current.currentTime;
             const total = videoRef.current.duration;
-            setDuration(total);
             const prog = (current / total) * 100;
             setProgress(prog);
 
@@ -327,8 +317,6 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                             src={lesson.videoUrl}
                             style={{ width: '100%', height: '100%' }}
                             onTimeUpdate={handleTimeUpdate}
-                            onPlay={() => setIsPlaying(true)}
-                            onPause={() => setIsPlaying(false)}
                             controlsList="nodownload"
                             controls
                         />
