@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Download, Calendar, ExternalLink, Loader2 } from 'lucide-react';
+import { Award, Calendar, ExternalLink, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

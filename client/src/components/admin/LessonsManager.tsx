@@ -40,12 +40,6 @@ interface Stats {
     totalViews: number;
 }
 
-interface VideoUploadResult {
-    videoUrl: string;
-    thumbnailUrl: string;
-    duration: number;
-}
-
 export default function LessonsManager() {
     // const { t } = useTranslate(); // Unused
     const [lessons, setLessons] = useState<Lesson[]>([]);
