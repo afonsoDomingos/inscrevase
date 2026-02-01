@@ -50,7 +50,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
     const fetchComments = useCallback(async () => {
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -64,7 +64,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     // Fetch initial data (user, progress, favorites)
     useEffect(() => {
         const fetchInitialData = async () => {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             if (!token) return;
 
             // Fetch user for comments
@@ -129,7 +129,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
     const updateProgress = async (watchTime: number, completed: boolean) => {
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/progress`, {
                 method: 'POST',
                 headers: {
@@ -153,7 +153,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
     const toggleFavorite = async () => {
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/favorite`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -170,7 +170,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
         if (!newComment.trim()) return;
 
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/comment`, {
                 method: 'POST',
                 headers: {
@@ -192,7 +192,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     const handleDeleteComment = async (commentId: string) => {
         if (!confirm('Deletar comentário?')) return;
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/comment/${commentId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
