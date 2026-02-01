@@ -219,7 +219,7 @@ router.delete('/:id', protect, async (req, res) => {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
-        await lesson.remove();
+        await lesson.deleteOne();
         res.json({ message: 'Aula deletada com sucesso' });
     } catch (error) {
         console.error('Error deleting lesson:', error);
@@ -456,7 +456,7 @@ router.delete('/:lessonId/comment/:commentId', protect, async (req, res) => {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
-        comment.remove();
+        lesson.comments.pull(req.params.commentId);
         await lesson.save();
 
         res.json({ message: 'Comentário deletado com sucesso' });
