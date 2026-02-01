@@ -7,11 +7,8 @@ import {
     Heart,
     MessageCircle,
     Send,
-    Trash2,
-    CheckCircle,
-    Play
+    Trash2
 } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
 
 interface Comment {
     _id: string;
@@ -42,7 +39,7 @@ interface LessonPlayerModalProps {
 
 export default function LessonPlayerModal({ lesson, onClose, onComplete }: LessonPlayerModalProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [progress, setProgress] = useState(0);
+    // const [progress, setProgress] = useState(0); // Removed unused state
     const [isCompleted, setIsCompleted] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [showComments, setShowComments] = useState(false);
@@ -89,7 +86,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                     setIsCompleted(lessonProg.completed);
                     if (videoRef.current && lessonProg.watchTime) {
                         videoRef.current.currentTime = lessonProg.watchTime;
-                        setProgress((lessonProg.watchTime / lesson.duration) * 100);
+                        // setProgress((lessonProg.watchTime / lesson.duration) * 100);
                     }
                 }
             } catch (err) { console.error(err); }
@@ -115,7 +112,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
             const current = videoRef.current.currentTime;
             const total = videoRef.current.duration;
             const prog = (current / total) * 100;
-            setProgress(prog);
+            // setProgress(prog);
 
             // Mark as completed if > 90%
             if (prog > 90 && !isCompleted) {

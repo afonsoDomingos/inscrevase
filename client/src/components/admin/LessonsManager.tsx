@@ -12,13 +12,12 @@ import {
     Plus,
     X,
     Search,
-    Filter,
     TrendingUp,
     Video,
     Clock,
     CheckCircle
 } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
+// import { useTranslate } from '@/context/LanguageContext';
 
 interface Lesson {
     _id: string;
@@ -48,7 +47,7 @@ interface VideoUploadResult {
 }
 
 export default function LessonsManager() {
-    const { t } = useTranslate();
+    // const { t } = useTranslate(); // Unused
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [stats, setStats] = useState<Stats>({ total: 0, published: 0, unpublished: 0, totalViews: 0 });
     const [loading, setLoading] = useState(true);
@@ -674,7 +673,7 @@ export default function LessonsManager() {
                                     </label>
                                     <select
                                         value={formData.category}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
                                         style={{
                                             width: '100%',
                                             padding: '12px',
