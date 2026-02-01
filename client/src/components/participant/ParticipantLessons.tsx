@@ -194,13 +194,25 @@ export default function ParticipantLessons() {
                             </button>
 
                             <div className="aspect-video bg-black">
-                                <video
-                                    src={selectedLesson.videoUrl}
-                                    controls
-                                    autoPlay
-                                    className="w-full h-full"
-                                    onEnded={() => handleLessonComplete(selectedLesson._id)}
-                                />
+                                {(selectedLesson.videoUrl.includes('youtube') || selectedLesson.videoUrl.includes('youtu.be') || selectedLesson.videoUrl.includes('vimeo')) ? (
+                                    <iframe
+                                        src={selectedLesson.videoUrl.includes('youtube') || selectedLesson.videoUrl.includes('youtu.be')
+                                            ? selectedLesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
+                                            : selectedLesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                                        className="w-full h-full"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                ) : (
+                                    <video
+                                        src={selectedLesson.videoUrl}
+                                        controls
+                                        autoPlay
+                                        className="w-full h-full"
+                                        onEnded={() => handleLessonComplete(selectedLesson._id)}
+                                    />
+                                )}
                             </div>
 
                             <div className="p-6 bg-white">

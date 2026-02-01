@@ -309,14 +309,47 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                 <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
                     {/* Video Player Section */}
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'black', position: 'relative' }}>
-                        <video
-                            ref={videoRef}
-                            src={lesson.videoUrl}
-                            style={{ width: '100%', height: '100%' }}
-                            onTimeUpdate={handleTimeUpdate}
-                            controlsList="nodownload"
-                            controls
-                        />
+                        {(lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be') || lesson.videoUrl.includes('vimeo')) ? (
+                            <>
+                                <iframe
+                                    src={lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be')
+                                        ? lesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
+                                        : lesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                                    style={{ width: '100%', height: '100%', border: 'none' }}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                                {!isCompleted && (
+                                    <button
+                                        onClick={markAsCompleted}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '20px',
+                                            right: '20px',
+                                            padding: '10px 20px',
+                                            background: '#D4AF37',
+                                            color: '#000',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            zIndex: 10
+                                        }}
+                                    >
+                                        Marcar como Concluída
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <video
+                                ref={videoRef}
+                                src={lesson.videoUrl}
+                                style={{ width: '100%', height: '100%' }}
+                                onTimeUpdate={handleTimeUpdate}
+                                controlsList="nodownload"
+                                controls
+                            />
+                        )}
                         {/* Optional Custom Controls Overlay could go here if native controls aren't enough */}
                     </div>
 
