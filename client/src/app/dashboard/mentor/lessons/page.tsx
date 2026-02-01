@@ -23,7 +23,6 @@ import {
     Trash2,
     Upload
 } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 
 interface LessonProgress {

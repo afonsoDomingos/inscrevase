@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useParams } from 'next/navigation';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import axios from 'axios';
-import { Award, CheckCircle, Calendar, User, BookOpen } from 'lucide-react';
+import { Award, CheckCircle, Calendar, BookOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -28,13 +28,7 @@ export default function CertificateValidationPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        if (code) {
-            fetchCertificate();
-        }
-    }, [code]);
-
-    const fetchCertificate = async () => {
+    const fetchCertificate = useCallback(async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/certificates/${code}`);
             setCertificate(response.data);
@@ -44,7 +38,13 @@ export default function CertificateValidationPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [code]);
+
+    useEffect(() => {
+        if (code) {
+            fetchCertificate();
+        }
+    }, [code, fetchCertificate]);
 
     if (loading) {
         return (
