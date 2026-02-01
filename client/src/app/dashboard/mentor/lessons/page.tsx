@@ -21,7 +21,8 @@ import {
     Video,
     Edit,
     Trash2,
-    Upload
+    Upload,
+    TrendingUp
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 
