@@ -9,6 +9,7 @@ import {
     Send,
     Trash2
 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 interface Comment {
     _id: string;

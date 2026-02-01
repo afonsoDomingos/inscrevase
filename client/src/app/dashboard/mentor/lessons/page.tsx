@@ -25,6 +25,7 @@ import {
     TrendingUp
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
+import Cookies from 'js-cookie';
 
 interface LessonProgress {
     lesson: string | { _id: string };
@@ -110,7 +111,7 @@ export default function MentorLessonsPage() {
     const fetchLearnLessons = async () => {
         setLoading(true);
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             if (!token) return;
 
             // Fetch Lessons
@@ -157,7 +158,7 @@ export default function MentorLessonsPage() {
     const fetchManageLessons = async () => {
         setLoading(true);
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/manage/all`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
