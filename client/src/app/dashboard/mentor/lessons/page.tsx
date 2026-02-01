@@ -212,7 +212,7 @@ export default function MentorLessonsPage() {
         formDataUpload.append('video', file);
 
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             const xhr = new XMLHttpRequest();
 
             xhr.upload.addEventListener('progress', (e) => {
@@ -250,8 +250,9 @@ export default function MentorLessonsPage() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        e.preventDefault();
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             const url = editingLesson
                 ? `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${editingLesson._id}`
                 : `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`;
@@ -282,7 +283,7 @@ export default function MentorLessonsPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Tem certeza que deseja deletar esta aula?')) return;
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -295,7 +296,7 @@ export default function MentorLessonsPage() {
 
     const togglePublish = async (id: string) => {
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const token = Cookies.get('token');
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}/toggle-publish`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` }
