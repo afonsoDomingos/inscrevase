@@ -31,7 +31,8 @@ import {
     Map as MapIcon,
     LifeBuoy,
     Plus,
-    Newspaper
+    Newspaper,
+    Video
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
@@ -42,8 +43,9 @@ import ThemeToggle from '@/components/common/ThemeToggle';
 import InternalBlogView from '@/components/common/InternalBlogView';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
+import ParticipantLessons from '@/components/participant/ParticipantLessons';
 
-type Tab = 'tickets' | 'explore' | 'certificates' | 'blog' | 'plans' | 'profile';
+type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile';
 
 export default function ParticipantDashboard() {
     const { t } = useTranslate();
@@ -340,11 +342,12 @@ export default function ParticipantDashboard() {
                     {[
                         { id: 'tickets', label: t('dashboard.myTickets'), icon: <Ticket size={20} /> },
                         { id: 'explore', label: t('dashboard.exploreEvents'), icon: <Compass size={20} /> },
+                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
                         { id: 'certificates', label: t('dashboard.myCertificates'), icon: <Award size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
-                    ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
+                    ].map((item) => (
                         <button
                             key={item.id}
                             id={`participant-nav-${item.id}`}
@@ -697,6 +700,17 @@ export default function ParticipantDashboard() {
                                     </button>
                                 </div>
                             )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'lessons' && (
+                        <motion.div
+                            key="lessons"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <ParticipantLessons />
                         </motion.div>
                     )}
 

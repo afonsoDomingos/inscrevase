@@ -40,6 +40,8 @@ interface Stats {
     totalViews: number;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function LessonsManager() {
     // const { t } = useTranslate(); // Unused
     const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -51,6 +53,7 @@ export default function LessonsManager() {
     const [filterCategory, setFilterCategory] = useState<string>('all');
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'url'>('upload');
 
     // Form state
     const [formData, setFormData] = useState({
@@ -71,7 +74,7 @@ export default function LessonsManager() {
     const fetchLessons = async () => {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/manage/all`, {
+            const response = await fetch(`${API_URL}/lessons/manage/all`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -125,7 +128,7 @@ export default function LessonsManager() {
                 }
             });
 
-            xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/upload-video`);
+            xhr.open('POST', `${API_URL}/lessons/upload-video`);
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
             xhr.send(formDataUpload);
         } catch (error) {
@@ -140,8 +143,8 @@ export default function LessonsManager() {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
             const url = editingLesson
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${editingLesson._id}`
-                : `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`;
+                ? `${API_URL}/lessons/${editingLesson._id}`
+                : `${API_URL}/lessons`;
 
             const method = editingLesson ? 'PUT' : 'POST';
 
@@ -168,7 +171,7 @@ export default function LessonsManager() {
 
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}`, {
+            await fetch(`${API_URL}/lessons/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -183,7 +186,7 @@ export default function LessonsManager() {
     const togglePublish = async (id: string) => {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}/toggle-publish`, {
+            await fetch(`${API_URL}/lessons/${id}/toggle-publish`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -538,54 +541,115 @@ export default function LessonsManager() {
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
                                         Vídeo da Aula
                                     </label>
+                                    {/* Toggle between Upload and URL */}
+                                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoInputMethod('upload')}
+                                            style={{
+                                                flex: 1,
+                                                padding: '10px',
+                                                background: videoInputMethod === 'upload' ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)' : '#f3f4f6',
+                                                color: videoInputMethod === 'upload' ? '#000' : '#666',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontWeight: '600',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            📤 Upload de Arquivo
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoInputMethod('url')}
+                                            style={{
+                                                flex: 1,
+                                                padding: '10px',
+                                                background: videoInputMethod === 'url' ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)' : '#f3f4f6',
+                                                color: videoInputMethod === 'url' ? '#000' : '#666',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontWeight: '600',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            🔗 URL do Vídeo
+                                        </button>
+                                    </div>
+
                                     {!formData.videoUrl ? (
                                         <div>
-                                            <input
-                                                type="file"
-                                                accept="video/*"
-                                                onChange={handleVideoUpload}
-                                                disabled={isUploading}
-                                                style={{ display: 'none' }}
-                                                id="video-upload"
-                                            />
-                                            <label
-                                                htmlFor="video-upload"
-                                                style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    padding: '3rem',
-                                                    border: '2px dashed #D4AF37',
-                                                    borderRadius: '12px',
-                                                    cursor: isUploading ? 'not-allowed' : 'pointer',
-                                                    background: '#fafafa'
-                                                }}
-                                            >
-                                                <Upload size={48} color="#D4AF37" style={{ marginBottom: '1rem' }} />
-                                                <p style={{ fontWeight: '600', marginBottom: '4px' }}>
-                                                    {isUploading ? 'Fazendo upload...' : 'Clique para fazer upload'}
-                                                </p>
-                                                <p style={{ fontSize: '0.875rem', color: '#666' }}>MP4, AVI, MOV (máx. 500MB)</p>
-                                            </label>
-                                            {isUploading && (
-                                                <div style={{ marginTop: '1rem' }}>
-                                                    <div style={{
-                                                        width: '100%',
-                                                        height: '8px',
-                                                        background: '#f0f0f0',
-                                                        borderRadius: '4px',
-                                                        overflow: 'hidden'
-                                                    }}>
-                                                        <div style={{
-                                                            width: `${uploadProgress}%`,
-                                                            height: '100%',
-                                                            background: 'linear-gradient(90deg, #D4AF37, #F4D03F)',
-                                                            transition: 'width 0.3s ease'
-                                                        }} />
-                                                    </div>
-                                                    <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '0.875rem', color: '#666' }}>
-                                                        {Math.round(uploadProgress)}%
+                                            {videoInputMethod === 'upload' ? (
+                                                <>
+                                                    <input
+                                                        type="file"
+                                                        accept="video/*"
+                                                        onChange={handleVideoUpload}
+                                                        disabled={isUploading}
+                                                        style={{ display: 'none' }}
+                                                        id="video-upload"
+                                                    />
+                                                    <label
+                                                        htmlFor="video-upload"
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            padding: '3rem',
+                                                            border: '2px dashed #D4AF37',
+                                                            borderRadius: '12px',
+                                                            cursor: isUploading ? 'not-allowed' : 'pointer',
+                                                            background: '#fafafa'
+                                                        }}
+                                                    >
+                                                        <Upload size={48} color="#D4AF37" style={{ marginBottom: '1rem' }} />
+                                                        <p style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                                            {isUploading ? 'Fazendo upload...' : 'Clique para fazer upload'}
+                                                        </p>
+                                                        <p style={{ fontSize: '0.875rem', color: '#666' }}>MP4, AVI, MOV (máx. 500MB)</p>
+                                                    </label>
+                                                    {isUploading && (
+                                                        <div style={{ marginTop: '1rem' }}>
+                                                            <div style={{
+                                                                width: '100%',
+                                                                height: '8px',
+                                                                background: '#f0f0f0',
+                                                                borderRadius: '4px',
+                                                                overflow: 'hidden'
+                                                            }}>
+                                                                <div style={{
+                                                                    width: `${uploadProgress}%`,
+                                                                    height: '100%',
+                                                                    background: 'linear-gradient(90deg, #D4AF37, #F4D03F)',
+                                                                    transition: 'width 0.3s ease'
+                                                                }} />
+                                                            </div>
+                                                            <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '0.875rem', color: '#666' }}>
+                                                                {Math.round(uploadProgress)}%
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <div>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."
+                                                        value={formData.videoUrl}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '12px',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid #e0e0e0',
+                                                            fontSize: '1rem'
+                                                        }}
+                                                    />
+                                                    <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '8px' }}>
+                                                        💡 Suporta: YouTube, Vimeo, ou link direto para arquivo de vídeo (.mp4, .webm, etc.)
                                                     </p>
                                                 </div>
                                             )}

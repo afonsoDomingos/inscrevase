@@ -45,6 +45,8 @@ interface VideoUploadResult {
     duration: number;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function AdminLessonsPage() {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [stats, setStats] = useState<Stats>({ total: 0, published: 0, unpublished: 0, totalViews: 0 });
@@ -76,7 +78,7 @@ export default function AdminLessonsPage() {
     const fetchLessons = async () => {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/manage/all`, {
+            const response = await fetch(`${API_URL}/lessons/manage/all`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -130,7 +132,7 @@ export default function AdminLessonsPage() {
                 }
             });
 
-            xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/upload-video`);
+            xhr.open('POST', `${API_URL}/lessons/upload-video`);
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
             xhr.send(formDataUpload);
         } catch (error) {
@@ -145,8 +147,8 @@ export default function AdminLessonsPage() {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
             const url = editingLesson
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${editingLesson._id}`
-                : `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`;
+                ? `${API_URL}/lessons/${editingLesson._id}`
+                : `${API_URL}/lessons`;
 
             const method = editingLesson ? 'PUT' : 'POST';
 
@@ -173,7 +175,7 @@ export default function AdminLessonsPage() {
 
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}`, {
+            await fetch(`${API_URL}/lessons/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -188,7 +190,7 @@ export default function AdminLessonsPage() {
     const togglePublish = async (id: string) => {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}/toggle-publish`, {
+            await fetch(`${API_URL}/lessons/${id}/toggle-publish`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`
