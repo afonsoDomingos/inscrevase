@@ -347,7 +347,7 @@ export default function ParticipantDashboard() {
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
-                    ].map((item) => (
+                    ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
                             key={item.id}
                             id={`participant-nav-${item.id}`}
