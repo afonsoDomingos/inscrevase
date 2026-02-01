@@ -47,13 +47,20 @@ router.get('/', protect, async (req, res) => {
         }
 
         // Filter by target audience based on user role
-        // Mentors see content for mentors
-        // Participants see content for participants
-        // Admins can see everything (or we can filter if needed, but usually they want to check)
-        if (req.user.role === 'mentor') {
-            filter.targetAudience = 'mentors';
+        if (req.user.role === 'admin') {
+            // Admins see all published lessons regardless of target audience
+        } else if (req.user.role === 'mentor') {
+            filter.$or = [
+                { targetAudience: 'mentors' },
+                { targetAudience: { $exists: false } }, // Legacy support
+                { targetAudience: null }
+            ];
         } else if (req.user.role === 'participant') {
-            filter.targetAudience = 'participants';
+            filter.$or = [
+                { targetAudience: 'participants' },
+                { targetAudience: { $exists: false } }, // Legacy support
+                { targetAudience: null }
+            ];
         }
 
         const lessons = await Lesson.find(filter)
