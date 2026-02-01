@@ -142,7 +142,7 @@ export default function ParticipantLessons() {
                                     <Play size={24} fill="currentColor" />
                                 </div>
                             </div>
-                            <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold ${getCategoryBadge(lesson.category).color} ${getCategoryBadge(lesson.category).className || ''}`}>
+                            <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold ${getCategoryBadge(lesson.category).color}`}>
                                 {getCategoryBadge(lesson.category).label}
                             </span>
                             {lesson.isCompleted && (
