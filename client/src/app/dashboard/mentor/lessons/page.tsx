@@ -853,8 +853,19 @@ export default function MentorLessonsPage() {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div style={{ position: 'relative' }}>
-                                                <video src={formData.videoUrl} controls style={{ width: '100%', borderRadius: '12px' }} />
+                                            <div style={{ position: 'relative', aspectRatio: '16/9', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
+                                                {(formData.videoUrl.includes('youtube') || formData.videoUrl.includes('youtu.be') || formData.videoUrl.includes('vimeo')) ? (
+                                                    <iframe
+                                                        src={formData.videoUrl.includes('youtube') || formData.videoUrl.includes('youtu.be')
+                                                            ? formData.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
+                                                            : formData.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                                                        style={{ width: '100%', height: '100%', border: 'none' }}
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                    />
+                                                ) : (
+                                                    <video src={formData.videoUrl} controls style={{ width: '100%', height: '100%' }} />
+                                                )}
                                                 <button
                                                     type="button"
                                                     onClick={() => setFormData(prev => ({ ...prev, videoUrl: '', thumbnailUrl: '' }))}
@@ -867,7 +878,8 @@ export default function MentorLessonsPage() {
                                                         border: 'none',
                                                         borderRadius: '8px',
                                                         padding: '8px',
-                                                        cursor: 'pointer'
+                                                        cursor: 'pointer',
+                                                        zIndex: 10
                                                     }}
                                                 >
                                                     <Trash2 size={16} />
