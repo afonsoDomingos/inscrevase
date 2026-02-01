@@ -6,6 +6,8 @@ import { Search, Play, CheckCircle, Video, X } from 'lucide-react';
 import Image from 'next/image';
 import axios from 'axios';
 
+import Cookies from 'js-cookie';
+
 interface Lesson {
     _id: string;
     title: string;
@@ -33,7 +35,7 @@ export default function ParticipantLessons() {
 
     const fetchLessons = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             // Assuming participants use the same endpoint as mentors for learning
             const response = await axios.get(`${API_URL}/lessons`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -48,7 +50,7 @@ export default function ParticipantLessons() {
 
     const handleLessonComplete = async (lessonId: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             await axios.post(`${API_URL}/lessons/${lessonId}/complete`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
