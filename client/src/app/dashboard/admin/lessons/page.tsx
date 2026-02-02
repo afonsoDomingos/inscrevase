@@ -498,363 +498,364 @@ export default function AdminLessonsPage() {
                         <p>Nenhuma aula encontrada</p>
                     </div>
                 )}
+            </div>
 
-                {/* Modal */}
-                <AnimatePresence>
-                    {showModal && (
+            {/* Modal */}
+            <AnimatePresence>
+                {showModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1000,
+                            padding: '1rem'
+                        }}
+                        onClick={closeModal}
+                    >
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
                             style={{
-                                position: 'fixed',
-                                inset: 0,
-                                background: 'rgba(0,0,0,0.5)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                zIndex: 1000,
-                                padding: '1rem'
+                                background: 'white',
+                                borderRadius: '20px',
+                                padding: '2rem',
+                                maxWidth: '600px',
+                                width: '100%',
+                                maxHeight: '90vh',
+                                overflowY: 'auto'
                             }}
-                            onClick={closeModal}
                         >
-                            <motion.div
-                                initial={{ scale: 0.9, y: 20 }}
-                                animate={{ scale: 1, y: 0 }}
-                                exit={{ scale: 0.9, y: 20 }}
-                                onClick={(e) => e.stopPropagation()}
-                                style={{
-                                    background: 'white',
-                                    borderRadius: '20px',
-                                    padding: '2rem',
-                                    maxWidth: '600px',
-                                    width: '100%',
-                                    maxHeight: '90vh',
-                                    overflowY: 'auto'
-                                }}
-                            >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                                        {editingLesson ? 'Editar Aula' : 'Nova Aula'}
-                                    </h2>
-                                    <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                        <X size={24} />
-                                    </button>
-                                </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                                    {editingLesson ? 'Editar Aula' : 'Nova Aula'}
+                                </h2>
+                                <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                    <X size={24} />
+                                </button>
+                            </div>
 
-                                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                    {/* Video Upload */}
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                            Vídeo da Aula
-                                        </label>
+                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                {/* Video Upload */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Vídeo da Aula
+                                    </label>
 
-                                        {/* Toggle between Upload and URL */}
-                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                                            <button
-                                                type="button"
-                                                onClick={() => setVideoInputMethod('upload')}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '10px',
-                                                    background: videoInputMethod === 'upload' ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)' : '#f3f4f6',
-                                                    color: videoInputMethod === 'upload' ? '#000' : '#666',
-                                                    border: 'none',
-                                                    borderRadius: '8px',
-                                                    fontWeight: '600',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                            >
-                                                📤 Upload de Arquivo
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setVideoInputMethod('url')}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '10px',
-                                                    background: videoInputMethod === 'url' ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)' : '#f3f4f6',
-                                                    color: videoInputMethod === 'url' ? '#000' : '#666',
-                                                    border: 'none',
-                                                    borderRadius: '8px',
-                                                    fontWeight: '600',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                            >
-                                                🔗 URL do Vídeo
-                                            </button>
-                                        </div>
-
-                                        {!formData.videoUrl ? (
-                                            <div>
-                                                {videoInputMethod === 'upload' ? (
-                                                    <>
-                                                        <input
-                                                            type="file"
-                                                            accept="video/*"
-                                                            onChange={handleVideoUpload}
-                                                            disabled={isUploading}
-                                                            style={{ display: 'none' }}
-                                                            id="video-upload"
-                                                        />
-                                                        <label
-                                                            htmlFor="video-upload"
-                                                            style={{
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                padding: '3rem',
-                                                                border: '2px dashed #D4AF37',
-                                                                borderRadius: '12px',
-                                                                cursor: isUploading ? 'not-allowed' : 'pointer',
-                                                                background: '#fafafa'
-                                                            }}
-                                                        >
-                                                            <Upload size={48} color="#D4AF37" style={{ marginBottom: '1rem' }} />
-                                                            <p style={{ fontWeight: '600', marginBottom: '4px' }}>
-                                                                {isUploading ? 'Fazendo upload...' : 'Clique para fazer upload'}
-                                                            </p>
-                                                            <p style={{ fontSize: '0.875rem', color: '#666' }}>MP4, AVI, MOV (máx. 500MB)</p>
-                                                        </label>
-                                                        {isUploading && (
-                                                            <div style={{ marginTop: '1rem' }}>
-                                                                <div style={{
-                                                                    width: '100%',
-                                                                    height: '8px',
-                                                                    background: '#f0f0f0',
-                                                                    borderRadius: '4px',
-                                                                    overflow: 'hidden'
-                                                                }}>
-                                                                    <div style={{
-                                                                        width: `${uploadProgress}%`,
-                                                                        height: '100%',
-                                                                        background: 'linear-gradient(90deg, #D4AF37, #F4D03F)',
-                                                                        transition: 'width 0.3s ease'
-                                                                    }} />
-                                                                </div>
-                                                                <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '0.875rem', color: '#666' }}>
-                                                                    {Math.round(uploadProgress)}%
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <div>
-                                                        <input
-                                                            type="url"
-                                                            placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."
-                                                            value={formData.videoUrl}
-                                                            onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
-                                                            style={{
-                                                                width: '100%',
-                                                                padding: '12px',
-                                                                borderRadius: '12px',
-                                                                border: '1px solid #e0e0e0',
-                                                                fontSize: '1rem'
-                                                            }}
-                                                        />
-                                                        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '8px' }}>
-                                                            💡 Suporta: YouTube, Vimeo, ou link direto para arquivo de vídeo (.mp4, .webm, etc.)
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <div style={{ position: 'relative' }}>
-                                                <video
-                                                    src={formData.videoUrl}
-                                                    controls
-                                                    style={{ width: '100%', borderRadius: '12px' }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData(prev => ({ ...prev, videoUrl: '', thumbnailUrl: '' }))}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: '8px',
-                                                        right: '8px',
-                                                        background: 'rgba(0,0,0,0.7)',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '8px',
-                                                        padding: '8px',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Title */}
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                            Título *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={formData.title}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                            placeholder="Ex: Introdução à Plataforma"
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: '1px solid #e0e0e0',
-                                                fontSize: '1rem'
-                                            }}
-                                        />
-                                    </div>
-
-                                    {/* Description */}
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                            Descrição
-                                        </label>
-                                        <textarea
-                                            value={formData.description}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                            placeholder="Descreva o conteúdo da aula..."
-                                            rows={4}
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: '1px solid #e0e0e0',
-                                                fontSize: '1rem',
-                                                resize: 'vertical'
-                                            }}
-                                        />
-                                    </div>
-
-                                    {/* Category */}
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                            Categoria
-                                        </label>
-                                        <select
-                                            value={formData.category}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: '1px solid #e0e0e0',
-                                                fontSize: '1rem',
-                                            }}
-                                        >
-                                            <option value="basico">Básico</option>
-                                            <option value="intermediario">Intermediário</option>
-                                            <option value="avancado">Avançado</option>
-                                        </select>
-                                    </div>
-
-                                    {/* Target Audience */}
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                            Público-Alvo
-                                        </label>
-                                        <select
-                                            value={formData.targetAudience}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' }))}
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: '1px solid #e0e0e0',
-                                                fontSize: '1rem',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            <option value="mentors">Mentores (Academia)</option>
-                                            <option value="participants">Participantes (Alunos)</option>
-                                        </select>
-                                        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
-                                            {formData.targetAudience === 'mentors'
-                                                ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
-                                                : '👥 Visível para os participantes/alunos no dashboard deles.'}
-                                        </p>
-                                    </div>
-
-                                    {/* Order */}
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                            Ordem de Exibição
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={formData.order}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: '1px solid #e0e0e0',
-                                                fontSize: '1rem'
-                                            }}
-                                        />
-                                    </div>
-
-                                    {/* Published */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <input
-                                            type="checkbox"
-                                            id="published"
-                                            checked={formData.isPublished}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-                                            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                                        />
-                                        <label htmlFor="published" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer' }}>
-                                            Publicar aula imediatamente
-                                        </label>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
+                                    {/* Toggle between Upload and URL */}
+                                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
                                         <button
                                             type="button"
-                                            onClick={closeModal}
+                                            onClick={() => setVideoInputMethod('upload')}
                                             style={{
                                                 flex: 1,
-                                                padding: '12px',
-                                                background: '#f3f4f6',
+                                                padding: '10px',
+                                                background: videoInputMethod === 'upload' ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)' : '#f3f4f6',
+                                                color: videoInputMethod === 'upload' ? '#000' : '#666',
                                                 border: 'none',
-                                                borderRadius: '12px',
+                                                borderRadius: '8px',
                                                 fontWeight: '600',
-                                                cursor: 'pointer'
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
                                             }}
                                         >
-                                            Cancelar
+                                            📤 Upload de Arquivo
                                         </button>
                                         <button
-                                            type="submit"
-                                            disabled={!formData.videoUrl || !formData.title}
+                                            type="button"
+                                            onClick={() => setVideoInputMethod('url')}
                                             style={{
                                                 flex: 1,
-                                                padding: '12px',
-                                                background: formData.videoUrl && formData.title
-                                                    ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)'
-                                                    : '#e5e7eb',
-                                                color: formData.videoUrl && formData.title ? '#000' : '#9ca3af',
+                                                padding: '10px',
+                                                background: videoInputMethod === 'url' ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)' : '#f3f4f6',
+                                                color: videoInputMethod === 'url' ? '#000' : '#666',
                                                 border: 'none',
-                                                borderRadius: '12px',
-                                                fontWeight: 'bold',
-                                                cursor: formData.videoUrl && formData.title ? 'pointer' : 'not-allowed'
+                                                borderRadius: '8px',
+                                                fontWeight: '600',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
                                             }}
                                         >
-                                            {editingLesson ? 'Atualizar' : 'Criar'} Aula
+                                            🔗 URL do Vídeo
                                         </button>
                                     </div>
-                                </form>
-                            </motion.div>
+
+                                    {!formData.videoUrl ? (
+                                        <div>
+                                            {videoInputMethod === 'upload' ? (
+                                                <>
+                                                    <input
+                                                        type="file"
+                                                        accept="video/*"
+                                                        onChange={handleVideoUpload}
+                                                        disabled={isUploading}
+                                                        style={{ display: 'none' }}
+                                                        id="video-upload"
+                                                    />
+                                                    <label
+                                                        htmlFor="video-upload"
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            padding: '3rem',
+                                                            border: '2px dashed #D4AF37',
+                                                            borderRadius: '12px',
+                                                            cursor: isUploading ? 'not-allowed' : 'pointer',
+                                                            background: '#fafafa'
+                                                        }}
+                                                    >
+                                                        <Upload size={48} color="#D4AF37" style={{ marginBottom: '1rem' }} />
+                                                        <p style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                                            {isUploading ? 'Fazendo upload...' : 'Clique para fazer upload'}
+                                                        </p>
+                                                        <p style={{ fontSize: '0.875rem', color: '#666' }}>MP4, AVI, MOV (máx. 500MB)</p>
+                                                    </label>
+                                                    {isUploading && (
+                                                        <div style={{ marginTop: '1rem' }}>
+                                                            <div style={{
+                                                                width: '100%',
+                                                                height: '8px',
+                                                                background: '#f0f0f0',
+                                                                borderRadius: '4px',
+                                                                overflow: 'hidden'
+                                                            }}>
+                                                                <div style={{
+                                                                    width: `${uploadProgress}%`,
+                                                                    height: '100%',
+                                                                    background: 'linear-gradient(90deg, #D4AF37, #F4D03F)',
+                                                                    transition: 'width 0.3s ease'
+                                                                }} />
+                                                            </div>
+                                                            <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '0.875rem', color: '#666' }}>
+                                                                {Math.round(uploadProgress)}%
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <div>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."
+                                                        value={formData.videoUrl}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '12px',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid #e0e0e0',
+                                                            fontSize: '1rem'
+                                                        }}
+                                                    />
+                                                    <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '8px' }}>
+                                                        💡 Suporta: YouTube, Vimeo, ou link direto para arquivo de vídeo (.mp4, .webm, etc.)
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div style={{ position: 'relative' }}>
+                                            <video
+                                                src={formData.videoUrl}
+                                                controls
+                                                style={{ width: '100%', borderRadius: '12px' }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ ...prev, videoUrl: '', thumbnailUrl: '' }))}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '8px',
+                                                    right: '8px',
+                                                    background: 'rgba(0,0,0,0.7)',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    padding: '8px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Title */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Título *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.title}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                        placeholder="Ex: Introdução à Plataforma"
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e0e0e0',
+                                            fontSize: '1rem'
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Description */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Descrição
+                                    </label>
+                                    <textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                        placeholder="Descreva o conteúdo da aula..."
+                                        rows={4}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e0e0e0',
+                                            fontSize: '1rem',
+                                            resize: 'vertical'
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Category */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Categoria
+                                    </label>
+                                    <select
+                                        value={formData.category}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e0e0e0',
+                                            fontSize: '1rem',
+                                        }}
+                                    >
+                                        <option value="basico">Básico</option>
+                                        <option value="intermediario">Intermediário</option>
+                                        <option value="avancado">Avançado</option>
+                                    </select>
+                                </div>
+
+                                {/* Target Audience */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Público-Alvo
+                                    </label>
+                                    <select
+                                        value={formData.targetAudience}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e0e0e0',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="mentors">Mentores (Academia)</option>
+                                        <option value="participants">Participantes (Alunos)</option>
+                                    </select>
+                                    <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
+                                        {formData.targetAudience === 'mentors'
+                                            ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
+                                            : '👥 Visível para os participantes/alunos no dashboard deles.'}
+                                    </p>
+                                </div>
+
+                                {/* Order */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Ordem de Exibição
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={formData.order}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e0e0e0',
+                                            fontSize: '1rem'
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Published */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <input
+                                        type="checkbox"
+                                        id="published"
+                                        checked={formData.isPublished}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
+                                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                    />
+                                    <label htmlFor="published" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer' }}>
+                                        Publicar aula imediatamente
+                                    </label>
+                                </div>
+
+                                {/* Actions */}
+                                <div style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            background: '#f3f4f6',
+                                            border: 'none',
+                                            borderRadius: '12px',
+                                            fontWeight: '600',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={!formData.videoUrl || !formData.title}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            background: formData.videoUrl && formData.title
+                                                ? 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)'
+                                                : '#e5e7eb',
+                                            color: formData.videoUrl && formData.title ? '#000' : '#9ca3af',
+                                            border: 'none',
+                                            borderRadius: '12px',
+                                            fontWeight: 'bold',
+                                            cursor: formData.videoUrl && formData.title ? 'pointer' : 'not-allowed'
+                                        }}
+                                    >
+                                        {editingLesson ? 'Atualizar' : 'Criar'} Aula
+                                    </button>
+                                </div>
+                            </form>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-            );
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
 }
