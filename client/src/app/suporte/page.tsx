@@ -171,9 +171,16 @@ export default function SuportePage() {
                     </p>
                 </motion.div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '30px' : '40px', marginBottom: '60px' }} className="support-grid">
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                    gap: isMobile ? '30px' : '40px',
+                    marginBottom: '60px',
+                    alignItems: 'start',
+                    justifyItems: isMobile ? 'center' : 'stretch'
+                }} className="support-grid">
                     {/* Contact Methods */}
-                    <div>
+                    <div style={{ width: '100%', maxWidth: isMobile ? '500px' : 'none' }}>
                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: isMobile ? '20px' : '30px' }}>Canais de Contato</h2>
                         <div style={{ display: 'grid', gap: '20px' }}>
                             {contactMethods.map((method, index) => (
@@ -253,7 +260,9 @@ export default function SuportePage() {
                             padding: isMobile ? '25px' : '40px',
                             borderRadius: '20px',
                             border: '1px solid #eee',
-                            boxShadow: '0 10px 40px rgba(0,0,0,0.05)'
+                            boxShadow: '0 10px 40px rgba(0,0,0,0.05)',
+                            width: '100%',
+                            maxWidth: isMobile ? '500px' : 'none'
                         }}
                     >
                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: '10px' }}>Envie uma Mensagem</h2>
