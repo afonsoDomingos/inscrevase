@@ -30,6 +30,14 @@ export default function BlogManagement() {
     });
     const [uploading, setUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -194,8 +202,15 @@ export default function BlogManagement() {
     };
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div style={{ padding: isMobile ? '1rem' : '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+            <div style={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                justifyContent: 'space-between',
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: '1.5rem',
+                marginBottom: '2rem'
+            }}>
                 <div>
                     <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Gerenciar Blog</h1>
                     <p style={{ color: '#666' }}>Crie e publique artigos educativos</p>
@@ -232,21 +247,28 @@ export default function BlogManagement() {
                             key={post._id}
                             style={{
                                 display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
                                 gap: '1rem',
                                 background: '#fff',
                                 border: '1px solid #eee',
                                 borderRadius: '12px',
                                 padding: '1rem',
-                                alignItems: 'center',
+                                alignItems: isMobile ? 'flex-start' : 'center',
                             }}
                         >
                             {post.coverImage && (
                                 <Image
                                     src={post.coverImage}
                                     alt={post.title}
-                                    width={120}
-                                    height={80}
-                                    style={{ borderRadius: '8px', objectFit: 'cover' }}
+                                    width={isMobile ? 400 : 120}
+                                    height={isMobile ? 200 : 80}
+                                    style={{
+                                        borderRadius: '8px',
+                                        objectFit: 'cover',
+                                        width: isMobile ? '100%' : '120px',
+                                        height: isMobile ? 'auto' : '80px',
+                                        aspectRatio: isMobile ? '16/9' : 'auto'
+                                    }}
                                 />
                             )}
                             <div style={{ flex: 1 }}>
@@ -267,7 +289,14 @@ export default function BlogManagement() {
                                     {post.category} • {post.readTime} min • {new Date(post.createdAt).toLocaleDateString()}
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div style={{
+                                display: 'flex',
+                                gap: '0.5rem',
+                                width: isMobile ? '100%' : 'auto',
+                                justifyContent: isMobile ? 'flex-end' : 'flex-start',
+                                borderTop: isMobile ? '1px solid #eee' : 'none',
+                                paddingTop: isMobile ? '0.75rem' : '0'
+                            }}>
                                 <button
                                     onClick={() => handleEdit(post)}
                                     style={{
@@ -313,7 +342,7 @@ export default function BlogManagement() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             zIndex: 1000,
-                            padding: '2rem',
+                            padding: isMobile ? '0' : '2rem',
                         }}
                         onClick={() => setShowModal(false)}
                     >
@@ -324,11 +353,12 @@ export default function BlogManagement() {
                             onClick={(e) => e.stopPropagation()}
                             style={{
                                 background: '#fff',
-                                borderRadius: '24px',
-                                padding: '2rem',
+                                borderRadius: isMobile ? '0' : '24px',
+                                padding: isMobile ? '1.5rem 1rem' : '2rem',
                                 maxWidth: '900px',
-                                width: '95%',
-                                maxHeight: '90vh',
+                                width: '100%',
+                                height: isMobile ? '100%' : 'auto',
+                                maxHeight: isMobile ? '100%' : '90vh',
                                 overflowY: 'auto',
                                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                                 position: 'relative'

@@ -513,9 +513,19 @@ export default function ParticipantDashboard() {
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: 'var(--foreground)' }}
+                            style={{
+                                fontSize: isMobile ? '1.5rem' : '2rem',
+                                fontWeight: 800,
+                                fontFamily: 'var(--font-playfair)',
+                                lineHeight: 1.2,
+                                color: 'var(--foreground)',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}
                         >
-                            {t('common.hello')}, <span className="gold-text">{(user?.name || t('common.user')).split(' ')[0]}</span>
+                            {t('common.hello')}, <span className="gold-text" style={{ wordBreak: 'break-word' }}>{(user?.name || t('common.user')).split(' ')[0]}</span>
                         </motion.h1>
                         <p style={{ color: '#666', marginTop: '0.4rem', fontSize: isMobile ? '0.9rem' : '1.05rem', fontWeight: 500 }}>
                             {t('dashboard.participantWelcomeDesc')}

@@ -102,6 +102,15 @@ export default function MentorLessonsPage() {
         targetAudience: 'mentors' as 'mentors' | 'participants'
     });
 
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -199,7 +208,7 @@ export default function MentorLessonsPage() {
 
     const formatDuration = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
+        const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
@@ -249,6 +258,33 @@ export default function MentorLessonsPage() {
         } catch (error) {
             console.error('Error uploading video:', error);
             setIsUploading(false);
+        }
+    };
+
+    const handleThumbnailUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', file);
+        formDataUpload.append('folder', 'lesson-thumbnails');
+
+        try {
+            const token = Cookies.get('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formDataUpload
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setFormData(prev => ({ ...prev, thumbnailUrl: data.url }));
+            }
+        } catch (error) {
+            console.error('Error uploading thumbnail:', error);
         }
     };
 
@@ -384,12 +420,12 @@ export default function MentorLessonsPage() {
 
     return (
         <MentorDashboardShell activeRoute="lessons">
-            <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+            <div style={{ padding: isMobile ? '1rem' : '2rem', maxWidth: '1400px', margin: '0 auto' }}>
 
                 {/* Header & Tabs */}
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
+                        <h1 style={{ fontSize: isMobile ? '1.75rem' : '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                             🎓 Academia Inscreva-se
                         </h1>
                         <p style={{ color: '#666' }}>Aprenda com especialistas ou compartilhe seu conhecimento</p>
@@ -438,7 +474,7 @@ export default function MentorLessonsPage() {
                         <div style={{
                             background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
                             borderRadius: '24px',
-                            padding: '3rem 2rem',
+                            padding: isMobile ? '1.5rem 1.25rem' : '3rem 2.5rem',
                             marginBottom: '2rem',
                             position: 'relative',
                             overflow: 'hidden'
@@ -505,23 +541,23 @@ export default function MentorLessonsPage() {
                         </div>
 
                         {/* Filters */}
-                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                            <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
+                        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+                            <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : 1, minWidth: isMobile ? '100%' : '250px' }}>
                                 <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                                 <input
                                     type="text"
                                     placeholder="Buscar aulas..."
                                     value={learnSearch}
                                     onChange={(e) => setLearnSearch(e.target.value)}
-                                    style={{ width: '100%', padding: '14px 14px 14px 44px', borderRadius: '12px', border: '1px solid #e0e0e0', fontSize: '1rem' }}
+                                    style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid #e0e0e0', fontSize: '1rem', background: 'white' }}
                                 />
                             </div>
                             <select
                                 value={learnCategory}
                                 onChange={(e) => setLearnCategory(e.target.value)}
-                                style={{ padding: '14px 20px', borderRadius: '12px', border: '1px solid #e0e0e0', fontSize: '1rem', cursor: 'pointer', background: 'white' }}
+                                style={{ flex: isMobile ? 1 : 'none', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e0e0e0', fontSize: '0.95rem', cursor: 'pointer', background: 'white' }}
                             >
-                                <option value="all">Todas Categorias</option>
+                                <option value="all">{isMobile ? 'Categorias' : 'Todas Categorias'}</option>
                                 <option value="basico">🌱 Básico</option>
                                 <option value="intermediario">🚀 Intermediário</option>
                                 <option value="avancado">⚡ Avançado</option>
@@ -529,21 +565,23 @@ export default function MentorLessonsPage() {
                             <button
                                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
                                 style={{
-                                    padding: '14px 20px',
+                                    flex: isMobile ? 1 : 'none',
+                                    padding: '12px 16px',
                                     borderRadius: '12px',
                                     border: showFavoritesOnly ? '2px solid #ef4444' : '1px solid #e0e0e0',
-                                    fontSize: '1rem',
+                                    fontSize: '0.95rem',
                                     cursor: 'pointer',
                                     background: showFavoritesOnly ? '#fef2f2' : 'white',
                                     color: showFavoritesOnly ? '#ef4444' : '#666',
                                     display: 'flex',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     gap: '8px',
                                     fontWeight: showFavoritesOnly ? 'bold' : 'normal'
                                 }}
                             >
                                 <Heart size={18} fill={showFavoritesOnly ? '#ef4444' : 'none'} />
-                                Favoritas
+                                {isMobile ? 'Fav.' : 'Favoritas'}
                             </button>
                         </div>
 
@@ -566,6 +604,16 @@ export default function MentorLessonsPage() {
                                         style={{ background: 'white', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
                                     >
                                         <div style={{ position: 'relative', paddingTop: '56.25%', background: info.gradient }}>
+                                            {lesson.thumbnailUrl && (
+                                                <div style={{ position: 'absolute', inset: 0 }}>
+                                                    <img
+                                                        src={lesson.thumbnailUrl}
+                                                        alt={lesson.title}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    />
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
+                                                </div>
+                                            )}
                                             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                 <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '50%', width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
                                                     <Play size={24} color={info.color} fill={info.color} />

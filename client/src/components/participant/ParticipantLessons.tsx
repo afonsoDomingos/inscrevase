@@ -169,7 +169,7 @@ export default function ParticipantLessons() {
                                 {lesson.description}
                             </p>
                             <div className="flex items-center justify-between text-xs text-gray-500">
-                                <span>{Math.floor(lesson.duration / 60)} min</span>
+                                <span>{Math.floor(lesson.duration / 60)}:{(Math.floor(lesson.duration % 60)).toString().padStart(2, '0')}</span>
                                 <span>{lesson.views} visualizações</span>
                             </div>
                         </div>

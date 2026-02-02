@@ -609,9 +609,19 @@ function MentorDashboardContent() {
                             <motion.h1
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
-                                style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                style={{
+                                    fontSize: isMobile ? '1.5rem' : '2rem',
+                                    fontWeight: 800,
+                                    fontFamily: 'var(--font-playfair)',
+                                    lineHeight: 1.2,
+                                    color: 'var(--foreground)',
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}
                             >
-                                {t('dashboard.welcomeBack')}, <span className="gold-text">{(user.businessName || user.name).split(' ')[0]}</span>
+                                {t('dashboard.welcomeBack')}, <span className="gold-text" style={{ wordBreak: 'break-word' }}>{(user.businessName || user.name).split(' ')[0]}</span>
                                 {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
                             </motion.h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

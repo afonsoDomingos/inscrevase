@@ -51,6 +51,14 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     const [comments, setComments] = useState<Comment[]>(lesson.comments || []);
     const [newComment, setNewComment] = useState('');
     const [currentUser, setCurrentUser] = useState<{ id: string, name: string, role: string } | null>(null);
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const fetchComments = useCallback(async () => {
         try {
@@ -231,13 +239,13 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                 onClick={(e) => e.stopPropagation()}
                 style={{
                     background: '#1a1a1a',
-                    borderRadius: '24px',
+                    borderRadius: isMobile ? '0' : '24px',
                     width: '100%',
                     maxWidth: '1200px',
-                    height: '90vh',
+                    height: isMobile ? '100%' : '90vh',
                     display: 'flex',
                     flexDirection: 'column',
-                    overflow: 'hidden',
+                    overflow: isMobile ? 'auto' : 'hidden',
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
                 }}
             >
@@ -311,9 +319,21 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                 </div>
 
                 {/* Main Content Area */}
-                <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+                <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    overflow: isMobile ? 'visible' : 'hidden'
+                }}>
                     {/* Video Player Section */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'black', position: 'relative' }}>
+                    <div style={{
+                        flex: isMobile ? 'none' : 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        background: 'black',
+                        position: 'relative',
+                        aspectRatio: isMobile ? '16/9' : 'auto'
+                    }}>
                         {(lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be') || lesson.videoUrl.includes('vimeo') || lesson.videoUrl.includes('drive.google.com')) ? (
                             <>
                                 <iframe
@@ -368,14 +388,17 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                     <AnimatePresence>
                         {showComments && (
                             <motion.div
-                                initial={{ width: 0, opacity: 0 }}
-                                animate={{ width: '350px', opacity: 1 }}
-                                exit={{ width: 0, opacity: 0 }}
+                                initial={isMobile ? { height: 0, opacity: 0 } : { width: 0, opacity: 0 }}
+                                animate={isMobile ? { height: 'auto', opacity: 1 } : { width: '350px', opacity: 1 }}
+                                exit={isMobile ? { height: 0, opacity: 0 } : { width: 0, opacity: 0 }}
                                 style={{
-                                    borderLeft: '1px solid #333',
+                                    borderLeft: isMobile ? 'none' : '1px solid #333',
+                                    borderTop: isMobile ? '1px solid #333' : 'none',
                                     background: '#1a1a1a',
                                     display: 'flex',
-                                    flexDirection: 'column'
+                                    flexDirection: 'column',
+                                    height: isMobile ? 'auto' : '100%',
+                                    minHeight: isMobile ? '400px' : 'auto'
                                 }}
                             >
                                 <div style={{ padding: '1.5rem', borderBottom: '1px solid #333', color: 'white', fontWeight: 'bold' }}>

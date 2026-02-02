@@ -70,6 +70,15 @@ export default function LessonsManager() {
         targetAudience: 'mentors' as 'mentors' | 'participants'
     });
 
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     useEffect(() => {
         fetchLessons();
     }, []);
@@ -396,8 +405,8 @@ export default function LessonsManager() {
             </div>
 
             {/* Lessons Table */}
-            <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ background: 'white', borderRadius: '16px', overflowX: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                     <thead>
                         <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Aula</th>
@@ -570,11 +579,12 @@ export default function LessonsManager() {
                             onClick={(e) => e.stopPropagation()}
                             style={{
                                 background: 'white',
-                                borderRadius: '20px',
-                                padding: '2rem',
+                                borderRadius: isMobile ? '0' : '20px',
+                                padding: isMobile ? '1.5rem 1rem' : '2rem',
                                 maxWidth: '600px',
                                 width: '100%',
-                                maxHeight: '90vh',
+                                height: isMobile ? '100%' : 'auto',
+                                maxHeight: isMobile ? '100%' : '90vh',
                                 overflowY: 'auto'
                             }}
                         >

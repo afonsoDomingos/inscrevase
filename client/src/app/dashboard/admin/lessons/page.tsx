@@ -74,6 +74,15 @@ export default function AdminLessonsPage() {
         targetAudience: 'mentors' as 'mentors' | 'participants'
     });
 
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     useEffect(() => {
         fetchLessons();
     }, []);
@@ -294,7 +303,7 @@ export default function AdminLessonsPage() {
     }
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ padding: isMobile ? '1rem' : '2rem', maxWidth: '1400px', margin: '0 auto' }}>
             {/* Header */}
             <div style={{ marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
@@ -343,9 +352,9 @@ export default function AdminLessonsPage() {
             </div>
 
             {/* Filters and Actions */}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', gap: '1rem', flex: 1, flexWrap: 'wrap' }}>
-                    <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', flex: 1, flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
+                    <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : 1, minWidth: isMobile ? '100%' : '250px' }}>
                         <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                         <input
                             type="text"
@@ -365,14 +374,16 @@ export default function AdminLessonsPage() {
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
                         style={{
+                            flex: isMobile ? 1 : 'none',
                             padding: '12px 16px',
                             borderRadius: '12px',
                             border: '1px solid #e0e0e0',
                             fontSize: '0.95rem',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            background: 'white'
                         }}
                     >
-                        <option value="all">Todas Categorias</option>
+                        <option value="all">{isMobile ? 'Categorias' : 'Todas Categorias'}</option>
                         <option value="basico">Básico</option>
                         <option value="intermediario">Intermediário</option>
                         <option value="avancado">Avançado</option>
@@ -381,8 +392,10 @@ export default function AdminLessonsPage() {
                 <button
                     onClick={() => openModal()}
                     style={{
+                        width: isMobile ? '100%' : 'auto',
                         display: 'flex',
                         alignItems: 'center',
+                        justifyContent: 'center',
                         gap: '8px',
                         padding: '12px 24px',
                         background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
@@ -400,8 +413,8 @@ export default function AdminLessonsPage() {
             </div>
 
             {/* Lessons Table */}
-            <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ background: 'white', borderRadius: '16px', overflowX: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                     <thead>
                         <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Aula</th>
@@ -467,7 +480,7 @@ export default function AdminLessonsPage() {
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem', color: '#666' }}>
-                                    {Math.floor(lesson.duration / 60)}:{(lesson.duration % 60).toString().padStart(2, '0')}
+                                    {Math.floor(lesson.duration / 60)}:{(Math.floor(lesson.duration % 60)).toString().padStart(2, '0')}
                                 </td>
                                 <td style={{ padding: '1rem', color: '#666' }}>{lesson.views}</td>
                                 <td style={{ padding: '1rem' }}>
@@ -580,11 +593,12 @@ export default function AdminLessonsPage() {
                             onClick={(e) => e.stopPropagation()}
                             style={{
                                 background: 'white',
-                                borderRadius: '20px',
-                                padding: '2rem',
+                                borderRadius: isMobile ? '0' : '20px',
+                                padding: isMobile ? '1.5rem 1rem' : '2rem',
                                 maxWidth: '600px',
                                 width: '100%',
-                                maxHeight: '90vh',
+                                height: isMobile ? '100%' : 'auto',
+                                maxHeight: isMobile ? '100%' : '90vh',
                                 overflowY: 'auto'
                             }}
                         >
