@@ -621,7 +621,6 @@ function MentorDashboardContent() {
                                     gap: '8px'
                                 }}
                             >
-                                {!isMobile && t('dashboard.welcomeBack') + ', '}
                                 <span className="gold-text" style={{ wordBreak: 'break-word' }}>
                                     {(user.businessName || user.name).split(' ')[0]}
                                 </span>
