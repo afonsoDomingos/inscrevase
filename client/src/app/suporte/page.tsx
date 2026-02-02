@@ -10,10 +10,12 @@ import {
     Clock,
     CheckCircle,
     Loader2,
-    ArrowLeft
+    ArrowLeft,
+    ChevronLeft
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 export default function SuportePage() {
     const router = useRouter();
@@ -25,6 +27,14 @@ export default function SuportePage() {
     });
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -110,7 +120,7 @@ export default function SuportePage() {
                 background: 'rgba(255,255,255,0.8)',
                 backdropFilter: 'blur(20px)',
                 zIndex: 100,
-                padding: '15px 24px',
+                padding: isMobile ? '10px 16px' : '15px 24px',
                 borderBottom: '1px solid #eee'
             }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -123,48 +133,49 @@ export default function SuportePage() {
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                            fontWeight: 500,
-                            fontSize: '0.9rem',
+                            gap: '4px',
+                            fontWeight: 600,
+                            fontSize: isMobile ? '0.85rem' : '0.9rem',
                             color: '#171A20'
                         }}
                     >
-                        <ArrowLeft size={18} /> Voltar
+                        <ChevronLeft size={isMobile ? 20 : 18} /> {isMobile ? 'Voltar' : 'Voltar'}
                     </button>
-                    <div style={{ fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.9rem' }}>
+                    <div style={{ fontWeight: 800, letterSpacing: isMobile ? '1px' : '2px', textTransform: 'uppercase', fontSize: isMobile ? '0.8rem' : '0.9rem', flex: 1, textAlign: 'center' }}>
                         SUPORTE
                     </div>
-                    <div style={{ width: '80px' }}></div>
+                    <div style={{ width: isMobile ? '60px' : '80px' }}></div>
                 </div>
             </nav>
 
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 24px' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '40px 16px' : '60px 24px' }}>
                 {/* Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    style={{ textAlign: 'center', marginBottom: '60px' }}
+                    style={{ textAlign: 'center', marginBottom: isMobile ? '40px' : '60px' }}
                 >
                     <h1 style={{
-                        fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                        fontSize: isMobile ? '2rem' : 'clamp(2.5rem, 5vw, 4rem)',
                         fontWeight: 700,
-                        letterSpacing: '-2px',
-                        marginBottom: '20px',
+                        letterSpacing: isMobile ? '-1px' : '-2px',
+                        marginBottom: '15px',
                         background: 'linear-gradient(135deg, #171A20 0%, #666 100%)',
                         WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
+                        WebkitTextFillColor: 'transparent',
+                        lineHeight: 1.1
                     }}>
                         Como podemos ajudar?
                     </h1>
-                    <p style={{ fontSize: '1.2rem', color: '#5C5E62', maxWidth: '600px', margin: '0 auto' }}>
+                    <p style={{ fontSize: isMobile ? '1rem' : '1.2rem', color: '#5C5E62', maxWidth: '600px', margin: '0 auto', lineHeight: 1.5 }}>
                         Nossa equipe está pronta para responder suas dúvidas e fornecer o suporte necessário.
                     </p>
                 </motion.div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '60px' }} className="support-grid">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '30px' : '40px', marginBottom: '60px' }} className="support-grid">
                     {/* Contact Methods */}
                     <div>
-                        <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '30px' }}>Canais de Contato</h2>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: isMobile ? '20px' : '30px' }}>Canais de Contato</h2>
                         <div style={{ display: 'grid', gap: '20px' }}>
                             {contactMethods.map((method, index) => (
                                 <motion.a
@@ -178,34 +189,41 @@ export default function SuportePage() {
                                     whileHover={{ scale: 1.02, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
                                     style={{
                                         background: '#fff',
-                                        padding: '30px',
+                                        padding: isMobile ? '20px' : '30px',
                                         borderRadius: '20px',
                                         border: '1px solid #eee',
                                         textDecoration: 'none',
                                         color: '#171A20',
                                         display: 'flex',
-                                        gap: '20px',
+                                        gap: isMobile ? '15px' : '20px',
                                         alignItems: 'start',
                                         cursor: 'pointer',
-                                        transition: 'all 0.3s'
+                                        transition: 'all 0.3s',
+                                        overflow: 'hidden'
                                     }}
                                 >
                                     <div style={{
                                         background: '#f4f4f4',
-                                        padding: '15px',
+                                        padding: isMobile ? '10px' : '15px',
                                         borderRadius: '12px',
                                         flexShrink: 0
                                     }}>
                                         {method.icon}
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', fontWeight: 700, marginBottom: '5px' }}>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', fontWeight: 700, marginBottom: '5px' }}>
                                             {method.title}
                                         </div>
-                                        <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px' }}>
+                                        <div style={{
+                                            fontSize: isMobile ? '1rem' : '1.1rem',
+                                            fontWeight: 800,
+                                            marginBottom: '5px',
+                                            wordBreak: 'break-word',
+                                            overflowWrap: 'break-word'
+                                        }}>
                                             {method.value}
                                         </div>
-                                        <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#666', lineHeight: 1.4 }}>
                                             {method.description}
                                         </div>
                                     </div>
@@ -214,7 +232,7 @@ export default function SuportePage() {
                         </div>
 
                         {/* Additional Info */}
-                        <div style={{ marginTop: '30px', padding: '25px', background: '#171A20', borderRadius: '20px', color: '#fff' }}>
+                        <div style={{ marginTop: '30px', padding: isMobile ? '20px' : '25px', background: '#171A20', borderRadius: '20px', color: '#fff' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
                                 <Clock size={20} />
                                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Horário de Atendimento</h3>
@@ -230,16 +248,16 @@ export default function SuportePage() {
                     {/* Contact Form */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        animate={{ opacity: 1, y: 0 }}
                         style={{
                             background: '#fff',
-                            padding: '40px',
+                            padding: isMobile ? '25px' : '40px',
                             borderRadius: '20px',
                             border: '1px solid #eee',
                             boxShadow: '0 10px 40px rgba(0,0,0,0.05)'
                         }}
                     >
-                        <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '10px' }}>Envie uma Mensagem</h2>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: '10px' }}>Envie uma Mensagem</h2>
                         <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '30px' }}>
                             Preencha o formulário abaixo e entraremos em contato em breve.
                         </p>
@@ -390,12 +408,12 @@ export default function SuportePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    style={{ marginTop: '60px' }}
+                    style={{ marginTop: isMobile ? '40px' : '60px' }}
                 >
-                    <h2 style={{ fontSize: '2rem', fontWeight: 700, textAlign: 'center', marginBottom: '40px' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700, textAlign: 'center', marginBottom: isMobile ? '20px' : '40px' }}>
                         Perguntas Frequentes
                     </h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                         {[
                             {
                                 q: 'Como criar um evento?',
@@ -414,8 +432,8 @@ export default function SuportePage() {
                                 a: 'No dashboard de mentor, você pode aprovar, rejeitar e visualizar todas as inscrições em tempo real.'
                             }
                         ].map((faq, index) => (
-                            <div key={index} style={{ background: '#fff', padding: '25px', borderRadius: '16px', border: '1px solid #eee' }}>
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '10px' }}>{faq.q}</h3>
+                            <div key={index} style={{ background: '#fff', padding: isMobile ? '20px' : '25px', borderRadius: '16px', border: '1px solid #eee' }}>
+                                <h3 style={{ fontSize: isMobile ? '1rem' : '1.1rem', fontWeight: 700, marginBottom: '10px' }}>{faq.q}</h3>
                                 <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.6 }}>{faq.a}</p>
                             </div>
                         ))}
