@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
+import Image from 'next/image';
+import MentorDashboardShell from '@/components/mentor/MentorDashboardShell';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -66,7 +68,7 @@ interface Stats {
     totalViews: number;
 }
 
-import MentorDashboardShell from '@/components/mentor/MentorDashboardShell';
+
 
 export default function MentorLessonsPage() {
     const router = useRouter();
@@ -606,10 +608,11 @@ export default function MentorLessonsPage() {
                                         <div style={{ position: 'relative', paddingTop: '56.25%', background: info.gradient }}>
                                             {lesson.thumbnailUrl && (
                                                 <div style={{ position: 'absolute', inset: 0 }}>
-                                                    <img
+                                                    <Image
                                                         src={lesson.thumbnailUrl}
                                                         alt={lesson.title}
-                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        fill
+                                                        style={{ objectFit: 'cover' }}
                                                     />
                                                     <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
                                                 </div>
@@ -957,6 +960,69 @@ export default function MentorLessonsPage() {
                                                 </button>
                                             </div>
                                         )}
+                                        {/* Thumbnail Upload */}
+                                        <div style={{ marginTop: '0.5rem' }}>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Capa da Aula (Opcional)</label>
+                                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                <div style={{
+                                                    width: '120px',
+                                                    height: '68px',
+                                                    background: '#f3f4f6',
+                                                    borderRadius: '8px',
+                                                    overflow: 'hidden',
+                                                    border: '1px solid #e0e0e0',
+                                                    position: 'relative',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    {formData.thumbnailUrl ? (
+                                                        <Image src={formData.thumbnailUrl} alt="Thumbnail preview" fill style={{ objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <Video size={24} color="#ccc" />
+                                                    )}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleThumbnailUpload}
+                                                        id="thumb-upload"
+                                                        style={{ display: 'none' }}
+                                                    />
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        <label
+                                                            htmlFor="thumb-upload"
+                                                            style={{
+                                                                padding: '8px 16px',
+                                                                background: '#fff',
+                                                                border: '1px solid #D4AF37',
+                                                                color: '#D4AF37',
+                                                                borderRadius: '8px',
+                                                                fontSize: '0.875rem',
+                                                                fontWeight: '600',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            Upload Capa
+                                                        </label>
+                                                        <input
+                                                            type="url"
+                                                            placeholder="Ou URL da imagem..."
+                                                            value={formData.thumbnailUrl}
+                                                            onChange={(e) => setFormData(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
+                                                            style={{
+                                                                flex: 1,
+                                                                padding: '8px 12px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #e0e0e0',
+                                                                fontSize: '0.875rem'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div>
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Título</label>

@@ -16,8 +16,9 @@ import {
     Video,
     Clock,
     CheckCircle,
-    Image
+    Image as ImageIcon
 } from 'lucide-react';
+import Image from 'next/image';
 // import { useTranslate } from '@/context/LanguageContext';
 
 interface Lesson {
@@ -441,7 +442,7 @@ export default function LessonsManager() {
                                             border: '1px solid #eee'
                                         }}>
                                             {lesson.thumbnailUrl ? (
-                                                <img src={lesson.thumbnailUrl} alt={lesson.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                <Image src={lesson.thumbnailUrl} alt={lesson.title} width={60} height={40} style={{ objectFit: 'cover' }} />
                                             ) : (
                                                 <Play size={20} color="#D4AF37" />
                                             )}
@@ -784,17 +785,18 @@ export default function LessonsManager() {
                                 <div style={{ border: '1px solid #eee', padding: '1.5rem', borderRadius: '16px', background: '#fcfcfc', marginTop: '1rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                         <label style={{ fontWeight: '600', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <Image size={18} color="#D4AF37" /> Capa da Aula (Thumbnail)
+                                            <ImageIcon size={18} color="#D4AF37" /> Capa da Aula (Thumbnail)
                                         </label>
                                     </div>
 
                                     <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
                                         {formData.thumbnailUrl ? (
                                             <div style={{ position: 'relative', width: '200px', height: '112px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ddd' }}>
-                                                <img
+                                                <Image
                                                     src={formData.thumbnailUrl}
                                                     alt="Thumbnail preview"
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    fill
+                                                    style={{ objectFit: 'cover' }}
                                                 />
                                                 <button
                                                     type="button"
