@@ -30,6 +30,7 @@ interface Lesson {
     isPublished: boolean;
     views: number;
     order: number;
+    targetAudience?: 'mentors' | 'participants';
     createdAt: string;
 }
 
