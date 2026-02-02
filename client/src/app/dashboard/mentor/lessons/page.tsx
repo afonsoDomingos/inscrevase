@@ -591,6 +591,9 @@ export default function MentorLessonsPage() {
                                                 <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: info.color, background: `${info.color}15`, padding: '4px 10px', borderRadius: '20px' }}>
                                                     {info.icon} {info.label}
                                                 </span>
+                                                <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#666', background: '#f0f0f0', padding: '4px 10px', borderRadius: '20px' }}>
+                                                    Aula {lesson.order || idx + 1}
+                                                </span>
                                             </div>
                                             <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '0.5rem', lineHeight: '1.4' }}>{lesson.title}</h3>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '0.875rem' }}>

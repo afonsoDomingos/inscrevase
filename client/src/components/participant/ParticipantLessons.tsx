@@ -155,6 +155,11 @@ export default function ParticipantLessons() {
                         </div>
 
                         <div className="p-5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-[10px] font-black uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded">
+                                    Aula {lesson.order || (lessons.indexOf(lesson) + 1)}
+                                </span>
+                            </div>
                             <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-yellow-600 transition-colors">
                                 {lesson.title}
                             </h3>

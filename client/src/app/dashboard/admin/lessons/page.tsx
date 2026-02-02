@@ -408,9 +408,14 @@ export default function AdminLessonsPage() {
                                             <Play size={20} color="#D4AF37" />
                                         </div>
                                         <div>
-                                            <p style={{ fontWeight: '600', color: '#1a1a1a', marginBottom: '2px' }}>{lesson.title}</p>
-                                            <p style={{ fontSize: '0.875rem', color: '#666' }}>
-                                                {lesson.description?.substring(0, 50)}{lesson.description?.length > 50 ? '...' : ''}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#999', background: '#f5f5f5', padding: '1px 5px', borderRadius: '4px' }}>
+                                                    #{lesson.order || 0}
+                                                </span>
+                                                <p style={{ fontWeight: '600', color: '#1a1a1a', margin: 0 }}>{lesson.title}</p>
+                                            </div>
+                                            <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '2px' }}>
+                                                {lesson.description?.substring(0, 40)}{lesson.description?.length > 40 ? '...' : ''}
                                             </p>
                                         </div>
                                     </div>
