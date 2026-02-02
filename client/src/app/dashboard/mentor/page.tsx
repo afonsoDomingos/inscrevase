@@ -621,11 +621,21 @@ function MentorDashboardContent() {
                                     gap: '8px'
                                 }}
                             >
-                                {t('dashboard.welcomeBack')}, <span className="gold-text" style={{ wordBreak: 'break-word' }}>{(user.businessName || user.name).split(' ')[0]}</span>
+                                {!isMobile && t('dashboard.welcomeBack') + ', '}
+                                <span className="gold-text" style={{ wordBreak: 'break-word' }}>
+                                    {(user.businessName || user.name).split(' ')[0]}
+                                </span>
                                 {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
                             </motion.h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <p style={{ color: '#666', marginTop: '0.4rem', fontSize: isMobile ? '0.9rem' : '1.05rem', fontWeight: 500 }}>
+                                <p style={{
+                                    color: '#666',
+                                    marginTop: '0.4rem',
+                                    fontSize: isMobile ? '0.9rem' : '1.05rem',
+                                    fontWeight: 500,
+                                    maxWidth: isMobile ? '280px' : 'none',
+                                    lineHeight: 1.4
+                                }}>
                                     {t('dashboard.readyToManage')}
                                 </p>
                                 {!isMobile && (

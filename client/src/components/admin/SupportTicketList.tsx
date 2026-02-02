@@ -13,6 +13,14 @@ export default function SupportTicketList() {
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filter, setFilter] = useState<'all' | 'open' | 'answered' | 'closed'>('all');
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         loadTickets();
@@ -69,23 +77,24 @@ export default function SupportTicketList() {
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1 style={{ fontSize: '2rem', fontWeight: 700 }}>Central de Suporte</h1>
+        <div style={{ padding: isMobile ? '1rem' : '2rem' }}>
+            <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '1rem' }}>
+                <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700 }}>Central de Suporte</h1>
 
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                     {(['all', 'open', 'answered', 'closed'] as const).map(status => (
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
                             style={{
-                                padding: '0.5rem 1rem',
+                                padding: isMobile ? '0.4rem 0.6rem' : '0.5rem 1rem',
                                 borderRadius: '8px',
                                 border: filter === status ? '2px solid #FFD700' : '1px solid #ddd',
                                 background: filter === status ? '#fff' : 'transparent',
                                 cursor: 'pointer',
                                 fontWeight: filter === status ? 600 : 400,
-                                textTransform: 'capitalize'
+                                textTransform: 'capitalize',
+                                fontSize: isMobile ? '0.75rem' : '0.9rem'
                             }}
                         >
                             {status === 'all' ? 'Todos' : getStatusLabel(status)}
@@ -109,7 +118,7 @@ export default function SupportTicketList() {
                             onClick={() => handleTicketClick(ticket)}
                             style={{
                                 background: '#fff',
-                                padding: '1.5rem',
+                                padding: isMobile ? '1rem' : '1.5rem',
                                 borderRadius: '12px',
                                 border: '1px solid #eee',
                                 cursor: 'pointer',

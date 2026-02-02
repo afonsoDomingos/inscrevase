@@ -588,7 +588,12 @@ export default function MentorLessonsPage() {
                         </div>
 
                         {/* Lessons Grid */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
+                            gap: '1.5rem',
+                            justifyContent: 'center'
+                        }}>
                             {learnLessons.filter(l =>
                                 (l.title.toLowerCase().includes(learnSearch.toLowerCase()) || l.description?.toLowerCase().includes(learnSearch.toLowerCase())) &&
                                 (learnCategory === 'all' || l.category === learnCategory) &&

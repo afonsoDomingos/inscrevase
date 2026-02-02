@@ -32,6 +32,14 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // New Ticket State
     const [subject, setSubject] = useState('');
@@ -211,167 +219,348 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '900px',
+                        maxWidth: isMobile ? '100%' : '900px',
                         background: '#fff',
-                        borderRadius: '24px',
+                        borderRadius: isMobile ? '0' : '24px',
                         overflow: 'hidden',
-                        height: '80vh',
+                        height: isMobile ? '100dvh' : '80vh',
                         display: 'flex',
                         flexDirection: 'column',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
                     }}
                 >
                     {/* Header */}
-                    <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
+                    <div style={{ padding: isMobile ? '1rem' : '1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ background: '#000', color: '#FFD700', padding: '8px', borderRadius: '8px' }}>
-                                <LifeBuoy size={24} />
-                            </div>
-                            <div>
-                                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-playfair)' }}>
-                                    {mode === 'admin' ? t('support.adminTitle') : (mode === 'mentor' ? 'Mensagens dos Participantes' : t('support.title'))}
-                                </h3>
-                                <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                    {mode === 'admin' ? t('support.adminSubtitle') : (mode === 'mentor' ? 'Gerencie as conversas com seus alunos' : t('support.userSubtitle'))}
-                                </p>
-                            </div>
-                        </div>
-                        <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={20} /></button>
-                    </div>
-
-                    <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '280px 1fr', overflow: 'hidden' }}>
-                        {/* Sidebar */}
-                        <div style={{ background: '#f8f9fa', borderRight: '1px solid #eee', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
-                            {mode === 'user' && (
+                            {isMobile && view !== 'list' && (
                                 <button
-                                    onClick={() => { setView('new'); setSelectedTicket(null); setSelectedRecipient('platform'); setSubject(''); setInitialMessage(''); }}
-                                    className="btn-primary"
-                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', borderRadius: '12px', marginBottom: '2rem', width: '100%' }}
+                                    onClick={() => setView('list')}
+                                    style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '5px', marginRight: '5px' }}
                                 >
-                                    <Plus size={18} /> {t('support.newTicket')}
+                                    <X size={20} style={{ transform: 'rotate(90deg)' }} />
                                 </button>
                             )}
-
-                            <h3 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#999', marginBottom: '1rem', textTransform: 'uppercase' }}>
-                                {mode === 'admin' ? t('support.allTickets') : t('support.yourTickets')}
-                            </h3>
-
-                            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {loading && view === 'list' ? (
-                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><Loader2 className="animate-spin" /></div>
-                                ) : tickets.length === 0 ? (
-                                    <p style={{ textAlign: 'center', color: '#999', fontSize: '0.9rem', marginTop: '2rem' }}>{t('support.noTickets')}</p>
-                                ) : (
-                                    tickets.map(ticket => (
-                                        <button
-                                            key={ticket._id}
-                                            onClick={() => { setSelectedTicket(ticket); setView('chat'); }}
-                                            style={{
-                                                textAlign: 'left',
-                                                padding: '1rem',
-                                                borderRadius: '12px',
-                                                background: selectedTicket?._id === ticket._id ? '#fff' : 'transparent',
-                                                border: selectedTicket?._id === ticket._id ? '1px solid #ddd' : 'none',
-                                                boxShadow: selectedTicket?._id === ticket._id ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s'
-                                            }}
-                                        >
-                                            <div style={{ fontWeight: 600, marginBottom: '4px', fontSize: '0.95rem' }}>{ticket.subject}</div>
-                                            {/* Admin View */}
-                                            {mode === 'admin' && ticket.user && (
-                                                <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>{t('support.by')}: {ticket.user.name || t('common.mentor')}</div>
-                                            )}
-
-                                            {/* Mentor/User View */}
-                                            {mode !== 'admin' && userId && (
-                                                <>
-                                                    {/* If I am the mentor */}
-                                                    {ticket.mentor?._id === userId && ticket.user && (
-                                                        <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Participante: {ticket.user.name}</div>
-                                                    )}
-                                                    {/* If I am the creator and talking to a mentor */}
-                                                    {ticket.user?._id === userId && ticket.mentor && (
-                                                        <div style={{ fontSize: '0.75rem', color: '#DAA520', marginBottom: '4px', fontWeight: 600 }}>Mentor: {ticket.mentor.businessName || ticket.mentor.name}</div>
-                                                    )}
-                                                    {/* If I am the creator and talking to Admin */}
-                                                    {ticket.user?._id === userId && !ticket.mentor && (
-                                                        <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Suporte Técnico (Admin)</div>
-                                                    )}
-                                                </>
-                                            )}
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{
-                                                    fontSize: '0.75rem',
-                                                    padding: '2px 8px',
-                                                    borderRadius: '10px',
-                                                    background: ticket.status === 'answered' ? '#d1fae5' : (ticket.status === 'closed' ? '#eee' : '#fff3cd'),
-                                                    color: ticket.status === 'answered' ? '#047857' : (ticket.status === 'closed' ? '#666' : '#b45309'),
-                                                    fontWeight: 600
-                                                }}>
-                                                    {ticket.status === 'open' ? t('support.statusOpen') : (ticket.status === 'answered' ? t('support.statusAnswered') : t('support.statusClosed'))}
-                                                </span>
-                                                <span style={{ fontSize: '0.7rem', color: '#999' }}>
-                                                    {new Date(ticket.createdAt).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    ))
+                            <div style={{ background: '#000', color: '#FFD700', padding: isMobile ? '4px' : '8px', borderRadius: '8px' }}>
+                                <LifeBuoy size={isMobile ? 20 : 24} />
+                            </div>
+                            <div>
+                                <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 700, fontFamily: 'var(--font-playfair)' }}>
+                                    {mode === 'admin' ? t('support.adminTitle') : (mode === 'mentor' ? 'Mensagens' : t('support.title'))}
+                                </h3>
+                                {!isMobile && (
+                                    <p style={{ fontSize: '0.8rem', color: '#666' }}>
+                                        {mode === 'admin' ? t('support.adminSubtitle') : (mode === 'mentor' ? 'Gerencie as conversas com seus alunos' : t('support.userSubtitle'))}
+                                    </p>
                                 )}
                             </div>
                         </div>
+                        <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={isMobile ? 24 : 20} /></button>
+                    </div>
+
+                    <div style={{ flex: 1, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '280px 1fr', overflow: 'hidden' }}>
+                        {/* Sidebar */}
+                        {(view === 'list' || !isMobile) && (
+                            <div style={{ background: '#f8f9fa', borderRight: '1px solid #eee', padding: isMobile ? '1rem' : '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                                {mode === 'user' && (
+                                    <button
+                                        onClick={() => { setView('new'); setSelectedTicket(null); setSelectedRecipient('platform'); setSubject(''); setInitialMessage(''); }}
+                                        className="btn-primary"
+                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', borderRadius: '12px', marginBottom: '2rem', width: '100%' }}
+                                    >
+                                        <Plus size={18} /> {t('support.newTicket')}
+                                    </button>
+                                )}
+
+                                <h3 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#999', marginBottom: '1rem', textTransform: 'uppercase' }}>
+                                    {mode === 'admin' ? t('support.allTickets') : t('support.yourTickets')}
+                                </h3>
+
+                                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {loading && view === 'list' ? (
+                                        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><Loader2 className="animate-spin" /></div>
+                                    ) : tickets.length === 0 ? (
+                                        <p style={{ textAlign: 'center', color: '#999', fontSize: '0.9rem', marginTop: '2rem' }}>{t('support.noTickets')}</p>
+                                    ) : (
+                                        tickets.map(ticket => (
+                                            <button
+                                                key={ticket._id}
+                                                onClick={() => { setSelectedTicket(ticket); setView('chat'); }}
+                                                style={{
+                                                    textAlign: 'left',
+                                                    padding: '1rem',
+                                                    borderRadius: '12px',
+                                                    background: selectedTicket?._id === ticket._id ? '#fff' : 'transparent',
+                                                    border: selectedTicket?._id === ticket._id ? '1px solid #ddd' : 'none',
+                                                    boxShadow: selectedTicket?._id === ticket._id ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                <div style={{ fontWeight: 600, marginBottom: '4px', fontSize: '0.95rem' }}>{ticket.subject}</div>
+                                                {/* Admin View */}
+                                                {mode === 'admin' && ticket.user && (
+                                                    <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>{t('support.by')}: {ticket.user.name || t('common.mentor')}</div>
+                                                )}
+
+                                                {/* Mentor/User View */}
+                                                {mode !== 'admin' && userId && (
+                                                    <>
+                                                        {/* If I am the mentor */}
+                                                        {ticket.mentor?._id === userId && ticket.user && (
+                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Participante: {ticket.user.name}</div>
+                                                        )}
+                                                        {/* If I am the creator and talking to a mentor */}
+                                                        {ticket.user?._id === userId && ticket.mentor && (
+                                                            <div style={{ fontSize: '0.75rem', color: '#DAA520', marginBottom: '4px', fontWeight: 600 }}>Mentor: {ticket.mentor.businessName || ticket.mentor.name}</div>
+                                                        )}
+                                                        {/* If I am the creator and talking to Admin */}
+                                                        {ticket.user?._id === userId && !ticket.mentor && (
+                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Suporte Técnico (Admin)</div>
+                                                        )}
+                                                    </>
+                                                )}
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '10px',
+                                                        background: ticket.status === 'answered' ? '#d1fae5' : (ticket.status === 'closed' ? '#eee' : '#fff3cd'),
+                                                        color: ticket.status === 'answered' ? '#047857' : (ticket.status === 'closed' ? '#666' : '#b45309'),
+                                                        fontWeight: 600
+                                                    }}>
+                                                        {ticket.status === 'open' ? t('support.statusOpen') : (ticket.status === 'answered' ? t('support.statusAnswered') : t('support.statusClosed'))}
+                                                    </span>
+                                                    <span style={{ fontSize: '0.7rem', color: '#999' }}>
+                                                        {new Date(ticket.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Main Content */}
-                        <div style={{ background: '#fff', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-                            {view === 'new' && (
-                                <div style={{ padding: '3rem', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
-                                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem' }}>{t('support.openNewTicket')}</h2>
-                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                        {/* Recipient Selection */}
-                                        {mode === 'user' && !targetMentorId && availableMentors.length > 0 && (
+                        {(view !== 'list' || !isMobile) && (
+                            <div style={{ background: '#fff', display: 'flex', flexDirection: 'column', overflowY: 'auto', flex: 1 }}>
+                                {view === 'new' && (
+                                    <div style={{ padding: isMobile ? '1.5rem' : '3rem', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+                                        <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 700, marginBottom: isMobile ? '1.5rem' : '2rem' }}>{t('support.openNewTicket')}</h2>
+                                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                            {/* Recipient Selection */}
+                                            {mode === 'user' && !targetMentorId && availableMentors.length > 0 && (
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Para quem é a mensagem?</label>
+                                                    <select
+                                                        value={selectedRecipient}
+                                                        onChange={(e) => setSelectedRecipient(e.target.value)}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff', cursor: 'pointer' }}
+                                                    >
+                                                        <option value="platform">Equipe Inscreva.se (Suporte Geral)</option>
+                                                        <optgroup label="Meus Mentores">
+                                                            {availableMentors.map(mentor => (
+                                                                <option key={mentor._id} value={mentor._id}>
+                                                                    {mentor.businessName || mentor.name}
+                                                                </option>
+                                                            ))}
+                                                        </optgroup>
+                                                    </select>
+                                                </div>
+                                            )}
+
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Para quem é a mensagem?</label>
-                                                <select
-                                                    value={selectedRecipient}
-                                                    onChange={(e) => setSelectedRecipient(e.target.value)}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff', cursor: 'pointer' }}
-                                                >
-                                                    <option value="platform">Equipe Inscreva.se (Suporte Geral)</option>
-                                                    <optgroup label="Meus Mentores">
-                                                        {availableMentors.map(mentor => (
-                                                            <option key={mentor._id} value={mentor._id}>
-                                                                {mentor.businessName || mentor.name}
-                                                            </option>
-                                                        ))}
-                                                    </optgroup>
-                                                </select>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.subject')}</label>
+                                                <input
+                                                    type="text"
+                                                    value={subject}
+                                                    onChange={(e) => setSubject(e.target.value)}
+                                                    placeholder={t('support.subjectPlaceholder')}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
                                             </div>
-                                        )}
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.message')}</label>
+                                                <textarea
+                                                    rows={6}
+                                                    value={initialMessage}
+                                                    onChange={(e) => setInitialMessage(e.target.value)}
+                                                    placeholder={t('support.messagePlaceholder')}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
+                                                />
+                                            </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.subject')}</label>
-                                            <input
-                                                type="text"
-                                                value={subject}
-                                                onChange={(e) => setSubject(e.target.value)}
-                                                placeholder={t('support.subjectPlaceholder')}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                            />
+                                            {/* File Attachment */}
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.attachmentOptional')}</label>
+                                                <input
+                                                    ref={fileInputRef}
+                                                    type="file"
+                                                    accept="image/*,.pdf"
+                                                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                                                    style={{ display: 'none' }}
+                                                />
+
+                                                {attachment ? (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f8f9fa' }}>
+                                                        {attachment.endsWith('.pdf') ? (
+                                                            <FileText size={24} color="#ef4444" />
+                                                        ) : (
+                                                            <ImageIcon size={24} color="#10b981" />
+                                                        )}
+                                                        <span style={{ flex: 1, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {attachment.split('/').pop()}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => setAttachment(null)}
+                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}
+                                                        >
+                                                            <X size={18} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        disabled={uploadingFile}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px dashed #ddd', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#666' }}
+                                                    >
+                                                        {uploadingFile ? (
+                                                            <><Loader2 className="animate-spin" size={18} /> {t('common.sending')}...</>
+                                                        ) : (
+                                                            <><Paperclip size={18} /> {t('support.attachImageOrPdf')}</>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <button
+                                                onClick={handleCreateTicket}
+                                                disabled={loading}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '1rem',
+                                                    borderRadius: '12px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '10px',
+                                                    marginTop: '1rem',
+                                                    background: '#1a1a1a',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    fontWeight: 700,
+                                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                                    opacity: loading ? 0.7 : 1
+                                                }}
+                                            >
+                                                {loading ? <Loader2 className="animate-spin" /> : <> Enviar Mensagem <Send size={18} /></>}
+                                            </button>
                                         </div>
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.message')}</label>
-                                            <textarea
-                                                rows={6}
-                                                value={initialMessage}
-                                                onChange={(e) => setInitialMessage(e.target.value)}
-                                                placeholder={t('support.messagePlaceholder')}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
-                                            />
+                                    </div>
+                                )}
+
+                                {view === 'chat' && selectedTicket && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                                        {/* Chat Header */}
+                                        <div style={{ padding: isMobile ? '1rem' : '1.5rem', borderBottom: '1px solid #eee', background: '#fff' }}>
+                                            <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 700 }}>{selectedTicket.subject}</div>
+                                            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                                <span style={{ background: '#f0f0f0', padding: '2px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600 }}>#{selectedTicket._id.slice(-6).toUpperCase()}</span>
+
+                                                {/* Mentor View: Showing Participant Name */}
+                                                {mode === 'mentor' && selectedTicket.user && (
+                                                    <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '0.75rem' : '0.9rem' }}>
+                                                        <UserIcon size={14} /> {isMobile ? '' : 'Participante:'} <span style={{ fontWeight: 400 }}>{selectedTicket.user.name ?? 'Usuário'}</span>
+                                                    </span>
+                                                )}
+
+                                                {/* User View: Showing Mentor Name */}
+                                                {mode === 'user' && (
+                                                    <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '0.75rem' : '0.9rem' }}>
+                                                        {selectedTicket.mentor ? (
+                                                            <><UserIcon size={14} /> {isMobile ? '' : 'Mentor:'} <span style={{ fontWeight: 400 }}>{selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span></>
+                                                        ) : (
+                                                            <><LifeBuoy size={14} /> {isMobile ? '' : 'Suporte:'} <span style={{ fontWeight: 400 }}>Equipe Inscreva.se</span></>
+                                                        )}
+                                                    </span>
+                                                )}
+
+                                                {/* Admin View */}
+                                                {mode === 'admin' && selectedTicket.user && (
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '0.75rem' : '0.9rem' }}>
+                                                        <UserIcon size={14} /> {isMobile ? '' : 'De:'} {selectedTicket.user.name}
+                                                        {selectedTicket.mentor && <span style={{ marginLeft: '8px', color: '#666' }}>Para: {selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span>}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
 
-                                        {/* File Attachment */}
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>{t('support.attachmentOptional')}</label>
+                                        {/* Messages */}
+                                        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '1rem' : '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#f8f9fa' }}>
+                                            {selectedTicket.messages.map((msg, idx) => {
+                                                const myMsg = isMyMessage(msg.sender);
+                                                return (
+                                                    <div
+                                                        key={idx}
+                                                        style={{
+                                                            alignSelf: myMsg ? 'flex-end' : 'flex-start',
+                                                            maxWidth: '70%',
+                                                            background: myMsg ? '#000' : '#fff',
+                                                            color: myMsg ? '#fff' : '#000',
+                                                            padding: '1rem',
+                                                            borderRadius: '16px',
+                                                            borderBottomRightRadius: myMsg ? '4px' : '16px',
+                                                            borderBottomLeftRadius: !myMsg ? '4px' : '16px',
+                                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                                        }}
+                                                    >
+                                                        <p style={{ lineHeight: 1.5, fontSize: '0.95rem' }}>{msg.content}</p>
+
+                                                        {msg.attachment && (
+                                                            <div style={{ marginTop: '0.75rem' }}>
+                                                                {msg.attachment.endsWith('.pdf') ? (
+                                                                    <a
+                                                                        href={msg.attachment}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', background: myMsg ? 'rgba(255,255,255,0.1)' : '#f8f9fa', color: myMsg ? '#fff' : '#000', textDecoration: 'none' }}
+                                                                    >
+                                                                        <FileText size={20} />
+                                                                        <span style={{ fontSize: '0.85rem' }}>{t('common.viewPdf')}</span>
+                                                                    </a>
+                                                                ) : (
+                                                                    <img
+                                                                        src={msg.attachment}
+                                                                        alt="Anexo"
+                                                                        style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '0.5rem', cursor: 'pointer' }}
+                                                                        onClick={() => msg.attachment && window.open(msg.attachment, '_blank')}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '8px', textAlign: 'right' }}>
+                                                            {(() => {
+                                                                const date = new Date(msg.createdAt);
+                                                                const today = new Date();
+                                                                const isToday = date.getDate() === today.getDate() &&
+                                                                    date.getMonth() === today.getMonth() &&
+                                                                    date.getFullYear() === today.getFullYear();
+
+                                                                return isToday
+                                                                    ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                                                    : date.toLocaleString([], { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                                                            })()}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                            <div ref={messagesEndRef} />
+                                        </div>
+
+                                        {/* Input */}
+                                        <div style={{ padding: isMobile ? '0.75rem' : '1.5rem', background: '#fff', borderTop: '1px solid #eee' }}>
                                             <input
                                                 ref={fileInputRef}
                                                 type="file"
@@ -380,229 +569,61 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                 style={{ display: 'none' }}
                                             />
 
-                                            {attachment ? (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f8f9fa' }}>
+                                            {attachment && (
+                                                <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd', background: '#f8f9fa' }}>
                                                     {attachment.endsWith('.pdf') ? (
-                                                        <FileText size={24} color="#ef4444" />
+                                                        <FileText size={20} color="#ef4444" />
                                                     ) : (
-                                                        <ImageIcon size={24} color="#10b981" />
+                                                        <ImageIcon size={20} color="#10b981" />
                                                     )}
-                                                    <span style={{ flex: 1, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    <span style={{ flex: 1, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                         {attachment.split('/').pop()}
                                                     </span>
                                                     <button
                                                         onClick={() => setAttachment(null)}
                                                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}
                                                     >
-                                                        <X size={18} />
+                                                        <X size={16} />
                                                     </button>
                                                 </div>
-                                            ) : (
+                                            )}
+
+                                            <div style={{ display: 'flex', gap: isMobile ? '6px' : '10px' }}>
                                                 <button
                                                     type="button"
                                                     onClick={() => fileInputRef.current?.click()}
                                                     disabled={uploadingFile}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px dashed #ddd', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#666' }}
+                                                    style={{ background: '#f8f9fa', color: '#666', border: '1px solid #ddd', width: isMobile ? '44px' : '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                 >
-                                                    {uploadingFile ? (
-                                                        <><Loader2 className="animate-spin" size={18} /> {t('common.sending')}...</>
-                                                    ) : (
-                                                        <><Paperclip size={18} /> {t('support.attachImageOrPdf')}</>
-                                                    )}
+                                                    {uploadingFile ? <Loader2 className="animate-spin" size={20} /> : <Paperclip size={20} />}
                                                 </button>
-                                            )}
-                                        </div>
-
-                                        <button
-                                            onClick={handleCreateTicket}
-                                            disabled={loading}
-                                            // className="btn-primary" // Removed class reliance, using explicit styles
-                                            style={{
-                                                width: '100%',
-                                                padding: '1rem',
-                                                borderRadius: '12px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '10px',
-                                                marginTop: '1rem',
-                                                background: '#1a1a1a',
-                                                color: '#fff',
-                                                border: 'none',
-                                                fontWeight: 700,
-                                                cursor: loading ? 'not-allowed' : 'pointer',
-                                                opacity: loading ? 0.7 : 1
-                                            }}
-                                        >
-                                            {loading ? <Loader2 className="animate-spin" /> : <> Enviar Mensagem <Send size={18} /></>}
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {view === 'chat' && selectedTicket && (
-                                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                    {/* Chat Header */}
-                                    <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee', background: '#fff' }}>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>{selectedTicket.subject}</div>
-                                        <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                            <span style={{ background: '#f0f0f0', padding: '2px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600 }}>#{selectedTicket._id.slice(-6).toUpperCase()}</span>
-
-                                            {/* Mentor View: Showing Participant Name */}
-                                            {mode === 'mentor' && selectedTicket.user && (
-                                                <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <UserIcon size={14} /> Participante: <span style={{ fontWeight: 400 }}>{selectedTicket.user.name ?? 'Usuário'}</span>
-                                                </span>
-                                            )}
-
-                                            {/* User View: Showing Mentor Name */}
-                                            {mode === 'user' && (
-                                                <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    {selectedTicket.mentor ? (
-                                                        <><UserIcon size={14} /> Mentor: <span style={{ fontWeight: 400 }}>{selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span></>
-                                                    ) : (
-                                                        <><LifeBuoy size={14} /> Suporte: <span style={{ fontWeight: 400 }}>Equipe Inscreva.se</span></>
-                                                    )}
-                                                </span>
-                                            )}
-
-                                            {/* Admin View */}
-                                            {mode === 'admin' && selectedTicket.user && (
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <UserIcon size={14} /> De: {selectedTicket.user.name}
-                                                    {selectedTicket.mentor && <span style={{ marginLeft: '8px', color: '#666' }}>Para: {selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span>}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Messages */}
-                                    <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#f8f9fa' }}>
-                                        {selectedTicket.messages.map((msg, idx) => {
-                                            const myMsg = isMyMessage(msg.sender);
-                                            return (
-                                                <div
-                                                    key={idx}
-                                                    style={{
-                                                        alignSelf: myMsg ? 'flex-end' : 'flex-start',
-                                                        maxWidth: '70%',
-                                                        background: myMsg ? '#000' : '#fff',
-                                                        color: myMsg ? '#fff' : '#000',
-                                                        padding: '1rem',
-                                                        borderRadius: '16px',
-                                                        borderBottomRightRadius: myMsg ? '4px' : '16px',
-                                                        borderBottomLeftRadius: !myMsg ? '4px' : '16px',
-                                                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                                                    }}
-                                                >
-                                                    <p style={{ lineHeight: 1.5, fontSize: '0.95rem' }}>{msg.content}</p>
-
-                                                    {msg.attachment && (
-                                                        <div style={{ marginTop: '0.75rem' }}>
-                                                            {msg.attachment.endsWith('.pdf') ? (
-                                                                <a
-                                                                    href={msg.attachment}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', background: myMsg ? 'rgba(255,255,255,0.1)' : '#f8f9fa', color: myMsg ? '#fff' : '#000', textDecoration: 'none' }}
-                                                                >
-                                                                    <FileText size={20} />
-                                                                    <span style={{ fontSize: '0.85rem' }}>{t('common.viewPdf')}</span>
-                                                                </a>
-                                                            ) : (
-                                                                <img
-                                                                    src={msg.attachment}
-                                                                    alt="Anexo"
-                                                                    style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '0.5rem', cursor: 'pointer' }}
-                                                                    onClick={() => msg.attachment && window.open(msg.attachment, '_blank')}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '8px', textAlign: 'right' }}>
-                                                        {(() => {
-                                                            const date = new Date(msg.createdAt);
-                                                            const today = new Date();
-                                                            const isToday = date.getDate() === today.getDate() &&
-                                                                date.getMonth() === today.getMonth() &&
-                                                                date.getFullYear() === today.getFullYear();
-
-                                                            return isToday
-                                                                ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                                                : date.toLocaleString([], { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-                                                        })()}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                        <div ref={messagesEndRef} />
-                                    </div>
-
-                                    {/* Input */}
-                                    <div style={{ padding: '1.5rem', background: '#fff', borderTop: '1px solid #eee' }}>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            accept="image/*,.pdf"
-                                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                                            style={{ display: 'none' }}
-                                        />
-
-                                        {attachment && (
-                                            <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd', background: '#f8f9fa' }}>
-                                                {attachment.endsWith('.pdf') ? (
-                                                    <FileText size={20} color="#ef4444" />
-                                                ) : (
-                                                    <ImageIcon size={20} color="#10b981" />
-                                                )}
-                                                <span style={{ flex: 1, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {attachment.split('/').pop()}
-                                                </span>
+                                                <input
+                                                    type="text"
+                                                    value={reply}
+                                                    onChange={(e) => setReply(e.target.value)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && handleReply()}
+                                                    placeholder={isMobile ? "Escreva..." : t('support.typeYourReply')}
+                                                    style={{ flex: 1, padding: isMobile ? '0.8rem' : '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: isMobile ? '0.9rem' : '1rem' }}
+                                                />
                                                 <button
-                                                    onClick={() => setAttachment(null)}
-                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}
+                                                    onClick={handleReply}
+                                                    style={{ background: '#000', color: '#fff', border: 'none', width: isMobile ? '44px' : '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                 >
-                                                    <X size={16} />
+                                                    <Send size={20} />
                                                 </button>
                                             </div>
-                                        )}
-
-                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                disabled={uploadingFile}
-                                                style={{ background: '#f8f9fa', color: '#666', border: '1px solid #ddd', width: '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                            >
-                                                {uploadingFile ? <Loader2 className="animate-spin" size={20} /> : <Paperclip size={20} />}
-                                            </button>
-                                            <input
-                                                type="text"
-                                                value={reply}
-                                                onChange={(e) => setReply(e.target.value)}
-                                                onKeyDown={(e) => e.key === 'Enter' && handleReply()}
-                                                placeholder={t('support.typeYourReply')}
-                                                style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                            />
-                                            <button
-                                                onClick={handleReply}
-                                                style={{ background: '#000', color: '#fff', border: 'none', width: '50px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                            >
-                                                <Send size={20} />
-                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {view === 'list' && !selectedTicket && (
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
-                                    <MessageSquare size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
-                                    <p>Selecione um ticket ou abra um novo chamado.</p>
-                                </div>
-                            )}
-                        </div>
+                                {view === 'list' && !selectedTicket && (
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#999', padding: '2rem', textAlign: 'center' }}>
+                                        <MessageSquare size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                                        <p>Selecione um ticket ou abra um novo chamado para começar.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </motion.div>
             </div>

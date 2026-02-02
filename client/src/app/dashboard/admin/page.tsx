@@ -112,6 +112,14 @@ export default function AdminDashboard() {
         activity: false
     });
     const [showValues, setShowValues] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const toggleSection = (section: string) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -400,10 +408,16 @@ export default function AdminDashboard() {
                                 lineHeight: 1.1,
                                 color: '#1a1a1a',
                                 overflowWrap: 'break-word',
-                                wordWrap: 'break-word'
+                                wordWrap: 'break-word',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '8px'
                             }}
                         >
-                            {t('dashboard.welcomeBack')}, <span className="gold-text">{user.name?.split(' ')[0] || 'Admin'}</span>
+                            {!isMobile && t('dashboard.welcomeBack') + ', '}
+                            <span className="gold-text" style={{ wordBreak: 'break-word' }}>
+                                {user.name?.split(' ')[0] || 'Admin'}
+                            </span>
                         </motion.h1>
                     </div>
 

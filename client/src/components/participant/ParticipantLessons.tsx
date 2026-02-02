@@ -124,7 +124,7 @@ export default function ParticipantLessons() {
             </div>
 
             {/* Lessons Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center md:justify-items-stretch">
                 {filteredLessons.map((lesson) => (
                     <motion.div
                         key={lesson._id}
