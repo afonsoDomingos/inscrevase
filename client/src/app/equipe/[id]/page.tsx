@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import {
     Instagram, Linkedin, Globe, Briefcase,
     ChevronLeft, MapPin,
-    MessageCircle, X
+    MessageCircle, X, Facebook, Youtube
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -26,22 +26,26 @@ export default function TeamProfilePage() {
             country: "Moçambique",
             businessName: "Inscreva-se & RPA Moçambique",
             socialLinks: {
-                linkedin: "https://linkedin.com",
+                linkedin: "https://www.linkedin.com/in/afonso-domingos-6b59361a5/",
+                facebook: "https://www.facebook.com/profile.php?id=61570071841591",
+                youtube: "https://www.youtube.com/@AfonsoDomingos-IT",
                 instagram: "https://instagram.com",
                 website: "https://afonso-domingos.com"
             },
             badges: [{ name: t('common.mentor'), color: "#D4AF37" }, { name: "Elite", color: "#000" }]
         },
         "jose-faustino": {
-            name: "José Faustino",
+            name: "Culpa Francisco Xavier",
             role: t('team.jose.role'),
             bio: t('team.jose.bio'),
             image: "/jose-faustino.png",
             country: "África (Múltiplas Regiões)",
-            businessName: "Afrobiz Network",
+            businessName: "Afrobiz Network (ABN), CCA & ODEI",
             socialLinks: {
-                linkedin: "https://linkedin.com",
-                instagram: "https://instagram.com",
+                linkedin: "https://www.linkedin.com/in/culpa-francisco-xavier-6023251a2",
+                instagram: "https://www.instagram.com/culpafranciscoxavier",
+                facebook: "https://www.facebook.com/culpafranciscoxavier1/",
+                youtube: "https://www.youtube.com/@culpafranciscoxavier",
                 website: "https://afrobiznetwork.com"
             },
             badges: [{ name: t('common.mentor'), color: "#D4AF37" }, { name: "Premium", color: "#000" }]
@@ -228,16 +232,32 @@ export default function TeamProfilePage() {
                                 <h3 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#888' }}>
                                     {t('team.professionalNetwork')}
                                 </h3>
-                                <div style={{ display: 'flex', gap: '15px' }}>
-                                    <a href={member.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#0077B5', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
-                                        <Linkedin size={22} />
-                                    </a>
-                                    <a href={member.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
-                                        <Instagram size={22} />
-                                    </a>
-                                    <a href={member.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#1a1a1a', color: '#D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
-                                        <Globe size={22} />
-                                    </a>
+                                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                                    {member.socialLinks.linkedin && (
+                                        <a href={member.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#0077B5', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
+                                            <Linkedin size={22} />
+                                        </a>
+                                    )}
+                                    {member.socialLinks.instagram && (
+                                        <a href={member.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
+                                            <Instagram size={22} />
+                                        </a>
+                                    )}
+                                    {member.socialLinks.facebook && (
+                                        <a href={member.socialLinks.facebook} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
+                                            <Facebook size={22} />
+                                        </a>
+                                    )}
+                                    {member.socialLinks.youtube && (
+                                        <a href={member.socialLinks.youtube} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#FF0000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
+                                            <Youtube size={22} />
+                                        </a>
+                                    )}
+                                    {member.socialLinks.website && (
+                                        <a href={member.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#1a1a1a', color: '#D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }} className="hover:scale-110">
+                                            <Globe size={22} />
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>

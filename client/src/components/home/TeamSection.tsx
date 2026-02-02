@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Linkedin, Instagram, Globe } from "lucide-react";
+import { ArrowRight, Linkedin, Instagram, Globe, Facebook, Youtube } from "lucide-react";
 import { useTranslate } from "@/context/LanguageContext";
 
 export default function TeamSection() {
@@ -17,20 +17,25 @@ export default function TeamSection() {
             summary: t('team.afonso.summary'),
             image: "/afonso-domingos.jpg",
             social: {
-                linkedin: "https://linkedin.com",
-                instagram: "https://instagram.com",
+                linkedin: "https://www.linkedin.com/in/afonso-domingos-6b59361a5/",
+                facebook: "https://www.facebook.com/profile.php?id=61570071841591",
+                youtube: "https://www.youtube.com/@AfonsoDomingos-IT",
+                instagram: "https://instagram.com/afonsodomingos_",
                 website: "https://afonso-domingos.com"
             }
         },
         {
             id: "jose-faustino",
-            name: "José Faustino",
+            name: "Culpa Francisco Xavier",
             role: t('team.jose.role'),
             summary: t('team.jose.summary'),
             image: "/jose-faustino.png",
             social: {
-                linkedin: "https://linkedin.com",
-                instagram: "https://instagram.com",
+                linkedin: "https://www.linkedin.com/in/culpa-francisco-xavier-6023251a2",
+                instagram: "https://www.instagram.com/culpafranciscoxavier",
+                facebook: "https://www.facebook.com/culpafranciscoxavier1/",
+                youtube: "https://www.youtube.com/@culpafranciscoxavier",
+                tiktok: "https://www.tiktok.com/@culpafranciscoxavier",
                 website: "https://afrobiznetwork.com"
             }
         }
@@ -167,13 +172,16 @@ export default function TeamSection() {
                                 <div className="social-links" style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '25px',
+                                    gap: '20px',
                                     marginBottom: '35px',
-                                    justifyContent: index % 2 === 0 ? 'flex-start' : 'flex-end'
+                                    justifyContent: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                                    flexWrap: 'wrap'
                                 }}>
-                                    <a href={member.social.linkedin} style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-blue-600"><Linkedin size={20} /></a>
-                                    <a href={member.social.instagram} style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-pink-600"><Instagram size={20} /></a>
-                                    <a href={member.social.website} style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-[#D4AF37]"><Globe size={20} /></a>
+                                    {member.social.linkedin && <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-blue-600"><Linkedin size={20} /></a>}
+                                    {member.social.instagram && <a href={member.social.instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-pink-600"><Instagram size={20} /></a>}
+                                    {member.social.facebook && <a href={member.social.facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-blue-700"><Facebook size={20} /></a>}
+                                    {member.social.youtube && <a href={member.social.youtube} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-red-600"><Youtube size={20} /></a>}
+                                    {member.social.website && <a href={member.social.website} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-[#D4AF37]"><Globe size={20} /></a>}
                                 </div>
 
                                 <Link
