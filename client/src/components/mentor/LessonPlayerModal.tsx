@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 interface Comment {
     _id: string;
     user: string;
@@ -51,7 +53,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     const fetchComments = useCallback(async () => {
         try {
             const token = Cookies.get('token');
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}`, {
+            const res = await fetch(`${API_URL}/lessons/${lesson._id}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -69,7 +71,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
             // Fetch user for comments
             try {
-                const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
+                const userRes = await fetch(`${API_URL}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const userData = await userRes.json();
@@ -78,7 +80,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
             // Fetch Progress
             try {
-                const progRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/progress/my-progress`, {
+                const progRes = await fetch(`${API_URL}/lessons/progress/my-progress`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const progData: { progress: { lesson: { _id: string }, completed: boolean, watchTime: number }[] } = await progRes.json();
@@ -94,7 +96,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
             // Fetch Favorites
             try {
-                const favRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/favorites/my-favorites`, {
+                const favRes = await fetch(`${API_URL}/lessons/favorites/my-favorites`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const favData: { _id: string }[] = await favRes.json();
@@ -130,7 +132,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     const updateProgress = async (watchTime: number, completed: boolean) => {
         try {
             const token = Cookies.get('token');
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/progress`, {
+            await fetch(`${API_URL}/lessons/${lesson._id}/progress`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,7 +156,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
     const toggleFavorite = async () => {
         try {
             const token = Cookies.get('token');
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/favorite`, {
+            const res = await fetch(`${API_URL}/lessons/${lesson._id}/favorite`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -171,7 +173,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
 
         try {
             const token = Cookies.get('token');
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/comment`, {
+            const res = await fetch(`${API_URL}/lessons/${lesson._id}/comment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -193,7 +195,7 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
         if (!confirm('Deletar comentário?')) return;
         try {
             const token = Cookies.get('token');
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lesson._id}/comment/${commentId}`, {
+            await fetch(`${API_URL}/lessons/${lesson._id}/comment/${commentId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

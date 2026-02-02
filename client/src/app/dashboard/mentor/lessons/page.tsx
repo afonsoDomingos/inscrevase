@@ -27,6 +27,8 @@ import {
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 interface LessonProgress {
     lesson: string | { _id: string };
     completed: boolean;
@@ -117,13 +119,13 @@ export default function MentorLessonsPage() {
             if (!token) return;
 
             // Fetch Lessons
-            const lessonsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
+            const lessonsRes = await fetch(`${API_URL}/lessons`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const lessonsData: Lesson[] = await lessonsRes.json();
 
             // Fetch Progress
-            const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/progress/my-progress`, {
+            const progressRes = await fetch(`${API_URL}/lessons/progress/my-progress`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const progressData: { progress: LessonProgress[] } = await progressRes.json();
@@ -135,7 +137,7 @@ export default function MentorLessonsPage() {
             );
 
             // Fetch Favorites
-            const favRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/favorites/my-favorites`, {
+            const favRes = await fetch(`${API_URL}/lessons/favorites/my-favorites`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const favData: Favorite[] = await favRes.json();
@@ -161,7 +163,7 @@ export default function MentorLessonsPage() {
         setLoading(true);
         try {
             const token = Cookies.get('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/manage/all`, {
+            const response = await fetch(`${API_URL}/lessons/manage/all`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
