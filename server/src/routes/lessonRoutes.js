@@ -33,37 +33,43 @@ const upload = multer({
 router.get('/', protect, async (req, res) => {
     try {
         const { category, search } = req.query;
-        const filter = { isPublished: true };
+        const conditions = [{ isPublished: true }];
 
         if (category && category !== 'all') {
-            filter.category = category;
+            conditions.push({ category });
         }
 
         if (search) {
-            filter.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } }
-            ];
+            conditions.push({
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } }
+                ]
+            });
         }
 
         // Filter by target audience based on user role
-        if (req.user.role === 'admin') {
+        if (req.user.role === 'admin' || req.user.role === 'SuperAdmin') {
             // Admins see all published lessons regardless of target audience
         } else if (req.user.role === 'mentor') {
-            filter.$or = [
-                { targetAudience: 'mentors' },
-                { targetAudience: { $exists: false } }, // Legacy support
-                { targetAudience: null }
-            ];
+            conditions.push({
+                $or: [
+                    { targetAudience: 'mentors' },
+                    { targetAudience: { $exists: false } }, // Legacy support
+                    { targetAudience: null }
+                ]
+            });
         } else if (req.user.role === 'participant') {
-            filter.$or = [
-                { targetAudience: 'participants' },
-                { targetAudience: { $exists: false } }, // Legacy support
-                { targetAudience: null }
-            ];
+            conditions.push({
+                $or: [
+                    { targetAudience: 'participants' },
+                    { targetAudience: { $exists: false } }, // Legacy support
+                    { targetAudience: null }
+                ]
+            });
         }
 
-        const lessons = await Lesson.find(filter)
+        const lessons = await Lesson.find({ $and: conditions })
             .sort({ order: 1, createdAt: -1 })
             .select('-__v');
 
@@ -108,7 +114,7 @@ router.get('/manage/all', protect, async (req, res) => {
         let query = {};
 
         // If not admin, only show lessons created by user
-        if (req.user.role !== 'admin') {
+        if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             query.createdBy = req.user.id;
         }
 
@@ -138,7 +144,8 @@ router.post('/', protect, async (req, res) => {
         const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, tags, order } = req.body;
 
         // Determine target audience based on role
-        const targetAudience = req.user.role === 'admin' ? 'mentors' : 'participants';
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+        const targetAudience = isAdmin ? 'mentors' : 'participants';
 
         const newLesson = new Lesson({
             title,
@@ -180,7 +187,7 @@ router.put('/:id', protect, async (req, res) => {
         }
 
         // Check permission
-        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
+        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
@@ -215,7 +222,7 @@ router.delete('/:id', protect, async (req, res) => {
         }
 
         // Check permission
-        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
+        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
@@ -269,7 +276,7 @@ router.patch('/:id/toggle-publish', protect, async (req, res) => {
         }
 
         // Check permission
-        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
+        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
@@ -452,7 +459,7 @@ router.delete('/:lessonId/comment/:commentId', protect, async (req, res) => {
         }
 
         // Only allow user to delete their own comment or admin
-        if (comment.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        if (comment.user.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'Não autorizado' });
         }
 
