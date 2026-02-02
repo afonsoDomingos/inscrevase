@@ -50,6 +50,7 @@ interface Lesson {
     views: number;
     createdAt: string;
     order?: number;
+    targetAudience?: 'mentors' | 'participants';
     // Client-side augmented props
     isCompleted?: boolean;
     isFavorite?: boolean;
@@ -95,7 +96,8 @@ export default function MentorLessonsPage() {
         duration: 0,
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
-        order: 0
+        order: 0,
+        targetAudience: 'mentors' as 'mentors' | 'participants'
     });
 
     const [loading, setLoading] = useState(true);
@@ -318,7 +320,8 @@ export default function MentorLessonsPage() {
                 duration: lesson.duration,
                 category: lesson.category,
                 isPublished: lesson.isPublished,
-                order: lesson.order || 0
+                order: lesson.order || 0,
+                targetAudience: lesson.targetAudience || 'mentors'
             });
         } else {
             setEditingLesson(null);
@@ -330,7 +333,8 @@ export default function MentorLessonsPage() {
                 duration: 0,
                 category: 'basico',
                 isPublished: false,
-                order: 0
+                order: 0,
+                targetAudience: 'mentors'
             });
         }
         setShowModal(true);
@@ -650,6 +654,7 @@ export default function MentorLessonsPage() {
                                     <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                                         <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Aula</th>
                                         <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Categoria</th>
+                                        <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Público</th>
                                         <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Status</th>
                                         <th style={{ padding: '1rem', textAlign: 'right', color: '#666' }}>Ações</th>
                                     </tr>
@@ -665,6 +670,18 @@ export default function MentorLessonsPage() {
                                             </td>
                                             <td style={{ padding: '1rem' }}>
                                                 <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: '#f3f4f6', color: '#666' }}>{lesson.category}</span>
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>
+                                                <span style={{
+                                                    fontSize: '0.75rem',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '8px',
+                                                    fontWeight: '600',
+                                                    background: lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
+                                                    color: lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
+                                                }}>
+                                                    {lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Mentores'}
+                                                </span>
                                             </td>
                                             <td style={{ padding: '1rem' }}>
                                                 <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
@@ -903,6 +920,20 @@ export default function MentorLessonsPage() {
                                             <option value="intermediario">Intermediário</option>
                                             <option value="avancado">Avançado</option>
                                         </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Público-Alvo</label>
+                                        <select
+                                            value={formData.targetAudience}
+                                            onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as 'mentors' | 'participants' })}
+                                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}
+                                        >
+                                            <option value="mentors">Mentores (Academia)</option>
+                                            <option value="participants">Participantes (Alunos)</option>
+                                        </select>
+                                        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
+                                            Defina se esta aula é para treinamento de mentores ou para alunos.
+                                        </p>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                         <input type="checkbox" checked={formData.isPublished} onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })} id="pub" style={{ width: '20px', height: '20px' }} />
