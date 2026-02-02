@@ -15,7 +15,8 @@ import {
     TrendingUp,
     Video,
     Clock,
-    CheckCircle
+    CheckCircle,
+    Image
 } from 'lucide-react';
 // import { useTranslate } from '@/context/LanguageContext';
 
@@ -136,6 +137,33 @@ export default function LessonsManager() {
         } catch (error) {
             console.error('Error uploading video:', error);
             setIsUploading(false);
+        }
+    };
+
+    const handleThumbnailUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', file);
+        formDataUpload.append('folder', 'lesson-thumbnails');
+
+        try {
+            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            const response = await fetch(`${API_URL}/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formDataUpload
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setFormData(prev => ({ ...prev, thumbnailUrl: data.url }));
+            }
+        } catch (error) {
+            console.error('Error uploading thumbnail:', error);
         }
     };
 
@@ -399,9 +427,15 @@ export default function LessonsManager() {
                                             borderRadius: '8px',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center'
+                                            justifyContent: 'center',
+                                            overflow: 'hidden',
+                                            border: '1px solid #eee'
                                         }}>
-                                            <Play size={20} color="#D4AF37" />
+                                            {lesson.thumbnailUrl ? (
+                                                <img src={lesson.thumbnailUrl} alt={lesson.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : (
+                                                <Play size={20} color="#D4AF37" />
+                                            )}
                                         </div>
                                         <div>
                                             <p style={{ fontWeight: '600', color: '#1a1a1a', marginBottom: '2px' }}>{lesson.title}</p>
@@ -733,6 +767,88 @@ export default function LessonsManager() {
                                                 )}
                                             </div>
                                         )}
+                                    </div>
+                                </div>
+
+                                {/* Thumbnail URL / Upload */}
+                                <div style={{ border: '1px solid #eee', padding: '1.5rem', borderRadius: '16px', background: '#fcfcfc', marginTop: '1rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                        <label style={{ fontWeight: '600', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <Image size={18} color="#D4AF37" /> Capa da Aula (Thumbnail)
+                                        </label>
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+                                        {formData.thumbnailUrl ? (
+                                            <div style={{ position: 'relative', width: '200px', height: '112px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ddd' }}>
+                                                <img
+                                                    src={formData.thumbnailUrl}
+                                                    alt="Thumbnail preview"
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData(prev => ({ ...prev, thumbnailUrl: '' }))}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '4px',
+                                                        right: '4px',
+                                                        background: 'rgba(239, 68, 68, 0.9)',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        padding: '4px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div style={{
+                                                width: '100%',
+                                                height: '112px',
+                                                border: '2px dashed #ddd',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                background: '#fafafa',
+                                                cursor: 'pointer'
+                                            }}
+                                                onClick={() => document.getElementById('thumb-upload-manager')?.click()}
+                                            >
+                                                <Upload size={24} color="#666" />
+                                                <span style={{ fontSize: '0.875rem', color: '#666', marginTop: '4px' }}>Upload da Capa</span>
+                                                <input
+                                                    type="file"
+                                                    id="thumb-upload-manager"
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    onChange={handleThumbnailUpload}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div>
+                                            <input
+                                                type="url"
+                                                placeholder="Ou cole a URL da imagem aqui..."
+                                                value={formData.thumbnailUrl}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '10px',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid #e0e0e0',
+                                                    fontSize: '0.875rem'
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
