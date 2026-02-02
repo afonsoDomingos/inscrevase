@@ -31,6 +31,8 @@ interface Lesson {
     duration: number;
     category: string;
     views: number;
+    order?: number;
+    targetAudience?: 'mentors' | 'participants';
     comments?: Comment[];
 }
 

@@ -18,6 +18,8 @@ interface Lesson {
     category: 'basico' | 'intermediario' | 'avancado';
     isCompleted?: boolean;
     views: number;
+    order?: number;
+    targetAudience?: 'mentors' | 'participants';
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
