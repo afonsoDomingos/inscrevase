@@ -141,11 +141,11 @@ router.get('/manage/all', protect, async (req, res) => {
 // @access  Private (Admin & Mentor)
 router.post('/', protect, async (req, res) => {
     try {
-        const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, tags, order } = req.body;
+        const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, tags, order, targetAudience: bodyTargetAudience } = req.body;
 
-        // Determine target audience based on role
+        // Determine target audience based on role if not provided in body
         const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
-        const targetAudience = isAdmin ? 'mentors' : 'participants';
+        const targetAudience = bodyTargetAudience || (isAdmin ? 'mentors' : 'participants');
 
         const newLesson = new Lesson({
             title,

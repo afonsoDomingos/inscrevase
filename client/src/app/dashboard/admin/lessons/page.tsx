@@ -380,6 +380,7 @@ export default function AdminLessonsPage() {
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Categoria</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Duração</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Visualizações</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Público</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Status</th>
                             <th style={{ padding: '1rem', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Ações</th>
                         </tr>
@@ -430,6 +431,20 @@ export default function AdminLessonsPage() {
                                     {Math.floor(lesson.duration / 60)}:{(lesson.duration % 60).toString().padStart(2, '0')}
                                 </td>
                                 <td style={{ padding: '1rem', color: '#666' }}>{lesson.views}</td>
+                                <td style={{ padding: '1rem' }}>
+                                    <span style={{
+                                        padding: '4px 8px',
+                                        borderRadius: '6px',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 'bold',
+                                        textTransform: 'uppercase',
+                                        background: lesson.targetAudience === 'mentors' ? '#e0f2fe' : '#f3f4f6',
+                                        color: lesson.targetAudience === 'mentors' ? '#0369a1' : '#4b5563',
+                                        border: lesson.targetAudience === 'mentors' ? '1px solid #bae6fd' : '1px solid #e5e7eb'
+                                    }}>
+                                        {lesson.targetAudience === 'mentors' ? '🎓 Mentor' : '👥 Aluno'}
+                                    </span>
+                                </td>
                                 <td style={{ padding: '1rem' }}>
                                     <span style={{
                                         padding: '4px 12px',
