@@ -619,14 +619,30 @@ export default function LessonsManager() {
                                                     💡 Suporta: YouTube, Vimeo, ou link direto para vídeo (.mp4, .webm, etc.).
                                                     {formData.videoUrl && " Cole um novo link acima para atualizar."}
                                                 </p>
-                                                {formData.videoUrl && !formData.videoUrl.includes('youtube') && !formData.videoUrl.includes('vimeo') && (
+                                                {formData.videoUrl && (
                                                     <div style={{ marginTop: '1rem' }}>
                                                         <p style={{ fontSize: '0.8rem', fontWeight: '600', marginBottom: '8px', color: '#666' }}>Prévia do Vídeo:</p>
-                                                        <video
-                                                            src={formData.videoUrl}
-                                                            controls
-                                                            style={{ width: '100%', borderRadius: '12px', background: '#000' }}
-                                                        />
+                                                        {formData.videoUrl.includes('drive.google.com') ? (
+                                                            <iframe
+                                                                src={formData.videoUrl.replace('/view', '/preview').replace('/edit', '/preview').replace('usp=sharing', '')}
+                                                                style={{ width: '100%', aspectRatio: '16/9', borderRadius: '12px', border: 'none', background: '#000' }}
+                                                                allowFullScreen
+                                                            />
+                                                        ) : !formData.videoUrl.includes('youtube') && !formData.videoUrl.includes('vimeo') ? (
+                                                            <video
+                                                                src={formData.videoUrl}
+                                                                controls
+                                                                style={{ width: '100%', borderRadius: '12px', background: '#000' }}
+                                                            />
+                                                        ) : (
+                                                            <iframe
+                                                                src={formData.videoUrl.includes('youtube') || formData.videoUrl.includes('youtu.be')
+                                                                    ? formData.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
+                                                                    : formData.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                                                                style={{ width: '100%', aspectRatio: '16/9', borderRadius: '12px', border: 'none', background: '#000' }}
+                                                                allowFullScreen
+                                                            />
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>

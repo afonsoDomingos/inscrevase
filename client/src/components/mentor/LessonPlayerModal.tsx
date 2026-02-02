@@ -314,12 +314,18 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                 <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
                     {/* Video Player Section */}
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'black', position: 'relative' }}>
-                        {(lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be') || lesson.videoUrl.includes('vimeo')) ? (
+                        {(lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be') || lesson.videoUrl.includes('vimeo') || lesson.videoUrl.includes('drive.google.com')) ? (
                             <>
                                 <iframe
-                                    src={lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be')
-                                        ? lesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
-                                        : lesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                                    src={
+                                        lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be')
+                                            ? lesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
+                                            : lesson.videoUrl.includes('vimeo.com/')
+                                                ? lesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')
+                                                : lesson.videoUrl.includes('drive.google.com')
+                                                    ? lesson.videoUrl.replace('/view', '/preview').replace('/edit', '/preview').replace('usp=sharing', '')
+                                                    : lesson.videoUrl
+                                    }
                                     style={{ width: '100%', height: '100%', border: 'none' }}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen

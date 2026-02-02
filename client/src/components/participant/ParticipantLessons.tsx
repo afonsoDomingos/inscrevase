@@ -203,11 +203,15 @@ export default function ParticipantLessons() {
                             </button>
 
                             <div className="aspect-video bg-black">
-                                {(selectedLesson.videoUrl.includes('youtube') || selectedLesson.videoUrl.includes('youtu.be') || selectedLesson.videoUrl.includes('vimeo')) ? (
+                                {(selectedLesson.videoUrl.includes('youtube') || selectedLesson.videoUrl.includes('youtu.be') || selectedLesson.videoUrl.includes('vimeo') || selectedLesson.videoUrl.includes('drive.google.com')) ? (
                                     <iframe
                                         src={selectedLesson.videoUrl.includes('youtube') || selectedLesson.videoUrl.includes('youtu.be')
                                             ? selectedLesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
-                                            : selectedLesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                                            : selectedLesson.videoUrl.includes('vimeo.com/')
+                                                ? selectedLesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')
+                                                : selectedLesson.videoUrl.includes('drive.google.com')
+                                                    ? selectedLesson.videoUrl.replace('/view', '/preview').replace('/edit', '/preview').replace('usp=sharing', '')
+                                                    : selectedLesson.videoUrl}
                                         className="w-full h-full"
                                         frameBorder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
