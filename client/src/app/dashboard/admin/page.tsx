@@ -414,7 +414,6 @@ export default function AdminDashboard() {
                                 gap: '8px'
                             }}
                         >
-                            {!isMobile && t('dashboard.welcomeBack') + ', '}
                             <span className="gold-text" style={{ wordBreak: 'break-word' }}>
                                 {user.name?.split(' ')[0] || 'Admin'}
                             </span>
