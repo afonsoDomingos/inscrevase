@@ -10,7 +10,6 @@ import {
     Clock,
     CheckCircle,
     Loader2,
-    ArrowLeft,
     ChevronLeft
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
