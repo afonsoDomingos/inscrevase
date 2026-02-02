@@ -272,7 +272,7 @@ export default function AdminLessonsPage() {
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                     🎓 Gerenciar Aulas
                 </h1>
-                <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para os mentores</p>
+                <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para seus usuários</p>
             </div>
 
             {/* Stats Cards */}

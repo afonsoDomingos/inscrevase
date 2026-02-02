@@ -388,7 +388,7 @@ export default function AdminDashboard() {
                     <div style={{ flex: '1 1 300px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
                             <ShieldAlert size={16} />
-                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{user.role === 'admin' ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
+                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{(user.role === 'admin' || user.role === 'SuperAdmin') ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
                         </div>
                         <motion.h1
                             initial={{ x: -20, opacity: 0 }}

@@ -64,7 +64,8 @@ export default function LessonsManager() {
         duration: 0,
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
-        order: 0
+        order: 0,
+        targetAudience: 'mentors' as 'mentors' | 'participants'
     });
 
     useEffect(() => {
@@ -209,7 +210,8 @@ export default function LessonsManager() {
                 duration: lesson.duration,
                 category: lesson.category,
                 isPublished: lesson.isPublished,
-                order: lesson.order
+                order: lesson.order,
+                targetAudience: lesson.targetAudience || 'mentors'
             });
         } else {
             setEditingLesson(null);
@@ -221,7 +223,8 @@ export default function LessonsManager() {
                 duration: 0,
                 category: 'basico',
                 isPublished: false,
-                order: 0
+                order: 0,
+                targetAudience: 'mentors'
             });
         }
         setShowModal(true);
@@ -264,7 +267,7 @@ export default function LessonsManager() {
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
                     🎓 Gerenciar Aulas
                 </h1>
-                <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para os mentores</p>
+                <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para seus usuários</p>
             </div>
 
             {/* Stats Cards */}
@@ -372,6 +375,7 @@ export default function LessonsManager() {
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Categoria</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Duração</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Visualizações</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Público</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Status</th>
                             <th style={{ padding: '1rem', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Ações</th>
                         </tr>
@@ -422,6 +426,19 @@ export default function LessonsManager() {
                                     {Math.floor(lesson.duration / 60)}:{(lesson.duration % 60).toString().padStart(2, '0')}
                                 </td>
                                 <td style={{ padding: '1rem', color: '#666' }}>{lesson.views}</td>
+                                <td style={{ padding: '1rem' }}>
+                                    <span style={{
+                                        padding: '4px 8px',
+                                        borderRadius: '6px',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 'bold',
+                                        background: lesson.targetAudience === 'mentors' ? '#e0f2fe' : '#f3f4f6',
+                                        color: lesson.targetAudience === 'mentors' ? '#0369a1' : '#4b5563',
+                                        border: lesson.targetAudience === 'mentors' ? '1px solid #bae6fd' : '1px solid #e5e7eb'
+                                    }}>
+                                        {lesson.targetAudience === 'mentors' ? '🎓 Mentor' : '👥 Aluno'}
+                                    </span>
+                                </td>
                                 <td style={{ padding: '1rem' }}>
                                     <span style={{
                                         padding: '4px 12px',
@@ -764,6 +781,33 @@ export default function LessonsManager() {
                                             fontSize: '1rem'
                                         }}
                                     />
+                                </div>
+
+                                {/* Target Audience */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                                        Público-Alvo
+                                    </label>
+                                    <select
+                                        value={formData.targetAudience}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e0e0e0',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="mentors">Mentores (Academia)</option>
+                                        <option value="participants">Participantes (Alunos)</option>
+                                    </select>
+                                    <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
+                                        {formData.targetAudience === 'mentors'
+                                            ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
+                                            : '👥 Visível para os participantes/alunos no dashboard deles.'}
+                                    </p>
                                 </div>
 
                                 {/* Published */}
