@@ -738,7 +738,15 @@ function HubContent() {
                                     </div>
                                     <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: '#111' }}>{t('dashboard.lessons') || 'Aulas do Evento'}</h2>
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '20px',
+                                    overflowX: 'auto',
+                                    paddingBottom: '20px',
+                                    scrollBehavior: 'smooth',
+                                    WebkitOverflowScrolling: 'touch'
+                                }}>
+
                                     {lessons.map((lesson, idx) => {
                                         const locked = isLessonLocked(lesson, idx);
                                         const completed = lesson.progress?.completed;
@@ -751,10 +759,12 @@ function HubContent() {
                                                     if (!locked) {
                                                         setSelectedLesson(lesson);
                                                     } else {
-                                                        toast.error('Complete a aula anterior para desbloquear esta!');
+                                                        toast.error(t('hub.lessonLockedError') || 'Complete a aula anterior para desbloquear esta!');
                                                     }
                                                 }}
                                                 style={{
+                                                    minWidth: '300px',
+                                                    maxWidth: '300px',
                                                     background: '#fbfbfb',
                                                     borderRadius: '24px',
                                                     overflow: 'hidden',
