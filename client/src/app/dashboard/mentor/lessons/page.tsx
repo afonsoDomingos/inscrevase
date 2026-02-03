@@ -498,39 +498,41 @@ export default function MentorLessonsPage() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                         {/* Hero Section */}
                         <div style={{
-                            background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
+                            background: '#fff',
                             borderRadius: '24px',
-                            padding: isMobile ? '1.5rem 1.25rem' : '3rem 2.5rem',
+                            padding: isMobile ? '1.5rem 1rem' : '1rem 0',
                             marginBottom: '2rem',
                             position: 'relative',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            borderBottom: '1px solid #eee'
                         }}>
                             <div style={{ position: 'relative', zIndex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
-                                    <GraduationCap size={40} color="#000" />
-                                    <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#000', margin: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '0.5rem' }}>
+                                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111', margin: 0 }}>
                                         Área de Aprendizado
                                     </h1>
                                 </div>
-                                <p style={{ fontSize: '1.1rem', color: '#000', opacity: 0.8, maxWidth: '600px' }}>
+                                <p style={{ fontSize: '1rem', color: '#666', maxWidth: '600px' }}>
                                     Domine a plataforma com nossos cursos exclusivos para mentores
                                 </p>
 
                                 {/* Overall Progress */}
-                                <div style={{ marginTop: '1.5rem', background: 'rgba(255,255,255,0.2)', padding: '1rem', borderRadius: '16px', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.3)', maxWidth: '400px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#000', fontWeight: '600', fontSize: '0.9rem' }}>
-                                        <span>Seu Progresso</span>
-                                        <span>{Math.round((learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100)}%</span>
+                                <div style={{ marginTop: '1.5rem', background: '#f9fafb', padding: '1.25rem', borderRadius: '20px', border: '1px solid #f0f0f0', maxWidth: '500px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#111', fontWeight: '700', fontSize: '0.95rem' }}>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            Seu Progresso
+                                        </span>
+                                        <span style={{ color: '#D4AF37' }}>{Math.round((learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100)}%</span>
                                     </div>
-                                    <div style={{ height: '8px', background: 'rgba(255,255,255,0.4)', borderRadius: '4px', overflow: 'hidden' }}>
+                                    <div style={{ height: '10px', background: '#e5e7eb', borderRadius: '5px', overflow: 'hidden' }}>
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${(learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100}%` }}
                                             transition={{ duration: 1, ease: 'easeOut' }}
-                                            style={{ height: '100%', background: '#000', borderRadius: '4px' }}
+                                            style={{ height: '100%', background: '#D4AF37', borderRadius: '5px' }}
                                         />
                                     </div>
-                                    <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#000', opacity: 0.7 }}>
+                                    <div style={{ marginTop: '10px', fontSize: '0.85rem', color: '#666', fontWeight: '500' }}>
                                         {learnLessons.filter(l => l.isCompleted).length} de {learnLessons.length} aulas concluídas
                                     </div>
                                     {Math.round((learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100) === 100 && (
@@ -539,31 +541,31 @@ export default function MentorLessonsPage() {
                                             animate={{ opacity: 1, y: 0 }}
                                             onClick={generateCertificate}
                                             style={{
-                                                marginTop: '1rem',
+                                                marginTop: '1.25rem',
                                                 width: '100%',
-                                                padding: '10px',
-                                                background: '#000',
-                                                color: '#FFD700',
+                                                padding: '12px',
+                                                background: '#111',
+                                                color: '#fff',
                                                 border: 'none',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 fontWeight: 'bold',
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 gap: '8px',
-                                                fontSize: '0.9rem'
+                                                fontSize: '0.95rem',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            whileHover={{ scale: 1.02 }}
+                                            whileHover={{ scale: 1.02, background: '#000' }}
                                             whileTap={{ scale: 0.98 }}
                                         >
-                                            <Award size={16} />
+                                            <Award size={18} />
                                             Emitir Certificado
                                         </motion.button>
                                     )}
                                 </div>
                             </div>
-                            <Sparkles size={120} style={{ position: 'absolute', right: '2rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.2, color: '#000' }} />
                         </div>
 
                         {/* Filters */}
