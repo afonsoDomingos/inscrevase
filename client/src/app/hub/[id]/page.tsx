@@ -132,7 +132,8 @@ interface SubmissionData {
             primaryColor: string;
             backgroundColor: string;
         };
-    }
+    };
+}
 
 interface HubLesson {
     _id: string;
