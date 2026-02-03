@@ -54,7 +54,7 @@ interface Lesson {
     views: number;
     createdAt: string;
     order?: number;
-    targetAudience?: 'mentors' | 'participants';
+    targetAudience?: 'mentors' | 'participants' | 'both';
     // Client-side augmented props
     isCompleted?: boolean;
     isFavorite?: boolean;
@@ -101,7 +101,7 @@ export default function MentorLessonsPage() {
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
         order: 0,
-        targetAudience: 'mentors' as 'mentors' | 'participants'
+        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both'
     });
 
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -738,10 +738,10 @@ export default function MentorLessonsPage() {
                                                     padding: '4px 8px',
                                                     borderRadius: '8px',
                                                     fontWeight: '600',
-                                                    background: lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
-                                                    color: lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
+                                                    background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
+                                                    color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
                                                 }}>
-                                                    {lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Mentores'}
+                                                    {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Mentores'}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem' }}>
@@ -1049,14 +1049,15 @@ export default function MentorLessonsPage() {
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Público-Alvo</label>
                                         <select
                                             value={formData.targetAudience}
-                                            onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as 'mentors' | 'participants' })}
+                                            onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as 'mentors' | 'participants' | 'both' })}
                                             style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}
                                         >
                                             <option value="mentors">Mentores (Academia)</option>
                                             <option value="participants">Participantes (Alunos)</option>
+                                            <option value="both">Ambos (Mentores e Participantes)</option>
                                         </select>
                                         <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
-                                            Defina se esta aula é para treinamento de mentores ou para alunos.
+                                            Defina se esta aula é para treinamento de mentores, para alunos ou para ambos.
                                         </p>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

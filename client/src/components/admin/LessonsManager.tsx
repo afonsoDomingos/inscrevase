@@ -32,7 +32,7 @@ interface Lesson {
     isPublished: boolean;
     views: number;
     order: number;
-    targetAudience?: 'mentors' | 'participants';
+    targetAudience?: 'mentors' | 'participants' | 'both';
     createdAt: string;
 }
 
@@ -68,7 +68,7 @@ export default function LessonsManager() {
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
         order: 0,
-        targetAudience: 'mentors' as 'mentors' | 'participants'
+        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both'
     });
 
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -477,11 +477,11 @@ export default function LessonsManager() {
                                         borderRadius: '6px',
                                         fontSize: '0.7rem',
                                         fontWeight: 'bold',
-                                        background: lesson.targetAudience === 'mentors' ? '#e0f2fe' : '#f3f4f6',
-                                        color: lesson.targetAudience === 'mentors' ? '#0369a1' : '#4b5563',
-                                        border: lesson.targetAudience === 'mentors' ? '1px solid #bae6fd' : '1px solid #e5e7eb'
+                                        background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'mentors' ? '#e0f2fe' : '#f3f4f6',
+                                        color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'mentors' ? '#0369a1' : '#4b5563',
+                                        border: lesson.targetAudience === 'both' ? '1px solid #fde68a' : lesson.targetAudience === 'mentors' ? '1px solid #bae6fd' : '1px solid #e5e7eb'
                                     }}>
-                                        {lesson.targetAudience === 'mentors' ? '🎓 Mentor' : '👥 Aluno'}
+                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'mentors' ? '🎓 Mentor' : '👥 Aluno'}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -955,7 +955,7 @@ export default function LessonsManager() {
                                     </label>
                                     <select
                                         value={formData.targetAudience}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' }))}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'both' }))}
                                         style={{
                                             width: '100%',
                                             padding: '12px',
@@ -967,11 +967,14 @@ export default function LessonsManager() {
                                     >
                                         <option value="mentors">Mentores (Academia)</option>
                                         <option value="participants">Participantes (Alunos)</option>
+                                        <option value="both">Ambos (Mentores e Participantes)</option>
                                     </select>
                                     <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
                                         {formData.targetAudience === 'mentors'
                                             ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
-                                            : '👥 Visível para os participantes/alunos no dashboard deles.'}
+                                            : formData.targetAudience === 'participants'
+                                                ? '👥 Visível para os participantes/alunos no dashboard deles.'
+                                                : '👥🎓 Visível para mentores E participantes.'}
                                     </p>
                                 </div>
 

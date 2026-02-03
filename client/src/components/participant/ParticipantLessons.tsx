@@ -19,7 +19,7 @@ interface Lesson {
     isCompleted?: boolean;
     views: number;
     order?: number;
-    targetAudience?: 'mentors' | 'participants';
+    targetAudience?: 'mentors' | 'participants' | 'both';
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';

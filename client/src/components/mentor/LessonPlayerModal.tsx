@@ -32,7 +32,7 @@ interface Lesson {
     category: string;
     views: number;
     order?: number;
-    targetAudience?: 'mentors' | 'participants';
+    targetAudience?: 'mentors' | 'participants' | 'both';
     comments?: Comment[];
 }
 
