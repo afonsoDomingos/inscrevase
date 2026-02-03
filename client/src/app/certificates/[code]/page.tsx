@@ -30,7 +30,10 @@ export default function CertificateValidationPage() {
 
     const fetchCertificate = useCallback(async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/certificates/${code}`);
+            const url = process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/certificates/${code}`
+                : `http://localhost:5000/api/certificates/${code}`;
+            const response = await axios.get(url);
             setCertificate(response.data);
         } catch (err) {
             console.error('Error fetching certificate:', err);

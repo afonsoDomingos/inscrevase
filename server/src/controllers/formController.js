@@ -71,6 +71,16 @@ exports.createForm = async (req, res) => {
         }
 
         const form = await newForm.save();
+
+        // Handle Lesson Associations
+        if (req.body.associatedLessons && Array.isArray(req.body.associatedLessons)) {
+            const Lesson = require('../models/Lesson');
+            await Lesson.updateMany(
+                { _id: { $in: req.body.associatedLessons }, createdBy: req.user.id },
+                { $addToSet: { associatedEvents: form._id } }
+            );
+        }
+
         res.status(201).json(form);
     } catch (err) {
         console.error("CRITICAL Create Form Error:", err);
@@ -232,6 +242,27 @@ exports.updateForm = async (req, res) => {
         }
 
         await form.save();
+
+        // Handle Lesson Associations
+        if (req.body.associatedLessons && Array.isArray(req.body.associatedLessons)) {
+            const Lesson = require('../models/Lesson');
+            const lessonIds = req.body.associatedLessons;
+
+            // 1. Remove this form from ALL lessons created by this mentor
+            await Lesson.updateMany(
+                { createdBy: req.user.id },
+                { $pull: { associatedEvents: form._id } }
+            );
+
+            // 2. Add this form to the selected lessons
+            if (lessonIds.length > 0) {
+                await Lesson.updateMany(
+                    { _id: { $in: lessonIds }, createdBy: req.user.id },
+                    { $addToSet: { associatedEvents: form._id } }
+                );
+            }
+        }
+
         console.log('--- Formulário salvo com sucesso! ---');
         res.json(form);
     } catch (err) {

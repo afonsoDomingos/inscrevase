@@ -164,7 +164,10 @@ function HubContent() {
     useEffect(() => {
         const fetchSubmission = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/submissions/${id}`);
+                const url = process.env.NEXT_PUBLIC_API_URL
+                    ? `${process.env.NEXT_PUBLIC_API_URL}/submissions/${id}`
+                    : `http://localhost:5000/api/submissions/${id}`;
+                const response = await fetch(url);
                 const data = await response.json();
                 if (response.ok) {
                     setSubmission(data);
@@ -190,7 +193,10 @@ function HubContent() {
 
         const fetchLessons = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/hub/${id}`);
+                const url = process.env.NEXT_PUBLIC_API_URL
+                    ? `${process.env.NEXT_PUBLIC_API_URL}/lessons/hub/${id}`
+                    : `http://localhost:5000/api/lessons/hub/${id}`;
+                const response = await fetch(url);
                 const data = await response.json();
                 if (response.ok) {
                     setLessons(data);
@@ -201,6 +207,7 @@ function HubContent() {
         };
 
         fetchSubmission();
+        fetchLessons();
     }, [id, t]);
 
     // Countdown Timer

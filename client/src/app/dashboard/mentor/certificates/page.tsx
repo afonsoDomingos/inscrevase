@@ -30,7 +30,10 @@ export default function MyCertificatesPage() {
     const fetchCertificates = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/certificates/my-certificates`, {
+            const url = process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/certificates/my-certificates`
+                : `http://localhost:5000/api/certificates/my-certificates`;
+            const response = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCertificates(response.data);

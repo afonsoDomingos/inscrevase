@@ -1,8 +1,10 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 // Service to fetch real-time platform statistics
 export const statsService = {
     async getPlatformStats() {
         try {
-            const response = await fetch('/api/stats/platform');
+            const response = await fetch(`${API_URL}/stats/platform`);
             if (!response.ok) {
                 // Return fallback stats if API fails
                 return {

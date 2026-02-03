@@ -276,7 +276,7 @@ export default function MentorLessonsPage() {
                 }
             });
 
-            xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/upload-video`);
+            xhr.open('POST', `${API_URL}/lessons/upload-video`);
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
             xhr.send(formDataUpload);
         } catch (error) {
@@ -295,7 +295,7 @@ export default function MentorLessonsPage() {
 
         try {
             const token = Cookies.get('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
+            const response = await fetch(`${API_URL}/upload`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -318,8 +318,8 @@ export default function MentorLessonsPage() {
         try {
             const token = Cookies.get('token');
             const url = editingLesson
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${editingLesson._id}`
-                : `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`;
+                ? `${API_URL}/lessons/${editingLesson._id}`
+                : `${API_URL}/lessons`;
 
             const method = editingLesson ? 'PUT' : 'POST';
 
@@ -348,7 +348,7 @@ export default function MentorLessonsPage() {
         if (!confirm('Tem certeza que deseja deletar esta aula?')) return;
         try {
             const token = Cookies.get('token');
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}`, {
+            await fetch(`${API_URL}/lessons/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -361,7 +361,7 @@ export default function MentorLessonsPage() {
     const togglePublish = async (id: string) => {
         try {
             const token = Cookies.get('token');
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}/toggle-publish`, {
+            await fetch(`${API_URL}/lessons/${id}/toggle-publish`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -416,7 +416,7 @@ export default function MentorLessonsPage() {
             const token = localStorage.getItem('token');
             // Check if already has a certificate recently issued? 
             // The backend handles creation. We just request it.
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/certificates/generate`, {}, {
+            await axios.post(`${API_URL}/certificates/generate`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success('Certificado gerado com sucesso! Você será redirecionado.');

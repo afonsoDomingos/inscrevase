@@ -14,6 +14,8 @@ import CustomFieldsEditor from './CustomFieldsEditor';
 import AgendaEditor from './AgendaEditor';
 import MaterialsEditor from './MaterialsEditor';
 import CertificateEditor from './CertificateEditor';
+import { lessonService, Lesson } from '@/lib/lessonService';
+import { BookOpen } from 'lucide-react';
 
 interface EditEventModalProps {
     isOpen: boolean;
@@ -172,6 +174,43 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         signerRole: 'Mentor Responsável',
         requireCheckIn: false
     });
+
+    // Lesson Selection State
+    const [allLessons, setAllLessons] = useState<Lesson[]>([]);
+    const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
+    const [lessonsLoading, setLessonsLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchLessons = async () => {
+            setLessonsLoading(true);
+            try {
+                const data = await lessonService.getManagedLessons();
+                setAllLessons(data.lessons || []);
+
+                // Initialize selected lessons from form
+                if (form?._id) {
+                    const initiallySelected = (data.lessons || [])
+                        .filter((l: Lesson) => l.associatedEvents?.includes(form._id))
+                        .map((l: Lesson) => l._id);
+                    setSelectedLessons(initiallySelected);
+                }
+            } catch (err) {
+                console.error("Error fetching lessons for modal:", err);
+            } finally {
+                setLessonsLoading(false);
+            }
+        };
+
+        if (isOpen) fetchLessons();
+    }, [isOpen, form?._id]);
+
+    const toggleLessonSelection = (lessonId: string) => {
+        setSelectedLessons(prev =>
+            prev.includes(lessonId)
+                ? prev.filter(id => id !== lessonId)
+                : [...prev, lessonId]
+        );
+    };
 
     useEffect(() => {
         if (form) {
@@ -378,6 +417,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 agenda: agenda.filter(a => a.time.trim() && a.activity.trim()),
                 materials: materials.filter(m => m.name.trim() && m.url.trim()),
                 certificateConfig,
+                associatedLessons: selectedLessons,
                 active: form.active
             });
             onSuccess();
@@ -427,6 +467,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                 { id: 6, label: 'Marketing AI', icon: <Megaphone size={18} /> },
                                 { id: 7, label: 'Hub Personalizado', icon: <Sparkles size={18} /> },
                                 { id: 8, label: 'Certificados', icon: <Award size={18} /> },
+                                { id: 9, label: 'Aulas do Evento', icon: <BookOpen size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -1604,6 +1645,89 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                             onChange={setCertificateConfig}
                                             mentorName={form.creator.name}
                                         />
+                                    </motion.div>
+                                )}
+
+                                {step === 9 && (
+                                    <motion.div key="step9" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aulas do Evento</h2>
+                                        <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
+
+                                        {lessonsLoading ? (
+                                            <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                                <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                                <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
+                                            </div>
+                                        ) : allLessons.length === 0 ? (
+                                            <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
+                                                <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
+                                                <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
+                                                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.</p>
+                                            </div>
+                                        ) : (
+                                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                                {allLessons.map((lesson) => (
+                                                    <div
+                                                        key={lesson._id}
+                                                        onClick={() => toggleLessonSelection(lesson._id)}
+                                                        style={{
+                                                            padding: '1.25rem',
+                                                            borderRadius: '16px',
+                                                            border: '2px solid',
+                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
+                                                            background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '15px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '24px',
+                                                            height: '24px',
+                                                            borderRadius: '6px',
+                                                            border: '2px solid',
+                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
+                                                            background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#fff'
+                                                        }}>
+                                                            {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
+                                                        </div>
+
+                                                        <div style={{
+                                                            width: '60px',
+                                                            height: '40px',
+                                                            borderRadius: '8px',
+                                                            background: '#eee',
+                                                            position: 'relative',
+                                                            overflow: 'hidden',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            {lesson.thumbnailUrl ? (
+                                                                <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                                                            ) : (
+                                                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
+                                                                    <Play size={16} color="#fff" fill="#fff" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div style={{ flex: 1 }}>
+                                                            <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
+                                                            <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
+                                                        </div>
+
+                                                        {!lesson.isPublished && (
+                                                            <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
