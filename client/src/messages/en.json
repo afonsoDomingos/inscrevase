@@ -998,6 +998,7 @@
             "pending": "Pending",
             "completed": "Completed",
             "recent": "Most Recent",
+            "order": "Sequence (1-9)",
             "az": "Title (A-Z)",
             "duration": "Shortest Duration",
             "allLevels": "All Levels",

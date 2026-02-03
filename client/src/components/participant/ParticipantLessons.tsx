@@ -34,7 +34,7 @@ export default function ParticipantLessons() {
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [courseFilter, setCourseFilter] = useState<string>('all');
-    const [sortBy, setSortBy] = useState<string>('recent');
+    const [sortBy, setSortBy] = useState<string>('order');
     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
     useEffect(() => {
@@ -114,6 +114,7 @@ export default function ParticipantLessons() {
             return matchesSearch && matchesCategory && matchesStatus && matchesCourse;
         })
         .sort((a, b) => {
+            if (sortBy === 'order') return (a.order || 9999) - (b.order || 9999);
             if (sortBy === 'az') return a.title.localeCompare(b.title);
             if (sortBy === 'duration') return (a.duration || 0) - (b.duration || 0);
             return 0; // 'recent' is default from API sort
@@ -475,6 +476,7 @@ export default function ParticipantLessons() {
                             cursor: 'pointer'
                         }}
                     >
+                        <option value="order">{t('lessons.filters.order')}</option>
                         <option value="recent">{t('lessons.filters.recent')}</option>
                         <option value="az">{t('lessons.filters.az')}</option>
                         <option value="duration">{t('lessons.filters.duration')}</option>
@@ -540,12 +542,17 @@ export default function ParticipantLessons() {
                             </span>
                         </div>
                         <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                            gap: '1.5rem'
+                            display: 'flex',
+                            gap: '1.5rem',
+                            overflowX: 'auto',
+                            paddingBottom: '1.5rem',
+                            scrollBehavior: 'smooth',
+                            WebkitOverflowScrolling: 'touch'
                         }}>
                             {courseLessons.map((lesson, idx) => (
-                                <LessonCard key={lesson._id} lesson={lesson} index={idx} type="Course" />
+                                <div key={lesson._id} style={{ minWidth: '320px', maxWidth: '320px' }}>
+                                    <LessonCard lesson={lesson} index={idx} type="Course" />
+                                </div>
                             ))}
                         </div>
                     </section>
@@ -564,12 +571,17 @@ export default function ParticipantLessons() {
                             </span>
                         </div>
                         <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                            gap: '1.5rem'
+                            display: 'flex',
+                            gap: '1.5rem',
+                            overflowX: 'auto',
+                            paddingBottom: '1.5rem',
+                            scrollBehavior: 'smooth',
+                            WebkitOverflowScrolling: 'touch'
                         }}>
                             {mentorLessons.map((lesson, idx) => (
-                                <LessonCard key={lesson._id} lesson={lesson} index={idx} type="Mentor" />
+                                <div key={lesson._id} style={{ minWidth: '320px', maxWidth: '320px' }}>
+                                    <LessonCard lesson={lesson} index={idx} type="Mentor" />
+                                </div>
                             ))}
                         </div>
                     </section>
@@ -588,12 +600,17 @@ export default function ParticipantLessons() {
                             </span>
                         </div>
                         <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                            gap: '1.5rem'
+                            display: 'flex',
+                            gap: '1.5rem',
+                            overflowX: 'auto',
+                            paddingBottom: '1.5rem',
+                            scrollBehavior: 'smooth',
+                            WebkitOverflowScrolling: 'touch'
                         }}>
                             {adminLessons.map((lesson, idx) => (
-                                <LessonCard key={lesson._id} lesson={lesson} index={idx} type="Admin" />
+                                <div key={lesson._id} style={{ minWidth: '320px', maxWidth: '320px' }}>
+                                    <LessonCard lesson={lesson} index={idx} type="Admin" />
+                                </div>
                             ))}
                         </div>
                     </section>
