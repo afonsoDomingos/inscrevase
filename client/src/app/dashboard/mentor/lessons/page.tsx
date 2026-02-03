@@ -59,6 +59,12 @@ interface Lesson {
     isCompleted?: boolean;
     isFavorite?: boolean;
     progress?: number;
+    associatedEvents?: string[];
+}
+
+interface MentorEvent {
+    _id: string;
+    title: string;
 }
 
 interface Stats {
@@ -90,6 +96,7 @@ export default function MentorLessonsPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'url'>('upload');
+    const [mentorEvents, setMentorEvents] = useState<MentorEvent[]>([]);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -101,7 +108,8 @@ export default function MentorLessonsPage() {
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
         order: 0,
-        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both'
+        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both',
+        associatedEvents: [] as string[]
     });
 
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -120,8 +128,22 @@ export default function MentorLessonsPage() {
             fetchLearnLessons();
         } else {
             fetchManageLessons();
+            fetchMentorEvents();
         }
     }, [activeTab]);
+
+    const fetchMentorEvents = async () => {
+        try {
+            const token = Cookies.get('token');
+            const response = await fetch(`${API_URL}/forms/my-forms`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            setMentorEvents(data || []);
+        } catch (error) {
+            console.error('Error fetching mentor events:', error);
+        }
+    };
 
     const fetchLearnLessons = async () => {
         setLoading(true);
@@ -361,7 +383,8 @@ export default function MentorLessonsPage() {
                 category: lesson.category,
                 isPublished: lesson.isPublished,
                 order: lesson.order || 0,
-                targetAudience: lesson.targetAudience || 'mentors'
+                targetAudience: lesson.targetAudience || 'mentors',
+                associatedEvents: lesson.associatedEvents || []
             });
         } else {
             setEditingLesson(null);
@@ -374,7 +397,8 @@ export default function MentorLessonsPage() {
                 category: 'basico',
                 isPublished: false,
                 order: 0,
-                targetAudience: 'mentors'
+                targetAudience: 'mentors',
+                associatedEvents: []
             });
         }
         setShowModal(true);
@@ -1058,6 +1082,31 @@ export default function MentorLessonsPage() {
                                         </select>
                                         <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
                                             Defina se esta aula é para treinamento de mentores, para alunos ou para ambos.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Vincular a Eventos Específicos (Opcional)</label>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '150px', overflowY: 'auto', padding: '10px', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e0e0e0' }}>
+                                            {mentorEvents.length > 0 ? mentorEvents.map(event => (
+                                                <label key={event._id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.associatedEvents.includes(event._id)}
+                                                        onChange={(e) => {
+                                                            const newEvents = e.target.checked
+                                                                ? [...formData.associatedEvents, event._id]
+                                                                : formData.associatedEvents.filter(id => id !== event._id);
+                                                            setFormData({ ...formData, associatedEvents: newEvents });
+                                                        }}
+                                                    />
+                                                    {event.title}
+                                                </label>
+                                            )) : (
+                                                <p style={{ fontSize: '0.8rem', color: '#888' }}>Nenhum evento encontrado.</p>
+                                            )}
+                                        </div>
+                                        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
+                                            Se selecionado, esta aula aparecerá apenas na HUB para inscritos nestes eventos.
                                         </p>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

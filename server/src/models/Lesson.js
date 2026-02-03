@@ -29,6 +29,10 @@ const LessonSchema = new mongoose.Schema({
         enum: ['mentors', 'participants', 'both'],
         default: 'mentors'
     },
+    associatedEvents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Form'
+    }],
     duration: {
         type: Number, // Duration in seconds
         min: [0, 'A duração não pode ser negativa']

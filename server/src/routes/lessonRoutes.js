@@ -33,7 +33,9 @@ const upload = multer({
 router.get('/', protect, async (req, res) => {
     try {
         const { category, search } = req.query;
-        const conditions = [{ isPublished: true }];
+        const conditions = [
+            { isPublished: true }
+        ];
 
         if (category && category !== 'all') {
             conditions.push({ category });
@@ -48,25 +50,40 @@ router.get('/', protect, async (req, res) => {
             });
         }
 
-        // Filter by target audience based on user role
+        // Filter by target audience and associated events based on user role
         if (req.user.role === 'admin' || req.user.role === 'SuperAdmin') {
-            // Admins see all published lessons regardless of target audience
-        } else if (req.user.role === 'mentor') {
+            // Admins see all published lessons
+        } else {
+            // Get user's approved submissions to unlock event-specific lessons
+            const userSubmissions = await Submission.find({
+                user: req.user.id,
+                $or: [{ status: 'approved' }, { paymentStatus: 'paid' }]
+            }).select('form');
+
+            const approvedFormIds = userSubmissions.map(s => s.form);
+
+            const roleCondition = req.user.role === 'mentor' ? 'mentors' : 'participants';
+
             conditions.push({
-                $or: [
-                    { targetAudience: 'mentors' },
-                    { targetAudience: 'both' },
-                    { targetAudience: { $exists: false } }, // Legacy support
-                    { targetAudience: null }
-                ]
-            });
-        } else if (req.user.role === 'participant') {
-            conditions.push({
-                $or: [
-                    { targetAudience: 'participants' },
-                    { targetAudience: 'both' },
-                    { targetAudience: { $exists: false } }, // Legacy support
-                    { targetAudience: null }
+                $and: [
+                    // Must match the role/audience OR be general
+                    {
+                        $or: [
+                            { targetAudience: roleCondition },
+                            { targetAudience: 'both' },
+                            { targetAudience: { $exists: false } },
+                            { targetAudience: null }
+                        ]
+                    },
+                    // AND must be either general content OR content from an event I paid for
+                    {
+                        $or: [
+                            { associatedEvents: { $size: 0 } },
+                            { associatedEvents: { $exists: false } },
+                            { associatedEvents: null },
+                            { associatedEvents: { $in: approvedFormIds } }
+                        ]
+                    }
                 ]
             });
         }
@@ -101,6 +118,40 @@ router.get('/:id', protect, async (req, res) => {
     } catch (error) {
         console.error('Error fetching lesson:', error);
         res.status(500).json({ message: 'Erro ao buscar aula' });
+    }
+});
+
+// ==================== HUB ROUTES (PUBLIC ACCESS VIA SUBMISSION) ====================
+
+// @route   GET /api/lessons/hub/:submissionId
+// @desc    Get lessons associated with an event via submission ID
+// @access  Public (Validated by Submission)
+const Submission = require('../models/Submission');
+router.get('/hub/:submissionId', async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.submissionId).populate('form');
+
+        if (!submission) {
+            return res.status(404).json({ message: 'Inscrição não encontrada' });
+        }
+
+        // Only approved submissions can access lessons
+        if (submission.status !== 'approved' && submission.paymentStatus !== 'paid') {
+            return res.status(403).json({ message: 'Acesso às aulas ainda não liberado para esta inscrição' });
+        }
+
+        const formId = submission.form._id;
+
+        // Find lessons associated with this event
+        const lessons = await Lesson.find({
+            isPublished: true,
+            associatedEvents: formId
+        }).sort({ order: 1, createdAt: -1 });
+
+        res.json(lessons);
+    } catch (error) {
+        console.error('Error fetching hub lessons:', error);
+        res.status(500).json({ message: 'Erro ao buscar aulas do evento' });
     }
 });
 
@@ -143,7 +194,7 @@ router.get('/manage/all', protect, async (req, res) => {
 // @access  Private (Admin & Mentor)
 router.post('/', protect, async (req, res) => {
     try {
-        const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, tags, order, targetAudience: bodyTargetAudience } = req.body;
+        const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, tags, order, targetAudience: bodyTargetAudience, associatedEvents } = req.body;
 
         // Determine target audience based on role if not provided in body
         const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
@@ -160,7 +211,8 @@ router.post('/', protect, async (req, res) => {
             tags,
             order,
             createdBy: req.user.id,
-            targetAudience
+            targetAudience,
+            associatedEvents: associatedEvents || []
         });
 
         const savedLesson = await newLesson.save();
