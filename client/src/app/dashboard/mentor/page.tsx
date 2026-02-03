@@ -380,13 +380,13 @@ function MentorDashboardContent() {
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
+                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
-                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
                         { id: 'certificates', label: 'Certificados', icon: <Award size={20} />, link: '/dashboard/mentor/certificates' },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (

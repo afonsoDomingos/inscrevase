@@ -376,7 +376,33 @@ export default function ParticipantDashboard() {
                                 position: 'relative',
                                 overflow: 'hidden'
                             }}
+                            onMouseOver={(e) => {
+                                if (activeTab !== item.id) {
+                                    e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)';
+                                    e.currentTarget.style.color = '#FFD700';
+                                }
+                            }}
+                            onMouseOut={(e) => {
+                                if (activeTab !== item.id) {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = '#aaa';
+                                }
+                            }}
                         >
+                            {activeTab === item.id && (
+                                <motion.div
+                                    layoutId="active-indicator-participant"
+                                    style={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        width: '4px',
+                                        height: '24px',
+                                        background: '#FFD700',
+                                        borderTopRightRadius: '4px',
+                                        borderBottomRightRadius: '4px'
+                                    }}
+                                />
+                            )}
                             <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
                             {!isSidebarCollapsed && (
                                 <motion.span
