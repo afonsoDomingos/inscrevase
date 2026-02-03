@@ -31,6 +31,9 @@ export default function ParticipantLessons() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [courseFilter, setCourseFilter] = useState<string>('all');
+    const [sortBy, setSortBy] = useState<string>('recent');
     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
     useEffect(() => {
@@ -91,12 +94,29 @@ export default function ParticipantLessons() {
         }
     };
 
-    const filteredLessons = lessons.filter(lesson => {
-        const matchesSearch = lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lesson.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || lesson.category === categoryFilter;
-        return matchesSearch && matchesCategory;
-    });
+    // Extract unique courses for the filter
+    const enrolledCourses = Array.from(new Set(
+        lessons.flatMap(l => l.associatedEvents?.map(e => e.title) || [])
+    )).sort();
+
+    const filteredLessons = lessons
+        .filter(lesson => {
+            const matchesSearch = lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                lesson.description.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = categoryFilter === 'all' || lesson.category === categoryFilter;
+            const matchesStatus = statusFilter === 'all' ||
+                (statusFilter === 'completed' && lesson.isCompleted) ||
+                (statusFilter === 'pending' && !lesson.isCompleted);
+            const matchesCourse = courseFilter === 'all' ||
+                lesson.associatedEvents?.some(e => e.title === courseFilter);
+
+            return matchesSearch && matchesCategory && matchesStatus && matchesCourse;
+        })
+        .sort((a, b) => {
+            if (sortBy === 'az') return a.title.localeCompare(b.title);
+            if (sortBy === 'duration') return (a.duration || 0) - (b.duration || 0);
+            return 0; // 'recent' is default from API sort
+        });
 
     // Grouping logic
     const courseLessons = filteredLessons.filter(l => l.associatedEvents && l.associatedEvents.length > 0);
@@ -107,10 +127,11 @@ export default function ParticipantLessons() {
     const groupedByCourse: Record<string, Lesson[]> = {};
     courseLessons.forEach(lesson => {
         lesson.associatedEvents?.forEach(event => {
+            if (courseFilter !== 'all' && event.title !== courseFilter) return;
+
             if (!groupedByCourse[event.title]) {
                 groupedByCourse[event.title] = [];
             }
-            // Avoid duplicates if a lesson is in multiple events (though here we group by event)
             if (!groupedByCourse[event.title].find(l => l._id === lesson._id)) {
                 groupedByCourse[event.title].push(lesson);
             }
@@ -356,54 +377,153 @@ export default function ParticipantLessons() {
             {/* Filters */}
             <div style={{
                 display: 'flex',
-                gap: '1.5rem',
+                gap: '1.2rem',
                 marginBottom: '2.5rem',
-                flexWrap: 'wrap'
+                flexWrap: 'wrap',
+                background: 'var(--paper)',
+                padding: '1.5rem',
+                borderRadius: '20px',
+                border: '1px solid var(--border)',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
             }}>
-                <div style={{ position: 'relative', flex: 2, minWidth: '300px' }}>
-                    <Search style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#999' }} size={20} />
+                {/* Search */}
+                <div style={{ position: 'relative', flex: '2 1 300px' }}>
+                    <Search style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#999' }} size={18} />
                     <input
                         type="text"
-                        placeholder="Buscar por título ou descrição..."
+                        placeholder="Buscar aulas, cursos ou mentores..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
                             width: '100%',
-                            padding: '0.875rem 1rem 0.875rem 3rem',
+                            padding: '0.75rem 1rem 0.75rem 2.8rem',
                             borderRadius: '12px',
                             border: '1px solid var(--border)',
-                            background: 'var(--paper)',
+                            background: 'var(--background)',
                             color: 'var(--foreground)',
-                            fontSize: '1rem',
-                            outline: 'none'
+                            fontSize: '0.95rem',
+                            outline: 'none',
+                            transition: 'border-color 0.2s'
                         }}
+                        onFocus={(e) => e.target.style.borderColor = '#FFD700'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                     />
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem', flex: 1, minWidth: '300px' }}>
+
+                {/* Course Filter */}
+                <div style={{ flex: '1 1 200px' }}>
+                    <select
+                        value={courseFilter}
+                        onChange={(e) => setCourseFilter(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)',
+                            background: 'var(--background)',
+                            color: 'var(--foreground)',
+                            fontSize: '0.95rem',
+                            outline: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <option value="all">Todos os Cursos</option>
+                        {enrolledCourses.map(course => (
+                            <option key={course} value={course}>{course}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Status Filter */}
+                <div style={{ flex: '1 1 180px' }}>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)',
+                            background: 'var(--background)',
+                            color: 'var(--foreground)',
+                            fontSize: '0.95rem',
+                            outline: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <option value="all">Todos os Status</option>
+                        <option value="pending">Pendentes</option>
+                        <option value="completed">Concluídas</option>
+                    </select>
+                </div>
+
+                {/* Sort Filter */}
+                <div style={{ flex: '1 1 180px' }}>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)',
+                            background: 'var(--background)',
+                            color: 'var(--foreground)',
+                            fontSize: '0.95rem',
+                            outline: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <option value="recent">Mais Recentes</option>
+                        <option value="az">Título (A-Z)</option>
+                        <option value="duration">Menor Duração</option>
+                    </select>
+                </div>
+
+                {/* Category Filter Pills */}
+                <div style={{ display: 'flex', gap: '0.5rem', width: '100%', borderTop: '1px solid var(--border)', paddingTop: '1.2rem', marginTop: '0.5rem' }}>
                     {['all', 'basico', 'intermediario', 'avancado'].map(cat => (
                         <button
                             key={cat}
                             onClick={() => setCategoryFilter(cat)}
                             style={{
-                                flex: 1,
-                                padding: '0.625rem',
-                                borderRadius: '12px',
+                                padding: '0.5rem 1.25rem',
+                                borderRadius: '20px',
                                 fontWeight: 700,
-                                fontSize: '0.85rem',
+                                fontSize: '0.8rem',
                                 transition: 'all 0.2s',
                                 cursor: 'pointer',
                                 border: '1px solid var(--border)',
-                                background: categoryFilter === cat ? 'var(--gold-gradient)' : 'var(--paper)',
-                                color: categoryFilter === cat ? '#000' : 'var(--text-muted)'
+                                background: categoryFilter === cat ? 'var(--gold-gradient)' : 'transparent',
+                                color: categoryFilter === cat ? '#000' : 'var(--text-muted)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
                             }}
                         >
-                            {cat === 'all' ? 'Todas' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            {cat === 'all' ? 'Todos Níveis' : cat === 'basico' ? 'Básico' : cat === 'intermediario' ? 'Intermediário' : 'Avançado'}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Content Sections */}
+            {/* Results Info */}
+            {(searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' || courseFilter !== 'all') && (
+                <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    <Search size={16} />
+                    <span>Encontradas <strong>{filteredLessons.length}</strong> aulas nos filtros selecionados.</span>
+                    <button
+                        onClick={() => {
+                            setSearchTerm('');
+                            setCategoryFilter('all');
+                            setStatusFilter('all');
+                            setCourseFilter('all');
+                        }}
+                        style={{ color: '#FFD700', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, marginLeft: '8px' }}
+                    >
+                        Limpar filtros
+                    </button>
+                </div>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
 
                 {/* 1. Course Lessons Sections */}
