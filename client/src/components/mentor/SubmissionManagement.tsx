@@ -22,9 +22,11 @@ import {
     Award,
     ChevronLeft,
     ChevronRight,
-    RotateCcw
+    RotateCcw,
+    BarChart3
 } from 'lucide-react';
 import { stripeService } from '@/lib/stripeService';
+import { lessonService } from '@/lib/lessonService';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
@@ -45,6 +47,8 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     const [searchTerm, setSearchTerm] = useState('');
     const [analyzingId, setAnalyzingId] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [studentProgress, setStudentProgress] = useState<any>(null);
+    const [loadingProgress, setLoadingProgress] = useState(false);
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -89,6 +93,19 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
             toast.error(t('common.toasts.generalError'));
         } finally {
             setAnalyzingId(null);
+        }
+    };
+
+    const handleViewProgress = async (submissionId: string) => {
+        setLoadingProgress(true);
+        try {
+            const progress = await lessonService.getStudentProgress(submissionId);
+            setStudentProgress(progress);
+        } catch (error) {
+            console.error('Error fetching progress:', error);
+            toast.error(t('events.submissions.studentProgressError'));
+        } finally {
+            setLoadingProgress(false);
         }
     };
 
@@ -327,6 +344,20 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                         }}
                                                     >
                                                         <Eye size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleViewProgress(submission._id)}
+                                                        disabled={submission.status !== 'approved'}
+                                                        title={submission.status !== 'approved' ? t('events.submissions.approveToViewProgress') : t('events.submissions.viewProgress')}
+                                                        style={{
+                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                            padding: '0.5rem 1rem', borderRadius: '8px',
+                                                            border: '1px solid var(--gold-active)', background: 'transparent',
+                                                            color: '#D4AF37', cursor: submission.status !== 'approved' ? 'not-allowed' : 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                                            opacity: submission.status !== 'approved' ? 0.3 : 1
+                                                        }}
+                                                    >
+                                                        {loadingProgress ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />} {t('events.submissions.progress')}
                                                     </button>
                                                     <a
                                                         href={`/hub/${submission._id}`}
@@ -931,6 +962,82 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 <a href={selectedProof} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
                                     <Download size={16} /> {t('events.submissions.downloadOriginal')}
                                 </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Student Progress Modal */}
+            <AnimatePresence>
+                {studentProgress && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 4000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setStudentProgress(null)}
+                            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                            style={{
+                                position: 'relative', width: '100%', maxWidth: '700px',
+                                maxHeight: '85vh', background: '#fff', borderRadius: '32px',
+                                overflow: 'hidden', display: 'flex', flexDirection: 'column',
+                                boxShadow: '0 30px 60px -12px rgba(0,0,0,0.5)'
+                            }}
+                        >
+                            <div style={{ padding: '2rem', background: '#0a0a0a', color: '#fff' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div>
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Acompanhamento de Aluno</h3>
+                                        <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>{getMainIdentifier(paginatedSubmissions.find(s => s._id === studentProgress.submissionId)?.data || {})}</p>
+                                    </div>
+                                    <button onClick={() => setStudentProgress(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>
+                                </div>
+
+                                <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{studentProgress.stats.completed}</div>
+                                        <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase' }}>Concluídas</div>
+                                    </div>
+                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{studentProgress.stats.total - studentProgress.stats.completed}</div>
+                                        <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase' }}>Pendentes</div>
+                                    </div>
+                                    <div style={{ background: 'rgba(255,215,0,0.1)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFD700' }}>{Math.round(studentProgress.stats.percentage)}%</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#FFD700', textTransform: 'uppercase' }}>Avanço Total</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
+                                {studentProgress.progress.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>Nenhuma aula vinculada a este evento.</div>
+                                ) : (
+                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                        {studentProgress.progress.map((p: any) => (
+                                            <div key={p._id} style={{ padding: '1.2rem', borderRadius: '20px', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: p.completed ? '#10b98115' : '#f4f4f4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.completed ? '#10b981' : '#999' }}>
+                                                    {p.completed ? <CheckCircle size={20} /> : <div style={{ fontWeight: 800 }}>{p.order}</div>}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{p.title}</div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>
+                                                        {p.completed ? `Finalizada em ${new Date(p.completedAt).toLocaleDateString()}` : 'Não iniciada'}
+                                                    </div>
+                                                </div>
+                                                {p.watchTime > 0 && (
+                                                    <div style={{ fontSize: '0.8rem', fontWeight: 700, background: '#f8f9fa', padding: '4px 10px', borderRadius: '6px' }}>
+                                                        {Math.floor(p.watchTime / 60)}m assistidos
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     </div>

@@ -680,7 +680,11 @@
             "copyBtn": "COPIAR",
             "whatsappBtn": "Chamar no WhatsApp",
             "verifiedLabel": "VERIFICADO",
-            "downloadCertificate": "Baixar Certificado"
+            "downloadCertificate": "Baixar Certificado",
+            "progress": "Progresso",
+            "viewProgress": "Ver progresso das aulas",
+            "approveToViewProgress": "Aprovar inscrição para ver progresso",
+            "studentProgressError": "Erro ao buscar progresso do aluno"
         },
         "theme": {
             "title": "Personalizar Aparência",
@@ -984,5 +988,42 @@
         "professionalNetwork": "Rede Profissional",
         "contact": "Entrar em Contato",
         "rights": "© 2026 INSCRIVA-SE • LIDERANÇA & IMPACTO"
+    },
+    "lessons": {
+        "title": "Suas Aulas & Conteúdos",
+        "subtitle": "Acesse todo o conteúdo exclusivo dos cursos em que você está matriculado.",
+        "searchPlaceholder": "Buscar aulas, cursos ou mentores...",
+        "filters": {
+            "allCourses": "Todos os Cursos",
+            "allStatus": "Todos os Status",
+            "pending": "Pendentes",
+            "completed": "Concluídas",
+            "recent": "Mais Recentes",
+            "az": "Título (A-Z)",
+            "duration": "Menor Duração",
+            "allLevels": "Todos Níveis",
+            "basic": "Básico",
+            "intermediate": "Intermediário",
+            "advanced": "Avançado",
+            "clear": "Limpar filtros",
+            "found": "Encontradas",
+            "foundSuffix": "aulas nos filtros selecionados."
+        },
+        "empty": {
+            "title": "Nenhuma aula encontrada",
+            "desc": "Tente ajustar os filtros ou busque por outro tema."
+        },
+        "card": {
+            "platformContent": "CONTEÚDO DA PLATAFORMA",
+            "enrolled": "Matriculado",
+            "completed": "Concluída"
+        },
+        "sections": {
+            "mentorTraining": "Treinamentos de Mentores",
+            "mentorContent": "conteúdos",
+            "helpCenter": "Central de Ajuda & Tutoriais",
+            "guides": "guias",
+            "lessons": "aulas"
+        }
     }
 }

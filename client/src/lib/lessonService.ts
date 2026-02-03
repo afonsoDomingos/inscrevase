@@ -32,4 +32,13 @@ export const lessonService = {
         const response = await axios.get(`${API_URL}/lessons/hub/${submissionId}`);
         return response.data;
     }
+},
+
+    getStudentProgress: async (submissionId: string) => {
+        const token = Cookies.get('token');
+        const response = await axios.get(`${API_URL}/lessons/submission/${submissionId}/progress`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    }
 };

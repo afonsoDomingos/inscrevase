@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Play, CheckCircle, Video, X } from 'lucide-react';
 import Image from 'next/image';
 import axios from 'axios';
-
 import Cookies from 'js-cookie';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface Lesson {
     _id: string;
@@ -27,6 +27,7 @@ interface Lesson {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function ParticipantLessons() {
+    const { t } = useTranslate();
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -140,9 +141,9 @@ export default function ParticipantLessons() {
 
     const getCategoryBadge = (category: string) => {
         const badges = {
-            basico: { label: 'Básico', color: '#10b981' },
-            intermediario: { label: 'Intermediário', color: '#f59e0b' },
-            avancado: { label: 'Avançado', color: '#ef4444' }
+            basico: { label: t('lessons.filters.basic'), color: '#10b981' },
+            intermediario: { label: t('lessons.filters.intermediate'), color: '#f59e0b' },
+            avancado: { label: t('lessons.filters.advanced'), color: '#ef4444' }
         };
         return badges[category as keyof typeof badges] || badges.basico;
     };
@@ -268,7 +269,7 @@ export default function ParticipantLessons() {
                         textTransform: 'uppercase',
                         letterSpacing: '1px'
                     }}>
-                        {lesson.associatedEvents?.[0]?.title || 'CONTEÚDO DA PLATAFORMA'}
+                        {lesson.associatedEvents?.[0]?.title || t('lessons.card.platformContent')}
                     </span>
                 </div>
 
@@ -311,7 +312,7 @@ export default function ParticipantLessons() {
                     fontWeight: 600
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ color: '#10b981' }}>●</span> Matriculado
+                        <span style={{ color: '#10b981' }}>●</span> {t('lessons.card.enrolled')}
                     </div>
                     <span>{Math.floor(lesson.duration / 60)}:{(Math.floor(lesson.duration % 60)).toString().padStart(2, '0')}</span>
                 </div>
@@ -365,11 +366,11 @@ export default function ParticipantLessons() {
                             color: '#fff',
                             margin: 0
                         }}>
-                            Suas Aulas & Conteúdos
+                            {t('lessons.title')}
                         </h1>
                     </div>
                     <p style={{ color: '#FFD700', fontSize: '1rem', fontWeight: 500, margin: 0, opacity: 0.9 }}>
-                        Acesse todo o conteúdo exclusivo dos cursos em que você está matriculado.
+                        {t('lessons.subtitle')}
                     </p>
                 </div>
             </motion.div>
@@ -391,7 +392,7 @@ export default function ParticipantLessons() {
                     <Search style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#999' }} size={18} />
                     <input
                         type="text"
-                        placeholder="Buscar aulas, cursos ou mentores..."
+                        placeholder={t('lessons.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
@@ -427,7 +428,7 @@ export default function ParticipantLessons() {
                             cursor: 'pointer'
                         }}
                     >
-                        <option value="all">Todos os Cursos</option>
+                        <option value="all">{t('lessons.filters.allCourses')}</option>
                         {enrolledCourses.map(course => (
                             <option key={course} value={course}>{course}</option>
                         ))}
@@ -451,9 +452,9 @@ export default function ParticipantLessons() {
                             cursor: 'pointer'
                         }}
                     >
-                        <option value="all">Todos os Status</option>
-                        <option value="pending">Pendentes</option>
-                        <option value="completed">Concluídas</option>
+                        <option value="all">{t('lessons.filters.allStatus')}</option>
+                        <option value="pending">{t('lessons.filters.pending')}</option>
+                        <option value="completed">{t('lessons.filters.completed')}</option>
                     </select>
                 </div>
 
@@ -474,9 +475,9 @@ export default function ParticipantLessons() {
                             cursor: 'pointer'
                         }}
                     >
-                        <option value="recent">Mais Recentes</option>
-                        <option value="az">Título (A-Z)</option>
-                        <option value="duration">Menor Duração</option>
+                        <option value="recent">{t('lessons.filters.recent')}</option>
+                        <option value="az">{t('lessons.filters.az')}</option>
+                        <option value="duration">{t('lessons.filters.duration')}</option>
                     </select>
                 </div>
 
@@ -500,7 +501,7 @@ export default function ParticipantLessons() {
                                 letterSpacing: '0.5px'
                             }}
                         >
-                            {cat === 'all' ? 'Todos Níveis' : cat === 'basico' ? 'Básico' : cat === 'intermediario' ? 'Intermediário' : 'Avançado'}
+                            {cat === 'all' ? t('lessons.filters.allLevels') : cat === 'basico' ? t('lessons.filters.basic') : cat === 'intermediario' ? t('lessons.filters.intermediate') : t('lessons.filters.advanced')}
                         </button>
                     ))}
                 </div>
@@ -510,7 +511,7 @@ export default function ParticipantLessons() {
             {(searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' || courseFilter !== 'all') && (
                 <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                     <Search size={16} />
-                    <span>Encontradas <strong>{filteredLessons.length}</strong> aulas nos filtros selecionados.</span>
+                    <span>{t('lessons.filters.found')} <strong>{filteredLessons.length}</strong> {t('lessons.filters.foundSuffix')}</span>
                     <button
                         onClick={() => {
                             setSearchTerm('');
@@ -520,7 +521,7 @@ export default function ParticipantLessons() {
                         }}
                         style={{ color: '#FFD700', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, marginLeft: '8px' }}
                     >
-                        Limpar filtros
+                        {t('lessons.filters.clear')}
                     </button>
                 </div>
             )}
@@ -535,7 +536,7 @@ export default function ParticipantLessons() {
                                 {courseTitle}
                             </h2>
                             <span style={{ fontSize: '0.9rem', color: '#999', background: 'rgba(255,215,0,0.1)', padding: '4px 12px', borderRadius: '20px' }}>
-                                {courseLessons.length} aulas
+                                {courseLessons.length} {t('lessons.sections.lessons')}
                             </span>
                         </div>
                         <div style={{
@@ -556,10 +557,10 @@ export default function ParticipantLessons() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1.5rem' }}>
                             <div style={{ width: '40px', height: '2px', background: '#f59e0b' }} />
                             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: 'var(--foreground)' }}>
-                                Treinamentos de Mentores
+                                {t('lessons.sections.mentorTraining')}
                             </h2>
                             <span style={{ fontSize: '0.9rem', color: '#999', background: 'rgba(245,158,11,0.1)', padding: '4px 12px', borderRadius: '20px' }}>
-                                {mentorLessons.length} conteúdos
+                                {mentorLessons.length} {t('lessons.sections.mentorContent')}
                             </span>
                         </div>
                         <div style={{
@@ -580,10 +581,10 @@ export default function ParticipantLessons() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1.5rem' }}>
                             <div style={{ width: '40px', height: '2px', background: '#3b82f6' }} />
                             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: 'var(--foreground)' }}>
-                                Central de Ajuda & Tutoriais
+                                {t('lessons.sections.helpCenter')}
                             </h2>
                             <span style={{ fontSize: '0.9rem', color: '#999', background: 'rgba(59,130,246,0.1)', padding: '4px 12px', borderRadius: '20px' }}>
-                                {adminLessons.length} guias
+                                {adminLessons.length} {t('lessons.sections.guides')}
                             </span>
                         </div>
                         <div style={{
@@ -624,10 +625,10 @@ export default function ParticipantLessons() {
                             <Video size={50} color="#FFD700" />
                         </div>
                         <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--foreground)' }}>
-                            Nenhuma aula encontrada
+                            {t('lessons.empty.title')}
                         </h3>
                         <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
-                            Tente ajustar os filtros ou busque por outro tema.
+                            {t('lessons.empty.desc')}
                         </p>
                     </motion.div>
                 )}
@@ -686,7 +687,7 @@ export default function ParticipantLessons() {
                                             </span>
                                             {selectedLesson.isCompleted && (
                                                 <span className="flex items-center gap-1.5 text-green-600 text-xs font-bold uppercase">
-                                                    <CheckCircle size={14} /> Concluída
+                                                    <CheckCircle size={14} /> {t('lessons.card.completed')}
                                                 </span>
                                             )}
                                         </div>

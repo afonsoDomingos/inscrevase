@@ -143,6 +143,11 @@ interface HubLesson {
     thumbnailUrl?: string;
     duration: number;
     order: number;
+    progress?: {
+        completed: boolean;
+        watchTime: number;
+        lastWatchedAt?: string;
+    };
 }
 
 function HubContent() {
@@ -193,13 +198,21 @@ function HubContent() {
 
         const fetchLessons = async () => {
             try {
+                // Get token if logged in to fetch personal progress
+                const token = typeof window !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
+
                 const url = process.env.NEXT_PUBLIC_API_URL
                     ? `${process.env.NEXT_PUBLIC_API_URL}/lessons/hub/${id}`
                     : `http://localhost:5000/api/lessons/hub/${id}`;
-                const response = await fetch(url);
+
+                const response = await fetch(url, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
                 const data = await response.json();
                 if (response.ok) {
-                    setLessons(data);
+                    // Sort by order
+                    const sorted = data.sort((a: HubLesson, b: HubLesson) => (a.order || 0) - (b.order || 0));
+                    setLessons(sorted);
                 }
             } catch (err) {
                 console.error('Error fetching hub lessons:', err);
@@ -207,8 +220,48 @@ function HubContent() {
         };
 
         fetchSubmission();
-        fetchLessons();
+        if (id) fetchLessons();
     }, [id, t]);
+
+    const markLessonComplete = async (lessonId: string) => {
+        try {
+            const token = typeof window !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
+            if (!token) return;
+
+            const url = process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/lessons/${lessonId}/progress`
+                : `http://localhost:5000/api/lessons/${lessonId}/progress`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ completed: true })
+            });
+
+            if (response.ok) {
+                // Refresh lessons to update progress status
+                setLessons(prev => prev.map(l => l._id === lessonId ? { ...l, progress: { ...l.progress, completed: true, watchTime: l.duration } } : l));
+                toast.success('Aula concluída!');
+            }
+        } catch (error) {
+            console.error('Error updating progress:', error);
+        }
+    };
+
+    const isLessonLocked = (lesson: HubLesson, index: number) => {
+        if (index === 0) return false;
+        const previousLesson = lessons[index - 1];
+        return !previousLesson.progress?.completed;
+    };
+
+    const stats = {
+        total: lessons.length,
+        completed: lessons.filter(l => l.progress?.completed).length,
+        percentage: lessons.length > 0 ? Math.round((lessons.filter(l => l.progress?.completed).length / lessons.length) * 100) : 0
+    };
 
     // Countdown Timer
     useEffect(() => {
@@ -647,6 +700,38 @@ function HubContent() {
                         {/* 4. Aulas do Evento (HUB Lessons) */}
                         {lessons.length > 0 && (
                             <div style={{ background: '#fff', padding: '45px', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                                {/* Progress Stats */}
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #0a0a0a 0%, #171A20 100%)',
+                                    borderRadius: '24px',
+                                    padding: '30px',
+                                    marginBottom: '40px',
+                                    color: '#fff',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    gap: '20px',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <div>
+                                        <div style={{ fontSize: '0.8rem', opacity: 0.6, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Seu Progresso</div>
+                                        <div style={{ fontSize: '2rem', fontWeight: 800 }}>{stats.completed} <span style={{ fontSize: '1rem', opacity: 0.5 }}>/ {stats.total} aulas</span></div>
+                                    </div>
+                                    <div style={{ flex: 1, maxWidth: '300px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem' }}>
+                                            <span>Concluído</span>
+                                            <span style={{ fontWeight: 800, color: primaryColor }}>{stats.percentage}%</span>
+                                        </div>
+                                        <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', overflow: 'hidden' }}>
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${stats.percentage}%` }}
+                                                style={{ height: '100%', background: primaryColor, borderRadius: '10px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '35px' }}>
                                     <div style={{ padding: '10px', background: `${primaryColor}15`, borderRadius: '12px' }}>
                                         <Video size={26} color={primaryColor} />
@@ -654,38 +739,72 @@ function HubContent() {
                                     <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: '#111' }}>{t('dashboard.lessons') || 'Aulas do Evento'}</h2>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-                                    {lessons.map((lesson) => (
-                                        <motion.div
-                                            key={lesson._id}
-                                            whileHover={{ y: -5 }}
-                                            onClick={() => setSelectedLesson(lesson)}
-                                            style={{
-                                                background: '#fbfbfb',
-                                                borderRadius: '24px',
-                                                overflow: 'hidden',
-                                                border: '1px solid #f0f0f0',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-                                                {lesson.thumbnailUrl ? (
-                                                    <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
-                                                ) : (
-                                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                        <Play size={32} color={primaryColor} />
+                                    {lessons.map((lesson, idx) => {
+                                        const locked = isLessonLocked(lesson, idx);
+                                        const completed = lesson.progress?.completed;
+
+                                        return (
+                                            <motion.div
+                                                key={lesson._id}
+                                                whileHover={!locked ? { y: -5 } : {}}
+                                                onClick={() => {
+                                                    if (!locked) {
+                                                        setSelectedLesson(lesson);
+                                                    } else {
+                                                        toast.error('Complete a aula anterior para desbloquear esta!');
+                                                    }
+                                                }}
+                                                style={{
+                                                    background: '#fbfbfb',
+                                                    borderRadius: '24px',
+                                                    overflow: 'hidden',
+                                                    border: '1px solid #f0f0f0',
+                                                    cursor: locked ? 'not-allowed' : 'pointer',
+                                                    opacity: locked ? 0.6 : 1,
+                                                    position: 'relative'
+                                                }}
+                                            >
+                                                <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
+                                                    {lesson.thumbnailUrl ? (
+                                                        <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            {locked ? <Loader2 size={32} color="#666" /> : <Play size={32} color={primaryColor} />}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Overlays */}
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }} />
+
+                                                    {locked && (
+                                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <div style={{ color: '#fff', fontSize: '2rem' }}>🔒</div>
+                                                        </div>
+                                                    )}
+
+                                                    {completed && (
+                                                        <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#10b981', color: '#fff', padding: '6px 12px', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '5px', boxShadow: '0 4px 10px rgba(16,185,129,0.3)' }}>
+                                                            <CheckCircle2 size={12} /> {t('hub.completedStatus') || 'Finalizada'}
+                                                        </div>
+                                                    )}
+
+                                                    <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.7rem', color: '#fff' }}>
+                                                        {Math.floor(lesson.duration / 60)}:{(lesson.duration % 60).toString().padStart(2, '0')}
                                                     </div>
-                                                )}
-                                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
-                                                <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.7rem', color: '#fff' }}>
-                                                    {Math.floor(lesson.duration / 60)}:{(lesson.duration % 60).toString().padStart(2, '0')}
                                                 </div>
-                                            </div>
-                                            <div style={{ padding: '15px' }}>
-                                                <h3 style={{ margin: '0 0 5px 0', fontSize: '1rem', fontWeight: 700, color: '#111', lineHeight: 1.3 }}>{lesson.title}</h3>
-                                                <p style={{ margin: 0, fontSize: '0.8rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{lesson.description}</p>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                                <div style={{ padding: '20px' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '1px' }}>Aula {idx + 1}</div>
+                                                        {!locked && !completed && (
+                                                            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{t('hub.pendingStatus') || 'Não iniciada'}</div>
+                                                        )}
+                                                    </div>
+                                                    <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 700, color: '#111', lineHeight: 1.3 }}>{lesson.title}</h3>
+                                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>{lesson.description}</p>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -714,9 +833,37 @@ function HubContent() {
                                                     allowFullScreen
                                                 />
                                             </div>
-                                            <div style={{ padding: '30px', background: '#fff' }}>
-                                                <h2 style={{ margin: '0 0 10px 0', color: '#000' }}>{selectedLesson.title}</h2>
-                                                <p style={{ margin: 0, color: '#666', lineHeight: 1.5 }}>{selectedLesson.description}</p>
+                                            <div style={{ padding: '30px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div>
+                                                    <h2 style={{ margin: '0 0 10px 0', color: '#000' }}>{selectedLesson.title}</h2>
+                                                    <p style={{ margin: 0, color: '#666', lineHeight: 1.5 }}>{selectedLesson.description}</p>
+                                                </div>
+                                                {!selectedLesson.progress?.completed && (
+                                                    <button
+                                                        onClick={() => markLessonComplete(selectedLesson._id)}
+                                                        style={{
+                                                            background: '#10b981',
+                                                            color: '#fff',
+                                                            border: 'none',
+                                                            padding: '12px 24px',
+                                                            borderRadius: '12px',
+                                                            fontWeight: 700,
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px',
+                                                            transition: '0.2s',
+                                                            boxShadow: '0 10px 20px rgba(16,185,129,0.2)'
+                                                        }}
+                                                    >
+                                                        <CheckCircle2 size={18} /> {t('hub.markAsComplete') || 'Concluir Aula'}
+                                                    </button>
+                                                )}
+                                                {selectedLesson.progress?.completed && (
+                                                    <div style={{ color: '#10b981', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <CheckCircle2 size={24} /> {t('hub.lessonCompleted') || 'Aula Concluída!'}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

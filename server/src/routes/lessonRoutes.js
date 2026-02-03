@@ -127,7 +127,7 @@ router.get('/:id', protect, async (req, res) => {
 // ==================== HUB ROUTES (PUBLIC ACCESS VIA SUBMISSION) ====================
 
 // @route   GET /api/lessons/hub/:submissionId
-// @desc    Get lessons associated with an event via submission ID
+// @desc    Get lessons associated with an event via submission ID (includes progress)
 // @access  Public (Validated by Submission)
 router.get('/hub/:submissionId', async (req, res) => {
     try {
@@ -150,10 +150,81 @@ router.get('/hub/:submissionId', async (req, res) => {
             associatedEvents: formId
         }).sort({ order: 1, createdAt: -1 });
 
-        res.json(lessons);
+        // If submission has a linked user, fetch their progress
+        let progress = [];
+        if (submission.user) {
+            progress = await LessonProgress.find({
+                user: submission.user,
+                lesson: { $in: lessons.map(l => l._id) }
+            });
+        }
+
+        // Return lessons with progress info
+        const lessonsWithProgress = lessons.map(lesson => {
+            const p = progress.find(pg => pg.lesson.toString() === lesson._id.toString());
+            return {
+                ...lesson.toObject(),
+                progress: p ? {
+                    completed: p.completed,
+                    watchTime: p.watchTime,
+                    lastWatchedAt: p.lastWatchedAt
+                } : { completed: false, watchTime: 0 }
+            };
+        });
+
+        res.json(lessonsWithProgress);
     } catch (error) {
         console.error('Error fetching hub lessons:', error);
         res.status(500).json({ message: 'Erro ao buscar aulas do evento' });
+    }
+});
+
+// @route   GET /api/lessons/submission/:submissionId/progress
+// @desc    Get progress details for a specific submission (For Mentor tracking)
+// @access  Mentor/Admin
+router.get('/submission/:submissionId/progress', protect, async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.submissionId).populate('form');
+        if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
+
+        // Verify if mentor owns the form
+        if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Acesso negado' });
+        }
+
+        if (!submission.user) {
+            return res.json({ message: 'Nenhum usuário vinculado a esta inscrição', lessons: [] });
+        }
+
+        const lessons = await Lesson.find({ associatedEvents: submission.form._id }).sort({ order: 1 });
+        const progress = await LessonProgress.find({ user: submission.user, lesson: { $in: lessons.map(l => l._id) } });
+
+        const detailedProgress = lessons.map(lesson => {
+            const p = progress.find(pg => pg.lesson.toString() === lesson._id.toString());
+            return {
+                _id: lesson._id,
+                title: lesson.title,
+                order: lesson.order,
+                completed: p ? p.completed : false,
+                watchTime: p ? p.watchTime : 0,
+                completedAt: p ? p.completedAt : null,
+                lastWatchedAt: p ? p.lastWatchedAt : null
+            };
+        });
+
+        res.json({
+            submissionId: submission._id,
+            user: submission.user,
+            progress: detailedProgress,
+            stats: {
+                total: lessons.length,
+                completed: detailedProgress.filter(p => p.completed).length,
+                percentage: lessons.length > 0 ? (detailedProgress.filter(p => p.completed).length / lessons.length) * 100 : 0
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching student progress:', error);
+        res.status(500).json({ message: 'Erro ao buscar progresso do aluno' });
     }
 });
 

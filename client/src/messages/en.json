@@ -679,7 +679,11 @@
             "copyBtn": "COPY",
             "whatsappBtn": "Call on WhatsApp",
             "verifiedLabel": "VERIFIED",
-            "downloadCertificate": "Download Certificate"
+            "downloadCertificate": "Download Certificate",
+            "progress": "Progress",
+            "viewProgress": "View Progress",
+            "approveToViewProgress": "Approve registration to view progress",
+            "studentProgressError": "Error fetching student progress"
         },
         "theme": {
             "title": "Customize Appearance",
@@ -983,5 +987,42 @@
         "professionalNetwork": "Professional Network",
         "contact": "Get in Touch",
         "rights": "© 2026 INSCRIVA-SE • LEADERSHIP & IMPACT"
+    },
+    "lessons": {
+        "title": "Your Lessons & Content",
+        "subtitle": "Access all exclusive content from the courses you are enrolled in.",
+        "searchPlaceholder": "Search lessons, courses or mentors...",
+        "filters": {
+            "allCourses": "All Courses",
+            "allStatus": "All Status",
+            "pending": "Pending",
+            "completed": "Completed",
+            "recent": "Most Recent",
+            "az": "Title (A-Z)",
+            "duration": "Shortest Duration",
+            "allLevels": "All Levels",
+            "basic": "Basic",
+            "intermediate": "Intermediate",
+            "advanced": "Advanced",
+            "clear": "Clear filters",
+            "found": "Found",
+            "foundSuffix": "lessons in selected filters."
+        },
+        "empty": {
+            "title": "No lessons found",
+            "desc": "Try adjusting filters or search for another topic."
+        },
+        "card": {
+            "platformContent": "PLATFORM CONTENT",
+            "enrolled": "Enrolled",
+            "completed": "Completed"
+        },
+        "sections": {
+            "mentorTraining": "Mentor Training",
+            "mentorContent": "contents",
+            "helpCenter": "Help Center & Tutorials",
+            "guides": "guides",
+            "lessons": "lessons"
+        }
     }
 }
