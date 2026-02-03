@@ -213,7 +213,7 @@ export default function ParticipantLessons() {
                                 }
                             }}
                         >
-                            {cat === 'all' ? '📚 Todas' : cat === 'basico' ? '🟢 Básico' : cat === 'intermediario' ? '🟡 Intermediário' : '🔴 Avançado'}
+                            {cat === 'all' ? 'Todas' : cat === 'basico' ? 'Básico' : cat === 'intermediario' ? 'Intermediário' : 'Avançado'}
                         </button>
                     ))}
                 </div>
@@ -374,8 +374,8 @@ export default function ParticipantLessons() {
                                 color: '#999',
                                 fontWeight: 600
                             }}>
-                                <span>⏱️ {Math.floor(lesson.duration / 60)}:{(Math.floor(lesson.duration % 60)).toString().padStart(2, '0')}</span>
-                                <span>👁️ {lesson.views} visualizações</span>
+                                <span>{Math.floor(lesson.duration / 60)}:{(Math.floor(lesson.duration % 60)).toString().padStart(2, '0')}</span>
+                                <span>{lesson.views} visualizações</span>
                             </div>
                         </div>
                     </motion.div>

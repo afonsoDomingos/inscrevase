@@ -79,28 +79,28 @@ export default function InternalBlogView() {
                                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%)' }} />
                             </div>
 
-                            <div style={{ padding: '4rem', position: 'relative' }}>
-                                <div style={{ display: 'flex', gap: '15px', marginBottom: '2rem' }}>
+                            <div style={{ padding: '3rem 2.5rem', position: 'relative', maxHeight: '80vh', overflowY: 'auto' }}>
+                                <div style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                                     <span style={{ background: 'var(--gold-gradient)', color: '#000', padding: '5px 15px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
                                         {selectedPost.category}
                                     </span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                                        <Clock size={16} /> {selectedPost.readTime} {t('blog.readTime')}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>
+                                        <Clock size={14} /> {selectedPost.readTime} {t('blog.readTime')}
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                                        <Eye size={16} /> {selectedPost.views} {t('blog.views')}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>
+                                        <Eye size={14} /> {selectedPost.views} {t('blog.views')}
                                     </div>
                                 </div>
 
-                                <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, marginBottom: '2.5rem', lineHeight: 1.1, fontFamily: 'var(--font-playfair)' }}>
+                                <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '2rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>
                                     {selectedPost.title}
                                 </h1>
 
                                 <div
                                     className="blog-content-rendering"
                                     style={{
-                                        fontSize: '1.25rem',
-                                        lineHeight: 1.8,
+                                        fontSize: '1.05rem',
+                                        lineHeight: 1.7,
                                         color: 'var(--foreground)',
                                         maxWidth: '900px'
                                     }}
@@ -165,11 +165,14 @@ export default function InternalBlogView() {
             </AnimatePresence>
 
             <style jsx global>{`
-                .blog-content-rendering h2 { margin: 3rem 0 1.5rem; font-size: 2.5rem; font-weight: 800; color: var(--foreground); }
-                .blog-content-rendering p { margin-bottom: 1.5rem; }
-                .blog-content-rendering img { max-width: 100%; border-radius: 20px; margin: 2rem 0; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-                .blog-content-rendering blockquote { border-left: 5px solid var(--primary); padding-left: 2rem; font-style: italic; color: var(--text-muted); margin: 3rem 0; font-size: 1.5rem; }
+                .blog-content-rendering h2 { margin: 2rem 0 1rem; font-size: 1.65rem; font-weight: 800; color: var(--foreground); line-height: 1.3; }
+                .blog-content-rendering h3 { margin: 1.5rem 0 0.75rem; font-size: 1.35rem; font-weight: 700; color: var(--foreground); }
+                .blog-content-rendering p { margin-bottom: 1.25rem; }
+                .blog-content-rendering ul, .blog-content-rendering ol { margin: 1rem 0; padding-left: 2rem; }
+                .blog-content-rendering li { margin-bottom: 0.5rem; }
+                .blog-content-rendering img { max-width: 100%; border-radius: 16px; margin: 1.5rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+                .blog-content-rendering blockquote { border-left: 4px solid var(--primary); padding-left: 1.5rem; font-style: italic; color: var(--text-muted); margin: 2rem 0; font-size: 1.15rem; }
             `}</style>
-        </div>
+        </div >
     );
 }
