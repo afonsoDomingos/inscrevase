@@ -122,6 +122,7 @@ export interface FormModel {
     updatedAt: string;
     submissionCount?: number;
     visits?: number;
+    associatedLessons?: string[];
 }
 
 export const formService = {
