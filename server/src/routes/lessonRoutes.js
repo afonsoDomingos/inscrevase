@@ -4,6 +4,7 @@ const { authMiddleware: protect, adminMiddleware: adminOnly } = require('../midd
 const multer = require('multer');
 const path = require('path');
 const { uploadToCloudinary } = require('../config/cloudinaryService');
+const Submission = require('../models/Submission');
 
 const router = Router();
 
@@ -89,6 +90,8 @@ router.get('/', protect, async (req, res) => {
         }
 
         const lessons = await Lesson.find({ $and: conditions })
+            .populate('associatedEvents', 'title')
+            .populate('createdBy', 'name role')
             .sort({ order: 1, createdAt: -1 })
             .select('-__v');
 
@@ -126,7 +129,6 @@ router.get('/:id', protect, async (req, res) => {
 // @route   GET /api/lessons/hub/:submissionId
 // @desc    Get lessons associated with an event via submission ID
 // @access  Public (Validated by Submission)
-const Submission = require('../models/Submission');
 router.get('/hub/:submissionId', async (req, res) => {
     try {
         const submission = await Submission.findById(req.params.submissionId).populate('form');

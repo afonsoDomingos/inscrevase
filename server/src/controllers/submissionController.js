@@ -157,12 +157,19 @@ const getFormSubmissions = async (req, res) => {
 const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
+        console.log(`[Submission] Updating status of ${req.params.id} to ${status}`);
+
         const submission = await Submission.findById(req.params.id).populate('form');
-        if (!submission) return res.status(404).json({ message: 'Submission not found' });
+        if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
+
+        if (!submission.form) {
+            console.error('[Submission] Submission exists but its associated form is missing');
+            return res.status(400).json({ message: 'Erro de integridade: Formulário associado não encontrado' });
+        }
 
         // Check ownership of the form
         if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
-            return res.status(403).json({ message: 'Not authorized' });
+            return res.status(403).json({ message: 'Acesso negado' });
         }
 
         submission.status = status;
@@ -180,19 +187,26 @@ const updateStatus = async (req, res) => {
                     const amount = submission.form.paymentConfig.price || 0;
                     const platformFee = amount * planConfig.commissionRate;
 
+                    const currency = submission.form.paymentConfig.currency || 'MZN';
+
                     // Create manual transaction (Status: pending until mentor pays platform)
                     const transaction = new Transaction({
-                        user: mentor._id,
+                        user: submission.user || mentor._id, // Use participant if exists, otherwise fallback to mentor or system
                         mentor: mentor._id,
                         form: submission.form._id,
                         submission: submission._id,
                         amount: amount,
-                        currency: submission.form.paymentConfig.currency || 'MT',
+                        currency: currency,
+                        baseAmount: amount, // Internal accounting in MZN (assuming 1:1 if currency is MT/MZN)
                         platformFee: platformFee,
+                        basePlatformFee: platformFee,
                         mentorEarnings: amount, // For manual, mentor already has 100% of money
+                        baseMentorEarnings: amount,
                         status: 'pending', // Pending platform fee reconciliation
                         paymentMethod: 'manual'
                     });
+
+                    console.log('[Submission] Creating manual transaction for approved submission:', transaction._id);
                     await transaction.save();
 
                     // Also mark payment as paid in submission since it's approved
@@ -205,7 +219,8 @@ const updateStatus = async (req, res) => {
         await submission.save();
         res.json(submission);
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        console.error('[Submission] Error in updateStatus:', err);
+        res.status(500).json({ message: 'Erro no servidor ao atualizar status', error: err.message });
     }
 };
 
