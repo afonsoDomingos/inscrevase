@@ -262,6 +262,7 @@
         "participants": "Participants",
         "events": "Events",
         "revenue": "Revenue",
+        "lessons": "Event Lessons",
         "analytics": {
             "loading": "Loading analytical data...",
             "evolution": "Registration Evolution",
@@ -377,7 +378,9 @@
             "noTransactions": "No transactions found yet.",
             "net": "Net",
             "loading": "Loading financial statistics...",
-            "event": "Event"
+            "event": "Event",
+            "subscriptionRevenue": "Subscription Revenue",
+            "eventFeeRevenue": "Event Fee Commissions"
         },
         "plans": {
             "choosePlan": "Choose Your Plan 💎",

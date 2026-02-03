@@ -260,8 +260,8 @@
         "engagementBalance": "Equilíbrio de Engagement",
         "mentors": "Mentores",
         "participants": "Participantes",
-        "events": "Eventos",
         "revenue": "Receita",
+        "lessons": "Aulas do Evento",
         "analytics": {
             "loading": "Carregando dados analíticos...",
             "evolution": "Evolução de Inscrições",
