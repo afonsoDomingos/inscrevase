@@ -50,9 +50,17 @@ export default function ParticipantLessons() {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            const progressMap = new Map();
-            progressRes.data.progress?.forEach((p: any) => {
-                progressMap.set(p.lesson?._id || p.lesson, p.completed);
+            interface ProgressItem {
+                lesson: string | { _id: string };
+                completed: boolean;
+            }
+
+            const progressMap = new Map<string, boolean>();
+            progressRes.data.progress?.forEach((p: ProgressItem) => {
+                const lessonId = typeof p.lesson === 'string' ? p.lesson : p.lesson?._id;
+                if (lessonId) {
+                    progressMap.set(lessonId, p.completed);
+                }
             });
 
             const lessonsWithProgress = lessonsRes.data.map((l: Lesson) => ({
