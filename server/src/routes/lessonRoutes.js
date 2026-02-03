@@ -55,6 +55,7 @@ router.get('/', protect, async (req, res) => {
             conditions.push({
                 $or: [
                     { targetAudience: 'mentors' },
+                    { targetAudience: 'both' },
                     { targetAudience: { $exists: false } }, // Legacy support
                     { targetAudience: null }
                 ]
@@ -63,6 +64,7 @@ router.get('/', protect, async (req, res) => {
             conditions.push({
                 $or: [
                     { targetAudience: 'participants' },
+                    { targetAudience: 'both' },
                     { targetAudience: { $exists: false } }, // Legacy support
                     { targetAudience: null }
                 ]

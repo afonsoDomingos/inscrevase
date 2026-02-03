@@ -26,7 +26,7 @@ const LessonSchema = new mongoose.Schema({
     },
     targetAudience: {
         type: String,
-        enum: ['mentors', 'participants'],
+        enum: ['mentors', 'participants', 'both'],
         default: 'mentors'
     },
     duration: {
