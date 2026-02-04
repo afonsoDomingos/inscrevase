@@ -38,6 +38,7 @@ interface SubmissionManagementProps {
 }
 
 interface StudentProgress {
+    submissionId: string;
     stats: {
         completed: number;
         total: number;
@@ -115,7 +116,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
         setLoadingProgress(true);
         try {
             const progress = await lessonService.getStudentProgress(submissionId);
-            setStudentProgress(progress);
+            setStudentProgress({ ...progress, submissionId });
         } catch (error) {
             console.error('Error fetching progress:', error);
             toast.error(t('events.submissions.studentProgressError'));
