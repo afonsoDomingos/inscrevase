@@ -1191,13 +1191,26 @@ export default function MentorLessonsPage() {
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Descrição</label>
                                         <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }} />
                                     </div>
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Categoria</label>
-                                        <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value as 'basico' | 'intermediario' | 'avancado' })} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}>
-                                            <option value="basico">Básico</option>
-                                            <option value="intermediario">Intermediário</option>
-                                            <option value="avancado">Avançado</option>
-                                        </select>
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Ordem / Sequência</label>
+                                            <input
+                                                type="number"
+                                                value={formData.order}
+                                                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                                                style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}
+                                                placeholder="Ex: 1, 2, 3..."
+                                            />
+                                            <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Define a posição na lista.</p>
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Categoria</label>
+                                            <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value as 'basico' | 'intermediario' | 'avancado' })} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}>
+                                                <option value="basico">Básico</option>
+                                                <option value="intermediario">Intermediário</option>
+                                                <option value="avancado">Avançado</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div>
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Público-Alvo</label>
