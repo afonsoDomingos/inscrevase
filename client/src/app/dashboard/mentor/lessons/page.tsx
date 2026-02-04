@@ -97,6 +97,14 @@ export default function MentorLessonsPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'url'>('upload');
     const [mentorEvents, setMentorEvents] = useState<MentorEvent[]>([]);
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -499,7 +507,7 @@ export default function MentorLessonsPage() {
 
     return (
         <MentorDashboardShell activeRoute="lessons">
-            <div style={{ padding: isMobile ? '1rem' : '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+            <div style={{ padding: isMobile ? '1rem 0.75rem' : '2rem', maxWidth: '1400px', margin: '0 auto' }}>
 
                 {/* Header & Tabs */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -510,14 +518,23 @@ export default function MentorLessonsPage() {
                         <p style={{ color: '#666' }}>Aprenda com especialistas ou compartilhe seu conhecimento</p>
                     </div>
 
-                    <div style={{ background: '#f3f4f6', padding: '4px', borderRadius: '12px', display: 'flex', gap: '4px' }}>
+                    <div style={{
+                        background: '#f3f4f6',
+                        padding: '4px',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        gap: '4px',
+                        width: isMobile ? '100%' : 'auto'
+                    }}>
                         <button
                             onClick={() => setActiveTab('learn')}
                             style={{
-                                padding: '10px 24px',
+                                flex: isMobile ? 1 : 'none',
+                                padding: isMobile ? '10px 12px' : '10px 24px',
                                 borderRadius: '10px',
                                 border: 'none',
                                 fontWeight: '600',
+                                fontSize: isMobile ? '0.9rem' : '1rem',
                                 cursor: 'pointer',
                                 background: activeTab === 'learn' ? 'white' : 'transparent',
                                 color: activeTab === 'learn' ? '#D4AF37' : '#666',
@@ -530,10 +547,12 @@ export default function MentorLessonsPage() {
                         <button
                             onClick={() => setActiveTab('manage')}
                             style={{
-                                padding: '10px 24px',
+                                flex: isMobile ? 1 : 'none',
+                                padding: isMobile ? '10px 12px' : '10px 24px',
                                 borderRadius: '10px',
                                 border: 'none',
                                 fontWeight: '600',
+                                fontSize: isMobile ? '0.9rem' : '1rem',
                                 cursor: 'pointer',
                                 background: activeTab === 'manage' ? 'white' : 'transparent',
                                 color: activeTab === 'manage' ? '#D4AF37' : '#666',
@@ -541,7 +560,7 @@ export default function MentorLessonsPage() {
                                 transition: 'all 0.2s'
                             }}
                         >
-                            Criar Aulas
+                            Gerir Aulas
                         </button>
                     </div>
                 </div>
@@ -753,23 +772,43 @@ export default function MentorLessonsPage() {
                 {activeTab === 'manage' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                         {/* Stats */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+                            gap: '1rem',
+                            marginBottom: '2rem'
+                        }}>
                             {[
                                 { icon: Video, label: 'Minhas Aulas', value: manageStats.total, color: '#D4AF37' },
                                 { icon: CheckCircle, label: 'Publicadas', value: manageStats.published, color: '#10b981' },
                                 { icon: Clock, label: 'Rascunhos', value: manageStats.unpublished, color: '#f59e0b' },
                                 { icon: TrendingUp, label: 'Visualizações', value: manageStats.totalViews, color: '#3b82f6' }
                             ].map((stat, idx) => (
-                                <div key={idx} style={{ background: 'white', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid #f0f0f0' }}>
+                                <div key={idx} style={{
+                                    background: 'white',
+                                    padding: isMobile ? '1rem' : '1.5rem',
+                                    borderRadius: '16px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    border: '1px solid #f0f0f0'
+                                }}>
                                     <div style={{ background: `${stat.color}15`, padding: '12px', borderRadius: '12px', color: stat.color }}><stat.icon size={24} /></div>
-                                    <div><p style={{ fontSize: '0.875rem', color: '#666' }}>{stat.label}</p><p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stat.value}</p></div>
+                                    <div><p style={{ fontSize: '0.875rem', color: '#666' }}>{stat.label}</p><p style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 'bold' }}>{stat.value}</p></div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Actions */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
-                            <div style={{ position: 'relative', width: '300px' }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: isMobile ? 'column' : 'row',
+                            justifyContent: 'space-between',
+                            gap: '1rem',
+                            marginBottom: '2rem'
+                        }}>
+                            <div style={{ position: 'relative', width: isMobile ? '100%' : '300px' }}>
                                 <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                                 <input
                                     type="text"
@@ -781,15 +820,35 @@ export default function MentorLessonsPage() {
                             </div>
                             <button
                                 onClick={() => openModal()}
-                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)' }}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    padding: '12px 24px',
+                                    background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
+                                    color: '#000',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
+                                    width: isMobile ? '100%' : 'auto'
+                                }}
                             >
                                 <Plus size={20} /> Nova Aula
                             </button>
                         </div>
 
                         {/* Management Table */}
-                        <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <div style={{
+                            background: 'white',
+                            borderRadius: '16px',
+                            overflowX: 'auto',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                            border: '1px solid #eee'
+                        }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '800px' : 'auto' }}>
                                 <thead>
                                     <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                                         <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Aula</th>
