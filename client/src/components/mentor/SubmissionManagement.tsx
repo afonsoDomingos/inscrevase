@@ -1036,7 +1036,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                 ) : (
                                     <div style={{ display: 'grid', gap: '1rem' }}>
                                         {studentProgress.progress.map((p) => (
-                                            <div key={p._id} style={{ padding: '1.2rem', borderRadius: '20px', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                            <div key={p._id} style={{ padding: '1.2rem', borderRadius: '20px', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
                                                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: p.completed ? '#10b98115' : '#f4f4f4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.completed ? '#10b981' : '#999' }}>
                                                     {p.completed ? <CheckCircle size={20} /> : <div style={{ fontWeight: 800 }}>{p.order}</div>}
                                                 </div>
