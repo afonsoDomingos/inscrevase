@@ -487,7 +487,7 @@ function HubContent() {
                     <AdBanner slot="5589508956" format="horizontal" />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '30px', alignItems: 'start' }} className="hub-grid">
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: '25px', alignItems: 'start' }} className="hub-grid">
 
                     {/* Left Column: Details */}
                     <div style={{ display: 'grid', gap: '35px' }}>
@@ -498,7 +498,7 @@ function HubContent() {
                             animate={{ opacity: 1, scale: 1 }}
                             style={{ background: '#fff', borderRadius: '32px', overflow: 'hidden', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.04)', position: 'relative' }}
                         >
-                            <div style={{ position: 'relative', width: '100%', height: '360px' }}>
+                            <div style={{ position: 'relative', width: '100%', height: '300px' }}>
                                 <Image
                                     src={form.coverImage || 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}
                                     alt={form.title}
@@ -506,7 +506,7 @@ function HubContent() {
                                     style={{ objectFit: 'cover' }}
                                     unoptimized={!form.coverImage}
                                 />
-                                <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', padding: '40px', background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)', color: '#fff' }}>
+                                <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', padding: '30px', background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)', color: '#fff' }}>
                                     <div style={{ display: 'flex', gap: '40px' }}>
                                         <div>
                                             <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('submissions.date')}</div>
@@ -953,7 +953,7 @@ function HubContent() {
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            style={{ background: '#fff', borderRadius: '32px', padding: '35px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.04)', textAlign: 'center' }}
+                            style={{ background: '#fff', borderRadius: '32px', padding: '25px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.04)', textAlign: 'center' }}
                         >
                             {/* Countdown Timer - Minimalista Premium */}
                             <div style={{ marginBottom: '30px', paddingBottom: '30px', borderBottom: '1px dashed #eee' }}>
