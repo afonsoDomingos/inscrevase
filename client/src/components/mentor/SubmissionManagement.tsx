@@ -50,6 +50,7 @@ interface StudentProgress {
         order: number;
         completed: boolean;
         completedAt: string;
+        watchTime?: number;
     }>;
 }
 
