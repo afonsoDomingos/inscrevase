@@ -280,10 +280,11 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                                         {msg.sender._id === creatorId && <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>}
                                                         {msg.sender.role === 'admin' && msg.sender._id !== creatorId && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>{t('common.badges.admin').toUpperCase()}</span>}
                                                     </div>
-                                                ) : showHeader && isMe && (
-                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    {msg.sender._id === creatorId && <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>}
-                                                </div>
+                                                )}
+                                                {showHeader && isMe && msg.sender._id === creatorId && (
+                                                    <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>
+                                                    </div>
                                                 )}
                                                 <div style={{
                                                     padding: '12px 16px',
