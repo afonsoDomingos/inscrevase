@@ -360,6 +360,83 @@ const deleteSubmission = async (req, res) => {
     }
 };
 
+const requestCertificate = async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id);
+        if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
+
+        // Ensure user is the one who made the submission
+        if (submission.user && submission.user.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Não autorizado' });
+        }
+
+        if (submission.certificateStatus === 'approved') {
+            return res.status(400).json({ message: 'Certificado já aprovado' });
+        }
+
+        submission.certificateStatus = 'requested';
+        await submission.save();
+
+        // Notify Mentor
+        const form = await Form.findById(submission.form);
+        if (form) {
+            const dataMap = submission.data instanceof Map ? submission.data : new Map(Object.entries(submission.data || {}));
+            const participantName = dataMap.get('nome') || dataMap.get('name') || (req.user ? req.user.name : 'Participante');
+
+            await Notification.create({
+                recipient: form.creator,
+                sender: req.user.id,
+                title: 'Solicitação de Certificado 🎓',
+                content: `${participantName} solicitou o certificado para o evento "${form.title}".`,
+                type: 'personal',
+                actionUrl: `/dashboard/mentor`
+            });
+        }
+
+        res.json({ message: 'Certificado solicitado com sucesso', submission });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao solicitar certificado', error: err.message });
+    }
+};
+
+const updateCertificateStatus = async (req, res) => {
+    try {
+        const { status } = req.body; // 'approved' or 'none' (rejected)
+        const submission = await Submission.findById(req.params.id).populate('form');
+        if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
+
+        // Check ownership (Mentor)
+        if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Acesso negado' });
+        }
+
+        submission.certificateStatus = status;
+        if (status === 'approved') {
+            submission.certificateIssuedAt = new Date();
+        }
+
+        await submission.save();
+
+        // Notify Participant
+        if (submission.user) {
+            await Notification.create({
+                recipient: submission.user,
+                sender: req.user.id,
+                title: status === 'approved' ? 'Certificado Liberado! 🎓' : 'Certificado não aprovado',
+                content: status === 'approved'
+                    ? `Seu certificado para o evento "${submission.form.title}" foi aprovado pelo mentor e já está disponível para download.`
+                    : `Houve um problema com sua solicitação de certificado para "${submission.form.title}". Entre em contato com o mentor.`,
+                type: 'personal',
+                actionUrl: `/hub/${submission._id}`
+            });
+        }
+
+        res.json({ message: 'Status do certificado atualizado', submission });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao atualizar status do certificado', error: err.message });
+    }
+};
+
 module.exports = {
     submitForm,
     getFormSubmissions,
@@ -368,5 +445,7 @@ module.exports = {
     getMySubmissions,
     getSubmissionPublic,
     analyzeReceipt,
-    deleteSubmission
+    deleteSubmission,
+    requestCertificate,
+    updateCertificateStatus
 };

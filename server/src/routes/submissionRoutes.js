@@ -9,7 +9,9 @@ const {
     getSubmissionPublic,
 
     analyzeReceipt,
-    deleteSubmission
+    deleteSubmission,
+    requestCertificate,
+    updateCertificateStatus
 } = require('../controllers/submissionController');
 const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
 
@@ -20,6 +22,8 @@ router.get('/all', authMiddleware, adminMiddleware, getAllSubmissionsAdmin);
 router.patch('/:id/status', authMiddleware, updateStatus);
 router.post('/:submissionId/analyze-receipt', authMiddleware, analyzeReceipt);
 router.delete('/:id', authMiddleware, deleteSubmission);
+router.post('/:id/request-certificate', authMiddleware, requestCertificate);
+router.patch('/:id/certificate-status', authMiddleware, updateCertificateStatus);
 router.get('/:id', getSubmissionPublic); // Public Hub
 
 module.exports = router;

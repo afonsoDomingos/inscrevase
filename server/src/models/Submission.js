@@ -27,6 +27,11 @@ const SubmissionSchema = new mongoose.Schema({
         warning: String
     },
     checkedIn: { type: Boolean, default: false },
+    certificateStatus: {
+        type: String,
+        enum: ['none', 'requested', 'approved'],
+        default: 'none'
+    },
     certificateIssuedAt: { type: Date },
     submittedAt: { type: Date, default: Date.now }
 });

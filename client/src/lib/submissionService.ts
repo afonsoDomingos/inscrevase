@@ -24,6 +24,7 @@ export interface SubmissionModel {
     paymentMethod?: 'manual' | 'stripe';
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'unpaid' | 'paid' | 'pending' | 'refunded';
+    certificateStatus?: 'none' | 'requested' | 'approved';
     aiAnalysis?: {
         isValid: boolean;
         transactionId?: string;
@@ -84,5 +85,18 @@ export const submissionService = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Falha ao excluir submissão');
+    },
+
+    async updateCertificateStatus(id: string, status: 'approved' | 'none'): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/${id}/certificate-status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+        if (!response.ok) throw new Error('Falha ao atualizar status do certificado');
     }
 };

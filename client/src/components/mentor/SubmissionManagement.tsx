@@ -96,6 +96,20 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
         }
     };
 
+    const handleUpdateCertificateStatus = async (id: string, status: 'approved' | 'none') => {
+        try {
+            await submissionService.updateCertificateStatus(id, status);
+            setSubmissions(prev => prev.map(s => s._id === id ? { ...s, certificateStatus: status } : s));
+            if (selectedSubmission?._id === id) {
+                setSelectedSubmission({ ...selectedSubmission, certificateStatus: status });
+            }
+            toast.success(status === 'approved' ? 'Certificado aprovado!' : 'Solicitação removida');
+        } catch (error) {
+            console.error('Error updating certificate status:', error);
+            toast.error('Erro ao atualizar status do certificado');
+        }
+    };
+
     const handleAnalyzeReceipt = async (submissionId: string) => {
         setAnalyzingId(submissionId);
         try {
@@ -348,6 +362,24 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                 }}>
                                                     {submission.paymentStatus === 'refunded' ? t('events.submissions.refundedLabel') : submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                                 </span>
+                                                {submission.certificateStatus === 'requested' && (
+                                                    <div style={{ marginTop: '5px' }}>
+                                                        <span style={{
+                                                            padding: '0.2rem 0.5rem',
+                                                            borderRadius: '4px',
+                                                            fontSize: '0.65rem',
+                                                            fontWeight: 800,
+                                                            background: '#CFB53B20',
+                                                            color: '#C5A028',
+                                                            border: '1px solid #CFB53B40',
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px'
+                                                        }}>
+                                                            <Award size={10} /> {t('hub.certificateRequested') || 'Certificado Solicitado'}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'center' }}>
                                                 <div style={{ display: 'flex', gap: '5px', justifyContent: 'center' }}>
@@ -438,6 +470,24 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                             <RotateCcw size={16} />
                                                         </button>
                                                     )}
+                                                    {submission.certificateStatus === 'requested' && (
+                                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                                            <button
+                                                                onClick={() => handleUpdateCertificateStatus(submission._id, 'approved')}
+                                                                title="Aprovar Certificado"
+                                                                style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: '#CFB53B', color: '#fff', cursor: 'pointer' }}
+                                                            >
+                                                                <Award size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleUpdateCertificateStatus(submission._id, 'none')}
+                                                                title="Rejeitar Certificado"
+                                                                style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #eee', background: '#fff', color: '#666', cursor: 'pointer' }}
+                                                            >
+                                                                <XCircle size={16} />
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                     <button
                                                         onClick={() => handleDelete(submission._id)}
                                                         title={t('events.submissions.deleteSubmission')}
@@ -454,57 +504,59 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                         </div>
 
                         {/* Pagination Controls */}
-                        {totalPages > 1 && (
-                            <div style={{
-                                padding: '1rem',
-                                borderTop: '1px solid #eee',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                background: '#f8f9fa'
-                            }}>
-                                <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                                    {t('events.submissions.showing')} {startIndex + 1}-{Math.min(endIndex, filteredSubmissions.length)} {t('events.submissions.of')} {filteredSubmissions.length} {t('dashboard.submissions')}
+                        {
+                            totalPages > 1 && (
+                                <div style={{
+                                    padding: '1rem',
+                                    borderTop: '1px solid #eee',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    background: '#f8f9fa'
+                                }}>
+                                    <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                                        {t('events.submissions.showing')} {startIndex + 1}-{Math.min(endIndex, filteredSubmissions.length)} {t('events.submissions.of')} {filteredSubmissions.length} {t('dashboard.submissions')}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                        <button
+                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                            disabled={currentPage === 1}
+                                            style={{
+                                                padding: '0.5rem',
+                                                borderRadius: '6px',
+                                                border: '1px solid #ddd',
+                                                background: currentPage === 1 ? '#f0f0f0' : '#fff',
+                                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                opacity: currentPage === 1 ? 0.5 : 1
+                                            }}
+                                        >
+                                            <ChevronLeft size={18} />
+                                        </button>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 600, minWidth: '80px', textAlign: 'center' }}>
+                                            {t('events.submissions.page')} {currentPage} {t('events.submissions.of')} {totalPages}
+                                        </span>
+                                        <button
+                                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                            disabled={currentPage === totalPages}
+                                            style={{
+                                                padding: '0.5rem',
+                                                borderRadius: '6px',
+                                                border: '1px solid #ddd',
+                                                background: currentPage === totalPages ? '#f0f0f0' : '#fff',
+                                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                opacity: currentPage === totalPages ? 0.5 : 1
+                                            }}
+                                        >
+                                            <ChevronRight size={18} />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                        disabled={currentPage === 1}
-                                        style={{
-                                            padding: '0.5rem',
-                                            borderRadius: '6px',
-                                            border: '1px solid #ddd',
-                                            background: currentPage === 1 ? '#f0f0f0' : '#fff',
-                                            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            opacity: currentPage === 1 ? 0.5 : 1
-                                        }}
-                                    >
-                                        <ChevronLeft size={18} />
-                                    </button>
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 600, minWidth: '80px', textAlign: 'center' }}>
-                                        {t('events.submissions.page')} {currentPage} {t('events.submissions.of')} {totalPages}
-                                    </span>
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                        disabled={currentPage === totalPages}
-                                        style={{
-                                            padding: '0.5rem',
-                                            borderRadius: '6px',
-                                            border: '1px solid #ddd',
-                                            background: currentPage === totalPages ? '#f0f0f0' : '#fff',
-                                            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            opacity: currentPage === totalPages ? 0.5 : 1
-                                        }}
-                                    >
-                                        <ChevronRight size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                            )
+                        }
 
                         {/* Mobile Cards */}
                         <div className="mobile-cards" style={{ display: 'none' }}>
@@ -534,6 +586,27 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
                                         <strong>{t('events.submissions.date')}:</strong> {formatDate(submission.submittedAt)}
                                     </div>
+
+                                    {submission.certificateStatus === 'requested' && (
+                                        <div style={{ marginBottom: '1rem' }}>
+                                            <span style={{
+                                                padding: '0.4rem 0.8rem',
+                                                borderRadius: '8px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 800,
+                                                background: '#CFB53B20',
+                                                color: '#C5A028',
+                                                border: '1px solid #CFB53B40',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                width: '100%',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <Award size={14} /> {t('hub.certificateRequested') || 'Certificado Solicitado'}
+                                            </span>
+                                        </div>
+                                    )}
 
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
                                         <button
@@ -621,6 +694,22 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         >
                                             <XCircle size={16} /> {t('events.submissions.reject')}
                                         </button>
+                                        {submission.certificateStatus === 'requested' && (
+                                            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem' }}>
+                                                <button
+                                                    onClick={() => handleUpdateCertificateStatus(submission._id, 'approved')}
+                                                    style={{ flex: 1, padding: '0.6rem', borderRadius: '8px', border: 'none', background: '#CFB53B', color: '#fff', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+                                                >
+                                                    <Award size={16} /> Aprovar Certificado
+                                                </button>
+                                                <button
+                                                    onClick={() => handleUpdateCertificateStatus(submission._id, 'none')}
+                                                    style={{ flex: 1, padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', background: '#fff', color: '#666', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+                                                >
+                                                    <XCircle size={16} /> Recusar
+                                                </button>
+                                            </div>
+                                        )}
                                         <button
                                             onClick={() => handleDelete(submission._id)}
                                             style={{
@@ -650,416 +739,422 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
 
             {/* Payment Proof Modal */}
             <AnimatePresence>
-                {selectedSubmission && (
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => setSelectedSubmission(null)}
-                            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}
-                        />
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            style={{
-                                position: 'relative', width: '100%', maxWidth: '600px',
-                                maxHeight: '90vh', background: '#fff', borderRadius: '24px',
-                                overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-                            }}
-                        >
-                            <div style={{
-                                padding: '1.5rem 2rem', background: '#000', color: '#fff',
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                            }}>
-                                <div>
-                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>
-                                        {t('events.submissions.details')}
-                                    </h3>
-                                    <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>
-                                        {selectedSubmission.form.title}
-                                    </p>
-                                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>
-                                        #{selectedSubmission._id.slice(-8).toUpperCase()} • {formatDate(selectedSubmission.submittedAt)}
-                                    </p>
-                                </div>
-                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                    <button
-                                        onClick={() => {
-                                            const text = Object.entries(selectedSubmission.data || {})
-                                                .map(([k, v]) => `${k}: ${v}`).join('\n');
-                                            navigator.clipboard.writeText(text);
-                                            toast.success(t('events.submissions.copySuccess'));
-                                        }}
-                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 700 }}
-                                    >
-                                        <Copy size={14} /> {t('events.submissions.copyBtn')}
-                                    </button>
-                                    <button
-                                        onClick={() => setSelectedSubmission(null)}
-                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                        <XCircle size={20} />
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
-                                        <div key={key} style={{ padding: '1.2rem', background: '#f8f9fa', borderRadius: '16px', border: '1px solid #eee', position: 'relative' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
-                                                        {key}
-                                                    </label>
-                                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
-                                                        {String(value)}
-                                                    </div>
-                                                </div>
-
-                                                {(key.toLowerCase().includes('tel') || key.toLowerCase().includes('cel') || key.toLowerCase().includes('phone') || key.toLowerCase().includes('zap') || key.toLowerCase().includes('contato')) && (
-                                                    <a
-                                                        href={`https://wa.me/${String(value).replace(/\D/g, '')}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{ background: '#25D366', color: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                        title="Chamar no WhatsApp"
-                                                    >
-                                                        <MessageCircle size={18} />
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {selectedSubmission.aiAnalysis && (
-                                    <div style={{
-                                        marginTop: '1.5rem',
-                                        padding: '1.5rem',
-                                        background: selectedSubmission.aiAnalysis.isValid ? '#f0fdf4' : '#fef2f2',
-                                        borderRadius: '20px',
-                                        border: `1px solid ${selectedSubmission.aiAnalysis.isValid ? '#bbf7d0' : '#fecaca'}`,
-                                        position: 'relative',
-                                        overflow: 'hidden'
-                                    }}>
-                                        <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.1 }}>
-                                            <Sparkles size={40} />
-                                        </div>
-
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                                            <Sparkles size={18} color={selectedSubmission.aiAnalysis.isValid ? '#10b981' : '#ef4444'} />
-                                            <h4 style={{ fontWeight: 800, color: selectedSubmission.aiAnalysis.isValid ? '#166534' : '#991b1b', fontSize: '0.9rem' }}>{t('events.submissions.aiAnalysisTitle')}</h4>
-                                        </div>
-
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                            <div>
-                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>{t('events.submissions.transactionId')}</div>
-                                                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.transactionId || '---'}</div>
-                                            </div>
-                                            <div>
-                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>{t('events.submissions.identifiedValue')}</div>
-                                                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.amount} {selectedSubmission.aiAnalysis.currency}</div>
-                                            </div>
-                                        </div>
-
-                                        {selectedSubmission.aiAnalysis.warning && (
-                                            <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fff', borderRadius: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                                                <AlertTriangle size={16} color="#ef4444" style={{ flexShrink: 0 }} />
-                                                <p style={{ fontSize: '0.75rem', color: '#991b1b', fontWeight: 600 }}>{selectedSubmission.aiAnalysis.warning}</p>
-                                            </div>
-                                        )}
-
-                                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ fontSize: '0.7rem', color: '#666' }}>{t('events.submissions.aiConfidence')}: <b>{selectedSubmission.aiAnalysis.confidence}%</b></div>
-                                            {selectedSubmission.aiAnalysis.isValid && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#10b981', fontWeight: 800 }}><ShieldCheck size={14} /> {t('events.submissions.verifiedLabel')}</div>}
-                                        </div>
+                {
+                    selectedSubmission && (
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                onClick={() => setSelectedSubmission(null)}
+                                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}
+                            />
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                style={{
+                                    position: 'relative', width: '100%', maxWidth: '600px',
+                                    maxHeight: '90vh', background: '#fff', borderRadius: '24px',
+                                    overflow: 'hidden', display: 'flex', flexDirection: 'column',
+                                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+                                }}
+                            >
+                                <div style={{
+                                    padding: '1.5rem 2rem', background: '#000', color: '#fff',
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>
+                                            {t('events.submissions.details')}
+                                        </h3>
+                                        <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>
+                                            {selectedSubmission.form.title}
+                                        </p>
+                                        <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>
+                                            #{selectedSubmission._id.slice(-8).toUpperCase()} • {formatDate(selectedSubmission.submittedAt)}
+                                        </p>
                                     </div>
-                                )}
-
-                                {selectedSubmission.paymentProof && (
-                                    <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,215,0,0.05)', borderRadius: '16px', border: '1px solid rgba(255,215,0,0.2)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                                            <DollarSign size={20} className="gold-text" />
-                                            <h4 style={{ fontWeight: 800 }}>{t('events.submissions.paymentProof')}</h4>
-                                        </div>
+                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                         <button
                                             onClick={() => {
-                                                const proof = selectedSubmission.paymentProof;
-                                                setSelectedSubmission(null);
-                                                setTimeout(() => setSelectedProof(proof!), 300);
+                                                const text = Object.entries(selectedSubmission.data || {})
+                                                    .map(([k, v]) => `${k}: ${v}`).join('\n');
+                                                navigator.clipboard.writeText(text);
+                                                toast.success(t('events.submissions.copySuccess'));
                                             }}
-                                            style={{
-                                                width: '100%', padding: '0.8rem', borderRadius: '10px',
-                                                border: '1px solid #000', background: '#000', color: '#FFD700',
-                                                fontWeight: 700, cursor: 'pointer', display: 'flex',
-                                                alignItems: 'center', justifyContent: 'center', gap: '8px'
-                                            }}
+                                            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 700 }}
                                         >
-                                            <Eye size={18} /> {t('events.submissions.view')}
+                                            <Copy size={14} /> {t('events.submissions.copyBtn')}
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedSubmission(null)}
+                                            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            <XCircle size={20} />
                                         </button>
                                     </div>
-                                )}
-                            </div>
-
-                            <div style={{ padding: '1.5rem 2rem', background: '#f8f9fa', borderTop: '1px solid #eee', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                                <button
-                                    onClick={() => {
-                                        const phone = getPhoneIdentifier(selectedSubmission.data);
-                                        const name = getMainIdentifier(selectedSubmission.data);
-                                        const eventTitle = selectedSubmission.form.title;
-                                        const hubLink = `${window.location.protocol}//${window.location.host}/hub/${selectedSubmission._id}`;
-
-                                        const message = encodeURIComponent(`Olá ${name}, a tua vaga na *${eventTitle}* está confirmada! 🎉\n\nAqui está o teu QR Code de entrada e detalhes do evento 🎟️:\n${hubLink}\n\nPrepare-se para uma experiência incrível!`);
-                                        window.open(`https://wa.me/${String(phone).replace(/\D/g, '')}?text=${message}`, '_blank');
-                                    }}
-                                    style={{
-                                        flex: 2, padding: '0.8rem', borderRadius: '10px',
-                                        border: '1px solid #25D366', background: '#25D366',
-                                        color: '#fff', fontWeight: 700, cursor: 'pointer',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
-                                    }}
-                                >
-                                    <MessageCircle size={18} /> WhatsApp Pro
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        handleUpdateStatus(selectedSubmission._id, 'approved');
-                                        setSelectedSubmission(null);
-                                    }}
-                                    disabled={selectedSubmission.status === 'approved'}
-                                    style={{
-                                        flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none',
-                                        background: selectedSubmission.status === 'approved' ? '#eee' : '#38a169',
-                                        color: '#fff', fontWeight: 700, cursor: 'pointer'
-                                    }}
-                                >
-                                    {t('events.submissions.approve')}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        handleUpdateStatus(selectedSubmission._id, 'rejected');
-                                        setSelectedSubmission(null);
-                                    }}
-                                    disabled={selectedSubmission.status === 'rejected'}
-                                    style={{
-                                        flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none',
-                                        background: selectedSubmission.status === 'rejected' ? '#eee' : '#e53e3e',
-                                        color: '#fff', fontWeight: 700, cursor: 'pointer'
-                                    }}
-                                >
-                                    {t('events.submissions.reject')}
-                                </button>
-                            </div>
-                            {selectedSubmission.paymentMethod === 'stripe' && selectedSubmission.paymentStatus !== 'refunded' && (
-                                <div style={{ padding: '0 2rem 1.5rem' }}>
-                                    <button
-                                        onClick={() => {
-                                            handleRefund(selectedSubmission._id);
-                                            setSelectedSubmission(null);
-                                        }}
-                                        style={{
-                                            width: '100%', padding: '0.8rem', borderRadius: '10px',
-                                            border: '1px solid #718096', background: '#fff',
-                                            color: '#718096', fontWeight: 700, cursor: 'pointer',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
-                                        }}
-                                    >
-                                        <RotateCcw size={18} /> Reembolsar Integralmente (Stripe)
-                                    </button>
-                                </div>
-                            )}
-                        </motion.div>
-                    </div>
-                )}
-
-                {selectedProof && (
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => setSelectedProof(null)}
-                            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(5px)' }}
-                        />
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-                            style={{ position: 'relative', width: '100%', maxWidth: '800px', maxHeight: '90vh', background: '#fff', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column' }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('events.submissions.proofTitle')}</h3>
-                                <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><XCircle size={24} /></button>
-                            </div>
-
-                            <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px', position: 'relative', minHeight: '600px' }}>
-                                {selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('.pdf') ? (
-                                    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-                                        {/* PDF Icon and Info */}
-                                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                                            <div style={{
-                                                width: '80px',
-                                                height: '80px',
-                                                background: '#ef4444',
-                                                borderRadius: '16px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                margin: '0 auto 1rem',
-                                                boxShadow: '0 10px 30px rgba(239, 68, 68, 0.3)'
-                                            }}>
-                                                <FileText size={40} color="#fff" />
-                                            </div>
-                                            <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#000' }}>
-                                                Comprovativo em PDF
-                                            </h4>
-                                            <p style={{ fontSize: '0.85rem', color: '#666', maxWidth: '400px', margin: '0 auto' }}>
-                                                Por questões de segurança, alguns navegadores bloqueiam PDFs inline. Clique no botão abaixo para visualizar.
-                                            </p>
-                                        </div>
-
-                                        {/* Primary Action Buttons */}
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '400px' }}>
-                                            <a
-                                                href={selectedProof}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style={{
-                                                    padding: '1rem 2rem',
-                                                    background: '#000',
-                                                    color: '#FFD700',
-                                                    borderRadius: '12px',
-                                                    textDecoration: 'none',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '10px',
-                                                    fontSize: '1rem',
-                                                    fontWeight: 700,
-                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                                onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'}
-                                                onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'}
-                                            >
-                                                <Eye size={20} /> Abrir PDF em Nova Aba
-                                            </a>
-
-                                            <a
-                                                href={selectedProof}
-                                                download
-                                                style={{
-                                                    padding: '1rem 2rem',
-                                                    background: '#fff',
-                                                    color: '#000',
-                                                    border: '2px solid #000',
-                                                    borderRadius: '12px',
-                                                    textDecoration: 'none',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '10px',
-                                                    fontSize: '1rem',
-                                                    fontWeight: 700,
-                                                    transition: 'all 0.2s'
-                                                }}
-                                                onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#f8f8f8'}
-                                                onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#fff'}
-                                            >
-                                                <Download size={20} /> Baixar PDF
-                                            </a>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div style={{ position: 'relative', width: '100%', height: '600px' }}>
-                                        <Image src={selectedProof} alt="Comprovativo" fill style={{ objectFit: 'contain' }} />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-                                <a href={selectedProof} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                                    <Download size={16} /> {t('events.submissions.downloadOriginal')}
-                                </a>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Student Progress Modal */}
-            <AnimatePresence>
-                {studentProgress && (
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 4000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => setStudentProgress(null)}
-                            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
-                        />
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
-                            style={{
-                                position: 'relative', width: '100%', maxWidth: '700px',
-                                maxHeight: '85vh', background: '#fff', borderRadius: '32px',
-                                overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                                boxShadow: '0 30px 60px -12px rgba(0,0,0,0.5)'
-                            }}
-                        >
-                            <div style={{ padding: '2rem', background: '#0a0a0a', color: '#fff' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                    <div>
-                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Acompanhamento de Aluno</h3>
-                                        <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>{getMainIdentifier(paginatedSubmissions.find(s => s._id === studentProgress.submissionId)?.data || {})}</p>
-                                    </div>
-                                    <button onClick={() => setStudentProgress(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>
                                 </div>
 
-                                <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{studentProgress.stats.completed}</div>
-                                        <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase' }}>Concluídas</div>
-                                    </div>
-                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{studentProgress.stats.total - studentProgress.stats.completed}</div>
-                                        <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase' }}>Pendentes</div>
-                                    </div>
-                                    <div style={{ background: 'rgba(255,215,0,0.1)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center', border: '1px solid rgba(255,215,0,0.2)' }}>
-                                        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFD700' }}>{Math.round(studentProgress.stats.percentage)}%</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#FFD700', textTransform: 'uppercase' }}>Avanço Total</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
-                                {studentProgress.progress.length === 0 ? (
-                                    <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>Nenhuma aula vinculada a este evento.</div>
-                                ) : (
-                                    <div style={{ display: 'grid', gap: '1rem' }}>
-                                        {studentProgress.progress.map((p) => (
-                                            <div key={p._id} style={{ padding: '1.2rem', borderRadius: '20px', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                                                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: p.completed ? '#10b98115' : '#f4f4f4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.completed ? '#10b981' : '#999' }}>
-                                                    {p.completed ? <CheckCircle size={20} /> : <div style={{ fontWeight: 800 }}>{p.order}</div>}
-                                                </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{p.title}</div>
-                                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>
-                                                        {p.completed ? `Finalizada em ${new Date(p.completedAt).toLocaleDateString()}` : 'Não iniciada'}
+                                <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                        {Object.entries(selectedSubmission.data || {}).map(([key, value]) => (
+                                            <div key={key} style={{ padding: '1.2rem', background: '#f8f9fa', borderRadius: '16px', border: '1px solid #eee', position: 'relative' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
+                                                            {key}
+                                                        </label>
+                                                        <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
+                                                            {String(value)}
+                                                        </div>
                                                     </div>
+
+                                                    {(key.toLowerCase().includes('tel') || key.toLowerCase().includes('cel') || key.toLowerCase().includes('phone') || key.toLowerCase().includes('zap') || key.toLowerCase().includes('contato')) && (
+                                                        <a
+                                                            href={`https://wa.me/${String(value).replace(/\D/g, '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{ background: '#25D366', color: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                            title="Chamar no WhatsApp"
+                                                        >
+                                                            <MessageCircle size={18} />
+                                                        </a>
+                                                    )}
                                                 </div>
-                                                {(p.watchTime ?? 0) > 0 && (
-                                                    <div style={{ fontSize: '0.8rem', fontWeight: 700, background: '#f8f9fa', padding: '4px 10px', borderRadius: '6px' }}>
-                                                        {Math.floor((p.watchTime ?? 0) / 60)}m assistidos
-                                                    </div>
-                                                )}
                                             </div>
                                         ))}
                                     </div>
+
+                                    {selectedSubmission.aiAnalysis && (
+                                        <div style={{
+                                            marginTop: '1.5rem',
+                                            padding: '1.5rem',
+                                            background: selectedSubmission.aiAnalysis.isValid ? '#f0fdf4' : '#fef2f2',
+                                            borderRadius: '20px',
+                                            border: `1px solid ${selectedSubmission.aiAnalysis.isValid ? '#bbf7d0' : '#fecaca'}`,
+                                            position: 'relative',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.1 }}>
+                                                <Sparkles size={40} />
+                                            </div>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                                                <Sparkles size={18} color={selectedSubmission.aiAnalysis.isValid ? '#10b981' : '#ef4444'} />
+                                                <h4 style={{ fontWeight: 800, color: selectedSubmission.aiAnalysis.isValid ? '#166534' : '#991b1b', fontSize: '0.9rem' }}>{t('events.submissions.aiAnalysisTitle')}</h4>
+                                            </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>{t('events.submissions.transactionId')}</div>
+                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.transactionId || '---'}</div>
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#666', fontWeight: 700 }}>{t('events.submissions.identifiedValue')}</div>
+                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedSubmission.aiAnalysis.amount} {selectedSubmission.aiAnalysis.currency}</div>
+                                                </div>
+                                            </div>
+
+                                            {selectedSubmission.aiAnalysis.warning && (
+                                                <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fff', borderRadius: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                                    <AlertTriangle size={16} color="#ef4444" style={{ flexShrink: 0 }} />
+                                                    <p style={{ fontSize: '0.75rem', color: '#991b1b', fontWeight: 600 }}>{selectedSubmission.aiAnalysis.warning}</p>
+                                                </div>
+                                            )}
+
+                                            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ fontSize: '0.7rem', color: '#666' }}>{t('events.submissions.aiConfidence')}: <b>{selectedSubmission.aiAnalysis.confidence}%</b></div>
+                                                {selectedSubmission.aiAnalysis.isValid && <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#10b981', fontWeight: 800 }}><ShieldCheck size={14} /> {t('events.submissions.verifiedLabel')}</div>}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedSubmission.paymentProof && (
+                                        <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,215,0,0.05)', borderRadius: '16px', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                                                <DollarSign size={20} className="gold-text" />
+                                                <h4 style={{ fontWeight: 800 }}>{t('events.submissions.paymentProof')}</h4>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    const proof = selectedSubmission.paymentProof;
+                                                    setSelectedSubmission(null);
+                                                    setTimeout(() => setSelectedProof(proof!), 300);
+                                                }}
+                                                style={{
+                                                    width: '100%', padding: '0.8rem', borderRadius: '10px',
+                                                    border: '1px solid #000', background: '#000', color: '#FFD700',
+                                                    fontWeight: 700, cursor: 'pointer', display: 'flex',
+                                                    alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                                }}
+                                            >
+                                                <Eye size={18} /> {t('events.submissions.view')}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div style={{ padding: '1.5rem 2rem', background: '#f8f9fa', borderTop: '1px solid #eee', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                    <button
+                                        onClick={() => {
+                                            const phone = getPhoneIdentifier(selectedSubmission.data);
+                                            const name = getMainIdentifier(selectedSubmission.data);
+                                            const eventTitle = selectedSubmission.form.title;
+                                            const hubLink = `${window.location.protocol}//${window.location.host}/hub/${selectedSubmission._id}`;
+
+                                            const message = encodeURIComponent(`Olá ${name}, a tua vaga na *${eventTitle}* está confirmada! 🎉\n\nAqui está o teu QR Code de entrada e detalhes do evento 🎟️:\n${hubLink}\n\nPrepare-se para uma experiência incrível!`);
+                                            window.open(`https://wa.me/${String(phone).replace(/\D/g, '')}?text=${message}`, '_blank');
+                                        }}
+                                        style={{
+                                            flex: 2, padding: '0.8rem', borderRadius: '10px',
+                                            border: '1px solid #25D366', background: '#25D366',
+                                            color: '#fff', fontWeight: 700, cursor: 'pointer',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                        }}
+                                    >
+                                        <MessageCircle size={18} /> WhatsApp Pro
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            handleUpdateStatus(selectedSubmission._id, 'approved');
+                                            setSelectedSubmission(null);
+                                        }}
+                                        disabled={selectedSubmission.status === 'approved'}
+                                        style={{
+                                            flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none',
+                                            background: selectedSubmission.status === 'approved' ? '#eee' : '#38a169',
+                                            color: '#fff', fontWeight: 700, cursor: 'pointer'
+                                        }}
+                                    >
+                                        {t('events.submissions.approve')}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            handleUpdateStatus(selectedSubmission._id, 'rejected');
+                                            setSelectedSubmission(null);
+                                        }}
+                                        disabled={selectedSubmission.status === 'rejected'}
+                                        style={{
+                                            flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none',
+                                            background: selectedSubmission.status === 'rejected' ? '#eee' : '#e53e3e',
+                                            color: '#fff', fontWeight: 700, cursor: 'pointer'
+                                        }}
+                                    >
+                                        {t('events.submissions.reject')}
+                                    </button>
+                                </div>
+                                {selectedSubmission.paymentMethod === 'stripe' && selectedSubmission.paymentStatus !== 'refunded' && (
+                                    <div style={{ padding: '0 2rem 1.5rem' }}>
+                                        <button
+                                            onClick={() => {
+                                                handleRefund(selectedSubmission._id);
+                                                setSelectedSubmission(null);
+                                            }}
+                                            style={{
+                                                width: '100%', padding: '0.8rem', borderRadius: '10px',
+                                                border: '1px solid #718096', background: '#fff',
+                                                color: '#718096', fontWeight: 700, cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                            }}
+                                        >
+                                            <RotateCcw size={18} /> Reembolsar Integralmente (Stripe)
+                                        </button>
+                                    </div>
                                 )}
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        </div>
+                    )
+                }
+
+                {
+                    selectedProof && (
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                onClick={() => setSelectedProof(null)}
+                                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(5px)' }}
+                            />
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                                style={{ position: 'relative', width: '100%', maxWidth: '800px', maxHeight: '90vh', background: '#fff', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column' }}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('events.submissions.proofTitle')}</h3>
+                                    <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><XCircle size={24} /></button>
+                                </div>
+
+                                <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#f0f0f0', borderRadius: '8px', position: 'relative', minHeight: '600px' }}>
+                                    {selectedProof.toLowerCase().endsWith('.pdf') || selectedProof.toLowerCase().includes('.pdf') ? (
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                                            {/* PDF Icon and Info */}
+                                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                                                <div style={{
+                                                    width: '80px',
+                                                    height: '80px',
+                                                    background: '#ef4444',
+                                                    borderRadius: '16px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    margin: '0 auto 1rem',
+                                                    boxShadow: '0 10px 30px rgba(239, 68, 68, 0.3)'
+                                                }}>
+                                                    <FileText size={40} color="#fff" />
+                                                </div>
+                                                <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#000' }}>
+                                                    Comprovativo em PDF
+                                                </h4>
+                                                <p style={{ fontSize: '0.85rem', color: '#666', maxWidth: '400px', margin: '0 auto' }}>
+                                                    Por questões de segurança, alguns navegadores bloqueiam PDFs inline. Clique no botão abaixo para visualizar.
+                                                </p>
+                                            </div>
+
+                                            {/* Primary Action Buttons */}
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '400px' }}>
+                                                <a
+                                                    href={selectedProof}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                        padding: '1rem 2rem',
+                                                        background: '#000',
+                                                        color: '#FFD700',
+                                                        borderRadius: '12px',
+                                                        textDecoration: 'none',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '10px',
+                                                        fontSize: '1rem',
+                                                        fontWeight: 700,
+                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'}
+                                                    onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'}
+                                                >
+                                                    <Eye size={20} /> Abrir PDF em Nova Aba
+                                                </a>
+
+                                                <a
+                                                    href={selectedProof}
+                                                    download
+                                                    style={{
+                                                        padding: '1rem 2rem',
+                                                        background: '#fff',
+                                                        color: '#000',
+                                                        border: '2px solid #000',
+                                                        borderRadius: '12px',
+                                                        textDecoration: 'none',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '10px',
+                                                        fontSize: '1rem',
+                                                        fontWeight: 700,
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#f8f8f8'}
+                                                    onMouseOut={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#fff'}
+                                                >
+                                                    <Download size={20} /> Baixar PDF
+                                                </a>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div style={{ position: 'relative', width: '100%', height: '600px' }}>
+                                            <Image src={selectedProof} alt="Comprovativo" fill style={{ objectFit: 'contain' }} />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                                    <a href={selectedProof} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
+                                        <Download size={16} /> {t('events.submissions.downloadOriginal')}
+                                    </a>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
+
+            {/* Student Progress Modal */}
+            <AnimatePresence>
+                {
+                    studentProgress && (
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 4000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                onClick={() => setStudentProgress(null)}
+                                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+                            />
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                                style={{
+                                    position: 'relative', width: '100%', maxWidth: '700px',
+                                    maxHeight: '85vh', background: '#fff', borderRadius: '32px',
+                                    overflow: 'hidden', display: 'flex', flexDirection: 'column',
+                                    boxShadow: '0 30px 60px -12px rgba(0,0,0,0.5)'
+                                }}
+                            >
+                                <div style={{ padding: '2rem', background: '#0a0a0a', color: '#fff' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                        <div>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Acompanhamento de Aluno</h3>
+                                            <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>{getMainIdentifier(paginatedSubmissions.find(s => s._id === studentProgress.submissionId)?.data || {})}</p>
+                                        </div>
+                                        <button onClick={() => setStudentProgress(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>
+                                    </div>
+
+                                    <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{studentProgress.stats.completed}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase' }}>Concluídas</div>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{studentProgress.stats.total - studentProgress.stats.completed}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase' }}>Pendentes</div>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,215,0,0.1)', padding: '1.2rem', borderRadius: '20px', textAlign: 'center', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFD700' }}>{Math.round(studentProgress.stats.percentage)}%</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#FFD700', textTransform: 'uppercase' }}>Avanço Total</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
+                                    {studentProgress.progress.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>Nenhuma aula vinculada a este evento.</div>
+                                    ) : (
+                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                            {studentProgress.progress.map((p) => (
+                                                <div key={p._id} style={{ padding: '1.2rem', borderRadius: '20px', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+                                                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: p.completed ? '#10b98115' : '#f4f4f4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.completed ? '#10b981' : '#999' }}>
+                                                        {p.completed ? <CheckCircle size={20} /> : <div style={{ fontWeight: 800 }}>{p.order}</div>}
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{p.title}</div>
+                                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>
+                                                            {p.completed ? `Finalizada em ${new Date(p.completedAt).toLocaleDateString()}` : 'Não iniciada'}
+                                                        </div>
+                                                    </div>
+                                                    {(p.watchTime ?? 0) > 0 && (
+                                                        <div style={{ fontSize: '0.8rem', fontWeight: 700, background: '#f8f9fa', padding: '4px 10px', borderRadius: '6px' }}>
+                                                            {Math.floor((p.watchTime ?? 0) / 60)}m assistidos
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             <style jsx>{`
                 @media (max-width: 1024px) {
@@ -1079,6 +1174,6 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                     }
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

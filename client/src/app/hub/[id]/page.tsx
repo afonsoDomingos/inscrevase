@@ -60,6 +60,7 @@ interface SubmissionData {
     _id: string;
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'unpaid' | 'paid' | 'pending';
+    certificateStatus?: 'none' | 'requested' | 'approved';
     data: Record<string, string | number | boolean>;
     submittedAt: string;
     form: {
@@ -248,6 +249,39 @@ function HubContent() {
             }
         } catch (error) {
             console.error('Error updating progress:', error);
+        }
+    };
+
+    const handleRequestCertificate = async () => {
+        try {
+            const token = typeof window !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
+            if (!token) {
+                toast.error(t('hub.loginToRequestCertificate') || 'Você precisa estar logado para solicitar o certificado');
+                return;
+            }
+
+            const url = process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/submissions/${id}/request-certificate`
+                : `http://localhost:5000/api/submissions/${id}/request-certificate`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setSubmission(prev => prev ? { ...prev, certificateStatus: 'requested' } : null);
+                toast.success(t('hub.certificateRequestedSuccess') || 'Solicitação enviada ao mentor!');
+            } else {
+                const err = await response.json();
+                toast.error(err.message || 'Erro ao solicitar certificado');
+            }
+        } catch (error) {
+            console.error('Error requesting certificate:', error);
+            toast.error('Erro de conexão');
         }
     };
 
@@ -1012,7 +1046,7 @@ function HubContent() {
                                 {isApproved && form.certificateConfig?.enabled !== false && (
                                     (stats.total > 0 && stats.completed === stats.total) || (form.eventDate && new Date() >= new Date(form.eventDate)) ? (
                                         <div style={{ display: 'grid', gap: '15px' }}>
-                                            {(stats.total > 0 && stats.completed === stats.total) && (
+                                            {(stats.total > 0 && stats.completed === stats.total) && submission.certificateStatus !== 'approved' && (
                                                 <motion.div
                                                     initial={{ opacity: 0, scale: 0.9 }}
                                                     animate={{ opacity: 1, scale: 1 }}
@@ -1027,56 +1061,98 @@ function HubContent() {
                                                         lineHeight: 1.4
                                                     }}
                                                 >
-                                                    🎉 Parabéns! Você concluiu todas as aulas. Seu certificado está pronto para download.
+                                                    🎉 Parabéns! Você concluiu todas as aulas. {submission.certificateStatus === 'requested' ? 'Sua solicitação está em análise.' : 'Solicite seu certificado abaixo.'}
                                                 </motion.div>
                                             )}
-                                            <button
-                                                onClick={() => {
-                                                    const dataMap = (submission as SubmissionData).data || {};
-                                                    const nameKey = Object.keys(dataMap).find(k =>
-                                                        k.toLowerCase().includes('nome') ||
-                                                        k.toLowerCase().includes('name')
-                                                    );
-                                                    const participantName = nameKey ? dataMap[nameKey] : t('hub.defaultParticipantName');
 
-                                                    generateCertificate({
-                                                        participantName: String(participantName),
-                                                        eventTitle: form.title,
-                                                        date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : t('common.toBeDefined'),
-                                                        mentorName: form.creator.name,
-                                                        id: submission._id,
-                                                        config: form.certificateConfig
-                                                    });
-                                                    toast.success(t('hub.certificateSuccessToast'));
-                                                }}
-                                                style={{
-                                                    background: 'linear-gradient(135deg, #CFB53B 0%, #C5A028 100%)', // Vegas Gold
-                                                    color: '#fff',
+                                            {submission.certificateStatus === 'approved' ? (
+                                                <button
+                                                    onClick={() => {
+                                                        const dataMap = (submission as SubmissionData).data || {};
+                                                        const nameKey = Object.keys(dataMap).find(k =>
+                                                            k.toLowerCase().includes('nome') ||
+                                                            k.toLowerCase().includes('name')
+                                                        );
+                                                        const participantName = nameKey ? dataMap[nameKey] : t('hub.defaultParticipantName');
+
+                                                        generateCertificate({
+                                                            participantName: String(participantName),
+                                                            eventTitle: form.title,
+                                                            date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : t('common.toBeDefined'),
+                                                            mentorName: form.creator.name,
+                                                            id: submission._id,
+                                                            config: form.certificateConfig
+                                                        });
+                                                        toast.success(t('hub.certificateSuccessToast'));
+                                                    }}
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #CFB53B 0%, #C5A028 100%)', // Vegas Gold
+                                                        color: '#fff',
+                                                        padding: '16px',
+                                                        borderRadius: '100px',
+                                                        border: '1px solid rgba(255,255,255,0.2)',
+                                                        fontWeight: 800,
+                                                        fontSize: '0.9rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px',
+                                                        boxShadow: '0 10px 30px rgba(207,181,59,0.3)',
+                                                        textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                    onMouseOver={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                        e.currentTarget.style.boxShadow = '0 15px 35px rgba(207,181,59,0.4)';
+                                                    }}
+                                                    onMouseOut={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                        e.currentTarget.style.boxShadow = '0 10px 30px rgba(207,181,59,0.3)';
+                                                    }}
+                                                >
+                                                    <Award size={20} /> {t('hub.downloadCertificate')}
+                                                </button>
+                                            ) : submission.certificateStatus === 'requested' ? (
+                                                <div style={{
+                                                    background: '#f8f8f8',
+                                                    color: '#666',
                                                     padding: '16px',
                                                     borderRadius: '100px',
-                                                    border: '1px solid rgba(255,255,255,0.2)',
-                                                    fontWeight: 800,
+                                                    border: '1px solid #e0e0e0',
+                                                    fontWeight: 700,
                                                     fontSize: '0.9rem',
-                                                    cursor: 'pointer',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     gap: '8px',
-                                                    boxShadow: '0 10px 30px rgba(207,181,59,0.3)',
-                                                    textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                                    transition: 'all 0.2s ease'
-                                                }}
-                                                onMouseOver={(e) => {
-                                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                                    e.currentTarget.style.boxShadow = '0 15px 35px rgba(207,181,59,0.4)';
-                                                }}
-                                                onMouseOut={(e) => {
-                                                    e.currentTarget.style.transform = 'translateY(0)';
-                                                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(207,181,59,0.3)';
-                                                }}
-                                            >
-                                                <Award size={20} /> {t('hub.downloadCertificate')}
-                                            </button>
+                                                    width: '100%'
+                                                }}>
+                                                    <Clock size={18} /> Aguardando Aprovação do Mentor
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={handleRequestCertificate}
+                                                    style={{
+                                                        background: '#111',
+                                                        color: '#fff',
+                                                        padding: '16px',
+                                                        borderRadius: '100px',
+                                                        border: 'none',
+                                                        fontWeight: 800,
+                                                        fontSize: '0.9rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px',
+                                                        boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                >
+                                                    <Award size={20} /> Solicitar Certificado
+                                                </button>
+                                            )}
                                         </div>
                                     ) : (
                                         <button
