@@ -272,7 +272,7 @@ function HubContent() {
             });
 
             if (response.ok) {
-                const data = await response.json();
+                await response.json();
                 setSubmission(prev => prev ? { ...prev, certificateStatus: 'requested' } : null);
                 toast.success(t('hub.certificateRequestedSuccess') || 'Solicitação enviada ao mentor!');
             } else {
