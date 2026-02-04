@@ -120,14 +120,6 @@ export default function MentorLessonsPage() {
         associatedEvents: [] as string[]
     });
 
-    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-    const isMobile = windowWidth < 768;
-
-    useEffect(() => {
-        const handleResize = () => setWindowWidth(window.innerWidth);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     const [loading, setLoading] = useState(true);
 
