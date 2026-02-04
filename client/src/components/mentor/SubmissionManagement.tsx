@@ -37,6 +37,21 @@ interface SubmissionManagementProps {
     formId?: string | null;
 }
 
+interface StudentProgress {
+    stats: {
+        completed: number;
+        total: number;
+        percentage: number;
+    };
+    progress: Array<{
+        _id: string;
+        title: string;
+        order: number;
+        completed: boolean;
+        completedAt: string;
+    }>;
+}
+
 export default function SubmissionManagement({ formId }: SubmissionManagementProps) {
     const { t, locale } = useTranslate();
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
@@ -47,7 +62,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
     const [searchTerm, setSearchTerm] = useState('');
     const [analyzingId, setAnalyzingId] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [studentProgress, setStudentProgress] = useState<any>(null);
+    const [studentProgress, setStudentProgress] = useState<StudentProgress | null>(null);
     const [loadingProgress, setLoadingProgress] = useState(false);
     const itemsPerPage = 10;
 
@@ -1018,7 +1033,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>Nenhuma aula vinculada a este evento.</div>
                                 ) : (
                                     <div style={{ display: 'grid', gap: '1rem' }}>
-                                        {studentProgress.progress.map((p: any) => (
+                                        {studentProgress.progress.map((p) => (
                                             <div key={p._id} style={{ padding: '1.2rem', borderRadius: '20px', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '15px' }}>
                                                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: p.completed ? '#10b98115' : '#f4f4f4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.completed ? '#10b981' : '#999' }}>
                                                     {p.completed ? <CheckCircle size={20} /> : <div style={{ fontWeight: 800 }}>{p.order}</div>}
