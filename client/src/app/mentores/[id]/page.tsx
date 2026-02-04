@@ -31,6 +31,15 @@ export default function MentorProfilePage() {
     const currentUser = useMemo(() => authService.getCurrentUser(), []);
     const visitRecorded = useRef(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const isMobile = windowWidth < 992;
+    const isSmallMobile = windowWidth < 480;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchMentor = async () => {
@@ -125,7 +134,7 @@ export default function MentorProfilePage() {
 
             {/* Premium Cinematic Header */}
             <div style={{
-                padding: '120px 0 40px',
+                padding: isMobile ? '80px 0 30px' : '120px 0 40px',
                 background: '#0a0a0a',
                 position: 'relative',
                 display: 'flex',
@@ -170,15 +179,25 @@ export default function MentorProfilePage() {
                         <ChevronLeft size={18} /> {t('mentors.backToList')}
                     </motion.button>
 
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3rem' }}>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        alignItems: isMobile ? 'center' : 'flex-end',
+                        gap: isMobile ? '1.5rem' : '3rem',
+                        textAlign: isMobile ? 'center' : 'left'
+                    }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             style={{
-                                width: '160px', height: '160px', borderRadius: '50%',
+                                width: isSmallMobile ? '140px' : '160px',
+                                height: isSmallMobile ? '140px' : '160px',
+                                borderRadius: '50%',
                                 padding: '4px', background: 'var(--gold-gradient)',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                                flexShrink: 0, position: 'relative', top: '70px',
+                                flexShrink: 0,
+                                position: 'relative',
+                                top: isMobile ? '60px' : '70px',
                                 zIndex: 10,
                                 cursor: 'zoom-in'
                             }}
@@ -205,7 +224,14 @@ export default function MentorProfilePage() {
                             transition={{ delay: 0.2 }}
                             style={{ paddingBottom: '2rem' }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '1.2rem' }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isMobile ? 'center' : 'flex-start',
+                                flexWrap: 'wrap',
+                                gap: '10px',
+                                marginBottom: '1.2rem'
+                            }}>
                                 {mentor.badges && mentor.badges.length > 0 ? (
                                     mentor.badges.map((badge, idx) => (
                                         <div
@@ -233,36 +259,58 @@ export default function MentorProfilePage() {
                                 <Verified size={20} className="gold-text" />
                             </div>
                             <h1 style={{
-                                fontSize: '2.4rem',
+                                fontSize: isMobile ? '1.8rem' : '2.4rem',
                                 fontWeight: 900,
                                 color: '#fff',
                                 fontFamily: 'var(--font-playfair)',
-                                lineHeight: 1,
-                                textShadow: '0 0 15px rgba(255,215,0,0.2)'
+                                lineHeight: 1.2,
+                                textShadow: '0 0 15px rgba(255,215,0,0.2)',
+                                maxWidth: '100%',
+                                wordBreak: 'break-word'
                             }}>
                                 {mentor.name}
                             </h1>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginTop: '1.2rem' }}>
                                 {mentor.businessName && (
-                                    <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                                    <p style={{
+                                        color: 'rgba(255,255,255,0.7)',
+                                        fontWeight: 600,
+                                        fontSize: '1.1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: isMobile ? 'center' : 'flex-start',
+                                        gap: '8px',
+                                        margin: 0
+                                    }}>
                                         <Briefcase size={18} className="gold-text" /> {mentor.businessName}
                                     </p>
                                 )}
 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '0.8rem 1.2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', width: 'fit-content' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '1.5rem' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: isMobile ? 'center' : 'flex-start',
+                                    gap: isSmallMobile ? '0.8rem' : '1.5rem',
+                                    padding: isSmallMobile ? '0.6rem 0.8rem' : '0.8rem 1.2rem',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    borderRadius: '12px',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    backdropFilter: 'blur(5px)',
+                                    width: isSmallMobile ? '100%' : 'fit-content'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: isSmallMobile ? '0.8rem' : '1.5rem' }}>
                                         <Users size={18} className="gold-text" />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>{followersCount}</span>
-                                            <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Seguidores</span>
+                                            <span style={{ fontSize: isSmallMobile ? '0.9rem' : '1.1rem', fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>{followersCount}</span>
+                                            <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Seguidores</span>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <Eye size={18} className="gold-text" />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{mentor.profileVisits || 0}</span>
-                                            <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Visitas</span>
+                                            <span style={{ fontSize: isSmallMobile ? '0.9rem' : '1.1rem', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{mentor.profileVisits || 0}</span>
+                                            <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Visitas</span>
                                         </div>
                                     </div>
                                 </div>
@@ -285,9 +333,11 @@ export default function MentorProfilePage() {
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     gap: '10px',
                                     boxShadow: isFollowing ? 'none' : '0 10px 25px rgba(255,215,0,0.25)',
-                                    transition: 'all 0.3s'
+                                    transition: 'all 0.3s',
+                                    width: isSmallMobile ? '100%' : 'fit-content'
                                 }}
                             >
                                 {followingLoading ? (
@@ -304,8 +354,8 @@ export default function MentorProfilePage() {
             </div>
 
             {/* Profile Strategic Layout */}
-            <main style={{ maxWidth: '1200px', margin: '100px auto 80px', padding: '0 20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '3rem' }}>
+            <main style={{ maxWidth: '1200px', margin: isMobile ? '80px auto 40px' : '100px auto 80px', padding: '0 20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 2fr', gap: isMobile ? '2rem' : '3rem' }}>
 
                     {/* Left Sidebar - Key Info & Socials */}
                     <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -425,13 +475,18 @@ export default function MentorProfilePage() {
                                 {mentor.bio || "Este mentor é um pilar de excelência no ecossistema Inscreva-se. Com uma trajetória marcada pela autoridade e resultados, ele compartilha sua visão estratégica para elevar o nível de cada profissional que cruza seu caminho."}
                             </p>
 
-                            <div style={{ marginTop: '4rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                            <div style={{
+                                marginTop: '4rem',
+                                display: 'grid',
+                                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                                gap: '1.5rem'
+                            }}>
                                 {[
                                     { label: 'Autoridade', value: 'Elite' },
                                     { label: 'Status', value: 'Verificado' },
                                     { label: 'Network', value: 'Premium' }
                                 ].map((stat, i) => (
-                                    <div key={i} style={{ background: '#fcfcfc', border: '1px solid #f0f0f0', padding: '2rem', borderRadius: '24px', textAlign: 'center' }}>
+                                    <div key={i} style={{ background: '#fcfcfc', border: '1px solid #f0f0f0', padding: isMobile ? '1.5rem' : '2rem', borderRadius: '24px', textAlign: 'center' }}>
                                         <span style={{ display: 'block', fontSize: '0.8rem', color: '#999', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '1px' }}>{stat.label}</span>
                                         <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#111', fontFamily: 'var(--font-playfair)' }}>{stat.value}</span>
                                     </div>
@@ -549,7 +604,7 @@ export default function MentorProfilePage() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.5 }}
                             style={{
-                                background: '#000', borderRadius: '40px', padding: '4rem',
+                                background: '#000', borderRadius: '40px', padding: isMobile ? '2.5rem 1.5rem' : '4rem',
                                 textAlign: 'center', color: '#fff', border: '1px solid rgba(255,215,0,0.2)',
                                 boxShadow: '0 30px 60px rgba(0,0,0,0.2)'
                             }}
@@ -570,7 +625,7 @@ export default function MentorProfilePage() {
             </main>
 
             {/* Elite Footer */}
-            <div style={{ padding: '60px', background: '#050505', color: '#fff', textAlign: 'center', borderTop: '1px solid rgba(255,215,0,0.1)' }}>
+            <div style={{ padding: isMobile ? '40px 20px' : '60px', background: '#050505', color: '#fff', textAlign: 'center', borderTop: '1px solid rgba(255,215,0,0.1)' }}>
                 <p style={{ opacity: 0.3, letterSpacing: '3px', textTransform: 'uppercase', fontSize: '0.8rem' }}>
                     © 2026 INSCRIVA-SE • MENTOR ELITE PROGRAM
                 </p>
