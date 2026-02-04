@@ -1,19 +1,26 @@
 const CommunityMessage = require('../models/CommunityMessage');
 const Submission = require('../models/Submission');
+const Form = require('../models/Form');
 
 exports.getMessages = async (req, res) => {
     try {
         const { formId } = req.params;
 
-        // Ensure user is subscribed to this form
-        const submission = await Submission.findOne({
-            form: formId,
-            user: req.user.id,
-            status: 'approved'
-        });
+        // Check if user is the creator
+        const form = await Form.findById(formId);
+        const isCreator = form && form.creator.toString() === req.user.id;
 
-        if (!submission && req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Você precisa estar inscrito e aprovado para acessar o chat.' });
+        // If not creator or admin, must have approved submission
+        if (!isCreator && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            const submission = await Submission.findOne({
+                form: formId,
+                user: req.user.id,
+                status: 'approved'
+            });
+
+            if (!submission) {
+                return res.status(403).json({ message: 'Você precisa estar inscrito e aprovado para acessar o chat.' });
+            }
         }
 
         const messages = await CommunityMessage.find({ formId })
@@ -32,15 +39,21 @@ exports.sendMessage = async (req, res) => {
     try {
         const { formId, text } = req.body;
 
-        // Ensure user is subscribed
-        const submission = await Submission.findOne({
-            form: formId,
-            user: req.user.id,
-            status: 'approved'
-        });
+        // Check if user is the creator
+        const form = await Form.findById(formId);
+        const isCreator = form && form.creator.toString() === req.user.id;
 
-        if (!submission && req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Apenas participantes inscritos podem enviar mensagens.' });
+        // If not creator or admin, must have approved submission
+        if (!isCreator && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            const submission = await Submission.findOne({
+                form: formId,
+                user: req.user.id,
+                status: 'approved'
+            });
+
+            if (!submission) {
+                return res.status(403).json({ message: 'Apenas participantes inscritos ou o mentor podem enviar mensagens.' });
+            }
         }
 
         const newMessage = new CommunityMessage({

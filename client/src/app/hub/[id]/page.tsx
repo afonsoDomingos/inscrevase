@@ -1223,6 +1223,7 @@ function HubContent() {
                 isApproved={isApproved || isCreatorOrAdmin}
                 primaryColor={primaryColor}
                 eventTitle={form.title}
+                creatorId={form.creator?._id}
             />
 
             <style jsx>{`

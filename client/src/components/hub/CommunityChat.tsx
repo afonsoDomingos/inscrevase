@@ -34,9 +34,10 @@ interface CommunityChatProps {
     isApproved: boolean;
     primaryColor: string;
     eventTitle: string;
+    creatorId?: string;
 }
 
-export default function CommunityChat({ formId, isApproved, primaryColor, eventTitle }: CommunityChatProps) {
+export default function CommunityChat({ formId, isApproved, primaryColor, eventTitle, creatorId }: CommunityChatProps) {
     const { t } = useTranslate();
     const { socket } = useSocket();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -276,8 +277,13 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                                     <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         {msg.sender.name}
                                                         {msg.sender.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
-                                                        {msg.sender.role === 'admin' && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>{t('common.badges.admin').toUpperCase()}</span>}
+                                                        {msg.sender._id === creatorId && <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>}
+                                                        {msg.sender.role === 'admin' && msg.sender._id !== creatorId && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>{t('common.badges.admin').toUpperCase()}</span>}
                                                     </div>
+                                                ) : showHeader && isMe && (
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    {msg.sender._id === creatorId && <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>}
+                                                </div>
                                                 )}
                                                 <div style={{
                                                     padding: '12px 16px',
