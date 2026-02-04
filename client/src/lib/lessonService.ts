@@ -31,8 +31,7 @@ export const lessonService = {
     getLessonsBySubmission: async (submissionId: string) => {
         const response = await axios.get(`${API_URL}/lessons/hub/${submissionId}`);
         return response.data;
-    }
-},
+    },
 
     getStudentProgress: async (submissionId: string) => {
         const token = Cookies.get('token');
