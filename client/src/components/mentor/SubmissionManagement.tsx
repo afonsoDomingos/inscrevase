@@ -1046,9 +1046,9 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                         {p.completed ? `Finalizada em ${new Date(p.completedAt).toLocaleDateString()}` : 'Não iniciada'}
                                                     </div>
                                                 </div>
-                                                {p.watchTime > 0 && (
+                                                {(p.watchTime ?? 0) > 0 && (
                                                     <div style={{ fontSize: '0.8rem', fontWeight: 700, background: '#f8f9fa', padding: '4px 10px', borderRadius: '6px' }}>
-                                                        {Math.floor(p.watchTime / 60)}m assistidos
+                                                        {Math.floor((p.watchTime ?? 0) / 60)}m assistidos
                                                     </div>
                                                 )}
                                             </div>
