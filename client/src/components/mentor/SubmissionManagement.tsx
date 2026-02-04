@@ -35,6 +35,7 @@ import { generateCertificate } from '@/lib/certificateGenerator';
 
 interface SubmissionManagementProps {
     formId?: string | null;
+    onAction?: () => void;
 }
 
 interface StudentProgress {
@@ -54,7 +55,7 @@ interface StudentProgress {
     }>;
 }
 
-export default function SubmissionManagement({ formId }: SubmissionManagementProps) {
+export default function SubmissionManagement({ formId, onAction }: SubmissionManagementProps) {
     const { t, locale } = useTranslate();
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
@@ -104,6 +105,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                 setSelectedSubmission({ ...selectedSubmission, certificateStatus: status });
             }
             toast.success(status === 'approved' ? 'Certificado aprovado!' : 'Solicitação removida');
+            if (onAction) onAction();
         } catch (error) {
             console.error('Error updating certificate status:', error);
             toast.error('Erro ao atualizar status do certificado');
@@ -299,6 +301,7 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.date')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.proof')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '90px' }}>{t('events.submissions.status')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.progress') || 'Progresso'}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '120px', textAlign: 'center' }}>{t('events.submissions.registration')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '160px', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
                                     </tr>
@@ -379,6 +382,26 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                                             <Award size={10} /> {t('hub.certificateRequested') || 'Certificado Solicitado'}
                                                         </span>
                                                     </div>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                                {submission.progress ? (
+                                                    <div style={{ width: '100px' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', marginBottom: '4px', fontWeight: 600 }}>
+                                                            <span>{submission.progress.percentage}%</span>
+                                                            <span style={{ color: '#999' }}>{submission.progress.completed}/{submission.progress.total}</span>
+                                                        </div>
+                                                        <div style={{ height: '4px', background: '#eee', borderRadius: '10px', overflow: 'hidden' }}>
+                                                            <div style={{
+                                                                height: '100%',
+                                                                width: `${submission.progress.percentage}%`,
+                                                                background: submission.progress.percentage === 100 ? '#38a169' : '#D4AF37',
+                                                                transition: 'width 0.3s ease'
+                                                            }} />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ fontSize: '0.7rem', color: '#ccc' }}>---</span>
                                                 )}
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'center' }}>
@@ -586,6 +609,28 @@ export default function SubmissionManagement({ formId }: SubmissionManagementPro
                                     <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
                                         <strong>{t('events.submissions.date')}:</strong> {formatDate(submission.submittedAt)}
                                     </div>
+
+                                    {submission.progress && (
+                                        <div style={{ marginBottom: '1rem', background: '#f8f9fa', padding: '10px', borderRadius: '12px', border: '1px solid #eee' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '8px', fontWeight: 700 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                    <BarChart3 size={14} color="#D4AF37" />
+                                                    {t('events.submissions.progress') || 'Progresso de Aulas'}
+                                                </div>
+                                                <span>{submission.progress.percentage}%</span>
+                                            </div>
+                                            <div style={{ height: '6px', background: '#eee', borderRadius: '10px', overflow: 'hidden' }}>
+                                                <div style={{
+                                                    height: '100%',
+                                                    width: `${submission.progress.percentage}%`,
+                                                    background: submission.progress.percentage === 100 ? '#38a169' : '#D4AF37'
+                                                }} />
+                                            </div>
+                                            <div style={{ fontSize: '0.65rem', color: '#666', marginTop: '5px', textAlign: 'right' }}>
+                                                {submission.progress.completed} de {submission.progress.total} aulas concluídas
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {submission.certificateStatus === 'requested' && (
                                         <div style={{ marginBottom: '1rem' }}>

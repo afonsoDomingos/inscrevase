@@ -2,6 +2,8 @@ const Submission = require('../models/Submission');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
+const Lesson = require('../models/Lesson');
+const LessonProgress = require('../models/LessonProgress');
 const Notification = require('../models/Notification');
 const { PLANS } = require('../config/stripe');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -148,7 +150,32 @@ const getFormSubmissions = async (req, res) => {
         }
 
         const submissions = await Submission.find({ form: req.params.formId }).sort('-submittedAt');
-        res.json(submissions);
+
+        // Fetch associated lessons for this form
+        const lessons = await Lesson.find({ associatedEvents: req.params.formId }).select('_id');
+        const lessonIds = lessons.map(l => l._id);
+
+        // Enhance submissions with progress if lessons exist
+        const submissionsWithProgress = await Promise.all(submissions.map(async (sub) => {
+            const subObj = sub.toObject();
+            if (lessonIds.length > 0 && sub.user) {
+                const completedCount = await LessonProgress.countDocuments({
+                    user: sub.user,
+                    lesson: { $in: lessonIds },
+                    completed: true
+                });
+                subObj.progress = {
+                    total: lessonIds.length,
+                    completed: completedCount,
+                    percentage: Math.round((completedCount / lessonIds.length) * 100)
+                };
+            } else if (lessonIds.length > 0) {
+                subObj.progress = { total: lessonIds.length, completed: 0, percentage: 0 };
+            }
+            return subObj;
+        }));
+
+        res.json(submissionsWithProgress);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }

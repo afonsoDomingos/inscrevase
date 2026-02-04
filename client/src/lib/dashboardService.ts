@@ -8,6 +8,7 @@ export interface AdminStats {
     forms: number;
     submissions: number;
     approved: number;
+    pendingCertificates?: number;
     revenue?: number;
     subscriptionRevenue?: number;
     eventFeeRevenue?: number;

@@ -218,27 +218,29 @@ function MentorDashboardContent() {
         }
     }, [searchParams, router, t]);
 
-    const loadUnreadCounts = useCallback(async () => {
+    const refreshData = useCallback(async () => {
         try {
-            const [supportData, notificationData] = await Promise.all([
+            const [supportData, notificationData, statsData] = await Promise.all([
                 supportService.getUnreadCount(),
-                notificationService.getUnreadCount()
+                notificationService.getUnreadCount(),
+                dashboardService.getMentorStats().catch(() => null)
             ]);
             setUnreadCount(supportData.count);
             setUnreadNotifications(notificationData.count);
+            if (statsData) setStats(statsData);
         } catch (error) {
-            console.error('Error loading unread counts:', error);
+            console.error('Error refreshing data:', error);
         }
     }, []);
 
     useEffect(() => {
         loadDashboard();
-        loadUnreadCounts();
+        refreshData();
 
-        // Poll for unread count every 30 seconds
-        const interval = setInterval(loadUnreadCounts, 30000);
+        // Poll for data every 30 seconds
+        const interval = setInterval(refreshData, 30000);
         return () => clearInterval(interval);
-    }, [loadDashboard, loadUnreadCounts]);
+    }, [loadDashboard, refreshData]);
 
     const copyToClipboard = (slug: string) => {
         const url = `${window.location.origin}/f/${slug}`;
@@ -442,6 +444,34 @@ function MentorDashboardContent() {
                                 >
                                     {item.label}
                                 </motion.span>
+                            )}
+                            {!isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 ? (
+                                <span style={{
+                                    marginLeft: 'auto',
+                                    background: activeTab === item.id ? '#000' : 'var(--gold-gradient)',
+                                    color: activeTab === item.id ? '#FFD700' : '#000',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 900,
+                                    padding: '2px 6px',
+                                    borderRadius: '10px',
+                                    minWidth: '18px',
+                                    textAlign: 'center',
+                                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                }}>
+                                    {stats.pendingCertificates}
+                                </span>
+                            ) : null}
+                            {isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 && (
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '8px',
+                                    right: '8px',
+                                    background: 'var(--gold-gradient)',
+                                    width: '8px',
+                                    height: '8px',
+                                    borderRadius: '50%',
+                                    border: '1.5px solid var(--paper)'
+                                }} />
                             )}
                         </button>
                     ))}
@@ -1095,7 +1125,10 @@ function MentorDashboardContent() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                         >
-                            <SubmissionManagement formId={selectedSubmissionFormId} />
+                            <SubmissionManagement
+                                formId={selectedSubmissionFormId}
+                                onAction={refreshData}
+                            />
                         </motion.div>
                     )}
 

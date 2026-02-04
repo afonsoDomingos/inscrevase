@@ -25,6 +25,11 @@ export interface SubmissionModel {
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'unpaid' | 'paid' | 'pending' | 'refunded';
     certificateStatus?: 'none' | 'requested' | 'approved';
+    progress?: {
+        total: number;
+        completed: number;
+        percentage: number;
+    };
     aiAnalysis?: {
         isValid: boolean;
         transactionId?: string;

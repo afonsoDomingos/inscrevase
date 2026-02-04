@@ -99,10 +99,16 @@ exports.getMentorStats = async (req, res) => {
             }
         });
 
+        const pendingCertificates = await Submission.countDocuments({
+            form: { $in: formIds },
+            certificateStatus: 'requested'
+        });
+
         res.json({
             forms: totalForms,
             submissions: totalSubmissions,
             approved: approvedSubmissions,
+            pendingCertificates: pendingCertificates,
             revenue: revenue
         });
     } catch (err) {
