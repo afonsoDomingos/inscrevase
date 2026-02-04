@@ -923,7 +923,12 @@
         "chatLockedTitle": "Chat Restrito",
         "chatLoginRequired": "Crie uma conta como participante para interagir com a comunidade.",
         "chatPlaceholder": "Escreva algo para a comunidade...",
-        "chatEnrollPrompt": "Inscreva-se no evento para participar da conversa."
+        "chatEnrollPrompt": "Inscreva-se no evento para participar da conversa.",
+        "completedStatus": "Concluída",
+        "pendingStatus": "Não iniciada",
+        "markAsComplete": "Concluir Aula",
+        "lessonCompleted": "Aula Concluída!",
+        "lessonLockedError": "Complete a aula anterior para desbloquear esta!"
     },
     "cookies": {
         "title": "Ajude-nos a melhorar o nosso website com cookies",

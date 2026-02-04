@@ -922,7 +922,12 @@
         "chatLoginRequired": "Create a participant account to interact with the community.",
         "chatPlaceholder": "Write something to the community...",
         "chatEnrollPrompt": "Join the event to participate in the conversation.",
-        "viewAccess": "View My Access"
+        "viewAccess": "View My Access",
+        "completedStatus": "Completed",
+        "pendingStatus": "Not started",
+        "markAsComplete": "Mark as Complete",
+        "lessonCompleted": "Lesson Completed!",
+        "lessonLockedError": "Complete the previous lesson to unlock this one!"
     },
     "cookies": {
         "title": "Help us improve our website with cookies",

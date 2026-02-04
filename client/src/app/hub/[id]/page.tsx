@@ -310,7 +310,7 @@ function HubContent() {
     const isCreatorOrAdmin = currentUser?.id === form.creator?._id || currentUser?._id === form.creator?._id || currentUser?.role === 'admin';
 
     return (
-        <main style={{ minHeight: '100vh', background: `linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(5,5,5,0.95)), url('${form.hubBackgroundImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}')`, backgroundSize: 'cover', backgroundAttachment: 'fixed', color: '#fff', fontFamily: 'var(--font-inter), sans-serif', padding: '0' }}>
+        <main style={{ minHeight: '100vh', background: `linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(5,5,5,0.95)), url('${form.hubBackgroundImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}')`, backgroundSize: 'cover', backgroundAttachment: 'fixed', color: '#fff', fontFamily: 'var(--font-inter), sans-serif', padding: '0', overflowX: 'hidden' }}>
             {form.creator.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Top Navigation Bar - Glass White */}
             <nav style={{ position: 'sticky', top: 0, background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', zIndex: 100, padding: '15px 24px', borderBottom: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -378,7 +378,7 @@ function HubContent() {
             </nav>
 
             {/* Main Container - Aumentado para 1100px */}
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 24px 100px' }}>
+            <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto', padding: '40px 24px 100px' }}>
 
                 {/* Header Section */}
                 <div style={{ marginBottom: '50px', textAlign: 'center' }}>
@@ -487,7 +487,7 @@ function HubContent() {
                     <AdBanner slot="5589508956" format="horizontal" />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '40px', alignItems: 'start' }} className="hub-grid">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '30px', alignItems: 'start' }} className="hub-grid">
 
                     {/* Left Column: Details */}
                     <div style={{ display: 'grid', gap: '35px' }}>
@@ -961,15 +961,16 @@ function HubContent() {
                                     {t('hub.remainingTime')}
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                                    {/* Column based layout for cards */}
                                     {[
                                         { val: countdown.days, label: t('hub.days') },
                                         { val: countdown.hours, label: t('hub.hours') },
                                         { val: countdown.minutes, label: t('hub.minutes') },
                                         { val: countdown.seconds, label: t('hub.seconds') }
                                     ].map((item, i) => (
-                                        <div key={i} style={{ background: '#0a0a0a', borderRadius: '16px', padding: '15px 5px', color: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-                                            <div style={{ fontSize: '1.6rem', fontWeight: 700, lineHeight: 1, fontFamily: 'monospace' }}>{String(item.val).padStart(2, '0')}</div>
-                                            <div style={{ fontSize: '0.6rem', opacity: 0.6, marginTop: '6px', textTransform: 'uppercase', fontWeight: 600 }}>{item.label}</div>
+                                        <div key={i} style={{ background: '#0a0a0a', borderRadius: '12px', padding: '12px 2px', color: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', minWidth: 0, overflow: 'hidden' }}>
+                                            <div style={{ fontSize: '1.4rem', fontWeight: 700, lineHeight: 1, fontFamily: 'monospace' }}>{String(item.val).padStart(2, '0')}</div>
+                                            <div style={{ fontSize: '0.55rem', opacity: 0.6, marginTop: '5px', textTransform: 'uppercase', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -1122,10 +1123,16 @@ function HubContent() {
             />
 
             <style jsx>{`
-                @media (max-width: 900px) {
+                @media (max-width: 1024px) {
                     .hub-grid {
                         grid-template-columns: 1fr !important;
                     }
+                    .hub-grid > div:last-child {
+                        position: relative !important;
+                        top: 0 !important;
+                    }
+                }
+                @media (max-width: 640px) {
                     nav div {
                         justify-content: center !important;
                     }
