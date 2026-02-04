@@ -20,7 +20,9 @@ import {
     Edit,
     Trash2,
     Upload,
-    TrendingUp
+    TrendingUp,
+    ArrowUp,
+    ArrowDown
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
@@ -198,7 +200,7 @@ export default function MentorLessonsPage() {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
-            setManageLessons(data.lessons || []);
+            setManageLessons((data.lessons || []).sort((a: Lesson, b: Lesson) => (a.order || 0) - (b.order || 0)));
             setManageStats(data.stats || { total: 0, published: 0, unpublished: 0, totalViews: 0 });
         } catch (error) {
             console.error('Error fetching managed lessons:', error);
@@ -366,6 +368,59 @@ export default function MentorLessonsPage() {
             fetchManageLessons();
         } catch (error) {
             console.error('Error toggling publish:', error);
+        }
+    };
+
+    const moveLesson = async (index: number, direction: 'up' | 'down') => {
+        const sortedLessons = [...manageLessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (targetIndex < 0 || targetIndex >= sortedLessons.length) return;
+
+        const currentLesson = sortedLessons[index];
+        const targetLesson = sortedLessons[targetIndex];
+
+        // Swap orders
+        const currentOrder = currentLesson.order || 0;
+        const targetOrder = targetLesson.order || 0;
+
+        // If orders are same (e.g. both 0), we need to re-index all to be safe, 
+        // but for now let's try simple swap or strict re-index logic if needed.
+        // Simple swap logic:
+        const token = Cookies.get('token');
+
+        try {
+            // Optimistic update
+            const newLessons = [...manageLessons];
+            // Find items in original array
+            const realCurrentIndex = newLessons.findIndex(l => l._id === currentLesson._id);
+            const realTargetIndex = newLessons.findIndex(l => l._id === targetLesson._id);
+
+            if (realCurrentIndex !== -1) newLessons[realCurrentIndex].order = targetOrder;
+            if (realTargetIndex !== -1) newLessons[realTargetIndex].order = currentOrder;
+
+            setManageLessons(newLessons.sort((a, b) => (a.order || 0) - (b.order || 0)));
+
+            // API Updates
+            await Promise.all([
+                fetch(`${API_URL}/lessons/${currentLesson._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ ...currentLesson, order: targetOrder })
+                }),
+                fetch(`${API_URL}/lessons/${targetLesson._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ ...targetLesson, order: currentOrder })
+                })
+            ]);
+
+            toast.success('Ordem atualizada!');
+            // fetchManageLessons(); // Optional: fetch to be sure
+        } catch (error) {
+            console.error('Error moving lesson:', error);
+            toast.error('Erro ao mover aula');
+            fetchManageLessons(); // Revert on error
         }
     };
 
@@ -745,49 +800,73 @@ export default function MentorLessonsPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {manageLessons.filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase())).map((lesson) => (
-                                        <tr key={lesson._id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                                            <td style={{ padding: '1rem' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <div style={{ width: '40px', height: '40px', background: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Video size={20} color="#666" /></div>
-                                                    <div><p style={{ fontWeight: '600' }}>{lesson.title}</p></div>
-                                                </div>
-                                            </td>
-                                            <td style={{ padding: '1rem' }}>
-                                                <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: '#f3f4f6', color: '#666' }}>{lesson.category}</span>
-                                            </td>
-                                            <td style={{ padding: '1rem' }}>
-                                                <span style={{
-                                                    fontSize: '0.75rem',
-                                                    padding: '4px 8px',
-                                                    borderRadius: '8px',
-                                                    fontWeight: '600',
-                                                    background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
-                                                    color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
-                                                }}>
-                                                    {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Mentores'}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: '1rem' }}>
-                                                <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
-                                                    {lesson.isPublished ? 'Publicada' : 'Rascunho'}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                                    <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }} title="Publicar/Despublicar">
-                                                        {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                    </button>
-                                                    <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }} title="Editar">
-                                                        <Edit size={18} />
-                                                    </button>
-                                                    <button onClick={() => handleDelete(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }} title="Excluir">
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {manageLessons
+                                        .filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase()))
+                                        .map((lesson, idx) => (
+                                            <tr key={lesson._id} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <div style={{ width: '40px', height: '40px', background: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <Video size={20} color="#666" />
+                                                        </div>
+                                                        <div><p style={{ fontWeight: '600' }}>{lesson.title}</p></div>
+                                                    </div>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: '#f3f4f6', color: '#666' }}>{lesson.category}</span>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        padding: '4px 8px',
+                                                        borderRadius: '8px',
+                                                        fontWeight: '600',
+                                                        background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
+                                                        color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
+                                                    }}>
+                                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Mentores'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
+                                                        {lesson.isPublished ? 'Publicada' : 'Rascunho'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                                        {!manageSearch && (
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                                <button
+                                                                    onClick={() => moveLesson(idx, 'up')}
+                                                                    disabled={idx === 0}
+                                                                    style={{ padding: '4px', border: 'none', background: 'transparent', cursor: idx === 0 ? 'not-allowed' : 'pointer', color: idx === 0 ? '#ccc' : '#666' }}
+                                                                    title="Mover para cima"
+                                                                >
+                                                                    <ArrowUp size={14} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => moveLesson(idx, 'down')}
+                                                                    disabled={idx === manageLessons.length - 1}
+                                                                    style={{ padding: '4px', border: 'none', background: 'transparent', cursor: idx === manageLessons.length - 1 ? 'not-allowed' : 'pointer', color: idx === manageLessons.length - 1 ? '#ccc' : '#666' }}
+                                                                    title="Mover para baixo"
+                                                                >
+                                                                    <ArrowDown size={14} />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                        <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }} title="Publicar/Despublicar">
+                                                            {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                        </button>
+                                                        <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }} title="Editar">
+                                                            <Edit size={18} />
+                                                        </button>
+                                                        <button onClick={() => handleDelete(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }} title="Excluir">
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </table>
                             {manageLessons.length === 0 && (
