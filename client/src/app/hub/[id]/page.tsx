@@ -1009,8 +1009,76 @@ function HubContent() {
                                 <button style={{ background: '#f8f8f8', color: '#aaa', padding: '16px', borderRadius: '100px', border: 'none', fontWeight: 700, fontSize: '0.9rem', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                     🔒 {t('hub.addToWallet')}
                                 </button>
-                                {isApproved && (
-                                    (!form.eventDate || new Date() < new Date(form.eventDate)) ? (
+                                {isApproved && form.certificateConfig?.enabled !== false && (
+                                    (stats.total > 0 && stats.completed === stats.total) || (form.eventDate && new Date() >= new Date(form.eventDate)) ? (
+                                        <div style={{ display: 'grid', gap: '15px' }}>
+                                            {(stats.total > 0 && stats.completed === stats.total) && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    style={{
+                                                        background: 'rgba(16, 185, 129, 0.1)',
+                                                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                                                        padding: '15px',
+                                                        borderRadius: '16px',
+                                                        color: '#10b981',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: 600,
+                                                        lineHeight: 1.4
+                                                    }}
+                                                >
+                                                    🎉 Parabéns! Você concluiu todas as aulas. Seu certificado está pronto para download.
+                                                </motion.div>
+                                            )}
+                                            <button
+                                                onClick={() => {
+                                                    const dataMap = (submission as SubmissionData).data || {};
+                                                    const nameKey = Object.keys(dataMap).find(k =>
+                                                        k.toLowerCase().includes('nome') ||
+                                                        k.toLowerCase().includes('name')
+                                                    );
+                                                    const participantName = nameKey ? dataMap[nameKey] : t('hub.defaultParticipantName');
+
+                                                    generateCertificate({
+                                                        participantName: String(participantName),
+                                                        eventTitle: form.title,
+                                                        date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : t('common.toBeDefined'),
+                                                        mentorName: form.creator.name,
+                                                        id: submission._id,
+                                                        config: form.certificateConfig
+                                                    });
+                                                    toast.success(t('hub.certificateSuccessToast'));
+                                                }}
+                                                style={{
+                                                    background: 'linear-gradient(135deg, #CFB53B 0%, #C5A028 100%)', // Vegas Gold
+                                                    color: '#fff',
+                                                    padding: '16px',
+                                                    borderRadius: '100px',
+                                                    border: '1px solid rgba(255,255,255,0.2)',
+                                                    fontWeight: 800,
+                                                    fontSize: '0.9rem',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '8px',
+                                                    boxShadow: '0 10px 30px rgba(207,181,59,0.3)',
+                                                    textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 15px 35px rgba(207,181,59,0.4)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(207,181,59,0.3)';
+                                                }}
+                                            >
+                                                <Award size={20} /> {t('hub.downloadCertificate')}
+                                            </button>
+                                        </div>
+                                    ) : (
                                         <button
                                             disabled
                                             style={{
@@ -1025,53 +1093,12 @@ function HubContent() {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                gap: '8px'
+                                                gap: '8px',
+                                                width: '100%'
                                             }}
                                             title={t('hub.certificateAvailableAfter')}
                                         >
                                             🔒 {t('hub.certificateComingSoon')}
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => {
-                                                const dataMap = (submission as SubmissionData).data || {};
-                                                const nameKey = Object.keys(dataMap).find(k =>
-                                                    k.toLowerCase().includes('nome') ||
-                                                    k.toLowerCase().includes('name')
-                                                );
-                                                const participantName = nameKey ? dataMap[nameKey] : t('hub.defaultParticipantName');
-
-                                                generateCertificate({
-                                                    participantName: String(participantName),
-                                                    eventTitle: form.title,
-                                                    date: form.eventDate ? new Date(form.eventDate).toLocaleDateString() : t('common.toBeDefined'),
-                                                    mentorName: form.creator.name,
-                                                    id: submission._id,
-                                                    config: form.certificateConfig
-                                                });
-                                                toast.success(t('hub.certificateSuccessToast'));
-                                            }}
-                                            style={{
-                                                background: 'linear-gradient(135deg, #CFB53B 0%, #C5A028 100%)', // Vegas Gold
-                                                color: '#fff',
-                                                padding: '16px',
-                                                borderRadius: '100px',
-                                                border: '1px solid rgba(255,255,255,0.2)',
-                                                fontWeight: 800,
-                                                fontSize: '0.9rem',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '8px',
-                                                boxShadow: '0 10px 30px rgba(207,181,59,0.3)',
-                                                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                                transition: 'transform 0.2s ease'
-                                            }}
-                                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                        >
-                                            <Award size={20} /> {t('hub.downloadCertificate')}
                                         </button>
                                     )
                                 )}
