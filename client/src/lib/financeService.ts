@@ -123,5 +123,17 @@ export const financeService = {
             throw new Error(error.message || 'Falha ao criar assinatura');
         }
         return response.json();
+    },
+
+    async refreshExchangeRate() {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/stripe/admin/refresh-rate`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.json();
     }
 };
+

@@ -50,8 +50,7 @@ import {
     ChevronLeft,
     Menu,
     Newspaper,
-    Video,
-    Award
+    Video
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -389,7 +388,6 @@ function MentorDashboardContent() {
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
-                        { id: 'certificates', label: 'Certificados', icon: <Award size={20} />, link: '/dashboard/mentor/certificates' },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
@@ -716,14 +714,14 @@ function MentorDashboardContent() {
                         )
                     }
 
-                    <div style={{ display: 'flex', gap: '0.75rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0' }} className="no-scrollbar">
+                    <div style={{ display: 'flex', gap: '0.5rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
                         <Link
                             href="/"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
+                                padding: '0.5rem 1rem',
                                 background: 'var(--paper)',
                                 border: '1px solid #FFD700',
                                 borderRadius: '10px',
@@ -731,8 +729,9 @@ function MentorDashboardContent() {
                                 fontWeight: 700,
                                 textDecoration: 'none',
                                 transition: 'all 0.3s',
-                                fontSize: isMobile ? '0.8rem' : '1rem',
-                                whiteSpace: 'nowrap'
+                                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                whiteSpace: 'nowrap',
+                                height: '40px'
                             }}
                             onMouseOver={(e) => e.currentTarget.style.background = 'var(--paper-hover)'}
                             onMouseOut={(e) => e.currentTarget.style.background = 'var(--paper)'}
@@ -747,7 +746,7 @@ function MentorDashboardContent() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
-                                    padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
+                                    padding: '0.5rem 1rem',
                                     background: 'var(--gold-gradient)',
                                     border: 'none',
                                     borderRadius: '10px',
@@ -756,8 +755,9 @@ function MentorDashboardContent() {
                                     cursor: 'pointer',
                                     boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
                                     transition: 'all 0.3s',
-                                    fontSize: isMobile ? '0.8rem' : '1rem',
-                                    whiteSpace: 'nowrap'
+                                    fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                    whiteSpace: 'nowrap',
+                                    height: '40px'
                                 }}
                                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
@@ -780,7 +780,7 @@ function MentorDashboardContent() {
                                 <Lock size={16} /> {t('dashboard.restrictedAccess')}
                             </div>
                         )}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <ThemeToggle />
                             <div style={{ position: 'relative' }}>
                                 <button
@@ -790,8 +790,8 @@ function MentorDashboardContent() {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        width: '45px',
-                                        height: '45px',
+                                        width: '40px',
+                                        height: '40px',
                                         background: 'var(--paper)',
                                         border: '1px solid #FFD700',
                                         borderRadius: '12px',
@@ -850,8 +850,8 @@ function MentorDashboardContent() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    width: '45px',
-                                    height: '45px',
+                                    width: '40px',
+                                    height: '40px',
                                     background: '#fff',
                                     border: '1px solid #fed7d7',
                                     borderRadius: '12px',

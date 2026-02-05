@@ -5,6 +5,8 @@ const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const Submission = require('../models/Submission');
 const { PLANS } = require('../config/stripe');
+const GlobalSettings = require('../models/GlobalSettings');
+
 
 /**
  * STRIPE CONNECT - MENTOR ONBOARDING
@@ -908,20 +910,52 @@ let lastRateFetch = 0;
 const RATE_TTL = 1000 * 60 * 60 * 12; // 12 hours
 
 const getLatestRate = async () => {
-    const now = Date.now();
-    if (now - lastRateFetch < RATE_TTL) return cachedExchangeRate;
-
     try {
-        const response = await axios.get('https://open.er-api.com/v6/latest/USD');
-        if (response.data && response.data.rates && response.data.rates.MZN) {
-            cachedExchangeRate = response.data.rates.MZN;
-            lastRateFetch = now;
-            console.log(`[CURRENCY] Real-time rate updated: 1 USD = ${cachedExchangeRate} MZN`);
+        // 1. Tentativo de buscar na base de dados (Persistência)
+        let settings = await GlobalSettings.findOne({ key: 'exchange_rate_usd_mzn' });
+        const now = Date.now();
+        const RATE_TTL = 1000 * 60 * 60 * 24; // 24 horas para atualização diária
+
+        // Se tivermos no DB e for recente, usamos
+        if (settings && (now - new Date(settings.lastUpdated).getTime() < RATE_TTL)) {
+            return settings.value;
         }
+
+        // 2. Se não existir ou estiver expirado, busca na API
+        console.log('[CURRENCY] A atualizar taxa de câmbio diária via API...');
+        const response = await axios.get('https://open.er-api.com/v6/latest/USD');
+
+        if (response.data && response.data.rates && response.data.rates.MZN) {
+            const marketRate = response.data.rates.MZN;
+
+            // 3. Adicionar Margem de Segurança (Buffer de 1.5%)
+            // Protege contra flutuações intra-diárias e taxas de conversão bancária
+            const safetyMargin = 0.015;
+            const adjustedRate = marketRate * (1 - safetyMargin);
+
+            if (!settings) {
+                settings = new GlobalSettings({
+                    key: 'exchange_rate_usd_mzn',
+                    value: adjustedRate,
+                    lastUpdated: now
+                });
+            } else {
+                settings.value = adjustedRate;
+                settings.lastUpdated = now;
+            }
+
+            await settings.save();
+            cachedExchangeRate = adjustedRate;
+            lastRateFetch = now;
+            console.log(`[CURRENCY] Taxa atualizada: 1 USD = ${marketRate} MT (Ajustada para ${adjustedRate.toFixed(2)} MT com margem)`);
+            return adjustedRate;
+        }
+
+        return settings ? settings.value : cachedExchangeRate;
     } catch (error) {
-        console.error('[CURRENCY] Failed to fetch live rate, using cache/fallback:', error.message);
+        console.error('[CURRENCY] Falha ao sincronizar taxa:', error.message);
+        return cachedExchangeRate;
     }
-    return cachedExchangeRate;
 };
 
 exports.getPlans = async (req, res) => {
@@ -968,3 +1002,50 @@ exports.getMySubscriptionStatus = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.refreshExchangeRate = async (req, res) => {
+    try {
+        console.log('[CURRENCY] Forçando atualização manual da taxa via Admin...');
+
+        // Buscamos ignorando o cache/TTL
+        const response = await axios.get('https://open.er-api.com/v6/latest/USD');
+
+        if (response.data && response.data.rates && response.data.rates.MZN) {
+            const marketRate = response.data.rates.MZN;
+            const safetyMargin = 0.015;
+            const adjustedRate = marketRate * (1 - safetyMargin);
+            const now = Date.now();
+
+            let settings = await GlobalSettings.findOne({ key: 'exchange_rate_usd_mzn' });
+
+            if (!settings) {
+                settings = new GlobalSettings({
+                    key: 'exchange_rate_usd_mzn',
+                    value: adjustedRate,
+                    lastUpdated: now
+                });
+            } else {
+                settings.value = adjustedRate;
+                settings.lastUpdated = now;
+            }
+
+            await settings.save();
+            cachedExchangeRate = adjustedRate;
+            lastRateFetch = now;
+
+            return res.status(200).json({
+                success: true,
+                message: 'Taxa de câmbio atualizada com sucesso!',
+                marketRate,
+                adjustedRate,
+                lastUpdated: settings.lastUpdated
+            });
+        }
+
+        res.status(400).json({ success: false, message: 'Não foi possível obter dados da API de câmbio.' });
+    } catch (error) {
+        console.error('[CURRENCY] Erro ao forçar atualização:', error.message);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+

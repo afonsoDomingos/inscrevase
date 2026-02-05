@@ -13,8 +13,10 @@ import {
     ExternalLink,
     Download,
     Trash2,
-    XCircle
+    XCircle,
+    RefreshCcw
 } from 'lucide-react';
+
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -41,6 +43,8 @@ export default function AdminFinance() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
     const [displayCurrency, setDisplayCurrency] = useState<'MZN' | 'USD'>('MZN');
+    const [isRefreshingRate, setIsRefreshingRate] = useState(false);
+
 
     const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -125,6 +129,25 @@ export default function AdminFinance() {
         }
     };
 
+    const handleRefreshRate = async () => {
+        try {
+            setIsRefreshingRate(true);
+            const res = await financeService.refreshExchangeRate();
+            if (res.success) {
+                toast.success(`Taxa atualizada! Mercado: ${res.marketRate} MT | Ajustada: ${res.adjustedRate.toFixed(2)} MT`);
+                loadData();
+            } else {
+                toast.error(res.message);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao atualizar taxa de câmbio");
+        } finally {
+            setIsRefreshingRate(false);
+        }
+    };
+
+
     const filteredTransactions = transactions.filter(tx => {
         const mentorMatch = tx.mentor?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             tx.mentor?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -205,10 +228,22 @@ export default function AdminFinance() {
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Crescimento de Receita</h3>
                             <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Taxas da Plataforma ({displayCurrency}) por mês</p>
                         </div>
-                        <div style={{ display: 'flex', gap: '5px', background: '#f5f5f5', padding: '4px', borderRadius: '8px' }}>
-                            <button onClick={() => setDisplayCurrency('MZN')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'MZN' ? '#fff' : 'transparent', fontWeight: 700, cursor: 'pointer', boxShadow: displayCurrency === 'MZN' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none' }}>MZN</button>
-                            <button onClick={() => setDisplayCurrency('USD')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'USD' ? '#000' : 'transparent', color: displayCurrency === 'USD' ? '#fff' : '#666', fontWeight: 700, cursor: 'pointer' }}>USD</button>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button
+                                onClick={handleRefreshRate}
+                                disabled={isRefreshingRate}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold transition-all ${isRefreshingRate ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                                title="Atualizar taxa de câmbio via API agora"
+                            >
+                                <RefreshCcw size={14} className={isRefreshingRate ? 'animate-spin' : ''} />
+                                {isRefreshingRate ? 'Sincronizando...' : 'Atualizar Câmbio'}
+                            </button>
+                            <div style={{ display: 'flex', gap: '5px', background: '#f5f5f5', padding: '4px', borderRadius: '8px' }}>
+                                <button onClick={() => setDisplayCurrency('MZN')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'MZN' ? '#fff' : 'transparent', fontWeight: 700, cursor: 'pointer', boxShadow: displayCurrency === 'MZN' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none' }}>MZN</button>
+                                <button onClick={() => setDisplayCurrency('USD')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'USD' ? '#000' : 'transparent', color: displayCurrency === 'USD' ? '#fff' : '#666', fontWeight: 700, cursor: 'pointer' }}>USD</button>
+                            </div>
                         </div>
+
                     </div>
                     <div style={{ width: '100%', height: '300px' }}>
                         <ResponsiveContainer>

@@ -46,6 +46,9 @@ router.get('/admin/transactions', authMiddleware, adminMiddleware, stripeControl
 // Get financial summary for admin
 router.get('/admin/summary', authMiddleware, adminMiddleware, stripeController.getAdminFinancialSummary);
 
+// Force refresh exchange rate
+router.post('/admin/refresh-rate', authMiddleware, adminMiddleware, stripeController.refreshExchangeRate);
+
 // Confirm manual fee payment
 router.patch('/admin/confirm-payment/:transactionId', authMiddleware, adminMiddleware, stripeController.confirmTransactionPayment);
 
