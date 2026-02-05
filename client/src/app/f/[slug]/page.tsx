@@ -12,7 +12,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     let form = null;
     let eventJsonLd = null;
 
-    const safeToISO = (dateStr: any, timeStr?: any) => {
+    const safeToISO = (dateStr: string | null | undefined, timeStr?: string | null | undefined) => {
         if (!dateStr) return undefined;
         try {
             const date = new Date(`${dateStr}T${timeStr || '00:00'}`);
