@@ -60,7 +60,7 @@ export default function SobreNos() {
 
             {/* Hero Section */}
             <section style={{
-                background: 'linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 46, 0.9) 100%), url(/header-bg-new.png)',
+                background: 'linear-gradient(135deg, rgba(10, 10, 10, 0.6) 0%, rgba(26, 26, 46, 0.7) 100%), url(/header-bg-new.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 color: '#fff',
@@ -105,6 +105,7 @@ export default function SobreNos() {
                         marginBottom: '25px',
                         fontFamily: 'var(--font-playfair, serif)',
                         lineHeight: 1.1,
+                        color: '#ffffff',
                         textShadow: '0 4px 20px rgba(0,0,0,0.3)'
                     }}>
                         Sobre o <span style={{
