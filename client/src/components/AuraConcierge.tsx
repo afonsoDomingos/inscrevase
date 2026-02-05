@@ -131,7 +131,7 @@ export default function AuraConcierge() {
     };
 
     return (
-        <div style={{ position: 'fixed', bottom: '30px', left: '30px', zIndex: 1000 }}>
+        <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 1000 }}>
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -139,8 +139,8 @@ export default function AuraConcierge() {
                         animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 50, x: -50 }}
                         style={{
-                            width: '380px',
-                            height: '550px',
+                            width: 'min(380px, calc(100vw - 40px))',
+                            height: 'min(550px, 70vh)',
                             background: 'rgba(255, 255, 255, 0.85)',
                             backdropFilter: 'blur(15px)',
                             borderRadius: '24px',
