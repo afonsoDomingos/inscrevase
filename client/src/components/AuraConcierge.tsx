@@ -307,7 +307,8 @@ export default function AuraConcierge() {
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        flexShrink: 0
                                     }}
                                 >
                                     {uploadingFile ? <Loader2 className="animate-spin" size={20} /> : <Paperclip size={20} />}
@@ -341,6 +342,7 @@ export default function AuraConcierge() {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         cursor: 'pointer',
+                                        flexShrink: 0,
                                         opacity: (!message.trim() && !attachment) ? 0.5 : 1
                                     }}
                                 >
