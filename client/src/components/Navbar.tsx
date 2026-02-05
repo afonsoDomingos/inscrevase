@@ -90,7 +90,7 @@ export default function Navbar() {
           className={`mobile-toggle ${isOpen ? 'hidden' : ''}`}
           onClick={() => setIsOpen(true)}
         >
-          <Menu color={scrolled ? "#000" : "#fff"} size={28} />
+          <Menu color={scrolled ? "#FFD700" : "#fff"} size={28} />
         </button>
       </div> {/* Close nav-container */}
 
