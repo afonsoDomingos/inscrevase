@@ -14,7 +14,6 @@ import {
     PieChart,
     Crown,
     Video,
-    Award,
     Settings,
     Menu,
     ChevronLeft,
