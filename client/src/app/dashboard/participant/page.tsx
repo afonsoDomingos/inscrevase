@@ -12,6 +12,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import PremiumBadge from '@/components/common/PremiumBadge';
+import ThemeToggle from '@/components/common/ThemeToggle';
 import {
     LogOut,
     Loader2,

@@ -22,7 +22,9 @@ import {
     Upload,
     TrendingUp,
     ArrowUp,
-    ArrowDown
+    ArrowDown,
+    Lock,
+    Unlock
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
@@ -926,6 +928,9 @@ export default function MentorLessonsPage() {
                                                         )}
                                                         <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }} title="Publicar/Despublicar">
                                                             {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                        </button>
+                                                        <button onClick={() => toggleLock(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: lesson.isLocked ? '#f59e0b' : '#666' }} title={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}>
+                                                            {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
                                                         </button>
                                                         <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }} title="Editar">
                                                             <Edit size={18} />
