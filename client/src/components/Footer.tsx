@@ -147,25 +147,25 @@ export default function Footer() {
                     fontWeight: 600
                 }}>
                     <span style={{ color: '#5c5e62' }}>Inscreva-se &copy; {new Date().getFullYear()}</span>
-                    <Link href="/sobre-nos" className="footer-btn">{t('landing.footer.aboutUs')}</Link>
-                    <Link href="/termos" className="footer-btn">{t('landing.footer.terms')}</Link>
-                    <Link href="/privacidade" className="footer-btn">{t('landing.footer.privacy')}</Link>
-                    <Link href="/blog" className="footer-btn">{t('landing.footer.blog')}</Link>
-                    <Link href="/suporte" className="footer-btn">{t('landing.footer.support')}</Link>
+                    <Link href="/sobre-nos" className="footer-btn" style={{ textDecoration: 'none', color: '#5c5e62' }}>{t('landing.footer.aboutUs')}</Link>
+                    <Link href="/termos" className="footer-btn" style={{ textDecoration: 'none', color: '#5c5e62' }}>{t('landing.footer.terms')}</Link>
+                    <Link href="/privacidade" className="footer-btn" style={{ textDecoration: 'none', color: '#5c5e62' }}>{t('landing.footer.privacy')}</Link>
+                    <Link href="/blog" className="footer-btn" style={{ textDecoration: 'none', color: '#5c5e62' }}>{t('landing.footer.blog')}</Link>
+                    <Link href="/suporte" className="footer-btn" style={{ textDecoration: 'none', color: '#5c5e62' }}>{t('landing.footer.support')}</Link>
                 </div>
             </div>
             <style jsx>{`
-                .footer-btn {
+                a.footer-btn {
                     text-decoration: none !important;
-                    color: #5c5e62;
+                    color: #5c5e62 !important;
                     padding: 8px 16px;
                     border-radius: 8px;
                     background: transparent;
                     transition: all 0.3s ease;
                     border: 1px solid transparent;
                 }
-                .footer-btn:hover {
-                    color: #1a1a1a;
+                a.footer-btn:hover {
+                    color: #1a1a1a !important;
                     background: #f5f5f5;
                     border-color: #e0e0e0;
                     text-decoration: none !important;
