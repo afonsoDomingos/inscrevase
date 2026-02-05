@@ -12,7 +12,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
     let form = null;
     let eventJsonLd = null;
 
-    const safeToISO = (dateStr: string, timeStr?: string) => {
+    const safeToISO = (dateStr: any, timeStr?: any) => {
+        if (!dateStr) return undefined;
         try {
             const date = new Date(`${dateStr}T${timeStr || '00:00'}`);
             if (isNaN(date.getTime())) return undefined;
