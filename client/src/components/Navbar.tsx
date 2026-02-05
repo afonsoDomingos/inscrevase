@@ -413,24 +413,21 @@ export default function Navbar() {
           }
         }
         .tesla-logo-text .gold-text {
-          color: #FFD700 !important;
+          color: #FFD700 !important; /* Cor padrão (Topo transparente) */
           text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
           text-decoration: none !important;
         }
-        .navbar.scrolled .tesla-logo-text {
-          color: #FFFFFF !important;
-        }
         .navbar.scrolled .tesla-logo-text .gold-text {
-          color: #FFFFFF !important;
+          color: #FFFFFF !important; /* Cor ao rolar (Fundo escuro) - BRANCO */
           text-shadow: none !important;
         }
-        /* Mobile Menu logo colors */
-        /* Mobile Menu logo colors */
+        
+        /* Mobile Menu logo colors overrides */
         .mobile-menu-overlay .tesla-logo-text {
-            color: #000000 !important;
+            color: #000000 !important; /* Preto no mobile */
         }
         .mobile-menu-overlay .tesla-logo-text .gold-text {
-            color: #000000 !important;
+            color: #000000 !important; /* Preto no mobile */
             text-shadow: none !important;
         }
 
