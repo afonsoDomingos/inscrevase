@@ -933,9 +933,9 @@ exports.getPlans = async (req, res) => {
         const dynamicPlans = JSON.parse(JSON.stringify(basePlans));
 
         // Let's assume MZN is the fixed base in Mozambique
-        // Pro: 499 MT -> Calculate USD
+        // Pro: 175 MT -> Calculate USD
         dynamicPlans.pro.prices.USD = Math.round((dynamicPlans.pro.prices.MZN / 100) / mznRate * 100);
-        // Enterprise: 4990 MT -> Calculate USD
+        // Enterprise: 1750 MT -> Calculate USD
         dynamicPlans.enterprise.prices.USD = Math.round((dynamicPlans.enterprise.prices.MZN / 100) / mznRate * 100);
 
         res.status(200).json({

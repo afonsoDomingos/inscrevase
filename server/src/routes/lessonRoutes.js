@@ -267,7 +267,7 @@ router.get('/manage/all', protect, async (req, res) => {
 // @access  Private (Admin & Mentor)
 router.post('/', protect, async (req, res) => {
     try {
-        const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, tags, order, targetAudience: bodyTargetAudience, associatedEvents } = req.body;
+        const { title, description, videoUrl, thumbnailUrl, duration, category, isPublished, isLocked, tags, order, targetAudience: bodyTargetAudience, associatedEvents } = req.body;
 
         // Determine target audience based on role if not provided in body
         const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
@@ -280,7 +280,8 @@ router.post('/', protect, async (req, res) => {
             thumbnailUrl,
             duration,
             category,
-            isPublished,
+            isPublished: isPublished || false,
+            isLocked: isLocked || false,
             tags,
             order,
             createdBy: req.user.id,
@@ -414,6 +415,32 @@ router.patch('/:id/toggle-publish', protect, async (req, res) => {
     } catch (error) {
         console.error('Error toggling publish status:', error);
         res.status(500).json({ message: 'Erro ao alterar status de publicação' });
+    }
+});
+
+// @route   PATCH /api/lessons/:id/toggle-lock
+// @desc    Toggle lesson lock status
+// @access  Private (Owner & Admin)
+router.patch('/:id/toggle-lock', protect, async (req, res) => {
+    try {
+        const lesson = await Lesson.findById(req.params.id);
+
+        if (!lesson) {
+            return res.status(404).json({ message: 'Aula não encontrada' });
+        }
+
+        // Check permission
+        if (lesson.createdBy.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Não autorizado' });
+        }
+
+        lesson.isLocked = !lesson.isLocked;
+        await lesson.save();
+
+        res.json(lesson);
+    } catch (error) {
+        console.error('Error toggling lock status:', error);
+        res.status(500).json({ message: 'Erro ao alterar status de bloqueio' });
     }
 });
 

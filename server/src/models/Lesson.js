@@ -53,6 +53,10 @@ const LessonSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isLocked: {
+        type: Boolean,
+        default: false
+    },
     views: {
         type: Number,
         default: 0

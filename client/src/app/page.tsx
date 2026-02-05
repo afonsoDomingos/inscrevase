@@ -28,7 +28,7 @@ const galleryImages = [
 
 export default function Home() {
   const { t } = useTranslate();
-  const { currency, setCurrency, formatPrice } = useCurrency();
+  const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
   const { handleMouseMove } = useSpotlight();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
@@ -1165,13 +1165,13 @@ export default function Home() {
             style={{
               position: 'relative',
               height: 'auto',
-              minHeight: '520px',
+              minHeight: 'clamp(480px, 80vh, 520px)',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '30px',
+              padding: 'clamp(15px, 4vw, 30px)',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1223,13 +1223,13 @@ export default function Home() {
             style={{
               position: 'relative',
               height: 'auto',
-              minHeight: '540px',
+              minHeight: 'clamp(500px, 85vh, 540px)',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '30px',
+              padding: 'clamp(15px, 4vw, 30px)',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1265,8 +1265,8 @@ export default function Home() {
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontWeight: 500, textDecoration: 'line-through' }}>
                   {formatPrice(350)}
                 </span>
-                <p style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center' }}>
-                  {formatPrice(175)}
+                <p style={{ color: '#fff', fontSize: 'clamp(1.8rem, 5vw, 2.2rem)', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                  {formatPrice(getPlanPrice('pro'), currency, currency)}
                 </p>
                 <div style={{
                   background: '#ef4444',
@@ -1280,7 +1280,7 @@ export default function Home() {
                   flexDirection: 'column',
                   lineHeight: 1
                 }}>
-                  <span>-{Math.round(((350 - 175) / 350) * 100)}%</span>
+                  <span>-{Math.round(((350 - getPlanPrice('pro')) / 350) * 100)}%</span>
                 </div>
                 <div style={{
                   background: 'rgba(255,215,0,0.2)',
@@ -1291,7 +1291,7 @@ export default function Home() {
                   fontWeight: 800,
                   border: '1px solid rgba(255,215,0,0.3)'
                 }}>
-                  {t('plans.save') || 'Poupe'} {formatPrice(175)}
+                  {t('plans.save') || 'Poupe'} {formatPrice(getPlanPrice('pro'), currency, currency)}
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
@@ -1329,13 +1329,13 @@ export default function Home() {
             style={{
               position: 'relative',
               height: 'auto',
-              minHeight: '520px',
+              minHeight: 'clamp(480px, 80vh, 520px)',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '30px',
+              padding: 'clamp(15px, 4vw, 30px)',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1358,8 +1358,8 @@ export default function Home() {
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: 500, textDecoration: 'line-through' }}>
                   {formatPrice(3500)}
                 </span>
-                <p style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, display: 'flex', alignItems: 'center' }}>
-                  {formatPrice(1750)}
+                <p style={{ color: '#fff', fontSize: 'clamp(1.6rem, 5vw, 2rem)', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                  {formatPrice(getPlanPrice('enterprise'), currency, currency)}
                 </p>
                 <div style={{
                   background: '#ef4444',
@@ -1370,7 +1370,7 @@ export default function Home() {
                   fontWeight: 900,
                   boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
                 }}>
-                  -{Math.round(((3500 - 1750) / 3500) * 100)}%
+                  -{Math.round(((3500 - getPlanPrice('enterprise')) / 3500) * 100)}%
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>

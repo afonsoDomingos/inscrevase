@@ -60,6 +60,7 @@ interface Lesson {
     isFavorite?: boolean;
     progress?: number;
     associatedEvents?: string[];
+    isLocked?: boolean;
 }
 
 interface MentorEvent {
@@ -117,7 +118,8 @@ export default function MentorLessonsPage() {
         isPublished: false,
         order: 0,
         targetAudience: 'mentors' as 'mentors' | 'participants' | 'both',
-        associatedEvents: [] as string[]
+        associatedEvents: [] as string[],
+        isLocked: false
     });
 
 
@@ -371,6 +373,21 @@ export default function MentorLessonsPage() {
         }
     };
 
+    const toggleLock = async (id: string) => {
+        try {
+            const token = Cookies.get('token');
+            await fetch(`${API_URL}/lessons/${id}/toggle-lock`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            fetchManageLessons();
+            toast.success('Status de bloqueio atualizado!');
+        } catch (error) {
+            console.error('Error toggling lock:', error);
+            toast.error('Erro ao bloquear/desbloquear aula');
+        }
+    };
+
     const moveLesson = async (index: number, direction: 'up' | 'down') => {
         const sortedLessons = [...manageLessons].sort((a, b) => (a.order || 0) - (b.order || 0));
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -437,7 +454,8 @@ export default function MentorLessonsPage() {
                 isPublished: lesson.isPublished,
                 order: lesson.order || 0,
                 targetAudience: lesson.targetAudience || 'mentors',
-                associatedEvents: lesson.associatedEvents || []
+                associatedEvents: lesson.associatedEvents || [],
+                isLocked: lesson.isLocked || false
             });
         } else {
             setEditingLesson(null);
@@ -451,7 +469,8 @@ export default function MentorLessonsPage() {
                 isPublished: false,
                 order: 0,
                 targetAudience: 'mentors',
-                associatedEvents: []
+                associatedEvents: [],
+                isLocked: false
             });
         }
         setShowModal(true);

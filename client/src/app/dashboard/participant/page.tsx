@@ -39,8 +39,8 @@ import SupportModal from '@/components/mentor/SupportModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { supportService } from '@/lib/supportService';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
-import ThemeToggle from '@/components/common/ThemeToggle';
 import InternalBlogView from '@/components/common/InternalBlogView';
+import { useCurrency } from '@/context/CurrencyContext';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
@@ -49,6 +49,7 @@ type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans'
 
 export default function ParticipantDashboard() {
     const { t } = useTranslate();
+    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const CATEGORIES = [
         { id: 'Todos', label: t('categories.all') },
         { id: 'Negócios', label: t('categories.business') },
@@ -917,8 +918,17 @@ export default function ParticipantDashboard() {
                                     </div>
 
                                     <div style={{ marginTop: '1rem', padding: '1rem', background: '#f9f9f9', borderRadius: '8px' }}>
-                                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>{t('dashboard.accountType')}</p>
-                                        <p style={{ margin: 0, fontWeight: 700, textTransform: 'capitalize' }}>{user.role === 'mentor' ? t('dashboard.mentor') : t('dashboard.visitor')}</p>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div>
+                                                <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>{t('dashboard.accountType')}</p>
+                                                <p style={{ margin: 0, fontWeight: 700, textTransform: 'capitalize' }}>{user.role === 'mentor' ? t('dashboard.mentor') : t('dashboard.visitor')}</p>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '4px' }}>
+                                                {['MZN', 'USD'].map(c => (
+                                                    <button key={c} onClick={() => setCurrency(c as 'MZN' | 'USD')} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', background: currency === c ? '#000' : '#fff', color: currency === c ? '#fff' : '#000', fontSize: '0.6rem', fontWeight: 800 }}>{c === 'MZN' ? 'MT' : 'USD'}</button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <button
@@ -969,7 +979,7 @@ export default function ParticipantDashboard() {
                                                     <span style={{ background: '#E3F2FD', color: '#1976D2', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700 }}>POPULAR</span>
                                                 </div>
                                                 <div style={{ marginBottom: '1.5rem' }}>
-                                                    <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>499 MT</span>
+                                                    <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>{formatPrice(getPlanPrice('pro'), currency, currency)}</span>
                                                     <span style={{ color: '#666', fontSize: '0.9rem' }}>/mês</span>
                                                 </div>
                                                 <ul style={{ padding: 0, listStyle: 'none', margin: '0 0 2rem 0', flex: 1 }}>
@@ -999,7 +1009,7 @@ export default function ParticipantDashboard() {
                                                     <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Enterprise</span>
                                                 </div>
                                                 <div style={{ marginBottom: '1.5rem' }}>
-                                                    <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>4.990 MT</span>
+                                                    <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>{formatPrice(getPlanPrice('enterprise'), currency, currency)}</span>
                                                     <span style={{ opacity: 0.6, fontSize: '0.9rem' }}>/mês</span>
                                                 </div>
                                                 <ul style={{ padding: 0, listStyle: 'none', margin: '0 0 2rem 0', flex: 1 }}>

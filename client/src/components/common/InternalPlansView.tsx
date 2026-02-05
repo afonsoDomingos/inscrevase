@@ -11,7 +11,7 @@ import { useTranslate } from "@/context/LanguageContext";
 
 export default function InternalPlansView() {
     const { t } = useTranslate();
-    const { currency, setCurrency, formatPrice } = useCurrency();
+    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
@@ -156,7 +156,7 @@ export default function InternalPlansView() {
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('plans.pro.description')}</p>
                     </div>
                     <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900 }}>
-                        {formatPrice(499)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6 }}>{t('plans.perMonth')}</span>
+                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6 }}>{t('plans.perMonth')}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}><Zap size={18} color="#B8860B" /> {t('plans.f1').replace('• ', '')}</li>
@@ -191,7 +191,7 @@ export default function InternalPlansView() {
                         <p style={{ opacity: 0.7, fontSize: '0.9rem' }}>{t('plans.enterprise.description')}</p>
                     </div>
                     <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, color: '#FFD700' }}>
-                        {formatPrice(4990)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--paper)' }}>{t('plans.perMonth')}</span>
+                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--paper)' }}>{t('plans.perMonth')}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 900, color: '#FFD700' }}><Crown size={18} /> {t('plans.enterprise.fee').replace('• ', '')}</li>

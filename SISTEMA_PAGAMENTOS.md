@@ -226,15 +226,15 @@ const PLANS = {
     pro: {
         commissionRate: 0.10, // 10%
         prices: {
-            MZN: 49900,  // 499.00 MT/mês
-            USD: 799     // 7.99 USD/mês
+            MZN: 17500,  // 175.00 MT/mês
+            USD: 299     // 2.99 USD/mês
         }
     },
     enterprise: {
         commissionRate: 0.00, // 0% - TAXA ZERO!
         prices: {
-            MZN: 499000, // 4.990.00 MT/mês
-            USD: 7990    // 79.90 USD/mês
+            MZN: 175000, // 1.750.00 MT/mês
+            USD: 2799    // 27.99 USD/mês
         }
     }
 };
