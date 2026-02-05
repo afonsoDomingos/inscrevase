@@ -228,19 +228,84 @@ export default function AdminFinance() {
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Crescimento de Receita</h3>
                             <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Taxas da Plataforma ({displayCurrency}) por mês</p>
                         </div>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <button
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                            <motion.button
+                                whileHover={{
+                                    scale: 1.03,
+                                    backgroundColor: '#111',
+                                    boxShadow: '0 12px 30px rgba(212, 175, 55, 0.25)'
+                                }}
+                                whileTap={{ scale: 0.97 }}
                                 onClick={handleRefreshRate}
                                 disabled={isRefreshingRate}
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold transition-all ${isRefreshingRate ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    padding: '0.8rem 1.6rem',
+                                    borderRadius: '18px',
+                                    background: isRefreshingRate ? '#f8f9fa' : '#000',
+                                    color: isRefreshingRate ? '#cbd5e1' : '#FFD700',
+                                    border: isRefreshingRate ? '1px solid #e2e8f0' : '2px solid #D4AF37',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 900,
+                                    cursor: isRefreshingRate ? 'not-allowed' : 'pointer',
+                                    boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.1em',
+                                    whiteSpace: 'nowrap',
+                                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                }}
                                 title="Atualizar taxa de câmbio via API agora"
                             >
-                                <RefreshCcw size={14} className={isRefreshingRate ? 'animate-spin' : ''} />
-                                {isRefreshingRate ? 'Sincronizando...' : 'Atualizar Câmbio'}
-                            </button>
-                            <div style={{ display: 'flex', gap: '5px', background: '#f5f5f5', padding: '4px', borderRadius: '8px' }}>
-                                <button onClick={() => setDisplayCurrency('MZN')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'MZN' ? '#fff' : 'transparent', fontWeight: 700, cursor: 'pointer', boxShadow: displayCurrency === 'MZN' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none' }}>MZN</button>
-                                <button onClick={() => setDisplayCurrency('USD')} style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: displayCurrency === 'USD' ? '#000' : 'transparent', color: displayCurrency === 'USD' ? '#fff' : '#666', fontWeight: 700, cursor: 'pointer' }}>USD</button>
+                                <RefreshCcw size={18} className={isRefreshingRate ? 'animate-spin' : ''} />
+                                {isRefreshingRate ? 'Sincronizando...' : 'Sincronizar Câmbio'}
+                            </motion.button>
+
+                            <div style={{
+                                display: 'flex',
+                                gap: '6px',
+                                background: 'rgba(245, 245, 245, 0.8)',
+                                padding: '6px',
+                                borderRadius: '15px',
+                                border: '1px solid #e2e8f0',
+                                backdropFilter: 'blur(10px)',
+                                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
+                            }}>
+                                <button
+                                    onClick={() => setDisplayCurrency('MZN')}
+                                    style={{
+                                        padding: '6px 18px',
+                                        borderRadius: '11px',
+                                        border: 'none',
+                                        background: displayCurrency === 'MZN' ? '#fff' : 'transparent',
+                                        color: displayCurrency === 'MZN' ? '#000' : '#888',
+                                        fontWeight: 800,
+                                        fontSize: '0.8rem',
+                                        cursor: 'pointer',
+                                        boxShadow: displayCurrency === 'MZN' ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    MZN
+                                </button>
+                                <button
+                                    onClick={() => setDisplayCurrency('USD')}
+                                    style={{
+                                        padding: '6px 18px',
+                                        borderRadius: '11px',
+                                        border: 'none',
+                                        background: displayCurrency === 'USD' ? '#000' : 'transparent',
+                                        color: displayCurrency === 'USD' ? '#fff' : '#888',
+                                        fontWeight: 800,
+                                        fontSize: '0.8rem',
+                                        cursor: 'pointer',
+                                        boxShadow: displayCurrency === 'USD' ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    USD
+                                </button>
                             </div>
                         </div>
 
