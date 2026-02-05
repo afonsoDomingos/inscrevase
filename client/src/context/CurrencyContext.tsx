@@ -64,8 +64,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     const getPlanPrice = (planId: 'pro' | 'enterprise'): number => {
         if (!plans || !plans[planId]) {
             // Fallbacks
-            if (planId === 'pro') return currency === 'MZN' ? 499 : 7.99;
-            return currency === 'MZN' ? 4990 : 79.90;
+            if (planId === 'pro') return currency === 'MZN' ? 175 : 2.75;
+            return currency === 'MZN' ? 1750 : 27.50;
         }
         const plan = plans[planId];
         const rawAmount = plan.prices[currency];

@@ -239,7 +239,7 @@ export default function PlansPage() {
                             </div>
                             <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>Plano Pro</h3>
                             <p style={{ color: '#FFD700', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                                {formatPrice(499)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
+                                {formatPrice(175)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>Para profissionais em ascensão.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
@@ -316,7 +316,7 @@ export default function PlansPage() {
                         <div style={{ position: 'relative', zIndex: 2 }}>
                             <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.2rem', fontWeight: 600 }}>Enterprise</h3>
                             <p style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-                                {formatPrice(4990)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
+                                {formatPrice(1750)}<span style={{ fontSize: '0.9rem', opacity: 0.8 }}>/mês</span>
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>O topo da performance estratégica.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>

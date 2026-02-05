@@ -110,7 +110,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                                 id="pro"
                                 name="Pro"
                                 amount={proPrice}
-                                price={formatPrice(499)}
+                                price={formatPrice(175)}
                                 color="#D4AF37"
                                 icon={<Sparkles size={24} />}
                                 features={[t('dashboard.plans.f1'), t('dashboard.plans.f2'), t('dashboard.plans.f3')]}
@@ -123,7 +123,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                                 id="enterprise"
                                 name="Enterprise"
                                 amount={enterprisePrice}
-                                price={formatPrice(4990)}
+                                price={formatPrice(1750)}
                                 color="#000"
                                 icon={<Crown size={24} />}
                                 features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
