@@ -100,6 +100,16 @@ export default function Footer() {
                 }}>
                     {[
                         { icon: Linkedin, url: 'https://www.linkedin.com/company/inscreva-se', color: '#0077B5', label: 'LinkedIn' },
+                        {
+                            icon: () => (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                                </svg>
+                            ),
+                            url: 'https://www.tiktok.com/@inscreva_se_events',
+                            color: '#000000',
+                            label: 'TikTok'
+                        },
                         { icon: Youtube, url: 'https://www.youtube.com/@Inscreva-se-events', color: '#FF0000', label: 'YouTube' },
                         { icon: Facebook, url: 'https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR', color: '#1877F2', label: 'Facebook' },
                         { icon: MessageCircle, url: 'https://wa.me/258856079576', color: '#25D366', label: 'WhatsApp' }
