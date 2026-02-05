@@ -4,12 +4,16 @@
 # Allow all crawlers
 User-agent: *
 Allow: /
+Allow: /_next/static/
+
+# AdSense Crawler
+User-agent: Mediapartners-Google
+Allow: /
 
 # Disallow admin and private areas
 Disallow: /api/
 Disallow: /dashboard/
 Disallow: /admin/
-Disallow: /_next/
 Disallow: /private/
 
 # Allow specific API routes that should be indexed
