@@ -59,7 +59,7 @@ export default function Navbar() {
           <Link href="/mentores" className="nav-item">
             {t('nav.mentors')}
           </Link>
-          <Link href="/sobre" className="nav-item">
+          <Link href="/sobre-nos" className="nav-item">
             {t('nav.about')}
           </Link>
           <Link href="/blog" className="nav-item">
@@ -127,7 +127,7 @@ export default function Navbar() {
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.mentors')}</span>
             </div>
           </Link>
-          <Link href="/sobre" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+          <Link href="/sobre-nos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
               <Info size={22} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.about')}</span>
