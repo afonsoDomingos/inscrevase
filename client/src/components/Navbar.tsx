@@ -116,32 +116,32 @@ export default function Navbar() {
           <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>{t('common.menu')}</div>
 
           <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
-              <Home size={20} color="#000" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
+              <Home size={22} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.home')}</span>
             </div>
           </Link>
           <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
-              <Users size={20} color="#000" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
+              <Users size={22} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.mentors')}</span>
             </div>
           </Link>
           <Link href="/sobre" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
-              <Info size={20} color="#000" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
+              <Info size={22} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.about')}</span>
             </div>
           </Link>
           <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
-              <Newspaper size={20} color="#000" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
+              <Newspaper size={22} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.blog')}</span>
             </div>
           </Link>
           <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
-              <LifeBuoy size={20} color="#000" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
+              <LifeBuoy size={22} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('dashboard.support')}</span>
             </div>
           </Link>
@@ -269,13 +269,13 @@ export default function Navbar() {
 
         .mobile-link {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             color: #000000 !important;
             text-decoration: none !important;
-            padding: 1.5rem 0.5rem;
+            padding: 2rem 0.5rem;
             transition: all 0.3s ease;
             font-weight: 500;
-            margin-bottom: 1.8rem;
+            margin-bottom: 2.5rem;
             display: flex;
             align-items: center;
             border: none !important;
