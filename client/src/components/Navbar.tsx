@@ -30,6 +30,18 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const getDashboardLink = () => {
     if (!user) return '/entrar';
     if (user.role === 'admin' || user.role === 'SuperAdmin') return '/dashboard/admin';
@@ -221,7 +233,11 @@ export default function Navbar() {
         /* Mobile Menu Overlay Styles */
         .mobile-menu-overlay {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh; /* Para navegadores mobile modernos */
             background: #ffffff;
             z-index: 9999;
             display: flex;
