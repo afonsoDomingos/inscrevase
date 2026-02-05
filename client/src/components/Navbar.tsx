@@ -115,34 +115,34 @@ export default function Navbar() {
         <div className="mobile-links">
           <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>{t('common.menu')}</div>
 
-          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
-              <Home size={22} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.home')}</span>
+          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
+              <Home size={24} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.home')}</span>
             </div>
           </Link>
-          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
-              <Users size={22} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.mentors')}</span>
+          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
+              <Users size={24} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.mentors')}</span>
             </div>
           </Link>
-          <Link href="/sobre-nos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
-              <Info size={22} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.about')}</span>
+          <Link href="/sobre-nos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
+              <Info size={24} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.about')}</span>
             </div>
           </Link>
-          <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
-              <Newspaper size={22} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.blog')}</span>
+          <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
+              <Newspaper size={24} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.blog')}</span>
             </div>
           </Link>
-          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', color: '#000', textDecoration: 'none' }}>
-              <LifeBuoy size={22} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('dashboard.support')}</span>
+          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
+              <LifeBuoy size={24} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('dashboard.support')}</span>
             </div>
           </Link>
 
