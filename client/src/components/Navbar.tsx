@@ -62,7 +62,7 @@ export default function Navbar() {
               height={40}
               className="nav-logo-img"
             />
-            <span className="tesla-logo-text">INSCREVA<span className="gold-text">-SE</span></span>
+            <span className="tesla-logo-text" style={{ color: '#fff' }}>INSCREVA<span className="gold-text" style={{ color: scrolled ? '#fff' : '#FFD700' }}>-SE</span></span>
           </div>
         </Link>
 
@@ -117,7 +117,7 @@ export default function Navbar() {
               height={40}
               className="nav-logo-img"
             />
-            <span className="tesla-logo-text">INSCREVA<span className="gold-text">-SE</span></span>
+            <span className="tesla-logo-text" style={{ color: '#000' }}>INSCREVA<span className="gold-text" style={{ color: '#000' }}>-SE</span></span>
           </div>
           <button className="close-menu-btn" onClick={() => setIsOpen(false)}>
             <X size={32} color="#FFD700" />
