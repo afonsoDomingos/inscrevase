@@ -13,8 +13,8 @@ export default function ThemeToggle() {
             className={`theme-toggle ${theme === 'dark' ? 'dark-active' : ''}`}
             aria-label="Toggle Theme"
             style={{
-                width: '45px',
-                height: '45px',
+                width: '40px',
+                height: '40px',
                 borderRadius: '12px',
                 border: '1px solid #FFD700',
                 background: 'var(--paper)',

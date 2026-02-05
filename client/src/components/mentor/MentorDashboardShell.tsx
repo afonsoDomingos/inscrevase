@@ -101,7 +101,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} />, link: '/dashboard/mentor?tab=reports' },
         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/dashboard/mentor?tab=plans' },
         { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
-        { id: 'certificates', label: 'Certificados', icon: <Award size={20} />, link: '/dashboard/mentor/certificates' },
+
         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} />, link: '/dashboard/mentor?tab=settings' },
     ];
 
@@ -423,14 +423,14 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.75rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0' }} className="no-scrollbar">
+                    <div style={{ display: 'flex', gap: '0.5rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
                         <Link
                             href="/"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
+                                padding: '0.5rem 1rem',
                                 background: 'var(--paper)',
                                 border: '1px solid #FFD700',
                                 borderRadius: '10px',
@@ -438,14 +438,15 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                 fontWeight: 700,
                                 textDecoration: 'none',
                                 transition: 'all 0.3s',
-                                fontSize: isMobile ? '0.8rem' : '1rem',
-                                whiteSpace: 'nowrap'
+                                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                whiteSpace: 'nowrap',
+                                height: '40px'
                             }}
                         >
-                            <ArrowRight size={18} /> {!isMobile && t('nav.home')}
+                            <ArrowRight size={16} /> {!isMobile && t('nav.home')}
                         </Link>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <ThemeToggle />
                             <div style={{ position: 'relative' }}>
                                 <button
@@ -455,8 +456,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        width: '45px',
-                                        height: '45px',
+                                        width: '40px',
+                                        height: '40px',
                                         background: 'var(--paper)',
                                         border: '1px solid #FFD700',
                                         borderRadius: '12px',
@@ -474,10 +475,10 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                             right: '-5px',
                                             background: 'var(--gold-gradient)',
                                             color: '#000',
-                                            width: '20px',
-                                            height: '20px',
+                                            width: '18px',
+                                            height: '18px',
                                             borderRadius: '50%',
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.6rem',
                                             fontWeight: 900,
                                             display: 'flex',
                                             alignItems: 'center',
@@ -497,7 +498,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                             style={{
                                                 position: 'absolute',
-                                                top: '55px',
+                                                top: '50px',
                                                 right: 0,
                                                 zIndex: 2000
                                             }}
@@ -515,8 +516,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    width: '45px',
-                                    height: '45px',
+                                    width: '40px',
+                                    height: '40px',
                                     background: 'var(--paper)',
                                     border: '1px solid #333',
                                     borderRadius: '12px',
