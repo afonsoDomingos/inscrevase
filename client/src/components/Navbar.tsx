@@ -421,14 +421,17 @@ export default function Navbar() {
           color: #FFFFFF !important;
         }
         .navbar.scrolled .tesla-logo-text .gold-text {
-          color: #FFD700 !important;
+          color: #FFFFFF !important;
+          text-shadow: none !important;
         }
         /* Mobile Menu logo colors */
+        /* Mobile Menu logo colors */
         .mobile-menu-overlay .tesla-logo-text {
-            color: #FFFFFF !important;
+            color: #000000 !important;
         }
         .mobile-menu-overlay .tesla-logo-text .gold-text {
-            color: #FFD700 !important;
+            color: #000000 !important;
+            text-shadow: none !important;
         }
 
         /* Creative Shine Effect on Logo */
