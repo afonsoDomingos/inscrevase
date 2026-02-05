@@ -183,11 +183,12 @@ export default function Navbar() {
           background: transparent;
         }
         .navbar.scrolled {
-          background: rgba(0, 0, 0, 0.6);
+          background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           padding: 0.8rem 3rem;
-          border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+          border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         @media (max-width: 992px) {
           .navbar {
@@ -237,7 +238,7 @@ export default function Navbar() {
         }
 
         .mobile-menu-header {
-            padding: 1.5rem 2rem;
+            padding: 2rem 2rem 1rem;
             display: flex;
             justify-content: flex-end;
             align-items: center;
@@ -255,25 +256,26 @@ export default function Navbar() {
             display: flex;
             flex-direction: column;
             padding: 0 2rem 3rem;
+            overflow-y: auto;
         }
 
         .mobile-menu-section-title {
             color: #1a1a1a;
             font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             font-family: 'Poppins', sans-serif;
         }
 
         .mobile-link {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: #000000 !important;
             text-decoration: none !important;
-            padding: 1.2rem 0;
+            padding: 1.5rem 0.5rem;
             transition: all 0.3s ease;
             font-weight: 500;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.8rem;
             display: flex;
             align-items: center;
             border: none !important;
