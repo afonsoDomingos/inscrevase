@@ -719,56 +719,93 @@ export default function AdminDashboard() {
                                     {/* NEW: Health & Progress Dashboard */}
                                     <div className="charts-grid" style={{ marginBottom: '2.5rem' }}>
                                         {/* Radar Chart: Platform Health */}
-                                        <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
+                                        <motion.div
+                                            variants={itemVariants}
+                                            onMouseMove={handleMouseMove}
+                                            className="luxury-card"
+                                            style={{
+                                                padding: '2.5rem',
+                                                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                            }}
+                                        >
                                             <div className="spotlight" />
-                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                <LayoutDashboard className="gold-text" size={20} /> {t('dashboard.engagementBalance')}
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', color: '#1a1a1a', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                    <LayoutDashboard className="gold-text" size={24} />
+                                                </div>
+                                                {t('dashboard.engagementBalance')}
                                             </h3>
                                             <div style={{ height: '320px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <RadarChart key={`radar-${expandedSections.performance}`} cx="50%" cy="50%" outerRadius="80%" data={[
                                                         { subject: t('dashboard.mentors'), A: stats?.mentors || 0, fullMark: 100 },
-                                                        { subject: t('dashboard.events'), A: stats?.forms || 0, fullMark: 100 },
+                                                        { subject: t('dashboard.forms'), A: stats?.forms || 0, fullMark: 100 },
                                                         { subject: t('dashboard.participants'), A: stats?.participants || 0, fullMark: 100 },
                                                         { subject: t('dashboard.submissions'), A: stats?.submissions || 0, fullMark: 100 },
-                                                        { subject: t('dashboard.revenue'), A: (stats?.revenue || 0) / 1000, fullMark: 100 },
+                                                        { subject: t('dashboard.estimatedRevenue'), A: (stats?.revenue || 0) / 1000, fullMark: 100 },
                                                     ]}>
                                                         <PolarGrid stroke="#eee" />
                                                         <PolarAngleAxis dataKey="subject" tick={{ fill: '#666', fontSize: 11, fontWeight: 600 }} />
-                                                        <Radar name="Plataforma" dataKey="A" stroke="#B8860B" fill="#FFD700" fillOpacity={0.6} />
-                                                        <Tooltip />
+                                                        <Radar name="Plataforma" dataKey="A" stroke="#D4AF37" fill="#FFD700" fillOpacity={0.6} />
+                                                        <Tooltip
+                                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 5px 15px rgba(0,0,0,0.1)' }}
+                                                        />
                                                     </RadarChart>
                                                 </ResponsiveContainer>
                                             </div>
                                         </motion.div>
 
-                                        {/* Radial Bar: Goals Progress */}
-                                        <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
+                                        {/* Radial Bar: Monthly Goals Progress */}
+                                        <motion.div
+                                            variants={itemVariants}
+                                            onMouseMove={handleMouseMove}
+                                            className="luxury-card"
+                                            style={{
+                                                padding: '2.5rem',
+                                                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                            }}
+                                        >
                                             <div className="spotlight" />
-                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                <CheckCircle className="gold-text" size={20} /> {t('dashboard.monthlyGoals')}
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', color: '#1a1a1a', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                    <CheckCircle className="gold-text" size={24} />
+                                                </div>
+                                                {t('dashboard.monthlyGoals')}
                                             </h3>
-                                            <div style={{ height: '320px', width: '100%' }}>
+                                            <div style={{ height: '380px', width: '100%', position: 'relative' }}>
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <RadialBarChart
                                                         key={`radial-${expandedSections.performance}`}
-                                                        cx="50%" cy="50%"
-                                                        innerRadius="20%" outerRadius="100%"
-                                                        barSize={15}
+                                                        cx="50%" cy="45%"
+                                                        innerRadius="30%" outerRadius="90%"
+                                                        barSize={20}
                                                         data={[
                                                             { name: t('dashboard.submissions'), uv: stats?.submissions || 0, fill: '#805ad5' },
-                                                            { name: t('dashboard.finance.revenue'), uv: (stats?.revenue || 0) / 100, fill: '#B8860B' },
-                                                            { name: t('dashboard.mentors'), uv: (stats?.mentors || 0) * 10, fill: '#1a1a1a' },
+                                                            { name: t('dashboard.estimatedRevenue'), uv: (stats?.revenue || 0) / 100, fill: '#D4AF37' },
+                                                            { name: t('dashboard.activeMentors'), uv: (stats?.mentors || 0) * 10, fill: '#1a1a1a' },
                                                             { name: t('dashboard.visitsToday'), uv: (trafficStats?.visitsToday || 0), fill: '#ed8936' }
                                                         ]}
                                                     >
                                                         <RadialBar
-                                                            label={{ position: 'insideStart', fill: '#fff' }}
-                                                            background
+                                                            label={{ position: 'insideStart', fill: '#fff', fontSize: '10px', fontWeight: 700 }}
+                                                            background={{ fill: '#f0f0f0' }}
                                                             dataKey="uv"
+                                                            cornerRadius={10}
                                                         />
-                                                        <Legend iconSize={10} layout="vertical" verticalAlign="middle" align="right" />
-                                                        <Tooltip />
+                                                        <Legend
+                                                            iconSize={12}
+                                                            layout="horizontal"
+                                                            verticalAlign="bottom"
+                                                            align="center"
+                                                            wrapperStyle={{ paddingTop: '20px', fontWeight: 600, fontSize: '0.85rem' }}
+                                                        />
+                                                        <Tooltip
+                                                            contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
+                                                        />
                                                     </RadialBarChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -777,10 +814,23 @@ export default function AdminDashboard() {
 
                                     <div className="charts-grid" style={{ marginBottom: '2.5rem' }}>
                                         {/* Traffic & Conversion Composed Chart */}
-                                        <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2.5rem' }}>
+                                        <motion.div
+                                            variants={itemVariants}
+                                            onMouseMove={handleMouseMove}
+                                            className="luxury-card"
+                                            style={{
+                                                padding: '2.5rem',
+                                                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                            }}
+                                        >
                                             <div className="spotlight" />
-                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                <TrendingUp className="gold-text" size={20} /> {t('dashboard.trafficVsActivityToday')}
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', color: '#1a1a1a', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                    <TrendingUp className="gold-text" size={24} />
+                                                </div>
+                                                {t('dashboard.trafficVsActivityToday')}
                                             </h3>
                                             <div style={{ height: '320px', width: '100%' }}>
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -797,10 +847,23 @@ export default function AdminDashboard() {
                                         </motion.div>
 
                                         {/* Monthly Growth Chart */}
-                                        <motion.div variants={itemVariants} onMouseMove={handleMouseMove} className="luxury-card" style={{ padding: '2rem' }}>
+                                        <motion.div
+                                            variants={itemVariants}
+                                            onMouseMove={handleMouseMove}
+                                            className="luxury-card"
+                                            style={{
+                                                padding: '2rem',
+                                                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                            }}
+                                        >
                                             <div className="spotlight" />
-                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
-                                                <BarChart3 className="gold-text" size={20} /> Evolução de Acessos (Ano)
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', color: '#1a1a1a', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                    <BarChart3 className="gold-text" size={24} />
+                                                </div>
+                                                Evolução de Acessos (Ano)
                                             </h3>
                                             <div style={{ height: '300px', width: '100%' }}>
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -815,7 +878,7 @@ export default function AdminDashboard() {
                                                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
                                                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
                                                         <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                                                        <Area type="monotone" dataKey="count" stroke="#B8860B" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
+                                                        <Area type="monotone" dataKey="count" stroke="#D4AF37" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
                                                     </AreaChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -824,29 +887,45 @@ export default function AdminDashboard() {
 
                                     {/* Pages and Geography */}
                                     <div className="split-grid" style={{ marginTop: '2rem' }}>
-                                        <div className="luxury-card" style={{ padding: '2rem' }}>
-                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <Globe className="gold-text" size={18} /> Top Países
+                                        <div className="luxury-card" style={{
+                                            padding: '2.5rem',
+                                            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                                            border: '1px solid rgba(212, 175, 55, 0.2)',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                        }}>
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                    <Globe className="gold-text" size={24} />
+                                                </div>
+                                                Top Países
                                             </h3>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 {(trafficStats?.topCountries || []).slice(0, 5).map((item, idx) => (
-                                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f5f5f5' }}>
-                                                        <span style={{ fontWeight: 600 }}>{item.country}</span>
-                                                        <span style={{ fontWeight: 800, color: '#FFD700' }}>{item.count}</span>
+                                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0', borderBottom: '1px solid #f0f0f0' }}>
+                                                        <span style={{ fontWeight: 600, color: '#333' }}>{item.country}</span>
+                                                        <span style={{ fontWeight: 800, color: '#D4AF37' }}>{item.count}</span>
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
 
-                                        <div className="luxury-card" style={{ padding: '2rem' }}>
-                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <FileText className="gold-text" size={18} /> Páginas Ativas
+                                        <div className="luxury-card" style={{
+                                            padding: '2.5rem',
+                                            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                                            border: '1px solid rgba(212, 175, 55, 0.2)',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                        }}>
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                    <FileText className="gold-text" size={24} />
+                                                </div>
+                                                Páginas Ativas
                                             </h3>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 {(trafficStats?.topPages || []).slice(0, 5).map((page, idx) => (
-                                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f5f5f5' }}>
-                                                        <span style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{page.page}</span>
-                                                        <span style={{ fontWeight: 800 }}>{page.count}</span>
+                                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0', borderBottom: '1px solid #f0f0f0' }}>
+                                                        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>{page.page}</span>
+                                                        <span style={{ fontWeight: 800, color: '#1a1a1a' }}>{page.count}</span>
                                                     </div>
                                                 ))}
                                             </div>
