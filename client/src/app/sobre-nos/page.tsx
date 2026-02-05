@@ -60,7 +60,9 @@ export default function SobreNos() {
 
             {/* Hero Section */}
             <section style={{
-                background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
+                background: 'linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 46, 0.9) 100%), url(/banner-sobre-nos.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
                 color: '#fff',
                 padding: '140px 20px 100px',
                 textAlign: 'center',
@@ -84,13 +86,14 @@ export default function SobreNos() {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '8px',
-                        background: 'rgba(20, 82, 173, 0.2)',
-                        border: '1px solid rgba(20, 82, 173, 0.3)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
                         borderRadius: '50px',
                         padding: '8px 20px',
                         marginBottom: '30px',
                         fontSize: '0.85rem',
-                        color: '#60a5fa'
+                        color: '#FFE55C'
                     }}>
                         <Award size={16} />
                         Plataforma Líder em Gestão de Eventos
@@ -101,10 +104,11 @@ export default function SobreNos() {
                         fontWeight: 900,
                         marginBottom: '25px',
                         fontFamily: 'var(--font-playfair, serif)',
-                        lineHeight: 1.1
+                        lineHeight: 1.1,
+                        textShadow: '0 4px 20px rgba(0,0,0,0.3)'
                     }}>
                         Sobre o <span style={{
-                            background: 'linear-gradient(135deg, #1452AD, #60a5fa)',
+                            background: 'linear-gradient(135deg, #FFD700, #FFE55C)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
                         }}>Inscreva-se</span>
@@ -112,10 +116,11 @@ export default function SobreNos() {
 
                     <p style={{
                         fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
-                        color: 'rgba(255,255,255,0.7)',
+                        color: 'rgba(255,255,255,0.9)',
                         maxWidth: '700px',
                         margin: '0 auto',
-                        lineHeight: 1.7
+                        lineHeight: 1.7,
+                        textShadow: '0 2px 10px rgba(0,0,0,0.5)'
                     }}>
                         Somos a plataforma que está a revolucionar a forma como eventos são criados,
                         geridos e vivenciados em toda a comunidade lusófona.
@@ -125,7 +130,7 @@ export default function SobreNos() {
 
             {/* Stats Section */}
             <section style={{
-                background: '#fff',
+                background: 'transparent',
                 padding: '0 20px',
                 marginTop: '-50px',
                 position: 'relative',
@@ -143,7 +148,7 @@ export default function SobreNos() {
                         boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
                         padding: '40px',
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
                         gap: '30px',
                         textAlign: 'center'
                     }}
@@ -169,10 +174,10 @@ export default function SobreNos() {
             </section>
 
             {/* Mission Section */}
-            <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '100px 20px' }}>
+            <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '100px 20px', overflowX: 'hidden' }}>
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                     gap: '60px',
                     alignItems: 'center'
                 }}>
@@ -231,8 +236,9 @@ export default function SobreNos() {
                         style={{
                             background: 'linear-gradient(135deg, #1452AD 0%, #0d3a7d 100%)',
                             borderRadius: '32px',
-                            padding: '50px',
-                            color: '#fff'
+                            padding: 'clamp(30px, 5vw, 50px)',
+                            color: '#fff',
+                            width: '100%'
                         }}
                     >
                         <Rocket size={50} style={{ marginBottom: '25px', opacity: 0.9 }} />

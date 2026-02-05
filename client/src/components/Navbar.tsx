@@ -230,6 +230,8 @@ export default function Navbar() {
             pointer-events: none;
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             transform: translateY(-10px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
         .mobile-menu-overlay.open {
             opacity: 1;
@@ -272,10 +274,10 @@ export default function Navbar() {
             font-size: 1.2rem;
             color: #000000 !important;
             text-decoration: none !important;
-            padding: 2rem 0.5rem;
+            padding: 2.5rem 0.5rem;
             transition: all 0.3s ease;
             font-weight: 500;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             display: flex;
             align-items: center;
             border: none !important;
