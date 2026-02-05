@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Calendar, LifeBuoy, Newspaper } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -59,8 +59,8 @@ export default function Navbar() {
           <Link href="/mentores" className="nav-item">
             {t('nav.mentors')}
           </Link>
-          <Link href={getDashboardLink()} className="nav-item">
-            {t('nav.events')}
+          <Link href="/sobre" className="nav-item">
+            {t('nav.about')}
           </Link>
           <Link href="/blog" className="nav-item">
             {t('nav.blog')}
@@ -127,10 +127,10 @@ export default function Navbar() {
               <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.mentors')}</span>
             </div>
           </Link>
-          <Link href={getDashboardLink()} className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+          <Link href="/sobre" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#000', textDecoration: 'none' }}>
-              <Calendar size={20} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.events')}</span>
+              <Info size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000' }}>{t('nav.about')}</span>
             </div>
           </Link>
           <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
