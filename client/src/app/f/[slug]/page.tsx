@@ -12,18 +12,28 @@ export default async function Page({ params }: { params: { slug: string } }) {
     let form = null;
     let eventJsonLd = null;
 
+    const safeToISO = (dateStr: string, timeStr?: string) => {
+        try {
+            const date = new Date(`${dateStr}T${timeStr || '00:00'}`);
+            if (isNaN(date.getTime())) return undefined;
+            return date.toISOString();
+        } catch {
+            return undefined;
+        }
+    };
+
     try {
         form = await formService.getFormBySlug(slug);
 
         // Prepare JSON-LD Structured Data
-        if (form) {
+        if (form && form.eventDate) {
             eventJsonLd = {
                 '@context': 'https://schema.org',
                 '@type': 'Event',
                 name: form.title,
                 description: form.description,
-                startDate: form.eventDate ? new Date(`${form.eventDate}T${form.eventTime || '00:00'}`).toISOString() : undefined,
-                endDate: form.eventDate ? new Date(`${form.eventDate}T${form.eventTime || '23:59'}`).toISOString() : undefined, // Approximation if no end time
+                startDate: safeToISO(form.eventDate, form.eventTime),
+                endDate: safeToISO(form.eventDate, form.eventTime || '23:59'), // Approximation if no end time
                 eventStatus: 'https://schema.org/EventScheduled',
                 eventAttendanceMode: form.eventType === 'modeOnline' ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
                 location: form.eventType === 'modeOnline' ? {
