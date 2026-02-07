@@ -29,7 +29,7 @@ export default function PartnersEditor({ partners, onChange }: PartnersEditorPro
     useEffect(() => {
         const currentPartners = partners.map(p => {
             if (typeof p === 'string') {
-                return { _id: p, name: 'Mentor (ID: ' + p.substring(0, 5) + '...)' };
+                return { _id: p, name: 'Mentor convidado' };
             }
             return p;
         });

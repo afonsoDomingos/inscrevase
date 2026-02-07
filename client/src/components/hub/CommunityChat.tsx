@@ -22,6 +22,7 @@ interface Message {
     sender: {
         _id: string;
         name: string;
+        businessName?: string;
         profilePhoto?: string;
         isVerified?: boolean;
         role: string;
@@ -275,7 +276,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
                                                 {showHeader && !isMe && (
                                                     <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        {msg.sender.name}
+                                                        {msg.sender.name} {msg.sender.businessName && <span style={{ fontWeight: 400, opacity: 0.7 }}>| {msg.sender.businessName}</span>}
                                                         {msg.sender.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
                                                         {msg.sender._id === creatorId && <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>}
                                                         {msg.sender.role === 'admin' && msg.sender._id !== creatorId && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>{t('common.badges.admin').toUpperCase()}</span>}

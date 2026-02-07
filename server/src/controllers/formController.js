@@ -79,6 +79,7 @@ exports.createForm = async (req, res) => {
         }
 
         const form = await newForm.save();
+        await form.populate('partners', 'name businessName profilePhoto');
 
         // Notify new partners
         if (safePartners.length > 0) {
@@ -328,6 +329,7 @@ exports.updateForm = async (req, res) => {
         }
 
         await form.save();
+        await form.populate('partners', 'name businessName profilePhoto');
 
         // Handle Lesson Associations
         if (req.body.associatedLessons && Array.isArray(req.body.associatedLessons)) {
@@ -411,7 +413,7 @@ exports.getFormsByMentor = async (req, res) => {
         const forms = await Form.find({
             $or: [
                 { creator: req.params.mentorId, active: true },
-                { partnersPublic: req.params.mentorId, active: true }
+                { partners: req.params.mentorId, active: true }
             ]
         }).sort({ createdAt: -1 });
         console.log(`Found ${forms.length} public forms for mentor`);
@@ -468,11 +470,12 @@ exports.togglePartnerVisibility = async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
-        const form = await require(" ../models/Form\).findById(id);
- if (!form) return res.status(404).json({ message: \Form not found\ });
+        const Form = require('../models/Form');
+        const form = await Form.findById(id);
+        if (!form) return res.status(404).json({ message: 'Formulário não encontrado' });
 
         const isPartner = form.partners.some(p => p.toString() === userId);
-        if (!isPartner) return res.status(403).json({ message: \Not authorized\ });
+        if (!isPartner) return res.status(403).json({ message: 'Não autorizado' });
 
         const isPublic = form.partnersPublic && form.partnersPublic.some(p => p.toString() === userId);
 
@@ -486,7 +489,7 @@ exports.togglePartnerVisibility = async (req, res) => {
         await form.save();
         res.json({ success: true, isPublic: !isPublic });
     } catch (err) {
-        console.error(\Toggle Visibility Error: \, err);
-        res.status(500).json({ message: \Server error\ });
+        console.error('Toggle Visibility Error:', err);
+        res.status(500).json({ message: 'Erro no servidor' });
     }
 };

@@ -24,7 +24,7 @@ exports.getMessages = async (req, res) => {
         }
 
         const messages = await CommunityMessage.find({ formId })
-            .populate('sender', 'name profilePhoto isVerified role')
+            .populate('sender', 'name businessName profilePhoto isVerified role')
             .sort({ createdAt: 1 })
             .limit(100);
 
@@ -65,7 +65,7 @@ exports.sendMessage = async (req, res) => {
         await newMessage.save();
 
         const populatedMessage = await CommunityMessage.findById(newMessage._id)
-            .populate('sender', 'name profilePhoto isVerified role');
+            .populate('sender', 'name businessName profilePhoto isVerified role');
 
         // Emit via socket (req.io)
         if (req.io) {
