@@ -125,6 +125,7 @@ export interface FormModel {
     associatedLessons?: string[];
     partners?: string[] | { _id: string; name: string; businessName?: string; profilePhoto?: string }[];
     partnersPublic?: string[];
+    isSponsored?: boolean;
 }
 
 export const formService = {
@@ -273,6 +274,15 @@ export const formService = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Falha ao atualizar visibilidade');
+        return response.json();
+    },
+    async toggleSponsorship(id: string): Promise<{ success: boolean; isSponsored: boolean }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/forms/${id}/toggle-sponsor`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao promover evento');
         return response.json();
     }
 };

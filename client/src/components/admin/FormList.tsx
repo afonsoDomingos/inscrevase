@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
-import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText } from 'lucide-react';
+import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function FormList() {
@@ -32,6 +32,16 @@ export default function FormList() {
         } catch (error: unknown) {
             console.error(error);
             alert('Erro ao atualizar status do formulário');
+        }
+    };
+
+    const handleToggleSponsor = async (form: FormModel) => {
+        try {
+            await formService.toggleSponsorship(form._id);
+            loadForms();
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao promover evento');
         }
     };
 
@@ -101,7 +111,12 @@ export default function FormList() {
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem' }}>
-                                    <div style={{ fontWeight: 600 }}>{form.title}</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ fontWeight: 600 }}>{form.title}</div>
+                                        {form.isSponsored && (
+                                            <span style={{ background: '#FFD700', color: '#000', fontSize: '0.6rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px' }}>PATROCINADO</span>
+                                        )}
+                                    </div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>/{form.slug}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -139,6 +154,13 @@ export default function FormList() {
                                         >
                                             <ExternalLink size={18} />
                                         </a>
+                                        <button
+                                            onClick={() => handleToggleSponsor(form)}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
+                                            title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
+                                        >
+                                            <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
+                                        </button>
                                         <button
                                             onClick={() => handleToggleStatus(form)}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.active ? '#888' : '#38a169' }}

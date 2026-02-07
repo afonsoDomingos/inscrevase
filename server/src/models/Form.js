@@ -115,6 +115,7 @@ const FormSchema = new mongoose.Schema({
     },
     partners: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     partnersPublic: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Which partners show this on their profile
+    isSponsored: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     visits: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }

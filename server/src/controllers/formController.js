@@ -455,9 +455,9 @@ exports.getExploreEvents = async (req, res) => {
         }
 
         const forms = await Form.find(query)
-            .select('title slug coverImage hubBackgroundImage eventDate eventType category creator location onlineLink')
+            .select('title slug coverImage hubBackgroundImage eventDate eventType category creator location onlineLink isSponsored')
             .populate('creator', 'name businessName')
-            .sort({ eventDate: 1 });
+            .sort({ isSponsored: -1, eventDate: 1 });
 
         console.log(`Found ${forms.length} events for explore`);
         res.json(forms);
@@ -491,5 +491,21 @@ exports.togglePartnerVisibility = async (req, res) => {
     } catch (err) {
         console.error('Toggle Visibility Error:', err);
         res.status(500).json({ message: 'Erro no servidor' });
+    }
+};
+
+exports.toggleSponsorship = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const form = await Form.findById(id);
+        if (!form) return res.status(404).json({ message: 'Evento não encontrado' });
+
+        form.isSponsored = !form.isSponsored;
+        await form.save();
+
+        res.json({ success: true, isSponsored: form.isSponsored });
+    } catch (err) {
+        console.error('Toggle Sponsorship Error:', err);
+        res.status(500).json({ message: 'Erro ao promover evento' });
     }
 };

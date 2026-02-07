@@ -845,6 +845,11 @@ export default function ParticipantDashboard() {
                                                 <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: '#FFD700', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>
                                                     {event.eventType === 'modeOnline' ? 'ONLINE' : (event.eventType === 'modeHybrid' ? 'HYBRID' : 'OFFLINE')}
                                                 </div>
+                                                {event.isSponsored && (
+                                                    <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--gold-gradient)', color: '#000', padding: '4px 10px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 900, boxShadow: '0 2px 10px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <Zap size={10} fill="#000" /> PATROCINADO
+                                                    </div>
+                                                )}
                                             </div>
                                             <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                                 <div style={{ fontSize: '0.75rem', color: '#DAA520', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
