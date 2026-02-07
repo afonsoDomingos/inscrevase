@@ -257,6 +257,17 @@ function MentorDashboardContent() {
         }
     };
 
+    const handleToggleProfileVisibility = async (form: FormModel) => {
+        try {
+            await formService.togglePartnerVisibility(form._id);
+            toast.success('Visibilidade no perfil atualizada');
+            await loadDashboard();
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao atualizar visibilidade no perfil');
+        }
+    };
+
     const handleDeleteForm = async (id: string) => {
         if (confirm(t('common.confirmDelete'))) {
             try {
@@ -1061,6 +1072,7 @@ function MentorDashboardContent() {
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Evento</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Status</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Perfil</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Inscritos</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'center' }}>Visitas</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'right' }}>Ações</th>
@@ -1089,6 +1101,27 @@ function MentorDashboardContent() {
                                                     >
                                                         {form.active ? t('common.active') : t('common.inactive')}
                                                     </button>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    {user && form.creator._id !== user.id ? (
+                                                        <button
+                                                            onClick={() => handleToggleProfileVisibility(form)}
+                                                            style={{
+                                                                padding: '0.3rem 0.6rem',
+                                                                borderRadius: '20px',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 700,
+                                                                border: '1px solid currentColor',
+                                                                cursor: 'pointer',
+                                                                background: 'transparent',
+                                                                color: form.partnersPublic?.includes(user.id) ? '#38a169' : '#e53e3e'
+                                                            }}
+                                                        >
+                                                            {form.partnersPublic?.includes(user.id) ? 'Visível' : 'Oculto'}
+                                                        </button>
+                                                    ) : (
+                                                        <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>Dono</span>
+                                                    )}
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
                                                     <div style={{ fontWeight: 600, fontSize: '1rem' }}>{form.submissionCount || 0}</div>

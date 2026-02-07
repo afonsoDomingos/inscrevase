@@ -52,6 +52,7 @@ exports.createForm = async (req, res) => {
             materials,
             certificateConfig,
             partners: partners || [],
+            partnersPublic: partners || [], // Default to visible for new partners
             active: active !== undefined ? active : true
         });
 
@@ -221,6 +222,14 @@ exports.updateForm = async (req, res) => {
 
             form.partners = partners;
 
+            // Auto-add new partners to public visibility too
+            if (newPartners.length > 0) {
+                form.partnersPublic = [...(form.partnersPublic || []), ...newPartners];
+            }
+
+            // Remove partners that are no longer in the main partners list
+            form.partnersPublic = (form.partnersPublic || []).filter(p => partners.includes(p.toString()));
+
             // Notify new partners
             if (newPartners.length > 0) {
                 try {
@@ -357,7 +366,12 @@ exports.getAllFormsAdmin = async (req, res) => {
 
 exports.getFormsByMentor = async (req, res) => {
     try {
-        const forms = await Form.find({ creator: req.params.mentorId, active: true }).sort({ createdAt: -1 });
+        const forms = await Form.find({
+            $or: [
+                { creator: req.params.mentorId, active: true },
+                { partnersPublic: req.params.mentorId, active: true }
+            ]
+        }).sort({ createdAt: -1 });
         res.json(forms);
     } catch (err) {
         console.error(err);
@@ -404,4 +418,30 @@ exports.getExploreEvents = async (req, res) => {
         console.error("Explore Events Error:", err);
         res.status(500).send('Server Error');
     }
+};
+exports.togglePartnerVisibility = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+        const form = await require(" ../models/Form\).findById(id);
+ if (!form) return res.status(404).json({ message: \Form not found\ });
+
+ const isPartner = form.partners.some(p => p.toString() === userId);
+ if (!isPartner) return res.status(403).json({ message: \Not authorized\ });
+
+ const isPublic = form.partnersPublic && form.partnersPublic.some(p => p.toString() === userId);
+
+ if (isPublic) {
+ form.partnersPublic = form.partnersPublic.filter(p => p.toString() !== userId);
+ } else {
+ if (!form.partnersPublic) form.partnersPublic = [];
+ form.partnersPublic.push(userId);
+ }
+
+ await form.save();
+ res.json({ success: true, isPublic: !isPublic });
+ } catch (err) {
+ console.error(\Toggle Visibility Error:\, err);
+ res.status(500).json({ message: \Server error\ });
+ }
 };

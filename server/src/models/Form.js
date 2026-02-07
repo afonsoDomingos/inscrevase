@@ -114,6 +114,7 @@ const FormSchema = new mongoose.Schema({
         requireCheckIn: { type: Boolean, default: true }
     },
     partners: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    partnersPublic: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Which partners show this on their profile
     active: { type: Boolean, default: true },
     visits: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }

@@ -124,6 +124,7 @@ export interface FormModel {
     visits?: number;
     associatedLessons?: string[];
     partners?: string[] | { _id: string; name: string; businessName?: string; profilePhoto?: string }[];
+    partnersPublic?: string[];
 }
 
 export const formService = {
@@ -264,5 +265,14 @@ export const formService = {
     },
     async getPublicForms(): Promise<FormModel[]> {
         return this.getExploreEvents();
+    },
+    async togglePartnerVisibility(id: string): Promise<{ success: boolean; isPublic: boolean }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/forms/${id}/toggle-visibility`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao atualizar visibilidade');
+        return response.json();
     }
 };

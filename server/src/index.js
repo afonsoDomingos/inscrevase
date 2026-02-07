@@ -187,7 +187,11 @@ app.get('/api/users/status/online', (req, res) => {
     res.json(Array.from(onlineUsers.keys()));
 });
 
-// Basic Route
+// Basic Routes
+app.get('/api', (req, res) => {
+    res.json({ message: 'Inscreva-se API is working...', version: '1.2.0' });
+});
+
 app.get('/', (req, res) => {
     res.send('Inscreva-se API is running...');
 });
