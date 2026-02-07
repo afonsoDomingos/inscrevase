@@ -172,5 +172,14 @@ export const authService = {
 
         // Refresh profile to update UI
         await this.getProfile();
+    },
+    async searchMentors(q: string): Promise<UserData[]> {
+        if (!q || q.length < 2) return [];
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/search-mentors?q=${encodeURIComponent(q)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar mentores');
+        return response.json();
     }
 };

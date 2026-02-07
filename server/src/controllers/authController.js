@@ -325,4 +325,30 @@ const restoreMentorRole = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole };
+const searchMentors = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || q.length < 2) {
+            return res.json([]);
+        }
+
+        const mentors = await User.find({
+            role: 'mentor',
+            status: 'active',
+            $or: [
+                { name: { $regex: q, $options: 'i' } },
+                { email: { $regex: q, $options: 'i' } },
+                { businessName: { $regex: q, $options: 'i' } }
+            ],
+            _id: { $ne: req.user.id } // Exclude current user
+        })
+            .select('name email businessName profilePhoto')
+            .limit(10);
+
+        res.json(mentors);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors };

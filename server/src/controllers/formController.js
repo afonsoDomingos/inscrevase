@@ -5,7 +5,7 @@ const Submission = require('../models/Submission');
 
 exports.createForm = async (req, res) => {
     try {
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         let slug = slugify(title, { lower: true, strict: true });
 
@@ -51,6 +51,7 @@ exports.createForm = async (req, res) => {
             agenda,
             materials,
             certificateConfig,
+            partners: partners || [],
             active: active !== undefined ? active : true
         });
 
@@ -94,7 +95,12 @@ exports.createForm = async (req, res) => {
 
 exports.getMyForms = async (req, res) => {
     try {
-        const forms = await Form.find({ creator: req.user.id }).sort({ createdAt: -1 }).lean();
+        const forms = await Form.find({
+            $or: [
+                { creator: req.user.id },
+                { partners: req.user.id }
+            ]
+        }).sort({ createdAt: -1 }).lean();
 
         const formsWithCount = await Promise.all(forms.map(async (form) => {
             const count = await Submission.countDocuments({ form: form._id });
@@ -110,7 +116,9 @@ exports.getMyForms = async (req, res) => {
 
 exports.getFormBySlug = async (req, res) => {
     try {
-        const form = await Form.findOne({ slug: req.params.slug }).populate('creator');
+        const form = await Form.findOne({ slug: req.params.slug })
+            .populate('creator')
+            .populate('partners', 'name businessName profilePhoto');
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         // Get submission count to calculate remaining slots
@@ -131,13 +139,17 @@ exports.updateForm = async (req, res) => {
         let form = await Form.findById(req.params.id);
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
-        // Ensure user owns the form OR is an admin
-        if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+        // Ensure user owns the form OR is a partner OR is an admin
+        const isCreator = form.creator.toString() === req.user.id;
+        const isPartner = form.partners && form.partners.some(p => p.toString() === req.user.id);
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+
+        if (!isCreator && !isPartner && !isAdmin) {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
         // Update fields
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         console.log(`--- Atualizando Formulário ${req.params.id} ---`);
 
@@ -199,6 +211,35 @@ exports.updateForm = async (req, res) => {
         if (customFields !== undefined) form.customFields = customFields;
         if (agenda !== undefined) form.agenda = agenda;
         if (materials !== undefined) form.materials = materials;
+
+        if (partners !== undefined) {
+            const Notification = require('../models/Notification');
+            const User = require('../models/User');
+
+            const oldPartners = (form.partners || []).map(p => p.toString());
+            const newPartners = partners.filter(p => !oldPartners.includes(p.toString()));
+
+            form.partners = partners;
+
+            // Notify new partners
+            if (newPartners.length > 0) {
+                try {
+                    const creator = await User.findById(req.user.id);
+                    await Promise.all(newPartners.map(async (partnerId) => {
+                        return Notification.create({
+                            recipient: partnerId,
+                            sender: req.user.id,
+                            title: 'Convite de Colaboração! 🤝',
+                            content: `${creator.name} convidou você para ser co-organizador do evento "${form.title}".`,
+                            type: 'personal',
+                            actionUrl: '/dashboard/mentor'
+                        });
+                    }));
+                } catch (notifErr) {
+                    console.error('Error notifying new partners:', notifErr);
+                }
+            }
+        }
 
         // Theme - Deep Merge
         if (theme) {

@@ -74,19 +74,23 @@ const submitForm = async (req, res) => {
         await submission.save();
         console.log('[Submission] Submission saved successfully:', submission._id);
 
-        // Notify Mentor (Non-blocking)
+        // Notify Creator and Partners (Non-blocking)
         const participantName = data.nome || data.name || (req.user ? req.user.name : 'Um novo participante');
         try {
-            console.log('[Submission] Sending notification to mentor:', form.creator);
-            const notification = new Notification({
-                recipient: form.creator,
-                sender: req.user ? req.user.id : form.creator, // If guest, sender is self (or system)
-                title: 'Nova Inscrição Recebida! 📩',
-                content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
-                type: 'personal',
-                actionUrl: '/dashboard/mentor'
-            });
-            await notification.save();
+            console.log('[Submission] Sending notification to creator:', form.creator);
+            const recipients = [form.creator, ...(form.partners || [])];
+
+            await Promise.all(recipients.map(async (recipientId) => {
+                const notification = new Notification({
+                    recipient: recipientId,
+                    sender: req.user ? req.user.id : recipientId,
+                    title: 'Nova Inscrição Recebida! 📩',
+                    content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
+                    type: 'personal',
+                    actionUrl: '/dashboard/mentor'
+                });
+                await notification.save();
+            }));
         } catch (notifErr) {
             console.error('[Submission] Error sending notification:', notifErr);
         }
@@ -144,8 +148,12 @@ const getFormSubmissions = async (req, res) => {
         const form = await Form.findById(req.params.formId);
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
-        // Check ownership
-        if (form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+        // Check authorization (Creator, Partner, or Admin)
+        const isCreator = form.creator.toString() === req.user.id;
+        const isPartner = form.partners && form.partners.some(p => p.toString() === req.user.id);
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+
+        if (!isCreator && !isPartner && !isAdmin) {
             return res.status(403).json({ message: 'Not authorized' });
         }
 
@@ -194,8 +202,12 @@ const updateStatus = async (req, res) => {
             return res.status(400).json({ message: 'Erro de integridade: Formulário associado não encontrado' });
         }
 
-        // Check ownership of the form
-        if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+        // Check authorization (Creator, Partner, or Admin)
+        const isCreator = submission.form.creator.toString() === req.user.id;
+        const isPartner = submission.form.partners && submission.form.partners.some(p => p.toString() === req.user.id);
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+
+        if (!isCreator && !isPartner && !isAdmin) {
             return res.status(403).json({ message: 'Acesso negado' });
         }
 
@@ -372,11 +384,12 @@ const deleteSubmission = async (req, res) => {
         if (!submission) return res.status(404).json({ message: 'Submission not found' });
 
         // Check ownership (Mentor, Admin, or the Participant themselves)
-        const isMentor = submission.form.creator.toString() === req.user.id;
+        const isCreator = submission.form.creator.toString() === req.user.id;
+        const isPartner = submission.form.partners && submission.form.partners.some(p => p.toString() === req.user.id);
         const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
         const isParticipant = submission.user && submission.user.toString() === req.user.id;
 
-        if (!isMentor && !isAdmin && !isParticipant) {
+        if (!isCreator && !isPartner && !isAdmin && !isParticipant) {
             return res.status(403).json({ message: 'Not authorized' });
         }
 
@@ -432,8 +445,12 @@ const updateCertificateStatus = async (req, res) => {
         const submission = await Submission.findById(req.params.id).populate('form');
         if (!submission) return res.status(404).json({ message: 'Inscrição não encontrada' });
 
-        // Check ownership (Mentor)
-        if (submission.form.creator.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+        // Check authorization (Creator, Partner, or Admin)
+        const isCreator = submission.form.creator.toString() === req.user.id;
+        const isPartner = submission.form.partners && submission.form.partners.some(p => p.toString() === req.user.id);
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+
+        if (!isCreator && !isPartner && !isAdmin) {
             return res.status(403).json({ message: 'Acesso negado' });
         }
 

@@ -15,7 +15,8 @@ import AgendaEditor from './AgendaEditor';
 import MaterialsEditor from './MaterialsEditor';
 import CertificateEditor from './CertificateEditor';
 import { lessonService, Lesson } from '@/lib/lessonService';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Users2 } from 'lucide-react';
+import PartnersEditor from './PartnersEditor';
 
 interface EditEventModalProps {
     isOpen: boolean;
@@ -180,6 +181,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
     const [lessonsLoading, setLessonsLoading] = useState(false);
 
+    // Partners State
+    const [partners, setPartners] = useState<any[]>([]);
+
     useEffect(() => {
         const fetchLessons = async () => {
             setLessonsLoading(true);
@@ -282,6 +286,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setCustomFields(form.customFields || []);
             setAgenda(form.agenda || []);
             setMaterials(form.materials || []);
+            setPartners(form.partners || []);
         }
     }, [form]);
 
@@ -418,6 +423,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 materials: materials.filter(m => m.name.trim() && m.url.trim()),
                 certificateConfig,
                 associatedLessons: selectedLessons,
+                partners: partners.map(p => typeof p === 'string' ? p : p._id),
                 active: form.active
             });
             onSuccess();
@@ -468,6 +474,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                 { id: 7, label: 'Hub Personalizado', icon: <Sparkles size={18} /> },
                                 { id: 8, label: 'Certificados', icon: <Award size={18} /> },
                                 { id: 9, label: 'Aulas do Evento', icon: <BookOpen size={18} /> },
+                                { id: 10, label: 'Parceiros/Co-org', icon: <Users2 size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -1728,6 +1735,14 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 ))}
                                             </div>
                                         )}
+                                    </motion.div>
+                                )}
+                                {step === 10 && (
+                                    <motion.div key="step10" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <PartnersEditor
+                                            partners={partners}
+                                            onChange={setPartners}
+                                        />
                                     </motion.div>
                                 )}
                             </AnimatePresence>

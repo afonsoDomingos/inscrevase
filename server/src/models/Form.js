@@ -113,6 +113,7 @@ const FormSchema = new mongoose.Schema({
         signerRole: { type: String, default: 'Mentor Responsável' },
         requireCheckIn: { type: Boolean, default: true }
     },
+    partners: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     active: { type: Boolean, default: true },
     visits: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }

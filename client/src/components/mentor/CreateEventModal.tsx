@@ -11,6 +11,8 @@ import { aiService } from '@/lib/aiService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { lessonService, Lesson } from '@/lib/lessonService';
+import PartnersEditor from './PartnersEditor';
+import { Users2 } from 'lucide-react';
 
 interface CreateEventModalProps {
     isOpen: boolean;
@@ -120,6 +122,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [allLessons, setAllLessons] = useState<Lesson[]>([]);
     const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
     const [lessonsLoading, setLessonsLoading] = useState(false);
+
+    // Partners State
+    const [partners, setPartners] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchLessons = async () => {
@@ -250,6 +255,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 videoUrl,
                 welcomeMessage,
                 associatedLessons: selectedLessons,
+                partners,
                 active: true
             });
             onSuccess();
@@ -326,6 +332,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} /> },
                                 { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
                                 { id: 6, label: 'Aulas do Evento', icon: <BookOpen size={18} /> },
+                                { id: 7, label: 'Parceiros/Co-org', icon: <Users2 size={18} /> },
                             ].map((s) => (
                                 <button
                                     key={s.id}
@@ -358,12 +365,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         {!isMobile && (
                             <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
                                 <button
-                                    onClick={step === 5 ? handleSubmit : () => setStep(step + 1)}
+                                    onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
                                     disabled={loading}
                                     className="btn-primary"
                                     style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
                                 </button>
                             </div>
                         )}
@@ -1228,6 +1235,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     )}
                                 </motion.div>
                             )}
+                            {step === 7 && (
+                                <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <PartnersEditor
+                                        partners={partners}
+                                        onChange={setPartners}
+                                    />
+                                </motion.div>
+                            )}
                         </AnimatePresence>
 
                         {/* Mobile Footer Action */}
@@ -1244,7 +1259,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 boxShadow: '0 -4px 20px rgba(0,0,0,0.05)'
                             }}>
                                 <button
-                                    onClick={step === 6 ? handleSubmit : () => setStep(step + 1)}
+                                    onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
                                     disabled={loading}
                                     className="btn-primary"
                                     style={{
@@ -1259,7 +1274,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         fontWeight: 700
                                     }}
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 5 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
                                 </button>
                             </div>
                         )}

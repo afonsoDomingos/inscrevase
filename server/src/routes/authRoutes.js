@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const passport = require('../config/passport');
-const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole } = require('../controllers/authController');
+const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors } = require('../controllers/authController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 
 router.post('/register', register);
@@ -16,6 +16,8 @@ router.get('/public/mentors', getPublicMentors);
 router.get('/public/mentors/:id', getPublicMentorById);
 router.post('/public/mentors/:id/visit', recordVisit);
 router.post('/mentors/:id/follow', authMiddleware, toggleFollow);
+
+router.get('/search-mentors', authMiddleware, searchMentors);
 
 // Google Auth Routes
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

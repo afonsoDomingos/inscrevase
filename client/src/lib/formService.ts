@@ -123,6 +123,7 @@ export interface FormModel {
     submissionCount?: number;
     visits?: number;
     associatedLessons?: string[];
+    partners?: string[] | { _id: string; name: string; businessName?: string; profilePhoto?: string }[];
 }
 
 export const formService = {
