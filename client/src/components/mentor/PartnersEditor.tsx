@@ -26,13 +26,14 @@ export default function PartnersEditor({ partners, onChange }: PartnersEditorPro
     const [resolvedPartners, setResolvedPartners] = useState<Partner[]>([]);
 
     // Resolve partner IDs to objects if they are strings
-    // In many cases, the component receives the objects from the API
     useEffect(() => {
-        const resolve = async () => {
-            const currentPartners = partners.filter((p): p is Partner => typeof p !== 'string');
-            setResolvedPartners(currentPartners);
-        };
-        resolve();
+        const currentPartners = partners.map(p => {
+            if (typeof p === 'string') {
+                return { _id: p, name: 'Mentor (ID: ' + p.substring(0, 5) + '...)' };
+            }
+            return p;
+        });
+        setResolvedPartners(currentPartners);
     }, [partners]);
 
     const handleSearch = async (query: string) => {

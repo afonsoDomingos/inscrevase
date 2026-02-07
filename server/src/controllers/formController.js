@@ -2,6 +2,10 @@ const Form = require('../models/Form');
 const slugify = require('slugify');
 
 const Submission = require('../models/Submission');
+const User = require('../models/User');
+const Notification = require('../models/Notification');
+const mongoose = require('mongoose');
+
 
 exports.createForm = async (req, res) => {
     try {
@@ -24,6 +28,8 @@ exports.createForm = async (req, res) => {
             const price = parseFloat(sanitizedPaymentConfig.price);
             sanitizedPaymentConfig.price = isNaN(price) ? 0 : price;
         }
+
+        const safePartners = Array.isArray(partners) ? partners.filter(p => p && mongoose.Types.ObjectId.isValid(p)) : [];
 
         const newForm = new Form({
             creator: req.user.id,
@@ -51,8 +57,8 @@ exports.createForm = async (req, res) => {
             agenda,
             materials,
             certificateConfig,
-            partners: partners || [],
-            partnersPublic: partners || [], // Default to visible for new partners
+            partners: safePartners,
+            partnersPublic: safePartners, // Default to visible for new partners
             active: active !== undefined ? active : true
         });
 
@@ -73,6 +79,27 @@ exports.createForm = async (req, res) => {
         }
 
         const form = await newForm.save();
+
+        // Notify new partners
+        if (safePartners.length > 0) {
+            try {
+                const creator = await User.findById(req.user.id);
+                if (creator) {
+                    await Promise.all(safePartners.map(async (partnerId) => {
+                        return Notification.create({
+                            recipient: partnerId,
+                            sender: req.user.id,
+                            title: 'Convite de Colaboração! 🤝',
+                            content: `${creator.name} convidou você para ser co-organizador do evento "${form.title}".`,
+                            type: 'personal',
+                            actionUrl: '/dashboard/mentor'
+                        });
+                    }));
+                }
+            } catch (notifErr) {
+                console.error('Error notifying partners in createForm:', notifErr);
+            }
+        }
 
         // Handle Lesson Associations
         if (req.body.associatedLessons && Array.isArray(req.body.associatedLessons)) {
@@ -96,12 +123,15 @@ exports.createForm = async (req, res) => {
 
 exports.getMyForms = async (req, res) => {
     try {
+        console.log(`Fetching forms for user: ${req.user.id}`);
         const forms = await Form.find({
             $or: [
                 { creator: req.user.id },
                 { partners: req.user.id }
             ]
-        }).sort({ createdAt: -1 }).lean();
+        }).populate('partners', 'name businessName profilePhoto').sort({ createdAt: -1 }).lean();
+
+        console.log(`Found ${forms.length} forms`);
 
         const formsWithCount = await Promise.all(forms.map(async (form) => {
             const count = await Submission.countDocuments({ form: form._id });
@@ -110,17 +140,21 @@ exports.getMyForms = async (req, res) => {
 
         res.json(formsWithCount);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error("ERROR in getMyForms:", err);
+        res.status(500).json({ message: 'Erro ao buscar formulários', error: err.message });
     }
 };
 
 exports.getFormBySlug = async (req, res) => {
     try {
+        console.log(`Fetching form for slug: ${req.params.slug}`);
         const form = await Form.findOne({ slug: req.params.slug })
             .populate('creator')
             .populate('partners', 'name businessName profilePhoto');
-        if (!form) return res.status(404).json({ message: 'Form not found' });
+        if (!form) {
+            console.log(`Form not found for slug: ${req.params.slug}`);
+            return res.status(404).json({ message: 'Form not found' });
+        }
 
         // Get submission count to calculate remaining slots
         const submissionCount = await Submission.countDocuments({ form: form._id });
@@ -130,8 +164,8 @@ exports.getFormBySlug = async (req, res) => {
             submissionCount
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error(`ERROR in getFormBySlug for slug "${req.params.slug}":`, err);
+        res.status(500).json({ message: 'Erro ao buscar evento', error: err.message });
     }
 };
 
@@ -213,14 +247,11 @@ exports.updateForm = async (req, res) => {
         if (agenda !== undefined) form.agenda = agenda;
         if (materials !== undefined) form.materials = materials;
 
-        if (partners !== undefined) {
-            const Notification = require('../models/Notification');
-            const User = require('../models/User');
-
+        if (partners !== undefined && Array.isArray(partners)) {
             const oldPartners = (form.partners || []).map(p => p.toString());
-            const newPartners = partners.filter(p => !oldPartners.includes(p.toString()));
+            const newPartners = partners.filter(p => p && !oldPartners.includes(p.toString()));
 
-            form.partners = partners;
+            form.partners = partners.filter(p => p && mongoose.Types.ObjectId.isValid(p));
 
             // Auto-add new partners to public visibility too
             if (newPartners.length > 0) {
@@ -228,22 +259,27 @@ exports.updateForm = async (req, res) => {
             }
 
             // Remove partners that are no longer in the main partners list
-            form.partnersPublic = (form.partnersPublic || []).filter(p => partners.includes(p.toString()));
+            const partnerStrings = form.partners.map(p => p.toString());
+            form.partnersPublic = (form.partnersPublic || []).filter(p => p && partnerStrings.includes(p.toString()));
 
             // Notify new partners
             if (newPartners.length > 0) {
                 try {
                     const creator = await User.findById(req.user.id);
-                    await Promise.all(newPartners.map(async (partnerId) => {
-                        return Notification.create({
-                            recipient: partnerId,
-                            sender: req.user.id,
-                            title: 'Convite de Colaboração! 🤝',
-                            content: `${creator.name} convidou você para ser co-organizador do evento "${form.title}".`,
-                            type: 'personal',
-                            actionUrl: '/dashboard/mentor'
-                        });
-                    }));
+                    if (creator) {
+                        await Promise.all(newPartners.map(async (partnerId) => {
+                            if (!mongoose.Types.ObjectId.isValid(partnerId)) return;
+
+                            return Notification.create({
+                                recipient: partnerId,
+                                sender: req.user.id,
+                                title: 'Convite de Colaboração! 🤝',
+                                content: `${creator.name} convidou você para ser co-organizador do evento "${form.title}".`,
+                                type: 'personal',
+                                actionUrl: '/dashboard/mentor'
+                            });
+                        }));
+                    }
                 } catch (notifErr) {
                     console.error('Error notifying new partners:', notifErr);
                 }
@@ -356,26 +392,33 @@ exports.deleteForm = async (req, res) => {
 
 exports.getAllFormsAdmin = async (req, res) => {
     try {
-        const forms = await Form.find().populate('creator', 'name email').sort({ createdAt: -1 });
+        console.log(`Admin fetching all forms. Admin user: ${req.user.id}`);
+        const forms = await Form.find()
+            .populate('creator', 'name email')
+            .populate('partners', 'name businessName profilePhoto')
+            .sort({ createdAt: -1 });
+        console.log(`Found ${forms.length} total forms for admin`);
         res.json(forms);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error("ERROR in getAllFormsAdmin:", err);
+        res.status(500).json({ message: 'Erro ao buscar todos os formulários (Admin)', error: err.message });
     }
 };
 
 exports.getFormsByMentor = async (req, res) => {
     try {
+        console.log(`Fetching forms for mentor ID: ${req.params.mentorId}`);
         const forms = await Form.find({
             $or: [
                 { creator: req.params.mentorId, active: true },
                 { partnersPublic: req.params.mentorId, active: true }
             ]
         }).sort({ createdAt: -1 });
+        console.log(`Found ${forms.length} public forms for mentor`);
         res.json(forms);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error(`ERROR in getFormsByMentor for ID ${req.params.mentorId}:`, err);
+        res.status(500).json({ message: 'Erro ao buscar eventos do mentor', error: err.message });
     }
 };
 
@@ -398,6 +441,7 @@ exports.recordVisit = async (req, res) => {
 exports.getExploreEvents = async (req, res) => {
     try {
         const { category, search } = req.query;
+        console.log(`Exploring events - Category: ${category}, Search: ${search}`);
         let query = { active: true };
 
         if (category && category !== 'Todos') {
@@ -411,12 +455,13 @@ exports.getExploreEvents = async (req, res) => {
         const forms = await Form.find(query)
             .select('title slug coverImage hubBackgroundImage eventDate eventType category creator location onlineLink')
             .populate('creator', 'name businessName')
-            .sort({ createdAt: -1 });
+            .sort({ eventDate: 1 });
 
+        console.log(`Found ${forms.length} events for explore`);
         res.json(forms);
     } catch (err) {
-        console.error("Explore Events Error:", err);
-        res.status(500).send('Server Error');
+        console.error("ERROR in getExploreEvents:", err);
+        res.status(500).json({ message: 'Erro ao buscar eventos para explorar', error: err.message });
     }
 };
 exports.togglePartnerVisibility = async (req, res) => {
@@ -426,22 +471,22 @@ exports.togglePartnerVisibility = async (req, res) => {
         const form = await require(" ../models/Form\).findById(id);
  if (!form) return res.status(404).json({ message: \Form not found\ });
 
- const isPartner = form.partners.some(p => p.toString() === userId);
- if (!isPartner) return res.status(403).json({ message: \Not authorized\ });
+        const isPartner = form.partners.some(p => p.toString() === userId);
+        if (!isPartner) return res.status(403).json({ message: \Not authorized\ });
 
- const isPublic = form.partnersPublic && form.partnersPublic.some(p => p.toString() === userId);
+        const isPublic = form.partnersPublic && form.partnersPublic.some(p => p.toString() === userId);
 
- if (isPublic) {
- form.partnersPublic = form.partnersPublic.filter(p => p.toString() !== userId);
- } else {
- if (!form.partnersPublic) form.partnersPublic = [];
- form.partnersPublic.push(userId);
- }
+        if (isPublic) {
+            form.partnersPublic = form.partnersPublic.filter(p => p.toString() !== userId);
+        } else {
+            if (!form.partnersPublic) form.partnersPublic = [];
+            form.partnersPublic.push(userId);
+        }
 
- await form.save();
- res.json({ success: true, isPublic: !isPublic });
- } catch (err) {
- console.error(\Toggle Visibility Error:\, err);
- res.status(500).json({ message: \Server error\ });
- }
+        await form.save();
+        res.json({ success: true, isPublic: !isPublic });
+    } catch (err) {
+        console.error(\Toggle Visibility Error: \, err);
+        res.status(500).json({ message: \Server error\ });
+    }
 };
