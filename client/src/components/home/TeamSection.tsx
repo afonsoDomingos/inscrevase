@@ -42,12 +42,12 @@ export default function TeamSection() {
     ];
 
     return (
-        <section style={{ padding: '120px 0', background: '#fafafa', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ padding: '60px 0', background: '#fafafa', position: 'relative', overflow: 'hidden' }}>
             {/* Background Decorations */}
             <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
 
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
-                <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <motion.span
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ export default function TeamSection() {
                     </motion.h2>
                 </div>
 
-                <div style={{ display: 'grid', gap: '50px' }}>
+                <div style={{ display: 'grid', gap: '24px' }}>
                     {team.map((member, index) => (
                         <motion.div
                             key={member.id}
@@ -92,14 +92,14 @@ export default function TeamSection() {
                             style={{
                                 background: '#fff',
                                 borderRadius: '40px',
-                                padding: '50px',
+                                padding: '30px 40px',
                                 border: '1px solid rgba(0,0,0,0.03)',
                                 boxShadow: '0 40px 80px rgba(0,0,0,0.06)',
                                 maxWidth: '1100px',
                                 width: '100%',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '50px',
+                                gap: '35px',
                                 flexDirection: index % 2 === 0 ? 'row' : 'row-reverse',
                                 position: 'relative',
                                 alignSelf: 'center',
@@ -110,8 +110,8 @@ export default function TeamSection() {
                             {/* Circular Image Container */}
                             <div style={{ flexShrink: 0, position: 'relative' }}>
                                 <div style={{
-                                    width: '280px',
-                                    height: '280px',
+                                    width: '180px',
+                                    height: '180px',
                                     borderRadius: '50%',
                                     border: '6px solid #fff',
                                     boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
@@ -141,8 +141,8 @@ export default function TeamSection() {
                             </div>
 
                             <div style={{ flex: 1, textAlign: index % 2 === 0 ? 'left' : 'right' }}>
-                                <div style={{ marginBottom: '20px' }}>
-                                    <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '5px', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
+                                <div style={{ marginBottom: '12px' }}>
+                                    <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '2px', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
                                         {member.name}
                                     </h3>
                                     <div className="role-text" style={{
@@ -161,9 +161,9 @@ export default function TeamSection() {
 
                                 <p style={{
                                     color: '#555',
-                                    fontSize: '1.1rem',
-                                    lineHeight: 1.6,
-                                    marginBottom: '30px',
+                                    fontSize: '0.95rem',
+                                    lineHeight: 1.5,
+                                    marginBottom: '20px',
                                     position: 'relative'
                                 }}>
                                     {member.summary}
@@ -172,8 +172,8 @@ export default function TeamSection() {
                                 <div className="social-links" style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '20px',
-                                    marginBottom: '35px',
+                                    gap: '15px',
+                                    marginBottom: '25px',
                                     justifyContent: index % 2 === 0 ? 'flex-start' : 'flex-end',
                                     flexWrap: 'wrap'
                                 }}>
@@ -192,10 +192,10 @@ export default function TeamSection() {
                                         gap: '10px',
                                         background: '#1a1a1a',
                                         color: '#fff',
-                                        padding: '14px 28px',
+                                        padding: '10px 24px',
                                         borderRadius: '50px',
                                         fontWeight: 700,
-                                        fontSize: '0.9rem',
+                                        fontSize: '0.85rem',
                                         textDecoration: 'none',
                                         transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                                         boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
