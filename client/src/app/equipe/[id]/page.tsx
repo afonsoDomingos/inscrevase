@@ -40,13 +40,13 @@ export default function TeamProfilePage() {
             bio: t('team.culpa.bio'),
             image: "/jose-faustino.png",
             country: "África (Múltiplas Regiões)",
-            businessName: "Afrobiz Network (ABN), CCA & ODEI",
+            businessName: "CCA & ODEI",
             socialLinks: {
                 linkedin: "https://www.linkedin.com/in/culpa-francisco-xavier-6023251a2",
                 instagram: "https://www.instagram.com/culpafranciscoxavier",
                 facebook: "https://www.facebook.com/culpafranciscoxavier1/",
                 youtube: "https://www.youtube.com/@culpafranciscoxavier",
-                website: "https://afrobiznetwork.com"
+                website: "https://odeimoz.org"
             },
             badges: [{ name: t('common.mentor'), color: "#D4AF37" }, { name: "Premium", color: "#000" }]
         }

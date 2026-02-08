@@ -36,7 +36,7 @@ export default function TeamSection() {
                 facebook: "https://www.facebook.com/culpafranciscoxavier1/",
                 youtube: "https://www.youtube.com/@culpafranciscoxavier",
                 tiktok: "https://www.tiktok.com/@culpafranciscoxavier",
-                website: "https://afrobiznetwork.com"
+                website: "https://odeimoz.org"
             }
         }
     ];
@@ -44,7 +44,24 @@ export default function TeamSection() {
     return (
         <section style={{ padding: '60px 0', background: '#fafafa', position: 'relative', overflow: 'hidden' }}>
             {/* Background Decorations */}
-            <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+            <motion.div
+                animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, 0],
+                    x: [0, 20, 0]
+                }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                style={{ position: 'absolute', top: '10%', right: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }}
+            />
+            <motion.div
+                animate={{
+                    scale: [1, 1.2, 1],
+                    x: [0, -30, 0],
+                    y: [0, 20, 0]
+                }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                style={{ position: 'absolute', bottom: '10%', left: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(0, 0, 0, 0.03) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }}
+            />
 
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -85,10 +102,15 @@ export default function TeamSection() {
                     {team.map((member, index) => (
                         <motion.div
                             key={member.id}
-                            initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover={{ y: -5, scale: 1.01, boxShadow: '0 50px 100px rgba(0,0,0,0.08)' }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 20
+                            }}
                             style={{
                                 background: '#fff',
                                 borderRadius: '40px',
@@ -127,17 +149,21 @@ export default function TeamSection() {
                                     />
                                 </div>
                                 {/* Decorative Ring */}
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '-10px',
-                                    left: '-10px',
-                                    right: '-10px',
-                                    bottom: '-10px',
-                                    borderRadius: '50%',
-                                    border: '2px dashed #D4AF37',
-                                    opacity: 0.3,
-                                    zIndex: 1
-                                }} />
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '-10px',
+                                        left: '-10px',
+                                        right: '-10px',
+                                        bottom: '-10px',
+                                        borderRadius: '50%',
+                                        border: '2px dashed #D4AF37',
+                                        opacity: 0.3,
+                                        zIndex: 1
+                                    }}
+                                />
                             </div>
 
                             <div style={{ flex: 1, textAlign: index % 2 === 0 ? 'left' : 'right' }}>
@@ -177,11 +203,11 @@ export default function TeamSection() {
                                     justifyContent: index % 2 === 0 ? 'flex-start' : 'flex-end',
                                     flexWrap: 'wrap'
                                 }}>
-                                    {member.social.linkedin && <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-blue-600"><Linkedin size={20} /></a>}
-                                    {member.social.instagram && <a href={member.social.instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-pink-600"><Instagram size={20} /></a>}
-                                    {member.social.facebook && <a href={member.social.facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-blue-700"><Facebook size={20} /></a>}
-                                    {member.social.youtube && <a href={member.social.youtube} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-red-600"><Youtube size={20} /></a>}
-                                    {member.social.website && <a href={member.social.website} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="hover:text-[#D4AF37]"><Globe size={20} /></a>}
+                                    {member.social.linkedin && <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="social-icon-team hover:text-blue-600"><Linkedin size={20} /></a>}
+                                    {member.social.instagram && <a href={member.social.instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="social-icon-team hover:text-pink-600"><Instagram size={20} /></a>}
+                                    {member.social.facebook && <a href={member.social.facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="social-icon-team hover:text-blue-700"><Facebook size={20} /></a>}
+                                    {member.social.youtube && <a href={member.social.youtube} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="social-icon-team hover:text-red-600"><Youtube size={20} /></a>}
+                                    {member.social.website && <a href={member.social.website} target="_blank" rel="noopener noreferrer" style={{ color: '#aaa', transition: '0.3s' }} className="social-icon-team hover:text-[#D4AF37]"><Globe size={20} /></a>}
                                 </div>
 
                                 <Link
@@ -269,6 +295,9 @@ export default function TeamSection() {
                     transform: translateY(-3px) scale(1.02);
                     box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
                     background: #000 !important;
+                }
+                .social-icon-team:hover {
+                    transform: translateY(-3px) scale(1.2);
                 }
             `}</style>
         </section>
