@@ -27,8 +27,8 @@ export default function TeamSection() {
         {
             id: "culpa-francisco-xavier",
             name: "Culpa Francisco Xavier",
-            role: t('team.jose.role'),
-            summary: t('team.jose.summary'),
+            role: t('team.culpa.role'),
+            summary: t('team.culpa.summary'),
             image: "/jose-faustino.png",
             social: {
                 linkedin: "https://www.linkedin.com/in/culpa-francisco-xavier-6023251a2",

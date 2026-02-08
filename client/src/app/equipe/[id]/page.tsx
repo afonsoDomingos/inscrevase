@@ -36,8 +36,8 @@ export default function TeamProfilePage() {
         },
         "culpa-francisco-xavier": {
             name: "Culpa Francisco Xavier",
-            role: t('team.jose.role'),
-            bio: t('team.jose.bio'),
+            role: t('team.culpa.role'),
+            bio: t('team.culpa.bio'),
             image: "/jose-faustino.png",
             country: "África (Múltiplas Regiões)",
             businessName: "Afrobiz Network (ABN), CCA & ODEI",
