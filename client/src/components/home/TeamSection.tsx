@@ -168,32 +168,45 @@ export default function TeamSection() {
 
                             <div style={{ flex: 1, textAlign: index % 2 === 0 ? 'left' : 'right' }}>
                                 <div style={{ marginBottom: '12px' }}>
-                                    <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '2px', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
+                                    <motion.h3
+                                        whileHover={{ x: index % 2 === 0 ? 10 : -10, color: '#D4AF37' }}
+                                        style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '2px', color: '#1a1a1a', letterSpacing: '-0.5px', cursor: 'default', transition: 'color 0.3s' }}
+                                    >
                                         {member.name}
-                                    </h3>
-                                    <div className="role-text" style={{
-                                        display: 'inline-block',
-                                        background: 'linear-gradient(90deg, #D4AF37, #F1D37E)',
-                                        WebkitBackgroundClip: 'text',
-                                        WebkitTextFillColor: 'transparent',
-                                        fontWeight: 800,
-                                        fontSize: '0.9rem',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '1px'
-                                    }}>
+                                    </motion.h3>
+                                    <motion.div
+                                        whileHover={{ scale: 1.05 }}
+                                        className="role-text"
+                                        style={{
+                                            display: 'inline-block',
+                                            background: 'linear-gradient(90deg, #D4AF37, #F1D37E)',
+                                            WebkitBackgroundClip: 'text',
+                                            WebkitTextFillColor: 'transparent',
+                                            fontWeight: 800,
+                                            fontSize: '0.9rem',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '1px',
+                                            cursor: 'default'
+                                        }}
+                                    >
                                         {member.role}
-                                    </div>
+                                    </motion.div>
                                 </div>
 
-                                <p style={{
-                                    color: '#555',
-                                    fontSize: '0.95rem',
-                                    lineHeight: 1.5,
-                                    marginBottom: '20px',
-                                    position: 'relative'
-                                }}>
+                                <motion.p
+                                    whileHover={{ color: '#000' }}
+                                    style={{
+                                        color: '#555',
+                                        fontSize: '0.95rem',
+                                        lineHeight: 1.5,
+                                        marginBottom: '20px',
+                                        position: 'relative',
+                                        cursor: 'default',
+                                        transition: 'color 0.3s'
+                                    }}
+                                >
                                     {member.summary}
-                                </p>
+                                </motion.p>
 
                                 <div className="social-links" style={{
                                     display: 'flex',
