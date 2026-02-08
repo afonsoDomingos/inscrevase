@@ -25,7 +25,7 @@ export default function TeamSection() {
             }
         },
         {
-            id: "jose-faustino",
+            id: "culpa-francisco-xavier",
             name: "Culpa Francisco Xavier",
             role: t('team.jose.role'),
             summary: t('team.jose.summary'),
@@ -123,7 +123,7 @@ export default function TeamSection() {
                                         src={member.image}
                                         alt={member.name}
                                         fill
-                                        style={{ objectFit: 'cover', objectPosition: member.id === 'jose-faustino' ? 'center 20%' : 'center center' }}
+                                        style={{ objectFit: 'cover', objectPosition: member.id === 'culpa-francisco-xavier' ? 'center 20%' : 'center center' }}
                                     />
                                 </div>
                                 {/* Decorative Ring */}

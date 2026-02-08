@@ -34,7 +34,7 @@ export default function TeamProfilePage() {
             },
             badges: [{ name: t('common.mentor'), color: "#D4AF37" }, { name: "Elite", color: "#000" }]
         },
-        "jose-faustino": {
+        "culpa-francisco-xavier": {
             name: "Culpa Francisco Xavier",
             role: t('team.jose.role'),
             bio: t('team.jose.bio'),
