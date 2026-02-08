@@ -17,7 +17,7 @@ import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
-import { ChevronRight, Zap, MapPin, Clock } from "lucide-react";
+import { ChevronRight, Zap, MapPin } from "lucide-react";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -452,7 +452,7 @@ export default function Home() {
                               <Users size={12} style={{ margin: '6px' }} />
                             )}
                           </div>
-                          <span style={{ fontWeight: 600 }}>{(event.creator as any)?.businessName || (event.creator as any)?.name}</span>
+                          <span style={{ fontWeight: 600 }}>{event.creator?.businessName || event.creator?.name}</span>
                         </div>
                       </div>
                     </div>
