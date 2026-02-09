@@ -1254,9 +1254,24 @@ function HubContent() {
                                             <motion.button
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
-                                                onClick={() => {
-                                                    setIsRatingSubmitted(true);
-                                                    toast.success(t('feedback.eventRating.success'));
+                                                onClick={async () => {
+                                                    try {
+                                                        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/contact`, {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                name: submission?.data?.name || 'Participante',
+                                                                email: submission?.data?.email || 'N/A',
+                                                                subject: `[RATING] ${form.title}`,
+                                                                message: `O participante avaliou o evento com ${userRating}/5 estrelas.`
+                                                            })
+                                                        });
+                                                        setIsRatingSubmitted(true);
+                                                        toast.success(t('feedback.eventRating.success'));
+                                                    } catch (error) {
+                                                        console.error('Error submitting rating:', error);
+                                                        toast.error('Erro ao enviar avaliação. Tente novamente.');
+                                                    }
                                                 }}
                                                 style={{
                                                     background: '#111',

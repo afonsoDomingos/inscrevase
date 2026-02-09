@@ -12,7 +12,7 @@ export default function SupportTicketList() {
     const [loading, setLoading] = useState(true);
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [filter, setFilter] = useState<'all' | 'open' | 'answered' | 'closed'>('all');
+    const [filter, setFilter] = useState<'all' | 'open' | 'answered' | 'closed' | 'feedback'>('all');
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -46,6 +46,9 @@ export default function SupportTicketList() {
 
     const filteredTickets = tickets.filter(ticket => {
         if (filter === 'all') return true;
+        if (filter === 'feedback') {
+            return ticket.subject.includes('[FEEDBACK]') || ticket.subject.includes('[RATING]');
+        }
         return ticket.status === filter;
     });
 
@@ -82,10 +85,10 @@ export default function SupportTicketList() {
                 <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700 }}>Central de Suporte</h1>
 
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                    {(['all', 'open', 'answered', 'closed'] as const).map(status => (
+                    {(['all', 'open', 'answered', 'closed', 'feedback'] as const).map(status => (
                         <button
                             key={status}
-                            onClick={() => setFilter(status)}
+                            onClick={() => setFilter(status as any)}
                             style={{
                                 padding: isMobile ? '0.4rem 0.6rem' : '0.5rem 1rem',
                                 borderRadius: '8px',
@@ -97,7 +100,7 @@ export default function SupportTicketList() {
                                 fontSize: isMobile ? '0.75rem' : '0.9rem'
                             }}
                         >
-                            {status === 'all' ? 'Todos' : getStatusLabel(status)}
+                            {status === 'all' ? 'Todos' : status === 'feedback' ? 'Feedbacks' : getStatusLabel(status)}
                         </button>
                     ))}
                 </div>
