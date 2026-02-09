@@ -1142,6 +1142,13 @@
             "praise": "Elogio",
             "other": "Outro"
         },
+        "eventRating": {
+            "title": "O que achou deste evento?",
+            "subtitle": "Sua avaliação ajuda outros participantes e o mentor a melhorar.",
+            "button": "Enviar Avaliação",
+            "success": "Obrigado pela sua avaliação!",
+            "alreadyRated": "Você já avaliou este evento."
+        },
         "ratings": {
             "terrible": "Terrível",
             "bad": "Ruim",

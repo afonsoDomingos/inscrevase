@@ -63,7 +63,7 @@ export default function FeedbackPage() {
             setSent(true);
             toast.success(t('feedback.form.success'));
             setFormData({ name: '', email: '', type: 'suggestion', rating: 5, message: '' });
-        } catch (_error) {
+        } catch {
             toast.error(t('feedback.form.error'));
         } finally {
             setSending(false);

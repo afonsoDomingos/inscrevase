@@ -1140,6 +1140,13 @@
             "praise": "Praise",
             "other": "Other"
         },
+        "eventRating": {
+            "title": "How was this event for you?",
+            "subtitle": "Your rating helps other participants and helps the mentor improve.",
+            "button": "Submit Rating",
+            "success": "Thank you for your rating!",
+            "alreadyRated": "You have already rated this event."
+        },
         "ratings": {
             "terrible": "Terrible",
             "bad": "Bad",

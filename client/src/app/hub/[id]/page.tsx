@@ -26,7 +26,8 @@ import {
     X,
     LayoutDashboard,
     UserCircle,
-    Home
+    Home,
+    Star
 } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import Image from 'next/image';
@@ -162,6 +163,9 @@ function HubContent() {
     const [currentUser, setCurrentUser] = useState<UserData | null>(null);
     const [lessons, setLessons] = useState<HubLesson[]>([]);
     const [selectedLesson, setSelectedLesson] = useState<HubLesson | null>(null);
+    const [userRating, setUserRating] = useState<number>(0);
+    const [hoverRating, setHoverRating] = useState<number>(0);
+    const [isRatingSubmitted, setIsRatingSubmitted] = useState(false);
 
     useEffect(() => {
         setCurrentUser(authService.getCurrentUser());
@@ -1199,6 +1203,89 @@ function HubContent() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Event Rating Section */}
+                        {isApproved && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                style={{
+                                    marginTop: '60px',
+                                    background: '#fff',
+                                    padding: '50px',
+                                    borderRadius: '32px',
+                                    border: '1px solid rgba(0,0,0,0.04)',
+                                    boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px', color: '#111' }}>
+                                    {t('feedback.eventRating.title')}
+                                </h2>
+                                <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: '30px', maxWidth: '500px', margin: '0 auto 30px' }}>
+                                    {t('feedback.eventRating.subtitle')}
+                                </p>
+
+                                {!isRatingSubmitted ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <motion.button
+                                                    key={star}
+                                                    whileHover={{ scale: 1.2 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                    onMouseEnter={() => setHoverRating(star)}
+                                                    onMouseLeave={() => setHoverRating(0)}
+                                                    onClick={() => setUserRating(star)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
+                                                >
+                                                    <Star
+                                                        size={48}
+                                                        fill={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : 'none'}
+                                                        color={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : '#ddd'}
+                                                        style={{ transition: 'all 0.2s ease' }}
+                                                    />
+                                                </motion.button>
+                                            ))}
+                                        </div>
+
+                                        {userRating > 0 && (
+                                            <motion.button
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                onClick={() => {
+                                                    setIsRatingSubmitted(true);
+                                                    toast.success(t('feedback.eventRating.success'));
+                                                }}
+                                                style={{
+                                                    background: '#111',
+                                                    color: '#fff',
+                                                    padding: '16px 40px',
+                                                    borderRadius: '100px',
+                                                    border: 'none',
+                                                    fontWeight: 800,
+                                                    fontSize: '1rem',
+                                                    cursor: 'pointer',
+                                                    marginTop: '10px',
+                                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                                                }}
+                                            >
+                                                {t('feedback.eventRating.button')}
+                                            </motion.button>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        style={{ color: '#10b981', fontWeight: 700, fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                    >
+                                        <CheckCircle2 size={24} /> {t('feedback.eventRating.success')}
+                                    </motion.div>
+                                )}
+                            </motion.div>
+                        )}
                     </div>
                 </div>
 
