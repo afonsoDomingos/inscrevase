@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Search, Check } from 'lucide-react';
+import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Search, Check, Award } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -52,18 +52,25 @@ function RegisterContent() {
     const redirectUrl = searchParams.get('redirect');
     const initialRole = searchParams.get('role') || 'mentor';
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        name: string;
+        email: string;
+        password: string;
+        businessName: string;
+        country: string;
+        role: 'mentor' | 'participant' | 'company' | 'specialist';
+    }>({
         name: '',
         email: '',
         password: '',
         businessName: '',
         country: '',
-        role: initialRole
+        role: (initialRole as 'mentor' | 'participant' | 'company' | 'specialist') || 'mentor'
     });
 
     useEffect(() => {
         if (initialRole) {
-            setFormData(prev => ({ ...prev, role: initialRole }));
+            setFormData(prev => ({ ...prev, role: initialRole as 'mentor' | 'participant' | 'company' | 'specialist' }));
         }
     }, [initialRole]);
 
@@ -115,6 +122,7 @@ function RegisterContent() {
             } else if (formData.role === 'participant') {
                 router.push('/dashboard/participant');
             } else {
+                // Mentor, Company, Specialist go to Mentor Dashboard (same interface for now)
                 router.push('/dashboard/mentor');
             }
         } catch (err: unknown) {
@@ -168,11 +176,10 @@ function RegisterContent() {
 
 
             {/* Role Selector */}
-            <div style={{ display: 'flex', gap: '0.8rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '1rem' }}>
                 <div
                     onClick={() => setFormData({ ...formData, role: 'mentor' })}
                     style={{
-                        flex: 1,
                         padding: '0.7rem',
                         borderRadius: '12px',
                         background: formData.role === 'mentor' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
@@ -188,13 +195,12 @@ function RegisterContent() {
                 >
                     <Briefcase size={20} color={formData.role === 'mentor' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
                     <span style={{ color: formData.role === 'mentor' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Mentor</span>
-                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Quero criar eventos</span>
+                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Criar eventos</span>
                 </div>
 
                 <div
                     onClick={() => setFormData({ ...formData, role: 'participant' })}
                     style={{
-                        flex: 1,
                         padding: '0.7rem',
                         borderRadius: '12px',
                         background: formData.role === 'participant' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
@@ -209,8 +215,50 @@ function RegisterContent() {
                     }}
                 >
                     <User size={20} color={formData.role === 'participant' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
-                    <span style={{ color: formData.role === 'participant' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Participante</span>
-                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Quero me inscrever</span>
+                    <span style={{ color: formData.role === 'participant' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Aluno</span>
+                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Aprender</span>
+                </div>
+
+                <div
+                    onClick={() => setFormData({ ...formData, role: 'company' })}
+                    style={{
+                        padding: '0.7rem',
+                        borderRadius: '12px',
+                        background: formData.role === 'company' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
+                        border: formData.role === 'company' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center'
+                    }}
+                >
+                    <Briefcase size={20} color={formData.role === 'company' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
+                    <span style={{ color: formData.role === 'company' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Empresa</span>
+                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Divulgar</span>
+                </div>
+
+                <div
+                    onClick={() => setFormData({ ...formData, role: 'specialist' })}
+                    style={{
+                        padding: '0.7rem',
+                        borderRadius: '12px',
+                        background: formData.role === 'specialist' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
+                        border: formData.role === 'specialist' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center'
+                    }}
+                >
+                    <Award size={20} color={formData.role === 'specialist' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
+                    <span style={{ color: formData.role === 'specialist' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Especialista</span>
+                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Ensinar</span>
                 </div>
             </div>
 

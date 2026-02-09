@@ -7,7 +7,7 @@ export interface UserData {
     _id?: string;
     name: string;
     email: string;
-    role: 'admin' | 'mentor' | 'SuperAdmin' | 'participant';
+    role: 'admin' | 'mentor' | 'SuperAdmin' | 'participant' | 'company' | 'specialist';
     businessName?: string;
     bio?: string;
     profilePhoto?: string;
@@ -41,6 +41,7 @@ export interface RegisterData {
     password: string;
     businessName: string;
     country?: string;
+    role?: 'participant' | 'mentor' | 'company' | 'specialist';
 }
 
 export interface AuthResponse {

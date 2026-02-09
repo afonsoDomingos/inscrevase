@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
     password: { type: String }, // Made optional for Google Auth
     googleId: { type: String, unique: true, sparse: true }, // Added googleId
     linkedinId: { type: String, unique: true, sparse: true }, // Added linkedinId
-    role: { type: String, enum: ['admin', 'mentor', 'SuperAdmin', 'participant'], default: 'mentor' },
+    role: { type: String, enum: ['admin', 'mentor', 'SuperAdmin', 'participant', 'company', 'specialist'], default: 'mentor' },
     profilePhoto: { type: String },
     whatsapp: { type: String },
     businessName: { type: String },

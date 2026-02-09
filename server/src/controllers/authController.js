@@ -10,8 +10,9 @@ const register = async (req, res) => {
         if (user) return res.status(400).json({ message: 'User already exists' });
 
         // Validate role (security)
-        const userRole = (role === 'participant') ? 'participant' : 'mentor';
-        const canCreateEvents = userRole === 'mentor';
+        const allowedRoles = ['participant', 'mentor', 'company', 'specialist'];
+        const userRole = allowedRoles.includes(role) ? role : 'mentor';
+        const canCreateEvents = userRole !== 'participant';
 
         user = new User({
             name,
@@ -224,8 +225,8 @@ const deleteByAdmin = async (req, res) => {
 
 const getPublicMentors = async (req, res) => {
     try {
-        const mentors = await User.find({ role: 'mentor', status: 'active', isPublic: true })
-            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits badges')
+        const mentors = await User.find({ role: { $in: ['mentor', 'specialist', 'company'] }, status: 'active', isPublic: true })
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits badges role')
             .sort({ createdAt: -1 });
         res.json(mentors);
     } catch (err) {
@@ -235,8 +236,8 @@ const getPublicMentors = async (req, res) => {
 
 const getPublicMentorById = async (req, res) => {
     try {
-        const mentor = await User.findOne({ _id: req.params.id, role: 'mentor', status: 'active', isPublic: true })
-            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits badges');
+        const mentor = await User.findOne({ _id: req.params.id, role: { $in: ['mentor', 'specialist', 'company'] }, status: 'active', isPublic: true })
+            .select('name businessName bio profilePhoto socialLinks country plan createdAt followers following profileVisits badges role');
 
         if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
 
@@ -333,7 +334,7 @@ const searchMentors = async (req, res) => {
         }
 
         const mentors = await User.find({
-            role: 'mentor',
+            role: { $in: ['mentor', 'specialist', 'company'] },
             status: 'active',
             $or: [
                 { name: { $regex: q, $options: 'i' } },

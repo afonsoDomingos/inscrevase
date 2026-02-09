@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronRight, Loader2, Star, Users, Award, Eye } from 'lucide-react';
+import { Search, ChevronRight, Loader2, Star, Users, Award, Eye, Briefcase, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -15,6 +15,7 @@ export default function MentorsShowcase() {
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState<'all' | 'mentor' | 'specialist' | 'company'>('all');
 
     useEffect(() => {
         const fetchMentors = async () => {
@@ -30,11 +31,15 @@ export default function MentorsShowcase() {
         fetchMentors();
     }, []);
 
-    const filteredMentors = mentors.filter(m =>
-        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (m.businessName && m.businessName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (m.bio && m.bio.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredMentors = mentors.filter(m => {
+        const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (m.businessName && m.businessName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (m.bio && m.bio.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        const matchesTab = activeTab === 'all' ? true : m.role === activeTab;
+
+        return matchesSearch && matchesTab;
+    });
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fcfcfc' }}>
@@ -174,6 +179,44 @@ export default function MentorsShowcase() {
                         }}>
                             {t('common.search')}
                         </button>
+                    </div>
+
+                    {/* Role Filter Tabs */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: '1rem',
+                        marginTop: '2rem',
+                        flexWrap: 'wrap'
+                    }}>
+                        {[
+                            { id: 'all', label: 'Todos', icon: Users },
+                            { id: 'mentor', label: 'Mentores', icon: User },
+                            { id: 'specialist', label: 'Especialistas', icon: Award },
+                            { id: 'company', label: 'Empresas', icon: Briefcase }
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as 'all' | 'mentor' | 'specialist' | 'company')}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px 20px',
+                                    borderRadius: '50px',
+                                    background: activeTab === tab.id ? 'var(--gold-gradient)' : 'rgba(255,255,255,0.05)',
+                                    border: activeTab === tab.id ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                                    color: activeTab === tab.id ? '#000' : '#fff',
+                                    fontWeight: activeTab === tab.id ? 700 : 500,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    fontSize: '0.9rem'
+                                }}
+                            >
+                                <tab.icon size={16} />
+                                {tab.label}
+                            </button>
+                        ))}
                     </div>
                 </motion.div>
             </section>
