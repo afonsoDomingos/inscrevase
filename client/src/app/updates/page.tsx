@@ -12,7 +12,9 @@ import {
     Zap,
     Users,
     Video,
-    ShieldCheck
+    ShieldCheck,
+    MessageSquare,
+    ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
@@ -197,10 +199,56 @@ export default function UpdatesPage() {
                 </div>
 
                 <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-                    <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#666', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#000'} onMouseOut={(e) => e.currentTarget.style.color = '#666'}>
+                    <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#666', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s', marginBottom: '2rem' }} onMouseOver={(e) => e.currentTarget.style.color = '#000'} onMouseOut={(e) => e.currentTarget.style.color = '#666'}>
                         <ChevronLeft size={20} />
                         {t('updates.backHome')}
                     </Link>
+
+                    {/* Feedback CTA */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        style={{
+                            background: 'linear-gradient(135deg, #111 0%, #222 100%)',
+                            borderRadius: '24px',
+                            padding: '3rem 2rem',
+                            color: '#fff',
+                            marginTop: '2rem',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            border: '1px solid rgba(212, 175, 55, 0.3)'
+                        }}
+                    >
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                            <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem' }}>
+                                O que achou destas novidades?
+                            </h3>
+                            <p style={{ color: '#aaa', fontSize: '1.1rem', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
+                                Seu feedback é o que nos move. Conte-nos como podemos tornar a Inscreva-se ainda melhor para você.
+                            </p>
+                            <Link
+                                href="/feedback"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
+                                    color: '#000',
+                                    padding: '14px 28px',
+                                    borderRadius: '12px',
+                                    textDecoration: 'none',
+                                    fontWeight: 900,
+                                    fontSize: '1rem',
+                                    boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)'
+                                }}
+                            >
+                                <MessageSquare size={20} />
+                                Deixar Feedback
+                                <ArrowRight size={20} />
+                            </Link>
+                        </div>
+                    </motion.div>
                 </div>
             </main>
 

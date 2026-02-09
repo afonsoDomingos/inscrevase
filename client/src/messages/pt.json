@@ -136,7 +136,8 @@
         "settings": "Configurações",
         "mentors": "Experts",
         "blog": "Blog",
-        "updates": "Atualizações"
+        "updates": "Atualizações",
+        "feedback": "Feedback"
     },
     "auth": {
         "signIn": "Entrar",
@@ -1119,5 +1120,34 @@
         "improved": "Melhoria",
         "fixed": "Corrigido",
         "latest": "ÚLTIMA VERSÃO"
+    },
+    "feedback": {
+        "title": "Sua Voz Importa",
+        "subtitle": "Ajude-nos a construir o futuro da Inscreva-se. Seu feedback é o nosso maior guia.",
+        "form": {
+            "name": "Nome",
+            "email": "E-mail",
+            "type": "Tipo de Feedback",
+            "rating": "Sua Avaliação",
+            "message": "Mensagem",
+            "placeholder": "Conte-nos o que podemos melhorar ou o que você mais gosta...",
+            "submit": "Enviar Feedback",
+            "sending": "Enviando...",
+            "success": "Obrigado pelo seu feedback!",
+            "error": "Ocorreu um erro ao enviar. Tente novamente."
+        },
+        "types": {
+            "bug": "Relatar Erro/Bug",
+            "suggestion": "Sugestão de Funcionalidade",
+            "praise": "Elogio",
+            "other": "Outro"
+        },
+        "ratings": {
+            "terrible": "Terrível",
+            "bad": "Ruim",
+            "good": "Bom",
+            "great": "Excelente",
+            "amazing": "Incrível"
+        }
     }
 }

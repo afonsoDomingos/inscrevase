@@ -136,7 +136,8 @@
         "settings": "Settings",
         "mentors": "Experts",
         "blog": "Blog",
-        "updates": "Updates"
+        "updates": "Updates",
+        "feedback": "Feedback"
     },
     "auth": {
         "signIn": "Sign In",
@@ -1117,5 +1118,34 @@
         "improved": "Improved",
         "fixed": "Fixed",
         "latest": "LATEST VERSION"
+    },
+    "feedback": {
+        "title": "Your Voice Matters",
+        "subtitle": "Help us build the future of Inscreva-se. Your feedback is our greatest guide.",
+        "form": {
+            "name": "Name",
+            "email": "Email",
+            "type": "Feedback Type",
+            "rating": "Your Rating",
+            "message": "Message",
+            "placeholder": "Tell us what we can improve or what you like the most...",
+            "submit": "Send Feedback",
+            "sending": "Sending...",
+            "success": "Thank you for your feedback!",
+            "error": "An error occurred while sending. Please try again."
+        },
+        "types": {
+            "bug": "Report Bug",
+            "suggestion": "Feature Suggestion",
+            "praise": "Praise",
+            "other": "Other"
+        },
+        "ratings": {
+            "terrible": "Terrible",
+            "bad": "Bad",
+            "good": "Good",
+            "great": "Great",
+            "amazing": "Amazing"
+        }
     }
 }
