@@ -1148,6 +1148,21 @@
             "good": "Bom",
             "great": "Excelente",
             "amazing": "Incrível"
+        },
+        "roadmap": {
+            "title": "Futuro da Plataforma",
+            "subtitle": "Veja o que estamos construindo com base nas sugestões da nossa comunidade.",
+            "status": {
+                "planned": "Planejado",
+                "progress": "Em Desenvolvimento",
+                "testing": "Em Testes",
+                "done": "Implementado"
+            },
+            "featured": "Destaque da Comunidade"
+        },
+        "wallOfLove": {
+            "title": "Voz de quem Inspira",
+            "subtitle": "O que nossos experts e alunos estão dizendo sobre a nova era da Inscreva-se."
         }
     }
 }

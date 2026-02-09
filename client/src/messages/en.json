@@ -1146,6 +1146,21 @@
             "good": "Good",
             "great": "Great",
             "amazing": "Amazing"
+        },
+        "roadmap": {
+            "title": "Platform Future",
+            "subtitle": "See what we are building based on our community's suggestions.",
+            "status": {
+                "planned": "Planned",
+                "progress": "In Progress",
+                "testing": "Testing",
+                "done": "Implemented"
+            },
+            "featured": "Community Highlight"
+        },
+        "wallOfLove": {
+            "title": "Voice of Inspiration",
+            "subtitle": "What our experts and students are saying about the new era of Inscreva-se."
         }
     }
 }

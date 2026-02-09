@@ -1,16 +1,14 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Rocket,
     Sparkles,
     Clock,
     ChevronLeft,
     CheckCircle2,
-    Wrench,
     Zap,
-    Users,
     Video,
     ShieldCheck,
     MessageSquare,
@@ -87,6 +85,14 @@ const updates: UpdateItem[] = [
 
 export default function UpdatesPage() {
     const { t, locale } = useTranslate();
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const getTypeStyles = (type: UpdateItem['type']) => {
         switch (type) {
@@ -192,6 +198,74 @@ export default function UpdatesPage() {
                                             </ul>
                                         </div>
                                     </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* ROADMAP SECTION */}
+                <div style={{ marginTop: '6rem', marginBottom: '6rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#1a1a1a', marginBottom: '1rem' }}>
+                            {t('feedback.roadmap.title')}
+                        </h2>
+                        <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
+                            {t('feedback.roadmap.subtitle')}
+                        </p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
+                        {[
+                            {
+                                title: { pt: 'Integração Multipagamentos África', en: 'Multi-payment Africa Integration' },
+                                desc: { pt: 'Novos gateways para M-Pesa e e-Mola automatizados.', en: 'New automated M-Pesa and e-Mola gateways.' },
+                                status: 'progress',
+                                icon: <Zap size={20} />
+                            },
+                            {
+                                title: { pt: 'App Mobile Nativo (PWA+)', en: 'Native Mobile App (PWA+)' },
+                                desc: { pt: 'Experiência de instalação aprimorada para iOS e Android.', en: 'Enhanced installation experience for iOS and Android.' },
+                                status: 'planned',
+                                icon: <Rocket size={20} />
+                            },
+                            {
+                                title: { pt: 'IA para Gestão de Conteúdo', en: 'AI for Content Management' },
+                                desc: { pt: 'Criação de resumos e legendas para aulas via IA.', en: 'Creation of summaries and captions for lessons via AI.' },
+                                status: 'testing',
+                                icon: <Sparkles size={20} />
+                            }
+                        ].map((item, idx) => {
+                            const getStatusLabel = (status: string) => {
+                                switch (status) {
+                                    case 'planned': return { label: t('feedback.roadmap.status.planned'), color: '#666', bg: '#f3f4f6' };
+                                    case 'progress': return { label: t('feedback.roadmap.status.progress'), color: '#0369a1', bg: '#e0f2fe' };
+                                    case 'testing': return { label: t('feedback.roadmap.status.testing'), color: '#92400e', bg: '#fef3c7' };
+                                    default: return { label: '', color: '#666', bg: '#f3f4f6' };
+                                }
+                            };
+                            const status = getStatusLabel(item.status);
+                            return (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    style={{ background: '#fff', padding: '2rem', borderRadius: '24px', border: '1px solid #eee', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                        <div style={{ color: '#D4AF37' }}>{item.icon}</div>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '4px 10px', borderRadius: '8px', background: status.bg, color: status.color, textTransform: 'uppercase' }}>
+                                            {status.label}
+                                        </span>
+                                    </div>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                                        {locale === 'pt' ? item.title.pt : item.title.en}
+                                    </h3>
+                                    <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: '1.5' }}>
+                                        {locale === 'pt' ? item.desc.pt : item.desc.en}
+                                    </p>
                                 </motion.div>
                             );
                         })}

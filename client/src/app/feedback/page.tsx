@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    MessageSquare,
     ChevronLeft,
     Star,
     Send,
@@ -12,8 +11,7 @@ import {
     Heart,
     Lightbulb,
     Bug,
-    MoreHorizontal,
-    ArrowRight
+    MoreHorizontal
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -65,7 +63,7 @@ export default function FeedbackPage() {
             setSent(true);
             toast.success(t('feedback.form.success'));
             setFormData({ name: '', email: '', type: 'suggestion', rating: 5, message: '' });
-        } catch (error) {
+        } catch (_error) {
             toast.error(t('feedback.form.error'));
         } finally {
             setSending(false);
