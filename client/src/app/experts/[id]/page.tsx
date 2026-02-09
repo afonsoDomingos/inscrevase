@@ -18,7 +18,7 @@ import { formService, FormModel } from '@/lib/formService';
 import { serviceService, ServiceModel } from '@/lib/serviceService';
 import { ShoppingBag } from 'lucide-react';
 
-export default function MentorProfilePage() {
+export default function ExpertProfilePage() {
     const { id } = useParams();
     const router = useRouter();
     const { t } = useTranslate();
@@ -116,7 +116,7 @@ export default function MentorProfilePage() {
                 <Users size={64} style={{ opacity: 0.1 }} />
                 <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '2rem' }}>{t('mentors.noMentors')}</h2>
                 <button
-                    onClick={() => router.push('/mentores')}
+                    onClick={() => router.push('/experts')}
                     style={{
                         background: '#000', color: '#FFD700', padding: '1rem 2.5rem',
                         borderRadius: '50px', border: 'none', fontWeight: 700, cursor: 'pointer'
@@ -171,7 +171,7 @@ export default function MentorProfilePage() {
                     <motion.button
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        onClick={() => router.push('/mentores')}
+                        onClick={() => router.push('/experts')}
                         style={{
                             display: 'flex', alignItems: 'center', gap: '8px',
                             background: 'rgba(255,255,255,0.05)', color: '#fff',

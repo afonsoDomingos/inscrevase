@@ -134,7 +134,7 @@
         "dashboard": "Painel",
         "profile": "Perfil",
         "settings": "Configurações",
-        "mentors": "Comunidade",
+        "mentors": "Experts",
         "blog": "Blog"
     },
     "auth": {
@@ -911,16 +911,16 @@
         "viewPdf": "Ver Documento PDF"
     },
     "mentors": {
-        "title": "Elite de Mentores",
-        "subtitle": "Conecte-se com os maiores especialistas da nossa rede exclusiva.",
-        "searchPlaceholder": "Buscar mentor ou negócio...",
+        "title": "Elite Experts",
+        "subtitle": "Conecte-se com os maiores experts da nossa rede exclusiva.",
+        "searchPlaceholder": "Buscar expert ou negócio...",
         "noMentors": "Nenhum mentor encontrado com esses critérios.",
         "viewProfile": "Ver Perfil",
         "joinedIn": "Membro desde",
         "specialist": "Especialista",
         "location": "Localização",
         "events": "Eventos Ativos",
-        "bio": "Sobre o Mentor",
+        "bio": "Sobre o Expert",
         "contact": "Contactar",
         "backToList": "Voltar à lista",
         "services": "Serviços & Produtos",
@@ -934,7 +934,7 @@
         "viewDetails": "Ver Detalhes",
         "dateToBeDefined": "Data a definir",
         "serviceWhatsAppMessage": "Olá {name}! Vi seu serviço \"{title}\" no Inscreva-se e gostaria de saber mais.",
-        "footer": "© 2026 INSCRIVA-SE • MENTOR ELITE PROGRAM",
+        "footer": "© 2026 INSCRIVA-SE • EXPERT ELITE PROGRAM",
         "roleAll": "Todos",
         "roleMentor": "Mentores",
         "roleSpecialist": "Especialistas",

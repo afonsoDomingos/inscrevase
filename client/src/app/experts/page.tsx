@@ -11,7 +11,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import { serviceService, ServiceModel } from '@/lib/serviceService';
 
-export default function MentorsShowcase() {
+export default function ExpertsShowcase() {
     const { t } = useTranslate();
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -566,7 +566,7 @@ export default function MentorsShowcase() {
                                             {/* Action Button - Subtle & Integrated */}
                                             <div style={{ marginTop: 'auto', width: '100%' }}>
                                                 <Link
-                                                    href={`/mentores/${mentor.id || mentor._id}`}
+                                                    href={`/experts/${mentor.id || mentor._id}`}
                                                     style={{
                                                         display: 'flex',
                                                         alignItems: 'center',

@@ -242,7 +242,7 @@ export default function Home() {
               }} className="hero-btn primary hover-glow">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
-              <Link href="/mentores" style={{
+              <Link href="/experts" style={{
                 flex: 1,
                 minWidth: '220px',
                 padding: '1.2rem 0',
@@ -407,7 +407,7 @@ export default function Home() {
                 </div>
                 <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a' }}>Eventos <span className="gold-text">Premium</span></h2>
               </div>
-              <Link href="/mentores" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#B8860B', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem' }}>
+              <Link href="/experts" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#B8860B', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem' }}>
                 Ver todos os eventos <ChevronRight size={18} />
               </Link>
             </motion.div>
@@ -1105,7 +1105,7 @@ export default function Home() {
                 }}>
                   {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
                 </Link>
-                <Link href="/mentores" style={{
+                <Link href="/experts" style={{
                   padding: '12px 60px',
                   borderRadius: '4px',
                   fontSize: '0.85rem',
@@ -1164,7 +1164,7 @@ export default function Home() {
                 }}>
                   {isLoggedIn ? t('nav.dashboard') : (t('common.participate') || 'Participar')}
                 </Link>
-                <Link href="/mentores" style={{
+                <Link href="/experts" style={{
                   padding: '12px 60px',
                   borderRadius: '4px',
                   fontSize: '0.85rem',

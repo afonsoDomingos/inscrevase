@@ -134,7 +134,7 @@
         "dashboard": "Dashboard",
         "profile": "Profile",
         "settings": "Settings",
-        "mentors": "Explore Mentors",
+        "mentors": "Experts",
         "blog": "Blog"
     },
     "auth": {
@@ -909,16 +909,16 @@
         "viewPdf": "View PDF Document"
     },
     "mentors": {
-        "title": "Mentor Elite",
+        "title": "Elite Experts",
         "subtitle": "Connect with the top experts in our exclusive network.",
-        "searchPlaceholder": "Search mentor or business...",
+        "searchPlaceholder": "Search expert or business...",
         "noMentors": "No mentors found with these criteria.",
         "viewProfile": "View Profile",
         "joinedIn": "Member since",
         "specialist": "Specialist",
         "location": "Location",
         "events": "Active Events",
-        "bio": "About the Mentor",
+        "bio": "About the Expert",
         "contact": "Contact",
         "backToList": "Back to list",
         "services": "Services & Products",
@@ -932,7 +932,7 @@
         "viewDetails": "View Details",
         "dateToBeDefined": "Date to be defined",
         "serviceWhatsAppMessage": "Hello {name}! I saw your service \"{title}\" on Inscreva-se and would like to know more.",
-        "footer": "© 2026 INSCRIVA-SE • MENTOR ELITE PROGRAM",
+        "footer": "© 2026 INSCRIVA-SE • EXPERT ELITE PROGRAM",
         "roleAll": "All",
         "roleMentor": "Mentors",
         "roleSpecialist": "Specialists",

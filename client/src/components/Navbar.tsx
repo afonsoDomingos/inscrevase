@@ -68,7 +68,7 @@ export default function Navbar() {
 
         {/* Center Links (Desktop) */}
         <div className="nav-center-links">
-          <Link href="/mentores" className="nav-item">
+          <Link href="/experts" className="nav-item">
             {t('nav.mentors')}
           </Link>
           <Link href="/sobre-nos" className="nav-item">
@@ -133,7 +133,7 @@ export default function Navbar() {
               <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.home')}</span>
             </div>
           </Link>
-          <Link href="/mentores" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+          <Link href="/experts" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
               <Users size={24} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.mentors')}</span>
