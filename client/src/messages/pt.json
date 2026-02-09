@@ -553,6 +553,7 @@
         "title": "Eventos",
         "public": {
             "officialMentor": "Mentor Oficial",
+            "officialRole": "{role} Oficial",
             "registrationValue": "Valor da Inscrição",
             "registrationsClosed": "INSCRIÇÕES ENCERRADAS",
             "capacityReachedDesc": "Este evento atingiu a capacidade máxima. Fique atento para as próximas edições!",
@@ -940,7 +941,9 @@
         "roleAll": "Todos",
         "roleMentor": "Mentores",
         "roleSpecialist": "Especialistas",
-        "roleCompany": "Empresas"
+        "roleCompany": "Empresas",
+        "followRole": "Seguir {role}",
+        "defaultBio": "Membro de destaque no ecossistema Inscreva-se. Com uma trajetória marcada pela autoridade e resultados, compartilha sua visão estratégica para elevar o nível de cada profissional que cruza seu caminho."
     },
     "ai": {
         "buttonWrite": "AURA AI: AJUDAR A ESCREVER",
@@ -974,8 +977,10 @@
         "terms": "Termos",
         "welcome": "Boas-vindas",
         "responsibleMentor": "Mentor Responsável",
+        "responsibleRole": "{role} Responsável",
         "mentorDefaultBio": "Especialista certificado Inscreva-se.",
         "eventMentor": "Mentor do Evento",
+        "eventRole": "{role} do Evento",
         "accessExternalLink": "Acessar Link Externo",
         "certificateSuccessToast": "Certificado gerado com sucesso!",
         "passport": "PASSAPORTE",
@@ -990,7 +995,8 @@
         "status": {
             "pending": "Pendente",
             "confirmed": "Confirmado",
-            "rejected": "Recusado"
+            "rejected": "Recusado",
+            "waitingApproval": "Aguardando Aprovação do {role}"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",

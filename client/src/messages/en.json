@@ -551,6 +551,7 @@
         "title": "Events",
         "public": {
             "officialMentor": "Official Mentor",
+            "officialRole": "Official {role}",
             "registrationValue": "Registration Value",
             "registrationsClosed": "REGISTRATIONS CLOSED",
             "capacityReachedDesc": "This event has reached maximum capacity. Stay tuned for future editions!",
@@ -938,7 +939,9 @@
         "roleAll": "All",
         "roleMentor": "Mentors",
         "roleSpecialist": "Specialists",
-        "roleCompany": "Companies"
+        "roleCompany": "Companies",
+        "followRole": "Follow {role}",
+        "defaultBio": "A distinguished member of the Inscreva-se ecosystem. With a trajectory marked by authority and results, they share their strategic vision to elevate the level of every professional who crosses their path."
     },
     "ai": {
         "buttonWrite": "AURA AI: HELP WRITE",
@@ -972,8 +975,10 @@
         "terms": "Terms",
         "welcome": "Welcome",
         "responsibleMentor": "Responsible Mentor",
+        "responsibleRole": "Responsible {role}",
         "mentorDefaultBio": "Inscreva-se certified expert.",
         "eventMentor": "Event Mentor",
+        "eventRole": "Event {role}",
         "accessExternalLink": "Access External Link",
         "certificateSuccessToast": "Certificate generated successfully!",
         "passport": "PASSPORT",
@@ -987,7 +992,8 @@
         "status": {
             "pending": "Pending",
             "confirmed": "Confirmed",
-            "rejected": "Rejected"
+            "rejected": "Rejected",
+            "waitingApproval": "Waiting for {role} Approval"
         },
         "communityTitle": "Community",
         "chatSubscribersOnly": "Only enrolled participants can interact in the chat.",

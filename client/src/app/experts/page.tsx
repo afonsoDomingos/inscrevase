@@ -495,7 +495,7 @@ export default function ExpertsShowcase() {
                                                         textTransform: 'uppercase',
                                                         letterSpacing: '0.5px'
                                                     }}>
-                                                        Mentor
+                                                        {t(`common.badges.${mentor.role || 'mentor'}`)}
                                                     </span>
                                                 )}
                                             </div>

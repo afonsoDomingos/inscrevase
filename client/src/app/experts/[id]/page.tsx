@@ -260,7 +260,7 @@ export default function ExpertProfilePage() {
                                     ))
                                 ) : (
                                     <div style={{ background: '#FFD700', color: '#000', padding: '4px 12px', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                        Mentor Verificado
+                                        {t(`common.badges.${mentor.role || 'mentor'}`)} {t('common.badges.verified')}
                                     </div>
                                 )}
                                 <Verified size={20} className="gold-text" />
@@ -352,7 +352,7 @@ export default function ExpertProfilePage() {
                                 ) : isFollowing ? (
                                     <><UserMinus size={18} /> Seguindo</>
                                 ) : (
-                                    <><UserPlus size={18} /> Seguir Mentor</>
+                                    <><UserPlus size={18} /> {t('mentors.followRole', { role: t(`common.badges.${mentor.role || 'mentor'}`) })}</>
                                 )}
                             </motion.button>
                         </motion.div>
@@ -479,7 +479,7 @@ export default function ExpertProfilePage() {
                             </div>
 
                             <p style={{ fontSize: '1.25rem', lineHeight: 2, color: '#444', whiteSpace: 'pre-line', position: 'relative', zIndex: 1 }}>
-                                {mentor.bio || "Este mentor é um pilar de excelência no ecossistema Inscreva-se. Com uma trajetória marcada pela autoridade e resultados, ele compartilha sua visão estratégica para elevar o nível de cada profissional que cruza seu caminho."}
+                                {mentor.bio || t('mentors.defaultBio', { role: t(`common.badges.${mentor.role || 'mentor'}`) })}
                             </p>
 
                             <div style={{

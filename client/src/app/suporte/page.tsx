@@ -90,22 +90,22 @@ export default function SuportePage() {
         {
             icon: <Phone size={24} />,
             title: 'Telefone / WhatsApp',
-            value: '+258 84 787 7405',
-            link: 'https://wa.me/258847877405',
+            value: '+258 85 607 9576',
+            link: 'https://wa.me/258856079576',
             description: 'Disponível 24/7 para suporte urgente'
         },
         {
             icon: <Mail size={24} />,
             title: 'Email',
-            value: 'karinganastudio23@gmail.com',
-            link: 'mailto:karinganastudio23@gmail.com',
+            value: 'info@inscreva-se.com',
+            link: 'mailto:info@inscreva-se.com',
             description: 'Resposta em até 24 horas'
         },
         {
             icon: <MessageCircle size={24} />,
             title: 'WhatsApp Direto',
             value: 'Chat Instantâneo',
-            link: 'https://wa.me/258847877405?text=Olá!%20Preciso%20de%20ajuda%20com%20a%20plataforma%20Inscreva-se',
+            link: 'https://wa.me/258856079576?text=Olá!%20Preciso%20de%20ajuda%20com%20a%20plataforma%20Inscreva-se',
             description: 'Suporte em tempo real'
         }
     ];

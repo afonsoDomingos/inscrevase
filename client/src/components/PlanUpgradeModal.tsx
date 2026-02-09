@@ -145,9 +145,9 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                                 <p style={{ fontSize: '0.9rem', color: '#555', marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: t('plans.manualUpgrade.paymentInstructions', { amount: String(manualPlan.amount), currency }) }}>
                                 </p>
                                 <div style={{ background: '#fff', padding: '15px', borderRadius: '16px', textAlign: 'left', fontSize: '0.85rem' }}>
-                                    <div style={{ marginBottom: '8px' }}>🇲🇿 <b>M-Pesa:</b> 847877405 (Afonso Domingos)</div>
+                                    <div style={{ marginBottom: '8px' }}>🇲🇿 <b>M-Pesa:</b> 856079576 (Afonso Domingos)</div>
                                     <div style={{ marginBottom: '8px' }}>🇲🇿 <b>e-Mola:</b> 879642412 (Afonso Domingos)</div>
-                                    <div style={{ marginBottom: '8px' }}>🌍 <b>PayPal:</b> karinganastudio23@gmail.com</div>
+                                    <div style={{ marginBottom: '8px' }}>🌍 <b>PayPal:</b> info@inscreva-se.com</div>
                                     <div>🏦 <b>NIB:</b> 000100000074301049557</div>
                                 </div>
                             </div>
