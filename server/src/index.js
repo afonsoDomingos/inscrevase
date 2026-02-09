@@ -181,6 +181,7 @@ app.use('/api/newsletter', require('./routes/newsletter'));
 app.use('/api/community', require('./routes/communityRoutes'));
 app.use('/api/lessons', require('./routes/lessonRoutes'));
 app.use('/api/certificates', require('./routes/certificateRoutes'));
+app.use('/api/services', require('./routes/serviceRoutes'));
 
 // Endpoint to get all online users
 app.get('/api/users/status/online', (req, res) => {
