@@ -63,7 +63,7 @@ router.get('/', protect, async (req, res) => {
 
             const approvedFormIds = userSubmissions.map(s => s.form);
 
-            const roleCondition = req.user.role === 'mentor' ? 'mentors' : 'participants';
+            const roleCondition = ['mentor', 'specialist', 'company'].includes(req.user.role) ? 'mentors' : 'participants';
 
             conditions.push({
                 $and: [
