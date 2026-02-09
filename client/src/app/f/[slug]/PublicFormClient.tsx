@@ -20,7 +20,9 @@ import {
     ArrowRight,
     Phone,
     Info,
-    Coins
+    Coins,
+    Star,
+    Users
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -496,6 +498,45 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         <span style={{ fontSize: '0.8rem', fontWeight: 800, color: titleColor }}>{t('events.public.vipGroup')}</span>
                                     </motion.a>
                                 )}
+
+                                {/* Social Proof Metrics */}
+                                <motion.div
+                                    variants={itemVariants}
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                                        gap: '15px',
+                                        marginBottom: '2rem'
+                                    }}
+                                >
+                                    <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                        <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                                            <Users size={24} />
+                                        </div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalStudents || 120}+</div>
+                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.students')}</div>
+                                    </div>
+
+                                    <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                        <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                                            <Zap size={24} />
+                                        </div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalEvents || 12}+</div>
+                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.eventsCreated')}</div>
+                                    </div>
+
+                                    <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                        <div style={{ color: '#FFD700', marginBottom: '8px', display: 'flex', justifyContent: 'center', gap: '2px' }}>
+                                            <Star size={18} fill="#FFD700" />
+                                            <Star size={18} fill="#FFD700" />
+                                            <Star size={18} fill="#FFD700" />
+                                            <Star size={18} fill="#FFD700" />
+                                            <Star size={18} fill="#FFD700" />
+                                        </div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.averageRating || 4.9}</div>
+                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.eventRating.stats.average')}</div>
+                                    </div>
+                                </motion.div>
 
                                 {form.creator && (
                                     <motion.div

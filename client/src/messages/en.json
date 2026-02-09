@@ -1145,7 +1145,19 @@
             "subtitle": "Your rating helps other participants and helps the mentor improve.",
             "button": "Submit Rating",
             "success": "Thank you for your rating!",
-            "alreadyRated": "You have already rated this event."
+            "alreadyRated": "You have already rated this event.",
+            "publicTitle": "Community Reviews",
+            "stats": {
+                "average": "Satisfaction average",
+                "total": "reviews submitted"
+            }
+        },
+        "socialProof": {
+            "impact": "Community Impact",
+            "students": "Enrolled Students",
+            "mentors": "Experts Trained",
+            "eventsCreated": "Events Conducted",
+            "totalImpact": "Transformed People"
         },
         "ratings": {
             "terrible": "Terrible",

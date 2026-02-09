@@ -126,6 +126,10 @@ export interface FormModel {
     partners?: string[] | { _id: string; name: string; businessName?: string; profilePhoto?: string }[];
     partnersPublic?: string[];
     isSponsored?: boolean;
+    totalStudents?: number;
+    totalEvents?: number;
+    averageRating?: number;
+    totalRatings?: number;
 }
 
 export const formService = {

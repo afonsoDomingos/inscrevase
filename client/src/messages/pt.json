@@ -1147,7 +1147,19 @@
             "subtitle": "Sua avaliação ajuda outros participantes e o mentor a melhorar.",
             "button": "Enviar Avaliação",
             "success": "Obrigado pela sua avaliação!",
-            "alreadyRated": "Você já avaliou este evento."
+            "alreadyRated": "Você já avaliou este evento.",
+            "publicTitle": "Avaliações da Comunidade",
+            "stats": {
+                "average": "Média de satisfação",
+                "total": "avaliações realizadas"
+            }
+        },
+        "socialProof": {
+            "impact": "Impacto na Comunidade",
+            "students": "Alunos Inscritos",
+            "mentors": "Especialistas Formados",
+            "eventsCreated": "Eventos Realizados",
+            "totalImpact": "Pessoas Transformadas"
         },
         "ratings": {
             "terrible": "Terrível",
