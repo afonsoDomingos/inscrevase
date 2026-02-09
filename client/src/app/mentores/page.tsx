@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronRight, Loader2, Star, Users, Award, Eye, Briefcase, User } from 'lucide-react';
+import { Search, ChevronRight, Loader2, Star, Users, Award, Eye, Briefcase, User, Filter } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
+import { serviceService, ServiceModel } from '@/lib/serviceService';
 
 export default function MentorsShowcase() {
     const { t } = useTranslate();
@@ -16,30 +17,54 @@ export default function MentorsShowcase() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'all' | 'mentor' | 'specialist' | 'company'>('all');
+    const [services, setServices] = useState<ServiceModel[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [minPrice, setMinPrice] = useState<string>('');
+    const [maxPrice, setMaxPrice] = useState<string>('');
+    const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
-        const fetchMentors = async () => {
+        const fetchData = async () => {
             try {
-                const data = await userService.getPublicMentors();
-                setMentors(data);
+                const [mentorsData, servicesData] = await Promise.all([
+                    userService.getPublicMentors(),
+                    serviceService.getServices()
+                ]);
+                setMentors(mentorsData);
+                setServices(servicesData);
             } catch (error) {
-                console.error("Error fetching mentors:", error);
+                console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchMentors();
+        fetchData();
     }, []);
 
     const filteredMentors = mentors.filter(m => {
+        const mentorId = m.id || m._id;
+        const mentorServices = services.filter(s => s.creator?._id === mentorId);
+
         const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (m.businessName && m.businessName.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (m.bio && m.bio.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const matchesTab = activeTab === 'all' ? true : m.role === activeTab;
 
-        return matchesSearch && matchesTab;
+        const matchesCategory = selectedCategory === 'all' ||
+            mentorServices.some(s => s.category === selectedCategory);
+
+        const matchesPrice = (minPrice === '' && maxPrice === '') || mentorServices.some(s => {
+            const price = s.price || 0;
+            const min = minPrice === '' ? 0 : parseFloat(minPrice);
+            const max = maxPrice === '' ? Infinity : parseFloat(maxPrice);
+            return price >= min && price <= max;
+        });
+
+        return matchesSearch && matchesTab && matchesCategory && matchesPrice;
     });
+
+    const categories = ['Consultoria', 'Mentoria', 'Treinamento', 'Design', 'Desenvolvimento', 'Marketing', 'Outro'];
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fcfcfc' }}>
@@ -161,6 +186,29 @@ export default function MentorsShowcase() {
                                 outline: 'none'
                             }}
                         />
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            style={{
+                                position: 'absolute',
+                                right: '110px',
+                                top: '6px',
+                                bottom: '6px',
+                                background: showFilters ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,215,0,0.3)',
+                                borderRadius: '100px',
+                                padding: '0 1rem',
+                                color: '#FFD700',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <Filter size={16} /> {showFilters ? t('dashboard.servicesManagement.filters.clear') : t('dashboard.servicesManagement.filters.title')}
+                        </button>
                         <button style={{
                             position: 'absolute',
                             right: '6px',
@@ -181,6 +229,92 @@ export default function MentorsShowcase() {
                         </button>
                     </div>
 
+                    <AnimatePresence>
+                        {showFilters && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                style={{
+                                    maxWidth: '650px',
+                                    margin: '1.5rem auto 0',
+                                    background: '#151515',
+                                    borderRadius: '24px',
+                                    padding: '1.5rem',
+                                    border: '1px solid #222',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.5rem', textAlign: 'left' }}>
+                                            {t('dashboard.servicesManagement.categoryLabel')}
+                                        </label>
+                                        <select
+                                            value={selectedCategory}
+                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                background: '#0a0a0a',
+                                                border: '1px solid #333',
+                                                borderRadius: '10px',
+                                                padding: '0.6rem',
+                                                color: '#fff',
+                                                outline: 'none'
+                                            }}
+                                        >
+                                            <option value="all">{t('dashboard.servicesManagement.categories.all')}</option>
+                                            {categories.map(cat => (
+                                                <option key={cat} value={cat}>{t(`dashboard.servicesManagement.categories.${cat}`)}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.5rem', textAlign: 'left' }}>
+                                            {t('dashboard.servicesManagement.filters.price')}
+                                        </label>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <input
+                                                type="number"
+                                                placeholder={t('dashboard.servicesManagement.filters.minPrice')}
+                                                value={minPrice}
+                                                onChange={(e) => setMinPrice(e.target.value)}
+                                                style={{ width: '50%', background: '#0a0a0a', border: '1px solid #333', borderRadius: '10px', padding: '0.6rem', color: '#fff', outline: 'none' }}
+                                            />
+                                            <input
+                                                type="number"
+                                                placeholder={t('dashboard.servicesManagement.filters.maxPrice')}
+                                                value={maxPrice}
+                                                onChange={(e) => setMaxPrice(e.target.value)}
+                                                style={{ width: '50%', background: '#0a0a0a', border: '1px solid #333', borderRadius: '10px', padding: '0.6rem', color: '#fff', outline: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        setSelectedCategory('all');
+                                        setMinPrice('');
+                                        setMaxPrice('');
+                                    }}
+                                    style={{
+                                        marginTop: '1rem',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: '#666',
+                                        fontSize: '0.8rem',
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline'
+                                    }}
+                                >
+                                    {t('dashboard.servicesManagement.filters.clear')}
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     {/* Role Filter Tabs */}
                     <div style={{
                         display: 'flex',
@@ -190,10 +324,10 @@ export default function MentorsShowcase() {
                         flexWrap: 'wrap'
                     }}>
                         {[
-                            { id: 'all', label: 'Todos', icon: Users },
-                            { id: 'mentor', label: 'Mentores', icon: User },
-                            { id: 'specialist', label: 'Especialistas', icon: Award },
-                            { id: 'company', label: 'Empresas', icon: Briefcase }
+                            { id: 'all', label: t('mentors.roleAll'), icon: Users },
+                            { id: 'mentor', label: t('mentors.roleMentor'), icon: User },
+                            { id: 'specialist', label: t('mentors.roleSpecialist'), icon: Award },
+                            { id: 'company', label: t('mentors.roleCompany'), icon: Briefcase }
                         ].map((tab) => (
                             <button
                                 key={tab.id}

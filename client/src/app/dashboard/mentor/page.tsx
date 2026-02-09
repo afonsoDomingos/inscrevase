@@ -12,6 +12,7 @@ import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
+import ServicesManagement from '@/components/mentor/ServicesManagement';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { Pencil } from 'lucide-react';
@@ -398,6 +399,7 @@ function MentorDashboardContent() {
                         { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
+                        { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
@@ -1243,6 +1245,12 @@ function MentorDashboardContent() {
                     {activeTab === 'plans' && (
                         <motion.div key="plans" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <InternalPlansView />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'services' && (
+                        <motion.div key="services" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <ServicesManagement />
                         </motion.div>
                     )}
                 </AnimatePresence>

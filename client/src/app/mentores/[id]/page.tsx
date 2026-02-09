@@ -15,6 +15,8 @@ import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import { authService } from '@/lib/authService';
 import { formService, FormModel } from '@/lib/formService';
+import { serviceService, ServiceModel } from '@/lib/serviceService';
+import { ShoppingBag } from 'lucide-react';
 
 export default function MentorProfilePage() {
     const { id } = useParams();
@@ -28,6 +30,7 @@ export default function MentorProfilePage() {
     const [followingLoading, setFollowingLoading] = useState(false);
     const [mentorEvents, setMentorEvents] = useState<FormModel[]>([]);
     const [eventsLoading, setEventsLoading] = useState(true);
+    const [mentorServices, setMentorServices] = useState<ServiceModel[]>([]);
     const currentUser = useMemo(() => authService.getCurrentUser(), []);
     const visitRecorded = useRef(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -57,6 +60,10 @@ export default function MentorProfilePage() {
                 // Fetch Mentor Events
                 const events = await formService.getFormsByMentor(id as string);
                 setMentorEvents(events);
+
+                // Fetch Mentor Services
+                const services = await serviceService.getServices({ creator: id as string });
+                setMentorServices(services);
             } catch (error) {
                 console.error("Error fetching mentor info:", error);
             } finally {
@@ -494,15 +501,110 @@ export default function MentorProfilePage() {
                             </div>
                         </motion.div>
 
+                        {/* Services & Products List */}
+                        {mentorServices.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.45 }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
+                                    <div style={{ width: '3px', height: '24px', background: 'var(--gold-gradient)' }} />
+                                    <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>{t('mentors.services')}</h2>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem', marginBottom: '4rem' }}>
+                                    {mentorServices.slice(0, 6).map((service) => (
+                                        <motion.div
+                                            key={service._id}
+                                            whileHover={{ y: -5 }}
+                                            className="luxury-card"
+                                            style={{
+                                                background: '#fff',
+                                                borderRadius: '24px',
+                                                padding: '2rem',
+                                                border: '1px solid #f0f0f0',
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                overflow: 'hidden'
+                                            }}
+                                            onClick={async () => {
+                                                try {
+                                                    await serviceService.incrementInquiry(service._id);
+                                                    const text = encodeURIComponent(t('mentors.serviceWhatsAppMessage', { name: mentor.name, title: service.title }));
+                                                    window.open(`https://wa.me/${mentor.whatsapp || ''}?text=${text}`, '_blank');
+                                                } catch (e) {
+                                                    console.error(e);
+                                                }
+                                            }}
+                                        >
+                                            <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', opacity: 0.1 }}>
+                                                <ShoppingBag size={40} />
+                                            </div>
+
+                                            <div style={{ marginBottom: '1.5rem' }}>
+                                                <span style={{
+                                                    display: 'inline-block',
+                                                    padding: '4px 10px',
+                                                    background: 'rgba(255,215,0,0.1)',
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 800,
+                                                    color: '#B8860B',
+                                                    textTransform: 'uppercase',
+                                                    marginBottom: '1rem'
+                                                }}>
+                                                    {t(`dashboard.servicesManagement.categories.${service.category}`)}
+                                                </span>
+                                                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111', marginBottom: '0.8rem', lineHeight: 1.3 }}>
+                                                    {service.title}
+                                                </h3>
+                                                <p style={{ color: '#666', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                    {service.description}
+                                                </p>
+                                            </div>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                                                <div>
+                                                    {service.price && service.price > 0 ? (
+                                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                            <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>{t('mentors.investment')}</span>
+                                                            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#111' }}>
+                                                                {service.currency} {service.price.toLocaleString()}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span style={{ fontWeight: 800, color: '#10b981' }}>{t('mentors.onQuery')}</span>
+                                                    )}
+                                                </div>
+                                                <div style={{
+                                                    width: '44px',
+                                                    height: '44px',
+                                                    borderRadius: '12px',
+                                                    background: 'var(--gold-gradient)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    boxShadow: '0 4px 12px rgba(255,215,0,0.3)'
+                                                }}>
+                                                    <MessageCircle size={20} color="#000" />
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+
                         {/* Active Events List */}
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.45 }}
+                            transition={{ delay: 0.5 }}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
                                 <div style={{ width: '3px', height: '24px', background: 'var(--gold-gradient)' }} />
-                                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>Eventos & Masterclasses</h2>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>{t('mentors.eventsAndMasterclasses')}</h2>
                             </div>
 
                             {eventsLoading ? (
@@ -549,7 +651,7 @@ export default function MentorProfilePage() {
                                                         backdropFilter: 'blur(5px)',
                                                         border: '1px solid rgba(255,215,0,0.3)'
                                                     }}>
-                                                        INSCRIÇÕES ABERTAS
+                                                        {t('mentors.openRegistrations')}
                                                     </span>
                                                 </div>
 
@@ -576,7 +678,7 @@ export default function MentorProfilePage() {
                                                 </h3>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888', fontSize: '0.85rem' }}>
                                                     <Calendar size={14} className="gold-text" />
-                                                    {event.eventDate ? new Date(event.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Data a definir'}
+                                                    {event.eventDate ? new Date(event.eventDate).toLocaleDateString(t('common.locale') === 'en-US' ? 'en-US' : 'pt-PT', { day: '2-digit', month: 'long', year: 'numeric' }) : t('mentors.dateToBeDefined')}
                                                 </div>
                                                 <button style={{
                                                     width: '100%', marginTop: '1.5rem', padding: '0.8rem',
@@ -584,7 +686,7 @@ export default function MentorProfilePage() {
                                                     color: '#000', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
                                                     transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
                                                 }}>
-                                                    Ver Detalhes <ExternalLink size={14} />
+                                                    {t('mentors.viewDetails')} <ExternalLink size={14} />
                                                 </button>
                                             </div>
                                         </motion.div>
@@ -593,7 +695,7 @@ export default function MentorProfilePage() {
                             ) : (
                                 <div style={{ background: '#fff', padding: '4rem', borderRadius: '32px', textAlign: 'center', border: '2px dashed #eee' }}>
                                     <Calendar size={48} color="#eee" style={{ marginBottom: '1rem' }} />
-                                    <p style={{ color: '#999', fontWeight: 600 }}>Nenhum evento ativo no momento.</p>
+                                    <p style={{ color: '#999', fontWeight: 600 }}>{t('mentors.noActiveEvents')}</p>
                                 </div>
                             )}
                         </motion.div>
@@ -610,10 +712,15 @@ export default function MentorProfilePage() {
                             }}
                         >
                             <h3 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', marginBottom: '1.5rem' }}>
-                                Deseja aprender com <span className="gold-text">{mentor.name.split(' ')[0]}</span>?
+                                {t('mentors.learnWith', { name: mentor.name.split(' ')[0] }).split(mentor.name.split(' ')[0]).map((part, i, arr) => (
+                                    <span key={i}>
+                                        {part}
+                                        {i < arr.length - 1 && <span className="gold-text">{mentor.name.split(' ')[0]}</span>}
+                                    </span>
+                                ))}
                             </h3>
                             <p style={{ opacity: 0.6, fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
-                                Fique atento aos próximos eventos e masterclasses. A excelência não espera, e as vagas são extremamente limitadas.
+                                {t('mentors.learnWithDesc')}
                             </p>
                             <button style={{ background: 'var(--gold-gradient)', color: '#000', padding: '1.2rem 3rem', borderRadius: '100px', border: 'none', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}>
                                 {t('nav.events')}
@@ -627,7 +734,7 @@ export default function MentorProfilePage() {
             {/* Elite Footer */}
             <div style={{ padding: isMobile ? '40px 20px' : '60px', background: '#050505', color: '#fff', textAlign: 'center', borderTop: '1px solid rgba(255,215,0,0.1)' }}>
                 <p style={{ opacity: 0.3, letterSpacing: '3px', textTransform: 'uppercase', fontSize: '0.8rem' }}>
-                    © 2026 INSCRIVA-SE • MENTOR ELITE PROGRAM
+                    {t('mentors.footer')}
                 </p>
             </div>
             {/* Image Lightbox */}
