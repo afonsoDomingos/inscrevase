@@ -135,7 +135,8 @@
         "profile": "Profile",
         "settings": "Settings",
         "mentors": "Experts",
-        "blog": "Blog"
+        "blog": "Blog",
+        "updates": "Updates"
     },
     "auth": {
         "signIn": "Sign In",
@@ -1106,5 +1107,15 @@
             "title": "Success Tip",
             "introVideo": "We highly recommend creating at least one introduction video for your profile or lessons. It helps students connect better with you!"
         }
+    },
+    "updates": {
+        "title": "Updates & News",
+        "subtitle": "Stay informed about every evolution on the platform. New features, improvements, and fixes.",
+        "backHome": "Back Home",
+        "noUpdates": "No updates recorded yet.",
+        "new": "New",
+        "improved": "Improved",
+        "fixed": "Fixed",
+        "latest": "LATEST VERSION"
     }
 }

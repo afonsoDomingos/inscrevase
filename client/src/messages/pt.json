@@ -135,7 +135,8 @@
         "profile": "Perfil",
         "settings": "Configurações",
         "mentors": "Experts",
-        "blog": "Blog"
+        "blog": "Blog",
+        "updates": "Atualizações"
     },
     "auth": {
         "signIn": "Entrar",
@@ -1108,5 +1109,15 @@
             "title": "Dica para o seu sucesso",
             "introVideo": "Recomendamos que crie no mínimo um vídeo de introdução para o seu perfil ou aulas. Isso ajuda os alunos a conectarem-se melhor com você!"
         }
+    },
+    "updates": {
+        "title": "Atualizações & Novidades",
+        "subtitle": "Fique por dentro de cada evolução na plataforma. Novas funcionalidades, melhorias e correções.",
+        "backHome": "Voltar ao Início",
+        "noUpdates": "Nenhuma atualização registrada ainda.",
+        "new": "Novo",
+        "improved": "Melhoria",
+        "fixed": "Corrigido",
+        "latest": "ÚLTIMA VERSÃO"
     }
 }
