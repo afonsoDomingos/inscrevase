@@ -1101,6 +1101,10 @@
             "helpCenter": "Help Center & Tutorials",
             "guides": "guides",
             "lessons": "lessons"
+        },
+        "advisory": {
+            "title": "Success Tip",
+            "introVideo": "We highly recommend creating at least one introduction video for your profile or lessons. It helps students connect better with you!"
         }
     }
 }

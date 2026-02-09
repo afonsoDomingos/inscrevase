@@ -1103,6 +1103,10 @@
             "helpCenter": "Central de Ajuda & Tutoriais",
             "guides": "guias",
             "lessons": "aulas"
+        },
+        "advisory": {
+            "title": "Dica para o seu sucesso",
+            "introVideo": "Recomendamos que crie no mínimo um vídeo de introdução para o seu perfil ou aulas. Isso ajuda os alunos a conectarem-se melhor com você!"
         }
     }
 }

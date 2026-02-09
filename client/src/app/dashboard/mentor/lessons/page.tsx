@@ -24,12 +24,14 @@ import {
     ArrowUp,
     ArrowDown,
     Lock,
-    Unlock
+    Unlock,
+    Sparkles
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import MentorDashboardShell from '@/components/mentor/MentorDashboardShell';
+import { useTranslate } from '@/context/LanguageContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -80,6 +82,7 @@ interface Stats {
 
 
 export default function MentorLessonsPage() {
+    const { t } = useTranslate();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'learn' | 'manage'>('learn');
 
@@ -598,7 +601,7 @@ export default function MentorLessonsPage() {
                                     </h1>
                                 </div>
                                 <p style={{ fontSize: '1rem', color: '#666', maxWidth: '600px' }}>
-                                    Domine a plataforma com nossos cursos exclusivos para mentores
+                                    Domine a plataforma com nossos cursos exclusivos para experts
                                 </p>
 
                                 {/* Overall Progress */}
@@ -813,6 +816,42 @@ export default function MentorLessonsPage() {
                             ))}
                         </div>
 
+                        {/* Advisory Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            style={{
+                                background: 'linear-gradient(135deg, #111 0%, #222 100%)',
+                                color: 'white',
+                                padding: '1.5rem',
+                                borderRadius: '20px',
+                                marginBottom: '2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1.5rem',
+                                border: '1px solid rgba(212, 175, 55, 0.3)',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            <div style={{
+                                background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
+                                padding: '12px',
+                                borderRadius: '14px',
+                                color: '#000',
+                                flexShrink: 0
+                            }}>
+                                <Sparkles size={28} />
+                            </div>
+                            <div>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '4px', color: '#D4AF37' }}>
+                                    {t('lessons.advisory.title')}
+                                </h3>
+                                <p style={{ fontSize: '0.95rem', color: '#ccc', lineHeight: '1.5' }}>
+                                    {t('lessons.advisory.introVideo')}
+                                </p>
+                            </div>
+                        </motion.div>
+
                         {/* Actions */}
                         <div style={{
                             display: 'flex',
@@ -896,7 +935,7 @@ export default function MentorLessonsPage() {
                                                         background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
                                                         color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
                                                     }}>
-                                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Mentores'}
+                                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'participants' ? '👥 Alunos' : '🎓 Experts'}
                                                     </span>
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
@@ -1243,12 +1282,12 @@ export default function MentorLessonsPage() {
                                             onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as 'mentors' | 'participants' | 'both' })}
                                             style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}
                                         >
-                                            <option value="mentors">Mentores (Academia)</option>
-                                            <option value="participants">Participantes (Alunos)</option>
-                                            <option value="both">Ambos (Mentores e Participantes)</option>
+                                            <option value="mentors">Experts (Academia)</option>
+                                            <option value="participants">Alunos (Eventos)</option>
+                                            <option value="both">Ambos (Experts e Alunos)</option>
                                         </select>
                                         <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
-                                            Defina se esta aula é para treinamento de mentores, para alunos ou para ambos.
+                                            Defina se esta aula é para treinamento de experts, para alunos ou para ambos.
                                         </p>
                                     </div>
                                     <div>
