@@ -217,7 +217,7 @@ exports.createPublicMessage = async (req, res) => {
         const resend = new Resend(resendKey);
 
         try {
-            // NOTA: Resend em modo sandbox só permite enviar para karinganastudio23@gmail.com
+            // NOTA: Resend em modo sandbox só permite enviar para o email verificado (info@inscreva-se.com)
             // Até verificar um domínio, ambos os emails vão para o admin
 
             // Enviar ambos os emails
@@ -225,7 +225,7 @@ exports.createPublicMessage = async (req, res) => {
                 // Email para o admin
                 resend.emails.send({
                     from: 'Inscreva-se <onboarding@resend.dev>',
-                    to: 'karinganastudio23@gmail.com',
+                    to: 'info@inscreva-se.com',
                     subject: `Nova Mensagem de Suporte: ${subject}`,
                     html: `
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -250,7 +250,7 @@ exports.createPublicMessage = async (req, res) => {
                 // Email de confirmação (também para admin enquanto em sandbox)
                 resend.emails.send({
                     from: 'Inscreva-se <onboarding@resend.dev>',
-                    to: 'karinganastudio23@gmail.com', // Temporariamente para admin
+                    to: 'info@inscreva-se.com', // Temporariamente para admin
                     subject: `[CONFIRMAÇÃO PARA ${name}] Recebemos sua mensagem`,
                     html: `
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -278,8 +278,8 @@ exports.createPublicMessage = async (req, res) => {
                             <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
                             <p style="font-size: 12px; color: #999; text-align: center;">
                                 Inscreva-se - Plataforma de Gestão de Eventos<br>
-                                WhatsApp: +258 84 787 7405<br>
-                                Email: karinganastudio23@gmail.com
+                                WhatsApp: +258 85 607 9576<br>
+                                Email: info@inscreva-se.com
                             </p>
                         </div>
                     `
@@ -403,8 +403,8 @@ exports.updateMessageStatus = async (req, res) => {
                             <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
                             <p style="font-size: 12px; color: #999; text-align: center;">
                                 Inscreva-se - Plataforma de Gestão de Eventos<br>
-                                WhatsApp: +258 84 787 7405<br>
-                                Email: karinganastudio23@gmail.com
+                                WhatsApp: +258 85 607 9576<br>
+                                Email: info@inscreva-se.com
                             </p>
                         </div>
                     `
