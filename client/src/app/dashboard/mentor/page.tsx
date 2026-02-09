@@ -50,7 +50,9 @@ import {
     ChevronLeft,
     Menu,
     Newspaper,
-    Video
+    Video,
+    Award,
+    Briefcase
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -665,6 +667,36 @@ function MentorDashboardContent() {
                                 </span>
                                 {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
                             </motion.h1>
+                            {/* Role Identifier Badge */}
+                            <div style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                marginTop: '0.5rem',
+                                marginBottom: '0.5rem',
+                                padding: '6px 14px',
+                                borderRadius: '20px',
+                                background: user.role === 'company' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' :
+                                    user.role === 'specialist' ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
+                                        user.role === 'mentor' ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' :
+                                            'var(--gold-gradient)',
+                                color: '#fff',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                            }}>
+                                {user.role === 'company' && <Briefcase size={14} />}
+                                {user.role === 'specialist' && <Award size={14} />}
+                                {user.role === 'mentor' && <UserIcon size={14} />}
+                                <span>
+                                    {user.role === 'company' ? 'Você é uma Empresa' :
+                                        user.role === 'specialist' ? 'Você é um Especialista' :
+                                            user.role === 'mentor' ? 'Você é um Mentor' :
+                                                'Administrador'}
+                                </span>
+                            </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <p style={{
                                     color: '#666',

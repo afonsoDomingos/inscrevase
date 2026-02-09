@@ -558,6 +558,26 @@ export default function ParticipantDashboard() {
                                 {(user?.name || t('common.user')).split(' ')[0]}
                             </span>
                         </motion.h1>
+                        {/* Role Identifier Badge */}
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginTop: '0.5rem',
+                            marginBottom: '0.5rem',
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: '#fff',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                        }}>
+                            <User size={14} />
+                            <span>Você é um Participante</span>
+                        </div>
                         <p style={{
                             color: '#666',
                             marginTop: '0.4rem',
