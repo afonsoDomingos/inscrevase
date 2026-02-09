@@ -16,7 +16,7 @@ export default function ExpertsShowcase() {
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'all' | 'mentor' | 'specialist' | 'company'>('all');
+    const [activeTab, setActiveTab] = useState<'mentor' | 'specialist' | 'company'>('company');
     const [services, setServices] = useState<ServiceModel[]>([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [minPrice, setMinPrice] = useState<string>('');
@@ -49,7 +49,7 @@ export default function ExpertsShowcase() {
             (m.businessName && m.businessName.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (m.bio && m.bio.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const matchesTab = activeTab === 'all' ? true : m.role === activeTab;
+        const matchesTab = m.role === activeTab;
 
         const matchesCategory = selectedCategory === 'all' ||
             mentorServices.some(s => s.category === selectedCategory);
@@ -330,7 +330,7 @@ export default function ExpertsShowcase() {
                         ].map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(activeTab === tab.id ? 'all' : tab.id as 'mentor' | 'specialist' | 'company')}
+                                onClick={() => setActiveTab(tab.id as 'mentor' | 'specialist' | 'company')}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
