@@ -107,6 +107,8 @@
             "admin": "Admin",
             "superadmin": "Super Admin",
             "mentor": "Mentor",
+            "specialist": "Specialist",
+            "company": "Company",
             "participant": "Participant",
             "free": "Free",
             "pro": "Pro",

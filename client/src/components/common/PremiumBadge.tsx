@@ -1,9 +1,9 @@
 
-import { BadgeCheck, ShieldAlert, Crown, Zap, Briefcase, Star, Gem } from 'lucide-react';
+import { BadgeCheck, ShieldAlert, Crown, Zap, Briefcase, Star, Gem, User, Award } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 interface PremiumBadgeProps {
-    type: 'verified' | 'admin' | 'superadmin' | 'mentor' | 'participant' | 'free' | 'pro' | 'enterprise' | 'pending';
+    type: 'verified' | 'admin' | 'superadmin' | 'mentor' | 'specialist' | 'company' | 'participant' | 'free' | 'pro' | 'enterprise' | 'pending';
     size?: 'sm' | 'md' | 'lg';
     showLabel?: boolean;
 }
@@ -45,11 +45,27 @@ export default function PremiumBadge({ type, size = 'md', showLabel = true }: Pr
             shadow: '0 4px 6px rgba(0,0,0,0.4)'
         },
         mentor: {
-            icon: Briefcase,
+            icon: User,
             label: t('common.badges.mentor'),
             bg: '#F7FAFC',
             color: '#4A5568',
             border: '1px solid #E2E8F0',
+            shadow: 'none'
+        },
+        specialist: {
+            icon: Award,
+            label: t('common.badges.specialist'),
+            bg: 'rgba(212, 175, 55, 0.1)',
+            color: '#B8860B',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
+            shadow: 'none'
+        },
+        company: {
+            icon: Briefcase,
+            label: t('common.badges.company'),
+            bg: '#F0F5FF',
+            color: '#2B6CB0',
+            border: '1px solid #BEE3F8',
             shadow: 'none'
         },
         participant: {

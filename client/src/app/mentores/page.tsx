@@ -324,14 +324,13 @@ export default function MentorsShowcase() {
                         flexWrap: 'wrap'
                     }}>
                         {[
-                            { id: 'all', label: t('mentors.roleAll'), icon: Users },
                             { id: 'mentor', label: t('mentors.roleMentor'), icon: User },
                             { id: 'specialist', label: t('mentors.roleSpecialist'), icon: Award },
                             { id: 'company', label: t('mentors.roleCompany'), icon: Briefcase }
                         ].map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id as 'all' | 'mentor' | 'specialist' | 'company')}
+                                onClick={() => setActiveTab(activeTab === tab.id ? 'all' : tab.id as 'mentor' | 'specialist' | 'company')}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',

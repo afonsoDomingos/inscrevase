@@ -181,6 +181,8 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                 >
                     <option value="all">Todos Cargos</option>
                     <option value="mentor">Mentor</option>
+                    <option value="specialist">Especialista</option>
+                    <option value="company">Empresa</option>
                     <option value="participant">Participante</option>
                     <option value="admin">Admin</option>
                     <option value="superadmin">Super Admin</option>
@@ -292,7 +294,9 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                         type={
                                             user.role === 'SuperAdmin' ? 'superadmin' :
                                                 user.role === 'admin' ? 'admin' :
-                                                    user.role === 'mentor' ? 'mentor' : 'participant'
+                                                    user.role === 'mentor' ? 'mentor' :
+                                                        user.role === 'specialist' ? 'specialist' :
+                                                            user.role === 'company' ? 'company' : 'participant'
                                         }
                                         size="sm"
                                     />
