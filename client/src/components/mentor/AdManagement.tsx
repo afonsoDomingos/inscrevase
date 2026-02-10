@@ -66,154 +66,289 @@ export default function AdManagement() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Header section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div>
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                        <Megaphone className="text-gold" /> Meus Anúncios
-                    </h2>
-                    <p className="text-gray-500 mt-1">Gerencie sua publicidade e acompanhe os resultados</p>
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-gold/10 via-yellow-50 to-orange-50 p-6 md:p-8 rounded-3xl border border-gold/20 shadow-sm"
+            >
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <Megaphone className="text-white" size={28} />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-1">Meus Anúncios</h2>
+                            <p className="text-gray-600 text-sm md:text-base">Gerencie sua publicidade e acompanhe os resultados em tempo real</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => router.push('/anunciar')}
+                        className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3.5 rounded-xl hover:bg-gray-900 hover:scale-105 transition-all font-bold shadow-lg hover:shadow-xl text-sm md:text-base w-full lg:w-auto"
+                    >
+                        <Plus size={20} /> Criar Novo Anúncio
+                    </button>
                 </div>
-                <button
-                    onClick={() => router.push('/anunciar')}
-                    className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-900 transition-all font-bold"
-                >
-                    <Plus size={20} /> Promover Novo Item
-                </button>
-            </div>
+            </motion.div>
 
             {ads.length === 0 ? (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white p-16 rounded-3xl border border-dashed border-gray-300 text-center flex flex-col items-center"
+                    className="bg-white p-12 md:p-20 rounded-3xl border-2 border-dashed border-gray-200 text-center flex flex-col items-center"
                 >
-                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                        <Megaphone size={40} className="text-gray-300" />
+                    <div className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                        <Megaphone size={48} className="text-gray-300" />
                     </div>
-                    <h3 className="text-xl font-bold mb-2">Você ainda não tem anúncios</h3>
-                    <p className="text-gray-500 max-w-sm mx-auto mb-8">
-                        Promova seus eventos, serviços ou produtos para milhares de potenciais clientes na nossa rede.
+                    <h3 className="text-2xl font-black mb-3 text-gray-900">Nenhum anúncio ainda</h3>
+                    <p className="text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
+                        Comece a promover seus eventos, serviços ou produtos para milhares de potenciais clientes na nossa plataforma.
                     </p>
                     <button
                         onClick={() => router.push('/anunciar')}
-                        className="bg-gold text-black px-8 py-3 rounded-xl font-bold hover:shadow-lg transition-all"
+                        className="bg-gradient-to-r from-gold to-yellow-500 text-black px-10 py-4 rounded-xl font-black hover:shadow-2xl hover:scale-105 transition-all text-lg"
                     >
                         Começar Agora
                     </button>
                 </motion.div>
             ) : (
-                <div className="grid gap-6">
-                    {ads.map((ad) => (
+                <div className="space-y-4">
+                    {ads.map((ad, index) => (
                         <motion.div
                             key={ad._id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 relative overflow-hidden group"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all overflow-hidden group"
                         >
-                            {/* Status Stripe */}
-                            <div className={`absolute top-0 left-0 w-1 h-full ${ad.status === 'approved' ? (ad.isActive ? 'bg-green-500' : 'bg-yellow-500') :
-                                ad.status === 'pending' ? 'bg-blue-500' : 'bg-red-500'
-                                }`} />
-
-                            {/* Media Preview */}
-                            <div className="relative w-full md:w-32 h-32 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                                {ad.mediaType === 'video' ? (
-                                    <video
-                                        src={ad.mediaUrl}
-                                        className="w-full h-full object-cover"
-                                        autoPlay
-                                        muted
-                                        loop
-                                    />
-                                ) : (
-                                    <Image
-                                        src={ad.mediaUrl}
-                                        alt={ad.title}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                )}
-                            </div>
-
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-center gap-3 mb-2">
-                                    <h3 className="text-lg font-bold truncate">{ad.title}</h3>
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${ad.status === 'approved' ? 'bg-green-100 text-green-700' :
-                                        ad.status === 'pending' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'
-                                        }`}>
-                                        {ad.status === 'approved' ? 'Aprovado' : ad.status === 'pending' ? 'Pendente' : 'Rejeitado'}
-                                    </span>
-                                    {ad.status === 'approved' && (
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${ad.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                                            }`}>
-                                            {ad.isActive ? 'Ativo' : 'Pausado'}
-                                        </span>
+                            {/* Mobile Layout */}
+                            <div className="lg:hidden">
+                                {/* Media Preview - Full Width on Mobile */}
+                                <div className="relative w-full h-48 bg-gray-100">
+                                    {ad.mediaType === 'video' ? (
+                                        <video
+                                            src={ad.mediaUrl}
+                                            className="w-full h-full object-cover"
+                                            autoPlay
+                                            muted
+                                            loop
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={ad.mediaUrl}
+                                            alt={ad.title}
+                                            fill
+                                            className="object-cover"
+                                        />
                                     )}
+                                    {/* Status Badge */}
+                                    <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+                                        <span className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${ad.status === 'approved' ? 'bg-green-500 text-white' :
+                                                ad.status === 'pending' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
+                                            }`}>
+                                            {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
+                                        </span>
+                                        {ad.status === 'approved' && (
+                                            <span className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${ad.isActive ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'
+                                                }`}>
+                                                {ad.isActive ? '● Ativo' : '○ Pausado'}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <p className="text-gray-500 text-sm line-clamp-2 mb-4">{ad.description}</p>
 
-                                {/* Performance Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                        <div className="flex items-center gap-2 text-gray-400 mb-1">
-                                            <Eye size={14} /> <span className="text-[10px] font-bold uppercase">Visualizações</span>
-                                        </div>
-                                        <div className="text-lg font-bold">{ad.views || 0}</div>
+                                {/* Content */}
+                                <div className="p-5 space-y-4">
+                                    <div>
+                                        <h3 className="text-xl font-black text-gray-900 mb-1 line-clamp-1">{ad.title}</h3>
+                                        <p className="text-gray-600 text-sm line-clamp-2">{ad.description}</p>
                                     </div>
-                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                        <div className="flex items-center gap-2 text-gray-400 mb-1">
-                                            <MousePointer2 size={14} /> <span className="text-[10px] font-bold uppercase">Cliques</span>
+
+                                    {/* Stats Grid - 2 columns on mobile */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-xl border border-blue-200">
+                                            <div className="flex items-center gap-2 text-blue-600 mb-1">
+                                                <Eye size={16} />
+                                                <span className="text-xs font-bold uppercase tracking-wide">Views</span>
+                                            </div>
+                                            <div className="text-2xl font-black text-blue-900">{ad.views || 0}</div>
                                         </div>
-                                        <div className="text-lg font-bold">{ad.clicks || 0}</div>
+                                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 rounded-xl border border-purple-200">
+                                            <div className="flex items-center gap-2 text-purple-600 mb-1">
+                                                <MousePointer2 size={16} />
+                                                <span className="text-xs font-bold uppercase tracking-wide">Clicks</span>
+                                            </div>
+                                            <div className="text-2xl font-black text-purple-900">{ad.clicks || 0}</div>
+                                        </div>
+                                        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-3 rounded-xl border border-orange-200">
+                                            <div className="flex items-center gap-2 text-orange-600 mb-1">
+                                                <Clock size={16} />
+                                                <span className="text-xs font-bold uppercase tracking-wide">Duração</span>
+                                            </div>
+                                            <div className="text-lg font-black text-orange-900">{ad.durationWeeks} Semanas</div>
+                                        </div>
+                                        <div className="bg-gradient-to-br from-green-50 to-green-100 p-3 rounded-xl border border-green-200">
+                                            <div className="flex items-center gap-2 text-green-600 mb-1">
+                                                <ExternalLink size={16} />
+                                                <span className="text-xs font-bold uppercase tracking-wide">Investido</span>
+                                            </div>
+                                            <div className="text-lg font-black text-green-900">{formatPrice(ad.priceTotal)}</div>
+                                        </div>
                                     </div>
-                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                        <div className="flex items-center gap-2 text-gray-400 mb-1">
-                                            <Clock size={14} /> <span className="text-[10px] font-bold uppercase">Duração</span>
-                                        </div>
-                                        <div className="text-lg font-bold">{ad.durationWeeks} Semanas</div>
-                                    </div>
-                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                        <div className="flex items-center gap-2 text-gray-400 mb-1">
-                                            <ExternalLink size={14} /> <span className="text-[10px] font-bold uppercase">Investimento</span>
-                                        </div>
-                                        <div className="text-lg font-bold">{formatPrice(ad.priceTotal)}</div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-2 pt-2">
+                                        {ad.status === 'approved' && (
+                                            <button
+                                                onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
+                                                className={`flex-1 p-3 rounded-xl transition-all font-bold text-sm flex items-center justify-center gap-2 ${ad.isActive
+                                                        ? 'bg-yellow-50 text-yellow-700 border-2 border-yellow-200 hover:bg-yellow-100'
+                                                        : 'bg-green-50 text-green-700 border-2 border-green-200 hover:bg-green-100'
+                                                    }`}
+                                            >
+                                                {ad.isActive ? <PowerOff size={18} /> : <Power size={18} />}
+                                                {ad.isActive ? 'Pausar' : 'Ativar'}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => ad._id && handleDeleteAd(ad._id)}
+                                            className="flex-1 p-3 bg-red-50 text-red-700 rounded-xl border-2 border-red-200 hover:bg-red-100 transition-all font-bold text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <Trash2 size={18} /> Excluir
+                                        </button>
+                                        {ad.targetUrl && (
+                                            <a
+                                                href={ad.targetUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-3 bg-gray-50 text-gray-700 rounded-xl border-2 border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center"
+                                            >
+                                                <ExternalLink size={18} />
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex flex-row md:flex-col gap-2 justify-end">
-                                {ad.status === 'approved' && (
-                                    <button
-                                        onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
-                                        className={`p-3 rounded-xl transition-all ${ad.isActive ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'bg-green-50 text-green-600 hover:bg-green-100'
-                                            }`}
-                                        title={ad.isActive ? 'Pausar Anúncio' : 'Ativar Anúncio'}
-                                    >
-                                        {ad.isActive ? <PowerOff size={20} /> : <Power size={20} />}
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => ad._id && handleDeleteAd(ad._id)}
-                                    className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all"
-                                    title="Excluir Anúncio"
-                                >
-                                    <Trash2 size={20} />
-                                </button>
-                                {ad.targetUrl && (
-                                    <a
-                                        href={ad.targetUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-3 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-all flex items-center justify-center"
-                                        title="Ver Link do Anúncio"
-                                    >
-                                        <ExternalLink size={20} />
-                                    </a>
-                                )}
+                            {/* Desktop Layout */}
+                            <div className="hidden lg:block">
+                                <div className="flex gap-6 p-6 relative">
+                                    {/* Status Stripe */}
+                                    <div className={`absolute top-0 left-0 w-1.5 h-full ${ad.status === 'approved' ? (ad.isActive ? 'bg-gradient-to-b from-green-400 to-green-600' : 'bg-gradient-to-b from-yellow-400 to-yellow-600') :
+                                            ad.status === 'pending' ? 'bg-gradient-to-b from-blue-400 to-blue-600' : 'bg-gradient-to-b from-red-400 to-red-600'
+                                        }`} />
+
+                                    {/* Media Preview */}
+                                    <div className="relative w-40 h-40 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-md">
+                                        {ad.mediaType === 'video' ? (
+                                            <video
+                                                src={ad.mediaUrl}
+                                                className="w-full h-full object-cover"
+                                                autoPlay
+                                                muted
+                                                loop
+                                            />
+                                        ) : (
+                                            <Image
+                                                src={ad.mediaUrl}
+                                                alt={ad.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        )}
+                                    </div>
+
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-4 mb-3">
+                                            <div className="flex-1">
+                                                <h3 className="text-2xl font-black text-gray-900 mb-2">{ad.title}</h3>
+                                                <p className="text-gray-600 line-clamp-2 leading-relaxed">{ad.description}</p>
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap ${ad.status === 'approved' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                                        ad.status === 'pending' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                                                            'bg-red-100 text-red-700 border border-red-200'
+                                                    }`}>
+                                                    {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
+                                                </span>
+                                                {ad.status === 'approved' && (
+                                                    <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap ${ad.isActive ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'
+                                                        }`}>
+                                                        {ad.isActive ? '● Ativo' : '○ Pausado'}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Performance Grid */}
+                                        <div className="grid grid-cols-4 gap-4">
+                                            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+                                                <div className="flex items-center gap-2 text-blue-600 mb-2">
+                                                    <Eye size={16} />
+                                                    <span className="text-xs font-bold uppercase tracking-wide">Views</span>
+                                                </div>
+                                                <div className="text-2xl font-black text-blue-900">{ad.views || 0}</div>
+                                            </div>
+                                            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+                                                <div className="flex items-center gap-2 text-purple-600 mb-2">
+                                                    <MousePointer2 size={16} />
+                                                    <span className="text-xs font-bold uppercase tracking-wide">Clicks</span>
+                                                </div>
+                                                <div className="text-2xl font-black text-purple-900">{ad.clicks || 0}</div>
+                                            </div>
+                                            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
+                                                <div className="flex items-center gap-2 text-orange-600 mb-2">
+                                                    <Clock size={16} />
+                                                    <span className="text-xs font-bold uppercase tracking-wide">Duração</span>
+                                                </div>
+                                                <div className="text-xl font-black text-orange-900">{ad.durationWeeks} Semanas</div>
+                                            </div>
+                                            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                                                <div className="flex items-center gap-2 text-green-600 mb-2">
+                                                    <ExternalLink size={16} />
+                                                    <span className="text-xs font-bold uppercase tracking-wide">Investido</span>
+                                                </div>
+                                                <div className="text-xl font-black text-green-900">{formatPrice(ad.priceTotal)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="flex flex-col gap-2 justify-center">
+                                        {ad.status === 'approved' && (
+                                            <button
+                                                onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
+                                                className={`p-3 rounded-xl transition-all hover:scale-110 ${ad.isActive
+                                                        ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100 border-2 border-yellow-200'
+                                                        : 'bg-green-50 text-green-600 hover:bg-green-100 border-2 border-green-200'
+                                                    }`}
+                                                title={ad.isActive ? 'Pausar Anúncio' : 'Ativar Anúncio'}
+                                            >
+                                                {ad.isActive ? <PowerOff size={22} /> : <Power size={22} />}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => ad._id && handleDeleteAd(ad._id)}
+                                            className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 hover:scale-110 transition-all border-2 border-red-200"
+                                            title="Excluir Anúncio"
+                                        >
+                                            <Trash2 size={22} />
+                                        </button>
+                                        {ad.targetUrl && (
+                                            <a
+                                                href={ad.targetUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-3 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 hover:scale-110 transition-all flex items-center justify-center border-2 border-gray-200"
+                                                title="Ver Link do Anúncio"
+                                            >
+                                                <ExternalLink size={22} />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     ))}
@@ -221,13 +356,19 @@ export default function AdManagement() {
             )}
 
             {/* Hint Box */}
-            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3 text-blue-700 text-sm">
-                <AlertCircle className="flex-shrink-0" size={20} />
-                <p>
-                    <strong>Nota:</strong> Anúncios marcados como pausados não serão exibidos nas seções patrocinadas até que sejam reativados.
-                    Anúncios pendentes aguardam validação do pagamento e conteúdo pela nossa equipe.
-                </p>
-            </div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-200 flex gap-4 text-blue-800"
+            >
+                <AlertCircle className="flex-shrink-0 mt-0.5" size={22} />
+                <div className="text-sm leading-relaxed">
+                    <strong className="font-black block mb-1">💡 Dica Importante:</strong>
+                    Anúncios marcados como <span className="font-bold">pausados</span> não aparecem nas seções patrocinadas.
+                    Anúncios <span className="font-bold">pendentes</span> aguardam aprovação da nossa equipe de moderação.
+                </div>
+            </motion.div>
         </div>
     );
 }
