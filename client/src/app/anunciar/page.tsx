@@ -24,6 +24,10 @@ export default function AnunciarPage() {
     const [step, setStep] = useState(1);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [myEvents, setMyEvents] = useState<any[]>([]);
+    const [selectedEventId, setSelectedEventId] = useState<string>('');
+    const [whatsappNumber, setWhatsappNumber] = useState('');
+    const [linkType, setLinkType] = useState<'url' | 'whatsapp'>('url');
 
     const [form, setForm] = useState<AdRequestModel>({
         title: '',
@@ -39,10 +43,50 @@ export default function AnunciarPage() {
 
     const [paymentProof, setPaymentProof] = useState<string | null>(null);
 
+    // Load user events
+    useEffect(() => {
+        const loadMyEvents = async () => {
+            try {
+                const events = await formService.getMyForms();
+                setMyEvents(events);
+            } catch (err) {
+                console.error("Error loading events:", err);
+            }
+        };
+        loadMyEvents();
+    }, []);
+
     // Update total price when duration changes
     useEffect(() => {
         setForm(prev => ({ ...prev, priceTotal: prev.durationWeeks * PRICING_PER_WEEK }));
     }, [form.durationWeeks]);
+
+    // Handle event selection
+    const handleEventSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const eventId = e.target.value;
+        setSelectedEventId(eventId);
+
+        if (eventId) {
+            const event = myEvents.find(ev => ev._id === eventId);
+            if (event) {
+                setForm(prev => ({
+                    ...prev,
+                    title: event.title,
+                    description: event.description.substring(0, 150),
+                    imageUrl: event.coverImage || '',
+                    targetUrl: `${window.location.origin}/f/${event.slug}`
+                }));
+            }
+        }
+    };
+
+    // Auto-convert WhatsApp to link
+    useEffect(() => {
+        if (linkType === 'whatsapp' && whatsappNumber) {
+            const clean = whatsappNumber.replace(/\D/g, '');
+            setForm(prev => ({ ...prev, targetUrl: `https://wa.me/${clean}` }));
+        }
+    }, [whatsappNumber, linkType]);
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -200,38 +244,89 @@ export default function AnunciarPage() {
                                                 </div>
                                             </div>
 
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Título do Anúncio</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Ex: Masterclass de Marketing Digital"
-                                                    value={form.title}
-                                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
-                                                />
-                                            </div>
+                                            {form.category === 'event' && (
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Selecione o Evento</label>
+                                                    <select
+                                                        value={selectedEventId}
+                                                        onChange={handleEventSelect}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', marginBottom: '1.5rem' }}
+                                                    >
+                                                        <option value="">-- Escolher um evento meu --</option>
+                                                        {myEvents.map(ev => (
+                                                            <option key={ev._id} value={ev._id}>{ev.title}</option>
+                                                        ))}
+                                                        <option value="custom">-- Criar anúncio personalizado --</option>
+                                                    </select>
+                                                </div>
+                                            )}
 
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Descrição Breve</label>
-                                                <textarea
-                                                    placeholder="O que torna este item especial?"
-                                                    rows={3}
-                                                    value={form.description}
-                                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', resize: 'none' }}
-                                                />
-                                            </div>
+                                            {(form.category !== 'event' || selectedEventId === 'custom') && (
+                                                <>
+                                                    <div>
+                                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Título do Anúncio</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Ex: Masterclass de Marketing Digital"
+                                                            value={form.title}
+                                                            onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
+                                                        />
+                                                    </div>
 
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>URL de Destino</label>
-                                                <input
-                                                    type="url"
-                                                    placeholder="https://exemplo.com/evento"
-                                                    value={form.targetUrl}
-                                                    onChange={(e) => setForm({ ...form, targetUrl: e.target.value })}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
-                                                />
-                                            </div>
+                                                    <div>
+                                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Descrição Breve</label>
+                                                        <textarea
+                                                            placeholder="O que torna este item especial?"
+                                                            rows={3}
+                                                            value={form.description}
+                                                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', resize: 'none' }}
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Destinar Leads para:</label>
+                                                        <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+                                                            <button
+                                                                onClick={() => setLinkType('url')}
+                                                                style={{ flex: 1, padding: '0.6rem', borderRadius: '8px', border: linkType === 'url' ? '2px solid #000' : '1px solid #eee', background: linkType === 'url' ? '#000' : 'transparent', color: linkType === 'url' ? '#fff' : '#666', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                                                            >Site / Link</button>
+                                                            <button
+                                                                onClick={() => setLinkType('whatsapp')}
+                                                                style={{ flex: 1, padding: '0.6rem', borderRadius: '8px', border: linkType === 'whatsapp' ? '2px solid #25D366' : '1px solid #eee', background: linkType === 'whatsapp' ? '#25D36610' : 'transparent', color: linkType === 'whatsapp' ? '#25D366' : '#666', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                                                            >WhatsApp</button>
+                                                        </div>
+
+                                                        {linkType === 'url' ? (
+                                                            <input
+                                                                type="url"
+                                                                placeholder="https://exemplo.com"
+                                                                value={form.targetUrl}
+                                                                onChange={(e) => setForm({ ...form, targetUrl: e.target.value })}
+                                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
+                                                            />
+                                                        ) : (
+                                                            <input
+                                                                type="tel"
+                                                                placeholder="Ex: 258841234567"
+                                                                value={whatsappNumber}
+                                                                onChange={(e) => setWhatsappNumber(e.target.value)}
+                                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {form.category === 'event' && selectedEventId && selectedEventId !== 'custom' && (
+                                                <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd', display: 'flex', gap: '10px' }}>
+                                                    <Info size={20} color="#0369a1" />
+                                                    <p style={{ fontSize: '0.75rem', color: '#0369a1', lineHeight: 1.5 }}>
+                                                        Os dados deste evento serão usados automaticamente. Você poderá ajustar a imagem na próxima etapa se desejar.
+                                                    </p>
+                                                </div>
+                                            )}
 
                                             <button
                                                 onClick={() => setStep(2)}
@@ -457,8 +552,8 @@ export default function AnunciarPage() {
                                     <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#B8860B', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{form.category}</div>
                                     <h4 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111', lineHeight: 1.2, marginBottom: '1rem' }}>{form.title || 'Título do seu Anúncio'}</h4>
                                     <div style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#888', fontSize: '0.75rem' }}><Calendar size={12} /> Em breve</div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#888', fontSize: '0.75rem' }}><MapPin size={12} /> Online / Presencial</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#888', fontSize: '0.75rem' }}><Calendar size={12} /> {form.category === 'event' ? 'Evento Interno' : 'Disponível'}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#888', fontSize: '0.75rem' }}><MapPin size={12} /> {form.targetUrl?.includes('wa.me') ? 'WhatsApp' : 'Web/Link'}</div>
                                     </div>
                                     <div style={{ padding: '1rem', background: '#000', color: '#fff', borderRadius: '12px', textAlign: 'center', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                         Ver Detalhes <ChevronRight size={16} />
