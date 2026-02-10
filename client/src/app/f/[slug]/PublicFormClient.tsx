@@ -558,7 +558,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                     <div>
                                                         <div style={{ fontSize: '0.7rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>
-                                                            {t('events.public.officialRole', { role: t(`common.badges.${(form.creator as any).role || 'mentor'}`) })}
+                                                            {t('events.public.officialRole', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}
                                                         </div>
                                                         <div style={{ fontWeight: 800, fontSize: '1.1rem', color: titleColor }}>{form.creator.name}</div>
                                                     </div>

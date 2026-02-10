@@ -614,7 +614,7 @@ function HubContent() {
                                 </div>
                             </div>
                             <div>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.5, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1.5px' }}>{t('hub.responsibleRole', { role: t(`common.badges.${(form.creator as any).role || 'mentor'}`) })}</div>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.5, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1.5px' }}>{t('hub.responsibleRole', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}</div>
                                 <div style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     {form.creator.name}
                                     {form.creator.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
@@ -693,7 +693,7 @@ function HubContent() {
                                         </div>
                                         <div>
                                             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{form.creator.name}</div>
-                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('hub.eventRole', { role: t(`common.badges.${(form.creator as any).role || 'mentor'}`) })}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('hub.eventRole', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1133,7 +1133,7 @@ function HubContent() {
                                                     gap: '8px',
                                                     width: '100%'
                                                 }}>
-                                                    <Clock size={18} /> {t('hub.status.waitingApproval', { role: t(`common.badges.${(form.creator as any).role || 'mentor'}`) })}
+                                                    <Clock size={18} /> {t('hub.status.waitingApproval', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}
                                                 </div>
                                             ) : (
                                                 <button
