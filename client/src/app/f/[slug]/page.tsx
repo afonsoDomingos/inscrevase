@@ -1,5 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next';
 import { formService } from '@/lib/formService';
+import { notFound } from 'next/navigation';
 import PublicFormClient from './PublicFormClient';
 
 // Force dynamic rendering to prevent stale data (e.g. seeing deleted events)
@@ -8,7 +9,7 @@ export const revalidate = 0;
 
 // This is a Server Component
 export default async function Page({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+    const slug = params.slug;
     let form = null;
     let eventJsonLd = null;
 
@@ -25,6 +26,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
     try {
         form = await formService.getFormBySlug(slug);
+
+        if (!form) {
+            notFound();
+        }
 
         // Prepare JSON-LD Structured Data
         if (form && form.eventDate) {
@@ -75,6 +80,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
     } catch (error) {
         console.error("Error fetching form for metadata:", error);
+        notFound();
     }
 
     return (

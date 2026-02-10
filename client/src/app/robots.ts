@@ -5,12 +5,37 @@ export default function robots(): MetadataRoute.Robots {
         rules: [
             {
                 userAgent: '*',
-                allow: ['/', '/_next/static/'],
-                disallow: ['/dashboard/', '/admin/', '/api/', '/private/'],
+                allow: [
+                    '/',
+                    '/_next/static/',
+                    '/f/',
+                    '/experts/',
+                    '/blog/',
+                    '/planos',
+                    '/sobre-nos',
+                    '/suporte',
+                    '/updates',
+                    '/feedback',
+                    '/funcionalidades',
+                    '/termos',
+                    '/privacidade',
+                    '/equipe/'
+                ],
+                disallow: [
+                    '/dashboard/',
+                    '/admin/',
+                    '/api/',
+                    '/private/',
+                    '/hub/',
+                    '/entrar',
+                    '/cadastro',
+                    '/recuperar-senha',
+                    '/*?*', // Disallow search/query params if not needed for indexing
+                ],
             },
             {
-                userAgent: 'Mediapartners-Google',
-                allow: '/',
+                userAgent: 'GPTBot',
+                disallow: ['/'],
             }
         ],
         sitemap: 'https://inscreva-se.com/sitemap.xml',

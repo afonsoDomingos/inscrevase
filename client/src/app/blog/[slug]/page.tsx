@@ -50,6 +50,14 @@ export async function generateMetadata(
     }
 }
 
-export default function BlogPostPage({ params }: Props) {
+import { notFound } from 'next/navigation';
+
+export default async function BlogPostPage({ params }: Props) {
+    const post = await blogService.getPostBySlug(params.slug);
+
+    if (!post) {
+        notFound();
+    }
+
     return <BlogPostContent params={params} />;
 }

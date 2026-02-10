@@ -124,7 +124,9 @@
             "loginRequired": "Você precisa estar logado para realizar esta ação",
             "uploadError": "Erro ao fazer upload do arquivo",
             "uploadSuccess": "Upload concluído com sucesso!"
-        }
+        },
+        "pageNotFound": "Página Não Encontrada",
+        "pageNotFoundDesc": "Desculpe, a página que você procura não existe ou foi movida."
     },
     "nav": {
         "home": "Início",

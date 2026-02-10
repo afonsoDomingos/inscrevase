@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { formService } from '@/lib/formService';
 import { blogService } from '@/lib/blogService';
+import { userService } from '@/lib/userService';
 
 // Base URL for the website
 const BASE_URL = 'https://inscreva-se.com';
@@ -19,12 +20,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 1.0,
-        },
-        {
-            url: `${BASE_URL}/eventos`,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 0.95,
         },
         {
             url: `${BASE_URL}/experts`,
@@ -48,49 +43,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: `${BASE_URL}/updates`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
-            priority: 0.85,
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/funcionalidades`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
         },
         {
             url: `${BASE_URL}/feedback`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
-            priority: 0.8,
+            priority: 0.7,
         },
         {
             url: `${BASE_URL}/sobre-nos`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
-            url: `${BASE_URL}/contactos`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
-            url: `${BASE_URL}/ajuda`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
             priority: 0.7,
         },
         {
-            url: `${BASE_URL}/entrar`,
+            url: `${BASE_URL}/suporte`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.7,
-        },
-        {
-            url: `${BASE_URL}/cadastro`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${BASE_URL}/termos`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
-            priority: 0.5,
         },
         {
             url: `${BASE_URL}/privacidade`,
@@ -98,7 +75,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'yearly',
             priority: 0.5,
         },
+        {
+            url: `${BASE_URL}/termos`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.5,
+        },
+        // Team Members (hardcoded in app/equipe/[id]/page.tsx)
+        {
+            url: `${BASE_URL}/equipe/afonso-domingos`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
+        },
+        {
+            url: `${BASE_URL}/equipe/culpa-francisco-xavier`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
+        },
     ];
+
+    // 2. Dynamic Routes - Experts (Mentors)
+    let expertRoutes: MetadataRoute.Sitemap = [];
+    try {
+        const experts = await userService.getPublicMentors();
+        if (Array.isArray(experts)) {
+            expertRoutes = experts.map((expert) => {
+                const id = expert.id || expert._id;
+                return {
+                    url: `${BASE_URL}/experts/${id}`,
+                    lastModified: safelyGetDate(expert.createdAt),
+                    changeFrequency: 'weekly',
+                    priority: 0.85,
+                };
+            });
+        }
+    } catch (error) {
+        console.error('Error generating sitemap for experts:', error);
+    }
 
     // 2. Dynamic Routes - Public Forms (Events)
     let formRoutes: MetadataRoute.Sitemap = [];
@@ -132,5 +147,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error('Error generating sitemap for blog posts:', error);
     }
 
-    return [...staticRoutes, ...formRoutes, ...blogRoutes];
+    return [...staticRoutes, ...expertRoutes, ...formRoutes, ...blogRoutes];
 }
