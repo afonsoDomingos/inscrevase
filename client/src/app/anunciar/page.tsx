@@ -1,0 +1,506 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin } from 'lucide-react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { useTranslate } from '@/context/LanguageContext';
+import { useCurrency } from '@/context/CurrencyContext';
+import { formService } from '@/lib/formService';
+import { adService, AdRequestModel } from '@/lib/adService';
+import { authService } from '@/lib/authService';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+const PRICING_PER_WEEK = 150; // MT
+
+export default function AnunciarPage() {
+    const { t } = useTranslate();
+    const router = useRouter();
+    const { formatPrice } = useCurrency();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [step, setStep] = useState(1);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
+
+    const [form, setForm] = useState<AdRequestModel>({
+        title: '',
+        description: '',
+        category: 'event',
+        imageUrl: '',
+        durationWeeks: 1,
+        priceTotal: PRICING_PER_WEEK,
+        paymentMethod: 'manual',
+        status: 'pending',
+        targetUrl: ''
+    });
+
+    const [paymentProof, setPaymentProof] = useState<string | null>(null);
+
+    // Update total price when duration changes
+    useEffect(() => {
+        setForm(prev => ({ ...prev, priceTotal: prev.durationWeeks * PRICING_PER_WEEK }));
+    }, [form.durationWeeks]);
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setError(null);
+        try {
+            const url = await formService.uploadFile(file, 'ads');
+            setForm(prev => ({ ...prev, imageUrl: url }));
+        } catch (err: any) {
+            setError(err.message || 'Erro ao subir imagem');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleProofUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const url = await formService.uploadFile(file, 'payments');
+            setPaymentProof(url);
+            setForm(prev => ({ ...prev, paymentProofUrl: url }));
+        } catch (err: any) {
+            setError(err.message || 'Erro ao subir comprovativo');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        setError(null);
+        try {
+            await adService.submitAdRequest(form);
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message || 'Ocorreu um erro ao enviar o pedido.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (success) {
+        return (
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                <Navbar />
+                <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        style={{ textAlign: 'center', maxWidth: '500px', background: '#fff', padding: '3rem', borderRadius: '32px', boxShadow: '0 40px 100px rgba(0,0,0,0.05)' }}
+                    >
+                        <div style={{ width: '80px', height: '80px', background: '#38a169', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                            <CheckCircle2 size={40} />
+                        </div>
+                        <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem' }}>Pedido Enviado!</h2>
+                        <p style={{ color: '#666', lineHeight: 1.6, marginBottom: '2rem' }}>
+                            Seu pedido de anúncio foi enviado com sucesso. Nossa equipe analisará as informações e o pagamento. Você será notificado assim que for aprovado.
+                        </p>
+                        <button
+                            onClick={() => router.push('/')}
+                            style={{ width: '100%', padding: '1rem', background: '#000', color: '#fff', borderRadius: '12px', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                            Voltar para o Início
+                        </button>
+                    </motion.div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+    return (
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fcfcfc' }}>
+            <Navbar />
+
+            <main style={{ flex: 1, padding: '120px 20px 60px' }}>
+                <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+                    {/* Header */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{ textAlign: 'center', marginBottom: '4rem' }}
+                    >
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(212, 175, 55, 0.1)', color: '#B8860B', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '1rem' }}>
+                            <Megaphone size={16} /> Publicidade Premium
+                        </div>
+                        <h1 style={{ fontSize: '3rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#111', marginBottom: '1rem' }}>
+                            Promova seu <span className="gold-text">Sucesso</span>
+                        </h1>
+                        <p style={{ maxWidth: '600px', margin: '0 auto', color: '#666', fontSize: '1.1rem', lineHeight: 1.6 }}>
+                            Alcance milhares de pessoas interessadas em eventos, educação e serviços profissionais em Moçambique e no mundo.
+                        </p>
+                    </motion.div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem', alignItems: 'start' }}>
+
+                        {/* Form Section */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            style={{ background: '#fff', padding: '2.5rem', borderRadius: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}
+                        >
+                            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem' }}>
+                                {[1, 2, 3].map((s) => (
+                                    <div key={s} style={{ flex: 1, height: '4px', background: s <= step ? 'var(--gold-gradient)' : '#eee', borderRadius: '10px' }} />
+                                ))}
+                            </div>
+
+                            <AnimatePresence mode="wait">
+                                {step === 1 && (
+                                    <motion.div
+                                        key="step1"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>O que deseja promover?</h3>
+
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Categoria</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                                                    {[
+                                                        { id: 'event', label: 'Evento', icon: Calendar },
+                                                        { id: 'service', label: 'Serviço', icon: Briefcase },
+                                                        { id: 'product', label: 'Produto', icon: Package }
+                                                    ].map((cat) => (
+                                                        <button
+                                                            key={cat.id}
+                                                            onClick={() => setForm({ ...form, category: cat.id as any })}
+                                                            style={{
+                                                                padding: '1rem 0.5rem',
+                                                                borderRadius: '12px',
+                                                                border: form.category === cat.id ? '2px solid #FFD700' : '1px solid #eee',
+                                                                background: form.category === cat.id ? '#FFD70005' : 'transparent',
+                                                                color: form.category === cat.id ? '#B8860B' : '#666',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: '8px',
+                                                                transition: '0.3s'
+                                                            }}
+                                                        >
+                                                            <cat.icon size={20} />
+                                                            <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{cat.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Título do Anúncio</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Ex: Masterclass de Marketing Digital"
+                                                    value={form.title}
+                                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Descrição Breve</label>
+                                                <textarea
+                                                    placeholder="O que torna este item especial?"
+                                                    rows={3}
+                                                    value={form.description}
+                                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', resize: 'none' }}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>URL de Destino</label>
+                                                <input
+                                                    type="url"
+                                                    placeholder="https://exemplo.com/evento"
+                                                    value={form.targetUrl}
+                                                    onChange={(e) => setForm({ ...form, targetUrl: e.target.value })}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9' }}
+                                                />
+                                            </div>
+
+                                            <button
+                                                onClick={() => setStep(2)}
+                                                disabled={!form.title || !form.description}
+                                                style={{ marginTop: '1rem', padding: '1.2rem', background: '#000', color: '#fff', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer', opacity: (!form.title || !form.description) ? 0.5 : 1 }}
+                                            >
+                                                Continuar
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {step === 2 && (
+                                    <motion.div
+                                        key="step2"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>Visual e Duração</h3>
+
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Imagem do Anúncio (Vertical/Quadrada)</label>
+                                                <div style={{ position: 'relative', height: '200px', width: '100%', border: '2px dashed #eee', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                                    {form.imageUrl ? (
+                                                        <>
+                                                            <Image src={form.imageUrl} alt="Anuncio" fill style={{ objectFit: 'cover' }} />
+                                                            <button
+                                                                onClick={() => setForm({ ...form, imageUrl: '' })}
+                                                                style={{ position: 'absolute', top: '10px', right: '10px', background: '#000', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '8px', fontSize: '0.7rem' }}
+                                                            >Trocar</button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {uploading ? <div className="spinner" /> : (
+                                                                <>
+                                                                    <Upload size={30} color="#ccc" />
+                                                                    <span style={{ fontSize: '0.8rem', color: '#999', marginTop: '10px' }}>Arraste ou clique para subir</span>
+                                                                    <input type="file" onChange={handleFileUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} accept="image/*" />
+                                                                </>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Duração do Anúncio</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                                                    {[1, 2, 3, 4].map((w) => (
+                                                        <button
+                                                            key={w}
+                                                            onClick={() => setForm({ ...form, durationWeeks: w })}
+                                                            style={{
+                                                                padding: '1rem 0.5rem',
+                                                                borderRadius: '12px',
+                                                                border: form.durationWeeks === w ? '2px solid #FFD700' : '1px solid #eee',
+                                                                background: form.durationWeeks === w ? '#000' : 'transparent',
+                                                                color: form.durationWeeks === w ? '#fff' : '#666',
+                                                                cursor: 'pointer',
+                                                                transition: '0.3s'
+                                                            }}
+                                                        >
+                                                            <div style={{ fontSize: '1rem', fontWeight: 900 }}>{w}</div>
+                                                            <div style={{ fontSize: '0.6rem', textTransform: 'uppercase' }}>{w === 1 ? 'Semana' : 'Semanas'}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <div style={{ marginTop: '1rem', background: '#fdf8e6', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <Info size={16} color="#B8860B" />
+                                                    <span style={{ fontSize: '0.8rem', color: '#B8860B', fontWeight: 600 }}>Total: {formatPrice(form.durationWeeks * PRICING_PER_WEEK)}</span>
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <button onClick={() => setStep(1)} style={{ flex: 1, padding: '1.2rem', background: '#f5f5f5', color: '#444', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Voltar</button>
+                                                <button
+                                                    onClick={() => setStep(3)}
+                                                    disabled={!form.imageUrl}
+                                                    style={{ flex: 2, padding: '1.2rem', background: '#000', color: '#fff', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer', opacity: !form.imageUrl ? 0.5 : 1 }}
+                                                >Finalizar e Pagar</button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {step === 3 && (
+                                    <motion.div
+                                        key="step3"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Pagamento</h3>
+                                        <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '2rem' }}>Escolha o método de sua preferência para concluir.</p>
+
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                                                <button
+                                                    onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
+                                                    style={{
+                                                        padding: '1.5rem',
+                                                        borderRadius: '16px',
+                                                        border: form.paymentMethod === 'stripe' ? '2px solid #FFD700' : '1px solid #eee',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        background: form.paymentMethod === 'stripe' ? '#FFD70005' : 'transparent',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    <CreditCard size={24} />
+                                                    <span style={{ fontWeight: 800 }}>Stripe / Cartão</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
+                                                    style={{
+                                                        padding: '1.5rem',
+                                                        borderRadius: '16px',
+                                                        border: form.paymentMethod === 'manual' ? '2px solid #FFD700' : '1px solid #eee',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        background: form.paymentMethod === 'manual' ? '#FFD70005' : 'transparent',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    <Upload size={24} />
+                                                    <span style={{ fontWeight: 800 }}>Transferência / M-Pesa</span>
+                                                </button>
+                                            </div>
+
+                                            {form.paymentMethod === 'manual' && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee' }}
+                                                >
+                                                    <p style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>Siga estas instruções:</p>
+                                                    <ul style={{ fontSize: '0.8rem', color: '#666', lineHeight: 2, marginBottom: '1.5rem', paddingLeft: '1rem' }}>
+                                                        <li><b>M-Pesa:</b> 84 123 4567 (Inscreva-se)</li>
+                                                        <li><b>E-Mola:</b> 86 123 4567 (Inscreva-se)</li>
+                                                        <li><b>Banco:</b> BCI - 1234567890 (NIB)</li>
+                                                    </ul>
+
+                                                    <div style={{ position: 'relative', border: '2px dashed #ddd', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
+                                                        {paymentProof ? (
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#38a169', fontWeight: 700, fontSize: '0.8rem' }}>
+                                                                <CheckCircle2 size={16} /> Comprovativo anexado
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <span style={{ fontSize: '0.75rem', color: '#999' }}>Suba o comprovativo aqui</span>
+                                                                <input type="file" onChange={handleProofUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {error && <div style={{ color: '#e53e3e', fontSize: '0.85rem', background: '#fff5f5', padding: '10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}><AlertCircle size={16} /> {error}</div>}
+
+                                            <button
+                                                onClick={handleSubmit}
+                                                disabled={isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)}
+                                                style={{ padding: '1.2rem', background: 'var(--gold-gradient)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: 800, cursor: 'pointer', opacity: (isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)) ? 0.5 : 1 }}
+                                            >
+                                                {isSubmitting ? 'Enviando...' : `Pagar ${formatPrice(form.priceTotal)}`}
+                                            </button>
+
+                                            <button onClick={() => setStep(2)} style={{ padding: '1rem', background: 'transparent', color: '#888', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+
+                        {/* Preview Section */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            style={{ position: 'sticky', top: '100px' }}
+                        >
+                            <h3 style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '1.5rem', letterSpacing: '2px' }}>PRÉ-VISUALIZAÇÃO</h3>
+
+                            <div style={{
+                                background: '#fff',
+                                borderRadius: '32px',
+                                overflow: 'hidden',
+                                boxShadow: '0 40px 100px rgba(0,0,0,0.1)',
+                                border: '1px solid #f0f0f0',
+                                position: 'relative'
+                            }}>
+                                <div style={{ position: 'relative', height: '240px' }}>
+                                    {form.imageUrl ? (
+                                        <Image src={form.imageUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                    ) : (
+                                        <div style={{ width: '100%', height: '100%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>Imagem do Anúncio</div>
+                                    )}
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '15px',
+                                        left: '15px',
+                                        background: '#000',
+                                        color: '#FFD700',
+                                        padding: '5px 12px',
+                                        borderRadius: '100px',
+                                        fontSize: '0.65rem',
+                                        fontWeight: 900,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '2px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '5px'
+                                    }}>
+                                        <Zap size={10} fill="#FFD700" /> Patrocinado
+                                    </div>
+                                </div>
+                                <div style={{ padding: '2rem' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#B8860B', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{form.category}</div>
+                                    <h4 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111', lineHeight: 1.2, marginBottom: '1rem' }}>{form.title || 'Título do seu Anúncio'}</h4>
+                                    <div style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#888', fontSize: '0.75rem' }}><Calendar size={12} /> Em breve</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#888', fontSize: '0.75rem' }}><MapPin size={12} /> Online / Presencial</div>
+                                    </div>
+                                    <div style={{ padding: '1rem', background: '#000', color: '#fff', borderRadius: '12px', textAlign: 'center', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                        Ver Detalhes <ChevronRight size={16} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ marginTop: '2rem', background: 'rgba(212,175,55,0.05)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(212,175,55,0.1)' }}>
+                                <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#B8860B', marginBottom: '0.8rem' }}>Por que anunciar?</h4>
+                                <ul style={{ fontSize: '0.8rem', color: '#666', lineHeight: 1.8, paddingLeft: '1.2rem' }}>
+                                    <li><b>Visibilidade Instantânea:</b> Apareça no topo de todas as páginas.</li>
+                                    <li><b>Segmentação Inteligente:</b> Alcance quem realmente importa.</li>
+                                    <li><b>Retorno de Investimento:</b> Aumente suas conversões de forma orgânica.</li>
+                                </ul>
+                            </div>
+                        </motion.div>
+
+                    </div>
+                </div>
+            </main>
+
+            <Footer />
+
+            <style jsx>{`
+                .spinner {
+                    width: 30px;
+                    height: 30px;
+                    border: 3px solid #eee;
+                    border-top: 3px solid #FFD700;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .gold-text {
+                    background: var(--gold-gradient);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+            `}</style>
+        </div>
+    );
+}

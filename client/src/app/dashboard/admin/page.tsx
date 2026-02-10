@@ -11,9 +11,10 @@ import AdminFinance from '@/components/admin/AdminFinance';
 import NewsletterList from '@/components/admin/NewsletterList';
 import BlogManager from '@/components/admin/BlogManager';
 import LessonsManager from '@/components/admin/LessonsManager';
+import AdRequestList from '@/components/admin/AdRequestList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -27,7 +28,7 @@ import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -217,6 +218,7 @@ export default function AdminDashboard() {
         { id: 'finance', label: t('dashboard.finance.title'), icon: <Wallet size={20} /> },
         { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={20} /> },
         { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
+        { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ];
 
@@ -1109,6 +1111,14 @@ export default function AdminDashboard() {
                         activeTab === 'lessons' && (
                             <motion.div key="lessons" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                                 <LessonsManager />
+                            </motion.div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'ads' && (
+                            <motion.div key="ads" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                                <AdRequestList />
                             </motion.div>
                         )
                     }

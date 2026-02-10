@@ -249,7 +249,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                 {/* Creative CTA for other advertisers */}
                                 <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
                                     <Link
-                                        href="/suporte"
+                                        href="/anunciar"
                                         style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
