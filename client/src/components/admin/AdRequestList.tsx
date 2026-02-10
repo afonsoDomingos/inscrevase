@@ -89,7 +89,7 @@ export default function AdRequestList() {
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 md:p-8 rounded-3xl shadow-xl text-white relative overflow-hidden"
+                className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 md:p-8 rounded-3xl shadow-xl text-white relative overflow-hidden"
             >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
 
@@ -198,7 +198,7 @@ export default function AdRequestList() {
                                 </div>
 
                                 {/* Content Section */}
-                                <div className="p-5 lg:p-6 flex-1 flex flex-col">
+                                <div className="p-4 lg:p-6 flex-1 flex flex-col">
                                     <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-4">
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
@@ -248,70 +248,76 @@ export default function AdRequestList() {
                                     </div>
 
                                     {/* Actions Toolbar */}
-                                    <div className="mt-auto pt-4 border-t border-gray-100 flex flex-wrap gap-2 justify-end">
-                                        {/* Proof of Payment Link */}
-                                        {req.paymentProofUrl && (
-                                            <a
-                                                href={req.paymentProofUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-bold"
-                                            >
-                                                <CreditCard size={16} /> <span className="hidden sm:inline">Comprovante</span>
-                                            </a>
-                                        )}
-
-                                        {/* Target Link */}
-                                        {req.targetUrl && (
-                                            <a
-                                                href={req.targetUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-bold"
-                                            >
-                                                <ExternalLink size={16} /> <span className="hidden sm:inline">Link</span>
-                                            </a>
-                                        )}
-
-                                        <div className="flex-1" />
-
-                                        {req.status === 'pending' && (
-                                            <>
-                                                <button
-                                                    onClick={() => req._id && handleUpdateStatus(req._id, 'rejected')}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 border border-red-200 transition-colors text-sm font-bold"
+                                    <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col sm:flex-row flex-wrap gap-2 sm:items-center justify-end">
+                                        <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:gap-2">
+                                            {/* Proof of Payment Link */}
+                                            {req.paymentProofUrl && (
+                                                <a
+                                                    href={req.paymentProofUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-bold w-full sm:w-auto"
+                                                    title="Ver Comprovante"
                                                 >
-                                                    <XCircle size={18} /> Rejeitar
-                                                </button>
-                                                <button
-                                                    onClick={() => req._id && handleUpdateStatus(req._id, 'approved')}
-                                                    className="inline-flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-lg shadow-green-200 hover:shadow-xl transition-all text-sm font-bold"
-                                                >
-                                                    <CheckCircle size={18} /> Aprovar Publicação
-                                                </button>
-                                            </>
-                                        )}
+                                                    <CreditCard size={16} /> <span className="sm:inline">Comprovante</span>
+                                                </a>
+                                            )}
 
-                                        {req.status === 'approved' && (
+                                            {/* Target Link */}
+                                            {req.targetUrl && (
+                                                <a
+                                                    href={req.targetUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-bold w-full sm:w-auto"
+                                                    title="Ver Link de Destino"
+                                                >
+                                                    <ExternalLink size={16} /> <span className="sm:inline">Link</span>
+                                                </a>
+                                            )}
+                                        </div>
+
+                                        <div className="hidden sm:block sm:flex-1" />
+
+                                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                            {req.status === 'pending' && (
+                                                <>
+                                                    <button
+                                                        onClick={() => req._id && handleUpdateStatus(req._id, 'rejected')}
+                                                        className="flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 border border-red-200 transition-colors text-sm font-bold w-full sm:w-auto"
+                                                    >
+                                                        <XCircle size={18} /> Rejeitar
+                                                    </button>
+                                                    <button
+                                                        onClick={() => req._id && handleUpdateStatus(req._id, 'approved')}
+                                                        className="flex items-center justify-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-lg shadow-green-200 hover:shadow-xl transition-all text-sm font-bold w-full sm:w-auto"
+                                                    >
+                                                        <CheckCircle size={18} /> Aprovar Publicação
+                                                    </button>
+                                                </>
+                                            )}
+
+                                            {req.status === 'approved' && (
+                                                <button
+                                                    onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
+                                                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-bold w-full sm:w-auto ${req.isActive
+                                                        ? 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
+                                                        : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                                                        }`}
+                                                >
+                                                    {req.isActive ? <PowerOff size={18} /> : <Power size={18} />}
+                                                    {req.isActive ? 'Pausar' : 'Reativar'}
+                                                </button>
+                                            )}
+
                                             <button
-                                                onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
-                                                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-bold ${req.isActive
-                                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
-                                                    : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                                                    }`}
+                                                onClick={() => req._id && handleDelete(req._id)}
+                                                className="flex items-center justify-center gap-2 px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors w-full sm:w-auto"
+                                                title="Excluir permanentemente"
                                             >
-                                                {req.isActive ? <PowerOff size={18} /> : <Power size={18} />}
-                                                {req.isActive ? 'Pausar' : 'Reativar'}
+                                                <Trash2 size={18} /> <span className="sm:hidden">Excluir</span>
                                             </button>
-                                        )}
-
-                                        <button
-                                            onClick={() => req._id && handleDelete(req._id)}
-                                            className="inline-flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Excluir permanentemente"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
