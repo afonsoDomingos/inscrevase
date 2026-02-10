@@ -37,6 +37,7 @@ export default function AdRequestList() {
             toast.success(`Anúncio ${status === 'approved' ? 'aprovado' : 'rejeitado'} com sucesso`);
             loadRequests();
         } catch (err) {
+            console.error('Error updating ad status:', err);
             toast.error('Erro ao atualizar status do anúncio');
         }
     };
@@ -47,6 +48,7 @@ export default function AdRequestList() {
             toast.success(`Anúncio ${!current ? 'ativado' : 'pausado'} com sucesso`);
             loadRequests();
         } catch (err) {
+            console.error('Error toggling ad status:', err);
             toast.error('Erro ao alternar status do anúncio');
         }
     };
@@ -58,6 +60,7 @@ export default function AdRequestList() {
                 toast.success('Anúncio excluído');
                 loadRequests();
             } catch (err) {
+                console.error('Error deleting ad:', err);
                 toast.error('Erro ao excluir anúncio');
             }
         }

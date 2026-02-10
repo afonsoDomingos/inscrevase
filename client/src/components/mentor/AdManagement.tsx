@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Megaphone, Plus, Clock, Eye, MousePointer2, Settings2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { toast } from 'sonner';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -37,6 +37,7 @@ export default function AdManagement() {
             toast.success(`Anúncio ${!currentStatus ? 'ativado' : 'pausado'} com sucesso`);
             loadAds();
         } catch (error) {
+            console.error('Error toggling ad status:', error);
             toast.error('Erro ao alterar status do anúncio');
         }
     };
@@ -48,6 +49,7 @@ export default function AdManagement() {
                 toast.success('Anúncio excluído com sucesso');
                 loadAds();
             } catch (error) {
+                console.error('Error deleting ad:', error);
                 toast.error('Erro ao excluir anúncio');
             }
         }
