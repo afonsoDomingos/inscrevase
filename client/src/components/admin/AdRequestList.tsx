@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, CreditCard, Trash2, Power, PowerOff, Eye, MousePointer2, Video } from 'lucide-react';
+import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, CreditCard, Trash2, Power, PowerOff, Eye, MousePointer2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
@@ -239,10 +239,10 @@ export default function AdRequestList() {
                                         <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 col-span-2">
                                             <div className="text-xs text-gray-500 font-bold uppercase mb-1">Anunciante</div>
                                             <div className="font-bold text-gray-800 truncate text-sm">
-                                                {typeof req.userId === 'object' ? req.userId?.name : 'Usuário'}
+                                                {typeof req.userId === 'object' ? (req.userId as any)?.name : 'Usuário'}
                                             </div>
                                             <div className="text-xs text-gray-400 truncate">
-                                                {typeof req.userId === 'object' ? req.userId?.email : req.userId}
+                                                {typeof req.userId === 'object' ? (req.userId as any)?.email : req.userId}
                                             </div>
                                         </div>
                                     </div>
