@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { formService } from '@/lib/formService';
 import { adService, AdRequestModel } from '@/lib/adService';
