@@ -126,7 +126,10 @@
             "uploadSuccess": "Upload concluído com sucesso!"
         },
         "pageNotFound": "Página Não Encontrada",
-        "pageNotFoundDesc": "Desculpe, a página que você procura não existe ou foi movida."
+        "pageNotFoundDesc": "Desculpe, a página que você procura não existe ou foi movida.",
+        "sponsored": "Patrocinado",
+        "nextAd": "Próximo Anúncio",
+        "nextEvent": "Próximo Evento"
     },
     "nav": {
         "home": "Início",

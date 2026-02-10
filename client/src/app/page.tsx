@@ -18,6 +18,8 @@ import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
 import { ChevronRight, Zap, MapPin } from "lucide-react";
+import SponsoredAdCard from "@/components/home/SponsoredAdCard";
+
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
@@ -391,77 +393,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sponsored Events - Premium Horizontal Slider */}
+      {/* Sponsored Ad System */}
       {sponsoredEvents.length > 0 && (
-        <section style={{ padding: '80px 0', background: '#fff', overflow: 'hidden' }}>
-          <div className="container" style={{ padding: '0 1.5rem' }}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#B8860B', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.8rem' }}>
-                  <Zap size={14} fill="#B8860B" /> EM DESTAQUE
-                </div>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a' }}>Eventos <span className="gold-text">Premium</span></h2>
-              </div>
-              <Link href="/experts" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#B8860B', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem' }}>
-                Ver todos os eventos <ChevronRight size={18} />
-              </Link>
-            </motion.div>
-
-            <div style={{ display: 'flex', gap: '24px', overflowX: 'auto', padding: '10px 0 30px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {sponsoredEvents.map((event, idx) => (
-                <motion.div
-                  key={event._id}
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  whileHover={{ y: -10 }}
-                  style={{ minWidth: '350px', background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}
-                >
-                  <Link href={`/f/${event.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div style={{ position: 'relative', height: '220px' }}>
-                      <Image
-                        src={event.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1000'}
-                        alt={event.title}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                      />
-                      <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', color: '#FFD700', padding: '5px 12px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 800 }}>
-                        {event.category || 'EVENTO'}
-                      </div>
-                    </div>
-                    <div style={{ padding: '1.5rem' }}>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#1a1a1a', height: '3rem', overflow: 'hidden' }}>{event.title}</h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#666', fontSize: '0.85rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Calendar size={14} /> {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : 'A definir'}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <MapPin size={14} /> {event.location || 'Online'}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
-                          <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#f0f0f0', overflow: 'hidden' }}>
-                            {event.creator?.profilePhoto ? (
-                              <Image src={event.creator.profilePhoto} alt="" width={24} height={24} style={{ objectFit: 'cover' }} />
-                            ) : (
-                              <Users size={12} style={{ margin: '6px' }} />
-                            )}
-                          </div>
-                          <span style={{ fontWeight: 600 }}>{event.creator?.businessName || event.creator?.name}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <SponsoredAdCard events={sponsoredEvents} />
       )}
 
       {/* Stats Section - Luxury Dark Mode */}
