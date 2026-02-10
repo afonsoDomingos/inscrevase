@@ -129,7 +129,8 @@
         "pageNotFoundDesc": "Desculpe, a página que você procura não existe ou foi movida.",
         "sponsored": "Patrocinado",
         "nextAd": "Próximo Anúncio",
-        "nextEvent": "Próximo Evento"
+        "nextEvent": "Próximo Evento",
+        "promoteCTA": "Anunciar aqui / Promover Evento"
     },
     "nav": {
         "home": "Início",

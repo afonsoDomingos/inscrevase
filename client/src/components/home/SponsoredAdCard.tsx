@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, MapPin, ChevronRight, Zap, Clock, X } from 'lucide-react';
+import { Calendar, MapPin, ChevronRight, Zap, Clock, X, Megaphone } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 import { FormModel } from '@/lib/formService';
 
@@ -244,6 +244,30 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     >
                                         Skip
                                     </button>
+                                </div>
+
+                                {/* Creative CTA for other advertisers */}
+                                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                                    <Link
+                                        href="/suporte"
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            color: '#B8860B',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 700,
+                                            textDecoration: 'none',
+                                            padding: '8px 16px',
+                                            borderRadius: '50px',
+                                            background: 'rgba(212, 175, 55, 0.05)',
+                                            border: '1px dashed rgba(212, 175, 55, 0.4)',
+                                            transition: '0.3s'
+                                        }}
+                                        className="hover:bg-[rgba(212,175,55,0.1)]"
+                                    >
+                                        <Megaphone size={14} /> {t('common.promoteCTA')}
+                                    </Link>
                                 </div>
 
                                 {/* Progress Indicator */}
