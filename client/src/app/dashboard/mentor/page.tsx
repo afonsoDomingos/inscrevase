@@ -14,6 +14,7 @@ import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
 import ServicesManagement from '@/components/mentor/ServicesManagement';
 import Link from 'next/link';
+import AdManagement from '@/components/mentor/AdManagement';
 import { useTranslate } from '@/context/LanguageContext';
 import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
@@ -54,7 +55,8 @@ import {
     Video,
     Award,
     Briefcase,
-    Package
+    Package,
+    Megaphone
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -66,7 +68,7 @@ import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads';
 
 import { Suspense } from 'react';
 
@@ -401,6 +403,7 @@ function MentorDashboardContent() {
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
+                        { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
@@ -1197,6 +1200,17 @@ function MentorDashboardContent() {
                                 formId={selectedSubmissionFormId}
                                 onAction={refreshData}
                             />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'ads' && (
+                        <motion.div
+                            key="ads"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <AdManagement />
                         </motion.div>
                     )}
 

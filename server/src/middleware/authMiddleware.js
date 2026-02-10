@@ -33,4 +33,10 @@ const optionalAuthMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = { authMiddleware, adminMiddleware, optionalAuthMiddleware };
+module.exports = {
+    authMiddleware,
+    adminMiddleware,
+    optionalAuthMiddleware,
+    protect: authMiddleware,
+    adminOnly: adminMiddleware
+};

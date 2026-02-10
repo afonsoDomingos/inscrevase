@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin } from 'lucide-react';
+import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FormModel } from '@/lib/formService';
 
-const PRICING_PER_WEEK = 150; // MT
+const PRICING_PER_WEEK = 250; // MT
 
 export default function AnunciarPage() {
     const router = useRouter();
@@ -31,7 +31,8 @@ export default function AnunciarPage() {
         title: '',
         description: '',
         category: 'event',
-        imageUrl: '',
+        mediaUrl: '',
+        mediaType: 'image',
         durationWeeks: 1,
         priceTotal: PRICING_PER_WEEK,
         paymentMethod: 'manual',
@@ -90,13 +91,16 @@ export default function AnunciarPage() {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        const isVideo = file.type.startsWith('video/');
+        const mediaType = isVideo ? 'video' : 'image';
+
         setUploading(true);
         setError(null);
         try {
             const url = await formService.uploadFile(file, 'ads');
-            setForm(prev => ({ ...prev, imageUrl: url }));
+            setForm(prev => ({ ...prev, mediaUrl: url, mediaType }));
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Erro ao subir imagem');
+            setError(err instanceof Error ? err.message : 'Erro ao subir arquivo');
         } finally {
             setUploading(false);
         }
@@ -149,10 +153,10 @@ export default function AnunciarPage() {
                             Seu pedido de anúncio foi enviado com sucesso. Nossa equipe analisará as informações e o pagamento. Você será notificado assim que for aprovado.
                         </p>
                         <button
-                            onClick={() => router.push('/')}
-                            style={{ width: '100%', padding: '1rem', background: '#000', color: '#fff', borderRadius: '12px', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+                            onClick={() => router.push('/dashboard/mentor')}
+                            style={{ width: '100%', padding: '1.2rem', background: '#000', color: '#fff', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         >
-                            Voltar para o Início
+                            Ver Meus Anúncios <ArrowRight size={20} />
                         </button>
                     </motion.div>
                 </main>
@@ -348,13 +352,17 @@ export default function AnunciarPage() {
 
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Imagem do Anúncio (Vertical/Quadrada)</label>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#444', marginBottom: '0.8rem' }}>Mídia do Anúncio (Imagem ou Vídeo)</label>
                                                 <div style={{ position: 'relative', height: '200px', width: '100%', border: '2px dashed #eee', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                                                    {form.imageUrl ? (
+                                                    {form.mediaUrl ? (
                                                         <>
-                                                            <Image src={form.imageUrl} alt="Anuncio" fill style={{ objectFit: 'cover' }} />
+                                                            {form.mediaType === 'video' ? (
+                                                                <video src={form.mediaUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} controls autoPlay muted loop />
+                                                            ) : (
+                                                                <Image src={form.mediaUrl} alt="Anuncio" fill style={{ objectFit: 'cover' }} />
+                                                            )}
                                                             <button
-                                                                onClick={() => setForm({ ...form, imageUrl: '' })}
+                                                                onClick={() => setForm({ ...form, mediaUrl: '', mediaType: 'image' })}
                                                                 style={{ position: 'absolute', top: '10px', right: '10px', background: '#000', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '8px', fontSize: '0.7rem' }}
                                                             >Trocar</button>
                                                         </>
@@ -363,8 +371,11 @@ export default function AnunciarPage() {
                                                             {uploading ? <div className="spinner" /> : (
                                                                 <>
                                                                     <Upload size={30} color="#ccc" />
-                                                                    <span style={{ fontSize: '0.8rem', color: '#999', marginTop: '10px' }}>Arraste ou clique para subir</span>
-                                                                    <input type="file" onChange={handleFileUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} accept="image/*" />
+                                                                    <div style={{ textAlign: 'center' }}>
+                                                                        <span style={{ fontSize: '0.8rem', color: '#999', display: 'block', marginTop: '10px' }}>Clique para subir imagem ou vídeo</span>
+                                                                        <span style={{ fontSize: '0.6rem', color: '#bbb' }}>Máx 10MB para vídeos</span>
+                                                                    </div>
+                                                                    <input type="file" onChange={handleFileUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} accept="image/*,video/*" />
                                                                 </>
                                                             )}
                                                         </>
@@ -404,8 +415,8 @@ export default function AnunciarPage() {
                                                 <button onClick={() => setStep(1)} style={{ flex: 1, padding: '1.2rem', background: '#f5f5f5', color: '#444', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Voltar</button>
                                                 <button
                                                     onClick={() => setStep(3)}
-                                                    disabled={!form.imageUrl}
-                                                    style={{ flex: 2, padding: '1.2rem', background: '#000', color: '#fff', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer', opacity: !form.imageUrl ? 0.5 : 1 }}
+                                                    disabled={!form.mediaUrl}
+                                                    style={{ flex: 2, padding: '1.2rem', background: '#000', color: '#fff', borderRadius: '16px', border: 'none', fontWeight: 700, cursor: 'pointer', opacity: !form.mediaUrl ? 0.5 : 1 }}
                                                 >Finalizar e Pagar</button>
                                             </div>
                                         </div>
@@ -521,24 +532,30 @@ export default function AnunciarPage() {
                                 border: '1px solid #f0f0f0',
                                 position: 'relative'
                             }}>
-                                <div style={{ position: 'relative', height: '240px' }}>
-                                    {form.imageUrl ? (
-                                        <Image src={form.imageUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                <div style={{ position: 'relative', height: '400px', background: '#f0f0f0' }}>
+                                    {form.mediaUrl ? (
+                                        form.mediaType === 'video' ? (
+                                            <video src={form.mediaUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay muted loop />
+                                        ) : (
+                                            <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                        )
                                     ) : (
-                                        <div style={{ width: '100%', height: '100%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>Imagem do Anúncio</div>
+                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+                                            <Megaphone size={48} />
+                                        </div>
                                     )}
                                     <div style={{
                                         position: 'absolute',
                                         top: '15px',
-                                        left: '15px',
-                                        background: '#000',
-                                        color: '#FFD700',
+                                        right: '15px',
+                                        background: 'rgba(0,0,0,0.5)',
+                                        color: '#fff',
                                         padding: '5px 12px',
-                                        borderRadius: '100px',
-                                        fontSize: '0.65rem',
-                                        fontWeight: 900,
+                                        borderRadius: '20px',
+                                        fontSize: '0.6rem',
+                                        fontWeight: 800,
+                                        backdropFilter: 'blur(10px)',
                                         textTransform: 'uppercase',
-                                        letterSpacing: '2px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '5px'
@@ -568,11 +585,9 @@ export default function AnunciarPage() {
                                 </ul>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </main>
-
             <Footer />
 
             <style jsx>{`
@@ -594,6 +609,6 @@ export default function AnunciarPage() {
                     -webkit-text-fill-color: transparent;
                 }
             `}</style>
-        </div>
+        </div >
     );
 }
