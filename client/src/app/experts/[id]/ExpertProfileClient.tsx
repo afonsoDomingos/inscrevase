@@ -17,7 +17,7 @@ import { authService } from '@/lib/authService';
 import { formService, FormModel } from '@/lib/formService';
 import { serviceService, ServiceModel } from '@/lib/serviceService';
 import { ShoppingBag } from 'lucide-react';
-import PremiumBadge from '@/components/common/PremiumBadge';
+
 
 export function ExpertProfileClient() {
     const { id } = useParams();
