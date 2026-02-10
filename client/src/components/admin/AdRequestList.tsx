@@ -239,10 +239,10 @@ export default function AdRequestList() {
                                         <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 col-span-2">
                                             <div className="text-xs text-gray-500 font-bold uppercase mb-1">Anunciante</div>
                                             <div className="font-bold text-gray-800 truncate text-sm">
-                                                {typeof req.userId === 'object' ? (req.userId as any)?.name : 'Usuário'}
+                                                {typeof req.userId === 'object' ? (req.userId as { name: string })?.name : 'Usuário'}
                                             </div>
                                             <div className="text-xs text-gray-400 truncate">
-                                                {typeof req.userId === 'object' ? (req.userId as any)?.email : req.userId}
+                                                {typeof req.userId === 'object' ? (req.userId as { email: string })?.email : req.userId}
                                             </div>
                                         </div>
                                     </div>
