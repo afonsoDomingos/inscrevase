@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, MapPin, ChevronRight, Zap, Clock, X, Megaphone } from 'lucide-react';
+import { Calendar, MapPin, ChevronRight, Zap, X, Megaphone } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 import { FormModel } from '@/lib/formService';
 
@@ -17,7 +17,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [timeLeft, setTimeLeft] = useState(30);
     const [isVisible, setIsVisible] = useState(false);
-    const [isClosed, setIsClosed] = useState(false);
+    const isClosed = false; // Placeholder if needed in future, but avoiding unused state
 
     // Show ad after a short delay on the home page
     useEffect(() => {
@@ -25,7 +25,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         return () => clearTimeout(timer);
     }, []);
 
-    const nextAd = () => {
+    const nextAd = useCallback(() => {
         if (events.length > 1) {
             setCurrentIndex((prev) => (prev + 1) % events.length);
             setTimeLeft(30);
@@ -34,7 +34,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
             // Or just cycle it back? For now, let's keep it visible but reset
             setTimeLeft(30);
         }
-    };
+    }, [events.length]);
 
     useEffect(() => {
         if (!isVisible || isClosed) return;
@@ -50,7 +50,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isVisible, isClosed, events.length, currentIndex]);
+    }, [isVisible, isClosed, events.length, currentIndex, nextAd]);
 
     if (!events || events.length === 0 || isClosed) return null;
 

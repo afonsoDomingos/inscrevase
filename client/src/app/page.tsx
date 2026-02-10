@@ -17,7 +17,7 @@ import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
-import { ChevronRight, Zap, MapPin } from "lucide-react";
+
 import SponsoredAdCard from "@/components/home/SponsoredAdCard";
 
 
