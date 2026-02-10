@@ -3,16 +3,23 @@ const AdRequest = require('../models/AdRequest');
 // Submit a new ad request
 exports.submitAdRequest = async (req, res) => {
     try {
+        console.log('📥 [AdController] Received ad request:', {
+            body: req.body,
+            userId: req.user?.id
+        });
+
         const userId = req.user.id;
         const adData = {
             ...req.body,
             userId
         };
 
+        console.log('🔍 [AdController] Creating ad with data:', adData);
+
         const newAd = new AdRequest(adData);
         await newAd.save();
 
-        console.log(`✅ [AdController] New ad request created by user ${userId}`);
+        console.log(`✅ [AdController] New ad request created by user ${userId}`, newAd._id);
         res.status(201).json({
             success: true,
             message: 'Pedido de anúncio enviado com sucesso!',
@@ -20,9 +27,17 @@ exports.submitAdRequest = async (req, res) => {
         });
     } catch (error) {
         console.error('🔴 [AdController] Error submitting ad request:', error);
+        console.error('🔴 [AdController] Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+
+        // Send detailed error for debugging
         res.status(500).json({
             success: false,
-            message: 'Erro ao enviar pedido de anúncio'
+            message: error.message || 'Erro ao enviar pedido de anúncio',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 };

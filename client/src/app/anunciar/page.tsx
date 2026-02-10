@@ -126,10 +126,17 @@ export default function AnunciarPage() {
         setIsSubmitting(true);
         setError(null);
         try {
-            await adService.submitAdRequest(form);
+            console.log('📤 [AnunciarPage] Submitting ad request:', form);
+            const response = await adService.submitAdRequest(form);
+            console.log('✅ [AnunciarPage] Ad submitted successfully:', response);
             setSuccess(true);
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Ocorreu um erro ao enviar o pedido.');
+            console.error('🔴 [AnunciarPage] Error submitting ad:', err);
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Ocorreu um erro ao enviar o pedido.');
+            }
         } finally {
             setIsSubmitting(false);
         }
