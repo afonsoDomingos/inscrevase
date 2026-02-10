@@ -761,9 +761,11 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     >
                                         {form.fields.map((field) => (
                                             <motion.div variants={itemVariants} key={field.label} style={{ marginBottom: '1.5rem' }}>
-                                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
-                                                    {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
-                                                </label>
+                                                {field.type !== 'checkbox' && (
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
+                                                        {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                    </label>
+                                                )}
                                                 {field.type === 'select' ? (
                                                     <motion.select
                                                         whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
@@ -791,7 +793,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
                                                             style={{ width: '20px', height: '20px', accentColor: primaryColor }}
                                                         />
-                                                        <span style={{ fontSize: '0.9rem', color: textColor }}>{t('form.acceptOrConfirm')}</span>
+                                                        <span style={{ fontSize: '0.9rem', color: textColor }}>
+                                                            {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                        </span>
                                                     </label>
                                                 ) : (
                                                     <motion.input
