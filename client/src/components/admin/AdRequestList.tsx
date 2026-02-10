@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, Search, Filter, CreditCard } from 'lucide-react';
+import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, CreditCard } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
@@ -36,7 +36,8 @@ export default function AdRequestList() {
         try {
             await adService.updateAdRequestStatus(id, status);
             loadRequests();
-        } catch (error) {
+        } catch (err) {
+            console.error('Update status error:', err);
             alert('Erro ao atualizar status do anúncio');
         }
     };

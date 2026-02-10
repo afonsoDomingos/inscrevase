@@ -9,14 +9,13 @@ import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { formService } from '@/lib/formService';
 import { adService, AdRequestModel } from '@/lib/adService';
-import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { FormModel } from '@/lib/formService';
 
 const PRICING_PER_WEEK = 150; // MT
 
 export default function AnunciarPage() {
-    const { t } = useTranslate();
     const router = useRouter();
     const { formatPrice } = useCurrency();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,7 +23,7 @@ export default function AnunciarPage() {
     const [step, setStep] = useState(1);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-    const [myEvents, setMyEvents] = useState<any[]>([]);
+    const [myEvents, setMyEvents] = useState<FormModel[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string>('');
     const [whatsappNumber, setWhatsappNumber] = useState('');
     const [linkType, setLinkType] = useState<'url' | 'whatsapp'>('url');
@@ -97,8 +96,8 @@ export default function AnunciarPage() {
         try {
             const url = await formService.uploadFile(file, 'ads');
             setForm(prev => ({ ...prev, imageUrl: url }));
-        } catch (err: any) {
-            setError(err.message || 'Erro ao subir imagem');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Erro ao subir imagem');
         } finally {
             setUploading(false);
         }
@@ -113,8 +112,8 @@ export default function AnunciarPage() {
             const url = await formService.uploadFile(file, 'payments');
             setPaymentProof(url);
             setForm(prev => ({ ...prev, paymentProofUrl: url }));
-        } catch (err: any) {
-            setError(err.message || 'Erro ao subir comprovativo');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Erro ao subir comprovativo');
         } finally {
             setUploading(false);
         }
@@ -126,8 +125,8 @@ export default function AnunciarPage() {
         try {
             await adService.submitAdRequest(form);
             setSuccess(true);
-        } catch (err: any) {
-            setError(err.message || 'Ocorreu um erro ao enviar o pedido.');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Ocorreu um erro ao enviar o pedido.');
         } finally {
             setIsSubmitting(false);
         }
@@ -222,7 +221,7 @@ export default function AnunciarPage() {
                                                     ].map((cat) => (
                                                         <button
                                                             key={cat.id}
-                                                            onClick={() => setForm({ ...form, category: cat.id as any })}
+                                                            onClick={() => setForm({ ...form, category: cat.id as 'event' | 'service' | 'product' })}
                                                             style={{
                                                                 padding: '1rem 0.5rem',
                                                                 borderRadius: '12px',
