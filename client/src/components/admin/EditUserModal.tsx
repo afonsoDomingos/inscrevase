@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield, Lock, Award } from 'lucide-react';
 import { userService } from '@/lib/userService';
-import { UserData } from '@/lib/authService';
+import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService'; // For uploading images if admin wants to change user photo
 import Image from 'next/image';
 
@@ -34,8 +34,12 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
     const [badges, setBadges] = useState<{ name: string; color: string }[]>([]);
     const [canCreateEvents, setCanCreateEvents] = useState(true);
+    const [currentUser, setCurrentUser] = useState<UserData | null>(null);
 
     useEffect(() => {
+        const loggedUser = authService.getCurrentUser();
+        setCurrentUser(loggedUser);
+
         if (user) {
             setName(user.name || '');
             setRole(user.role || 'mentor');
@@ -183,7 +187,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             className="input-luxury"
                                             value={role}
                                             onChange={(e) => setRole(e.target.value)}
-                                            style={{ padding: '0.6rem' }}
+                                            style={{ padding: '0.6rem', opacity: currentUser?.role !== 'SuperAdmin' ? 0.6 : 1, cursor: currentUser?.role !== 'SuperAdmin' ? 'not-allowed' : 'pointer' }}
+                                            disabled={currentUser?.role !== 'SuperAdmin'}
                                         >
                                             <option value="mentor">Mentor</option>
                                             <option value="specialist">Especialista</option>
