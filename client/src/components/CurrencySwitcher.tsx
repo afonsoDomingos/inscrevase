@@ -1,13 +1,12 @@
 "use client";
 
+import { useCurrency, Currency } from "@/context/CurrencyContext";
+import { useTranslate } from "@/context/LanguageContext";
 import { Coins } from 'lucide-react';
 import { useState } from 'react';
-import { useCurrency } from '@/context/CurrencyContext';
-import { useTranslate } from '@/context/LanguageContext';
 
 export default function CurrencySwitcher() {
     const { currency, setCurrency } = useCurrency();
-    const { t } = useTranslate();
     const [isOpen, setIsOpen] = useState(false);
 
     const currencies = [
@@ -69,7 +68,7 @@ export default function CurrencySwitcher() {
                         <button
                             key={c.code}
                             onClick={() => {
-                                setCurrency(c.code as any);
+                                setCurrency(c.code as Currency);
                                 setIsOpen(false);
                             }}
                             style={{

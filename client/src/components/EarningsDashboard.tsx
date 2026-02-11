@@ -8,7 +8,7 @@ import StripeConnect from './StripeConnect';
 import PlanUpgradeModal from './PlanUpgradeModal';
 import { UserData, authService } from '@/lib/authService';
 import { useTranslate } from '@/context/LanguageContext';
-import { useCurrency } from '@/context/CurrencyContext';
+import { useCurrency, Currency } from '@/context/CurrencyContext';
 
 import {
     AreaChart,
@@ -245,8 +245,8 @@ export default function EarningsDashboard() {
                                     <div style={{ fontSize: '0.8rem', color: '#999' }}>{new Date(tx.createdAt).toLocaleDateString()}</div>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontWeight: 700, color: '#10b981' }}>+ {formatPrice(tx.amount, (tx.currency || 'USD') as any, currency)}</div>
-                                    <div style={{ fontSize: '0.75rem', color: '#888' }}>{t('dashboard.finance.net')}: {formatPrice(tx.mentorEarnings, (tx.currency || 'USD') as any, currency)}</div>
+                                    <div style={{ fontWeight: 700, color: '#10b981' }}>+ {formatPrice(tx.amount, (tx.currency || 'USD') as Currency, currency)}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#888' }}>{t('dashboard.finance.net')}: {formatPrice(tx.mentorEarnings, (tx.currency || 'USD') as Currency, currency)}</div>
                                 </div>
                             </div>
                         ))

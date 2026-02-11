@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle, Zap, ShieldCheck, Crown, Loader2, Info, Clock } from "lucide-react";
-import { useCurrency } from "@/context/CurrencyContext";
+import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
 import { toast } from "sonner";
@@ -142,7 +142,7 @@ export default function InternalPlansView() {
                             const value = e.target.value;
                             const PALOP = ['MZN', 'AOA', 'CVE', 'XOF'];
                             if (value && PALOP.includes(value)) {
-                                setCurrency(value as any);
+                                setCurrency(value as Currency);
                             }
                         }}
                         style={{

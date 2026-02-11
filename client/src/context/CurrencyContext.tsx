@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
-type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF';
+export type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF';
 
 interface PlanPrices {
     MZN: number;

@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
-import { useCurrency } from "@/context/CurrencyContext";
+import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
 import Cookies from "js-cookie";
@@ -1172,7 +1172,7 @@ export default function Home() {
                   const value = e.target.value;
                   const PALOP = ['MZN', 'AOA', 'CVE', 'XOF'];
                   if (value && PALOP.includes(value)) {
-                    setCurrency(value as any);
+                    setCurrency(value as Currency);
                   }
                 }}
                 style={{
