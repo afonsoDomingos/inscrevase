@@ -59,40 +59,46 @@ export default function ImpactSection() {
                             <Award className="icon-gold" size={24} /> Top Mentores de Elite
                         </h3>
                         <div className="mentors-list">
-                            {stats?.topMentors.map((mentor, index) => (
-                                <div key={mentor.id} className="mentor-item">
-                                    <div className="mentor-info">
-                                        <div className="mentor-avatar-wrapper">
-                                            {mentor.profilePhoto ? (
-                                                <Image
-                                                    src={mentor.profilePhoto}
-                                                    alt={mentor.name}
-                                                    width={40}
-                                                    height={40}
-                                                    className="mentor-avatar"
-                                                    style={{ objectFit: 'cover' }}
-                                                />
-                                            ) : (
-                                                <div className="mentor-initial">{mentor.name[0]}</div>
-                                            )}
+                            {stats?.topMentors && stats.topMentors.length > 0 ? (
+                                stats.topMentors.map((mentor, index) => (
+                                    <div key={mentor.id} className="mentor-item">
+                                        <div className="mentor-info">
+                                            <div className="mentor-avatar-wrapper">
+                                                {mentor.profilePhoto ? (
+                                                    <Image
+                                                        src={mentor.profilePhoto}
+                                                        alt={mentor.name}
+                                                        width={44}
+                                                        height={44}
+                                                        className="mentor-avatar"
+                                                        style={{ objectFit: 'cover' }}
+                                                    />
+                                                ) : (
+                                                    <div className="mentor-initial">{mentor.name[0]}</div>
+                                                )}
+                                            </div>
+                                            <div className="mentor-name-group">
+                                                <span className={`mentor-name ${index === 0 ? 'highlight' : ''}`}>
+                                                    {mentor.name}
+                                                </span>
+                                                <span className="mentor-score">{mentor.impactScore.toLocaleString()} pts</span>
+                                            </div>
                                         </div>
-                                        <div className="mentor-name-group">
-                                            <span className={`mentor-name ${index === 0 ? 'highlight' : ''}`}>
-                                                {mentor.name}
-                                            </span>
-                                            <span className="mentor-score">{mentor.impactScore.toLocaleString()} pts</span>
+                                        <div className="progress-bar-bg">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                whileInView={{ width: `${(mentor.impactScore / (stats.topMentors[0].impactScore || 1)) * 100}%` }}
+                                                transition={{ duration: 1.2, ease: "easeOut", delay: index * 0.1 }}
+                                                className={`progress-bar-fill ${index === 0 ? 'first' : ''}`}
+                                            />
                                         </div>
                                     </div>
-                                    <div className="progress-bar-bg">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            whileInView={{ width: `${(mentor.impactScore / (stats.topMentors[0].impactScore || 1)) * 100}%` }}
-                                            transition={{ duration: 1.2, ease: "easeOut", delay: index * 0.1 }}
-                                            className={`progress-bar-fill ${index === 0 ? 'first' : ''}`}
-                                        />
-                                    </div>
+                                ))
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '40px 0', opacity: 0.5 }}>
+                                    Ainda sem dados de mentores.
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </motion.div>
 
@@ -109,33 +115,39 @@ export default function ImpactSection() {
                         <p className="card-subtitle-small">Países com maior atividade na plataforma</p>
 
                         <div className="chart-container">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={stats?.topCountries} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                                    <XAxis type="number" hide />
-                                    <YAxis
-                                        dataKey="country"
-                                        type="category"
-                                        tick={{ fill: '#888', fontSize: 12, fontWeight: 600 }}
-                                        axisLine={false}
-                                        tickLine={false}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
-                                        cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
-                                    />
-                                    <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                                        {stats?.topCountries.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={index < 3 ? 'url(#goldGradient)' : '#333'} />
-                                        ))}
-                                    </Bar>
-                                    <defs>
-                                        <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stopColor="#FFD700" />
-                                            <stop offset="100%" stopColor="#B8860B" />
-                                        </linearGradient>
-                                    </defs>
-                                </BarChart>
-                            </ResponsiveContainer>
+                            {stats?.topCountries && stats.topCountries.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={stats?.topCountries} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                                        <XAxis type="number" hide />
+                                        <YAxis
+                                            dataKey="country"
+                                            type="category"
+                                            tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}
+                                            axisLine={false}
+                                            tickLine={false}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '12px', color: '#fff' }}
+                                            cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                        />
+                                        <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                                            {stats?.topCountries.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={index < 3 ? 'url(#goldGradient)' : 'rgba(255,255,255,0.15)'} />
+                                            ))}
+                                        </Bar>
+                                        <defs>
+                                            <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="0">
+                                                <stop offset="0%" stopColor="#FFD700" />
+                                                <stop offset="100%" stopColor="#B8860B" />
+                                            </linearGradient>
+                                        </defs>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.5 }}>
+                                    Ainda sem dados de geolocalização.
+                                </div>
+                            )}
                         </div>
 
                         <div className="counters-box">
@@ -160,9 +172,9 @@ export default function ImpactSection() {
 
             <style jsx>{`
                 .impact-section {
-                    background: #050505;
+                    background: #000000;
                     color: #ffffff;
-                    padding: 100px 0;
+                    padding: 120px 0;
                     position: relative;
                     overflow: hidden;
                 }
@@ -170,64 +182,90 @@ export default function ImpactSection() {
                 .bg-mesh-overlay {
                     position: absolute;
                     inset: 0;
-                    background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+                    background: 
+                        radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
                     pointer-events: none;
                 }
 
                 .impact-header {
                     text-align: center;
-                    margin-bottom: 70px;
+                    margin-bottom: 80px;
+                    position: relative;
+                    z-index: 2;
                 }
 
                 .impact-title {
-                    font-size: clamp(2.5rem, 5vw, 4rem);
+                    font-size: clamp(3rem, 6vw, 4.5rem);
                     font-weight: 900;
-                    margin-bottom: 20px;
+                    margin-bottom: 24px;
                     font-family: 'Playfair Display', serif;
+                    color: #ffffff;
+                    letter-spacing: -1px;
+                }
+
+                .gold-text {
+                    background: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #B8860B 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    display: inline-block;
                 }
 
                 .impact-subtitle {
-                    color: #888;
-                    font-size: 1.2rem;
-                    max-width: 700px;
+                    color: rgba(255, 255, 255, 0.6);
+                    font-size: 1.25rem;
+                    max-width: 800px;
                     margin: 0 auto;
-                    line-height: 1.6;
+                    line-height: 1.7;
+                    font-family: 'Inter', sans-serif;
                 }
 
                 .impact-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
                     gap: 40px;
                     align-items: start;
+                    position: relative;
+                    z-index: 2;
                 }
 
                 .impact-card {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(12px);
-                    border: 1px solid rgba(255, 255, 255, 0.08);
-                    border-radius: 32px;
-                    padding: 40px;
-                    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+                    background: rgba(20, 20, 20, 0.6);
+                    backdrop-filter: blur(20px);
+                    border: 1px solid rgba(212, 175, 55, 0.15);
+                    border-radius: 40px;
+                    padding: 48px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+
+                .impact-card:hover {
+                    transform: translateY(-10px);
+                    border-color: rgba(212, 175, 55, 0.4);
+                    box-shadow: 0 35px 70px -15px rgba(212, 175, 55, 0.1);
                 }
 
                 .card-title {
-                    font-size: 1.5rem;
+                    font-size: 1.75rem;
                     font-weight: 800;
-                    margin-bottom: 30px;
+                    margin-bottom: 35px;
                     display: flex;
                     align-items: center;
-                    gap: 12px;
+                    gap: 16px;
                     font-family: 'Playfair Display', serif;
+                    color: #ffffff;
                 }
 
                 .icon-gold {
                     color: #FFD700;
+                    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
                 }
 
                 .mentors-list {
                     display: flex;
                     flex-direction: column;
-                    gap: 25px;
+                    gap: 30px;
                 }
 
                 .mentor-item {
@@ -238,34 +276,32 @@ export default function ImpactSection() {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    margin-bottom: 10px;
+                    margin-bottom: 12px;
                 }
 
                 .mentor-avatar-wrapper {
                     display: flex;
                     align-items: center;
-                    gap: 15px;
+                    gap: 18px;
                 }
 
                 .mentor-avatar {
-                    width: 40px;
-                    height: 40px;
                     border-radius: 50%;
-                    object-fit: cover;
-                    border: 2px solid rgba(255, 215, 0, 0.3);
+                    border: 2px solid rgba(255, 215, 0, 0.5);
+                    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
                 }
 
                 .mentor-initial {
-                    width: 40px;
-                    height: 40px;
+                    width: 44px;
+                    height: 44px;
                     border-radius: 50%;
-                    background: #222;
+                    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-weight: bold;
+                    font-weight: 800;
                     color: #FFD700;
-                    border: 1px solid rgba(255, 215, 0, 0.2);
+                    border: 2px solid rgba(255, 215, 0, 0.3);
                 }
 
                 .mentor-name-group {
@@ -275,86 +311,97 @@ export default function ImpactSection() {
                 }
 
                 .mentor-name {
-                    font-weight: 600;
-                    font-size: 0.95rem;
+                    font-weight: 700;
+                    font-size: 1.1rem;
+                    color: rgba(255, 255, 255, 0.9);
                 }
 
                 .mentor-name.highlight {
                     color: #FFD700;
-                    font-weight: 800;
+                    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
                 }
 
                 .mentor-score {
-                    font-size: 0.75rem;
-                    color: #666;
-                    font-weight: 700;
+                    font-size: 0.8rem;
+                    color: rgba(255, 255, 255, 0.5);
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
                 }
 
                 .progress-bar-bg {
-                    height: 8px;
-                    background: #111;
-                    border-radius: 10px;
+                    height: 10px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 20px;
                     overflow: hidden;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
                 }
 
                 .progress-bar-fill {
                     height: 100%;
-                    background: #444;
-                    border-radius: 10px;
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 20px;
                 }
 
                 .progress-bar-fill.first {
-                    background: linear-gradient(90deg, #FFD700, #B8860B);
-                    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+                    background: linear-gradient(90deg, #FFD700, #FDB931, #B8860B);
+                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
                 }
 
                 .card-subtitle-small {
-                    font-size: 0.85rem;
-                    color: #666;
-                    margin-bottom: 25px;
+                    font-size: 0.95rem;
+                    color: rgba(255, 255, 255, 0.5);
+                    margin-bottom: 30px;
+                    font-weight: 500;
                 }
 
                 .chart-container {
-                    height: 300px;
-                    margin-bottom: 30px;
+                    height: 320px;
+                    margin-bottom: 40px;
                 }
 
                 .counters-box {
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
-                    gap: 15px;
-                    margin-top: 20px;
+                    gap: 20px;
+                    margin-top: 30px;
                 }
 
                 .counter-item {
                     background: rgba(255, 255, 255, 0.03);
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                    border-radius: 20px;
-                    padding: 15px 10px;
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    border-radius: 24px;
+                    padding: 24px 12px;
                     text-align: center;
+                    transition: all 0.3s ease;
                 }
 
                 .counter-item.featured {
-                    border-color: rgba(255, 215, 0, 0.2);
-                    background: rgba(255, 215, 0, 0.03);
+                    border-color: rgba(255, 215, 0, 0.3);
+                    background: rgba(255, 215, 0, 0.05);
+                    box-shadow: 0 0 30px rgba(255, 215, 0, 0.05);
                 }
 
                 .counter-value {
-                    font-size: 1.4rem;
-                    font-weight: 800;
-                    margin-bottom: 5px;
+                    font-size: 1.75rem;
+                    font-weight: 900;
+                    margin-bottom: 8px;
+                    color: #ffffff;
                 }
 
                 .counter-item.featured .counter-value {
-                    color: #FFD700;
+                    background: linear-gradient(135deg, #FFD700, #FDB931);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
                 }
 
                 .counter-label {
-                    font-size: 0.65rem;
+                    font-size: 0.75rem;
                     text-transform: uppercase;
-                    letter-spacing: 1px;
-                    color: #666;
-                    font-weight: 700;
+                    letter-spacing: 1.5px;
+                    color: rgba(255, 255, 255, 0.4);
+                    font-weight: 800;
                 }
 
                 @media (max-width: 768px) {
@@ -362,10 +409,13 @@ export default function ImpactSection() {
                         grid-template-columns: 1fr;
                     }
                     .impact-card {
-                        padding: 25px;
+                        padding: 30px;
                     }
                     .counter-value {
-                        font-size: 1.1rem;
+                        font-size: 1.4rem;
+                    }
+                    .impact-title {
+                        font-size: 2.5rem;
                     }
                 }
             `}</style>
