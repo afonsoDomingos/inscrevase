@@ -95,7 +95,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     const getPlanPrice = (planId: 'pro' | 'enterprise'): number => {
         if (!plans || !plans[planId]) {
             // Fallbacks based on approximate exchange rates
-            const basePriceUSD = planId === 'pro' ? 79 : 799;
+            const basePriceUSD = planId === 'pro' ? 4.99 : 47.99;
 
             if (currency === 'USD') return basePriceUSD;
             if (currency === 'EUR') return basePriceUSD * 0.92;

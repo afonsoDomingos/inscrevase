@@ -1316,7 +1316,7 @@ export default function Home() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontWeight: 500, textDecoration: 'line-through' }}>
-                  {formatPrice(350, 'USD', currency)}
+                  {formatPrice(45, 'USD', currency)}
                 </span>
                 <p style={{ color: '#fff', fontSize: 'clamp(1.8rem, 5vw, 2.2rem)', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('pro'), currency, currency)}
@@ -1333,7 +1333,7 @@ export default function Home() {
                   flexDirection: 'column',
                   lineHeight: 1
                 }}>
-                  <span>-{Math.round(((350 - 79) / 350) * 100)}%</span>
+                  <span>-89%</span>
                 </div>
                 <div style={{
                   background: 'rgba(255,215,0,0.2)',
@@ -1344,7 +1344,7 @@ export default function Home() {
                   fontWeight: 800,
                   border: '1px solid rgba(255,215,0,0.3)'
                 }}>
-                  {t('plans.save') || 'Poupe'} {formatPrice(350 - 79, 'USD', currency)}
+                  {t('plans.save') || 'Poupe'} {formatPrice(45 - 4.99, 'USD', currency)}
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
@@ -1409,7 +1409,7 @@ export default function Home() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: 500, textDecoration: 'line-through' }}>
-                  {formatPrice(3500, 'USD', currency)}
+                  {formatPrice(450, 'USD', currency)}
                 </span>
                 <p style={{ color: '#fff', fontSize: 'clamp(1.6rem, 5vw, 2rem)', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('enterprise'), currency, currency)}
@@ -1423,7 +1423,7 @@ export default function Home() {
                   fontWeight: 900,
                   boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
                 }}>
-                  -{Math.round(((3500 - 799) / 3500) * 100)}%
+                  -89%
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
@@ -1452,10 +1452,10 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
-      </section >
+      </section>
 
       {/* Features CTA Section (Tesla Inspired) - Placed at the end */}
-      < section style={{
+      <section style={{
         height: '70vh',
         position: 'relative',
         display: 'flex',
@@ -1521,7 +1521,7 @@ export default function Home() {
       < SocialProof />
 
       {/* Team Section - Leadership Authority */}
-      <TeamSection />
+      < TeamSection />
 
       {/* Testimonials Section */}
       < Testimonials />
