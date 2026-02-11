@@ -17,8 +17,6 @@ import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
-import ImpactSection from "@/components/home/ImpactSection";
-
 import SponsoredAdCard from "@/components/home/SponsoredAdCard";
 
 
@@ -547,8 +545,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Impact Section - Top Mentors & Global Reach */}
-      <ImpactSection />
+
 
       {/* Dashboard Feature Showcase */}
       <section className="dashboard-showcase" style={{ padding: '50px 0 90px 0', background: '#fff', position: 'relative', overflow: 'hidden' }}>
