@@ -62,7 +62,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
                         console.log('✅ Exchange rates loaded:', data.rates);
                     }
                 }
-            } catch (error) {
+            } catch {
                 console.warn('⚠️  Failed to fetch exchange rates, using fallback rates');
             }
         };
