@@ -40,6 +40,15 @@ export default function FormList() {
     };
 
     const handleToggleSponsor = async (form: FormModel) => {
+        // Limit promoted events for non-SuperAdmins
+        if (currentUser?.role !== 'SuperAdmin' && !form.isSponsored) {
+            const sponsoredCount = forms.filter(f => f.isSponsored).length;
+            if (sponsoredCount >= 4) {
+                alert('Limite atingido! Administradores podem promover no máximo 4 eventos simultaneamente. Remova o destaque de outro evento para continuar.');
+                return;
+            }
+        }
+
         try {
             await formService.toggleSponsorship(form._id);
             loadForms();
@@ -158,15 +167,13 @@ export default function FormList() {
                                         >
                                             <ExternalLink size={18} />
                                         </a>
-                                        {currentUser?.role === 'SuperAdmin' && (
-                                            <button
-                                                onClick={() => handleToggleSponsor(form)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
-                                                title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
-                                            >
-                                                <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
-                                            </button>
-                                        )}
+                                        <button
+                                            onClick={() => handleToggleSponsor(form)}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
+                                            title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
+                                        >
+                                            <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
+                                        </button>
                                         <button
                                             onClick={() => handleToggleStatus(form)}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.active ? '#888' : '#38a169' }}
