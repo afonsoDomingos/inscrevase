@@ -638,26 +638,53 @@ function MentorDashboardContent() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         style={{
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
-                            borderRadius: '16px',
-                            padding: '20px',
-                            marginBottom: '30px',
+                            background: 'linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(184,134,11,0.08) 100%)',
+                            border: '1px solid rgba(212,175,55,0.4)',
+                            borderRadius: '24px',
+                            padding: '24px',
+                            marginBottom: '40px',
                             display: 'flex',
                             flexDirection: isMobile ? 'column' : 'row',
                             alignItems: isMobile ? 'flex-start' : 'center',
                             justifyContent: 'space-between',
-                            gap: '20px',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                            gap: '24px',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(212,175,55,0.05)',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <div style={{ background: '#ef4444', padding: '10px', borderRadius: '12px' }}>
-                                <AlertCircle color="#fff" size={24} />
+                        {/* Shimmer Effect */}
+                        <motion.div
+                            animate={{ x: ['-100%', '200%'] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '40%',
+                                height: '100%',
+                                background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)',
+                                pointerEvents: 'none'
+                            }}
+                        />
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', zIndex: 1 }}>
+                            <div style={{
+                                background: 'var(--gold-gradient)',
+                                padding: '12px',
+                                borderRadius: '16px',
+                                boxShadow: '0 5px 15px rgba(212,175,55,0.4)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <AlertCircle color="#000" size={28} />
                             </div>
                             <div>
-                                <h4 style={{ color: '#fff', margin: 0, fontWeight: 700, fontSize: '1.1rem' }}>{t('auth.verifyEmailTitle')}</h4>
-                                <p style={{ color: 'rgba(255,255,255,0.7)', margin: '5px 0 0 0', fontSize: '0.9rem', maxWidth: '600px' }}>
+                                <h4 style={{ color: '#fff', margin: 0, fontWeight: 800, fontSize: '1.25rem', fontFamily: 'var(--font-playfair)' }}>
+                                    {t('auth.verifyEmailTitle')}
+                                </h4>
+                                <p style={{ color: 'rgba(255,255,255,0.85)', margin: '8px 0 0 0', fontSize: '1rem', maxWidth: '700px', lineHeight: 1.5 }}>
                                     {t('auth.unverifiedNotice')}
                                 </p>
                             </div>
@@ -666,22 +693,33 @@ function MentorDashboardContent() {
                             onClick={handleResendVerification}
                             disabled={isResending}
                             style={{
-                                background: 'rgba(255,255,255,0.1)',
-                                border: '1px solid rgba(255,255,255,0.2)',
-                                color: '#fff',
-                                padding: '10px 20px',
-                                borderRadius: '10px',
-                                fontWeight: 700,
-                                fontSize: '0.85rem',
+                                background: 'rgba(255,215,0,0.1)',
+                                border: '1px solid rgba(255,215,0,0.2)',
+                                color: '#FFD700',
+                                padding: '12px 24px',
+                                borderRadius: '14px',
+                                fontWeight: 800,
+                                fontSize: '0.9rem',
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
-                                transition: 'all 0.3s ease'
+                                transition: 'all 0.3s ease',
+                                zIndex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
                             }}
                             onMouseOver={(e) => {
-                                if (!isResending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                                if (!isResending) {
+                                    e.currentTarget.style.background = 'rgba(255,215,0,0.2)';
+                                    e.currentTarget.style.boxShadow = '0 0 15px rgba(255,215,0,0.2)';
+                                }
                             }}
                             onMouseOut={(e) => {
-                                if (!isResending) e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                if (!isResending) {
+                                    e.currentTarget.style.background = 'rgba(255,215,0,0.1)';
+                                    e.currentTarget.style.boxShadow = 'none';
+                                }
                             }}
                         >
                             {isResending ? <Loader2 className="animate-spin" size={18} /> : t('auth.resendVerification')}

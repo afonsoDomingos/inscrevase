@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -915,60 +915,45 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     </div>
                                                 </div>
 
-                                                <div style={{ background: '#f0f7ff', padding: '1.5rem', borderRadius: '15px', border: '1px solid #c3dafe' }}>
-                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#2c5282', cursor: 'pointer', marginBottom: '1rem' }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={paymentConfig.stripeEnabled}
-                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, stripeEnabled: e.target.checked })}
-                                                            style={{ width: '20px', height: '20px' }}
-                                                        />
+                                                <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '12px',
+                                                        right: '12px',
+                                                        background: '#e2e8f0',
+                                                        color: '#475569',
+                                                        padding: '4px 10px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 800,
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '0.5px'
+                                                    }}>
+                                                        Em Breve
+                                                    </div>
+
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#64748b', cursor: 'not-allowed', marginBottom: '1rem' }}>
+                                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={false}
+                                                                disabled={true}
+                                                                style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
+                                                            />
+                                                            <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
+                                                                <Lock size={12} color="#64748b" />
+                                                            </div>
+                                                        </div>
                                                         {t('events.stripeHeader')}
                                                     </label>
 
-                                                    {paymentConfig.stripeEnabled && (
-                                                        <div style={{ display: 'grid', gap: '1rem' }}>
-                                                            <div style={{ padding: '1rem', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
-                                                                <p style={{ fontSize: '0.85rem', color: '#1e40af', marginBottom: '0.5rem' }}>
-                                                                    {t('events.stripeHelp')}
-                                                                </p>
-                                                                <a
-                                                                    href="https://dashboard.stripe.com/products"
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{
-                                                                        display: 'inline-flex',
-                                                                        alignItems: 'center',
-                                                                        gap: '0.5rem',
-                                                                        color: '#2563eb',
-                                                                        fontWeight: 600,
-                                                                        fontSize: '0.85rem',
-                                                                        textDecoration: 'none',
-                                                                        padding: '0.5rem 1rem',
-                                                                        background: '#fff',
-                                                                        borderRadius: '6px',
-                                                                        border: '1px solid #2563eb',
-                                                                        cursor: 'pointer'
-                                                                    }}
-                                                                >
-                                                                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-                                                                    </svg>
-                                                                    {t('events.stripeLink')}
-                                                                </a>
-                                                            </div>
-                                                            <div>
-                                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.8rem' }}>{t('events.stripePriceId')}</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.stripePriceId}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, stripePriceId: e.target.value })}
-                                                                    placeholder="Ex: price_1Q..."
-                                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e0', outline: 'none' }}
-                                                                />
-                                                            </div>
+                                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                                        <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                                            <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                                                                Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
+                                                            </p>
                                                         </div>
-                                                    )}
+                                                    </div>
                                                 </div>
 
                                                 <div>

@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -1134,34 +1134,45 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         </div>
                                                     </div>
 
-                                                    <div style={{ background: '#f0f7ff', padding: '1.5rem', borderRadius: '15px', border: '1px solid #c3dafe' }}>
-                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#2c5282', cursor: 'pointer', marginBottom: '1rem' }}>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={paymentConfig.stripeEnabled}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, stripeEnabled: e.target.checked })}
-                                                                style={{ width: '20px', height: '20px' }}
-                                                            />
+                                                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            top: '12px',
+                                                            right: '12px',
+                                                            background: '#e2e8f0',
+                                                            color: '#475569',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '20px',
+                                                            fontSize: '0.65rem',
+                                                            fontWeight: 800,
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px'
+                                                        }}>
+                                                            Em Breve
+                                                        </div>
+
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#64748b', cursor: 'not-allowed', marginBottom: '1rem' }}>
+                                                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={false}
+                                                                    disabled={true}
+                                                                    style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
+                                                                />
+                                                                <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
+                                                                    <Lock size={12} color="#64748b" />
+                                                                </div>
+                                                            </div>
                                                             Habilitar Pagamento com Cartão (Stripe)
                                                         </label>
 
-                                                        {paymentConfig.stripeEnabled && (
-                                                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                                                <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                                                    Para usar o Stripe, você precisa criar um Produto e um Preço no seu painel do Stripe e colar o <b>Price ID</b> abaixo.
+                                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                                            <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                                                                    Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
                                                                 </p>
-                                                                <div>
-                                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.8rem' }}>Stripe Price ID</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={paymentConfig.stripePriceId}
-                                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, stripePriceId: e.target.value })}
-                                                                        placeholder="Ex: price_1Q..."
-                                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e0', outline: 'none' }}
-                                                                    />
-                                                                </div>
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
 
                                                     <div>
