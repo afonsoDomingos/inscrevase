@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
-import { UserData } from '@/lib/authService';
+import { UserData, authService } from '@/lib/authService';
 import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Mail, Lock, Unlock, MessageSquare, BadgeCheck, XOctagon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
@@ -20,6 +20,7 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [editingUser, setEditingUser] = useState<UserData | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState<UserData | null>(null);
 
     // Filters State
     const [filterOrigin, setFilterOrigin] = useState('all');
@@ -33,6 +34,8 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
     const itemsPerPage = 10;
 
     useEffect(() => {
+        const loggedUser = authService.getCurrentUser();
+        setCurrentUser(loggedUser);
         loadUsers();
 
         // Poll for updates every 10 seconds to keep roles and plans in sync
@@ -107,6 +110,9 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
             u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             u.email.toLowerCase().includes(searchTerm.toLowerCase())
         );
+
+        // Hide SuperAdmins from non-SuperAdmins
+        if (currentUser?.role !== 'SuperAdmin' && u.role === 'SuperAdmin') return false;
 
         if (!matchesSearch) return false;
 
@@ -185,7 +191,7 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                     <option value="company">Empresa</option>
                     <option value="participant">Participante</option>
                     <option value="admin">Admin</option>
-                    <option value="superadmin">Super Admin</option>
+                    {currentUser?.role === 'SuperAdmin' && <option value="superadmin">Super Admin</option>}
                 </select>
 
                 <select

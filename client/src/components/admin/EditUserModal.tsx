@@ -195,7 +195,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             <option value="company">Empresa</option>
                                             <option value="participant">Participante</option>
                                             <option value="admin">Admin</option>
-                                            <option value="SuperAdmin">SuperAdmin</option>
+                                            {currentUser?.role === 'SuperAdmin' && <option value="SuperAdmin">SuperAdmin</option>}
                                         </select>
                                     </div>
                                     <div className="input-group">
