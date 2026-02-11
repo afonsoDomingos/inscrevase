@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, MapPin, ChevronRight, Zap, X, Megaphone } from 'lucide-react';
+import { Calendar, MapPin, ChevronRight, Zap, X } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 import { FormModel } from '@/lib/formService';
 
@@ -66,8 +66,6 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         <AnimatePresence>
             {isVisible && (
                 <>
-                    {/* Removed Darkened Background Overlay for Focus to allow interaction with the page */}
-
                     {/* Floating Creative Card - Small & Top Right */}
                     <motion.div
                         initial={{ opacity: 0, x: 50, scale: 0.9 }}
@@ -119,6 +117,23 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             >
                                 <X size={14} />
                             </button>
+
+                            {/* Countdown Timer (Small) */}
+                            <div style={{
+                                position: 'absolute',
+                                top: '8px',
+                                right: '40px',
+                                zIndex: 10,
+                                background: 'rgba(0,0,0,0.6)',
+                                color: '#fff',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontSize: '0.6rem',
+                                fontWeight: 700,
+                                backdropFilter: 'blur(4px)'
+                            }}>
+                                {timeLeft}s
+                            </div>
 
                             {/* Multimedia Section */}
                             <div style={{ position: 'relative', height: '140px', width: '100%' }}>

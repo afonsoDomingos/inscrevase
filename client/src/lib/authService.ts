@@ -227,7 +227,7 @@ export const authService = {
         let data;
         try {
             data = JSON.parse(text);
-        } catch (e) {
+        } catch {
             console.error('Migration Error (Invalid JSON):', text);
             throw new Error(`Erro no servidor (Respostas não-JSON). Possível erro 404 ou 500.`);
         }
