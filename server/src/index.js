@@ -183,6 +183,7 @@ app.use('/api/lessons', require('./routes/lessonRoutes'));
 app.use('/api/certificates', require('./routes/certificateRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/ads', require('./routes/adRoutes'));
+app.use('/api/exchange-rates', require('./routes/exchangeRate'));
 
 // Endpoint to get all online users
 app.get('/api/users/status/online', (req, res) => {
@@ -200,7 +201,15 @@ app.get('/', (req, res) => {
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => {
+        console.log('MongoDB Connected');
+
+        // Initialize exchange rates on startup
+        const exchangeRateService = require('./services/exchangeRateService');
+        exchangeRateService.getCurrentRates()
+            .then(() => console.log('✅ Exchange rates initialized'))
+            .catch(err => console.error('⚠️  Failed to initialize exchange rates:', err.message));
+    })
     .catch(err => console.log('MongoDB Connection Error:', err));
 
 // Use server.listen instead of app.listen

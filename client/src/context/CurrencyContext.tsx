@@ -35,12 +35,39 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     const [plans, setPlans] = useState<Record<string, Plan> | null>(null);
     const [exchangeRate, setExchangeRate] = useState(63.8);
     const [loading, setLoading] = useState(true);
+    const [allRates, setAllRates] = useState<Record<Currency, number>>({
+        USD: 1,
+        EUR: 0.92,
+        MZN: 63.8,
+        AOA: 850,
+        CVE: 100,
+        XOF: 600
+    });
 
     useEffect(() => {
         const savedCurrency = Cookies.get('NEXT_CURRENCY') as Currency;
         if (savedCurrency && ['MZN', 'USD', 'EUR', 'AOA', 'CVE', 'XOF'].includes(savedCurrency)) {
             setCurrencyState(savedCurrency);
         }
+
+        // Fetch real-time exchange rates
+        const fetchExchangeRates = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/exchange-rates/current`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.rates) {
+                        setAllRates(data.rates);
+                        setExchangeRate(data.rates.MZN || 63.8);
+                        console.log('✅ Exchange rates loaded:', data.rates);
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️  Failed to fetch exchange rates, using fallback rates');
+            }
+        };
+
+        fetchExchangeRates();
 
         const fetchPlans = async () => {
             try {
