@@ -17,11 +17,10 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [timeLeft, setTimeLeft] = useState(30);
     const [isVisible, setIsVisible] = useState(false);
-    const isClosed = false; // Placeholder if needed in future, but avoiding unused state
+    const isClosed = false;
 
     const [isMobile, setIsMobile] = useState(false);
 
-    // Show ad after a short delay on the home page
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth <= 768);
         checkMobile();
@@ -39,9 +38,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
             setCurrentIndex((prev) => (prev + 1) % events.length);
             setTimeLeft(30);
         } else {
-            setIsVisible(false); // Hide if it was the only one and time is up? 
-            // Or just cycle it back? For now, let's keep it visible but reset
-            setTimeLeft(30);
+            setIsVisible(false); // Hide if it was the only one and time is up
         }
     }, [events.length]);
 
@@ -69,48 +66,32 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         <AnimatePresence>
             {isVisible && (
                 <>
-                    {/* Darkened Background Overlay for Focus */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setIsVisible(false)}
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(0,0,0,0.6)',
-                            backdropFilter: 'blur(10px)',
-                            zIndex: 9998
-                        }}
-                    />
+                    {/* Removed Darkened Background Overlay for Focus to allow interaction with the page */}
 
-                    {/* Floating Creative Card */}
+                    {/* Floating Creative Card - Small & Top Right */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: isMobile ? -50 : 100, rotateX: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: isMobile ? -50 : 100, rotateX: -20 }}
+                        initial={{ opacity: 0, x: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 50, scale: 0.9 }}
                         transition={{
                             type: 'spring',
-                            damping: 20,
-                            stiffness: 100,
-                            duration: 0.8
+                            damping: 25,
+                            stiffness: 120
                         }}
                         style={{
                             position: 'fixed',
-                            top: isMobile ? '20px' : 'auto',
-                            bottom: isMobile ? 'auto' : '40px',
-                            right: isMobile ? '20px' : '40px',
-                            width: isMobile ? 'min(300px, 85vw)' : 'min(500px, 90vw)',
+                            top: isMobile ? '80px' : '100px', // Below navbar
+                            right: '20px',
+                            bottom: 'auto',
+                            width: '260px', // Very small fixed width as requested
                             zIndex: 9999,
-                            perspective: '1000px'
                         }}
                     >
                         <div style={{
                             background: '#fff',
-                            borderRadius: isMobile ? '24px' : '32px',
+                            borderRadius: '16px',
                             overflow: 'hidden',
-                            boxShadow: '0 50px 100px rgba(0,0,0,0.3), 0 0 20px rgba(255,215,0,0.1)',
-                            border: '1px solid rgba(255,215,0,0.3)',
+                            boxShadow: '0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)',
                             display: 'flex',
                             flexDirection: 'column',
                             position: 'relative'
@@ -120,27 +101,27 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                 onClick={() => setIsVisible(false)}
                                 style={{
                                     position: 'absolute',
-                                    top: '15px',
-                                    right: '15px',
+                                    top: '8px',
+                                    right: '8px',
                                     zIndex: 10,
-                                    background: 'rgba(0,0,0,0.5)',
+                                    background: 'rgba(0,0,0,0.6)',
                                     color: '#fff',
                                     border: 'none',
-                                    width: '32px',
-                                    height: '32px',
+                                    width: '24px',
+                                    height: '24px',
                                     borderRadius: '50%',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     cursor: 'pointer',
-                                    backdropFilter: 'blur(5px)'
+                                    backdropFilter: 'blur(4px)'
                                 }}
                             >
-                                <X size={18} />
+                                <X size={14} />
                             </button>
 
                             {/* Multimedia Section */}
-                            <div style={{ position: 'relative', height: '240px', width: '100%' }}>
+                            <div style={{ position: 'relative', height: '140px', width: '100%' }}>
                                 <Image
                                     src={currentEvent.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1000'}
                                     alt={currentEvent.title}
@@ -149,106 +130,82 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                 />
                                 <div style={{
                                     position: 'absolute',
-                                    top: '15px',
-                                    left: '15px',
+                                    top: '8px',
+                                    left: '8px',
                                     background: '#000',
                                     color: '#FFD700',
-                                    padding: '6px 14px',
+                                    padding: '4px 8px',
                                     borderRadius: '100px',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 900,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '2px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
-                                }}>
-                                    <Zap size={12} fill="#FFD700" className="animate-pulse" /> {t('common.sponsored')}
-                                </div>
-
-                                {/* Countdown Circle Overlay */}
-                                <div style={{
-                                    position: 'absolute',
-                                    bottom: '15px',
-                                    right: '15px',
-                                    width: '40px',
-                                    height: '40px',
-                                    background: 'rgba(0,0,0,0.6)',
-                                    backdropFilter: 'blur(5px)',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#FFD700',
-                                    fontSize: '0.8rem',
+                                    fontSize: '0.6rem',
                                     fontWeight: 800,
-                                    border: '2px solid rgba(255,215,0,0.3)'
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
                                 }}>
-                                    {timeLeft}s
+                                    <Zap size={10} fill="#FFD700" className="animate-pulse" /> {t('common.sponsored')}
                                 </div>
                             </div>
 
                             {/* Info Section */}
-                            <div style={{ padding: isMobile ? '1.25rem' : '2rem', textAlign: isMobile ? 'center' : 'left' }}>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B8860B', textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '1px' }}>
-                                    {currentEvent.category || 'EVENTO PREMIUM'}
-                                </div>
+                            <div style={{ padding: '1rem' }}>
                                 <h3 style={{
-                                    fontSize: isMobile ? '1.2rem' : '1.5rem',
-                                    fontWeight: 900,
-                                    fontFamily: 'var(--font-playfair)',
+                                    fontSize: '0.95rem',
+                                    fontWeight: 700,
                                     color: '#111',
-                                    lineHeight: 1.2,
-                                    marginBottom: '1rem'
+                                    marginBottom: '0.5rem',
+                                    lineHeight: 1.3,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
                                 }}>
                                     {currentEvent.title}
                                 </h3>
 
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gap: '15px', marginBottom: '2rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.8rem' }}>
-                                        <Calendar size={14} className="gold-text" />
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
+                                        <Calendar size={12} className="gold-text" />
                                         {currentEvent.eventDate ? new Date(currentEvent.eventDate).toLocaleDateString() : 'Em breve'}
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.8rem' }}>
-                                        <MapPin size={14} className="gold-text" />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
+                                        <MapPin size={12} className="gold-text" />
                                         {currentEvent.location || 'Online'}
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '10px', flexDirection: isMobile ? 'column' : 'row' }}>
+                                <div style={{ display: 'flex', gap: '8px' }}>
                                     <Link
                                         href={`/f/${currentEvent.slug}`}
                                         style={{
-                                            flex: 2,
-                                            padding: '1rem',
+                                            flex: 1,
+                                            padding: '8px 0',
                                             background: 'var(--gold-gradient)',
                                             color: '#000',
-                                            borderRadius: '16px',
+                                            borderRadius: '8px',
                                             textAlign: 'center',
-                                            fontWeight: 800,
+                                            fontWeight: 700,
                                             textDecoration: 'none',
-                                            fontSize: '0.9rem',
+                                            fontSize: '0.8rem',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            gap: '8px',
-                                            boxShadow: '0 8px 20px rgba(212,175,55,0.2)'
                                         }}
                                     >
-                                        Garantir Vaga <ChevronRight size={16} />
+                                        Ver <ChevronRight size={14} style={{ marginLeft: '2px' }} />
                                     </Link>
                                     <button
                                         onClick={nextAd}
                                         style={{
-                                            flex: 1,
-                                            padding: '1rem',
-                                            background: '#f8f8f8',
-                                            color: '#111',
-                                            borderRadius: '16px',
-                                            border: '1px solid #eee',
-                                            fontWeight: 700,
-                                            fontSize: '0.8rem',
+                                            padding: '0 12px',
+                                            background: '#f1f1f1',
+                                            color: '#666',
+                                            borderRadius: '8px',
+                                            border: 'none',
+                                            fontWeight: 600,
+                                            fontSize: '0.75rem',
                                             cursor: 'pointer'
                                         }}
                                     >
@@ -256,53 +213,13 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     </button>
                                 </div>
 
-                                {/* Creative CTA for other advertisers */}
-                                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                                <div style={{ marginTop: '0.8rem', textAlign: 'center' }}>
                                     <Link
                                         href="/anunciar"
-                                        style={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '8px',
-                                            color: '#B8860B',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 700,
-                                            textDecoration: 'none',
-                                            padding: '8px 16px',
-                                            borderRadius: '50px',
-                                            background: 'rgba(212, 175, 55, 0.05)',
-                                            border: '1px dashed rgba(212, 175, 55, 0.4)',
-                                            transition: '0.3s'
-                                        }}
-                                        className="hover:bg-[rgba(212,175,55,0.1)]"
+                                        style={{ fontSize: '0.65rem', color: '#999', textDecoration: 'none' }}
                                     >
-                                        <Megaphone size={14} /> {t('common.promoteCTA')}
+                                        Anunciar aqui
                                     </Link>
-                                </div>
-
-                                {/* Progress Indicator */}
-                                <div style={{ marginTop: '1.5rem', display: 'flex', gap: '4px' }}>
-                                    {events.map((_, i) => (
-                                        <div
-                                            key={i}
-                                            style={{
-                                                flex: 1,
-                                                height: '3px',
-                                                background: i === currentIndex ? 'var(--gold-gradient)' : '#eee',
-                                                borderRadius: '10px',
-                                                overflow: 'hidden'
-                                            }}
-                                        >
-                                            {i === currentIndex && (
-                                                <motion.div
-                                                    initial={{ width: '0%' }}
-                                                    animate={{ width: '100%' }}
-                                                    transition={{ duration: 30, ease: 'linear' }}
-                                                    style={{ height: '100%', background: '#fff', opacity: 0.5 }}
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -312,3 +229,4 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         </AnimatePresence>
     );
 }
+

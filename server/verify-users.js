@@ -8,7 +8,7 @@ async function verifyAllUsers() {
         console.log('Connected to MongoDB');
 
         const result = await User.updateMany(
-            { isEmailVerified: { $exists: false } }, // Or those where it is false
+            { isEmailVerified: { $ne: true } },
             { $set: { isEmailVerified: true } }
         );
 
