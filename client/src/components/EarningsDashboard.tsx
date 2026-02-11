@@ -8,6 +8,7 @@ import StripeConnect from './StripeConnect';
 import PlanUpgradeModal from './PlanUpgradeModal';
 import { UserData, authService } from '@/lib/authService';
 import { useTranslate } from '@/context/LanguageContext';
+import { useCurrency } from '@/context/CurrencyContext';
 
 import {
     AreaChart,
@@ -45,6 +46,7 @@ export default function EarningsDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const { t } = useTranslate();
+    const { currency, formatPrice } = useCurrency();
 
     useEffect(() => {
         const loadEarnings = async () => {
@@ -80,19 +82,19 @@ export default function EarningsDashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 <FinanceCard
                     title={t('dashboard.finance.totalRevenue')}
-                    value={`${summary.totalRevenue.toFixed(2)}`}
+                    value={formatPrice(summary.totalRevenue, 'USD', currency)}
                     icon={<TrendingUp size={24} />}
                     color="#D4AF37"
                 />
                 <FinanceCard
                     title={t('dashboard.finance.yourEarnings')}
-                    value={`${summary.totalEarnings.toFixed(2)}`}
+                    value={formatPrice(summary.totalEarnings, 'USD', currency)}
                     icon={<Wallet size={24} />}
                     color="#10b981"
                 />
                 <FinanceCard
                     title={t('dashboard.finance.paidFees')}
-                    value={`${summary.totalFees.toFixed(2)}`}
+                    value={formatPrice(summary.totalFees, 'USD', currency)}
                     icon={<DollarSign size={24} />}
                     color="#666"
                 />
@@ -131,7 +133,7 @@ export default function EarningsDashboard() {
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 12, fill: '#999' }}
-                                tickFormatter={(value) => `${value} USD`}
+                                tickFormatter={(value) => `${value} ${currency}`}
                             />
                             <Tooltip
                                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
@@ -243,8 +245,8 @@ export default function EarningsDashboard() {
                                     <div style={{ fontSize: '0.8rem', color: '#999' }}>{new Date(tx.createdAt).toLocaleDateString()}</div>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontWeight: 700, color: '#10b981' }}>+ {tx.amount} {tx.currency}</div>
-                                    <div style={{ fontSize: '0.75rem', color: '#888' }}>{t('dashboard.finance.net')}: {tx.mentorEarnings}</div>
+                                    <div style={{ fontWeight: 700, color: '#10b981' }}>+ {formatPrice(tx.amount, (tx.currency || 'USD') as any, currency)}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#888' }}>{t('dashboard.finance.net')}: {formatPrice(tx.mentorEarnings, (tx.currency || 'USD') as any, currency)}</div>
                                 </div>
                             </div>
                         ))
@@ -262,7 +264,7 @@ function FinanceCard({ title, value, icon, color }: { title: string, value: stri
                 <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{title}</span>
                 {icon}
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{value} <span style={{ fontSize: '0.8rem', color: '#999' }}>USD</span></div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{value}</div>
         </div>
     );
 }

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
 import LanguageSwitcher from './LanguageSwitcher';
+import CurrencySwitcher from './CurrencySwitcher';
 import { useTranslate } from '@/context/LanguageContext';
 import InstallPrompt from './common/InstallPrompt';
 
@@ -89,6 +90,7 @@ export default function Navbar() {
         <div className="nav-right-section">
           <InstallPrompt />
           <LanguageSwitcher />
+          <CurrencySwitcher />
           {isLoggedIn ? (
             <Link href={getDashboardLink()} className="icon-link" title={t('nav.dashboard')}>
               <LayoutDashboard size={20} />
@@ -194,7 +196,10 @@ export default function Navbar() {
               <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Facebook size={20} /></a>
               <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><MessageCircle size={20} /></a>
             </div>
-            <LanguageSwitcher />
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '1rem' }}>
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
           </div>
         </div>
       </div>

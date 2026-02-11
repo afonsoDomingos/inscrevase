@@ -1129,25 +1129,9 @@ export default function Home() {
               display: 'flex',
               justifyContent: 'center',
               gap: '12px',
-              marginTop: '2.5rem'
+              marginTop: '2.5rem',
+              flexWrap: 'wrap'
             }}>
-              <button
-                onClick={() => setCurrency('MZN')}
-                style={{
-                  padding: '10px 30px',
-                  borderRadius: '30px',
-                  border: '1px solid #e0e0e0',
-                  background: currency === 'MZN' ? '#1a1a1b' : '#fff',
-                  color: currency === 'MZN' ? '#fff' : '#1a1a1b',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: currency === 'MZN' ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
-                }}
-              >
-                {t('landing.showcase.currencyMzn')}
-              </button>
               <button
                 onClick={() => setCurrency('USD')}
                 style={{
@@ -1163,8 +1147,56 @@ export default function Home() {
                   boxShadow: currency === 'USD' ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
                 }}
               >
-                {t('landing.showcase.currencyUsd')}
+                USD
               </button>
+              <button
+                onClick={() => setCurrency('EUR')}
+                style={{
+                  padding: '10px 30px',
+                  borderRadius: '30px',
+                  border: '1px solid #e0e0e0',
+                  background: currency === 'EUR' ? '#1a1a1b' : '#fff',
+                  color: currency === 'EUR' ? '#fff' : '#1a1a1b',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: currency === 'EUR' ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                EUR
+              </button>
+              <select
+                value={['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? currency : ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const PALOP = ['MZN', 'AOA', 'CVE', 'XOF'];
+                  if (value && PALOP.includes(value)) {
+                    setCurrency(value as any);
+                  }
+                }}
+                style={{
+                  padding: '10px 30px',
+                  borderRadius: '30px',
+                  border: '1px solid #e0e0e0',
+                  background: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '#1a1a1b' : '#fff',
+                  color: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '#fff' : '#1a1a1b',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '0 10px 20px rgba(0,0,0,0.1)' : 'none',
+                  outline: 'none',
+                  appearance: 'none',
+                  WebkitAppearance: 'none'
+                }}
+              >
+                <option value="" disabled>{t('common.palop') || 'África (PALOP)'}</option>
+                <option value="MZN">🇲🇿 Metical (MZ)</option>
+                <option value="AOA">🇦🇴 Kwanza (AO)</option>
+                <option value="CVE">🇨🇻 Escudo (CV)</option>
+                <option value="XOF">🇬🇼 Franco CFA (GW)</option>
+              </select>
             </div>
           </motion.div>
         </div>
@@ -1282,9 +1314,9 @@ export default function Home() {
               <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 🔥 {t('plans.limitedOffer') || 'Oferta por tempo limitado'}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontWeight: 500, textDecoration: 'line-through' }}>
-                  {formatPrice(350)}
+                  {formatPrice(350, 'USD', currency)}
                 </span>
                 <p style={{ color: '#fff', fontSize: 'clamp(1.8rem, 5vw, 2.2rem)', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('pro'), currency, currency)}
@@ -1301,7 +1333,7 @@ export default function Home() {
                   flexDirection: 'column',
                   lineHeight: 1
                 }}>
-                  <span>-{Math.round(((350 - getPlanPrice('pro')) / 350) * 100)}%</span>
+                  <span>-{Math.round(((350 - 79) / 350) * 100)}%</span>
                 </div>
                 <div style={{
                   background: 'rgba(255,215,0,0.2)',
@@ -1312,7 +1344,7 @@ export default function Home() {
                   fontWeight: 800,
                   border: '1px solid rgba(255,215,0,0.3)'
                 }}>
-                  {t('plans.save') || 'Poupe'} {formatPrice(getPlanPrice('pro'), currency, currency)}
+                  {t('plans.save') || 'Poupe'} {formatPrice(350 - 79, 'USD', currency)}
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
@@ -1375,9 +1407,9 @@ export default function Home() {
               <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 👑 {t('plans.exclusiveAccess') || 'Acesso Exclusivo'}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: 500, textDecoration: 'line-through' }}>
-                  {formatPrice(3500)}
+                  {formatPrice(3500, 'USD', currency)}
                 </span>
                 <p style={{ color: '#fff', fontSize: 'clamp(1.6rem, 5vw, 2rem)', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('enterprise'), currency, currency)}
@@ -1391,7 +1423,7 @@ export default function Home() {
                   fontWeight: 900,
                   boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
                 }}>
-                  -{Math.round(((3500 - getPlanPrice('enterprise')) / 3500) * 100)}%
+                  -{Math.round(((3500 - 799) / 3500) * 100)}%
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>

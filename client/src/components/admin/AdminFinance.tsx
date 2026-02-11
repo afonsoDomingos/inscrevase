@@ -33,34 +33,38 @@ import {
     Pie
 } from 'recharts';
 import { useTranslate } from '@/context/LanguageContext';
+import { useCurrency } from '@/context/CurrencyContext';
 
 export default function AdminFinance() {
     const { t } = useTranslate();
+    const { currency, formatPrice } = useCurrency();
     const [transactions, setTransactions] = useState<TransactionModel[]>([]);
     const [summary, setSummary] = useState<FinancialSummary | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
-    const [displayCurrency, setDisplayCurrency] = useState<'MZN' | 'USD'>('USD');
     const [isRefreshingRate, setIsRefreshingRate] = useState(false);
 
 
     const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
     const getConvertedValue = useCallback((valueMZN: number) => {
-        if (displayCurrency === 'MZN') return valueMZN;
-        const rate = summary?.exchangeRate || 64; // Fallback rate
-        return valueMZN / rate;
-    }, [displayCurrency, summary?.exchangeRate]);
+        // We use formatPrice logic which is more robust, but for charts we need numbers.
+        // The summary from backend usually comes in MZN (base for locally recorded transactions)
+        // or USD (for Stripe). 
+        // In this component, we'll assume base values are MZN for local records.
+        // However, it's safer to just return the value if we don't have a specific conversion need here
+        // or use a helper that doesn't return a string.
+        return valueMZN;
+    }, []);
 
     const formatCurrency = useCallback((value: number) => {
-        const converted = getConvertedValue(value);
-        return new Intl.NumberFormat(displayCurrency === 'MZN' ? 'pt-MZ' : 'en-US', {
-            style: 'currency',
-            currency: displayCurrency
-        }).format(converted);
-    }, [displayCurrency, getConvertedValue]);
+        // Base value in the finance system is typically MZN (for local) or USD (for stripe)
+        // But for display consistency, we'll use formatPrice from MZN to current target
+        return formatPrice(value, 'MZN', currency);
+    }, [currency, formatPrice]);
+
 
     const loadData = useCallback(async () => {
         try {
@@ -226,7 +230,7 @@ export default function AdminFinance() {
                     <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Crescimento de Receita</h3>
-                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Taxas da Plataforma ({displayCurrency}) por mês</p>
+                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Receita Total ({currency}) por mês</p>
                         </div>
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                             <motion.button
@@ -262,53 +266,7 @@ export default function AdminFinance() {
                                 {isRefreshingRate ? 'Sincronizando...' : 'Sincronizar Câmbio'}
                             </motion.button>
 
-                            <div style={{
-                                display: 'flex',
-                                gap: '6px',
-                                background: 'rgba(245, 245, 245, 0.8)',
-                                padding: '6px',
-                                borderRadius: '15px',
-                                border: '1px solid #e2e8f0',
-                                backdropFilter: 'blur(10px)',
-                                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
-                            }}>
-                                <button
-                                    onClick={() => setDisplayCurrency('MZN')}
-                                    style={{
-                                        padding: '6px 18px',
-                                        borderRadius: '11px',
-                                        border: 'none',
-                                        background: displayCurrency === 'MZN' ? '#fff' : 'transparent',
-                                        color: displayCurrency === 'MZN' ? '#000' : '#888',
-                                        fontWeight: 800,
-                                        fontSize: '0.8rem',
-                                        cursor: 'pointer',
-                                        boxShadow: displayCurrency === 'MZN' ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
-                                        transition: 'all 0.3s ease'
-                                    }}
-                                >
-                                    MZN
-                                </button>
-                                <button
-                                    onClick={() => setDisplayCurrency('USD')}
-                                    style={{
-                                        padding: '6px 18px',
-                                        borderRadius: '11px',
-                                        border: 'none',
-                                        background: displayCurrency === 'USD' ? '#000' : 'transparent',
-                                        color: displayCurrency === 'USD' ? '#fff' : '#888',
-                                        fontWeight: 800,
-                                        fontSize: '0.8rem',
-                                        cursor: 'pointer',
-                                        boxShadow: displayCurrency === 'USD' ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
-                                        transition: 'all 0.3s ease'
-                                    }}
-                                >
-                                    USD
-                                </button>
-                            </div>
                         </div>
-
                     </div>
                     <div style={{ width: '100%', height: '300px' }}>
                         <ResponsiveContainer>
@@ -324,7 +282,7 @@ export default function AdminFinance() {
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-                                    formatter={(value: string | number | undefined) => [`${Number(value || 0).toLocaleString()} ${displayCurrency}`, 'Taxa Plataforma']}
+                                    formatter={(value: string | number | undefined) => [formatPrice(Number(value || 0), 'MZN', currency), 'Taxa Plataforma']}
                                 />
                                 <Area type="monotone" dataKey="fees" stroke="#FFD700" strokeWidth={3} fillOpacity={1} fill="url(#colorFees)" />
                             </AreaChart>

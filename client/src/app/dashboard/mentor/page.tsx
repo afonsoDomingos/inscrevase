@@ -16,6 +16,7 @@ import ServicesManagement from '@/components/mentor/ServicesManagement';
 import Link from 'next/link';
 import AdManagement from '@/components/mentor/AdManagement';
 import { useTranslate } from '@/context/LanguageContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
 
@@ -74,6 +75,7 @@ import { Suspense } from 'react';
 
 function MentorDashboardContent() {
     const { t } = useTranslate();
+    const { currency, formatPrice } = useCurrency();
     const router = useRouter();
     const searchParams = useSearchParams();
     const [user, setUser] = useState<UserData | null>(null);
@@ -943,7 +945,7 @@ function MentorDashboardContent() {
                                 <StatCard
                                     icon={<DollarSign className="gold-text" />}
                                     label={t('dashboard.estimatedRevenue')}
-                                    value={`USD ${(stats?.revenue || 0).toLocaleString()}`}
+                                    value={formatPrice(stats?.revenue || 0, 'USD', currency)}
                                     trend="+18%"
                                 />
                             </div>

@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
@@ -47,6 +48,7 @@ const itemVariants = {
 
 export default function AdminDashboard() {
     const { t } = useTranslate();
+    const { currency, formatPrice } = useCurrency();
     const monthNames = [
         t('common.months.jan'), t('common.months.feb'), t('common.months.mar'),
         t('common.months.apr'), t('common.months.may'), t('common.months.jun'),
@@ -194,14 +196,14 @@ export default function AdminDashboard() {
     const vitalCards = [
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: t('dashboard.finance.totalRevenue'), value: showValues ? (stats?.revenue || 0).toLocaleString() + ' ' + t('currency.mzn') : '•••• ' + t('currency.mzn'), icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { label: t('dashboard.finance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
     // Removed unused cards to fix lint errors
 
     const financialCards = [
-        { label: t('dashboard.planSubscriptions'), value: showValues ? (stats?.subscriptionRevenue || 0).toLocaleString() + ' ' + t('currency.mzn') : '•••• ' + t('currency.mzn'), icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
+        { label: t('dashboard.planSubscriptions'), value: showValues ? formatPrice(stats?.subscriptionRevenue || 0, 'MZN', currency) : '••••', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
     ];
 
     const activityCards = [

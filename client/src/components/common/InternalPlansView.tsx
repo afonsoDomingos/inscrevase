@@ -105,25 +105,64 @@ export default function InternalPlansView() {
                     </motion.div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                    {['USD', 'MZN'].map((c) => (
-                        <button
-                            key={c}
-                            onClick={() => setCurrency(c as 'MZN' | 'USD')}
-                            style={{
-                                padding: '8px 25px',
-                                borderRadius: '50px',
-                                border: currency === c ? '2px solid var(--primary)' : '1px solid var(--border)',
-                                background: currency === c ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
-                                color: currency === c ? 'var(--primary)' : 'var(--text-muted)',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            {c}
-                        </button>
-                    ))}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <button
+                        onClick={() => setCurrency('USD')}
+                        style={{
+                            padding: '8px 25px',
+                            borderRadius: '50px',
+                            border: currency === 'USD' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                            background: currency === 'USD' ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                            color: currency === 'USD' ? 'var(--primary)' : 'var(--text-muted)',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            fontSize: '0.85rem'
+                        }}
+                    >
+                        USD
+                    </button>
+                    <button
+                        onClick={() => setCurrency('EUR')}
+                        style={{
+                            padding: '8px 25px',
+                            borderRadius: '50px',
+                            border: currency === 'EUR' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                            background: currency === 'EUR' ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                            color: currency === 'EUR' ? 'var(--primary)' : 'var(--text-muted)',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            fontSize: '0.85rem'
+                        }}
+                    >
+                        EUR
+                    </button>
+                    <select
+                        value={['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? currency : ''}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            const PALOP = ['MZN', 'AOA', 'CVE', 'XOF'];
+                            if (value && PALOP.includes(value)) {
+                                setCurrency(value as any);
+                            }
+                        }}
+                        style={{
+                            padding: '8px 25px',
+                            borderRadius: '50px',
+                            border: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '2px solid var(--primary)' : '1px solid var(--border)',
+                            background: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                            color: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'var(--primary)' : 'var(--text-muted)',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            outline: 'none'
+                        }}
+                    >
+                        <option value="" disabled>{t('common.palop') || 'África (PALOP)'}</option>
+                        <option value="MZN">🇲🇿 Metical (MZ)</option>
+                        <option value="AOA">🇦🇴 Kwanza (AO)</option>
+                        <option value="CVE">🇨🇻 Escudo (CV)</option>
+                        <option value="XOF">🇬🇼 Franco CFA (GW)</option>
+                    </select>
                 </div>
             </div>
 
