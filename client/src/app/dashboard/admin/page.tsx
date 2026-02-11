@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { authService, UserData } from '@/lib/authService';
-import { dashboardService, AdminStats, TrafficStats } from '@/lib/dashboardService';
+import { dashboardService, AdminStats, TrafficStats, TopMentor } from '@/lib/dashboardService';
 import UsersList from '@/components/admin/UsersList';
 import FormList from '@/components/admin/FormList';
 import SubmissionList from '@/components/admin/SubmissionList';
@@ -162,6 +162,14 @@ export default function AdminDashboard() {
                 setStats(statsData);
                 const trafficData = await dashboardService.getTrafficStats();
                 setTrafficStats(trafficData);
+
+                try {
+                    const topMentorsData = await dashboardService.getTopMentors();
+                    setTopMentors(topMentorsData);
+                } catch (e) {
+                    console.error("Top mentors error", e);
+                }
+
                 console.log('✅ [Admin Dashboard] Dashboard loaded successfully');
             } catch (err) {
                 console.error("🔴 [Admin Dashboard] Error loading dashboard:", err);
@@ -802,15 +810,94 @@ export default function AdminDashboard() {
                                                         { subject: t('dashboard.estimatedRevenue'), A: (stats?.revenue || 0) / 1000, fullMark: 100 },
                                                     ]}>
                                                         <PolarGrid stroke="#eee" />
-                                                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#666', fontSize: 11, fontWeight: 600 }} />
-                                                        <Radar name="Plataforma" dataKey="A" stroke="#D4AF37" fill="#FFD700" fillOpacity={0.6} />
-                                                        <Tooltip
-                                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 5px 15px rgba(0,0,0,0.1)' }}
-                                                        />
+                                                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#999', fontSize: 10 }} />
+                                                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                                        <Radar name="Performance" dataKey="A" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} />
+                                                        <Tooltip contentStyle={{ borderRadius: '12px' }} />
                                                     </RadarChart>
                                                 </ResponsiveContainer>
                                             </div>
                                         </motion.div>
+
+                                        {/* Top Mentors Leaderboard */}
+                                        <motion.div
+                                            variants={itemVariants}
+                                            onMouseMove={handleMouseMove}
+                                            className="luxury-card"
+                                            style={{
+                                                padding: '2rem',
+                                                background: '#fff',
+                                                border: '1px solid rgba(0,0,0,0.05)',
+                                                boxShadow: '0 10px 40px rgba(0,0,0,0.05)',
+                                                overflow: 'hidden',
+                                                minHeight: '400px'
+                                            }}
+                                        >
+                                            <div className="spotlight" />
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', fontFamily: 'var(--font-playfair)' }}>
+                                                <div style={{ background: '#FFD700', padding: '6px', borderRadius: '50%', color: '#000' }}>
+                                                    <TrendingUp size={16} />
+                                                </div>
+                                                Top Mentores de Elite
+                                            </h3>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', position: 'relative', zIndex: 1 }}>
+                                                {topMentors.length > 0 ? topMentors.map((mentor, idx) => (
+                                                    <div key={mentor.id} style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '15px',
+                                                        padding: '12px',
+                                                        borderRadius: '12px',
+                                                        background: idx === 0 ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.02)',
+                                                        color: idx === 0 ? '#000' : '#333',
+                                                        border: idx === 0 ? 'none' : '1px solid #f0f0f0'
+                                                    }}>
+                                                        <div style={{
+                                                            fontSize: '1rem',
+                                                            fontWeight: 900,
+                                                            color: idx === 0 ? '#000' : '#aaa',
+                                                            width: '24px',
+                                                            textAlign: 'center'
+                                                        }}>#{idx + 1}</div>
+
+                                                        {/* Avatar */}
+                                                        <div style={{
+                                                            width: '40px',
+                                                            height: '40px',
+                                                            borderRadius: '50%',
+                                                            background: '#ddd',
+                                                            backgroundImage: `url(${mentor.user?.profilePhoto || 'https://via.placeholder.com/40'})`,
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center',
+                                                            border: '2px solid #fff'
+                                                        }} />
+
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{mentor.user?.name || 'Desconhecido'}</div>
+                                                            <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>{mentor.user?.email}</div>
+                                                        </div>
+
+                                                        <div style={{ display: 'flex', gap: '15px', textAlign: 'right' }}>
+                                                            <div>
+                                                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{mentor.submissions}</div>
+                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>Inscritos</div>
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{mentor.visits}</div>
+                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>Visitas</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )) : (
+                                                    <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+                                                        Nenhum dado disponível ainda.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+
+
 
                                         {/* Radial Bar: Monthly Goals Progress */}
                                         <motion.div
@@ -986,8 +1073,8 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                </div >
+                            </div >
 
                             <motion.div variants={itemVariants} onMouseMove={handleMouseMove} style={{ marginTop: '2.5rem' }}>
                                 <div className="luxury-card" style={{
@@ -1096,7 +1183,7 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
                             </motion.div>
-                        </motion.div>
+                        </motion.div >
                     )
                     }
 
@@ -1176,7 +1263,7 @@ export default function AdminDashboard() {
                             </motion.div>
                         )
                     }
-                </AnimatePresence>
+                </AnimatePresence >
                 <button
                     onClick={() => setIsSupportOpen(true)}
                     id="admin-support-fab"

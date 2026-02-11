@@ -239,3 +239,104 @@ exports.getAnalytics = async (req, res) => {
         res.status(500).json({ message: 'Error fetching analytics', error: err.message });
     }
 };
+
+exports.getTopMentors = async (req, res) => {
+    try {
+        // 1. Get all mentors
+        // We could filter by role='mentor', but creators might be admins effectively acting as mentors too. 
+        // Let's rely on who has created forms.
+
+        // Aggregate Submissions by Form Creator
+        const submissionStats = await Submission.aggregate([
+            {
+                $lookup: {
+                    from: 'forms',
+                    localField: 'form',
+                    foreignField: '_id',
+                    as: 'formDetails'
+                }
+            },
+            { $unwind: '$formDetails' },
+            {
+                $group: {
+                    _id: '$formDetails.creator',
+                    totalSubmissions: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // Aggregate Visits by Form Creator
+        // Visits key off 'page' string. We need to match pages to forms.
+        // Doing this purely in minimal aggregation is hard because of the string join.
+        // Strategy: 
+        // 1. Get all forms (id, slug, creator)
+        // 2. Get all visits for pages starting with /f/
+        // 3. Map in memory (not ideal for huge datasets but fine for small/medium)
+
+        const allForms = await Form.find({}, 'slug creator title');
+        const formSlugMap = {}; // slug -> creatorId
+        const formCreatorMap = {}; // formId -> creatorId
+        const creatorNames = {}; // creatorId -> details
+
+        // Prefetch creator details to avoid N+1
+        const creators = await User.find({ _id: { $in: allForms.map(f => f.creator) } }, 'name email profilePhoto');
+        creators.forEach(c => {
+            creatorNames[c._id.toString()] = c;
+        });
+
+        allForms.forEach(f => {
+            formSlugMap[`/f/${f.slug}`] = f.creator.toString();
+            formCreatorMap[f._id.toString()] = f.creator.toString();
+        });
+
+        const visitStats = await Visit.aggregate([
+            { $match: { page: { $regex: /^\/f\// } } },
+            {
+                $group: {
+                    _id: "$page",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const mentorStats = {};
+
+        // Process Submissions
+        submissionStats.forEach(stat => {
+            const creatorId = stat._id.toString();
+            if (!mentorStats[creatorId]) {
+                mentorStats[creatorId] = { id: creatorId, submissions: 0, visits: 0, user: creatorNames[creatorId] || { name: 'Unknown' } };
+            }
+            mentorStats[creatorId].submissions += stat.totalSubmissions;
+        });
+
+        // Process Visits
+        visitStats.forEach(stat => {
+            const page = stat._id;
+            const creatorId = formSlugMap[page];
+            if (creatorId) {
+                if (!mentorStats[creatorId]) {
+                    mentorStats[creatorId] = { id: creatorId, submissions: 0, visits: 0, user: creatorNames[creatorId] || { name: 'Unknown' } };
+                }
+                mentorStats[creatorId].visits += stat.count;
+            }
+        });
+
+        // Convert to array and sort
+        const topMentors = Object.values(mentorStats)
+            .sort((a, b) => {
+                // Weighted score: 1 submission = 5 visits? Or just by submissions?
+                // The user asked "based on results of inscriptions and visits".
+                // Let's sort by submissions first, then visits.
+                if (b.submissions !== a.submissions) return b.submissions - a.submissions;
+                return b.visits - a.visits;
+            })
+            .slice(0, 10); // Top 10
+
+        res.json(topMentors);
+
+    } catch (err) {
+        console.error('Error fetching top mentors:', err);
+        res.status(500).json({ message: 'Error fetching top mentors' });
+    }
+};

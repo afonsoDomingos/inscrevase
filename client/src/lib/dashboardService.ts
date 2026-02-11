@@ -35,6 +35,28 @@ export interface AnalyticsData {
     geoStats: { name: string; value: number }[];
 }
 
+export interface TopMentor {
+    id: string;
+    submissions: number;
+    visits: number;
+    user: {
+        _id: string;
+        name: string;
+        email: string;
+        profilePhoto?: string;
+    }
+}
+
+export interface TrafficStats {
+    visitsToday: number;
+    uniqueVisitorsToday: number;
+    totalVisits: number;
+    topPages: { page: string; count: number }[];
+    topCountries: { country: string; count: number }[];
+    trafficByHour: { hour: number; count: number }[];
+    trafficByMonth: { month: number; count: number }[];
+}
+
 export const dashboardService = {
     async getAdminStats(): Promise<AdminStats> {
         const token = Cookies.get('token');
@@ -79,15 +101,14 @@ export const dashboardService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar tráfego');
         return response.json();
+    },
+
+    async getTopMentors(): Promise<TopMentor[]> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/dashboard/top-mentors`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar top mentores');
+        return response.json();
     }
 };
-
-export interface TrafficStats {
-    visitsToday: number;
-    uniqueVisitorsToday: number;
-    totalVisits: number;
-    topPages: { page: string; count: number }[];
-    topCountries: { country: string; count: number }[];
-    trafficByHour: { hour: number; count: number }[];
-    trafficByMonth: { month: number; count: number }[];
-}
