@@ -97,6 +97,19 @@ function MentorDashboardContent() {
     const [isMobile, setIsMobile] = useState(false);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
+    const [isResending, setIsResending] = useState(false);
+
+    const handleResendVerification = async () => {
+        setIsResending(true);
+        try {
+            await authService.resendVerification();
+            toast.success(t('auth.resendSuccess'));
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setIsResending(false);
+        }
+    };
 
     const steps: Step[] = [
         {
@@ -620,6 +633,61 @@ function MentorDashboardContent() {
                 maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
                 overflowX: 'hidden'
             }}>
+                {user && !user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                            borderRadius: '16px',
+                            padding: '20px',
+                            marginBottom: '30px',
+                            display: 'flex',
+                            flexDirection: isMobile ? 'column' : 'row',
+                            alignItems: isMobile ? 'flex-start' : 'center',
+                            justifyContent: 'space-between',
+                            gap: '20px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div style={{ background: '#ef4444', padding: '10px', borderRadius: '12px' }}>
+                                <AlertCircle color="#fff" size={24} />
+                            </div>
+                            <div>
+                                <h4 style={{ color: '#fff', margin: 0, fontWeight: 700, fontSize: '1.1rem' }}>{t('auth.verifyEmailTitle')}</h4>
+                                <p style={{ color: 'rgba(255,255,255,0.7)', margin: '5px 0 0 0', fontSize: '0.9rem', maxWidth: '600px' }}>
+                                    {t('auth.unverifiedNotice')}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleResendVerification}
+                            disabled={isResending}
+                            style={{
+                                background: 'rgba(255,255,255,0.1)',
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                color: '#fff',
+                                padding: '10px 20px',
+                                borderRadius: '10px',
+                                fontWeight: 700,
+                                fontSize: '0.85rem',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseOver={(e) => {
+                                if (!isResending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                            }}
+                            onMouseOut={(e) => {
+                                if (!isResending) e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                            }}
+                        >
+                            {isResending ? <Loader2 className="animate-spin" size={18} /> : t('auth.resendVerification')}
+                        </button>
+                    </motion.div>
+                )}
                 {/* Header */}
                 <header style={{
                     display: 'flex',

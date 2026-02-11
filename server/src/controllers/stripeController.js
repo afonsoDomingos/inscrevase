@@ -17,6 +17,10 @@ exports.createConnectAccount = async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
+        if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Por favor, confirme seu e-mail para configurar pagamentos.' });
+        }
+
         // Check if user already has a Stripe account
         if (user.stripeAccountId) {
             return res.status(200).json({
@@ -59,7 +63,13 @@ exports.createConnectAccount = async (req, res) => {
 exports.getOnboardingLink = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
-        if (!user || !user.stripeAccountId) {
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Por favor, confirme seu e-mail para configurar pagamentos.' });
+        }
+
+        if (!user.stripeAccountId) {
             return res.status(400).json({ message: 'Stripe account not found. Create one first.' });
         }
 
@@ -127,6 +137,9 @@ exports.createCheckoutSession = async (req, res) => {
         }
 
         const mentor = form.creator;
+        if (!mentor.isEmailVerified && mentor.role !== 'admin' && mentor.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'O mentor deste evento ainda não confirmou o e-mail.' });
+        }
         if (!mentor.stripeAccountId || !mentor.stripeOnboardingComplete) {
             return res.status(400).json({ message: 'Mentor is not ready to receive payments via Stripe' });
         }
@@ -575,6 +588,11 @@ exports.createSubscription = async (req, res) => {
     try {
         const { plan, currency = 'USD' } = req.body;
         const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Por favor, confirme seu e-mail antes de assinar um plano.' });
+        }
 
         const planConfig = PLANS[plan];
         if (!planConfig || plan === 'free') {
@@ -780,6 +798,12 @@ exports.submitManualSubscription = async (req, res) => {
     try {
         const { plan, amount, proofUrl, currency = 'USD' } = req.body;
         const userId = req.user.id;
+        const user = await User.findById(userId);
+
+        if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Por favor, confirme seu e-mail antes de assinar um plano.' });
+        }
+
         const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 
         const transaction = new Transaction({

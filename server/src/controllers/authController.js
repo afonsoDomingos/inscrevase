@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const Submission = require('../models/Submission');
+const sendEmail = require('../utils/emailService');
 
 const register = async (req, res) => {
     try {
@@ -14,6 +16,8 @@ const register = async (req, res) => {
         const userRole = allowedRoles.includes(role) ? role : 'mentor';
         const canCreateEvents = userRole !== 'participant';
 
+        const emailToken = crypto.randomBytes(32).toString('hex');
+
         user = new User({
             name,
             email,
@@ -21,9 +25,32 @@ const register = async (req, res) => {
             businessName,
             country,
             role: userRole,
-            canCreateEvents
+            canCreateEvents,
+            emailToken,
+            isEmailVerified: false
         });
         await user.save();
+
+        // Send Verification Email
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
+
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h2 style="color: #D4AF37; text-align: center;">Bem-vindo ao Inscreva-se! 💎</h2>
+                <p>Olá <strong>${name}</strong>,</p>
+                <p>Obrigado por se juntar à nossa comunidade de elite. Para começar a criar seus eventos e gerir seus participantes, precisamos que confirme seu endereço de e-mail.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${verificationLink}" style="background-color: #D4AF37; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Confirmar E-mail</a>
+                </div>
+                <p>Se o botão não funcionar, copie e cole o link abaixo no seu navegador:</p>
+                <p style="word-break: break-all; color: #666;">${verificationLink}</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 12px; color: #999; text-align: center;">Esta é uma mensagem automática, por favor não responda.</p>
+            </div>
+        `;
+
+        await sendEmail(email, 'Confirme seu endereço de e-mail - Inscreva-se', emailHtml);
 
         // Link existing submissions for this email to the new user account
         // We search for the email in common field names used in forms
@@ -59,7 +86,7 @@ const register = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.status(201).json({ token, user: { id: user._id, name, email, role: user.role } });
+        res.status(201).json({ token, user: { id: user._id, name, email, role: user.role, isEmailVerified: user.isEmailVerified } });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
@@ -103,7 +130,7 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.json({ token, user: { id: user._id, name: user.name, email, role: user.role } });
+        res.json({ token, user: { id: user._id, name: user.name, email, role: user.role, isEmailVerified: user.isEmailVerified } });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
@@ -173,7 +200,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic, canCreateEvents, badges, isVerified, verificationStatus } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic, canCreateEvents, badges, isVerified, verificationStatus, isEmailVerified } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -193,6 +220,7 @@ const updateByAdmin = async (req, res) => {
         if (badges) user.badges = badges;
         if (isVerified !== undefined) user.isVerified = isVerified;
         if (verificationStatus) user.verificationStatus = verificationStatus;
+        if (isEmailVerified !== undefined) user.isEmailVerified = isEmailVerified;
 
         // Update password if provided
         if (password && password.trim() !== '') {
@@ -352,4 +380,126 @@ const searchMentors = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors };
+const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.body;
+        if (!token) return res.status(400).json({ message: 'Token é obrigatório' });
+
+        const user = await User.findOne({ emailToken: token });
+        if (!user) return res.status(400).json({ message: 'Token inválido ou expirado' });
+
+        user.isEmailVerified = true;
+        user.emailToken = undefined;
+        await user.save();
+
+        res.json({ message: 'E-mail confirmado com sucesso!', user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro no servidor', error: err.message });
+    }
+};
+
+const resendVerificationEmail = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+        if (user.isEmailVerified) return res.status(400).json({ message: 'E-mail já está verificado' });
+
+        const emailToken = crypto.randomBytes(32).toString('hex');
+        user.emailToken = emailToken;
+        await user.save();
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
+
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h2 style="color: #D4AF37; text-align: center;">Confirmação de E-mail 💎</h2>
+                <p>Olá <strong>${user.name}</strong>,</p>
+                <p>Você solicitou um novo link para confirmar seu endereço de e-mail no Inscreva-se.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${verificationLink}" style="background-color: #D4AF37; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Confirmar E-mail</a>
+                </div>
+                <p>Se o botão não funcionar, copie e cole o link abaixo no seu navegador:</p>
+                <p style="word-break: break-all; color: #666;">${verificationLink}</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 12px; color: #999; text-align: center;">Esta é uma mensagem automática, por favor não responda.</p>
+            </div>
+        `;
+
+        await sendEmail(user.email, 'Confirme seu endereço de e-mail - Inscreva-se', emailHtml);
+        res.json({ message: 'E-mail de verificação enviado com sucesso!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro no servidor', error: err.message });
+    }
+};
+
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        await user.save();
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const resetLink = `${frontendUrl}/redefinir-senha?token=${resetToken}`;
+
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h2 style="color: #D4AF37; text-align: center;">Recuperação de Senha 💎</h2>
+                <p>Olá <strong>${user.name}</strong>,</p>
+                <p>Você solicitou a redefinição de sua senha no Inscreva-se. Clique no botão abaixo para prosseguir:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${resetLink}" style="background-color: #D4AF37; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Redefinir Minha Senha</a>
+                </div>
+                <p>Este link expirará em 1 hora.</p>
+                <p>Se você não solicitou isso, ignore este e-mail.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 12px; color: #999; text-align: center;">Esta é uma mensagem automática, por favor não responda.</p>
+            </div>
+        `;
+
+        await sendEmail(email, 'Redefinição de Senha - Inscreva-se', emailHtml);
+        res.json({ message: 'E-mail de recuperação enviado com sucesso!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro no servidor', error: err.message });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) return res.status(400).json({ message: 'Token inválido ou expirado' });
+
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.json({ message: 'Senha redefinida com sucesso!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro no servidor', error: err.message });
+    }
+};
+
+const migrateVerifiedUsers = async (req, res) => {
+    try {
+        const result = await User.updateMany(
+            { isEmailVerified: { $ne: true } },
+            { $set: { isEmailVerified: true } }
+        );
+        res.json({ message: `Migração concluída. ${result.modifiedCount} usuários atualizados.` });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro na migração', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers };

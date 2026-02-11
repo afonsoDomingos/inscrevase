@@ -249,6 +249,19 @@ function LoginContent() {
                                 )}
                             </AnimatePresence>
                         </motion.div>
+                        <div style={{ textAlign: 'right', marginTop: '8px' }}>
+                            <Link href="/esqueci-senha" style={{
+                                color: 'rgba(255,255,255,0.4)',
+                                fontSize: '0.75rem',
+                                textDecoration: 'none',
+                                transition: 'color 0.2s'
+                            }}
+                                onMouseOver={(e) => e.currentTarget.style.color = '#FFD700'}
+                                onMouseOut={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
+                            >
+                                {t('auth.forgotPassword') || 'Esqueceu sua senha?'}
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

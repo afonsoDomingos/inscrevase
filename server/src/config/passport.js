@@ -70,6 +70,7 @@ if (googleClientId && googleClientSecret) {
 
                 if (user) {
                     user.googleId = profile.id;
+                    user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
                     await user.save();
                     return done(null, user);
@@ -82,6 +83,7 @@ if (googleClientId && googleClientSecret) {
                     profilePhoto: profile.photos[0].value,
                     role: 'mentor',
                     password: '',
+                    isEmailVerified: true,
                     country: await detectCountry(req, profile)
                 });
 
@@ -157,6 +159,7 @@ if (linkedinClientId && linkedinClientSecret) {
 
                 if (user) {
                     user.linkedinId = linkedinId;
+                    user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = photo;
                     await user.save();
                     return done(null, user);
@@ -169,6 +172,7 @@ if (linkedinClientId && linkedinClientSecret) {
                     profilePhoto: photo,
                     role: 'mentor',
                     password: '',
+                    isEmailVerified: true,
                     country: await detectCountry(req, data)
                 });
 

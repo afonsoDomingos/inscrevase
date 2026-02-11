@@ -31,6 +31,7 @@ export interface UserData {
     createdAt?: string;
     authProvider?: 'google' | 'linkedin' | 'native';
     isVerified?: boolean;
+    isEmailVerified?: boolean;
     verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
     facebookPixelId?: string;
 }
@@ -182,5 +183,47 @@ export const authService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar mentores');
         return response.json();
+    },
+    async resendVerification(): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/resend-verification`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || 'Falha ao reenviar e-mail de verificação');
+        }
+    },
+
+    async forgotPassword(email: string): Promise<void> {
+        const response = await fetch(`${API_URL}/auth/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Erro ao enviar e-mail de recuperação');
+    },
+
+    async resetPassword(token: string, password: string): Promise<void> {
+        const response = await fetch(`${API_URL}/auth/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, password })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Erro ao redefinir senha');
+    },
+
+    async migrateVerifiedUsers(): Promise<string> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/migrate-verified-users`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Erro na migração');
+        return data.message;
     }
 };

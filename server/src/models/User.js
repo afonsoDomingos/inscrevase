@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema({
     profileVisits: { type: Number, default: 0 },
     canCreateEvents: { type: Boolean, default: true },
     isVerified: { type: Boolean, default: false },
+    isEmailVerified: { type: Boolean, default: false },
+    emailToken: { type: String },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
     verificationStatus: { type: String, enum: ['none', 'pending', 'verified', 'rejected'], default: 'none' },
     verificationRequestedAt: { type: Date },
     facebookPixelId: { type: String, sparse: true }, // Meta Pixel ID for tracking

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats, TrafficStats } from '@/lib/dashboardService';
 import UsersList from '@/components/admin/UsersList';
@@ -115,6 +116,23 @@ export default function AdminDashboard() {
         activity: false
     });
     const [showValues, setShowValues] = useState(true);
+    const [isMigrating, setIsMigrating] = useState(false);
+
+    const handleMigrateUsers = async () => {
+        if (!confirm('Você tem certeza que deseja marcar TODOS os usuários como verificados? Esta ação é irreversível.')) {
+            return;
+        }
+
+        setIsMigrating(true);
+        try {
+            const message = await authService.migrateVerifiedUsers();
+            toast.success(message);
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setIsMigrating(false);
+        }
+    };
 
     const toggleSection = (section: string) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -602,21 +620,53 @@ export default function AdminDashboard() {
                                                         <div style={{ fontSize: '2rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
                                                     </div>
                                                 ))}
-                                                {financialCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', borderRadius: '20px' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '8px', borderRadius: '10px' }}>{card.icon}</div>
-                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</span>
-                                                        </div>
-                                                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
-                                                    </div>
-                                                ))}
                                             </div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
                             </div>
 
+                            {/* System Tools */}
+                            <div className="accordion-section" style={{ marginBottom: '1.2rem' }}>
+                                <div style={{
+                                    background: '#fff',
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: '18px',
+                                    padding: '1.2rem 1.8rem',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+                                }}>
+                                    <h4 style={{ margin: '0 0 15px 0', fontSize: '1rem', fontWeight: 800, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Settings size={20} className="gold-text" />
+                                        Ferramentas do Sistema
+                                    </h4>
+                                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                                        <button
+                                            onClick={handleMigrateUsers}
+                                            disabled={isMigrating}
+                                            style={{
+                                                background: isMigrating ? '#ccc' : '#2a2a2a',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '10px',
+                                                padding: '10px 20px',
+                                                fontSize: '0.85rem',
+                                                fontWeight: 700,
+                                                cursor: isMigrating ? 'not-allowed' : 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '10px',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                        >
+                                            {isMigrating ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
+                                            Verificar Todos os E-mails (Limpeza de Base)
+                                        </button>
+                                    </div>
+                                    <p style={{ margin: '10px 0 0 0', fontSize: '0.75rem', color: '#666' }}>
+                                        Esta ação marcará todos os usuários existentes como verificados. Use apenas uma vez para limpar a base antiga.
+                                    </p>
+                                </div>
+                            </div>
 
                             {/* Advanced Insights Section (Fixed) */}
                             <div style={{ marginTop: '3rem', marginBottom: '2.5rem' }}>
@@ -1048,7 +1098,8 @@ export default function AdminDashboard() {
                                 </div>
                             </motion.div>
                         </motion.div>
-                    )}
+                    )
+                    }
 
                     {
                         activeTab === 'users' && (
@@ -1126,7 +1177,7 @@ export default function AdminDashboard() {
                             </motion.div>
                         )
                     }
-                </AnimatePresence >
+                </AnimatePresence>
                 <button
                     onClick={() => setIsSupportOpen(true)}
                     id="admin-support-fab"

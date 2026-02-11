@@ -19,10 +19,19 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const [isVisible, setIsVisible] = useState(false);
     const isClosed = false; // Placeholder if needed in future, but avoiding unused state
 
+    const [isMobile, setIsMobile] = useState(false);
+
     // Show ad after a short delay on the home page
     useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
         const timer = setTimeout(() => setIsVisible(true), 2000);
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('resize', checkMobile);
+        };
     }, []);
 
     const nextAd = useCallback(() => {
@@ -77,9 +86,9 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
 
                     {/* Floating Creative Card */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: 100, rotateX: 20 }}
+                        initial={{ opacity: 0, scale: 0.8, y: isMobile ? -50 : 100, rotateX: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 100, rotateX: -20 }}
+                        exit={{ opacity: 0, scale: 0.8, y: isMobile ? -50 : 100, rotateX: -20 }}
                         transition={{
                             type: 'spring',
                             damping: 20,
@@ -88,16 +97,17 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                         }}
                         style={{
                             position: 'fixed',
-                            bottom: '40px',
-                            right: '40px',
-                            width: 'min(500px, 90vw)',
+                            top: isMobile ? '20px' : 'auto',
+                            bottom: isMobile ? 'auto' : '40px',
+                            right: isMobile ? '20px' : '40px',
+                            width: isMobile ? 'min(300px, 85vw)' : 'min(500px, 90vw)',
                             zIndex: 9999,
                             perspective: '1000px'
                         }}
                     >
                         <div style={{
                             background: '#fff',
-                            borderRadius: '32px',
+                            borderRadius: isMobile ? '24px' : '32px',
                             overflow: 'hidden',
                             boxShadow: '0 50px 100px rgba(0,0,0,0.3), 0 0 20px rgba(255,215,0,0.1)',
                             border: '1px solid rgba(255,215,0,0.3)',
@@ -180,12 +190,12 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
 
                             {/* Info Section */}
-                            <div style={{ padding: '2rem' }}>
+                            <div style={{ padding: isMobile ? '1.25rem' : '2rem', textAlign: isMobile ? 'center' : 'left' }}>
                                 <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B8860B', textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '1px' }}>
                                     {currentEvent.category || 'EVENTO PREMIUM'}
                                 </div>
                                 <h3 style={{
-                                    fontSize: '1.5rem',
+                                    fontSize: isMobile ? '1.2rem' : '1.5rem',
                                     fontWeight: 900,
                                     fontFamily: 'var(--font-playfair)',
                                     color: '#111',
@@ -195,7 +205,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     {currentEvent.title}
                                 </h3>
 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gap: '15px', marginBottom: '2rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.8rem' }}>
                                         <Calendar size={14} className="gold-text" />
                                         {currentEvent.eventDate ? new Date(currentEvent.eventDate).toLocaleDateString() : 'Em breve'}
@@ -206,7 +216,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '10px' }}>
+                                <div style={{ display: 'flex', gap: '10px', flexDirection: isMobile ? 'column' : 'row' }}>
                                     <Link
                                         href={`/f/${currentEvent.slug}`}
                                         style={{

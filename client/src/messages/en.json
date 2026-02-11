@@ -178,7 +178,16 @@
         "user": "User",
         "organizer": "Organizer",
         "mentor": "Mentor",
-        "hello": "Hello"
+        "hello": "Hello",
+        "verifyEmailTitle": "Verify your email ✨",
+        "verifyEmailSuccess": "Email verified successfully!",
+        "verifyEmailError": "Verification error. Invalid or expired token.",
+        "resendVerification": "Resend verification link",
+        "resendSuccess": "Verification email sent!",
+        "unverifiedNotice": "Your account is almost ready! Please confirm your email to unlock all features (creating events and managing payments).",
+        "checkSpam": "Didn't receive it? Check your spam folder or click below to resend.",
+        "confirmEmailCTA": "Confirm Email",
+        "verifying": "Verifying your email..."
     },
     "dashboard": {
         "overview": "Overview",

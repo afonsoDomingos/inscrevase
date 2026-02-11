@@ -9,6 +9,10 @@ const mongoose = require('mongoose');
 
 exports.createForm = async (req, res) => {
     try {
+        const user = await User.findById(req.user.id);
+        if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Por favor, confirme seu e-mail para criar eventos.' });
+        }
         const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         let slug = slugify(title, { lower: true, strict: true });
@@ -182,6 +186,11 @@ exports.updateForm = async (req, res) => {
 
         if (!isCreator && !isPartner && !isAdmin) {
             return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        const currentUser = await User.findById(req.user.id);
+        if (!currentUser.isEmailVerified && !isAdmin) {
+            return res.status(403).json({ message: 'Por favor, confirme seu e-mail para editar eventos.' });
         }
 
         // Update fields
