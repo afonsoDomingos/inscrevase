@@ -24,7 +24,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
@@ -100,6 +100,7 @@ export default function AdminDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
+    const [topMentors, setTopMentors] = useState<TopMentor[]>([]);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
