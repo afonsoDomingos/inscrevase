@@ -15,7 +15,7 @@ interface SponsoredAdCardProps {
 export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const { t } = useTranslate();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(30);
+    const [timeLeft, setTimeLeft] = useState(10);
     const [isVisible, setIsVisible] = useState(false);
     const isClosed = false;
 
@@ -36,7 +36,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const nextAd = useCallback(() => {
         if (events.length > 1) {
             setCurrentIndex((prev) => (prev + 1) % events.length);
-            setTimeLeft(30);
+            setTimeLeft(10);
         } else {
             setIsVisible(false); // Hide if it was the only one and time is up
         }
@@ -49,7 +49,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
             setTimeLeft((prev) => {
                 if (prev <= 1) {
                     nextAd();
-                    return 30;
+                    return 10;
                 }
                 return prev - 1;
             });
@@ -209,7 +209,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        Skip
+                                        Próximo
                                     </button>
                                 </div>
 
