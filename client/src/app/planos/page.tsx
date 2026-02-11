@@ -11,8 +11,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
-type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF';
-
 export default function PlansPage() {
     const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const router = useRouter();
@@ -135,7 +133,10 @@ export default function PlansPage() {
                             value={['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? currency : ''}
                             onChange={(e) => {
                                 const value = e.target.value;
-                                if (value) setCurrency(value as 'MZN' | 'AOA' | 'CVE' | 'XOF');
+                                const validCurrencies = ['MZN', 'AOA', 'CVE', 'XOF'];
+                                if (value && validCurrencies.includes(value)) {
+                                    setCurrency(value as never);
+                                }
                             }}
                             style={{
                                 padding: '10px 20px',

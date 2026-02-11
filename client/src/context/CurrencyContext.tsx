@@ -128,20 +128,11 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         const from = normalize(fromCurrency);
         const target = normalize(targetCurrency);
 
-        // Currency conversion logic (using approximate rates)
-        const rates = {
-            USD: 1,
-            EUR: 0.92,
-            MZN: exchangeRate || 63.8,
-            AOA: 850,
-            CVE: 100,
-            XOF: 600
-        };
-
+        // Currency conversion logic (using real-time rates from API)
         if (from !== target) {
             // Convert from source to USD, then to target
-            const amountInUSD = amount / rates[from];
-            displayAmount = amountInUSD * rates[target];
+            const amountInUSD = amount / allRates[from];
+            displayAmount = amountInUSD * allRates[target];
         }
 
         // Format based on target currency
