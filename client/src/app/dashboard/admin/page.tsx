@@ -220,7 +220,7 @@ export default function AdminDashboard() {
         { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
         { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
-    ];
+    ].filter(item => item.id !== 'finance' || user?.role === 'SuperAdmin');
 
     return (
         <div className="admin-container" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -1084,7 +1084,7 @@ export default function AdminDashboard() {
                     }
 
                     {
-                        activeTab === 'finance' && (
+                        activeTab === 'finance' && user?.role === 'SuperAdmin' && (
                             <motion.div key="finance" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                                 <AdminFinance />
                             </motion.div>
