@@ -443,32 +443,34 @@ export default function AdminDashboard() {
                             {showValues ? <EyeOff size={16} /> : <Eye size={16} />}
                             {showValues ? t('dashboard.hideValues') : t('dashboard.showValues')}
                         </button>
-                        <button
-                            onClick={() => {
-                                setSelectedRecipient(undefined);
-                                setIsMessageModalOpen(true);
-                            }}
-                            id="admin-global-msg"
-                            style={{
-                                padding: '0.7rem 1.2rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.6rem',
-                                borderRadius: '50px',
-                                background: '#000',
-                                color: '#FFD700',
-                                border: '2px solid #000',
-                                whiteSpace: 'nowrap',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s',
-                                fontSize: '0.75rem',
-                                letterSpacing: '0.3px'
-                            }}
-                            className="hover:translate-y-[-2px] hover:shadow-lg"
-                        >
-                            <Send size={16} /> {t('dashboard.broadcast')}
-                        </button>
+                        {user?.role === 'SuperAdmin' && (
+                            <button
+                                onClick={() => {
+                                    setSelectedRecipient(undefined);
+                                    setIsMessageModalOpen(true);
+                                }}
+                                id="admin-global-msg"
+                                style={{
+                                    padding: '0.7rem 1.2rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.6rem',
+                                    borderRadius: '50px',
+                                    background: '#000',
+                                    color: '#FFD700',
+                                    border: '2px solid #000',
+                                    whiteSpace: 'nowrap',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                    fontSize: '0.75rem',
+                                    letterSpacing: '0.3px'
+                                }}
+                                className="hover:translate-y-[-2px] hover:shadow-lg"
+                            >
+                                <Send size={16} /> {t('dashboard.broadcast')}
+                            </button>
+                        )}
                         <Link
                             href="/"
                             target="_blank"

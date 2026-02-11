@@ -394,12 +394,15 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                         >
                                             <Pencil size={18} />
                                         </button>
-                                        <button
-                                            onClick={() => handleDelete(user.id || user._id || '')}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        {currentUser?.role === 'SuperAdmin' && (
+                                            <button
+                                                onClick={() => handleDelete(user.id || user._id || '')}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
+                                                title="Excluir Usuário Permanentemente"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </motion.tr>
