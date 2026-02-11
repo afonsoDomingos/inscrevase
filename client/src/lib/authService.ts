@@ -222,7 +222,16 @@ export const authService = {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const data = await response.json();
+
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Migration Error (Invalid JSON):', text);
+            throw new Error(`Erro no servidor (Respostas não-JSON). Possível erro 404 ou 500.`);
+        }
+
         if (!response.ok) throw new Error(data.message || 'Erro na migração');
         return data.message;
     }

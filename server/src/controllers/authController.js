@@ -491,15 +491,29 @@ const resetPassword = async (req, res) => {
 };
 
 const migrateVerifiedUsers = async (req, res) => {
+    console.log('[Migration] Iniciando migração de usuários verificados...');
     try {
         const result = await User.updateMany(
             { isEmailVerified: { $ne: true } },
             { $set: { isEmailVerified: true } }
         );
-        res.json({ message: `Migração concluída. ${result.modifiedCount} usuários atualizados.` });
+        console.log('[Migration] Resultado:', result);
+        const count = result.modifiedCount ?? result.nModified ?? 0;
+        res.json({ message: `Migração concluída. ${count} usuários atualizados.` });
     } catch (err) {
+        console.error('[Migration] Erro:', err);
         res.status(500).json({ message: 'Erro na migração', error: err.message });
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers };
+const migrationStatus = async (req, res) => {
+    try {
+        const total = await User.countDocuments();
+        const verified = await User.countDocuments({ isEmailVerified: true });
+        res.json({ total, verified, pending: total - verified });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao verificar status' });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus };

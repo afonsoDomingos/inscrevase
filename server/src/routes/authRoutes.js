@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const passport = require('../config/passport');
-const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers } = require('../controllers/authController');
+const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus } = require('../controllers/authController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 
 router.post('/register', register);
 router.post('/login', login);
 router.post('/verify-email', verifyEmail);
+router.post('/migrate-verified-users', authMiddleware, adminMiddleware, migrateVerifiedUsers);
+router.get('/migration-status', authMiddleware, adminMiddleware, migrationStatus);
 router.post('/resend-verification', authMiddleware, resendVerificationEmail);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
@@ -51,6 +53,5 @@ router.get('/linkedin/callback',
 router.get('/users', authMiddleware, adminMiddleware, getUsers);
 router.put('/users/:id', authMiddleware, adminMiddleware, updateByAdmin);
 router.delete('/users/:id', authMiddleware, adminMiddleware, deleteByAdmin);
-router.post('/migrate-verified-users', authMiddleware, adminMiddleware, migrateVerifiedUsers);
 
 module.exports = router;
