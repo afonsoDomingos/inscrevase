@@ -124,7 +124,8 @@
             "loginRequired": "You need to be logged in to perform this action",
             "uploadError": "Error uploading file",
             "uploadSuccess": "Upload completed successfully!"
-        }
+        },
+        "palop": "Africa (PALOP)"
     },
     "nav": {
         "home": "Home",

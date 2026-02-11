@@ -95,13 +95,14 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     const getPlanPrice = (planId: 'pro' | 'enterprise'): number => {
         if (!plans || !plans[planId]) {
             // Fallbacks based on approximate exchange rates
-            const basePriceUSD = planId === 'pro' ? 2.99 : 27.99;
+            const basePriceUSD = planId === 'pro' ? 79 : 799;
 
-            if (currency === 'MZN') return planId === 'pro' ? 175 : 1750;
-            if (currency === 'EUR') return basePriceUSD;
-            if (currency === 'AOA') return basePriceUSD * 850; // ~850 AOA per USD
-            if (currency === 'CVE') return basePriceUSD * 100; // ~100 CVE per USD
-            if (currency === 'XOF') return basePriceUSD * 600; // ~600 XOF per USD
+            if (currency === 'USD') return basePriceUSD;
+            if (currency === 'EUR') return basePriceUSD * 0.92;
+            if (currency === 'MZN') return basePriceUSD * 63.8;
+            if (currency === 'AOA') return basePriceUSD * 850;
+            if (currency === 'CVE') return basePriceUSD * 100;
+            if (currency === 'XOF') return basePriceUSD * 600;
             return basePriceUSD;
         }
         const plan = plans[planId];
