@@ -679,7 +679,8 @@ export default function ParticipantDashboard() {
                                 try {
                                     await authService.resendVerification();
                                     toast.success(t('auth.resendSuccess'));
-                                } catch (error: any) {
+                                } catch (err: unknown) {
+                                    const error = err as Error;
                                     toast.error(error.message || 'Erro ao reenviar');
                                 }
                             }}

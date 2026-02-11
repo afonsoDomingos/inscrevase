@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { publicService, PublicImpactStats } from '@/lib/publicService';
-import { MapPin, Award, TrendingUp, Users, Globe } from 'lucide-react';
+import { MapPin, Award } from 'lucide-react';
+import Image from 'next/image';
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function ImpactSection() {
@@ -63,7 +64,14 @@ export default function ImpactSection() {
                                     <div className="mentor-info">
                                         <div className="mentor-avatar-wrapper">
                                             {mentor.profilePhoto ? (
-                                                <img src={mentor.profilePhoto} alt={mentor.name} className="mentor-avatar" />
+                                                <Image
+                                                    src={mentor.profilePhoto}
+                                                    alt={mentor.name}
+                                                    width={40}
+                                                    height={40}
+                                                    className="mentor-avatar"
+                                                    style={{ objectFit: 'cover' }}
+                                                />
                                             ) : (
                                                 <div className="mentor-initial">{mentor.name[0]}</div>
                                             )}
