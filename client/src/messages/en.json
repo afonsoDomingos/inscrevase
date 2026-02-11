@@ -207,6 +207,7 @@
         "readyToManage": "Ready to manage your events today?",
         "account": "account",
         "restrictedAccess": "Restricted Access",
+        "emailUnverified": "Email not verified",
         "notifications": "Notifications",
         "discoverPlatform": "DISCOVER OUR PLATFORM",
         "adminDashboard": "Admin Dashboard",

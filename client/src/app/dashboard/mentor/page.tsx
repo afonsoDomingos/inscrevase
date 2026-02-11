@@ -57,7 +57,8 @@ import {
     Award,
     Briefcase,
     Package,
-    Megaphone
+    Megaphone,
+    AlertTriangle
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -635,56 +636,56 @@ function MentorDashboardContent() {
             }}>
                 {user && !user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin' && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         style={{
-                            background: 'linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(184,134,11,0.08) 100%)',
-                            border: '1px solid rgba(212,175,55,0.4)',
+                            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                            border: '1px solid rgba(255, 215, 0, 0.3)',
                             borderRadius: '24px',
-                            padding: '24px',
+                            padding: '30px',
                             marginBottom: '40px',
                             display: 'flex',
                             flexDirection: isMobile ? 'column' : 'row',
                             alignItems: isMobile ? 'flex-start' : 'center',
                             justifyContent: 'space-between',
                             gap: '24px',
-                            boxShadow: '0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(212,175,55,0.05)',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.05)',
                             position: 'relative',
                             overflow: 'hidden'
                         }}
                     >
                         {/* Shimmer Effect */}
                         <motion.div
-                            animate={{ x: ['-100%', '200%'] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                            animate={{ x: ['-200%', '200%'] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                             style={{
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
-                                width: '40%',
+                                width: '50%',
                                 height: '100%',
-                                background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)',
+                                background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.05), transparent)',
                                 pointerEvents: 'none'
                             }}
                         />
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', zIndex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', zIndex: 1 }}>
                             <div style={{
                                 background: 'var(--gold-gradient)',
-                                padding: '12px',
-                                borderRadius: '16px',
-                                boxShadow: '0 5px 15px rgba(212,175,55,0.4)',
+                                padding: '14px',
+                                borderRadius: '18px',
+                                boxShadow: '0 0 20px rgba(212,175,55,0.4)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}>
-                                <AlertCircle color="#000" size={28} />
+                                <AlertTriangle color="#000" size={32} />
                             </div>
                             <div>
-                                <h4 style={{ color: '#fff', margin: 0, fontWeight: 800, fontSize: '1.25rem', fontFamily: 'var(--font-playfair)' }}>
+                                <h4 style={{ color: '#FFD700', margin: 0, fontWeight: 900, fontSize: '1.4rem', fontFamily: 'var(--font-playfair)', letterSpacing: '0.5px' }}>
                                     {t('auth.verifyEmailTitle')}
                                 </h4>
-                                <p style={{ color: 'rgba(255,255,255,0.85)', margin: '8px 0 0 0', fontSize: '1rem', maxWidth: '700px', lineHeight: 1.5 }}>
+                                <p style={{ color: 'rgba(255,255,255,0.8)', margin: '10px 0 0 0', fontSize: '1.05rem', maxWidth: '700px', lineHeight: 1.6, fontWeight: 500 }}>
                                     {t('auth.unverifiedNotice')}
                                 </p>
                             </div>
@@ -693,36 +694,38 @@ function MentorDashboardContent() {
                             onClick={handleResendVerification}
                             disabled={isResending}
                             style={{
-                                background: 'rgba(255,215,0,0.1)',
-                                border: '1px solid rgba(255,215,0,0.2)',
-                                color: '#FFD700',
-                                padding: '12px 24px',
-                                borderRadius: '14px',
-                                fontWeight: 800,
-                                fontSize: '0.9rem',
+                                background: 'var(--gold-gradient)',
+                                border: 'none',
+                                color: '#000',
+                                padding: '14px 32px',
+                                borderRadius: '16px',
+                                fontWeight: 900,
+                                fontSize: '0.95rem',
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
-                                transition: 'all 0.3s ease',
+                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                                 zIndex: 1,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
-                                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                gap: '10px',
+                                boxShadow: '0 10px 20px rgba(212,175,55,0.2)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px'
                             }}
                             onMouseOver={(e) => {
                                 if (!isResending) {
-                                    e.currentTarget.style.background = 'rgba(255,215,0,0.2)';
-                                    e.currentTarget.style.boxShadow = '0 0 15px rgba(255,215,0,0.2)';
+                                    e.currentTarget.style.transform = 'translateY(-3px)';
+                                    e.currentTarget.style.boxShadow = '0 15px 30px rgba(212,175,55,0.4)';
                                 }
                             }}
                             onMouseOut={(e) => {
                                 if (!isResending) {
-                                    e.currentTarget.style.background = 'rgba(255,215,0,0.1)';
-                                    e.currentTarget.style.boxShadow = 'none';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 10px 20px rgba(212,175,55,0.2)';
                                 }
                             }}
                         >
-                            {isResending ? <Loader2 className="animate-spin" size={18} /> : t('auth.resendVerification')}
+                            {isResending ? <Loader2 className="animate-spin" size={20} /> : t('auth.resendVerification')}
                         </button>
                     </motion.div>
                 )}
@@ -895,7 +898,7 @@ function MentorDashboardContent() {
                         >
                             <ArrowRight size={18} /> {!isMobile && t('nav.home')}
                         </Link>
-                        {user.canCreateEvents !== false ? (
+                        {user.canCreateEvents !== false && (user.isEmailVerified || user.role === 'admin' || user.role === 'SuperAdmin') ? (
                             <button
                                 id="mentor-create-btn"
                                 onClick={() => setIsEventModalOpen(true)}
@@ -926,15 +929,17 @@ function MentorDashboardContent() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '0.75rem 1.5rem',
+                                padding: '0.5rem 1rem',
                                 background: '#fff5f5',
                                 border: '1px solid #fed7d7',
-                                borderRadius: '12px',
+                                borderRadius: '10px',
                                 color: '#c53030',
                                 fontWeight: 700,
-                                fontSize: '0.85rem'
+                                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                height: '40px',
+                                whiteSpace: 'nowrap'
                             }}>
-                                <Lock size={16} /> {t('dashboard.restrictedAccess')}
+                                <Lock size={16} /> {user.isEmailVerified ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

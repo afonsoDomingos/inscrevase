@@ -330,8 +330,8 @@ h6 {
 }
 
 .gold-text {
-  color: var(--primary);
-  background: var(--blue-gradient);
+  color: #D4AF37;
+  background: var(--gold-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
