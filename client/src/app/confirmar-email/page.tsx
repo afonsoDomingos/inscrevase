@@ -5,10 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { useTranslate } from '@/context/LanguageContext';
 
 function ConfirmEmailContent() {
-    const { t } = useTranslation();
+    const { t } = useTranslate();
     const searchParams = useSearchParams();
     const router = useRouter();
     const token = searchParams?.get('token');
