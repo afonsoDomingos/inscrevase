@@ -1,7 +1,6 @@
 "use client";
 
 import { useCurrency, Currency } from "@/context/CurrencyContext";
-import { useTranslate } from "@/context/LanguageContext";
 import { Coins } from 'lucide-react';
 import { useState } from 'react';
 
