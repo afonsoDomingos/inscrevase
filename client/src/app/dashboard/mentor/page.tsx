@@ -104,8 +104,8 @@ function MentorDashboardContent() {
         try {
             await authService.resendVerification();
             toast.success(t('auth.resendSuccess'));
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            toast.error((error as Error).message || 'Erro ao reenviar verificação');
         } finally {
             setIsResending(false);
         }

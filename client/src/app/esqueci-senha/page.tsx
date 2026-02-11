@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Mail, ArrowRight, CheckCircle, Loader2, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { authService } from '@/lib/authService';
@@ -26,8 +26,8 @@ export default function ForgotPasswordPage() {
             await authService.forgotPassword(email);
             setSubmitted(true);
             toast.success('E-mail enviado com sucesso!');
-        } catch (error: any) {
-            toast.error(error.message || 'Erro ao processar solicitação');
+        } catch (error: unknown) {
+            toast.error((error as Error).message || 'Erro ao processar solicitação');
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -10,7 +10,6 @@ import { useTranslate } from '@/context/LanguageContext';
 function ConfirmEmailContent() {
     const { t } = useTranslate();
     const searchParams = useSearchParams();
-    const router = useRouter();
     const token = searchParams?.get('token');
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
@@ -34,7 +33,7 @@ function ConfirmEmailContent() {
                 } else {
                     setStatus('error');
                 }
-            } catch (error) {
+            } catch {
                 setStatus('error');
             }
         };

@@ -127,8 +127,8 @@ export default function AdminDashboard() {
         try {
             const message = await authService.migrateVerifiedUsers();
             toast.success(message);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            toast.error((error as Error).message || 'Erro na migração');
         } finally {
             setIsMigrating(false);
         }
@@ -220,9 +220,7 @@ export default function AdminDashboard() {
 
     // Removed unused cards to fix lint errors
 
-    const financialCards = [
-        { label: t('dashboard.planSubscriptions'), value: showValues ? formatPrice(stats?.subscriptionRevenue || 0, 'MZN', currency) : '••••', icon: <ShieldAlert size={24} />, color: '#6366f1', tab: 'finance' },
-    ];
+
 
     const activityCards = [
         { label: t('dashboard.createdForms'), value: stats?.forms || 0, icon: <FileText size={24} />, color: '#3182ce', tab: 'forms' },

@@ -7,10 +7,8 @@ import { Lock, ArrowRight, CheckCircle, Loader2, Eye, EyeOff, XCircle } from 'lu
 import Link from 'next/link';
 import { authService } from '@/lib/authService';
 import { toast } from 'sonner';
-import { useTranslate } from '@/context/LanguageContext';
 
 function ResetPasswordContent() {
-    const { t } = useTranslate();
     const searchParams = useSearchParams();
     const router = useRouter();
     const token = searchParams?.get('token');
@@ -50,9 +48,9 @@ function ResetPasswordContent() {
             setTimeout(() => {
                 router.push('/entrar');
             }, 3000);
-        } catch (error: any) {
-            setError(error.message || 'Erro ao redefinir senha');
-            toast.error(error.message || 'Erro ao redefinir senha');
+        } catch (error: unknown) {
+            setError((error as Error).message || 'Erro ao redefinir senha');
+            toast.error((error as Error).message || 'Erro ao redefinir senha');
         } finally {
             setLoading(false);
         }
