@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
+import { authService, UserData } from '@/lib/authService';
 import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -9,8 +10,11 @@ export default function FormList() {
     const [forms, setForms] = useState<FormModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentUser, setCurrentUser] = useState<UserData | null>(null);
 
     useEffect(() => {
+        const loggedUser = authService.getCurrentUser();
+        setCurrentUser(loggedUser);
         loadForms();
     }, []);
 
@@ -154,13 +158,15 @@ export default function FormList() {
                                         >
                                             <ExternalLink size={18} />
                                         </a>
-                                        <button
-                                            onClick={() => handleToggleSponsor(form)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
-                                            title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
-                                        >
-                                            <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
-                                        </button>
+                                        {currentUser?.role === 'SuperAdmin' && (
+                                            <button
+                                                onClick={() => handleToggleSponsor(form)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
+                                                title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
+                                            >
+                                                <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => handleToggleStatus(form)}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.active ? '#888' : '#38a169' }}

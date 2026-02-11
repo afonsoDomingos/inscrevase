@@ -220,7 +220,7 @@ export default function AdminDashboard() {
         { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
         { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
-    ].filter(item => item.id !== 'finance' || user?.role === 'SuperAdmin');
+    ].filter(item => (item.id !== 'finance' && item.id !== 'ads') || user?.role === 'SuperAdmin');
 
     return (
         <div className="admin-container" style={{ position: 'relative', overflow: 'hidden' }}>
