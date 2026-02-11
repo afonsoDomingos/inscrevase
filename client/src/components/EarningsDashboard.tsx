@@ -131,7 +131,7 @@ export default function EarningsDashboard() {
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 12, fill: '#999' }}
-                                tickFormatter={(value) => `${value} MT`}
+                                tickFormatter={(value) => `${value} USD`}
                             />
                             <Tooltip
                                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
@@ -262,7 +262,7 @@ function FinanceCard({ title, value, icon, color }: { title: string, value: stri
                 <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{title}</span>
                 {icon}
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{value} <span style={{ fontSize: '0.8rem', color: '#999' }}>MT</span></div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{value} <span style={{ fontSize: '0.8rem', color: '#999' }}>USD</span></div>
         </div>
     );
 }

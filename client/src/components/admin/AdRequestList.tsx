@@ -216,7 +216,7 @@ export default function AdRequestList() {
                                         <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 shrink-0">
                                             <div className="flex flex-col">
                                                 <span className="text-xs font-bold text-gray-400 uppercase">Investimento</span>
-                                                <span className="text-lg font-black text-green-600">{formatPrice(req.priceTotal)}</span>
+                                                <span className="text-lg font-black text-green-600">{formatPrice(req.priceTotal, req.currency || 'USD')}</span>
                                             </div>
                                             <div className="w-px h-8 bg-gray-200" />
                                             <div className="flex flex-col">

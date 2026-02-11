@@ -108,7 +108,7 @@ export const financeService = {
         return response.json();
     },
 
-    async createSubscription(plan: string, currency: string = 'MZN') {
+    async createSubscription(plan: string, currency: string = 'USD') {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/stripe/subscription/create`, {
             method: 'POST',

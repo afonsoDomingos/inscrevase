@@ -37,6 +37,10 @@ const adRequestSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    currency: {
+        type: String,
+        default: 'USD'
+    },
     paymentMethod: {
         type: String,
         enum: ['stripe', 'manual'],

@@ -19,7 +19,7 @@ export default function ServicesManagement() {
         description: '',
         category: 'Consultoria',
         price: 0,
-        currency: 'MZN',
+        currency: 'USD',
         images: [],
         tags: [],
         contactInfo: {},
@@ -121,7 +121,7 @@ export default function ServicesManagement() {
             description: '',
             category: 'Consultoria',
             price: 0,
-            currency: 'MZN',
+            currency: 'USD',
             images: [],
             tags: [],
             contactInfo: {},
@@ -496,9 +496,12 @@ export default function ServicesManagement() {
                                                 color: 'var(--foreground)'
                                             }}
                                         >
-                                            <option value="MZN">MZN</option>
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
+                                            <option value="MZN">MZN</option>
+                                            <option value="AOA">AOA</option>
+                                            <option value="CVE">CVE</option>
+                                            <option value="XOF">XOF</option>
                                         </select>
                                     </div>
                                 </div>

@@ -12,6 +12,7 @@ export interface AdRequestModel {
     mediaType: 'image' | 'video';
     durationWeeks: number;
     priceTotal: number;
+    currency?: string;
     paymentMethod: 'stripe' | 'manual';
     paymentProofUrl?: string;
     status: 'pending' | 'approved' | 'rejected';

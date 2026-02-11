@@ -139,7 +139,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [paymentConfig, setPaymentConfig] = useState({
         enabled: false,
         price: 0,
-        currency: 'MT',
+        currency: 'USD',
         mpesaNumber: '',
         emolaNumber: '',
         bankAccount: '',
@@ -1124,8 +1124,12 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                 onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
                                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
                                                             >
-                                                                <option value="MT">{t('events.metical')}</option>
                                                                 <option value="USD">{t('events.dollar')}</option>
+                                                                <option value="EUR">{t('events.euro')}</option>
+                                                                <option value="MT">{t('events.metical')}</option>
+                                                                <option value="AOA">{t('events.kwanza')}</option>
+                                                                <option value="CVE">{t('events.escudo')}</option>
+                                                                <option value="XOF">{t('events.cfa')}</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -1746,10 +1750,11 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                        </div>
+                        </div >
 
                         {/* Footer Actions */}
-                        <div style={{ padding: '1.5rem 3rem', background: '#fff', borderTop: '2px solid #FFD700', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', boxShadow: '0 -4px 20px rgba(0,0,0,0.05)', zIndex: 20, flexShrink: 0 }}>
+                        < div style={{ padding: '1.5rem 3rem', background: '#fff', borderTop: '2px solid #FFD700', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', boxShadow: '0 -4px 20px rgba(0,0,0,0.05)', zIndex: 20, flexShrink: 0 }
+                        }>
                             <button
                                 onClick={handleSubmit}
                                 disabled={loading}
@@ -1758,9 +1763,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                             >
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
                             </button>
-                        </div>
-                    </div>
-                </motion.div>
+                        </div >
+                    </div >
+                </motion.div >
             </div >
         </AnimatePresence >
     );

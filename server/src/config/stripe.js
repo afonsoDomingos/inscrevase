@@ -3,7 +3,7 @@ const PLANS = {
         name: 'Gratuito',
         commissionRate: 0.15, // 15%
         price: 0,
-        currency: 'MZN'
+        currency: 'USD'
     },
     pro: {
         name: 'Profissional',

@@ -943,7 +943,7 @@ function MentorDashboardContent() {
                                 <StatCard
                                     icon={<DollarSign className="gold-text" />}
                                     label={t('dashboard.estimatedRevenue')}
-                                    value={`MT ${(stats?.revenue || 0).toLocaleString()}`}
+                                    value={`USD ${(stats?.revenue || 0).toLocaleString()}`}
                                     trend="+18%"
                                 />
                             </div>

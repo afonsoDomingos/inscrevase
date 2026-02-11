@@ -105,7 +105,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [paymentConfig, setPaymentConfig] = useState({
         enabled: false,
         price: 0,
-        currency: 'MT',
+        currency: 'USD',
         mpesaNumber: '',
         emolaNumber: '',
         bankAccount: '',
@@ -905,8 +905,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                             onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
                                                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
                                                         >
-                                                            <option value="MT">{t('events.metical')}</option>
                                                             <option value="USD">{t('events.dollar')}</option>
+                                                            <option value="EUR">{t('events.euro')}</option>
+                                                            <option value="MT">{t('events.metical')}</option>
+                                                            <option value="AOA">{t('events.kwanza')}</option>
+                                                            <option value="CVE">{t('events.escudo')}</option>
+                                                            <option value="XOF">{t('events.cfa')}</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -1246,38 +1250,40 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         </AnimatePresence>
 
                         {/* Mobile Footer Action */}
-                        {isMobile && (
-                            <div style={{
-                                position: 'fixed',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                padding: '1.25rem',
-                                background: '#fff',
-                                borderTop: '1px solid #eee',
-                                zIndex: 2005,
-                                boxShadow: '0 -4px 20px rgba(0,0,0,0.05)'
-                            }}>
-                                <button
-                                    onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
-                                    disabled={loading}
-                                    className="btn-primary"
-                                    style={{
-                                        width: '100%',
-                                        borderRadius: '14px',
-                                        padding: '1.1rem',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '10px',
-                                        fontSize: '1rem',
-                                        fontWeight: 700
-                                    }}
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
-                                </button>
-                            </div>
-                        )}
+                        {
+                            isMobile && (
+                                <div style={{
+                                    position: 'fixed',
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    padding: '1.25rem',
+                                    background: '#fff',
+                                    borderTop: '1px solid #eee',
+                                    zIndex: 2005,
+                                    boxShadow: '0 -4px 20px rgba(0,0,0,0.05)'
+                                }}>
+                                    <button
+                                        onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
+                                        disabled={loading}
+                                        className="btn-primary"
+                                        style={{
+                                            width: '100%',
+                                            borderRadius: '14px',
+                                            padding: '1.1rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '10px',
+                                            fontSize: '1rem',
+                                            fontWeight: 700
+                                        }}
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
+                                    </button>
+                                </div>
+                            )
+                        }
                     </div >
 
                     <style jsx>{`

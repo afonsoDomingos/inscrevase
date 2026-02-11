@@ -59,7 +59,7 @@ const FormSchema = new mongoose.Schema({
     paymentConfig: {
         enabled: { type: Boolean, default: false },
         price: { type: Number },
-        currency: { type: String, default: 'MT' },
+        currency: { type: String, default: 'USD' },
         mpesaNumber: { type: String }, // Keep for backward compatibility
         emolaNumber: { type: String }, // Keep for backward compatibility
         bankAccount: { type: String },

@@ -145,7 +145,7 @@ export default function AdManagement() {
                                     {/* Status Badge */}
                                     <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
                                         <span className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${ad.status === 'approved' ? 'bg-green-500 text-white' :
-                                                ad.status === 'pending' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
+                                            ad.status === 'pending' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
                                             }`}>
                                             {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
                                         </span>
@@ -193,7 +193,7 @@ export default function AdManagement() {
                                                 <ExternalLink size={16} />
                                                 <span className="text-xs font-bold uppercase tracking-wide">Investido</span>
                                             </div>
-                                            <div className="text-lg font-black text-green-900">{formatPrice(ad.priceTotal)}</div>
+                                            <div className="text-lg font-black text-green-900">{formatPrice(ad.priceTotal, ad.currency || 'USD')}</div>
                                         </div>
                                     </div>
 
@@ -203,8 +203,8 @@ export default function AdManagement() {
                                             <button
                                                 onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
                                                 className={`flex-1 p-3 rounded-xl transition-all font-bold text-sm flex items-center justify-center gap-2 ${ad.isActive
-                                                        ? 'bg-yellow-50 text-yellow-700 border-2 border-yellow-200 hover:bg-yellow-100'
-                                                        : 'bg-green-50 text-green-700 border-2 border-green-200 hover:bg-green-100'
+                                                    ? 'bg-yellow-50 text-yellow-700 border-2 border-yellow-200 hover:bg-yellow-100'
+                                                    : 'bg-green-50 text-green-700 border-2 border-green-200 hover:bg-green-100'
                                                     }`}
                                             >
                                                 {ad.isActive ? <PowerOff size={18} /> : <Power size={18} />}
@@ -236,7 +236,7 @@ export default function AdManagement() {
                                 <div className="flex gap-6 p-6 relative">
                                     {/* Status Stripe */}
                                     <div className={`absolute top-0 left-0 w-1.5 h-full ${ad.status === 'approved' ? (ad.isActive ? 'bg-gradient-to-b from-green-400 to-green-600' : 'bg-gradient-to-b from-yellow-400 to-yellow-600') :
-                                            ad.status === 'pending' ? 'bg-gradient-to-b from-blue-400 to-blue-600' : 'bg-gradient-to-b from-red-400 to-red-600'
+                                        ad.status === 'pending' ? 'bg-gradient-to-b from-blue-400 to-blue-600' : 'bg-gradient-to-b from-red-400 to-red-600'
                                         }`} />
 
                                     {/* Media Preview */}
@@ -268,8 +268,8 @@ export default function AdManagement() {
                                             </div>
                                             <div className="flex flex-col gap-2">
                                                 <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap ${ad.status === 'approved' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                                        ad.status === 'pending' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                                                            'bg-red-100 text-red-700 border border-red-200'
+                                                    ad.status === 'pending' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                                                        'bg-red-100 text-red-700 border border-red-200'
                                                     }`}>
                                                     {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
                                                 </span>
@@ -310,7 +310,7 @@ export default function AdManagement() {
                                                     <ExternalLink size={16} />
                                                     <span className="text-xs font-bold uppercase tracking-wide">Investido</span>
                                                 </div>
-                                                <div className="text-xl font-black text-green-900">{formatPrice(ad.priceTotal)}</div>
+                                                <div className="text-xl font-black text-green-900">{formatPrice(ad.priceTotal, ad.currency || 'USD')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -321,8 +321,8 @@ export default function AdManagement() {
                                             <button
                                                 onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
                                                 className={`p-3 rounded-xl transition-all hover:scale-110 ${ad.isActive
-                                                        ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100 border-2 border-yellow-200'
-                                                        : 'bg-green-50 text-green-600 hover:bg-green-100 border-2 border-green-200'
+                                                    ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100 border-2 border-yellow-200'
+                                                    : 'bg-green-50 text-green-600 hover:bg-green-100 border-2 border-green-200'
                                                     }`}
                                                 title={ad.isActive ? 'Pausar Anúncio' : 'Ativar Anúncio'}
                                             >

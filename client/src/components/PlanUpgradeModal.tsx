@@ -91,7 +91,7 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
 
                     {!manualPlan && (
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '1.5rem' }}>
-                            {['MZN', 'USD'].map((c) => (
+                            {['USD', 'MZN'].map((c) => (
                                 <button key={c} onClick={() => setCurrency(c as 'MZN' | 'USD')} style={{ padding: '8px 24px', borderRadius: '30px', border: '1px solid #eee', background: currency === c ? '#000' : '#fff', color: currency === c ? '#fff' : '#000', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s' }}>{c === 'MZN' ? 'MT' : 'USD'}</button>
                             ))}
                         </div>

@@ -42,7 +42,7 @@ export default function AdminFinance() {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
-    const [displayCurrency, setDisplayCurrency] = useState<'MZN' | 'USD'>('MZN');
+    const [displayCurrency, setDisplayCurrency] = useState<'MZN' | 'USD'>('USD');
     const [isRefreshingRate, setIsRefreshingRate] = useState(false);
 
 

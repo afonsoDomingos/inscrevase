@@ -94,24 +94,9 @@ export default function PlansPage() {
                         display: 'flex',
                         justifyContent: 'center',
                         gap: '12px',
-                        marginTop: '2.5rem'
+                        marginTop: '2.5rem',
+                        flexWrap: 'wrap'
                     }}>
-                        <button
-                            onClick={() => setCurrency('MZN')}
-                            style={{
-                                padding: '10px 30px',
-                                borderRadius: '30px',
-                                border: '1px solid #333',
-                                background: currency === 'MZN' ? 'var(--gold-gradient)' : 'transparent',
-                                color: currency === 'MZN' ? '#000' : '#fff',
-                                fontSize: '0.85rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s ease'
-                            }}
-                        >
-                            MT (Moçambique)
-                        </button>
                         <button
                             onClick={() => setCurrency('USD')}
                             style={{
@@ -128,6 +113,44 @@ export default function PlansPage() {
                         >
                             USD (Global)
                         </button>
+                        <button
+                            onClick={() => setCurrency('EUR')}
+                            style={{
+                                padding: '10px 30px',
+                                borderRadius: '30px',
+                                border: '1px solid #333',
+                                background: currency === 'EUR' ? 'var(--gold-gradient)' : 'transparent',
+                                color: currency === 'EUR' ? '#000' : '#fff',
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            EUR (Europa)
+                        </button>
+                        <select
+                            value={['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? currency : ''}
+                            onChange={(e) => e.target.value && setCurrency(e.target.value as any)}
+                            style={{
+                                padding: '10px 20px',
+                                borderRadius: '30px',
+                                border: '1px solid #333',
+                                background: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'var(--gold-gradient)' : 'transparent',
+                                color: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '#000' : '#fff',
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                outline: 'none'
+                            }}
+                        >
+                            <option value="" style={{ background: '#000', color: '#fff' }}>PALOP</option>
+                            <option value="MZN" style={{ background: '#000', color: '#fff' }}>🇲🇿 Moçambique (MT)</option>
+                            <option value="AOA" style={{ background: '#000', color: '#fff' }}>🇦🇴 Angola (Kz)</option>
+                            <option value="CVE" style={{ background: '#000', color: '#fff' }}>🇨🇻 Cabo Verde (Esc)</option>
+                            <option value="XOF" style={{ background: '#000', color: '#fff' }}>🇬🇼 Guiné-Bissau (CFA)</option>
+                        </select>
                     </div>
                 </motion.div>
             </section>

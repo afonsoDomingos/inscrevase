@@ -1,4 +1,7 @@
 const AdRequest = require('../models/AdRequest');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
+const sendEmail = require('../utils/emailService');
 
 // Submit a new ad request
 exports.submitAdRequest = async (req, res) => {
@@ -92,6 +95,35 @@ exports.updateAdStatus = async (req, res) => {
         }
 
         await ad.save();
+
+        // Notify User
+        try {
+            const adminSender = await User.findOne({ role: 'admin' });
+            if (adminSender) {
+                const statusText = status === 'approved' ? 'aprovado' : 'rejeitado';
+                const title = `Atualização do Anúncio: ${ad.title}`;
+                const content = `Olá! Seu anúncio "${ad.title}" foi ${statusText} pela nossa equipe. ${status === 'approved' ? 'Ele já está ativo.' : 'Verifique as diretrizes e tente novamente.'}`;
+
+                // In-app Logic
+                await Notification.create({
+                    recipient: ad.userId,
+                    sender: adminSender._id,
+                    title,
+                    content,
+                    type: 'system',
+                    actionUrl: '/dashboard/mentor'
+                });
+
+                // Email Logic
+                const user = await User.findById(ad.userId);
+                if (user && user.email) {
+                    await sendEmail(user.email, title, `<div style="font-family: sans-serif; padding: 20px;"><h2>${title}</h2><p>${content}</p><br><p>Equipe Inscreva-se</p></div>`);
+                }
+            }
+        } catch (notifyError) {
+            console.error('⚠️ [AdController] Error sending notification:', notifyError);
+            // Don't block response
+        }
 
         console.log(`✅ [AdController] Ad ${id} status updated to ${status}`);
         res.json(ad);

@@ -11,6 +11,7 @@ export default function FormList() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData | null>(null);
+    const [alertMessage, setAlertMessage] = useState<{ title: string; message: string; type: 'error' | 'success' } | null>(null);
 
     useEffect(() => {
         const loggedUser = authService.getCurrentUser();
@@ -44,7 +45,11 @@ export default function FormList() {
         if (currentUser?.role !== 'SuperAdmin' && !form.isSponsored) {
             const sponsoredCount = forms.filter(f => f.isSponsored).length;
             if (sponsoredCount >= 4) {
-                alert('Limite atingido! Administradores podem promover no máximo 4 eventos simultaneamente. Remova o destaque de outro evento para continuar.');
+                setAlertMessage({
+                    title: 'Limite Atingido',
+                    message: 'Você pode promover no máximo 4 eventos simultaneamente. Remova o destaque de outro evento para continuar.',
+                    type: 'error'
+                });
                 return;
             }
         }
@@ -259,6 +264,72 @@ export default function FormList() {
                             Próximo
                         </button>
                     </div>
+                </div>
+            )}
+
+            {/* Custom Alert Modal */}
+            {alertMessage && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 3000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.5)',
+                    backdropFilter: 'blur(4px)'
+                }} onClick={() => setAlertMessage(null)}>
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="luxury-card"
+                        style={{
+                            background: '#fff',
+                            padding: '2rem',
+                            maxWidth: '400px',
+                            textAlign: 'center',
+                            borderRadius: '20px',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
+                            border: '1px solid #fed7d7'
+                        }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div style={{
+                            width: '60px',
+                            height: '60px',
+                            background: '#fff5f5',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 1.5rem',
+                            color: '#e53e3e'
+                        }}>
+                            <Zap size={30} />
+                        </div>
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.8rem', color: '#1a1a1a' }}>
+                            {alertMessage.title}
+                        </h3>
+                        <p style={{ color: '#666', lineHeight: 1.6, marginBottom: '2rem' }}>
+                            {alertMessage.message}
+                        </p>
+                        <button
+                            onClick={() => setAlertMessage(null)}
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
+                                background: '#1a1a1a',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '12px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            Entendido
+                        </button>
+                    </motion.div>
                 </div>
             )}
         </div>

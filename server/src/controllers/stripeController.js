@@ -573,7 +573,7 @@ exports.refundPayment = async (req, res) => {
 
 exports.createSubscription = async (req, res) => {
     try {
-        const { plan, currency = 'MZN' } = req.body;
+        const { plan, currency = 'USD' } = req.body;
         const user = await User.findById(req.user.id);
 
         const planConfig = PLANS[plan];
@@ -778,7 +778,7 @@ exports.deleteTransaction = async (req, res) => {
 
 exports.submitManualSubscription = async (req, res) => {
     try {
-        const { plan, amount, proofUrl, currency = 'MZN' } = req.body;
+        const { plan, amount, proofUrl, currency = 'USD' } = req.body;
         const userId = req.user.id;
         const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 

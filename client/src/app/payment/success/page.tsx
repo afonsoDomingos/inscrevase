@@ -38,7 +38,7 @@ function SuccessContent() {
                     if (typeof window !== 'undefined' && window.fbq) {
                         window.fbq('track', 'Purchase', {
                             value: data.amount,
-                            currency: data.currency || 'MZN',
+                            currency: data.currency || 'USD',
                             content_name: 'Event Registration',
                             content_ids: [data.submission],
                             content_type: 'product'

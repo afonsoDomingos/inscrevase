@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FormModel } from '@/lib/formService';
 
-const PRICING_PER_WEEK = 250; // MT
+const PRICING_PER_WEEK = 5; // USD
 
 export default function AnunciarPage() {
     const router = useRouter();
@@ -414,7 +414,7 @@ export default function AnunciarPage() {
                                                 </div>
                                                 <div style={{ marginTop: '1rem', background: '#fdf8e6', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                     <Info size={16} color="#B8860B" />
-                                                    <span style={{ fontSize: '0.8rem', color: '#B8860B', fontWeight: 600 }}>Total: {formatPrice(form.durationWeeks * PRICING_PER_WEEK)}</span>
+                                                    <span style={{ fontSize: '0.8rem', color: '#B8860B', fontWeight: 600 }}>Total: {formatPrice(form.durationWeeks * PRICING_PER_WEEK, 'USD')}</span>
                                                 </div>
                                             </div>
 
@@ -513,7 +513,7 @@ export default function AnunciarPage() {
                                                 disabled={isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)}
                                                 style={{ padding: '1.2rem', background: 'var(--gold-gradient)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: 800, cursor: 'pointer', opacity: (isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)) ? 0.5 : 1 }}
                                             >
-                                                {isSubmitting ? 'Enviando...' : `Pagar ${formatPrice(form.priceTotal)}`}
+                                                {isSubmitting ? 'Enviando...' : `Pagar ${formatPrice(form.priceTotal, 'USD')}`}
                                             </button>
 
                                             <button onClick={() => setStep(2)} style={{ padding: '1rem', background: 'transparent', color: '#888', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>

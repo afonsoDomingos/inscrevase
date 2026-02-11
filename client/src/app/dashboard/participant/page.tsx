@@ -950,7 +950,7 @@ export default function ParticipantDashboard() {
                                                 <p style={{ margin: 0, fontWeight: 700, textTransform: 'capitalize' }}>{user.role === 'mentor' ? t('dashboard.mentor') : t('dashboard.visitor')}</p>
                                             </div>
                                             <div style={{ display: 'flex', gap: '4px' }}>
-                                                {['MZN', 'USD'].map(c => (
+                                                {['USD', 'MZN'].map(c => (
                                                     <button key={c} onClick={() => setCurrency(c as 'MZN' | 'USD')} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', background: currency === c ? '#000' : '#fff', color: currency === c ? '#fff' : '#000', fontSize: '0.6rem', fontWeight: 800 }}>{c === 'MZN' ? 'MT' : 'USD'}</button>
                                                 ))}
                                             </div>

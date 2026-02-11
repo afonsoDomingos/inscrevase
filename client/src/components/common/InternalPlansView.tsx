@@ -106,7 +106,7 @@ export default function InternalPlansView() {
                 )}
 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                    {['MZN', 'USD'].map((c) => (
+                    {['USD', 'MZN'].map((c) => (
                         <button
                             key={c}
                             onClick={() => setCurrency(c as 'MZN' | 'USD')}
