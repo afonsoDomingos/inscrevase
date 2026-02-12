@@ -1,11 +1,36 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Users, Target, Rocket, Heart, Globe, Award, CheckCircle, Zap } from 'lucide-react';
+import { statsService } from '@/lib/statsService';
+import Typewriter from '@/components/common/Typewriter';
 
 export default function SobreNos() {
+    const [platformStats, setPlatformStats] = useState({
+        totalEvents: 10000,
+        totalParticipants: 50000,
+        totalMentors: 500,
+        totalCountries: 4
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            const data = await statsService.getPlatformStats();
+            if (data) {
+                setPlatformStats({
+                    totalEvents: data.totalEvents || 10000,
+                    totalParticipants: data.totalParticipants || 50000,
+                    totalMentors: data.totalMentors || 500,
+                    totalCountries: data.totalCountries || 4
+                });
+            }
+        };
+        fetchStats();
+    }, []);
+
     const values = [
         {
             icon: <Heart size={28} />,
@@ -30,10 +55,10 @@ export default function SobreNos() {
     ];
 
     const stats = [
-        { number: "10.000+", label: "Eventos Criados" },
-        { number: "50.000+", label: "Participantes" },
-        { number: "500+", label: "Mentores Ativos" },
-        { number: "4", label: "Países" }
+        { number: `${(platformStats.totalEvents / 1000).toFixed(0)}k+`, label: "Eventos Criados" },
+        { number: `${(platformStats.totalParticipants / 1000).toFixed(0)}k+`, label: "Participantes" },
+        { number: `${platformStats.totalMentors}+`, label: "Mentores Ativos" },
+        { number: platformStats.totalCountries.toString(), label: "Países" }
     ];
 
     const team = [
@@ -115,17 +140,24 @@ export default function SobreNos() {
                         }}>Inscreva-se</span>
                     </h1>
 
-                    <p style={{
+                    <div style={{
                         fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
                         color: 'rgba(255,255,255,0.9)',
-                        maxWidth: '700px',
+                        maxWidth: '800px',
                         margin: '0 auto',
                         lineHeight: 1.7,
-                        textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                        textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                        minHeight: '4.5rem'
                     }}>
-                        Somos a plataforma que está a revolucionar a forma como eventos são criados,
-                        geridos e vivenciados em toda a comunidade lusófona.
-                    </p>
+                        <Typewriter
+                            text="Plataforma completa para criar e gerenciar eventos."
+                            duration={3}
+                        />
+                        <div style={{ fontSize: '0.85em', opacity: 0.8, marginTop: '10px' }}>
+                            Somos a plataforma que está a revolucionar a forma como eventos são criados,
+                            geridos e vivenciados em toda a comunidade lusófona.
+                        </div>
+                    </div>
                 </motion.div>
             </section>
 
