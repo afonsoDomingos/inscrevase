@@ -12,10 +12,14 @@ import { useTranslate } from '@/context/LanguageContext';
 import { Suspense } from 'react';
 
 const BACKGROUND_IMAGES = [
-    "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2012&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1511578334221-d3033bc853b1?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=2070&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=2070",
+    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069",
+    "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2012",
+    "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098",
+    "https://images.unsplash.com/photo-1511578334221-d3033bc853b1?q=80&w=2070",
+    "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=2070",
+    "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=2070",
+    "https://images.unsplash.com/photo-1551818255-e6e10975bc17?q=80&w=2070"
 ];
 
 export default function Login() {
@@ -34,15 +38,23 @@ function LoginContent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [shuffledImages, setShuffledImages] = useState<string[]>([]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    useEffect(() => {
+        // Simple shuffle to "mix" images
+        const shuffled = [...BACKGROUND_IMAGES].sort(() => Math.random() - 0.5);
+        setShuffledImages(shuffled);
+    }, []);
     const router = useRouter();
 
     useEffect(() => {
+        if (shuffledImages.length === 0) return;
         const timer = setInterval(() => {
-            setCurrentImageIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
+            setCurrentImageIndex((prev) => (prev + 1) % shuffledImages.length);
         }, 5000);
         return () => clearInterval(timer);
-    }, []);
+    }, [shuffledImages]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,22 +96,24 @@ function LoginContent() {
                 overflow: 'hidden'
             }}>
                 <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentImageIndex}
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 1.5, ease: "easeInOut" }}
-                        style={{ position: 'absolute', inset: 0 }}
-                    >
-                        <Image
-                            src={BACKGROUND_IMAGES[currentImageIndex]}
-                            alt="Event background"
-                            fill
-                            style={{ objectFit: 'cover', filter: 'brightness(0.5)' }}
-                            priority
-                        />
-                    </motion.div>
+                    {shuffledImages.length > 0 && (
+                        <motion.div
+                            key={currentImageIndex}
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                            style={{ position: 'absolute', inset: 0 }}
+                        >
+                            <Image
+                                src={shuffledImages[currentImageIndex]}
+                                alt="Event background"
+                                fill
+                                style={{ objectFit: 'cover', filter: 'brightness(0.5)' }}
+                                priority
+                            />
+                        </motion.div>
+                    )}
                 </AnimatePresence>
 
                 <div style={{
