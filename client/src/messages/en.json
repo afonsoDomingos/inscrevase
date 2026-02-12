@@ -189,7 +189,58 @@
         "confirmEmailCTA": "Confirm Email",
         "verifying": "Verifying your email...",
         "forgotPasswordText": "Forgot your password?",
-        "sendRequest": "Send Recovery Link"
+        "sendRequest": "Send Recovery Link",
+        "roles": {
+            "mentor": {
+                "title": "Mentor",
+                "brief": "Create and manage your own events and training.",
+                "description": "As a Mentor, you have the power to transform your knowledge into profitable or informative events. You are the protagonist of the organization.",
+                "whenToChoose": "Choose this role if you want to sell tickets, manage registrations, issue certificates, and have a complete control panel over your events.",
+                "features": [
+                    "Unlimited event creation",
+                    "Full registrant management",
+                    "Receive global payments",
+                    "Automatic certificate issuance",
+                    "Analytics and sales reports"
+                ]
+            },
+            "participant": {
+                "title": "Participant",
+                "brief": "Register for events and access your certificates.",
+                "description": "The Participant focuses on learning and connecting. It is the ideal profile for those seeking growth through workshops, courses, and mentorships.",
+                "whenToChoose": "Choose this role if your main goal is to participate in events organized by others and manage your learning history.",
+                "features": [
+                    "Quick event registration",
+                    "Access to exclusive materials",
+                    "Download participation certificates",
+                    "Panel with event history"
+                ]
+            },
+            "company": {
+                "title": "Company",
+                "brief": "Promote your business and create corporate connections.",
+                "description": "Profile aimed at organizations that want to manage multiple corporate events or promote their brand to a qualified audience.",
+                "whenToChoose": "Ideal for HR, Marketing, or directors looking to organize events on behalf of a legal entity or seek strategic partnerships.",
+                "features": [
+                    "Customized institutional profile",
+                    "Management of multiple organizers",
+                    "Brand highlights in partner events",
+                    "Consolidated reports for companies"
+                ]
+            },
+            "specialist": {
+                "title": "Specialist",
+                "brief": "Collaborate in events with your technical knowledge.",
+                "description": "The Specialist is the technical right hand. Recognized for their expertise and frequently invited to collaborate in mentorships and courses.",
+                "whenToChoose": "Choose this role if you act as a speaker or niche instructor and want to be found by Mentors and Companies for partnerships.",
+                "features": [
+                    "Verified Specialist Badge",
+                    "Co-organization tools",
+                    "Technical highlights in partner events",
+                    "Networking with major mentors"
+                ]
+            }
+        }
     },
     "dashboard": {
         "overview": "Overview",
@@ -210,6 +261,7 @@
         "account": "account",
         "restrictedAccess": "Restricted Access",
         "emailUnverified": "Email not verified",
+        "rolesHeader": "Official {role}",
         "notifications": "Notifications",
         "discoverPlatform": "DISCOVER OUR PLATFORM",
         "adminDashboard": "Admin Dashboard",
@@ -391,7 +443,7 @@
                 },
                 "users": {
                     "title": "User Management",
-                    "desc": "Manage mentors, students, and admins. Access detailed profiles and control permissions."
+                    "desc": "Manage mentors, participants, and admins. Access detailed profiles and control permissions."
                 },
                 "comm": {
                     "title": "Mass Communication",
@@ -597,7 +649,7 @@
         "namePlaceholder": "Ex: Sales Masterclass",
         "capacityLabel": "Registrant Goal (Optional)",
         "capacityHelp": "Set a goal to track registration progress.",
-        "descriptionPlaceholder": "Describe what students will learn...",
+        "descriptionPlaceholder": "Describe what participants will learn...",
         "coverImageLabel": "Cover Image (Optional)",
         "coverImageHelp": "Click to upload image (1200x600)",
         "addField": "Add Field",
@@ -627,7 +679,7 @@
         "currencyLabel": "Currency",
         "paymentInstructions": "Payment Instructions",
         "requireProof": "Require payment proof on registration?",
-        "whatsappHelp": "After registration, the student will be redirected to your WhatsApp for direct contact.",
+        "whatsappHelp": "After registration, the participant will be redirected to your WhatsApp for direct contact.",
         "whatsappNumber": "Your WhatsApp Number",
         "whatsappNumberPlaceholder": "Ex: 258840000000",
         "whatsappMessage": "Automatic Message",
@@ -755,7 +807,7 @@
             "progress": "Progress",
             "viewProgress": "View Progress",
             "approveToViewProgress": "Approve registration to view progress",
-            "studentProgressError": "Error fetching student progress"
+            "studentProgressError": "Error fetching participant progress"
         },
         "theme": {
             "title": "Customize Appearance",

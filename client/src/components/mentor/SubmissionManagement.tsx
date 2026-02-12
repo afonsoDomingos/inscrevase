@@ -1147,7 +1147,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                 <div style={{ padding: '2rem', background: '#0a0a0a', color: '#fff' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <div>
-                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Acompanhamento de Aluno</h3>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Acompanhamento de Participante</h3>
                                             <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>{getMainIdentifier(paginatedSubmissions.find(s => s._id === studentProgress.submissionId)?.data || {})}</p>
                                         </div>
                                         <button onClick={() => setStudentProgress(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>

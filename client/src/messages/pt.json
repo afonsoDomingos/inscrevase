@@ -194,6 +194,58 @@
         "checkSpam": "Não recebeu? Verifique a pasta de spam ou clique abaixo para reenviar.",
         "confirmEmailCTA": "Confirmar E-mail",
         "verifying": "Verificando seu e-mail...",
+        "passwordText": "Sua senha deve ter pelo menos 6 caracteres",
+        "roles": {
+            "mentor": {
+                "title": "Mentor",
+                "brief": "Crie e gerencie seus próprios eventos e treinamentos.",
+                "description": "Como Mentor, você tem o poder de transformar seu conhecimento em eventos lucrativos ou informativos. Você é o protagonista da organização.",
+                "whenToChoose": "Escolha este papel se você deseja vender ingressos, gerenciar inscrições, emitir certificados e ter um painel completo de controle sobre seus eventos.",
+                "features": [
+                    "Criação de eventos ilimitados",
+                    "Gestão completa de inscritos",
+                    "Recebimento de pagamentos globais",
+                    "Emissão automática de certificados",
+                    "Analytics e relatórios de vendas"
+                ]
+            },
+            "participant": {
+                "title": "Participante",
+                "brief": "Inscreva-se em eventos e acesse seus certificados.",
+                "description": "O Participante foca em aprender e se conectar. É o perfil ideal para quem busca crescimento através de workshops, cursos e mentorias.",
+                "whenToChoose": "Escolha este papel se o seu objetivo principal é participar de eventos organizados por outros e gerenciar seu histórico de aprendizado.",
+                "features": [
+                    "Inscrição rápida em eventos",
+                    "Acesso a materiais exclusivos",
+                    "Download de certificados de participação",
+                    "Painel com histórico de eventos"
+                ]
+            },
+            "company": {
+                "title": "Empresa",
+                "brief": "Promova seu negócio e crie conexões corporativas.",
+                "description": "Perfil voltado para organizações que desejam gerenciar múltiplos eventos corporativos ou promover sua marca para uma audiência qualificada.",
+                "whenToChoose": "Ideal para HR, Marketing ou diretores que buscam organizar eventos em nome de uma entidade jurídica ou buscar parcerias estratégicas.",
+                "features": [
+                    "Perfil institucional personalizado",
+                    "Gestão de múltiplos organizadores",
+                    "Destaque de marca em eventos parceiros",
+                    "Relatórios consolidados para empresas"
+                ]
+            },
+            "specialist": {
+                "title": "Especialista",
+                "brief": "Colabore em eventos com seu conhecimento técnico.",
+                "description": "O Especialista é o braço direito técnico. É reconhecido por sua expertise e frequentemente convidado para colaborar em mentorias e cursos.",
+                "whenToChoose": "Escolha este papel se você atua como palestrante ou instrutor de nicho e deseja ser encontrado por Mentores e Empresas para parcerias.",
+                "features": [
+                    "Selo de Especialista Verificado",
+                    "Ferramentas de co-organização",
+                    "Destaque técnico em eventos parceiros",
+                    "Rede de conexões com grandes mentores"
+                ]
+            }
+        },
         "forgotPasswordText": "Esqueceu sua senha?",
         "sendRequest": "Enviar Link de Recuperação"
     },
@@ -398,7 +450,7 @@
                 },
                 "users": {
                     "title": "Gestão de Usuários",
-                    "desc": "Gerencie mentores, alunos e admins. Acesse perfis detalhados e controle permissões."
+                    "desc": "Gerencie mentores, participantes e admins. Acesse perfis detalhados e controle permissões."
                 },
                 "comm": {
                     "title": "Comunicação em Massa",
@@ -613,7 +665,7 @@
         "capacityHelp": "Defina um objetivo para acompanhar o progresso das inscrições.",
         "extraCapacityLabel": "Vagas Extras (Opcional)",
         "extraCapacityHelp": "Liberadas automaticamente quando a meta de inscritos for atingida.",
-        "descriptionPlaceholder": "Descreva o que os alunos vão aprender...",
+        "descriptionPlaceholder": "Descreva o que os participantes vão aprender...",
         "coverImageLabel": "Imagem de Capa (Opcional)",
         "coverImageHelp": "Clique para subir imagem (1200x600)",
         "addField": "Adicionar Campo",
@@ -643,7 +695,7 @@
         "currencyLabel": "Moeda",
         "paymentInstructions": "Instruções de Pagamento",
         "requireProof": "Exigir comprovativo de pagamento na inscrição?",
-        "whatsappHelp": "Após a inscrição, o aluno será redirecionado para o seu WhatsApp para facilitar o contato direto.",
+        "whatsappHelp": "Após a inscrição, o participante será redirecionado para o seu WhatsApp para facilitar o contato direto.",
         "whatsappNumber": "Seu Número WhatsApp",
         "whatsappNumberPlaceholder": "Ex: 258840000000",
         "whatsappMessage": "Mensagem Automática",
@@ -775,7 +827,7 @@
             "progress": "Progresso",
             "viewProgress": "Ver progresso das aulas",
             "approveToViewProgress": "Aprovar inscrição para ver progresso",
-            "studentProgressError": "Erro ao buscar progresso do aluno"
+            "studentProgressError": "Erro ao buscar progresso do participante"
         },
         "theme": {
             "title": "Personalizar Aparência",
@@ -1146,7 +1198,7 @@
         },
         "advisory": {
             "title": "Dica para o seu sucesso",
-            "introVideo": "Recomendamos que crie no mínimo um vídeo de introdução para o seu perfil ou aulas. Isso ajuda os alunos a conectarem-se melhor com você!"
+            "introVideo": "Recomendamos que crie no mínimo um vídeo de introdução para o seu perfil ou aulas. Isso ajuda os participantes a conectarem-se melhor com você!"
         }
     },
     "updates": {
@@ -1194,7 +1246,7 @@
         },
         "socialProof": {
             "impact": "Impacto na Comunidade",
-            "students": "Alunos Inscritos",
+            "students": "Participantes Inscritos",
             "mentors": "Especialistas Formados",
             "eventsCreated": "Eventos Realizados",
             "totalImpact": "Pessoas Transformadas"
@@ -1219,7 +1271,7 @@
         },
         "wallOfLove": {
             "title": "Voz de quem Inspira",
-            "subtitle": "O que nossos experts e alunos estão dizendo sobre a nova era da Inscreva-se."
+            "subtitle": "O que nossos experts e participantes estão dizendo sobre a nova era da Inscreva-se."
         }
     }
 }

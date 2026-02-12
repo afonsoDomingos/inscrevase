@@ -11,7 +11,7 @@ const translations = { pt, en };
 
 interface LanguageContextType {
     locale: Locale;
-    t: (key: string, variables?: Record<string, string | number>) => string;
+    t: (key: string, variables?: Record<string, string | number>, options?: { returnObjects?: boolean }) => any;
     setLocale: (locale: Locale) => void;
 }
 
@@ -32,7 +32,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         Cookies.set('NEXT_LOCALE', newLocale, { expires: 365 });
     };
 
-    const t = (path: string, variables?: Record<string, string | number>) => {
+    const t = (path: string, variables?: Record<string, string | number>, options?: { returnObjects?: boolean }) => {
         const keys = path.split('.');
 
         const getNestedValue = (obj: unknown, keysArray: string[]): unknown => {
@@ -55,6 +55,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
         if (value === undefined) {
             return path;
+        }
+
+        // Return raw object/array if requested
+        if (options?.returnObjects) {
+            return value;
         }
 
         if (typeof value === 'string' && variables) {

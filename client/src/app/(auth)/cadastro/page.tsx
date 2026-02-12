@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Search, Check, Award } from 'lucide-react';
+import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Search, Check, Award, HelpCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -78,6 +78,143 @@ function RegisterContent() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [focusedField, setFocusedField] = useState<string | null>(null);
+
+    // Role Info State
+    const [showRoleInfo, setShowRoleInfo] = useState<string | null>(null);
+
+    interface RoleInfo {
+        title: string;
+        description: string;
+        whenToChoose: string;
+        features: string[];
+    }
+
+    const roleInfo: Record<string, RoleInfo> = {
+        mentor: {
+            title: String(t('auth.roles.mentor.title')),
+            description: String(t('auth.roles.mentor.description')),
+            whenToChoose: String(t('auth.roles.mentor.whenToChoose')),
+            features: (t('auth.roles.mentor.features', undefined, { returnObjects: true }) || []) as string[]
+        },
+        participant: {
+            title: String(t('auth.roles.participant.title')),
+            description: String(t('auth.roles.participant.description')),
+            whenToChoose: String(t('auth.roles.participant.whenToChoose')),
+            features: (t('auth.roles.participant.features', undefined, { returnObjects: true }) || []) as string[]
+        },
+        company: {
+            title: String(t('auth.roles.company.title')),
+            description: String(t('auth.roles.company.description')),
+            whenToChoose: String(t('auth.roles.company.whenToChoose')),
+            features: (t('auth.roles.company.features', undefined, { returnObjects: true }) || []) as string[]
+        },
+        specialist: {
+            title: String(t('auth.roles.specialist.title')),
+            description: String(t('auth.roles.specialist.description')),
+            whenToChoose: String(t('auth.roles.specialist.whenToChoose')),
+            features: (t('auth.roles.specialist.features', undefined, { returnObjects: true }) || []) as string[]
+        }
+    };
+
+    const RoleDetailModal = ({ role }: { role: string }) => {
+        const info = roleInfo[role as keyof typeof roleInfo];
+        if (!info) return null;
+
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.85)',
+                    backdropFilter: 'blur(8px)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1.5rem'
+                }}
+                onClick={() => setShowRoleInfo(null)}
+            >
+                <motion.div
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    style={{
+                        background: '#1a1a1a',
+                        width: '100%',
+                        maxWidth: '500px',
+                        borderRadius: '24px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        padding: '2rem',
+                        position: 'relative',
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                    }}
+                    onClick={e => e.stopPropagation()}
+                >
+                    <button
+                        onClick={() => setShowRoleInfo(null)}
+                        style={{
+                            position: 'absolute',
+                            top: '1.5rem',
+                            right: '1.5rem',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: 'none',
+                            borderRadius: '50%',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            color: '#888'
+                        }}
+                    >
+                        <X size={20} />
+                    </button>
+
+                    <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)' }}>
+                        <span className="gold-text">{info.title}</span>
+                    </h3>
+
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <h4 style={{ color: '#D4AF37', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>O que significa?</h4>
+                        <p style={{ color: '#ccc', lineHeight: 1.6, fontSize: '0.95rem' }}>{info.description}</p>
+                    </div>
+
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <h4 style={{ color: '#D4AF37', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Quando escolher?</h4>
+                        <p style={{ color: '#ccc', lineHeight: 1.6, fontSize: '0.95rem' }}>{info.whenToChoose}</p>
+                    </div>
+
+                    <div>
+                        <h4 style={{ color: '#D4AF37', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Funcionalidades:</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+                            {Array.isArray(info.features) ? info.features.map((feature, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#fff', fontSize: '0.9rem' }}>
+                                    <Check size={14} color="#D4AF37" /> {feature}
+                                </div>
+                            )) : null}
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => setShowRoleInfo(null)}
+                        style={{
+                            width: '100%',
+                            marginTop: '2rem',
+                            padding: '1rem',
+                            background: 'var(--gold-gradient)',
+                            border: 'none',
+                            borderRadius: '12px',
+                            color: '#000',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Entendi, continuar cadastro
+                    </button>
+                </motion.div>
+            </motion.div>
+        );
+    };
 
     // Country Search State
     const [showCountryPicker, setShowCountryPicker] = useState(false);
@@ -165,6 +302,10 @@ function RegisterContent() {
                 justifyContent: 'center'
             }}
         >
+            <AnimatePresence>
+                {showRoleInfo && <RoleDetailModal role={showRoleInfo} />}
+            </AnimatePresence>
+
             <div style={{ display: 'flex', marginBottom: '1.2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <Link href="/entrar" style={{ flex: 1, padding: '8px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', textDecoration: 'none', transition: 'color 0.2s' }}>
                     <LogIn size={14} /> {t('auth.signIn')}
@@ -190,9 +331,19 @@ function RegisterContent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        position: 'relative'
                     }}
                 >
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('mentor'); }}
+                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
+                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
+                    >
+                        <HelpCircle size={10} /> Saiba mais
+                    </button>
                     <Briefcase size={20} color={formData.role === 'mentor' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
                     <span style={{ color: formData.role === 'mentor' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Mentor</span>
                     <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Criar eventos</span>
@@ -211,11 +362,21 @@ function RegisterContent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        position: 'relative'
                     }}
                 >
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('participant'); }}
+                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
+                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
+                    >
+                        <HelpCircle size={10} /> Saiba mais
+                    </button>
                     <User size={20} color={formData.role === 'participant' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
-                    <span style={{ color: formData.role === 'participant' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Aluno</span>
+                    <span style={{ color: formData.role === 'participant' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Participante</span>
                     <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Aprender</span>
                 </div>
 
@@ -232,9 +393,19 @@ function RegisterContent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        position: 'relative'
                     }}
                 >
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('company'); }}
+                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
+                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
+                    >
+                        <HelpCircle size={10} /> Saiba mais
+                    </button>
                     <Briefcase size={20} color={formData.role === 'company' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
                     <span style={{ color: formData.role === 'company' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Empresa</span>
                     <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Divulgar</span>
@@ -253,9 +424,19 @@ function RegisterContent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        position: 'relative'
                     }}
                 >
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('specialist'); }}
+                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
+                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
+                    >
+                        <HelpCircle size={10} /> Saiba mais
+                    </button>
                     <Award size={20} color={formData.role === 'specialist' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
                     <span style={{ color: formData.role === 'specialist' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Especialista</span>
                     <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Ensinar</span>
@@ -473,7 +654,7 @@ function RegisterContent() {
                 {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: '#FFD700', fontWeight: 600, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
             </p>
 
-            <style jsx global>{`
+            <style>{`
                 .country-option:hover { background: #333 !important; color: var(--primary) !important; }
                 .input-luxury { width: 100%; border-radius: 8px; outline: none; transition: 0.3s; }
             `}</style>
