@@ -641,14 +641,14 @@ function MentorDashboardContent() {
                         style={{
                             background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                             border: '1px solid rgba(255, 215, 0, 0.3)',
-                            borderRadius: '24px',
-                            padding: '30px',
-                            marginBottom: '40px',
+                            borderRadius: isMobile ? '16px' : '24px',
+                            padding: isMobile ? '16px' : '30px',
+                            marginBottom: isMobile ? '20px' : '40px',
                             display: 'flex',
                             flexDirection: isMobile ? 'column' : 'row',
                             alignItems: isMobile ? 'flex-start' : 'center',
                             justifyContent: 'space-between',
-                            gap: '24px',
+                            gap: isMobile ? '12px' : '24px',
                             boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.05)',
                             position: 'relative',
                             overflow: 'hidden'
@@ -669,23 +669,24 @@ function MentorDashboardContent() {
                             }}
                         />
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', zIndex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '24px', zIndex: 1 }}>
                             <div style={{
                                 background: 'var(--gold-gradient)',
-                                padding: '14px',
-                                borderRadius: '18px',
+                                padding: isMobile ? '10px' : '14px',
+                                borderRadius: isMobile ? '12px' : '18px',
                                 boxShadow: '0 0 20px rgba(212,175,55,0.4)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                flexShrink: 0
                             }}>
-                                <AlertTriangle color="#000" size={32} />
+                                <AlertTriangle color="#000" size={isMobile ? 20 : 32} />
                             </div>
                             <div>
-                                <h4 style={{ color: '#FFD700', margin: 0, fontWeight: 900, fontSize: '1.4rem', fontFamily: 'var(--font-playfair)', letterSpacing: '0.5px' }}>
+                                <h4 style={{ color: '#FFD700', margin: 0, fontWeight: 900, fontSize: isMobile ? '1rem' : '1.4rem', fontFamily: 'var(--font-playfair)', letterSpacing: '0.5px' }}>
                                     {t('auth.verifyEmailTitle')}
                                 </h4>
-                                <p style={{ color: 'rgba(255,255,255,0.8)', margin: '10px 0 0 0', fontSize: '1.05rem', maxWidth: '700px', lineHeight: 1.6, fontWeight: 500 }}>
+                                <p style={{ color: 'rgba(255,255,255,0.8)', margin: isMobile ? '6px 0 0 0' : '10px 0 0 0', fontSize: isMobile ? '0.85rem' : '1.05rem', maxWidth: '700px', lineHeight: 1.6, fontWeight: 500 }}>
                                     {t('auth.unverifiedNotice')}
                                 </p>
                             </div>
@@ -697,10 +698,10 @@ function MentorDashboardContent() {
                                 background: 'var(--gold-gradient)',
                                 border: 'none',
                                 color: '#000',
-                                padding: '14px 32px',
-                                borderRadius: '16px',
+                                padding: isMobile ? '10px 20px' : '14px 32px',
+                                borderRadius: isMobile ? '12px' : '16px',
                                 fontWeight: 900,
-                                fontSize: '0.95rem',
+                                fontSize: isMobile ? '0.8rem' : '0.95rem',
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
