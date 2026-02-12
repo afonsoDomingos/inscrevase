@@ -190,7 +190,7 @@
         "verifyEmailError": "Erro ao confirmar e-mail. Token inválido ou expirado.",
         "resendVerification": "Reenviar link de confirmação",
         "resendSuccess": "E-mail de verificação enviado!",
-        "unverifiedNotice": "Sua conta está quase pronta! Por favor, confirme seu e-mail para desbloquear todas as funcionalidades (criar eventos e gerir pagamentos).",
+        "unverifiedNotice": "Confirme seu e-mail para desbloquear todas as funcionalidades de criar e gerir pagamentos.",
         "checkSpam": "Não recebeu? Verifique a pasta de spam ou clique abaixo para reenviar.",
         "confirmEmailCTA": "Confirmar E-mail",
         "verifying": "Verificando seu e-mail..."

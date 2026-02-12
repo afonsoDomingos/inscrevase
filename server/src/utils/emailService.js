@@ -1,28 +1,28 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const sendEmail = async (to, subject, html) => {
     try {
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-            console.warn('⚠️ [EmailService] Credentials not found. Email skipped.');
+        // Check if Resend API key is configured
+        if (!process.env.RESEND_API_KEY) {
+            console.warn('⚠️ [EmailService] RESEND_API_KEY not found. Email skipped.');
             return false;
         }
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD
-            }
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        const { data, error } = await resend.emails.send({
+            from: 'Inscreva-se <onboarding@resend.dev>', // Use your verified domain
+            to: [to],
+            subject: subject,
+            html: html,
         });
 
-        const info = await transporter.sendMail({
-            from: `"Inscreva-se" <${process.env.EMAIL_USER}>`,
-            to,
-            subject,
-            html
-        });
+        if (error) {
+            console.error('🔴 [EmailService] Resend error:', error);
+            return false;
+        }
 
-        console.log(`📧 [EmailService] Email sent: ${info.messageId}`);
+        console.log(`📧 [EmailService] Email sent via Resend: ${data.id}`);
         return true;
     } catch (error) {
         console.error('🔴 [EmailService] Error sending email:', error);
