@@ -366,7 +366,7 @@ function RegisterContent() {
                 background: '#0a0a0a',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 alignItems: 'center',
                 padding: '2rem',
                 position: 'relative',
@@ -381,7 +381,7 @@ function RegisterContent() {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    style={{ width: '100%', maxWidth: '450px', padding: '2rem 0' }}
+                    style={{ width: '100%', maxWidth: '450px', padding: '4rem 0' }}
                 >
                     <div style={{ marginBottom: '2rem' }}>
                         <div style={{ display: 'flex', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
