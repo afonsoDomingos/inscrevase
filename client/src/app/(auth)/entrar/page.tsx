@@ -329,24 +329,6 @@ function LoginContent() {
                         </div>
                     </form>
 
-                    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                        <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '1rem' }}>{t('auth.noAccountYet')}</p>
-                        <Link href="/cadastro" style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '0.7rem 2rem',
-                            border: '1px solid #D4AF37',
-                            borderRadius: '12px',
-                            color: '#D4AF37',
-                            fontWeight: 700,
-                            textDecoration: 'none',
-                            fontSize: '0.9rem',
-                            transition: 'all 0.3s ease'
-                        }}>
-                            {t('auth.registerNow')} <ArrowRight size={16} />
-                        </Link>
-                    </div>
                 </motion.div>
 
                 {/* Footer Brand */}
