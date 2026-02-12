@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { authService, UserData } from '@/lib/authService';
-import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap } from 'lucide-react';
+import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
+import EditEventModal from '@/components/mentor/EditEventModal';
 
 export default function FormList() {
     const [forms, setForms] = useState<FormModel[]>([]);
@@ -12,6 +13,8 @@ export default function FormList() {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData | null>(null);
     const [alertMessage, setAlertMessage] = useState<{ title: string; message: string; type: 'error' | 'success' } | null>(null);
+    const [selectedForm, setSelectedForm] = useState<FormModel | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         const loggedUser = authService.getCurrentUser();
@@ -173,6 +176,16 @@ export default function FormList() {
                                             <ExternalLink size={18} />
                                         </a>
                                         <button
+                                            onClick={() => {
+                                                setSelectedForm(form);
+                                                setIsEditModalOpen(true);
+                                            }}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}
+                                            title="Editar Evento"
+                                        >
+                                            <Pencil size={18} />
+                                        </button>
+                                        <button
                                             onClick={() => handleToggleSponsor(form)}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
                                             title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
@@ -331,6 +344,22 @@ export default function FormList() {
                         </button>
                     </motion.div>
                 </div>
+            )}
+
+            {selectedForm && (
+                <EditEventModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        setSelectedForm(null);
+                    }}
+                    form={selectedForm}
+                    onSuccess={() => {
+                        loadForms();
+                        setIsEditModalOpen(false);
+                        setSelectedForm(null);
+                    }}
+                />
             )}
         </div>
     );
