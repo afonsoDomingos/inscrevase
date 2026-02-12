@@ -23,6 +23,7 @@ import {
     ChevronLeft,
     Bell,
     Calendar,
+    Clock,
     Award,
     Crown,
     Search,
