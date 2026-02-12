@@ -713,7 +713,7 @@ export function ExpertProfileClient() {
                             }}
                         >
                             <h3 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', marginBottom: '1.5rem' }}>
-                                {t('mentors.learnWith', { name: mentor.name.split(' ')[0] }).split(mentor.name.split(' ')[0]).map((part, i, arr) => (
+                                {t('mentors.learnWith', { name: mentor.name.split(' ')[0] }).split(mentor.name.split(' ')[0]).map((part: string, i: number, arr: string[]) => (
                                     <span key={i}>
                                         {part}
                                         {i < arr.length - 1 && <span className="gold-text">{mentor.name.split(' ')[0]}</span>}
