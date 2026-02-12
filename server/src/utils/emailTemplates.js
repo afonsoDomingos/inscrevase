@@ -51,7 +51,7 @@ const generateWelcomeEmail = (name, verificationLink = null) => {
 
             <div style="padding: 40px;">
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 60px; height: auto;">
+                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
                     <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
                 </div>
                 
@@ -100,7 +100,7 @@ const generateBasicEmail = (title, name, content, buttonText, buttonUrl, color =
     return `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
             <div style="text-align: center; margin-bottom: 30px;">
-                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 100px; height: auto;">
                 <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: ${color};">-SE</span></h1>
             </div>
             
