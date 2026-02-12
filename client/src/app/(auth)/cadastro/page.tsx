@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Lock, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Search, Check, Award, HelpCircle, X } from 'lucide-react';
+import { User, Briefcase, ArrowRight, Loader2, Globe, UserPlus, LogIn, Eye, EyeOff, Check, Award, HelpCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -77,7 +77,6 @@ function RegisterContent() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     // Role Info State
     const [showRoleInfo, setShowRoleInfo] = useState<string | null>(null);
@@ -285,15 +284,6 @@ function RegisterContent() {
         }
     };
 
-    const inputVariants = {
-        initial: { scale: 1, boxShadow: "0px 0px 0px rgba(212, 175, 55, 0)" },
-        focused: { scale: 1.01, boxShadow: "0px 0px 15px rgba(212, 175, 55, 0.12)" }
-    };
-
-    const iconVariants = {
-        initial: { x: 0, color: "#888", scale: 1 },
-        focused: { x: 3, color: "var(--primary)", scale: 1.15 }
-    };
 
     return (
         <div style={{
