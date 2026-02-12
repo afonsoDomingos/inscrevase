@@ -11,7 +11,7 @@ const sendEmail = async (to, subject, html) => {
         const resend = new Resend(process.env.RESEND_API_KEY);
 
         const { data, error } = await resend.emails.send({
-            from: 'Inscreva-se <onboarding@resend.dev>', // Temporary - change to noreply@inscreva-se.com after DNS verification
+            from: 'Inscreva-se <noreply@inscreva-se.com>',
             to: [to],
             subject: subject,
             html: html,
