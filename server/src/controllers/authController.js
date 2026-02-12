@@ -36,17 +36,38 @@ const register = async (req, res) => {
         const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
 
         const emailHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                <h2 style="color: #D4AF37; text-align: center;">Bem-vindo ao Inscreva-se! 💎</h2>
-                <p>Olá <strong>${name}</strong>,</p>
-                <p>Obrigado por se juntar à nossa comunidade de elite. Para começar a criar seus eventos e gerir seus participantes, precisamos que confirme seu endereço de e-mail.</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${verificationLink}" style="background-color: #D4AF37; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Confirmar E-mail</a>
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
+                    <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
                 </div>
-                <p>Se o botão não funcionar, copie e cole o link abaixo no seu navegador:</p>
-                <p style="word-break: break-all; color: #666;">${verificationLink}</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                <p style="font-size: 12px; color: #999; text-align: center;">Esta é uma mensagem automática, por favor não responda.</p>
+                
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Bem-vindo, <strong>${name}</strong>!</p>
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        É uma honra ter você na nossa comunidade de elite. O <strong>Inscreva-se</strong> foi desenhado para mentores que buscam excelência e escala. Sua jornada para transformar conhecimento em impacto global começa agora. 🚀
+                    </p>
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Para ativar sua conta e começar a criar seus eventos, confirme seu e-mail por favor:
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${verificationLink}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Confirmar E-mail
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #888; text-align: center; margin-top: 25px;">
+                        Se o botão não funcionar, copie e cole este link no seu navegador:
+                        <br>
+                        <a href="${verificationLink}" style="color: #D4AF37; text-decoration: none; word-break: break-all;">${verificationLink}</a>
+                    </p>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; paddingTop: 30px;">
+                    <p style="font-size: 12px; color: #999; margin-bottom: 5px;">Seja bem-vindo à nova era da mentoria digital.</p>
+                    <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se. Todos os direitos reservados.</p>
+                </div>
             </div>
         `;
 
@@ -412,17 +433,35 @@ const resendVerificationEmail = async (req, res) => {
         const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
 
         const emailHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                <h2 style="color: #D4AF37; text-align: center;">Confirmação de E-mail 💎</h2>
-                <p>Olá <strong>${user.name}</strong>,</p>
-                <p>Você solicitou um novo link para confirmar seu endereço de e-mail no Inscreva-se.</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${verificationLink}" style="background-color: #D4AF37; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Confirmar E-mail</a>
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
+                    <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
                 </div>
-                <p>Se o botão não funcionar, copie e cole o link abaixo no seu navegador:</p>
-                <p style="word-break: break-all; color: #666;">${verificationLink}</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                <p style="font-size: 12px; color: #999; text-align: center;">Esta é uma mensagem automática, por favor não responda.</p>
+                
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá <strong>${user.name}</strong>,</p>
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Seja bem-vindo à elite da mentoria. Para garantir a segurança da sua conta e desbloquear todas as funcionalidades exclusivas, clique no botão abaixo para confirmar seu e-mail.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${verificationLink}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Confirmar E-mail
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #888; text-align: center; margin-top: 25px;">
+                        Se o botão não funcionar, copie e cole este link no seu navegador:
+                        <br>
+                        <a href="${verificationLink}" style="color: #D4AF37; text-decoration: none; word-break: break-all;">${verificationLink}</a>
+                    </p>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; paddingTop: 30px;">
+                    <p style="font-size: 12px; color: #999; margin-bottom: 5px;">Este é um e-mail prioritário e automático.</p>
+                    <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se. Todos os direitos reservados.</p>
+                </div>
             </div>
         `;
 
@@ -448,17 +487,33 @@ const forgotPassword = async (req, res) => {
         const resetLink = `${frontendUrl}/redefinir-senha?token=${resetToken}`;
 
         const emailHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                <h2 style="color: #D4AF37; text-align: center;">Recuperação de Senha 💎</h2>
-                <p>Olá <strong>${user.name}</strong>,</p>
-                <p>Você solicitou a redefinição de sua senha no Inscreva-se. Clique no botão abaixo para prosseguir:</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${resetLink}" style="background-color: #D4AF37; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Redefinir Minha Senha</a>
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
+                    <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
                 </div>
-                <p>Este link expirará em 1 hora.</p>
-                <p>Se você não solicitou isso, ignore este e-mail.</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                <p style="font-size: 12px; color: #999; text-align: center;">Esta é uma mensagem automática, por favor não responda.</p>
+                
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá <strong>${user.name}</strong>,</p>
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Recebemos uma solicitação para redefinir a sua senha. Se você não solicitou esta alteração, ignore este e-mail. Caso contrário, clique no botão abaixo para prosseguir:
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${resetLink}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Redefinir Senha
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #888; text-align: center; margin-top: 25px;">
+                        Este link expirará em 1 hora por motivos de segurança.
+                    </p>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; paddingTop: 30px;">
+                    <p style="font-size: 12px; color: #999; margin-bottom: 5px;">Este é um e-mail prioritário e automático.</p>
+                    <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se. Todos os direitos reservados.</p>
+                </div>
             </div>
         `;
 
