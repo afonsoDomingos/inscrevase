@@ -366,6 +366,87 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         grid-template-columns: 1fr !important;
                     }
                 }
+                .premium-input {
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    border: 1px solid ${borderColor} !important;
+                }
+                .premium-input:hover {
+                    border-color: ${primaryColor}70 !important;
+                    background: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'} !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                }
+                .premium-input:focus {
+                    border-color: ${primaryColor} !important;
+                    background: ${bgColor} !important;
+                    box-shadow: 0 0 0 4px ${primaryColor}20, 0 8px 20px rgba(0,0,0,0.1);
+                    transform: translateY(-2px);
+                }
+                .checkbox-container {
+                    transition: all 0.2s ease;
+                }
+                .checkbox-container:hover {
+                    background: rgba(255,255,255,0.05);
+                    padding-left: 10px !important;
+                }
+                .premium-upload {
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    background: ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)'} !important;
+                    border: 2px dashed ${borderColor} !important;
+                }
+                .premium-upload:hover {
+                    border-color: ${primaryColor} !important;
+                    background: ${primaryColor}05 !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+                }
+                .premium-btn {
+                    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    position: relative;
+                    overflow: hidden;
+                }
+                .premium-btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 30px ${primaryColor}40 !important;
+                    filter: brightness(1.1);
+                }
+                .premium-btn:active {
+                    transform: translateY(-1px);
+                    filter: brightness(0.9);
+                }
+                .premium-btn::after {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: linear-gradient(
+                        45deg,
+                        transparent,
+                        rgba(255, 255, 255, 0.1),
+                        transparent
+                    );
+                    transform: rotate(45deg);
+                    transition: 0.5s;
+                    pointer-events: none;
+                }
+                .premium-btn:hover::after {
+                    left: 120%;
+                }
+                .premium-card {
+                    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+                .premium-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+                    border-color: ${primaryColor}70 !important;
+                }
+                .premium-card.active {
+                    background: ${primaryColor}15 !important;
+                    border-color: ${primaryColor} !important;
+                    box-shadow: 0 8px 20px ${primaryColor}30;
+                }
             `}</style>
 
             <AnimatePresence mode="wait">
@@ -828,43 +909,46 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 )}
                                                 {field.type === 'select' ? (
                                                     <motion.select
-                                                        whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
+                                                        whileFocus={{ scale: 1.01 }}
                                                         required={field.required}
                                                         onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, border: `1px solid ${borderColor}`, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
+                                                        className="premium-input"
+                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', cursor: 'pointer' }}
                                                     >
                                                         <option value="">{t('form.select')}</option>
                                                         {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                     </motion.select>
                                                 ) : field.type === 'textarea' ? (
                                                     <motion.textarea
-                                                        whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
+                                                        whileFocus={{ scale: 1.01 }}
                                                         required={field.required}
                                                         placeholder={field.label}
                                                         rows={4}
                                                         onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, border: `1px solid ${borderColor}`, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', resize: 'none' }}
+                                                        className="premium-input"
+                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', resize: 'none' }}
                                                     />
                                                 ) : field.type === 'checkbox' ? (
-                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '0.5rem 0' }}>
+                                                    <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '0.8rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: `1px solid ${borderColor}` }}>
                                                         <input
                                                             type="checkbox"
                                                             required={field.required}
                                                             onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
-                                                            style={{ width: '20px', height: '20px', accentColor: primaryColor }}
+                                                            style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
                                                         />
-                                                        <span style={{ fontSize: '0.9rem', color: textColor }}>
+                                                        <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
                                                             {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                         </span>
                                                     </label>
                                                 ) : (
                                                     <motion.input
-                                                        whileFocus={{ scale: 1.02, borderColor: primaryColor, boxShadow: `0 0 0 4px ${primaryColor}15` }}
+                                                        whileFocus={{ scale: 1.01 }}
                                                         type={field.type === 'phone' ? 'tel' : field.type}
                                                         required={field.required}
                                                         placeholder={field.label}
                                                         onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, border: `1px solid ${borderColor}`, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
+                                                        className="premium-input"
+                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
                                                     />
                                                 )}
                                             </motion.div>
@@ -877,25 +961,31 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
                                                     {form.paymentConfig.stripeEnabled && (
                                                         <motion.div
-                                                            whileHover={{ scale: 1.05, borderColor: primaryColor }}
+                                                            whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={() => setPaymentMode('stripe')}
-                                                            style={{ padding: '1.5rem', borderRadius: '20px', background: paymentMode === 'stripe' ? `${primaryColor}20` : 'rgba(255,255,255,0.02)', border: `2px solid ${paymentMode === 'stripe' ? primaryColor : borderColor}`, cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s ease' }}
+                                                            className={`premium-card ${paymentMode === 'stripe' ? 'active' : ''}`}
+                                                            style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
                                                         >
-                                                            <CreditCard size={24} color={paymentMode === 'stripe' ? primaryColor : '#888'} style={{ margin: '0 auto 10px' }} />
-                                                            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Cartão</div>
-                                                            <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>Instantâneo</div>
+                                                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'stripe' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
+                                                                <CreditCard size={20} color={paymentMode === 'stripe' ? (isDark ? '#000' : '#fff') : '#888'} />
+                                                            </div>
+                                                            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>Cartão</div>
+                                                            <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>Instantâneo</div>
                                                         </motion.div>
                                                     )}
                                                     <motion.div
-                                                        whileHover={{ scale: 1.05, borderColor: primaryColor }}
+                                                        whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
                                                         onClick={() => setPaymentMode('manual')}
-                                                        style={{ padding: '1.5rem', borderRadius: '20px', background: paymentMode === 'manual' ? `${primaryColor}20` : 'rgba(255,255,255,0.02)', border: `2px solid ${paymentMode === 'manual' ? primaryColor : borderColor}`, cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s ease' }}
+                                                        className={`premium-card ${paymentMode === 'manual' ? 'active' : ''}`}
+                                                        style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
                                                     >
-                                                        <Upload size={24} color={paymentMode === 'manual' ? primaryColor : '#888'} style={{ margin: '0 auto 10px' }} />
-                                                        <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Manual</div>
-                                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>Enviando Prova</div>
+                                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'manual' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
+                                                            <Upload size={20} color={paymentMode === 'manual' ? (isDark ? '#000' : '#fff') : '#888'} />
+                                                        </div>
+                                                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'manual' ? primaryColor : titleColor }}>Manual</div>
+                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>Enviando Prova</div>
                                                     </motion.div>
                                                 </div>
 
@@ -979,17 +1069,25 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             </div>
 
                                                             <div style={{ marginBottom: '1.5rem' }}>
-                                                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}`, borderRadius: '20px', cursor: 'pointer' }}>
+                                                                <label className="premium-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2.5rem', borderRadius: '24px', cursor: 'pointer', textAlign: 'center' }}>
                                                                     <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
                                                                     {filePreview ? (
                                                                         <div style={{ textAlign: 'center' }}>
-                                                                            <Image src={filePreview} alt="Preview" width={80} height={80} style={{ borderRadius: '10px' }} />
-                                                                            <div style={{ marginTop: '10px', fontSize: '0.8rem', color: primaryColor }}>{file?.name}</div>
+                                                                            <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 15px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 8px 16px rgba(0,0,0,0.2)' }}>
+                                                                                <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                                            </div>
+                                                                            <div style={{ fontSize: '0.9rem', color: primaryColor, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                                                                <CheckCircle size={16} /> {file?.name.substring(0, 20)}...
+                                                                            </div>
+                                                                            <p style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '5px' }}>Clique para alterar o arquivo</p>
                                                                         </div>
                                                                     ) : (
                                                                         <>
-                                                                            <Upload size={32} color={primaryColor} />
-                                                                            <span style={{ marginTop: '10px', fontSize: '0.9rem' }}>Anexar Comprovativo de Pagamento</span>
+                                                                            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: `${primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px' }}>
+                                                                                <Upload size={28} color={primaryColor} />
+                                                                            </div>
+                                                                            <span style={{ fontSize: '1rem', fontWeight: 700, color: titleColor }}>Anexar Comprovativo</span>
+                                                                            <p style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '8px' }}>Clique ou arraste o arquivo aqui</p>
                                                                         </>
                                                                     )}
                                                                 </label>
@@ -999,8 +1097,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 whileTap={{ scale: 0.98 }}
                                                                 type="submit"
                                                                 disabled={submitting}
-                                                                className="btn-primary"
-                                                                style={{ width: '100%', padding: '1.2rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer' }}
+                                                                className="btn-primary premium-btn"
+                                                                style={{ width: '100%', padding: '1.4rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '20px', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '1rem', letterSpacing: '1px' }}
                                                             >
                                                                 {submitting ? <Loader2 className="animate-spin" /> : 'FINALIZAR INSCRIÇÃO'}
                                                             </motion.button>
@@ -1012,12 +1110,12 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                         {!form.paymentConfig?.enabled && (
                                             <motion.button
-                                                whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${primaryColor}40` }}
+                                                whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
                                                 type="submit"
                                                 disabled={submitting}
-                                                className="btn-primary"
-                                                style={{ width: '100%', padding: '1.2rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer' }}
+                                                className="btn-primary premium-btn"
+                                                style={{ width: '100%', padding: '1.4rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '20px', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '1rem', letterSpacing: '1px' }}
                                             >
                                                 {submitting ? <Loader2 className="animate-spin" /> : 'GARANTIR MINHA VAGA'}
                                             </motion.button>

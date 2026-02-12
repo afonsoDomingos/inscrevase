@@ -26,6 +26,7 @@ const FormSchema = new mongoose.Schema({
     coverImage: { type: String },
     coverImageMode: { type: String, enum: ['full', 'banner'], default: 'full' }, // full = imagem completa, banner = cortada
     videoUrl: { type: String },
+    videoOrientation: { type: String, enum: ['vertical', 'horizontal'], default: 'vertical' },
     fields: [FormFieldSchema],
     eventDate: { type: Date },
     eventTime: { type: String }, // Ex: "14:00"
