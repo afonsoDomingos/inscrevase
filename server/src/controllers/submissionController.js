@@ -30,6 +30,16 @@ const submitForm = async (req, res) => {
             return res.status(404).json({ message: 'Form not found or inactive' });
         }
 
+        // Capacity check
+        if (form.capacity && form.capacity > 0) {
+            const currentSubmissions = await Submission.countDocuments({ form: formId });
+            const totalAllowed = form.capacity + (form.extraCapacity || 0);
+            if (currentSubmissions >= totalAllowed) {
+                console.warn(`[Submission] Capacity reached for form ${formId}: ${currentSubmissions}/${totalAllowed}`);
+                return res.status(400).json({ message: 'Capacidade máxima atingida para este evento.' });
+            }
+        }
+
         const submissionData = {
             form: formId,
             data,

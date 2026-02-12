@@ -13,7 +13,7 @@ exports.createForm = async (req, res) => {
         if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'Por favor, confirme seu e-mail para criar eventos.' });
         }
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, extraCapacity, whatsappConfig, videoUrl, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         let slug = slugify(title, { lower: true, strict: true });
 
@@ -80,6 +80,12 @@ exports.createForm = async (req, res) => {
         } else if (capacity) {
             const cap = parseInt(capacity);
             if (!isNaN(cap)) newForm.capacity = cap;
+        }
+
+        // Handle Extra Capacity explicitly
+        if (extraCapacity) {
+            const extraCap = parseInt(extraCapacity);
+            if (!isNaN(extraCap)) newForm.extraCapacity = extraCap;
         }
 
         const form = await newForm.save();
@@ -194,7 +200,7 @@ exports.updateForm = async (req, res) => {
         }
 
         // Update fields
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, capacity, extraCapacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         console.log(`--- Atualizando Formulário ${req.params.id} ---`);
 
@@ -237,6 +243,14 @@ exports.updateForm = async (req, res) => {
                 if (!isNaN(cap)) {
                     form.capacity = cap;
                 }
+            }
+        }
+
+        // Extra Capacity
+        if (extraCapacity !== undefined) {
+            const extraCap = parseInt(extraCapacity);
+            if (!isNaN(extraCap)) {
+                form.extraCapacity = extraCap;
             }
         }
 

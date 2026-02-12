@@ -118,6 +118,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [eventType, setEventType] = useState('modeOnline');
     const [category, setCategory] = useState('Outros');
     const [capacity, setCapacity] = useState('');
+    const [extraCapacity, setExtraCapacity] = useState('');
     const [coverImage, setCoverImage] = useState<string>('');
     const [coverImageMode, setCoverImageMode] = useState<'full' | 'banner'>('full');
     const [uploadingImage, setUploadingImage] = useState(false);
@@ -225,6 +226,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setEventType(form.eventType || 'modeOnline');
             setCategory(form.category || 'Outros');
             setCapacity(form.capacity ? form.capacity.toString() : '');
+            setExtraCapacity((form as any).extraCapacity ? (form as any).extraCapacity.toString() : '0');
             setCoverImage(form.coverImage || '');
             setCoverImageMode((form as any).coverImageMode || 'full');
             setLocation(form.location || '');
@@ -397,6 +399,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 eventType,
                 category,
                 capacity: capacity ? parseInt(capacity) : null,
+                extraCapacity: extraCapacity ? parseInt(extraCapacity) : 0,
                 location,
                 onlineLink,
                 fields: cleanedFields as FormModel['fields'],
@@ -564,6 +567,20 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                     <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.capacityHelp')}</p>
                                                 </div>
                                                 <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.extraCapacityLabel')}</label>
+                                                    <input
+                                                        type="number"
+                                                        value={extraCapacity}
+                                                        onChange={(e) => setExtraCapacity(e.target.value)}
+                                                        placeholder="Ex: 10"
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    />
+                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.extraCapacityHelp')}</p>
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div>
                                                     <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventMode')}</label>
                                                     <select
                                                         value={eventType}
@@ -575,22 +592,21 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         <option value="modeHybrid">{t('events.modeHybrid')}</option>
                                                     </select>
                                                 </div>
-                                            </div>
-
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
-                                                <select
-                                                    value={category}
-                                                    onChange={(e) => setCategory(e.target.value)}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
-                                                >
-                                                    <option value="Outros">Outros</option>
-                                                    <option value="Negócios">Negócios</option>
-                                                    <option value="Tecnologia">Tecnologia</option>
-                                                    <option value="Arte & Música">Arte & Música</option>
-                                                    <option value="Educação">Educação</option>
-                                                    <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
-                                                </select>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
+                                                    <select
+                                                        value={category}
+                                                        onChange={(e) => setCategory(e.target.value)}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
+                                                    >
+                                                        <option value="Outros">Outros</option>
+                                                        <option value="Negócios">Negócios</option>
+                                                        <option value="Tecnologia">Tecnologia</option>
+                                                        <option value="Arte & Música">Arte & Música</option>
+                                                        <option value="Educação">Educação</option>
+                                                        <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
+                                                    </select>
+                                                </div>
                                             </div>
 
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

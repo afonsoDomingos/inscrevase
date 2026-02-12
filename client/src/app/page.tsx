@@ -18,6 +18,7 @@ import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
 import SponsoredAdCard from "@/components/home/SponsoredAdCard";
+import Typewriter from "@/components/common/Typewriter";
 
 
 const galleryImages = [
@@ -210,7 +211,7 @@ export default function Home() {
               fontWeight: 400,
               lineHeight: 1.6
             }} className="hero-description">
-              {t('landing.hero.description')}
+              <Typewriter text={t('landing.hero.description')} duration={3} />
             </p>
           </motion.div>
 

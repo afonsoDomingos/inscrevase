@@ -56,6 +56,7 @@ const FormSchema = new mongoose.Schema({
         communityUrl: { type: String }
     },
     capacity: { type: Number }, // Target number of submissions
+    extraCapacity: { type: Number, default: 0 }, // Additional slots released by mentor
     paymentConfig: {
         enabled: { type: Boolean, default: false },
         price: { type: Number },

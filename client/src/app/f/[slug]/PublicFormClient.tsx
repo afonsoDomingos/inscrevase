@@ -450,15 +450,27 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 fontWeight: 800,
                                                 padding: '4px 12px',
                                                 borderRadius: '20px',
-                                                background: (form.capacity - (form.submissionCount || 0)) <= 5 ? '#ef4444' : `${primaryColor}15`,
-                                                color: (form.capacity - (form.submissionCount || 0)) <= 5 ? '#fff' : primaryColor,
-                                                border: (form.capacity - (form.submissionCount || 0)) <= 5 ? 'none' : `1px solid ${primaryColor}30`
+                                                background: ((form.capacity + (form.extraCapacity || 0)) - (form.submissionCount || 0)) <= 5 ? '#ef4444' : `${primaryColor}15`,
+                                                color: ((form.capacity + (form.extraCapacity || 0)) - (form.submissionCount || 0)) <= 5 ? '#fff' : primaryColor,
+                                                border: ((form.capacity + (form.extraCapacity || 0)) - (form.submissionCount || 0)) <= 5 ? 'none' : `1px solid ${primaryColor}30`,
+                                                animation: ((form.capacity + (form.extraCapacity || 0)) - (form.submissionCount || 0)) <= 5 ? 'pulse-red 2s infinite' : 'none'
                                             }}
                                         >
                                             <Zap size={12} fill="currentColor" />
-                                            {form.capacity - (form.submissionCount || 0) > 0
-                                                ? `APENAS ${form.capacity - (form.submissionCount || 0)} VAGAS`
-                                                : 'VAGAS ESGOTADAS'}
+                                            {(() => {
+                                                const subCount = form.submissionCount || 0;
+                                                const cap = form.capacity;
+                                                const extra = form.extraCapacity || 0;
+                                                const total = cap + extra;
+
+                                                if (subCount >= total) return t('events.public.soldOutBadge') || 'VAGAS ESGOTADAS';
+
+                                                if (subCount >= cap) {
+                                                    return `${t('events.public.initialSoldOut')} | ${total - subCount} ${t('events.public.extraSlots')}`;
+                                                }
+
+                                                return (t('events.public.onlySlots') || 'APENAS {count} VAGAS').replace('{count}', (cap - subCount).toString());
+                                            })()}
                                         </div>
                                     )}
                                 </motion.div>
@@ -745,10 +757,19 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     transition={{ duration: 0.3 }}
                                     style={{ background: cardBg, borderRadius: '30px', border: `1px solid ${borderColor}`, padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}
                                 >
-                                    {form.capacity && (form.capacity - (form.submissionCount || 0)) <= 0 && (
+                                    {form.capacity && (form.submissionCount || 0) >= (form.capacity + (form.extraCapacity || 0)) && (
                                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', backdropFilter: 'blur(4px)' }}>
                                             <div style={{ background: '#ef4444', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', fontWeight: 900, marginBottom: '1rem' }}>{t('events.public.registrationsClosed')}</div>
                                             <p style={{ color: '#fff', fontSize: '1.1rem' }}>{t('events.public.capacityReachedDesc')}</p>
+                                        </div>
+                                    )}
+                                    {form.capacity && (form.submissionCount || 0) >= form.capacity && (form.submissionCount || 0) < (form.capacity + (form.extraCapacity || 0)) && (
+                                        <div style={{ marginBottom: '1.5rem', background: 'rgba(255,215,0,0.1)', border: '1px solid #FFD70040', padding: '1rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <Zap size={20} color="#FFD700" fill="#FFD700" />
+                                            <div>
+                                                <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#FFD700' }}>{t('events.public.extraCapacityTitle') || 'VAGAS INICIAIS ESGOTADAS!'}</div>
+                                                <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('events.public.extraCapacityDesc') || 'O mentor liberou algumas vagas extras. Garanta a sua agora!'}</div>
+                                            </div>
                                         </div>
                                     )}
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: titleColor }}>{t('form.fillYourData')}</h3>

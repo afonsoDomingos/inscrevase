@@ -37,6 +37,7 @@ export interface FormModel {
     eventType?: string | null;
     category?: string | null;
     capacity?: number | null;
+    extraCapacity?: number | null; // For dynamically adding slots
     location?: string | null;
     onlineLink?: string | null;
     waitingVideo?: string | null;

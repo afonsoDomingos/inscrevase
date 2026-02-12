@@ -576,7 +576,13 @@
             "registrationValue": "Valor da Inscrição",
             "registrationsClosed": "INSCRIÇÕES ENCERRADAS",
             "capacityReachedDesc": "Este evento atingiu a capacidade máxima. Fique atento para as próximas edições!",
-            "vipGroup": "ENTRAR NO GRUPO VIP"
+            "vipGroup": "ENTRAR NO GRUPO VIP",
+            "initialSoldOut": "VAGAS INICIAIS ESGOTADAS",
+            "extraSlots": "EXTRAS",
+            "onlySlots": "APENAS {count} VAGAS",
+            "soldOutBadge": "VAGAS ESGOTADAS",
+            "extraCapacityTitle": "VAGAS INICIAIS ESGOTADAS!",
+            "extraCapacityDesc": "O mentor liberou algumas vagas extras. Garanta a sua agora!"
         },
         "createEvent": "Criar Evento",
         "editEvent": "Editar Evento",
@@ -605,6 +611,8 @@
         "namePlaceholder": "Ex: Masterclass de Vendas",
         "capacityLabel": "Meta de Inscritos (Opcional)",
         "capacityHelp": "Defina um objetivo para acompanhar o progresso das inscrições.",
+        "extraCapacityLabel": "Vagas Extras (Opcional)",
+        "extraCapacityHelp": "Liberadas automaticamente quando a meta de inscritos for atingida.",
         "descriptionPlaceholder": "Descreva o que os alunos vão aprender...",
         "coverImageLabel": "Imagem de Capa (Opcional)",
         "coverImageHelp": "Clique para subir imagem (1200x600)",

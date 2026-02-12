@@ -79,6 +79,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [description, setDescription] = useState('');
     const [eventDate, setEventDate] = useState('');
     const [capacity, setCapacity] = useState('');
+    const [extraCapacity, setExtraCapacity] = useState('0');
     const [coverImage, setCoverImage] = useState<string>('');
     const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -247,6 +248,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 },
                 paymentConfig,
                 capacity: capacity ? parseInt(capacity) : null,
+                extraCapacity: extraCapacity ? parseInt(extraCapacity) : 0,
                 location,
                 onlineLink,
                 eventTime,
@@ -429,7 +431,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '1rem' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.capacityLabel')}</label>
                                                 <input
@@ -440,6 +442,17 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
                                                 />
                                                 <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.capacityHelp')}</p>
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.extraCapacityLabel')}</label>
+                                                <input
+                                                    type="number"
+                                                    value={extraCapacity}
+                                                    onChange={(e) => setExtraCapacity(e.target.value)}
+                                                    placeholder="Ex: 10"
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.extraCapacityHelp')}</p>
                                             </div>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventMode')}</label>
