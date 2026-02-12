@@ -107,7 +107,6 @@ exports.getAnalyticsStats = async (req, res) => {
             { $group: { _id: "$month", count: { $sum: 1 } } },
             { $sort: { _id: 1 } }
         ]);
-
         res.json({
             visitsToday,
             uniqueVisitorsToday,
@@ -121,11 +120,6 @@ exports.getAnalyticsStats = async (req, res) => {
         console.error('Error getting analytics:', error);
         res.status(500).json({ message: 'Error getting analytics' });
     }
-});
-    } catch (error) {
-    console.error('Error getting analytics:', error);
-    res.status(500).json({ message: 'Error getting analytics' });
-}
 };
 
 // Estatísticas Públicas de Impacto (Home Page)
