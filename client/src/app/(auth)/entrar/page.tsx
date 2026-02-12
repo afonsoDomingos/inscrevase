@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -177,8 +177,17 @@ function LoginContent() {
                     style={{ width: '100%', maxWidth: '400px' }}
                 >
                     <div style={{ marginBottom: '2.5rem' }}>
+                        <div style={{ display: 'flex', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
+                                <LogIn size={16} /> {t('auth.signIn')}
+                            </div>
+                            <Link href="/cadastro" style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}>
+                                <UserPlus size={16} /> {t('auth.signUp')}
+                            </Link>
+                        </div>
+
                         <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
-                            {t('auth.loginTitle') || 'Bem-vindo de volta'}
+                            {t('auth.loginTitle')}
                         </h1>
                         <p style={{ color: '#666' }}>
                             {t('auth.loginSubtitle') || 'Entre para continuar sua jornada premium.'}
@@ -320,9 +329,24 @@ function LoginContent() {
                         </div>
                     </form>
 
-                    <p style={{ marginTop: '2.5rem', textAlign: 'center', color: '#666', fontSize: '0.95rem' }}>
-                        {t('auth.noAccountYet')} <Link href="/cadastro" style={{ color: '#D4AF37', fontWeight: 700, textDecoration: 'none' }}>{t('auth.registerNow')}</Link>
-                    </p>
+                    <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+                        <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '1.2rem' }}>{t('auth.noAccountYet')}</p>
+                        <Link href="/cadastro" style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '0.8rem 2.5rem',
+                            border: '1px solid #D4AF37',
+                            borderRadius: '12px',
+                            color: '#D4AF37',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            fontSize: '0.95rem',
+                            transition: 'all 0.3s ease'
+                        }}>
+                            {t('auth.registerNow')} <ArrowRight size={16} />
+                        </Link>
+                    </div>
                 </motion.div>
 
                 {/* Footer Brand */}
