@@ -47,7 +47,10 @@ export default function Home() {
     const fetchSponsored = async () => {
       try {
         const events = await formService.getExploreEvents();
-        setSponsoredEvents(events.filter(e => e.isSponsored));
+        const sponsored = events.filter(e => e.isSponsored);
+        // Randomize the order so different ads get featured first
+        const shuffled = [...sponsored].sort(() => Math.random() - 0.5);
+        setSponsoredEvents(shuffled);
       } catch (error) {
         console.error("Error fetching sponsored events:", error);
       }

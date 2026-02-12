@@ -62,6 +62,19 @@ export default function ExpertsShowcase() {
         });
 
         return matchesSearch && matchesTab && matchesCategory && matchesPrice;
+    }).sort((a, b) => {
+        // First sort by profile visits
+        const visitsA = a.profileVisits || 0;
+        const visitsB = b.profileVisits || 0;
+
+        if (visitsB !== visitsA) {
+            return visitsB - visitsA;
+        }
+
+        // Then sort by follower count
+        const followersA = a.followers?.length || 0;
+        const followersB = b.followers?.length || 0;
+        return followersB - followersA;
     });
 
     const categories = ['Consultoria', 'Mentoria', 'Treinamento', 'Design', 'Desenvolvimento', 'Marketing', 'Outro'];

@@ -10,7 +10,18 @@ export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+
     const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
 
     useEffect(() => {
         loadSubmissions();
@@ -76,6 +87,7 @@ export default function SubmissionList() {
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Inscrito / Dados</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Evento</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Data / Hora</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Pagamento</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Detalhes</th>
@@ -109,6 +121,9 @@ export default function SubmissionList() {
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{sub.form?.title || 'Form Removido'}</div>
+                                </td>
+                                <td style={{ padding: '1rem' }}>
+                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{formatDate(sub.submittedAt)}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     {sub.paymentProof ? (
@@ -275,6 +290,7 @@ export default function SubmissionList() {
                                 <div>
                                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Dados de Inscrição</h3>
                                     <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>{selectedSubmission.form?.title}</p>
+                                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>Realizada em: {formatDate(selectedSubmission.submittedAt)}</p>
                                 </div>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <button

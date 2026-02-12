@@ -777,6 +777,10 @@ export default function ParticipantDashboard() {
                                                                     <Calendar size={16} />
                                                                     {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : t('common.toBeDefined')} {ticket.form.eventTime ? `${t('common.atTime')} ${ticket.form.eventTime}` : ''}
                                                                 </div>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.85rem' }}>
+                                                                    <Clock size={14} style={{ opacity: 0.7 }} />
+                                                                    <span style={{ opacity: 0.8 }}>Inscrito em: {new Date(ticket.submittedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                                                </div>
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
                                                                     <MapPin size={16} />
                                                                     {ticket.form.location || 'Online'}

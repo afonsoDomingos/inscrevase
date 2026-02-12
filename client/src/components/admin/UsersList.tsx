@@ -248,6 +248,7 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Nome</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Origem</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Cadastro</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Cargo</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Plano</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Visibilidade</th>
@@ -294,6 +295,14 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                             <Mail size={14} /> E-mail
                                         </div>
                                     )}
+                                </td>
+                                <td style={{ padding: '1rem' }}>
+                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>
+                                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
+                                    </div>
+                                    <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>
+                                        {user.createdAt ? new Date(user.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                    </div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <PremiumBadge
@@ -477,6 +486,6 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                     setIsEditModalOpen(false);
                 }}
             />
-        </div>
+        </div >
     );
 }

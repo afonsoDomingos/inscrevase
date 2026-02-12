@@ -263,10 +263,12 @@ exports.getActiveAds = async (req, res) => {
         }
 
         const ads = await AdRequest.find(query)
-            .sort({ createdAt: -1 })
-            .limit(10);
+            .limit(20); // Get more to shuffle properly
 
-        res.json(ads);
+        // Shuffle the results
+        const shuffledAds = ads.sort(() => Math.random() - 0.5);
+
+        res.json(shuffledAds);
     } catch (error) {
         console.error('🔴 [AdController] Error fetching active ads:', error);
         res.status(500).json({ message: 'Erro ao buscar anúncios ativos' });
