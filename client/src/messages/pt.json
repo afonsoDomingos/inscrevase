@@ -487,7 +487,7 @@
             "name": "Plano Free",
             "description": "Comece sua jornada sem custos.",
             "fee": "• Taxa de 15% por inscrição",
-            "f1": "• Formulários Ilimitados",
+            "f1": "• 25 Utilizações Normais + 5 Extras",
             "f2": "• Gestão de Conteúdo Base",
             "cta": "Começar Grátis"
         },
@@ -496,7 +496,7 @@
             "name": "Plano Pro",
             "description": "Para profissionais em ascensão.",
             "fee": "• Taxa reduzida de 10%",
-            "f1": "• Destaque no Showcase",
+            "f1": "• 50 Utilizações Normais + 10 Extras",
             "f2": "• Analytics Avançado",
             "cta": "Assinar Pro"
         },
@@ -504,7 +504,7 @@
             "name": "Enterprise",
             "description": "O topo da performance.",
             "fee": "• TAXA 0% (Isenção Total)",
-            "f1": "• Suporte VIP 24/7",
+            "f1": "• Utilização Totalmente Ilimitada",
             "f2": "• Customização Total",
             "cta": "Contactar Vendas"
         },

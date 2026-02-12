@@ -479,7 +479,7 @@
             "name": "Free Plan",
             "description": "Start your journey at no cost.",
             "fee": "• 15% fee per registration",
-            "f1": "• Unlimited Forms",
+            "f1": "• 25 Normal Slots + 5 Extras",
             "f2": "• Base Content Management",
             "cta": "Start Free"
         },
@@ -488,7 +488,7 @@
             "name": "Pro Plan",
             "description": "For rising professionals.",
             "fee": "• Reduced 10% fee",
-            "f1": "• Showcase Highlight",
+            "f1": "• 50 Normal Slots + 10 Extras",
             "f2": "• Advanced Analytics",
             "cta": "Subscribe Pro"
         },
@@ -496,7 +496,7 @@
             "name": "Enterprise",
             "description": "The peak of performance.",
             "fee": "• 0% FEE (Total Exemption)",
-            "f1": "• 24/7 VIP Support",
+            "f1": "• Fully Unlimited Usage",
             "f2": "• Total Customization",
             "cta": "Contact Sales"
         },
