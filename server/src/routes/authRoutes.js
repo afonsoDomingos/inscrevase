@@ -29,7 +29,7 @@ router.get('/search-mentors', authMiddleware, searchMentors);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
-    passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+    passport.authenticate('google', { session: false, failureRedirect: '/entrar' }),
     (req, res) => {
         const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -41,7 +41,7 @@ router.get('/google/callback',
 router.get('/linkedin', passport.authenticate('linkedin'));
 
 router.get('/linkedin/callback',
-    passport.authenticate('linkedin', { session: false, failureRedirect: '/login' }),
+    passport.authenticate('linkedin', { session: false, failureRedirect: '/entrar' }),
     (req, res) => {
         const token = jwt.sign({ id: req.user._id, role: req.user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';

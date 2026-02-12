@@ -121,7 +121,7 @@ function ConfirmEmailContent() {
                             </p>
                         </div>
 
-                        <Link href="/login" style={{
+                        <Link href="/entrar" style={{
                             marginTop: '12px',
                             display: 'flex',
                             alignItems: 'center',
@@ -163,7 +163,7 @@ function ConfirmEmailContent() {
                             </p>
                         </div>
 
-                        <Link href="/login" style={{
+                        <Link href="/entrar" style={{
                             marginTop: '12px',
                             color: '#FFD700',
                             textDecoration: 'none',
