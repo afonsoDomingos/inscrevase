@@ -46,7 +46,7 @@ const generateWelcomeEmail = (name, verificationLink = null) => {
     return `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
             <div style="width: 100%; height: auto;">
-                <img src="https://inscreva-se.com/welcome.png" alt="Bem-vindo ao Inscreva-se" style="width: 100%; height: auto; display: block;">
+                <img src="https://inscreva-se.com/Welcome.gif" alt="Bem-vindo ao Inscreva-se" style="width: 100%; height: auto; display: block;">
             </div>
 
             <div style="padding: 40px;">
