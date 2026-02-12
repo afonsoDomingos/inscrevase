@@ -10,7 +10,7 @@ exports.sendAdminEmail = async (req, res) => {
 
         let mentors = [];
         if (isAllMentors) {
-            mentors = await User.find({ role: 'mentor' }, 'email name');
+            mentors = await User.find({ role: { $in: ['mentor', 'specialist', 'company'] } }, 'email name');
         } else if (recipientIds && Array.isArray(recipientIds)) {
             mentors = await User.find({ _id: { $in: recipientIds } }, 'email name');
         }
@@ -20,7 +20,6 @@ exports.sendAdminEmail = async (req, res) => {
         }
 
         const results = [];
-        const logs = [];
 
         for (const mentor of mentors) {
             const html = generateBasicEmail(
@@ -33,33 +32,34 @@ exports.sendAdminEmail = async (req, res) => {
 
             const sent = await sendEmail(mentor.email, subject, html);
             results.push({ email: mentor.email, success: sent });
-
-            if (sent) {
-                logs.push({
-                    sender: senderId,
-                    recipients: [mentor._id],
-                    recipientEmails: [mentor.email],
-                    subject,
-                    content,
-                    type: 'email',
-                    status: 'sent'
-                });
-            } else {
-                logs.push({
-                    sender: senderId,
-                    recipients: [mentor._id],
-                    recipientEmails: [mentor.email],
-                    subject,
-                    content,
-                    type: 'email',
-                    status: 'failed'
-                });
-            }
         }
 
-        // Save logs to database
-        if (logs.length > 0) {
-            await CommunicationLog.insertMany(logs);
+        // Create a single log entry for successful broadcast
+        const successfulMentors = mentors.filter((_, index) => results[index].success);
+        if (successfulMentors.length > 0) {
+            await CommunicationLog.create({
+                sender: senderId,
+                recipients: successfulMentors.map(m => m._id),
+                recipientEmails: successfulMentors.map(m => m.email),
+                subject,
+                content,
+                type: 'email',
+                status: 'sent'
+            });
+        }
+
+        // Also log failures if any
+        const failedMentors = mentors.filter((_, index) => !results[index].success);
+        if (failedMentors.length > 0) {
+            await CommunicationLog.create({
+                sender: senderId,
+                recipients: failedMentors.map(m => m._id),
+                recipientEmails: failedMentors.map(m => m.email),
+                subject,
+                content,
+                type: 'email',
+                status: 'failed'
+            });
         }
 
         res.json({
@@ -78,7 +78,7 @@ exports.getCommunicationLogs = async (req, res) => {
             .populate('sender', 'name email')
             .populate('recipients', 'name email')
             .sort({ sentAt: -1 })
-            .limit(100);
+            .limit(500);
         res.json(logs);
     } catch (err) {
         res.status(500).json({ message: 'Erro ao buscar histórico', error: err.message });

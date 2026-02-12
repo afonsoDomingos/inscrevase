@@ -55,7 +55,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
         setFetchingMentors(true);
         try {
             const allUsers = await userService.getAllUsers();
-            const mentorList = allUsers.filter(u => u.role === 'mentor');
+            const mentorList = allUsers.filter(u => ['mentor', 'specialist', 'company'].includes(u.role || ''));
             setMentors(mentorList);
         } catch (error) {
             console.error('Error loading mentors:', error);
@@ -203,7 +203,9 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                         <div key={log._id} style={{ padding: '1rem', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '16px' }}>
                                             <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{log.subject}</div>
                                             <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: '8px' }}>
-                                                Enviado para: {log.recipientEmails?.join(', ') || 'N/A'}
+                                                Enviado para: {log.recipientEmails?.length > 3
+                                                    ? `${log.recipientEmails.slice(0, 3).join(', ')} e mais ${log.recipientEmails.length - 3}`
+                                                    : log.recipientEmails?.join(', ') || 'N/A'}
                                             </div>
                                             <div style={{ fontSize: '0.7rem', color: '#aaa' }}>{new Date(log.sentAt).toLocaleString()}</div>
                                         </div>
