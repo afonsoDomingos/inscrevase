@@ -11,9 +11,10 @@ import { useSocket } from '@/context/SocketContext';
 
 interface UsersListProps {
     onMessageUser?: (user: UserData) => void;
+    onEmailUser?: (user: UserData) => void;
 }
 
-export default function UsersList({ onMessageUser }: UsersListProps) {
+export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps) {
     const [users, setUsers] = useState<UserData[]>([]);
     const { onlineUsers } = useSocket();
     const [loading, setLoading] = useState(true);
@@ -374,9 +375,18 @@ export default function UsersList({ onMessageUser }: UsersListProps) {
                                             <button
                                                 onClick={() => onMessageUser(user)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
-                                                title="Enviar Mensagem"
+                                                title="Enviar Notificação"
                                             >
                                                 <MessageSquare size={18} />
+                                            </button>
+                                        )}
+                                        {onEmailUser && (
+                                            <button
+                                                onClick={() => onEmailUser(user)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                title="Enviar Email"
+                                            >
+                                                <Mail size={18} />
                                             </button>
                                         )}
                                         <button

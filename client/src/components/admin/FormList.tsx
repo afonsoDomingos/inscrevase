@@ -3,11 +3,15 @@
 import { useState, useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { authService, UserData } from '@/lib/authService';
-import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap, Pencil } from 'lucide-react';
+import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap, Pencil, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditEventModal from '@/components/mentor/EditEventModal';
 
-export default function FormList() {
+interface FormListProps {
+    onEmailMentor?: (mentorId: string, mentorName: string, formDetails: FormModel) => void;
+}
+
+export default function FormList({ onEmailMentor }: FormListProps) {
     const [forms, setForms] = useState<FormModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -175,6 +179,15 @@ export default function FormList() {
                                         >
                                             <ExternalLink size={18} />
                                         </a>
+                                        {onEmailMentor && form.creator && (
+                                            <button
+                                                onClick={() => onEmailMentor(form.creator._id || '', form.creator.name, form)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                title="Enviar Email ao Mentor"
+                                            >
+                                                <Mail size={18} />
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => {
                                                 setSelectedForm(form);

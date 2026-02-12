@@ -23,6 +23,7 @@ import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
+import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
@@ -108,7 +109,9 @@ export default function AdminDashboard() {
     const [unreadCount, setUnreadCount] = useState(0);
     const { onlineUsers } = useSocket();
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [selectedRecipient, setSelectedRecipient] = useState<{ id: string, name: string } | undefined>(undefined);
+    const [selectedEmailRecipient, setSelectedEmailRecipient] = useState<{ id: string, name: string } | undefined>(undefined);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
         traffic: false,
@@ -471,34 +474,57 @@ export default function AdminDashboard() {
                             {showValues ? <EyeOff size={16} /> : <Eye size={16} />}
                             {showValues ? t('dashboard.hideValues') : t('dashboard.showValues')}
                         </button>
-                        {user?.role === 'SuperAdmin' && (
-                            <button
-                                onClick={() => {
-                                    setSelectedRecipient(undefined);
-                                    setIsMessageModalOpen(true);
-                                }}
-                                id="admin-global-msg"
-                                style={{
-                                    padding: '0.7rem 1.2rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.6rem',
-                                    borderRadius: '50px',
-                                    background: '#000',
-                                    color: '#FFD700',
-                                    border: '2px solid #000',
-                                    whiteSpace: 'nowrap',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    fontSize: '0.75rem',
-                                    letterSpacing: '0.3px'
-                                }}
-                                className="hover:translate-y-[-2px] hover:shadow-lg"
-                            >
-                                <Send size={16} /> {t('dashboard.broadcast')}
-                            </button>
-                        )}
+                        <button
+                            onClick={() => {
+                                setSelectedRecipient(undefined);
+                                setIsMessageModalOpen(true);
+                            }}
+                            id="admin-global-msg"
+                            style={{
+                                padding: '0.7rem 1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.6rem',
+                                borderRadius: '50px',
+                                background: '#000',
+                                color: '#FFD700',
+                                border: '2px solid #000',
+                                whiteSpace: 'nowrap',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                fontSize: '0.75rem',
+                                letterSpacing: '0.3px'
+                            }}
+                            className="hover:translate-y-[-2px] hover:shadow-lg"
+                        >
+                            <Send size={16} /> {t('dashboard.broadcast')}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setSelectedEmailRecipient(undefined);
+                                setIsEmailModalOpen(true);
+                            }}
+                            style={{
+                                padding: '0.7rem 1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.6rem',
+                                borderRadius: '50px',
+                                background: '#B8860B',
+                                color: '#fff',
+                                border: 'none',
+                                whiteSpace: 'nowrap',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                fontSize: '0.75rem',
+                                letterSpacing: '0.3px'
+                            }}
+                            className="hover:translate-y-[-2px] hover:shadow-lg"
+                        >
+                            <Mail size={16} /> Enviar Email
+                        </button>
                         <Link
                             href="/"
                             target="_blank"
@@ -1192,10 +1218,16 @@ export default function AdminDashboard() {
                         activeTab === 'users' && (
                             <motion.div key="users" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                                 <ErrorBoundary>
-                                    <UsersList onMessageUser={(user) => {
-                                        setSelectedRecipient({ id: user.id || user._id || '', name: user.name });
-                                        setIsMessageModalOpen(true);
-                                    }} />
+                                    <UsersList
+                                        onMessageUser={(user) => {
+                                            setSelectedRecipient({ id: user.id || user._id || '', name: user.name });
+                                            setIsMessageModalOpen(true);
+                                        }}
+                                        onEmailUser={(user) => {
+                                            setSelectedEmailRecipient({ id: user.id || user._id || '', name: user.name });
+                                            setIsEmailModalOpen(true);
+                                        }}
+                                    />
                                 </ErrorBoundary>
                             </motion.div>
                         )
@@ -1204,7 +1236,10 @@ export default function AdminDashboard() {
                     {
                         activeTab === 'forms' && (
                             <motion.div key="forms" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
-                                <FormList />
+                                <FormList onEmailMentor={(mentorId, mentorName, details) => {
+                                    setSelectedEmailRecipient({ id: mentorId, name: mentorName });
+                                    setIsEmailModalOpen(true);
+                                }} />
                             </motion.div>
                         )
                     }
@@ -1303,6 +1338,16 @@ export default function AdminDashboard() {
                     }}
                     recipientId={selectedRecipient?.id}
                     recipientName={selectedRecipient?.name}
+                />
+
+                <AdminEmailModal
+                    isOpen={isEmailModalOpen}
+                    onClose={() => {
+                        setIsEmailModalOpen(false);
+                        setSelectedEmailRecipient(undefined);
+                    }}
+                    recipientId={selectedEmailRecipient?.id}
+                    recipientName={selectedEmailRecipient?.name}
                 />
 
                 <ProfileModal
