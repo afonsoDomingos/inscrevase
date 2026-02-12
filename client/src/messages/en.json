@@ -159,6 +159,8 @@
         "country": "Country",
         "registerTitle": "Create Premium Account",
         "registerSubtitle": "The first step to your event's success",
+        "signUpTitle": "Take the first step",
+        "signUpSubtitle": "Choose your profile and start now.",
         "fullName": "Full Name",
         "businessName": "Business Name",
         "businessPlaceholder": "Ex: Elite Mentorship",

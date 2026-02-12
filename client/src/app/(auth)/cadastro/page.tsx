@@ -394,9 +394,9 @@ function RegisterContent() {
                         </div>
 
                         <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
-                            {t('auth.signUpTitle') || 'Dê o primeiro passo'}
+                            {t('auth.signUpTitle')}
                         </h1>
-                        <p style={{ color: '#666' }}>Escolha seu perfil e comece agora.</p>
+                        <p style={{ color: '#666' }}>{t('auth.signUpSubtitle')}</p>
                     </div>
 
                     {/* Role Selector */}
