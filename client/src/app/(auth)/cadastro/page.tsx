@@ -413,20 +413,22 @@ function RegisterContent() {
                     </div>
 
                     {/* Role Selector */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.8rem', marginBottom: '1.2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem', marginBottom: '1rem' }}>
                         {(['mentor', 'participant', 'company', 'specialist'] as const).map((role) => (
                             <div
                                 key={role}
                                 onClick={() => setFormData({ ...formData, role })}
                                 style={{
-                                    padding: '1rem',
-                                    borderRadius: '16px',
+                                    padding: '0.6rem',
+                                    borderRadius: '12px',
                                     background: formData.role === role ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
                                     border: formData.role === role ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease',
                                     display: 'flex',
-                                    flexDirection: 'column',
+                                    flexDirection: 'row',
+                                    justifyContent: 'center',
+                                    gap: '10px',
                                     alignItems: 'center',
                                     position: 'relative'
                                 }}
@@ -442,8 +444,8 @@ function RegisterContent() {
                                 {role === 'participant' && <User size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
                                 {role === 'company' && <Globe size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
                                 {role === 'specialist' && <Award size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                <span style={{ color: formData.role === role ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.75rem', marginTop: '0.4rem' }}>
-                                    {role === 'participant' ? 'Part.' : role.charAt(0).toUpperCase() + role.slice(1, 3) + '.'}
+                                <span style={{ color: formData.role === role ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.85rem' }}>
+                                    {t('common.badges.' + role)}
                                 </span>
                             </div>
                         ))}
