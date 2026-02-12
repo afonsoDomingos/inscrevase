@@ -413,6 +413,38 @@ const verifyEmail = async (req, res) => {
         user.emailToken = undefined;
         await user.save();
 
+        // Send confirmation email after success
+        const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`;
+        const emailHtml = `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
+                    <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
+                </div>
+                
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #22c55e;">
+                    <h2 style="color: #22c55e; margin-top: 0;">E-mail Verificado com Sucesso! ✅</h2>
+                    <p style="font-size: 18px; color: #333;">Olá <strong>${user.name}</strong>,</p>
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Sua conta foi verificada com sucesso. Agora você tem acesso total a todas as funcionalidades da nossa plataforma de elite.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2); text-transform: uppercase; letter-spacing: 1px;">
+                            Ir para o Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 30px;">
+                    <p style="font-size: 12px; color: #999; margin-bottom: 5px;">Estamos felizes em ter você conosco.</p>
+                    <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        `;
+
+        await sendEmail(user.email, 'Sua conta está verificada! - Inscreva-se', emailHtml);
+
         res.json({ message: 'E-mail confirmado com sucesso!', user: { id: user._id, name: user.name, email: user.email, role: user.role } });
     } catch (err) {
         res.status(500).json({ message: 'Erro no servidor', error: err.message });

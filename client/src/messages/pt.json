@@ -193,7 +193,9 @@
         "unverifiedNotice": "Confirme seu e-mail para desbloquear todas as funcionalidades de criar e gerir pagamentos.",
         "checkSpam": "Não recebeu? Verifique a pasta de spam ou clique abaixo para reenviar.",
         "confirmEmailCTA": "Confirmar E-mail",
-        "verifying": "Verificando seu e-mail..."
+        "verifying": "Verificando seu e-mail...",
+        "forgotPasswordText": "Esqueceu sua senha?",
+        "sendRequest": "Enviar Link de Recuperação"
     },
     "dashboard": {
         "overview": "Visão Geral",

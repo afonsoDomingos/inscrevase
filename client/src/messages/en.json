@@ -187,7 +187,9 @@
         "unverifiedNotice": "Confirm your email to unlock all features for creating and managing payments.",
         "checkSpam": "Didn't receive it? Check your spam folder or click below to resend.",
         "confirmEmailCTA": "Confirm Email",
-        "verifying": "Verifying your email..."
+        "verifying": "Verifying your email...",
+        "forgotPasswordText": "Forgot your password?",
+        "sendRequest": "Send Recovery Link"
     },
     "dashboard": {
         "overview": "Overview",
