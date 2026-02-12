@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X, Users, Mail, Sparkles, Wand2, Loader2, Search, Check, History } from 'lucide-react';
+import { Send, X, Mail, Sparkles, Loader2, Search, Check, History } from 'lucide-react';
 import { adminCommunicationService } from '@/lib/adminCommunicationService';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
@@ -17,14 +17,21 @@ interface AdminEmailModalProps {
     initialContent?: string;
 }
 
+interface EmailLog {
+    _id: string;
+    subject: string;
+    recipientEmails: string[];
+    sentAt: string | Date;
+}
+
 export default function AdminEmailModal({ isOpen, onClose, recipientId, recipientName, initialSubject, initialContent }: AdminEmailModalProps) {
-    const { locale, t } = useTranslate();
+    const { locale } = useTranslate();
     const [subject, setSubject] = useState(initialSubject || '');
     const [content, setContent] = useState(initialContent || '');
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
-    const [logs, setLogs] = useState<any[]>([]);
+    const [logs, setLogs] = useState<EmailLog[]>([]);
     const [logsLoading, setLogsLoading] = useState(false);
 
     // Bulk logic states
@@ -63,7 +70,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
         try {
             const data = await adminCommunicationService.getLogs();
             setLogs(data);
-        } catch (error) {
+        } catch {
             toast.error('Erro ao carregar histórico');
         } finally {
             setLogsLoading(false);
@@ -94,8 +101,9 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
             const data = await aiService.chat(prompt, locale);
             setContent(data.reply);
             toast.success("Conteúdo gerado com IA!");
-        } catch (err: any) {
-            toast.error(err.message || "Erro ao gerar conteúdo");
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : "Erro ao gerar conteúdo";
+            toast.error(errorMessage);
         } finally {
             setAiLoading(false);
         }
@@ -123,8 +131,9 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
             setSubject('');
             setContent('');
             onClose();
-        } catch (err: any) {
-            toast.error(err.message || 'Erro ao enviar emails');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Erro ao enviar emails';
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

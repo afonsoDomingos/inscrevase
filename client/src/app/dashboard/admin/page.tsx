@@ -1236,7 +1236,7 @@ export default function AdminDashboard() {
                     {
                         activeTab === 'forms' && (
                             <motion.div key="forms" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
-                                <FormList onEmailMentor={(mentorId, mentorName, details) => {
+                                <FormList onEmailMentor={(mentorId, mentorName) => {
                                     setSelectedEmailRecipient({ id: mentorId, name: mentorName });
                                     setIsEmailModalOpen(true);
                                 }} />
