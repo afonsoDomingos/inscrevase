@@ -236,6 +236,22 @@ function RegisterContent() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const BACKGROUND_IMAGES = useMemo(() => [
+        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2012&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=2070&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1511578334221-d3033bc853b1?q=80&w=2070&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=2070&auto=format&fit=crop"
+    ], []);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentImageIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [BACKGROUND_IMAGES]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -245,7 +261,6 @@ function RegisterContent() {
             await authService.register(formData);
             toast.success(t('auth.registerSuccess'));
 
-            // Meta Pixel Tracking
             if (typeof window !== 'undefined' && window.fbq) {
                 window.fbq('track', 'CompleteRegistration', {
                     content_name: formData.role,
@@ -259,7 +274,6 @@ function RegisterContent() {
             } else if (formData.role === 'participant') {
                 router.push('/dashboard/participant');
             } else {
-                // Mentor, Company, Specialist go to Mentor Dashboard (same interface for now)
                 router.push('/dashboard/mentor');
             }
         } catch (err: unknown) {
@@ -282,382 +296,289 @@ function RegisterContent() {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 40, rotateY: 8 }}
-            animate={{ opacity: 1, x: 0, rotateY: 0 }}
-            exit={{ opacity: 0, x: -40, rotateY: -8 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-            style={{
-                maxWidth: '480px',
-                width: '100%',
-                margin: '0 auto',
-                padding: '1.5rem',
-                perspective: '1000px',
-                background: '#121212',
-                borderRadius: '16px',
-                border: '1px solid #222',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-            }}
-        >
+        <div style={{
+            position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            zIndex: 100,
+            background: '#000'
+        }}>
             <AnimatePresence>
                 {showRoleInfo && <RoleDetailModal role={showRoleInfo} />}
             </AnimatePresence>
 
-            <div style={{ display: 'flex', marginBottom: '1.2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <Link href="/entrar" style={{ flex: 1, padding: '8px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', textDecoration: 'none', transition: 'color 0.2s' }}>
-                    <LogIn size={14} /> {t('auth.signIn')}
-                </Link>
-                <div style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem' }}>
-                    <UserPlus size={14} /> {t('auth.signUp')}
-                </div>
-            </div>
-
-
-            {/* Role Selector */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '1rem' }}>
-                <div
-                    onClick={() => setFormData({ ...formData, role: 'mentor' })}
-                    style={{
-                        padding: '0.7rem',
-                        borderRadius: '12px',
-                        background: formData.role === 'mentor' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
-                        border: formData.role === 'mentor' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        position: 'relative'
-                    }}
-                >
-                    <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('mentor'); }}
-                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
-                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
-                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
+            {/* Left Side: Visual Slideshow */}
+            <div style={{
+                flex: 1.2,
+                position: 'relative',
+                display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'block',
+                overflow: 'hidden'
+            }}>
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentImageIndex}
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        style={{ position: 'absolute', inset: 0 }}
                     >
-                        <HelpCircle size={10} /> Saiba mais
-                    </button>
-                    <Briefcase size={20} color={formData.role === 'mentor' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
-                    <span style={{ color: formData.role === 'mentor' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Mentor</span>
-                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Criar eventos</span>
-                </div>
-
-                <div
-                    onClick={() => setFormData({ ...formData, role: 'participant' })}
-                    style={{
-                        padding: '0.7rem',
-                        borderRadius: '12px',
-                        background: formData.role === 'participant' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
-                        border: formData.role === 'participant' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        position: 'relative'
-                    }}
-                >
-                    <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('participant'); }}
-                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
-                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
-                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
-                    >
-                        <HelpCircle size={10} /> Saiba mais
-                    </button>
-                    <User size={20} color={formData.role === 'participant' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
-                    <span style={{ color: formData.role === 'participant' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Participante</span>
-                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Aprender</span>
-                </div>
-
-                <div
-                    onClick={() => setFormData({ ...formData, role: 'company' })}
-                    style={{
-                        padding: '0.7rem',
-                        borderRadius: '12px',
-                        background: formData.role === 'company' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
-                        border: formData.role === 'company' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        position: 'relative'
-                    }}
-                >
-                    <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('company'); }}
-                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
-                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
-                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
-                    >
-                        <HelpCircle size={10} /> Saiba mais
-                    </button>
-                    <Briefcase size={20} color={formData.role === 'company' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
-                    <span style={{ color: formData.role === 'company' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Sou Empresa</span>
-                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Divulgar</span>
-                </div>
-
-                <div
-                    onClick={() => setFormData({ ...formData, role: 'specialist' })}
-                    style={{
-                        padding: '0.7rem',
-                        borderRadius: '12px',
-                        background: formData.role === 'specialist' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
-                        border: formData.role === 'specialist' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        position: 'relative'
-                    }}
-                >
-                    <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setShowRoleInfo('specialist'); }}
-                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#666', cursor: 'help', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '0.6rem', transition: 'color 0.2s' }}
-                        onMouseOver={(e) => e.currentTarget.style.color = '#D4AF37'}
-                        onMouseOut={(e) => e.currentTarget.style.color = '#666'}
-                    >
-                        <HelpCircle size={10} /> Saiba mais
-                    </button>
-                    <Award size={20} color={formData.role === 'specialist' ? '#D4AF37' : '#888'} style={{ marginBottom: '0.5rem' }} />
-                    <span style={{ color: formData.role === 'specialist' ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.9rem' }}>Especialista</span>
-                    <span style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.2rem' }}>Ensinar</span>
-                </div>
-            </div>
-
-            {error && (
-                <div style={{ background: 'rgba(229, 62, 62, 0.15)', color: '#fc8181', padding: '0.5rem', borderRadius: '8px', marginBottom: '0.8rem', textAlign: 'center', fontSize: '0.75rem', border: '1px solid rgba(229, 62, 62, 0.2)' }}>
-                    {error}
-                </div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '0.6rem' }}>
-                    {/* Full Name */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.fullName')}</label>
-                        <motion.div variants={inputVariants} animate={focusedField === 'name' ? 'focused' : 'initial'} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', background: 'rgba(255,255,255,0.03)' }}>
-                            <motion.div
-                                variants={iconVariants}
-                                animate={focusedField === 'name' ? 'focused' : 'initial'}
-                                transition={{ type: 'spring', stiffness: 300 }}
-                                style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}
-                            >
-                                <User size={14} />
-                            </motion.div>
-                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} onFocus={() => setFocusedField('name')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: focusedField === 'name' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
-                            <AnimatePresence>{focusedField === 'name' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
-                        </motion.div>
-                    </div>
-
-                    {/* Business Name */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.businessName')}</label>
-                        <motion.div variants={inputVariants} animate={focusedField === 'business' ? 'focused' : 'initial'} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', background: 'rgba(255,255,255,0.03)' }}>
-                            <motion.div variants={iconVariants} animate={focusedField === 'business' ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
-                                <Briefcase size={14} />
-                            </motion.div>
-                            <input type="text" value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} onFocus={() => setFocusedField('business')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: focusedField === 'business' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
-                            <AnimatePresence>{focusedField === 'business' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
-                        </motion.div>
-                    </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginBottom: '0.6rem' }}>
-                    {/* Country Searchable Picker */}
-                    <div style={{ position: 'relative' }} ref={dropdownRef}>
-                        <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.country')}</label>
-                        <motion.div
-                            variants={inputVariants}
-                            animate={showCountryPicker ? 'focused' : 'initial'}
-                            onClick={() => !loading && setShowCountryPicker(!showCountryPicker)}
-                            style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer', background: 'rgba(255,255,255,0.03)' }}
-                        >
-                            <motion.div variants={iconVariants} animate={showCountryPicker ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
-                                <Globe size={14} />
-                            </motion.div>
-                            <div className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: showCountryPicker ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff' }}>
-                                <span style={{ color: formData.country ? '#fff' : '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formData.country || "Selecione..."}</span>
-                            </div>
-                            <AnimatePresence>{showCountryPicker && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
-                        </motion.div>
-
-                        <AnimatePresence>
-                            {showCountryPicker && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    style={{
-                                        position: 'absolute',
-                                        top: '105%',
-                                        left: 0,
-                                        right: 0,
-                                        background: '#1a1a1a',
-                                        borderRadius: '12px',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                                        zIndex: 100,
-                                        border: '1px solid #333',
-                                        maxHeight: '260px',
-                                        display: 'flex',
-                                        flexDirection: 'column'
-                                    }}
-                                >
-                                    <div style={{ padding: '0.5rem', borderBottom: '1px solid #333', position: 'relative' }}>
-                                        <Search size={12} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
-                                        <input
-                                            autoFocus
-                                            type="text"
-                                            placeholder="Pesquisar..."
-                                            value={countrySearch}
-                                            onChange={(e) => setCountrySearch(e.target.value)}
-                                            style={{ width: '100%', padding: '0.4rem 0.4rem 0.4rem 1.8rem', borderRadius: '6px', border: '1px solid #333', fontSize: '0.8rem', background: '#222', color: '#fff' }}
-                                        />
-                                    </div>
-                                    <div style={{ overflowY: 'auto', flex: 1, padding: '4px' }}>
-                                        {filteredCountries.map(country => (
-                                            <div
-                                                key={country}
-                                                onClick={() => {
-                                                    setFormData({ ...formData, country });
-                                                    setShowCountryPicker(false);
-                                                    setCountrySearch('');
-                                                }}
-                                                style={{
-                                                    padding: '0.5rem 0.7rem',
-                                                    cursor: 'pointer',
-                                                    borderRadius: '6px',
-                                                    fontSize: '0.8rem',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    background: formData.country === country ? '#333' : 'transparent',
-                                                    transition: '0.2s',
-                                                    color: '#ccc'
-                                                }}
-                                                className="country-option"
-                                            >
-                                                {country}
-                                                {formData.country === country && <Check size={12} color="var(--primary)" />}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.email')}</label>
-                        <motion.div variants={inputVariants} animate={focusedField === 'email' ? 'focused' : 'initial'} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', background: 'rgba(255,255,255,0.03)' }}>
-                            <motion.div variants={iconVariants} animate={focusedField === 'email' ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
-                                <Mail size={14} />
-                            </motion.div>
-                            <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.85rem', border: focusedField === 'email' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
-                            <AnimatePresence>{focusedField === 'email' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
-                        </motion.div>
-                    </div>
-                </div>
-
-                {/* Password Field */}
-                <div style={{ marginBottom: '1.2rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 500, fontSize: '0.75rem', color: '#ccc' }}>{t('auth.password')}</label>
-                    <motion.div variants={inputVariants} animate={focusedField === 'password' ? 'focused' : 'initial'} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', background: 'rgba(255,255,255,0.03)' }}>
-                        <motion.div variants={iconVariants} animate={focusedField === 'password' ? 'focused' : 'initial'} style={{ position: 'absolute', left: '0.8rem', top: 0, bottom: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}>
-                            <Lock size={14} />
-                        </motion.div>
-                        <input type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} onFocus={() => setFocusedField('password')} onBlur={() => setFocusedField(null)} className="input-luxury" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', paddingBlock: '0.5rem', fontSize: '0.95rem', border: focusedField === 'password' ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', width: '100%' }} required disabled={loading} />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888', zIndex: 3 }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
-                        <AnimatePresence>{focusedField === 'password' && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'var(--gold-gradient)', transformOrigin: 'left' }} />}</AnimatePresence>
+                        <Image
+                            src={BACKGROUND_IMAGES[currentImageIndex]}
+                            alt="Registration background"
+                            fill
+                            style={{ objectFit: 'cover', filter: 'brightness(0.5)' }}
+                            priority
+                        />
                     </motion.div>
+                </AnimatePresence>
+
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2))',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    padding: '4rem',
+                    color: '#fff',
+                    zIndex: 2
+                }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <h2 style={{ fontSize: '3.5rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '1.5rem', background: 'linear-gradient(135deg, #fff 0%, #D4AF37 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                            Crie sua Conta Premium
+                        </h2>
+                        <p style={{ fontSize: '1.2rem', opacity: 0.8, maxWidth: '500px', lineHeight: 1.6 }}>
+                            Junte-se à maior rede de conexões e eventos exclusivos. Comece sua transformação hoje.
+                        </p>
+                    </motion.div>
+
+                    <div style={{ marginTop: 'auto', display: 'flex', gap: '2rem' }}>
+                        <div>
+                            <p style={{ fontSize: '1.5rem', fontWeight: 800 }}>100%</p>
+                            <p style={{ fontSize: '0.8rem', opacity: 0.5, textTransform: 'uppercase' }}>Seguro e Verificado</p>
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '1.5rem', fontWeight: 800 }}>Global</p>
+                            <p style={{ fontSize: '0.8rem', opacity: 0.5, textTransform: 'uppercase' }}>Presença Internacional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Side: Registration Form */}
+            <div style={{
+                flex: 1,
+                background: '#0a0a0a',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '2rem',
+                position: 'relative',
+                overflowY: 'auto'
+            }}>
+                <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
+                    <Link href="/" style={{ color: '#888', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Home
+                    </Link>
                 </div>
 
-                <motion.button
-                    whileHover={{ scale: 1.01, boxShadow: "0px 10px 30px rgba(255, 215, 0, 0.2)" }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    className="btn-primary"
-                    style={{
-                        width: '100%',
-                        padding: '0.8rem',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontSize: '0.9rem',
-                        borderRadius: '10px',
-                        marginTop: '0.4rem',
-                        background: 'var(--gold-gradient)',
-                        color: '#000',
-                        fontWeight: 700,
-                        border: 'none',
-                        cursor: 'pointer'
-                    }}
-                    disabled={loading}
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    style={{ width: '100%', maxWidth: '450px', padding: '2rem 0' }}
                 >
-                    {loading ? <Loader2 className="animate-spin" size={18} /> : <>{t('auth.createAccount')} <ArrowRight size={18} /></>}
-                </motion.button>
+                    <div style={{ marginBottom: '2rem' }}>
+                        <div style={{ display: 'flex', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <Link href="/entrar" style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}>
+                                <LogIn size={16} /> {t('auth.signIn')}
+                            </Link>
+                            <div style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
+                                <UserPlus size={16} /> {t('auth.signUp')}
+                            </div>
+                        </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', margin: '0.8rem 0' }}>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-                    <span style={{ padding: '0 10px', color: '#666', fontSize: '0.75rem' }}>OU</span>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
+                            {t('auth.signUpTitle') || 'Dê o primeiro passo'}
+                        </h1>
+                        <p style={{ color: '#666' }}>Escolha seu perfil e comece agora.</p>
+                    </div>
+
+                    {/* Role Selector */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                        {(['mentor', 'participant', 'company', 'specialist'] as const).map((role) => (
+                            <div
+                                key={role}
+                                onClick={() => setFormData({ ...formData, role })}
+                                style={{
+                                    padding: '1rem',
+                                    borderRadius: '16px',
+                                    background: formData.role === role ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
+                                    border: formData.role === role ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    position: 'relative'
+                                }}
+                            >
+                                <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); setShowRoleInfo(role); }}
+                                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#444', cursor: 'help' }}
+                                >
+                                    <HelpCircle size={14} />
+                                </button>
+                                {role === 'mentor' && <Briefcase size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                {role === 'participant' && <User size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                {role === 'company' && <Globe size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                {role === 'specialist' && <Award size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                <span style={{ color: formData.role === role ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                                    {role === 'participant' ? 'Participante' : role.charAt(0).toUpperCase() + role.slice(1)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {error && (
+                        <div style={{ background: 'rgba(229, 62, 62, 0.1)', color: '#fc8181', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', fontSize: '0.85rem', border: '1px solid rgba(229, 62, 62, 0.2)' }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.fullName')}</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#888', textTransform: 'uppercase' }}>Negócio/Empresa</label>
+                                <input
+                                    type="text"
+                                    value={formData.businessName}
+                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ position: 'relative' }} ref={dropdownRef}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.country')}</label>
+                                <div
+                                    onClick={() => !loading && setShowCountryPicker(!showCountryPicker)}
+                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', cursor: 'pointer' }}
+                                >
+                                    {formData.country || "Selecione..."}
+                                </div>
+                                <AnimatePresence>
+                                    {showCountryPicker && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            style={{ position: 'absolute', top: '105%', left: 0, right: 0, background: '#1a1a1a', borderRadius: '12px', zIndex: 100, border: '1px solid #333', maxHeight: '200px', overflowY: 'auto' }}
+                                        >
+                                            <div style={{ padding: '0.5rem', position: 'sticky', top: 0, background: '#1a1a1a' }}>
+                                                <input
+                                                    autoFocus
+                                                    type="text"
+                                                    placeholder="Pesquisar..."
+                                                    value={countrySearch}
+                                                    onChange={(e) => setCountrySearch(e.target.value)}
+                                                    style={{ width: '100%', padding: '0.5rem 1.8rem', borderRadius: '8px', border: '1px solid #333', background: '#222', color: '#fff', fontSize: '0.85rem' }}
+                                                />
+                                            </div>
+                                            {filteredCountries.map(country => (
+                                                <div key={country} onClick={() => { setFormData({ ...formData, country }); setShowCountryPicker(false); }} style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.85rem', color: formData.country === country ? '#D4AF37' : '#ccc' }}>
+                                                    {country}
+                                                </div>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.email')}</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.85rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.password')}</label>
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    required
+                                />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#444' }}>
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            type="submit"
+                            style={{ width: '100%', padding: '1.2rem', background: 'var(--gold-gradient)', color: '#000', fontWeight: 800, borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '1rem', marginTop: '1rem' }}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="animate-spin" /> : <>{t('auth.createAccount')} <ArrowRight size={20} /></>}
+                        </motion.button>
+                    </form>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
+                        <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                        <span style={{ fontSize: '0.8rem', color: '#444' }}>OU CONTINUE COM</span>
+                        <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`} style={{ flex: 1, padding: '1rem', background: '#fff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg> Google
+                        </button>
+                        <button onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`} style={{ flex: 1, padding: '1rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={18} height={18} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
+                        </button>
+                    </div>
+
+                    <p style={{ marginTop: '2.5rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
+                        {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: '#D4AF37', fontWeight: 700, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
+                    </p>
+                </motion.div>
+
+                <div style={{ padding: '2rem 0', color: '#333', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                    Inscreva-se Premium &copy; 2026
                 </div>
-
-                <div style={{ display: 'flex', gap: '0.8rem' }}>
-                    <motion.button
-                        whileHover={{ y: -2, background: 'rgba(255,255,255,0.1)' }}
-                        whileTap={{ scale: 0.95 }}
-                        type="button"
-                        onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
-                        style={{ flex: 1, padding: '0.6rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.8rem', cursor: 'pointer', color: '#fff' }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                        </svg> Google
-                    </motion.button>
-                    <motion.button
-                        whileHover={{ y: -2, background: 'rgba(0,119,181,0.2)' }}
-                        whileTap={{ scale: 0.95 }}
-                        type="button"
-                        onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`}
-                        style={{ flex: 1, padding: '0.6rem', background: 'rgba(0,119,181,0.1)', border: '1px solid rgba(0,119,181,0.3)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.8rem', cursor: 'pointer', color: '#fff' }}
-                    >
-                        <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={14} height={14} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
-                    </motion.button>
-                </div>
-            </form>
-
-            <p style={{ marginTop: '1rem', textAlign: 'center', color: '#888', fontSize: '0.8rem' }}>
-                {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: '#FFD700', fontWeight: 600, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
-            </p>
+            </div>
 
             <style>{`
-                .country-option:hover { background: #333 !important; color: var(--primary) !important; }
-                .input-luxury { width: 100%; border-radius: 8px; outline: none; transition: 0.3s; }
+                .gold-text { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             `}</style>
-        </motion.div>
+        </div>
     );
 }

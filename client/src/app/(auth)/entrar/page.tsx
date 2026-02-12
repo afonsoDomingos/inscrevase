@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
 import { useRouter } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { Suspense } from 'react';
+
+const BACKGROUND_IMAGES = [
+    "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=2070&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2012&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1511578334221-d3033bc853b1?q=80&w=2070&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=2070&auto=format&fit=crop"
+];
 
 export default function Login() {
     return (
@@ -27,7 +34,15 @@ function LoginContent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const router = useRouter();
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentImageIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,20 +76,32 @@ function LoginContent() {
             zIndex: 100,
             background: '#000'
         }}>
-            {/* Left Side: Visual/Image */}
+            {/* Left Side: Visual/Image Slideshow */}
             <div style={{
                 flex: 1.2,
                 position: 'relative',
                 display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'block',
                 overflow: 'hidden'
             }}>
-                <Image
-                    src="https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=2070&auto=format&fit=crop"
-                    alt="Event background"
-                    fill
-                    style={{ objectFit: 'cover', filter: 'brightness(0.6)' }}
-                    priority
-                />
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentImageIndex}
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        style={{ position: 'absolute', inset: 0 }}
+                    >
+                        <Image
+                            src={BACKGROUND_IMAGES[currentImageIndex]}
+                            alt="Event background"
+                            fill
+                            style={{ objectFit: 'cover', filter: 'brightness(0.5)' }}
+                            priority
+                        />
+                    </motion.div>
+                </AnimatePresence>
+
                 <div style={{
                     position: 'absolute',
                     inset: 0,
@@ -83,7 +110,8 @@ function LoginContent() {
                     flexDirection: 'column',
                     justifyContent: 'center',
                     padding: '4rem',
-                    color: '#fff'
+                    color: '#fff',
+                    zIndex: 2
                 }}>
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
