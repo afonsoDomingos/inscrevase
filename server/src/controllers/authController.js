@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Notification = require('../models/Notification');
 const Submission = require('../models/Submission');
 const sendEmail = require('../utils/emailService');
+const { generateWelcomeEmail } = require('../utils/emailTemplates');
 
 const register = async (req, res) => {
     try {
@@ -35,43 +36,8 @@ const register = async (req, res) => {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
 
-        const emailHtml = `
-            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
-                    <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
-                </div>
-                
-                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
-                    <p style="font-size: 18px; color: #333; margin-top: 0;">Bem-vindo, <strong>${name}</strong>!</p>
-                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
-                        É uma honra ter você na nossa comunidade de elite. O <strong>Inscreva-se</strong> foi desenhado para mentores que buscam excelência e escala. Sua jornada para transformar conhecimento em impacto global começa agora. 🚀
-                    </p>
-                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
-                        Para ativar sua conta e começar a criar seus eventos, confirme seu e-mail por favor:
-                    </p>
-                    
-                    <div style="text-align: center; margin: 35px 0;">
-                        <a href="${verificationLink}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
-                            Confirmar E-mail
-                        </a>
-                    </div>
-                    
-                    <p style="font-size: 14px; color: #888; text-align: center; margin-top: 25px;">
-                        Se o botão não funcionar, copie e cole este link no seu navegador:
-                        <br>
-                        <a href="${verificationLink}" style="color: #D4AF37; text-decoration: none; word-break: break-all;">${verificationLink}</a>
-                    </p>
-                </div>
-                
-                <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; paddingTop: 30px;">
-                    <p style="font-size: 12px; color: #999; margin-bottom: 5px;">Seja bem-vindo à nova era da mentoria digital.</p>
-                    <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se. Todos os direitos reservados.</p>
-                </div>
-            </div>
-        `;
-
-        await sendEmail(email, 'Confirme seu endereço de e-mail - Inscreva-se', emailHtml);
+        const welcomeHtml = generateWelcomeEmail(name, verificationLink);
+        await sendEmail(email, 'Confirme seu endereço de e-mail - Inscreva-se', welcomeHtml);
 
         // Link existing submissions for this email to the new user account
         // We search for the email in common field names used in forms

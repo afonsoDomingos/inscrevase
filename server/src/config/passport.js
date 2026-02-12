@@ -4,6 +4,8 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const User = require('../models/User');
 const Submission = require('../models/Submission');
 const axios = require('axios');
+const sendEmail = require('../utils/emailService');
+const { generateWelcomeEmail } = require('../utils/emailTemplates');
 
 // Helper to detect country from profile or IP
 const detectCountry = async (req, profileData) => {
@@ -88,6 +90,14 @@ if (googleClientId && googleClientSecret) {
                 });
 
                 await user.save();
+
+                // Send Welcome Email for Social Login (No verification needed)
+                try {
+                    const welcomeHtml = generateWelcomeEmail(profile.displayName);
+                    await sendEmail(email, 'Bem-vindo ao Inscreva-se! 💎', welcomeHtml);
+                } catch (emailErr) {
+                    console.error("Error sending social welcome email:", emailErr);
+                }
 
                 // Link existing submissions for this email
                 const emailRegex = new RegExp(`^${email}$`, 'i');
@@ -177,6 +187,14 @@ if (linkedinClientId && linkedinClientSecret) {
                 });
 
                 await user.save();
+
+                // Send Welcome Email for Social Login (No verification needed)
+                try {
+                    const welcomeHtml = generateWelcomeEmail(name);
+                    await sendEmail(email, 'Bem-vindo ao Inscreva-se! 💎', welcomeHtml);
+                } catch (emailErr) {
+                    console.error("Error sending social welcome email (LinkedIn):", emailErr);
+                }
 
                 // Link existing submissions for this email
                 const emailRegex = new RegExp(`^${email}$`, 'i');
