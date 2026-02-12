@@ -4,6 +4,7 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const User = require('../models/User');
 const Submission = require('../models/Submission');
 const axios = require('axios');
+const Notification = require('../models/Notification');
 const sendEmail = require('../utils/emailService');
 const { generateWelcomeEmail } = require('../utils/emailTemplates');
 
@@ -90,6 +91,17 @@ if (googleClientId && googleClientSecret) {
                 });
 
                 await user.save();
+
+                // Create Welcome Notification in Dashboard
+                const welcomeNotification = new Notification({
+                    recipient: user._id,
+                    sender: user._id, // System notification
+                    title: 'Bem-vindo à Elite! 💎',
+                    content: `Olá ${profile.displayName}! Sua conta foi criada com sucesso. Enviamos um e-mail especial de boas-vindas com o seu acesso e um guia rápido. Não esqueça de conferir sua caixa de entrada!`,
+                    type: 'welcome',
+                    actionUrl: '/dashboard/mentor'
+                });
+                await welcomeNotification.save();
 
                 // Send Welcome Email for Social Login (No verification needed)
                 try {
@@ -187,6 +199,17 @@ if (linkedinClientId && linkedinClientSecret) {
                 });
 
                 await user.save();
+
+                // Create Welcome Notification in Dashboard
+                const welcomeNotification = new Notification({
+                    recipient: user._id,
+                    sender: user._id, // System notification
+                    title: 'Bem-vindo à Elite! 💎',
+                    content: `Olá ${name}! Sua conta foi criada com sucesso. Enviamos um e-mail especial de boas-vindas com o seu acesso e um guia rápido. Não esqueça de conferir sua caixa de entrada!`,
+                    type: 'welcome',
+                    actionUrl: '/dashboard/mentor'
+                });
+                await welcomeNotification.save();
 
                 // Send Welcome Email for Social Login (No verification needed)
                 try {
