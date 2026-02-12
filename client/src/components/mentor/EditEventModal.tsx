@@ -128,6 +128,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [waitingVideo, setWaitingVideo] = useState('');
     const [showVideoOnStart, setShowVideoOnStart] = useState(false);
     const [videoUrl, setVideoUrl] = useState('');
+    const [videoOrientation, setVideoOrientation] = useState<'vertical' | 'horizontal'>('vertical');
+    const [logo, setLogo] = useState('');
+    const [uploadingLogo, setUploadingLogo] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [fields, setFields] = useState<any[]>([]);
 
@@ -234,6 +237,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             setWaitingVideo((form as any).waitingVideo || '');
             setShowVideoOnStart((form as any).showVideoOnStart || false);
             setVideoUrl((form as any).videoUrl || '');
+            setVideoOrientation((form as any).videoOrientation || 'vertical');
+            setLogo(form.logo || '');
             setFields(form.fields || []);
             if (form.whatsappConfig) {
                 setWhatsappConfig({
@@ -327,6 +332,22 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 toast.error(t('events.profile.uploadError'));
             } finally {
                 setUploadingImage(false);
+            }
+        }
+    };
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setUploadingLogo(true);
+            try {
+                const url = await formService.uploadFile(e.target.files[0], 'logos');
+                setLogo(url);
+                toast.success('Logo empresarial carregada!');
+            } catch (err: unknown) {
+                console.error("Logo Upload Error:", err);
+                toast.error('Erro ao carregar logo');
+            } finally {
+                setUploadingLogo(false);
             }
         }
     };
@@ -425,6 +446,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 agenda: agenda.filter(a => a.time.trim() && a.activity.trim()),
                 materials: materials.filter(m => m.name.trim() && m.url.trim()),
                 certificateConfig,
+                videoOrientation,
+                logo,
                 associatedLessons: selectedLessons,
                 partners: partners.map(p => typeof p === 'string' ? p : p._id),
                 active: form.active
@@ -792,6 +815,48 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                             </div>
 
                                             <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Logo da Empresa (Opcional)</label>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                                    <div style={{
+                                                        width: '100px',
+                                                        height: '100px',
+                                                        background: '#f8f9fa',
+                                                        borderRadius: '16px',
+                                                        border: '2px dashed #ddd',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        position: 'relative',
+                                                        overflow: 'hidden'
+                                                    }}>
+                                                        <input type="file" onChange={handleLogoUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                        {uploadingLogo ? <Loader2 className="animate-spin" size={20} /> : (
+                                                            logo ? <Image src={logo} alt="Logo" fill style={{ objectFit: 'contain', padding: '10px' }} /> : (
+                                                                <div style={{ textAlign: 'center' }}>
+                                                                    <Upload size={20} color="#aaa" />
+                                                                    <p style={{ fontSize: '0.6rem', color: '#888', marginTop: '4px' }}>Logo</p>
+                                                                </div>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.4' }}>
+                                                            Adicione uma logo empresarial para aparecer no topo do seu formulário. Se não desejar usar uma logo, deixe este campo vazio.
+                                                        </p>
+                                                        {logo && (
+                                                            <button
+                                                                onClick={() => setLogo('')}
+                                                                style={{ marginTop: '8px', fontSize: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                                                            >
+                                                                Remover Logo
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>
                                                     🎬 Vídeo de Vendas (VSL)
                                                 </label>
@@ -906,6 +971,67 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         />
                                                     </div>
                                                 </div>
+
+                                                {videoUrl && (
+                                                    <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: '#fffbeb', borderRadius: '16px', border: '1px solid #fef3c7' }}>
+                                                        <label style={{ display: 'block', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9rem', color: '#92400e' }}>
+                                                            Orientação do Vídeo (VSL)
+                                                        </label>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setVideoOrientation('vertical')}
+                                                                style={{
+                                                                    padding: '1rem',
+                                                                    borderRadius: '12px',
+                                                                    border: '2px solid',
+                                                                    borderColor: videoOrientation === 'vertical' ? '#b45309' : '#e5e7eb',
+                                                                    background: videoOrientation === 'vertical' ? '#fff' : '#f9fafb',
+                                                                    color: videoOrientation === 'vertical' ? '#b45309' : '#6b7280',
+                                                                    fontWeight: 700,
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    alignItems: 'center',
+                                                                    gap: '8px',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                            >
+                                                                <div style={{ width: '20px', height: '32px', border: '2px solid currentColor', borderRadius: '4px', position: 'relative' }}>
+                                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '8px', height: '8px', background: 'currentColor', borderRadius: '50%' }} />
+                                                                </div>
+                                                                Vertical (9:16)
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setVideoOrientation('horizontal')}
+                                                                style={{
+                                                                    padding: '1rem',
+                                                                    borderRadius: '12px',
+                                                                    border: '2px solid',
+                                                                    borderColor: videoOrientation === 'horizontal' ? '#b45309' : '#e5e7eb',
+                                                                    background: videoOrientation === 'horizontal' ? '#fff' : '#f9fafb',
+                                                                    color: videoOrientation === 'horizontal' ? '#b45309' : '#6b7280',
+                                                                    fontWeight: 700,
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    alignItems: 'center',
+                                                                    gap: '8px',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                            >
+                                                                <div style={{ width: '32px', height: '20px', border: '2px solid currentColor', borderRadius: '4px', position: 'relative' }}>
+                                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '8px', height: '8px', background: 'currentColor', borderRadius: '50%' }} />
+                                                                </div>
+                                                                Horizontal (16:9)
+                                                            </button>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: '#b45309', marginTop: '12px', lineHeight: '1.4' }}>
+                                                            Escolha a orientação correta do seu vídeo para garantir que ele seja exibido perfeitamente na página do evento.
+                                                        </p>
+                                                    </div>
+                                                )}
 
                                                 <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px' }}>
                                                     💡 Vídeo vertical (9:16) recomendado para melhor visualização. Ideal para VSLs e Reels.

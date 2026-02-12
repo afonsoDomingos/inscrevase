@@ -421,6 +421,23 @@ function HubContent() {
 
                 {/* Header Section */}
                 <div style={{ marginBottom: '50px', textAlign: 'center' }}>
+                    {form.logo && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}
+                        >
+                            <div style={{
+                                padding: '10px 20px',
+                                background: 'rgba(255,255,255,0.05)',
+                                borderRadius: '16px',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                backdropFilter: 'blur(10px)'
+                            }}>
+                                <Image src={form.logo} alt="Logo" width={160} height={60} style={{ objectFit: 'contain', height: 'auto', maxWidth: '200px' }} />
+                            </div>
+                        </motion.div>
+                    )}
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -849,7 +866,7 @@ function HubContent() {
                                                         )}
                                                     </div>
                                                     <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 700, color: '#111', lineHeight: 1.3 }}>{lesson.title}</h3>
-                                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>{lesson.description}</p>
+                                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{lesson.description}</p>
                                                 </div>
                                             </motion.div>
                                         );
@@ -885,7 +902,7 @@ function HubContent() {
                                             <div style={{ padding: '30px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div>
                                                     <h2 style={{ margin: '0 0 10px 0', color: '#000' }}>{selectedLesson.title}</h2>
-                                                    <p style={{ margin: 0, color: '#666', lineHeight: 1.5 }}>{selectedLesson.description}</p>
+                                                    <p style={{ margin: 0, color: '#666', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{selectedLesson.description}</p>
                                                 </div>
                                                 {!selectedLesson.progress?.completed && (
                                                     <button
@@ -939,7 +956,7 @@ function HubContent() {
                                                 <div style={{ fontSize: '0.85rem', color: '#888', fontWeight: 700, background: '#f4f4f4', padding: '2px 8px', borderRadius: '6px' }}>{item.duration}</div>
                                             </div>
                                             <div style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '6px', color: '#333' }}>{item.activity}</div>
-                                            {item.description && <div style={{ color: '#666', fontSize: '1rem', lineHeight: '1.6' }}>{item.description}</div>}
+                                            {item.description && <div style={{ color: '#666', fontSize: '1rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{item.description}</div>}
                                         </div>
                                     ))}
                                 </div>

@@ -479,7 +479,7 @@ export function ExpertProfileClient() {
                                 <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111' }}>{t('mentors.bio')}</h2>
                             </div>
 
-                            <p style={{ fontSize: '1.25rem', lineHeight: 2, color: '#444', whiteSpace: 'pre-line', position: 'relative', zIndex: 1 }}>
+                            <p style={{ fontSize: '1.25rem', lineHeight: 2, color: '#444', whiteSpace: 'pre-wrap', position: 'relative', zIndex: 1 }}>
                                 {mentor.bio || t('mentors.defaultBio', { role: t(`common.badges.${mentor.role || 'mentor'}`) })}
                             </p>
 
@@ -560,7 +560,7 @@ export function ExpertProfileClient() {
                                                 <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111', marginBottom: '0.8rem', lineHeight: 1.3 }}>
                                                     {service.title}
                                                 </h3>
-                                                <p style={{ color: '#666', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                <p style={{ color: '#666', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
                                                     {service.description}
                                                 </p>
                                             </div>

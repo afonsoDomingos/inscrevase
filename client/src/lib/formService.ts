@@ -45,6 +45,7 @@ export interface FormModel {
     coverImage?: string | null;
     coverImageMode?: 'full' | 'banner' | null;
     videoUrl?: string | null;
+    videoOrientation?: 'vertical' | 'horizontal';
     logo?: string;
     whatsappConfig?: {
         phoneNumber: string;

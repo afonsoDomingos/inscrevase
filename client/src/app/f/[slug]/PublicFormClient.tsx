@@ -353,6 +353,19 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         grid-template-columns: 1fr;
                     }
                 }
+                .responsive-form-grid.horizontal-vsl {
+                    grid-template-columns: 1fr 400px !important;
+                }
+                .responsive-form-grid.horizontal-vsl .vsl-column {
+                    grid-column: 1 / -1;
+                    order: -1;
+                    margin-bottom: 1rem;
+                }
+                @media (max-width: 1000px) {
+                    .responsive-form-grid.horizontal-vsl {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
             `}</style>
 
             <AnimatePresence mode="wait">
@@ -383,8 +396,34 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         </div>
                     </motion.div>
                 ) : (
-                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px' }}>
-                        <div className={`responsive-form-grid ${(form as any).videoUrl ? 'has-vsl' : 'no-vsl'}`}>
+                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: '20px', paddingRight: '20px' }}>
+
+                        {/* Company Logo Option */}
+                        {form.logo && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}
+                            >
+                                <div style={{
+                                    padding: '1rem 2rem',
+                                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                    borderRadius: '20px',
+                                    backdropFilter: 'blur(10px)',
+                                    border: `1px solid ${borderColor}`
+                                }}>
+                                    <Image
+                                        src={form.logo}
+                                        alt="Company Logo"
+                                        width={180}
+                                        height={60}
+                                        style={{ objectFit: 'contain', height: 'auto', maxWidth: '220px' }}
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+
+                        <div className={`responsive-form-grid ${(form as any).videoUrl ? 'has-vsl' : 'no-vsl'} ${(form as any).videoOrientation === 'horizontal' ? 'horizontal-vsl' : ''}`}>
 
                             {/* Column 1: Info + Banner */}
                             <motion.div
@@ -476,7 +515,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 </motion.div>
 
                                 <motion.h1 variants={itemVariants} style={{ fontSize: 'clamp(2rem, 8vw, 3rem)', fontWeight: 900, marginTop: '0', marginBottom: '1rem', color: titleColor }}>{form.title}</motion.h1>
-                                <motion.p variants={itemVariants} style={{ color: secondaryTextColor, fontSize: '1rem', lineHeight: '1.7', marginBottom: '2rem' }}>{form.description}</motion.p>
+                                <motion.p variants={itemVariants} style={{ color: secondaryTextColor, fontSize: '1rem', lineHeight: '1.7', marginBottom: '2rem', whiteSpace: 'pre-wrap' }}>{form.description}</motion.p>
 
                                 {form.whatsappConfig?.communityUrl && (
                                     <motion.a
@@ -592,7 +631,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                         )}
                                                     </div>
                                                 </div>
-                                                {form.creator.bio && <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4' }}>&quot;{form.creator.bio}&quot;</p>}
+                                                {form.creator.bio && <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4', whiteSpace: 'pre-wrap' }}>&quot;{form.creator.bio}&quot;</p>}
                                             </div>
                                         </div>
                                     </motion.div>
@@ -674,7 +713,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency, currency === 'MZN' ? 'USD' : 'MZN')}
                                         </div>
                                         {form.paymentConfig.instructions && (
-                                            <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor }}>
+                                            <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor, whiteSpace: 'pre-wrap' }}>
                                                 {form.paymentConfig.instructions}
                                             </div>
                                         )}
@@ -689,7 +728,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                         transition={{ duration: 0.6, delay: 0.2, type: 'spring' }}
-                                        style={{ position: 'sticky', top: '20px' }}
+                                        style={{ position: (form as any).videoOrientation === 'horizontal' ? 'relative' : 'sticky', top: '20px' }}
                                     >
                                         <div style={{
                                             position: 'relative',
@@ -698,9 +737,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             border: `3px solid ${primaryColor}`,
                                             boxShadow: `0 25px 50px rgba(0,0,0,0.4), inset 0 0 0 1px ${primaryColor}30`,
                                             background: '#000',
-                                            aspectRatio: '9/16',
+                                            aspectRatio: (form as any).videoOrientation === 'horizontal' ? '16/9' : '9/16',
                                             width: '100%',
-                                            maxWidth: '300px',
+                                            maxWidth: (form as any).videoOrientation === 'horizontal' ? '100%' : '300px',
                                             margin: '0 auto'
                                         }}>
                                             {/* Top Gradient Overlay */}
@@ -930,7 +969,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                             marginTop: '5px',
                                                                             fontSize: '0.8rem',
                                                                             fontStyle: 'italic',
-                                                                            color: secondaryTextColor
+                                                                            color: secondaryTextColor,
+                                                                            whiteSpace: 'pre-wrap'
                                                                         }}>
                                                                             {form.paymentConfig.instructions}
                                                                         </div>
