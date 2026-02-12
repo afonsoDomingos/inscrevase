@@ -11,6 +11,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
+const sendEmail = require('../utils/emailService');
+const { generateBasicEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
     console.log('[Submission] Starting submission process for form:', req.body.formId);
@@ -96,38 +98,14 @@ const submitForm = async (req, res) => {
             const mentor = await User.findById(form.creator);
             if (mentor && mentor.email) {
                 const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
-                const emailHtml = `
-                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
-                        <div style="text-align: center; margin-bottom: 30px;">
-                            <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto;">
-                            <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
-                        </div>
-                        
-                        <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
-                            <h2 style="color: #D4AF37; margin-top: 0;">Nova Inscrição Recebida! 📩</h2>
-                            <p style="font-size: 18px; color: #333;">Olá <strong>${mentor.name}</strong>,</p>
-                            <p style="font-size: 16px; color: #555; line-height: 1.6;">
-                                Acabamos de receber uma nova inscrição para o seu evento "<strong>${form.title}</strong>".
-                            </p>
-                            
-                            <div style="background-color: white; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #eee;">
-                                <p style="margin: 5px 0;"><strong>Participante:</strong> ${participantName}</p>
-                                <p style="margin: 5px 0;"><strong>E-mail:</strong> ${data.email || data.Email || 'Não informado'}</p>
-                            </div>
-                            
-                            <div style="text-align: center; margin: 35px 0;">
-                                <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
-                                    Ver Detalhes no Dashboard
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 30px;">
-                            <p style="font-size: 12px; color: #999; margin-bottom: 5px;">Esta é uma notificação automática de novas inscrições.</p>
-                            <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se. Todos os direitos reservados.</p>
-                        </div>
+                const content = `
+                    Acabamos de receber uma nova inscrição para o seu evento "<strong>${form.title}</strong>".
+                    <div style="background-color: white; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #eee;">
+                        <p style="margin: 5px 0;"><strong>Participante:</strong> ${participantName}</p>
+                        <p style="margin: 5px 0;"><strong>E-mail:</strong> ${data.email || data.Email || 'Não informado'}</p>
                     </div>
                 `;
+                const emailHtml = generateBasicEmail('Nova Inscrição Recebida! 📩', mentor.name, content, 'Ver Detalhes no Dashboard', dashboardUrl);
 
                 await sendEmail(mentor.email, `Nova Inscrição: ${form.title} - Inscreva-se`, emailHtml);
             }
