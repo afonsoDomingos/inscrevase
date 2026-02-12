@@ -11,6 +11,7 @@ const translations = { pt, en };
 
 interface LanguageContextType {
     locale: Locale;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     t: (key: string, variables?: Record<string, string | number>, options?: { returnObjects?: boolean }) => any;
     setLocale: (locale: Locale) => void;
 }
