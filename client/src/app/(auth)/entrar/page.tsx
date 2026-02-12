@@ -313,7 +313,7 @@ function LoginContent() {
 
                 {/* Footer Brand */}
                 <div style={{ position: 'absolute', bottom: '2rem', color: '#333', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                    Inscreva-se Premium &copy; 2026
+                    Inscreva-se &copy; 2026
                 </div>
             </div>
         </div>

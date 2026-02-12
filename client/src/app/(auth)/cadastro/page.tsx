@@ -340,7 +340,7 @@ function RegisterContent() {
                         transition={{ duration: 0.8 }}
                     >
                         <h2 style={{ fontSize: '3.5rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '1.5rem', background: 'linear-gradient(135deg, #fff 0%, #D4AF37 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            Crie sua Conta Premium
+                            Crie sua Conta
                         </h2>
                         <p style={{ fontSize: '1.2rem', opacity: 0.8, maxWidth: '500px', lineHeight: 1.6 }}>
                             Junte-se à maior rede de conexões e eventos exclusivos. Comece sua transformação hoje.
@@ -562,7 +562,7 @@ function RegisterContent() {
                 </motion.div>
 
                 <div style={{ padding: '2rem 0', color: '#333', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                    Inscreva-se Premium &copy; 2026
+                    Inscreva-se &copy; 2026
                 </div>
             </div>
 
