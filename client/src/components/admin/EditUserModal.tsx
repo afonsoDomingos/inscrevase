@@ -187,15 +187,19 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             className="input-luxury"
                                             value={role}
                                             onChange={(e) => setRole(e.target.value)}
-                                            style={{ padding: '0.6rem', opacity: currentUser?.role !== 'SuperAdmin' ? 0.6 : 1, cursor: currentUser?.role !== 'SuperAdmin' ? 'not-allowed' : 'pointer' }}
-                                            disabled={currentUser?.role !== 'SuperAdmin'}
+                                            style={{
+                                                padding: '0.6rem',
+                                                opacity: (currentUser?.role === 'SuperAdmin' || (currentUser?.role === 'admin' && user.role !== 'admin' && user.role !== 'SuperAdmin')) ? 1 : 0.6,
+                                                cursor: (currentUser?.role === 'SuperAdmin' || (currentUser?.role === 'admin' && user.role !== 'admin' && user.role !== 'SuperAdmin')) ? 'pointer' : 'not-allowed'
+                                            }}
+                                            disabled={!(currentUser?.role === 'SuperAdmin' || (currentUser?.role === 'admin' && user.role !== 'admin' && user.role !== 'SuperAdmin'))}
                                         >
                                             <option value="mentor">Mentor</option>
                                             <option value="specialist">Especialista</option>
                                             <option value="company">Empresa</option>
                                             <option value="participant">Participante</option>
-                                            <option value="admin">Admin</option>
-                                            {currentUser?.role === 'SuperAdmin' && <option value="SuperAdmin">SuperAdmin</option>}
+                                            {(currentUser?.role === 'SuperAdmin' || role === 'admin') && <option value="admin">Admin</option>}
+                                            {(currentUser?.role === 'SuperAdmin' || role === 'SuperAdmin') && <option value="SuperAdmin">SuperAdmin</option>}
                                         </select>
                                     </div>
                                     <div className="input-group">

@@ -19,6 +19,9 @@ export interface PublicImpactStats {
         totalSubmissions: number;
         totalVisits: number;
         totalMentors: number;
+        totalEvents: number;
+        totalCountries: number;
+        averageRating: number;
     };
 }
 

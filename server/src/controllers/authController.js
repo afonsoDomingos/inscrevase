@@ -191,6 +191,19 @@ const updateByAdmin = async (req, res) => {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
+        // Role-based security for Admin role
+        if (req.user.role === 'admin') {
+            // Admin cannot edit a SuperAdmin or another Admin
+            if (user.role === 'SuperAdmin' || user.role === 'admin') {
+                return res.status(403).json({ message: 'Apenas SuperAdmin pode editar outros administradores.' });
+            }
+
+            // Admin cannot promote someone to Admin or SuperAdmin
+            if (role && (role === 'admin' || role === 'SuperAdmin')) {
+                return res.status(403).json({ message: 'Apenas SuperAdmin pode atribuir funções de administrador.' });
+            }
+        }
+
         if (name) user.name = name;
         if (email) user.email = email;
         if (role) user.role = role;

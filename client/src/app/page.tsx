@@ -19,6 +19,7 @@ import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
 import SponsoredAdCard from "@/components/home/SponsoredAdCard";
 import Typewriter from "@/components/common/Typewriter";
+import { publicService, PublicImpactStats } from "@/lib/publicService";
 
 
 const galleryImages = [
@@ -38,6 +39,7 @@ export default function Home() {
   const [user, setUser] = useState<UserData | null>(null);
 
   const [sponsoredEvents, setSponsoredEvents] = useState<FormModel[]>([]);
+  const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -57,6 +59,10 @@ export default function Home() {
       }
     };
     fetchSponsored();
+
+    publicService.getImpactStats()
+      .then(setImpactStats)
+      .catch(err => console.error("Error fetching impact stats:", err));
   }, []);
 
   const getDashboardLink = () => {
@@ -447,10 +453,34 @@ export default function Home() {
             }}
           >
             {[
-              { icon: Calendar, label: t('home.stats.createdEvents'), value: '2,500+', color: '#FFD700' },
-              { icon: Users, label: t('home.stats.subscribers'), value: '150k+', color: '#00f2ea' },
-              { icon: TrendingUp, label: t('home.stats.activeMentors'), value: '450+', color: '#ff0080' },
-              { icon: Star, label: t('home.stats.averageRating'), value: '4.9', color: '#FFD700' },
+              {
+                icon: Calendar,
+                label: t('home.stats.createdEvents'),
+                value: impactStats?.globalStats.totalEvents ? `${impactStats.globalStats.totalEvents}+` : '0k+',
+                color: '#FFD700'
+              },
+              {
+                icon: Users,
+                label: t('home.stats.subscribers'),
+                value: impactStats?.globalStats.totalSubmissions ?
+                  (impactStats.globalStats.totalSubmissions >= 1000 ?
+                    `${(impactStats.globalStats.totalSubmissions / 1000).toFixed(1)}k+` :
+                    `${impactStats.globalStats.totalSubmissions}+`) :
+                  '3k+', // Real fallback if 0 or loading
+                color: '#00f2ea'
+              },
+              {
+                icon: TrendingUp,
+                label: t('home.stats.activeMentors'),
+                value: impactStats?.globalStats.totalMentors ? `${impactStats.globalStats.totalMentors}+` : '45+',
+                color: '#ff0080'
+              },
+              {
+                icon: Star,
+                label: t('home.stats.averageRating'),
+                value: impactStats?.globalStats.averageRating?.toString() || '4.9',
+                color: '#FFD700'
+              },
             ].map((stat, i) => (
               <motion.div
                 key={i}

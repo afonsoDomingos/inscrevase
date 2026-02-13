@@ -5,30 +5,16 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Users, Target, Rocket, Heart, Globe, Award, CheckCircle, Zap } from 'lucide-react';
-import { statsService } from '@/lib/statsService';
+import { publicService, PublicImpactStats } from '@/lib/publicService';
 import Typewriter from '@/components/common/Typewriter';
 
 export default function SobreNos() {
-    const [platformStats, setPlatformStats] = useState({
-        totalEvents: 10000,
-        totalParticipants: 50000,
-        totalMentors: 500,
-        totalCountries: 4
-    });
+    const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
     useEffect(() => {
-        const fetchStats = async () => {
-            const data = await statsService.getPlatformStats();
-            if (data) {
-                setPlatformStats({
-                    totalEvents: data.totalEvents || 10000,
-                    totalParticipants: data.totalParticipants || 50000,
-                    totalMentors: data.totalMentors || 500,
-                    totalCountries: data.totalCountries || 4
-                });
-            }
-        };
-        fetchStats();
+        publicService.getImpactStats()
+            .then(setImpactStats)
+            .catch(err => console.error("Error fetching impact stats:", err));
     }, []);
 
     const values = [
@@ -55,10 +41,26 @@ export default function SobreNos() {
     ];
 
     const stats = [
-        { number: `${(platformStats.totalEvents / 1000).toFixed(0)}k+`, label: "Eventos Criados" },
-        { number: `${(platformStats.totalParticipants / 1000).toFixed(0)}k+`, label: "Participantes" },
-        { number: `${platformStats.totalMentors}+`, label: "Mentores Ativos" },
-        { number: platformStats.totalCountries.toString(), label: "Países" }
+        {
+            number: impactStats?.globalStats.totalEvents ? `${impactStats.globalStats.totalEvents}+` : '0k+',
+            label: "Eventos Criados"
+        },
+        {
+            number: impactStats?.globalStats.totalSubmissions ?
+                (impactStats.globalStats.totalSubmissions >= 1000 ?
+                    `${(impactStats.globalStats.totalSubmissions / 1000).toFixed(1)}k+` :
+                    `${impactStats.globalStats.totalSubmissions}+`) :
+                '3k+',
+            label: "Participantes"
+        },
+        {
+            number: impactStats?.globalStats.totalMentors ? `${impactStats.globalStats.totalMentors}+` : '45+',
+            label: "Mentores Ativos"
+        },
+        {
+            number: impactStats?.globalStats.totalCountries?.toString() || '4',
+            label: "Países"
+        }
     ];
 
     const team = [

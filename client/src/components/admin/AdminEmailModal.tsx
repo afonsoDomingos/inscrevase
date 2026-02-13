@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X, Mail, Sparkles, Loader2, Search, Check, History } from 'lucide-react';
+import { Send, X, Mail, Sparkles, Loader2, Search, Check, History, LayoutIcon, FileText } from 'lucide-react';
 import { adminCommunicationService } from '@/lib/adminCommunicationService';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
@@ -24,13 +24,46 @@ interface EmailLog {
     sentAt: string | Date;
 }
 
+const TEMPLATES = [
+    {
+        id: 'congrats',
+        category: 'Sucesso',
+        subject: '🚀 Parabéns pelo seu Evento na Inscreva-se!',
+        content: 'Olá! Passamos para parabenizar pela excelente organização do seu último evento. O feedback dos participantes tem sido incrível e o seu perfil está a ganhar muito destaque na nossa rede de Elite. Continue o excelente trabalho!'
+    },
+    {
+        id: 'branding',
+        category: 'Melhoria',
+        subject: '🎨 Dica de Branding: Eleve o Nível do seu Formulário',
+        content: 'Olá! Notamos o seu novo evento e temos uma sugestão para aumentar as suas conversões: que tal atualizar a imagem de capa para uma foto de alta resolução e ajustar as cores do tema para combinarem com a sua marca? Formulários com branding forte convertem até 40% mais. Se precisar de ajuda, a Aura AI pode gerar uma descrição de luxo para si!'
+    },
+    {
+        id: 'verification',
+        category: 'Segurança',
+        subject: '🛡️ Verificação de Perfil Profissional',
+        content: 'Olá! Para manter o padrão de segurança e exclusividade da plataforma, solicitamos que complete a verificação do seu perfil. Isso trará o selo de "Expert Verificado", aumentando a confiança dos seus inscritos e permitindo o recebimento de pagamentos via Stripe de forma mais célere.'
+    },
+    {
+        id: 'masterclass',
+        category: 'Oportunidade',
+        subject: '🌟 Convite: Destaque na Homepage',
+        content: 'Olá! Estamos a selecionar os melhores especialistas para a nossa vitrine de Masterclasses na página principal. Vimos o seu potencial e gostaríamos de saber se tem interesse em criar um conteúdo exclusivo para este destaque. Vamos elevar o seu alcance?'
+    },
+    {
+        id: 'dormant',
+        category: 'Retenção',
+        subject: '👋 Sentimos sua falta no ecossistema!',
+        content: 'Olá! Notamos que já faz algum tempo que não cria um evento na Inscreva-se. A plataforma evoluiu com novas ferramentas de IA e automação que podem facilitar muito a sua gestão. Gostaria de agendar uma breve chamada para vermos como podemos impulsionar os seus próximos projetos?'
+    }
+];
+
 export default function AdminEmailModal({ isOpen, onClose, recipientId, recipientName, initialSubject, initialContent }: AdminEmailModalProps) {
     const { locale } = useTranslate();
     const [subject, setSubject] = useState(initialSubject || '');
     const [content, setContent] = useState(initialContent || '');
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
-    const [showHistory, setShowHistory] = useState(false);
+    const [leftTab, setLeftTab] = useState<'recipients' | 'history' | 'templates'>('recipients');
     const [logs, setLogs] = useState<EmailLog[]>([]);
     const [logsLoading, setLogsLoading] = useState(false);
 
@@ -181,18 +214,26 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                 <Mail size={24} />
                                 <h2 style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>Comunicação</h2>
                             </div>
-                            <button
-                                onClick={() => {
-                                    setShowHistory(!showHistory);
-                                    if (!showHistory) loadLogs();
-                                }}
-                                style={{ background: '#f5f5f5', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                            >
-                                <History size={14} /> {showHistory ? 'Escrever' : 'Histórico'}
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button
+                                    onClick={() => {
+                                        setLeftTab(leftTab === 'history' ? 'recipients' : 'history');
+                                        if (leftTab !== 'history') loadLogs();
+                                    }}
+                                    style={{ background: leftTab === 'history' ? '#000' : '#f5f5f5', color: leftTab === 'history' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                >
+                                    <History size={14} /> Histórico
+                                </button>
+                                <button
+                                    onClick={() => setLeftTab(leftTab === 'templates' ? 'recipients' : 'templates')}
+                                    style={{ background: leftTab === 'templates' ? '#000' : '#f5f5f5', color: leftTab === 'templates' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                >
+                                    <LayoutIcon size={14} /> Modelos
+                                </button>
+                            </div>
                         </div>
 
-                        {showHistory ? (
+                        {leftTab === 'history' ? (
                             <div style={{ display: 'grid', gap: '1rem' }}>
                                 {logsLoading ? (
                                     <div style={{ textAlign: 'center', padding: '2rem' }}><Loader2 className="animate-spin" /></div>
@@ -211,6 +252,42 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                         </div>
                                     ))
                                 )}
+                            </div>
+                        ) : leftTab === 'templates' ? (
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                {TEMPLATES.map((tmpl) => (
+                                    <button
+                                        key={tmpl.id}
+                                        onClick={() => {
+                                            setSubject(tmpl.subject);
+                                            setContent(tmpl.content);
+                                            setLeftTab('recipients');
+                                            toast.success('Modelo aplicado!');
+                                        }}
+                                        style={{
+                                            textAlign: 'left',
+                                            padding: '1.2rem',
+                                            background: '#fff',
+                                            border: '1px solid #eee',
+                                            borderRadius: '20px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#B8860B'}
+                                        onMouseLeave={(e) => e.currentTarget.style.borderColor = '#eee'}
+                                    >
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#B8860B', background: 'rgba(184,134,11,0.1)', padding: '4px 8px', borderRadius: '8px' }}>
+                                                {tmpl.category}
+                                            </span>
+                                            <FileText size={14} color="#ccc" />
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#111', marginBottom: '0.4rem', lineHeight: 1.2 }}>{tmpl.subject}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                            {tmpl.content}
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
                         ) : (
                             <>

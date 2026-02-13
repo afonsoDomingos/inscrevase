@@ -1,46 +1,48 @@
-import { Users, Calendar, Star, TrendingUp } from 'lucide-react';
+import { Users, Calendar, Star, TrendingUp, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { statsService } from '@/lib/statsService';
+import { publicService, PublicImpactStats } from '@/lib/publicService';
 import { useTranslate } from '@/context/LanguageContext';
 
 export default function SocialProof() {
     const { t } = useTranslate();
-    const [stats, setStats] = useState({
-        totalEvents: 150,
-        totalParticipants: 2500,
-        totalMentors: 45,
-        averageRating: 4.8
-    });
+    const [stats, setStats] = useState<PublicImpactStats | null>(null);
 
     useEffect(() => {
-        statsService.getPlatformStats().then(setStats);
+        publicService.getImpactStats().then(setStats).catch(console.error);
     }, []);
+
+    const formatValue = (val: number | undefined) => {
+        if (val === undefined) return '...';
+        if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M+`;
+        if (val >= 1000) return `${(val / 1000).toFixed(1)}k+`;
+        return `${val}+`;
+    };
 
     const statItems = [
         {
             icon: Calendar,
-            value: `${stats.totalEvents}+`,
+            value: formatValue(stats?.globalStats.totalEvents),
             label: t('home.stats.createdEvents'),
             color: '#FFD700'
         },
         {
             icon: Users,
-            value: `${stats.totalParticipants.toLocaleString()}+`,
+            value: formatValue(stats?.globalStats.totalSubmissions),
             label: t('home.stats.subscribers'),
             color: '#00D4FF'
         },
         {
             icon: TrendingUp,
-            value: `${stats.totalMentors}+`,
+            value: formatValue(stats?.globalStats.totalMentors),
             label: t('home.stats.activeMentors'),
             color: '#FF6B9D'
         },
         {
-            icon: Star,
-            value: stats.averageRating.toFixed(1),
-            label: t('home.stats.averageRating'),
-            color: '#FFD700'
+            icon: Globe,
+            value: `${stats?.globalStats.totalCountries || 0}+`,
+            label: t('mentors.location'),
+            color: '#4ADE80'
         }
     ];
 
