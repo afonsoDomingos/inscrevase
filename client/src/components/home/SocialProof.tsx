@@ -1,4 +1,4 @@
-import { Users, Calendar, Star, TrendingUp, Globe } from 'lucide-react';
+import { Users, Calendar, TrendingUp, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { publicService, PublicImpactStats } from '@/lib/publicService';
