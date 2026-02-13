@@ -54,6 +54,36 @@ const TEMPLATES = [
         category: 'Retenção',
         subject: '👋 Sentimos sua falta no ecossistema!',
         content: 'Olá! Notamos que já faz algum tempo que não cria um evento na Inscreva-se. A plataforma evoluiu com novas ferramentas de IA e automação que podem facilitar muito a sua gestão. Gostaria de agendar uma breve chamada para vermos como podemos impulsionar os seus próximos projetos?'
+    },
+    {
+        id: 'support_tech',
+        category: 'Suporte',
+        subject: '🛠️ Atualização do Suporte Técnico',
+        content: 'Olá! Identificamos o problema técnico que reportou no carregamento de ficheiros. A nossa equipa de engenharia já aplicou uma correção e tudo deve estar a funcionar normalmente agora. Pedimos desculpa pelo transtorno e agradecemos a sua paciência.'
+    },
+    {
+        id: 'billing_stripe',
+        category: 'Pagamentos',
+        subject: '💳 Configuração de Checkout Global (Stripe)',
+        content: 'Olá! Vimos que o seu evento está a atrair tráfego internacional. Recomendamos configurar a sua conta Stripe para aceitar pagamentos em USD/EUR, permitindo que participantes de fora de África comprem os seus bilhetes com cartão de crédito de forma instantânea. Vamos habilitar esta opção?'
+    },
+    {
+        id: 'partnership',
+        category: 'Parceria',
+        subject: '🤝 Proposta de Parceria Estratégica',
+        content: 'Olá! O Inscreva-se está a expandir a sua rede de parceiros institucionais. Dado o impacto dos seus eventos para a comunidade, gostaríamos de discutir um modelo de parceria onde poderíamos oferecer taxas reduzidas ou suporte de marketing dedicado para os seus futuros lançamentos.'
+    },
+    {
+        id: 'remind_event',
+        category: 'Engajamento',
+        subject: '⏰ Lembrete: Seu evento começa em breve!',
+        content: 'Olá! O seu evento está quase a começar e notamos que ainda restam algumas vagas. Sugerimos fazer um "último aviso" nas suas redes sociais para atrair os retardatários. Lembre-se que pode exportar a lista de participantes em formato Excel a qualquer momento no seu dashboard.'
+    },
+    {
+        id: 'feature_update',
+        category: 'Novidade',
+        subject: '✨ Nova Funcionalidade: Certificados Automáticos',
+        content: 'Olá! Acabamos de lançar a funcionalidade de Certificação Automática. Agora, assim que o seu evento terminar, os participantes podem baixar um certificado personalizado com a sua assinatura diretamente da plataforma. Isso adiciona um valor imenso para o seu público!'
     }
 ];
 
@@ -199,6 +229,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                         overflow: 'hidden',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
                         display: 'flex',
+                        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
                         height: '85vh'
                     }}
                 >
@@ -209,10 +240,10 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                         borderRight: '1px solid #eee',
                         overflowY: 'auto'
                     }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#B8860B' }}>
-                                <Mail size={24} />
-                                <h2 style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>Comunicação</h2>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#B8860B', flexShrink: 0 }}>
+                                <Mail size={window.innerWidth < 480 ? 20 : 24} />
+                                <h2 style={{ fontSize: window.innerWidth < 480 ? '1.1rem' : '1.4rem', fontWeight: 900, margin: 0 }}>Comunicação</h2>
                             </div>
                             <div style={{ display: 'flex', gap: '8px' }}>
                                 <button
@@ -226,9 +257,9 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                 </button>
                                 <button
                                     onClick={() => setLeftTab(leftTab === 'templates' ? 'recipients' : 'templates')}
-                                    style={{ background: leftTab === 'templates' ? '#000' : '#f5f5f5', color: leftTab === 'templates' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    style={{ background: leftTab === 'templates' ? '#000' : '#f5f5f5', color: leftTab === 'templates' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                                 >
-                                    <LayoutIcon size={14} /> Modelos
+                                    <LayoutIcon size={13} /> {window.innerWidth < 480 ? '' : 'Modelos'}
                                 </button>
                             </div>
                         </div>
@@ -376,10 +407,11 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                     {/* Right Panel: Editor */}
                     <div style={{
                         flex: '2',
-                        padding: '2.5rem',
+                        padding: window.innerWidth < 480 ? '1.5rem' : '2.5rem',
                         display: 'flex',
                         flexDirection: 'column',
-                        background: '#fcfcfc'
+                        background: '#fcfcfc',
+                        borderTop: window.innerWidth < 768 ? '1px solid #eee' : 'none'
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
                             <button onClick={onClose} style={{ background: '#eee', border: 'none', color: '#666', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
