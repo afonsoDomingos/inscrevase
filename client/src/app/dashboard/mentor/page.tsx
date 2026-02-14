@@ -19,6 +19,8 @@ import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
+import ReferralModal from '@/components/mentor/ReferralModal';
+import { referralService, ReferralRanking } from '@/lib/referralService';
 
 import NotificationCenter from '@/components/mentor/NotificationCenter';
 import { notificationService } from '@/lib/notificationService';
@@ -58,7 +60,8 @@ import {
     Briefcase,
     Package,
     Megaphone,
-    AlertTriangle
+    AlertTriangle,
+    Trophy
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -99,6 +102,8 @@ function MentorDashboardContent() {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
     const [isResending, setIsResending] = useState(false);
+    const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
+    const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -249,6 +254,10 @@ function MentorDashboardContent() {
             setUnreadCount(supportData.count);
             setUnreadNotifications(notificationData.count);
             if (statsData) setStats(statsData);
+
+            // Load referral ranking for overview
+            const ranking = await referralService.getRanking().catch(() => []);
+            setReferralRanking(ranking);
         } catch (error) {
             console.error('Error refreshing data:', error);
         }
@@ -414,6 +423,7 @@ function MentorDashboardContent() {
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
+                        { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
                         { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
@@ -431,6 +441,8 @@ function MentorDashboardContent() {
                             onClick={() => {
                                 if (item.link) {
                                     router.push(item.link);
+                                } else if (item.id === 'referral') {
+                                    setIsReferralModalOpen(true);
                                 } else {
                                     setActiveTab(item.id as Tab);
                                 }
@@ -1213,6 +1225,72 @@ function MentorDashboardContent() {
                                     )}
                                 </div>
                             </div>
+
+                            {/* Impact Ranking Section */}
+                            <div style={{ marginTop: '2rem' }}>
+                                <div style={{
+                                    background: 'var(--paper)',
+                                    borderRadius: '24px',
+                                    padding: '2rem',
+                                    border: '1px solid rgba(255, 215, 0, 0.1)'
+                                }}>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Trophy size={20} color="#FFD700" /> {t('referral.ranking')}
+                                    </h3>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                        {referralRanking.slice(0, 5).map((r, i) => (
+                                            <div key={r._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: i === 0 ? 'rgba(255, 215, 0, 0.05)' : 'rgba(0,0,0,0.02)', borderRadius: '16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                    <div style={{
+                                                        width: '32px',
+                                                        height: '32px',
+                                                        borderRadius: '50%',
+                                                        background: i === 0 ? 'var(--gold-gradient)' : '#eee',
+                                                        color: i === 0 ? '#000' : '#666',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontWeight: 900,
+                                                        fontSize: '0.8rem'
+                                                    }}>
+                                                        {i + 1}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.name === user.name ? 'Você' : r.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{r.referralCount} convites convertidos</div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} pts</div>
+                                            </div>
+                                        ))}
+
+                                        {referralRanking.length === 0 && (
+                                            <div style={{ textAlign: 'center', padding: '2rem', color: '#666', fontSize: '0.9rem' }}>
+                                                O ranking de impacto começará a crescer em breve! 🚀
+                                            </div>
+                                        )}
+
+                                        <button
+                                            onClick={() => setIsReferralModalOpen(true)}
+                                            style={{
+                                                width: '100%',
+                                                marginTop: '0.5rem',
+                                                background: '#111',
+                                                color: '#fff',
+                                                border: 'none',
+                                                padding: '1rem',
+                                                borderRadius: '12px',
+                                                fontWeight: 800,
+                                                cursor: 'pointer',
+                                                fontSize: '0.9rem'
+                                            }}
+                                        >
+                                            Participar & Ganhar Recompensas
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </motion.div>
                     )}
 
@@ -1426,6 +1504,11 @@ function MentorDashboardContent() {
                         />
                     )
                 }
+
+                <ReferralModal
+                    isOpen={isReferralModalOpen}
+                    onClose={() => setIsReferralModalOpen(false)}
+                />
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="mentor" />
                 <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />

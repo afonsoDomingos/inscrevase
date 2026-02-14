@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema({
     verificationRequestedAt: { type: Date },
     facebookPixelId: { type: String, sparse: true }, // Meta Pixel ID for tracking
     favoriteLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
+    referralCode: { type: String, unique: true, sparse: true },
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    referralPoints: { type: Number, default: 0 },
+    referralCount: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

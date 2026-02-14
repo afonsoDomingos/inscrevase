@@ -15,10 +15,11 @@ import LessonsManager from '@/components/admin/LessonsManager';
 import AdRequestList from '@/components/admin/AdRequestList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
+import { referralService, ReferralRanking } from '@/lib/referralService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -31,7 +32,7 @@ import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -121,6 +122,7 @@ export default function AdminDashboard() {
     });
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
+    const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
 
     const handleMigrateUsers = async () => {
         if (!confirm('Você tem certeza que deseja marcar TODOS os usuários como verificados? Esta ação é irreversível.')) {
@@ -170,6 +172,8 @@ export default function AdminDashboard() {
                 try {
                     const topMentorsData = await dashboardService.getTopMentors();
                     setTopMentors(topMentorsData);
+                    const ranking = await referralService.getRanking();
+                    setReferralRanking(ranking);
                 } catch (e) {
                     console.error("Top mentors error", e);
                 }
@@ -250,6 +254,7 @@ export default function AdminDashboard() {
         { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={20} /> },
         { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
         { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
+        { id: 'referrals', label: 'Referenciações', icon: <Trophy size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
     ].filter(item => (item.id !== 'finance' && item.id !== 'ads') || user?.role === 'SuperAdmin');
 
@@ -1296,6 +1301,80 @@ export default function AdminDashboard() {
                         activeTab === 'ads' && (
                             <motion.div key="ads" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                                 <AdRequestList />
+                            </motion.div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'referrals' && (
+                            <motion.div key="referrals" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                                <div className="luxury-card" style={{ background: '#fff', border: 'none' }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-playfair)' }}>
+                                        {t('referral.adminTitle')}
+                                    </h2>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
+                                                <th style={{ padding: '1rem', color: '#666' }}>Membro</th>
+                                                <th style={{ padding: '1rem', color: '#666' }}>Plano Atual</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Convites Ativos</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Pontuação</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {referralRanking.map((r) => (
+                                                <tr key={r._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                                                    <td style={{ padding: '1rem' }}>
+                                                        <div style={{ fontWeight: 700 }}>{r.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{r.email}</div>
+                                                    </td>
+                                                    <td style={{ padding: '1rem' }}>
+                                                        <span style={{
+                                                            padding: '4px 10px',
+                                                            borderRadius: '20px',
+                                                            background: r.plan === 'enterprise' ? '#000' : (r.plan === 'pro' ? '#FFD700' : '#eee'),
+                                                            color: r.plan === 'enterprise' ? '#FFD700' : (r.plan === 'pro' ? '#000' : '#666'),
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            {r.plan}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 700 }}>{r.referralCount}</td>
+                                                    <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} pts</td>
+                                                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                                            <button
+                                                                onClick={async () => {
+                                                                    if (confirm(`Atribuir Plano Pro (30 dias) a ${r.name}?`)) {
+                                                                        try {
+                                                                            await referralService.assignReward(r._id, 'pro', 30);
+                                                                            toast.success('Recompensa atribuída!');
+                                                                            const updRanking = await referralService.getRanking();
+                                                                            setReferralRanking(updRanking);
+                                                                        } catch (e) { toast.error('Erro ao atribuir prémio'); }
+                                                                    }
+                                                                }}
+                                                                style={{ padding: '6px 12px', borderRadius: '8px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                                                            >
+                                                                Atribuir Pro
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {referralRanking.length === 0 && (
+                                                <tr>
+                                                    <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>
+                                                        Nenhuma atividade de referenciação encontrada.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </motion.div>
                         )
                     }

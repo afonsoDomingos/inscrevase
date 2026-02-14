@@ -100,6 +100,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} />, link: '/dashboard/mentor?tab=reports' },
         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/dashboard/mentor?tab=plans' },
         { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
+        { id: 'explore', label: t('dashboard.exploreEvents'), icon: <Map size={20} />, link: '/' },
 
         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} />, link: '/dashboard/mentor?tab=settings' },
     ];

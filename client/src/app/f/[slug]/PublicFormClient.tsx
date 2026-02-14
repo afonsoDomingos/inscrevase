@@ -246,8 +246,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             position: 'relative',
             minHeight: '100vh',
             color: textColor,
-            fontFamily: form.theme?.fontFamily || 'Inter',
-            overflow: 'hidden'
+            fontFamily: form.theme?.fontFamily || 'Inter'
         }}>
             {form.creator?.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Animated Background */}
@@ -966,7 +965,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                         {form.paymentConfig?.enabled && (
                                             <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: `1px solid ${borderColor}` }}>
-                                                <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>Escolha o Método de Pagamento</h4>
+                                                <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>{t('form.paymentMethodHeader')}</h4>
 
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
                                                     {form.paymentConfig.stripeEnabled && (
@@ -980,8 +979,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'stripe' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
                                                                 <CreditCard size={20} color={paymentMode === 'stripe' ? (isDark ? '#000' : '#fff') : '#888'} />
                                                             </div>
-                                                            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>Cartão</div>
-                                                            <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>Instantâneo</div>
+                                                            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>{t('form.cardPayment')}</div>
+                                                            <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.instant')}</div>
                                                         </motion.div>
                                                     )}
                                                     <motion.div
@@ -994,8 +993,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'manual' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
                                                             <Upload size={20} color={paymentMode === 'manual' ? (isDark ? '#000' : '#fff') : '#888'} />
                                                         </div>
-                                                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'manual' ? primaryColor : titleColor }}>Manual</div>
-                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>Enviando Prova</div>
+                                                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'manual' ? primaryColor : titleColor }}>{t('form.manualPayment')}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.uploadProof')}</div>
                                                     </motion.div>
                                                 </div>
 
@@ -1017,7 +1016,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 fontSize: '0.9rem'
                                                             }}>
                                                                 <h5 style={{ fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px', color: primaryColor }}>
-                                                                    <Info size={18} /> Detalhes para Pagamento
+                                                                    <Info size={18} /> {t('form.paymentDetails')}
                                                                 </h5>
 
                                                                 <div style={{ display: 'grid', gap: '12px' }}>
@@ -1096,8 +1095,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                             <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: `${primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px' }}>
                                                                                 <Upload size={28} color={primaryColor} />
                                                                             </div>
-                                                                            <span style={{ fontSize: '1rem', fontWeight: 700, color: titleColor }}>Anexar Comprovativo</span>
-                                                                            <p style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '8px' }}>Clique ou arraste o arquivo aqui</p>
+                                                                            <span style={{ fontSize: '1rem', fontWeight: 700, color: titleColor }}>{t('form.attachComprovative')}</span>
+                                                                            <p style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '8px' }}>{t('form.clickOrDrag')}</p>
                                                                         </>
                                                                     )}
                                                                 </label>
@@ -1110,7 +1109,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 className="btn-primary premium-btn"
                                                                 style={{ width: '100%', padding: '1.4rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '20px', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '1rem', letterSpacing: '1px' }}
                                                             >
-                                                                {submitting ? <Loader2 className="animate-spin" /> : 'FINALIZAR INSCRIÇÃO'}
+                                                                {submitting ? <Loader2 className="animate-spin" /> : t('form.finishRegistration').toUpperCase()}
                                                             </motion.button>
                                                         </motion.div>
                                                     )}
@@ -1258,58 +1257,60 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             </AnimatePresence>
 
             {/* Floating Discover Platform Button */}
-            {!showPromo && (
-                <motion.a
-                    href="/"
-                    target="_blank"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.5, duration: 0.6 }}
-                    style={{
-                        position: 'fixed',
-                        bottom: '30px',
-                        right: '30px',
-                        zIndex: 100,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0',
-                        textDecoration: 'none',
-                        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
-                    }}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                >
-                    <div style={{
-                        background: '#1a1a1a',
-                        color: '#fff',
-                        padding: '10px 20px', // Smaller padding
-                        borderRadius: '10px 4px 4px 10px',
-                        fontSize: '0.65rem', // Smaller text
-                        fontWeight: 800,
-                        letterSpacing: '1.2px',
-                        textTransform: 'uppercase',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        whiteSpace: 'nowrap'
-                    }}>
-                        {t('common.discoverPlatform')}
-                    </div>
-                    <div style={{
-                        background: '#FFD700',
-                        width: '42px', // Smaller icon part
-                        height: '42px',
-                        borderRadius: '4px 10px 10px 4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#000',
-                        marginLeft: '-1px',
-                        boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
-                    }}>
-                        <ArrowRight size={18} strokeWidth={2.5} />
-                    </div>
-                </motion.a>
-            )}
-        </main>
+            {
+                !showPromo && (
+                    <motion.a
+                        href="/"
+                        target="_blank"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.5, duration: 0.6 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '30px',
+                            right: '30px',
+                            zIndex: 100,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0',
+                            textDecoration: 'none',
+                            filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
+                        }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                        <div style={{
+                            background: '#1a1a1a',
+                            color: '#fff',
+                            padding: '10px 20px', // Smaller padding
+                            borderRadius: '10px 4px 4px 10px',
+                            fontSize: '0.65rem', // Smaller text
+                            fontWeight: 800,
+                            letterSpacing: '1.2px',
+                            textTransform: 'uppercase',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            {t('common.discoverPlatform')}
+                        </div>
+                        <div style={{
+                            background: '#FFD700',
+                            width: '42px', // Smaller icon part
+                            height: '42px',
+                            borderRadius: '4px 10px 10px 4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#000',
+                            marginLeft: '-1px',
+                            boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
+                        }}>
+                            <ArrowRight size={18} strokeWidth={2.5} />
+                        </div>
+                    </motion.a>
+                )
+            }
+        </main >
     );
 }
 

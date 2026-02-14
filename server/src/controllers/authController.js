@@ -3,12 +3,13 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const Submission = require('../models/Submission');
+const Referral = require('../models/Referral');
 const sendEmail = require('../utils/emailService');
 const { generateWelcomeEmail, generateBasicEmail } = require('../utils/emailTemplates');
 
 const register = async (req, res) => {
     try {
-        const { name, email, password, businessName, country, role } = req.body;
+        const { name, email, password, businessName, country, role, referralCode } = req.body;
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ message: 'User already exists' });
 
@@ -28,8 +29,40 @@ const register = async (req, res) => {
             role: userRole,
             canCreateEvents,
             emailToken,
-            isEmailVerified: false
+            isEmailVerified: false,
+            referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
         });
+
+        // Handle Referral logic
+        if (referralCode) {
+            const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
+            if (referrer) {
+                user.referredBy = referrer._id;
+
+                // Track referral
+                const newReferral = new Referral({
+                    referrer: referrer._id,
+                    referredUser: user._id,
+                    pointsEarned: 10
+                });
+                await newReferral.save();
+
+                // Update referrer stats
+                referrer.referralPoints += 10;
+                referrer.referralCount += 1;
+                await referrer.save();
+
+                // Notify referrer
+                const referralNotification = new Notification({
+                    recipient: referrer._id,
+                    title: 'Nova Indicação de Sucesso! 🚀',
+                    content: `Parabéns! ${name} juntou-se à elite da Inscreva.se através do seu convite. Ganhou 10 pontos de impacto!`,
+                    type: 'referral'
+                });
+                await referralNotification.save();
+            }
+        }
+
         await user.save();
 
         // Send Verification Email

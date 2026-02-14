@@ -31,6 +31,24 @@ interface UpdateItem {
 
 const updates: UpdateItem[] = [
     {
+        id: 'update-4',
+        date: '14 Fev 2026',
+        version: 'v2.5.0',
+        title: { pt: 'UX de Inscrição & Mensagens Globais', en: 'Registration UX & Global Messaging' },
+        type: 'improved',
+        description: {
+            pt: 'Focamos na fluidez da experiência do participante e no alcance global da plataforma.',
+            en: 'Focused on the participant experience fluidity and the platform\'s global reach.'
+        },
+        features: [
+            { pt: 'Correção de rolagem (scroll) em formulários no computador', en: 'Fixed desktop form scrolling issues' },
+            { pt: 'Novo sistema de mensagens de indicação com visão global', en: 'New global referral messaging system' },
+            { pt: 'Remoção de validações de horário restritivas', en: 'Removed restrictive time format validations' },
+            { pt: 'Aprimoramento dos rótulos e identificação de campos', en: 'Improved field labels and identification' }
+        ],
+        icon: <Zap className="text-yellow-500" />
+    },
+    {
         id: 'update-1',
         date: '09 Fev 2026',
         version: 'v2.4.0',

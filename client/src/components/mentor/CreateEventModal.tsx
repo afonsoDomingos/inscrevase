@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -542,15 +542,6 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             return;
         }
 
-        // 3. Validar horário (formato HH:MM)
-        if (eventTime) {
-            const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-            if (!timeRegex.test(eventTime)) {
-                toast.error('Horário inválido. Use o formato HH:MM (ex: 14:30)');
-                setStep(1);
-                return;
-            }
-        }
 
         // 4. Validação condicional: Location para eventos presenciais
         if (eventType === 'modePresencial' && !location.trim()) {
@@ -2176,6 +2167,31 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 <MessageCircle size={20} />
                                                 Mensagem Automática de Boas-Vindas
                                             </label>
+
+                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
+                                                    style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                >
+                                                    {t('events.welcomeTemplates.formal')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
+                                                    style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                >
+                                                    {t('events.welcomeTemplates.excited')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
+                                                    style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                >
+                                                    {t('events.welcomeTemplates.brief')}
+                                                </button>
+                                            </div>
+
                                             <p style={{ fontSize: '0.8rem', color: '#7F1D1D', marginBottom: '1rem' }}>
                                                 Esta mensagem será enviada automaticamente pelo chat assim que o participante se inscrever.
                                             </p>
@@ -2205,7 +2221,29 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
                                             <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
                                             <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
-                                            <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.</p>
+                                            <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+                                                Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
+                                            </p>
+                                            <a
+                                                href="/dashboard/mentor/lessons"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px',
+                                                    marginTop: '1rem',
+                                                    padding: '0.75rem 1.5rem',
+                                                    borderRadius: '12px',
+                                                    background: '#111',
+                                                    color: '#FFD700',
+                                                    textDecoration: 'none',
+                                                    fontWeight: 700,
+                                                    fontSize: '0.9rem'
+                                                }}
+                                            >
+                                                Criar Nova Aula <ExternalLink size={16} />
+                                            </a>
                                         </div>
                                     ) : (
                                         <div style={{ display: 'grid', gap: '1rem' }}>
