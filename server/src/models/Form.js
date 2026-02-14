@@ -75,7 +75,14 @@ const FormSchema = new mongoose.Schema({
         requireProof: { type: Boolean, default: false },
         stripeEnabled: { type: Boolean, default: false },
         stripePriceId: { type: String },
-        stripeProductId: { type: String }
+        stripeProductId: { type: String },
+        useTieredPricing: { type: Boolean, default: false },
+        pricingTiers: [{
+            id: { type: String }, // Frontend Generated ID
+            category: { type: String, required: true }, // 'Estudante', 'VIP', 'Público Geral'
+            price: { type: Number, required: true },
+            description: { type: String }
+        }]
     },
     // Hub Customization
     hubBackgroundImage: { type: String },
