@@ -23,7 +23,8 @@ import {
     Plus,
     Bell,
     User as UserIcon,
-    ArrowRight
+    ArrowRight,
+    MessageSquare
 } from 'lucide-react';
 
 import { authService, UserData } from '@/lib/authService';
@@ -103,6 +104,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         { id: 'explore', label: t('dashboard.exploreEvents'), icon: <Map size={20} />, link: '/' },
 
         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} />, link: '/dashboard/mentor?tab=settings' },
+        { id: 'feedback', label: 'Feedbacks', icon: <MessageSquare size={20} />, link: '/dashboard/mentor?tab=feedback' },
     ];
 
     if (loading) {

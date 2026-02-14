@@ -764,7 +764,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         flexDirection: isMobile ? 'column' : 'initial',
-                        gap: isMobile ? '1rem' : '0'
+                        gap: isMobile ? '1rem' : '0',
+                        position: 'relative'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '3rem', color: '#FFD700' }}>
                             <Layout size={isMobile ? 18 : 24} />
@@ -928,81 +929,74 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             </div>
                         </div>
 
-                        {/* Draft Recovery Banner */}
+                        {/* Draft Recovery Banner - Compacted */}
                         {showDraftBanner && (
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 style={{
                                     background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-                                    border: '2px solid #fbbf24',
+                                    border: '1px solid #fbbf24',
                                     borderRadius: '12px',
-                                    padding: '1rem',
-                                    marginBottom: '1.5rem',
-                                    boxShadow: '0 4px 6px rgba(251, 191, 36, 0.1)'
+                                    padding: '0.6rem 1rem',
+                                    marginBottom: '1rem',
+                                    boxShadow: '0 2px 4px rgba(251, 191, 36, 0.05)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '12px',
+                                    flexWrap: isMobile ? 'wrap' : 'nowrap'
                                 }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                                    <AlertCircle size={20} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{
-                                            fontSize: '0.9rem',
-                                            fontWeight: 700,
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <AlertCircle size={18} color="#f59e0b" style={{ flexShrink: 0 }} />
+                                    <p style={{
+                                        fontSize: '0.8rem',
+                                        color: '#78350f',
+                                        fontWeight: 700,
+                                        margin: 0
+                                    }}>
+                                        Rascunho disponível ({
+                                            draftData
+                                                ? Math.round((Date.now() - draftData.timestamp) / 60000) < 60
+                                                    ? `${Math.round((Date.now() - draftData.timestamp) / 60000)} min atrás`
+                                                    : `${Math.round((Date.now() - draftData.timestamp) / 3600000)} h atrás`
+                                                : 'recente'
+                                        })
+                                    </p>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '8px', width: isMobile ? '100%' : 'auto', justifyContent: 'flex-end' }}>
+                                    <button
+                                        onClick={restoreDraft}
+                                        style={{
+                                            background: '#f59e0b',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            padding: '5px 12px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Restaurar
+                                    </button>
+                                    <button
+                                        onClick={discardDraft}
+                                        style={{
+                                            background: 'rgba(255,255,255,0.5)',
                                             color: '#92400e',
-                                            marginBottom: '4px'
-                                        }}>
-                                            Rascunho encontrado
-                                        </h4>
-                                        <p style={{
-                                            fontSize: '0.8rem',
-                                            color: '#78350f',
-                                            marginBottom: '12px',
-                                            lineHeight: '1.4'
-                                        }}>
-                                            Encontramos um rascunho salvo de {
-                                                draftData
-                                                    ? Math.round((Date.now() - draftData.timestamp) / 60000) < 60
-                                                        ? `${Math.round((Date.now() - draftData.timestamp) / 60000)} minutos atrás`
-                                                        : `${Math.round((Date.now() - draftData.timestamp) / 3600000)} horas atrás`
-                                                    : 'recentemente'
-                                            }. Deseja restaurar?
-                                        </p>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <button
-                                                onClick={restoreDraft}
-                                                style={{
-                                                    background: '#f59e0b',
-                                                    color: '#fff',
-                                                    border: 'none',
-                                                    borderRadius: '8px',
-                                                    padding: '8px 16px',
-                                                    fontSize: '0.8rem',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                                onMouseEnter={(e) => e.currentTarget.style.background = '#d97706'}
-                                                onMouseLeave={(e) => e.currentTarget.style.background = '#f59e0b'}
-                                            >
-                                                Restaurar Rascunho
-                                            </button>
-                                            <button
-                                                onClick={discardDraft}
-                                                style={{
-                                                    background: 'transparent',
-                                                    color: '#92400e',
-                                                    border: '1px solid #d97706',
-                                                    borderRadius: '8px',
-                                                    padding: '8px 16px',
-                                                    fontSize: '0.8rem',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                Descartar
-                                            </button>
-                                        </div>
-                                    </div>
+                                            border: '1px solid #fbbf24',
+                                            borderRadius: '6px',
+                                            padding: '5px 12px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Descartar
+                                    </button>
                                 </div>
                             </motion.div>
                         )}

@@ -17,6 +17,8 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import { useTranslate } from '@/context/LanguageContext';
+import { authService } from '@/lib/authService';
+import { feedbackService } from '@/lib/feedbackService';
 
 export default function FeedbackPage() {
     const router = useRouter();
@@ -31,13 +33,37 @@ export default function FeedbackPage() {
         email: '',
         type: 'suggestion',
         rating: 5,
-        message: ''
+        message: '',
+        targetUserId: '' // Optional target mentor
     });
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
+
+        // Get mentorId from URL if exists
+        const params = new URLSearchParams(window.location.search);
+        const mId = params.get('mentorId');
+        if (mId) {
+            setFormData(prev => ({ ...prev, targetUserId: mId }));
+        }
+
+        // Auto-fill if user is logged in
+        const loadUser = async () => {
+            try {
+                const profile = await authService.getProfile();
+                if (profile) {
+                    setFormData(prev => ({
+                        ...prev,
+                        name: profile.name,
+                        email: profile.email
+                    }));
+                }
+            } catch { }
+        };
+        loadUser();
+
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
@@ -46,23 +72,11 @@ export default function FeedbackPage() {
         setSending(true);
 
         try {
-            // Using existing contact support endpoint for now, but with [FEEDBACK] prefix
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/contact`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    subject: `[FEEDBACK] ${formData.type.toUpperCase()} - Rating: ${formData.rating}/5`,
-                    message: formData.message
-                })
-            });
-
-            if (!response.ok) throw new Error('Failed to send');
+            await feedbackService.sendFeedback(formData);
 
             setSent(true);
             toast.success(t('feedback.form.success'));
-            setFormData({ name: '', email: '', type: 'suggestion', rating: 5, message: '' });
+            setFormData({ name: '', email: '', type: 'suggestion', rating: 5, message: '', targetUserId: '' });
         } catch {
             toast.error(t('feedback.form.error'));
         } finally {
@@ -134,7 +148,7 @@ export default function FeedbackPage() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                                 <div style={{ background: '#f0f0f0', padding: '10px', borderRadius: '12px' }}><CheckCircle2 size={24} color="#10b981" /></div>
-                                <span style={{ fontWeight: 600, color: '#444' }}>{t('common.success')} garantido na evolução</span>
+                                <span style={{ fontWeight: 600, color: '#444' }}>Ganhe +10 pontos de reputação por feedback</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                                 <div style={{ background: '#f0f0f0', padding: '10px', borderRadius: '12px' }}><AlertCircle size={24} color="#3b82f6" /></div>
@@ -289,7 +303,7 @@ export default function FeedbackPage() {
                                         <CheckCircle2 size={40} />
                                     </div>
                                     <h2 style={{ fontSize: '1.75rem', fontWeight: 900, marginBottom: '10px' }}>{t('feedback.form.success')}</h2>
-                                    <p style={{ color: '#666', marginBottom: '30px' }}>Sua contribuição é fundamental para o nosso crescimento.</p>
+                                    <p style={{ color: '#666', marginBottom: '30px' }}>Você ganhou <b>+10 pontos</b>. Sua contribuição é fundamental para o nosso crescimento.</p>
                                     <button
                                         onClick={() => setSent(false)}
                                         style={{ background: 'transparent', border: '2px solid #111', color: '#111', padding: '12px 24px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer' }}

@@ -13,6 +13,7 @@ import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import SupportModal from '@/components/mentor/SupportModal';
 import ServicesManagement from '@/components/mentor/ServicesManagement';
+import FeedbackManagement from '@/components/mentor/FeedbackManagement';
 import Link from 'next/link';
 import AdManagement from '@/components/mentor/AdManagement';
 import { useTranslate } from '@/context/LanguageContext';
@@ -73,7 +74,7 @@ import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback';
 
 import { Suspense } from 'react';
 
@@ -1457,6 +1458,12 @@ function MentorDashboardContent() {
                     {activeTab === 'services' && (
                         <motion.div key="services" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <ServicesManagement />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'feedback' && (
+                        <motion.div key="feedback" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <FeedbackManagement />
                         </motion.div>
                     )}
                 </AnimatePresence>

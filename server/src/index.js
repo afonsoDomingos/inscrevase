@@ -186,6 +186,7 @@ app.use('/api/ads', require('./routes/adRoutes'));
 app.use('/api/exchange-rates', require('./routes/exchangeRate'));
 app.use('/api/admin/communication', require('./routes/adminCommunicationRoutes'));
 app.use('/api/referrals', require('./routes/referralRoutes'));
+app.use('/api/feedback', require('./routes/feedbackRoutes'));
 
 // Endpoint to get all online users
 app.get('/api/users/status/online', (req, res) => {

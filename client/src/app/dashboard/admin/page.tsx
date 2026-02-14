@@ -1354,7 +1354,7 @@ export default function AdminDashboard() {
                                                                             toast.success('Recompensa atribuída!');
                                                                             const updRanking = await referralService.getRanking();
                                                                             setReferralRanking(updRanking);
-                                                                        } catch (e) { toast.error('Erro ao atribuir prémio'); }
+                                                                        } catch { toast.error('Erro ao atribuir prémio'); }
                                                                     }
                                                                 }}
                                                                 style={{ padding: '6px 12px', borderRadius: '8px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}

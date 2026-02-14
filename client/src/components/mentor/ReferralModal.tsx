@@ -9,9 +9,7 @@ import {
     Trophy,
     Users,
     Star,
-    ChevronRight,
     Gift,
-    ExternalLink,
     Loader2,
     Mail,
     Linkedin,
@@ -373,7 +371,7 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
 
                                 {/* Motivation Quote */}
                                 <div style={{ textAlign: 'center', fontStyle: 'italic', color: '#666', fontSize: '0.85rem', padding: '1rem 2rem' }}>
-                                    "{t('referral.motivation.education')}"
+                                    &quot;{t('referral.motivation.education')}&quot;
                                 </div>
 
                                 {/* History */}
