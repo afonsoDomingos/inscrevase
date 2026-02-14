@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -2409,55 +2409,150 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         )}
                     </AnimatePresence>
 
-                    {/* PREVIEW MODAL OVERLAY */}
+                    {/* PREVIEW MODAL OVERLAY - Enhanced with field list and structured content */}
                     <AnimatePresence>
                         {showPreview && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.9)', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                style={{ position: 'fixed', inset: 0, zIndex: 3100, background: 'rgba(0,0,0,0.85)', padding: isMobile ? '0' : '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}
                             >
-                                <div style={{ width: '100%', maxWidth: '1000px', height: '90vh', background: '#fff', borderRadius: '24px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
-                                    <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
-                                        <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#333', fontWeight: 700 }}>
-                                            <Eye size={18} /> Pré-visualização do Evento
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    style={{
+                                        width: '100%',
+                                        maxWidth: '1000px',
+                                        height: isMobile ? '100vh' : '90vh',
+                                        background: theme.backgroundColor || '#fff',
+                                        borderRadius: isMobile ? '0' : '24px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                                        border: `1px solid ${theme.primaryColor}33`
+                                    }}
+                                >
+                                    <div style={{ padding: '1.2rem 1.5rem', borderBottom: `1px solid ${theme.primaryColor}22`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.02)' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '10px', color: theme.primaryColor, fontWeight: 700 }}>
+                                            <Eye size={20} /> {t('preview.title') || 'Pré-visualização do Evento'}
                                         </h3>
-                                        <button onClick={() => setShowPreview(false)} style={{ background: '#f7fafc', border: 'none', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
+                                        <button onClick={() => setShowPreview(false)} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}><X size={20} /></button>
                                     </div>
-                                    <div style={{ flex: 1, overflowY: 'auto', background: theme.backgroundColor, color: theme.style === 'luxury' && (theme.backgroundColor === '#050505' || theme.backgroundColor === '#000000') ? '#fff' : '#1a202c' }}>
-                                        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' }}>
-                                            {coverImage && (
-                                                <div style={{ width: '100%', height: '300px', position: 'relative', borderRadius: '20px', overflow: 'hidden', marginBottom: '2rem', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.2)' }}>
-                                                    <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+
+                                    <div style={{ flex: 1, overflowY: 'auto', color: theme.style === 'luxury' && (theme.backgroundColor === '#050505' || theme.backgroundColor === '#000000') ? '#fff' : '#1a202c', position: 'relative' }}>
+                                        {/* Logo Preview */}
+                                        {logo && (
+                                            <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
+                                                <Image src={logo} alt="Logo" width={100} height={35} style={{ objectFit: 'contain' }} />
+                                            </div>
+                                        )}
+
+                                        {/* Cover Image */}
+                                        {coverImage ? (
+                                            <div style={{ width: '100%', height: '350px', position: 'relative' }}>
+                                                <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+                                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))' }} />
+                                            </div>
+                                        ) : (
+                                            <div style={{ width: '100%', height: '100px', background: theme.primaryColor + '11' }} />
+                                        )}
+
+                                        <div style={{ maxWidth: '850px', margin: '0 auto', padding: '3rem 2rem', marginTop: coverImage ? '-60px' : '0', position: 'relative', zIndex: 2 }}>
+                                            <div style={{ background: theme.backgroundColor, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', border: `1px solid ${theme.primaryColor}22` }}>
+                                                <h1 style={{ fontSize: isMobile ? '2.2rem' : '3rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1, color: theme.primaryColor, fontFamily: theme.fontFamily }}>
+                                                    {title || 'Título do seu evento incrível'}
+                                                </h1>
+
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', opacity: 0.9, fontSize: '1rem', fontWeight: 600 }}>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Data a definir'}</span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📍 {location || (onlineLink ? 'Online' : 'Local a definir')}</span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.primaryColor }}>
+                                                        💰 {paymentConfig.enabled
+                                                            ? (paymentConfig.useTieredPricing ? 'Várias Categorias' : `${paymentConfig.currency} ${paymentConfig.price}`)
+                                                            : 'Gratuito'}
+                                                    </span>
                                                 </div>
-                                            )}
 
-                                            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2, color: theme.primaryColor }}>{title || 'Título do seu evento incrível'}</h1>
+                                                {/* Video Preview */}
+                                                {videoUrl && (
+                                                    <div style={{ marginBottom: '3rem', borderRadius: '24px', overflow: 'hidden', border: `1px solid ${theme.primaryColor}44`, aspectRatio: videoOrientation === 'vertical' ? '9/16' : '16/9', maxHeight: '500px', margin: '0 auto 3rem', background: '#000' }}>
+                                                        <video src={videoUrl} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </div>
+                                                )}
 
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem', opacity: 0.8, fontSize: '1rem' }}>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Data a definir'}</span>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>📍 {location || 'Local a definir'}</span>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    💰 {paymentConfig.enabled
-                                                        ? (paymentConfig.useTieredPricing ? 'Vários Preços' : `${paymentConfig.currency} ${paymentConfig.price}`)
-                                                        : 'Gratuito'}
-                                                </span>
+                                                <div style={{ lineHeight: 1.8, fontSize: '1.15rem', opacity: 0.95, whiteSpace: 'pre-line', marginBottom: '4rem' }}>
+                                                    {description || 'A descrição do seu evento aparecerá aqui detalhando tudo o que seus participantes precisam saber...'}
+                                                </div>
+
+                                                {/* Form Fields Preview Section */}
+                                                <div style={{ borderTop: `1px solid ${theme.primaryColor}22`, paddingTop: '3rem' }}>
+                                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <FileText size={24} color={theme.primaryColor} /> Faça sua Inscrição
+                                                    </h3>
+
+                                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                                        {fields.map((field) => (
+                                                            <div key={field.id}>
+                                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.6rem', fontSize: '0.9rem', opacity: 0.8 }}>
+                                                                    {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+                                                                </label>
+                                                                <div style={{
+                                                                    width: '100%',
+                                                                    padding: '1.2rem',
+                                                                    borderRadius: '16px',
+                                                                    background: theme.style === 'luxury' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                                                    border: `1px solid ${theme.primaryColor}33`,
+                                                                    color: '#888',
+                                                                    fontSize: '0.95rem'
+                                                                }}>
+                                                                    {field.type === 'date' ? '00/00/0000' : field.type === 'select' ? 'Selecione uma opção...' : `Digite seu ${field.label.toLowerCase()}...`}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* WhatsApp Trigger Preview */}
+                                                        {(whatsappConfig.phoneNumber || whatsappConfig.communityUrl) && (
+                                                            <div style={{ marginTop: '1rem', padding: '1.5rem', borderRadius: '20px', background: 'rgba(37, 211, 102, 0.05)', border: '1px solid rgba(37, 211, 102, 0.2)', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                                <div style={{ width: '45px', height: '45px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                                                    <MessageCircle size={24} />
+                                                                </div>
+                                                                <div>
+                                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Botão do WhatsApp Ativo</div>
+                                                                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Os participantes poderão te contactar via WhatsApp.</div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        <button
+                                                            disabled
+                                                            style={{
+                                                                marginTop: '1.5rem',
+                                                                width: '100%',
+                                                                padding: '1.5rem',
+                                                                borderRadius: '20px',
+                                                                background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
+                                                                color: '#000',
+                                                                fontWeight: 900,
+                                                                fontSize: '1.1rem',
+                                                                border: 'none',
+                                                                opacity: 0.8,
+                                                                boxShadow: `0 10px 30px ${theme.primaryColor}33`
+                                                            }}
+                                                        >
+                                                            {paymentConfig.enabled ? 'PAGAR E INSCREVER' : 'CONFIRMAR INSCRIÇÃO'}
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            <div style={{ lineHeight: 1.8, fontSize: '1.1rem', opacity: 0.9, whiteSpace: 'pre-line' }}>
-                                                {description || 'A descrição do seu evento aparecerá aqui...'}
-                                            </div>
-
-                                            <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px dashed ' + theme.primaryColor, textAlign: 'center' }}>
-                                                <p style={{ marginBottom: '1rem', fontWeight: 600 }}>Área de Inscrição (Simulação)</p>
-                                                <button style={{ background: theme.primaryColor, color: (['#FFD700', '#ffffff', '#e2e8f0'].includes(theme.primaryColor)) ? '#000' : '#fff', padding: '1rem 2rem', borderRadius: '12px', fontWeight: 700, border: 'none', fontSize: '1rem' }}>
-                                                    Inscrever-se Agora
-                                                </button>
+                                            <div style={{ textAlign: 'center', marginTop: '3rem', opacity: 0.5, fontSize: '0.8rem' }}>
+                                                © {new Date().getFullYear()} Inscreva.se - Todos os direitos reservados
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         )}
                     </AnimatePresence>

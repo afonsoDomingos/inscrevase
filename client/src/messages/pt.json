@@ -104,6 +104,10 @@
             "nov": "Nov",
             "dec": "Dez"
         },
+        "preview": {
+            "title": "Pré-visualização do Evento",
+            "registrationTitle": "Faça sua Inscrição"
+        },
         "newEra": "A Nova Era de Eventos",
         "menu": "Menu",
         "badges": {

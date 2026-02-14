@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -30,6 +30,17 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const checkMobile = () => setIsMobile(window.innerWidth <= 1024);
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+            return () => window.removeEventListener('resize', checkMobile);
+        }
+    }, []);
 
     // Marketing State
     const [marketingPlatform, setMarketingPlatform] = useState('instagram');
@@ -541,12 +552,35 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     <div className="edit-event-content">
                         {/* Scrollable Area */}
                         <div style={{ flex: 1, overflowY: 'auto', padding: '3rem', paddingBottom: '120px', minHeight: 0 }} className="custom-scrollbar">
-                            <button
-                                onClick={onClose}
-                                style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
-                            >
-                                <X size={18} />
-                            </button>
+                            <div style={{ position: 'absolute', top: '2rem', right: '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
+                                <button
+                                    onClick={() => setShowPreview(true)}
+                                    title="Pré-visualizar Alterações"
+                                    style={{
+                                        background: '#fff',
+                                        border: '1px solid #ddd',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '20px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 600,
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                        color: '#333'
+                                    }}
+                                >
+                                    <Eye size={18} />
+                                    {!isMobile && "Pré-visualizar"}
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    style={{ background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
 
                             <AnimatePresence mode="wait">
                                 {step === 1 && (
@@ -2009,6 +2043,151 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                             </button>
                         </div >
                     </div >
+                    {/* PREVIEW MODAL OVERLAY - Enhanced version */}
+                    <AnimatePresence>
+                        {showPreview && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                style={{ position: 'fixed', inset: 0, zIndex: 3100, background: 'rgba(0,0,0,0.85)', padding: isMobile ? '0' : '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}
+                            >
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    style={{
+                                        width: '100%',
+                                        maxWidth: '1000px',
+                                        height: isMobile ? '100vh' : '90vh',
+                                        background: theme.backgroundColor || '#fff',
+                                        borderRadius: isMobile ? '0' : '24px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                                        border: `1px solid ${theme.primaryColor}33`
+                                    }}
+                                >
+                                    <div style={{ padding: '1.2rem 1.5rem', borderBottom: `1px solid ${theme.primaryColor}22`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.02)' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '10px', color: theme.primaryColor, fontWeight: 700 }}>
+                                            <Eye size={20} /> {t('preview.title') || 'Pré-visualização do Evento'}
+                                        </h3>
+                                        <button onClick={() => setShowPreview(false)} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}><X size={20} /></button>
+                                    </div>
+
+                                    <div style={{ flex: 1, overflowY: 'auto', color: theme.style === 'luxury' && (theme.backgroundColor === '#050505' || theme.backgroundColor === '#000000') ? '#fff' : '#1a202c', position: 'relative' }}>
+                                        {/* Logo Preview */}
+                                        {logo && (
+                                            <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
+                                                <Image src={logo} alt="Logo" width={100} height={35} style={{ objectFit: 'contain' }} />
+                                            </div>
+                                        )}
+
+                                        {/* Cover Image */}
+                                        {coverImage ? (
+                                            <div style={{ width: '100%', height: '350px', position: 'relative' }}>
+                                                <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+                                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))' }} />
+                                            </div>
+                                        ) : (
+                                            <div style={{ width: '100%', height: '100px', background: theme.primaryColor + '11' }} />
+                                        )}
+
+                                        <div style={{ maxWidth: '850px', margin: '0 auto', padding: '3rem 2rem', marginTop: coverImage ? '-60px' : '0', position: 'relative', zIndex: 2 }}>
+                                            <div style={{ background: theme.backgroundColor, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', border: `1px solid ${theme.primaryColor}22` }}>
+                                                <h1 style={{ fontSize: isMobile ? '2.2rem' : '3rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1, color: theme.primaryColor, fontFamily: theme.fontFamily }}>
+                                                    {title || 'Título do seu evento incrível'}
+                                                </h1>
+
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', opacity: 0.9, fontSize: '1rem', fontWeight: 600 }}>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Data a definir'}</span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📍 {location || (onlineLink ? 'Online' : 'Local a definir')}</span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.primaryColor }}>
+                                                        💰 {paymentConfig.enabled ? `${paymentConfig.currency} ${paymentConfig.price}` : 'Gratuito'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Video Preview */}
+                                                {videoUrl && (
+                                                    <div style={{ marginBottom: '3rem', borderRadius: '24px', overflow: 'hidden', border: `1px solid ${theme.primaryColor}44`, aspectRatio: videoOrientation === 'vertical' ? '9/16' : '16/9', maxHeight: '500px', margin: '0 auto 3rem', background: '#000' }}>
+                                                        <video src={videoUrl} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </div>
+                                                )}
+
+                                                <div style={{ lineHeight: 1.8, fontSize: '1.15rem', opacity: 0.95, whiteSpace: 'pre-line', marginBottom: '4rem' }}>
+                                                    {description || 'A descrição do seu evento aparecerá aqui detalhando tudo o que seus participantes precisam saber...'}
+                                                </div>
+
+                                                {/* Form Fields Preview Section */}
+                                                <div style={{ borderTop: `1px solid ${theme.primaryColor}22`, paddingTop: '3rem' }}>
+                                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <FileText size={24} color={theme.primaryColor} /> {t('preview.registrationTitle') || 'Faça sua Inscrição'}
+                                                    </h3>
+
+                                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                                        {fields.map((field, idx) => (
+                                                            <div key={idx}>
+                                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.6rem', fontSize: '0.9rem', opacity: 0.8 }}>
+                                                                    {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+                                                                </label>
+                                                                <div style={{
+                                                                    width: '100%',
+                                                                    padding: '1.2rem',
+                                                                    borderRadius: '16px',
+                                                                    background: theme.style === 'luxury' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                                                    border: `1px solid ${theme.primaryColor}33`,
+                                                                    color: '#888',
+                                                                    fontSize: '0.95rem'
+                                                                }}>
+                                                                    {field.type === 'date' ? '00/00/0000' : field.type === 'select' ? 'Selecione uma opção...' : `Digite seu ${field.label.toLowerCase()}...`}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* WhatsApp Trigger Preview */}
+                                                        {(whatsappConfig.phoneNumber || whatsappConfig.communityUrl) && (
+                                                            <div style={{ marginTop: '1rem', padding: '1.5rem', borderRadius: '20px', background: 'rgba(37, 211, 102, 0.05)', border: '1px solid rgba(37, 211, 102, 0.2)', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                                <div style={{ width: '45px', height: '45px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                                                    <MessageCircle size={24} />
+                                                                </div>
+                                                                <div>
+                                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Botão do WhatsApp Ativo</div>
+                                                                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Os participantes poderão te contactar via WhatsApp.</div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        <button
+                                                            disabled
+                                                            style={{
+                                                                marginTop: '1.5rem',
+                                                                width: '100%',
+                                                                padding: '1.5rem',
+                                                                borderRadius: '20px',
+                                                                background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
+                                                                color: '#000',
+                                                                fontWeight: 900,
+                                                                fontSize: '1.1rem',
+                                                                border: 'none',
+                                                                opacity: 0.8,
+                                                                boxShadow: `0 10px 30px ${theme.primaryColor}33`
+                                                            }}
+                                                        >
+                                                            {paymentConfig.enabled ? 'PAGAR E INSCREVER' : 'CONFIRMAR INSCRIÇÃO'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div style={{ textAlign: 'center', marginTop: '3rem', opacity: 0.5, fontSize: '0.8rem' }}>
+                                                © {new Date().getFullYear()} Inscreva.se - Todos os direitos reservados
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </motion.div >
             </div >
         </AnimatePresence >
