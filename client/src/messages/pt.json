@@ -1318,37 +1318,40 @@
         "wallOfLove": {
             "title": "Voz de quem Inspira",
             "subtitle": "O que nossos experts e participantes estão dizendo sobre a nova era da Inscreva-se."
+        }
+    },
+    "referral": {
+        "title": "Indicações & Recompensas",
+        "subtitle": "Convide mentores e amigos para a plataforma e desbloqueie benefícios exclusivos por cada indicação.",
+        "inviteButton": "Convidar Amigos & Mentores",
+        "copyLink": "Copiar Link de Convite",
+        "linkCopied": "Link copiado com sucesso!",
+        "points": "Pontos Acumulados",
+        "totalInvites": "Convites Enviados",
+        "converted": "Convertidos",
+        "rewards": "Recompensas & Benefícios",
+        "nextGoal": "Próximo Objetivo",
+        "socialMissions": "Missões Sociais",
+        "socialMissionsDesc": "Ganhe +10 pontos por cada rede que seguir",
+        "followTask": "Seguir",
+        "shareMessage": "A Revolução dos Eventos e do Networking Já Começou — E Você Está Convidado\n\nExiste uma nova plataforma a transformar a forma como especialistas, empresas, mentores e pessoas que buscam conhecimento se conectam, aprendem e crescem juntos.\n\nEstou a convidar-te a conhecer esta nova forma de viver eventos e networking de alto nível.\n\n💡 Conecte-se com especialistas\n🤝 Expanda o seu networking\n📚 Acesse eventos e conhecimentos que geram resultados\n🚀 Faça parte de uma comunidade focada em crescimento real\n\n👉 Aceite o convite, conheça a plataforma e convide outros para fazerem parte desta nova era.\n\nInovação deve ser partilhada.\n\nO futuro do conhecimento é colaborativo. Comece hoje.\n\nRegista-te aqui: ",
+        "shareEmail": "Convidar por E-mail",
+        "shareLinkedIn": "Partilhar no LinkedIn",
+        "shareFacebook": "Partilhar no Facebook",
+        "shareWhatsApp": "Partilhar no WhatsApp",
+        "emailSubject": "Convite: Conheça a Inscreva-se - A Revolução dos Eventos e Networking",
+        "ranking": "Ranking de Impacto",
+        "adminTitle": "Gestão de Referenciações",
+        "assignReward": "Atribuir Prémio",
+        "benefits": {
+            "pro": "Plano Pro (30 dias)",
+            "enterprise": "Plano Enterprise (15 dias)",
+            "exclusive": "Funcionalidades Exclusivas"
         },
-        "referral": {
-            "title": "Impacto & Conhecimento Partilhado",
-            "subtitle": "Transforme vidas ao espalhar a revolução da educação. Convide outros líderes e ganhe recompensas exclusivas.",
-            "inviteButton": "Convidar Amigos & Mentores",
-            "copyLink": "Copiar Link de Convite",
-            "linkCopied": "Link copiado com sucesso!",
-            "points": "Pontos Acumulados",
-            "totalInvites": "Convites Enviados",
-            "converted": "Convertidos",
-            "rewards": "Recompensas & Benefícios",
-            "nextGoal": "Próximo Objetivo",
-            "shareMessage": "A Revolução dos Eventos e do Networking Já Começou — E Você Está Convidado\n\nExiste uma nova plataforma a transformar a forma como especialistas, empresas, mentores e pessoas que buscam conhecimento se conectam, aprendem e crescem juntos.\n\nEstou a convidar-te a conhecer esta nova forma de viver eventos e networking de alto nível.\n\n💡 Conecte-se com especialistas\n🤝 Expanda o seu networking\n📚 Acesse eventos e conhecimentos que geram resultados\n🚀 Faça parte de uma comunidade focada em crescimento real\n\n👉 Aceite o convite, conheça a plataforma e convide outros para fazerem parte desta nova era.\n\nInovação deve ser partilhada.\n\nO futuro do conhecimento é colaborativo. Comece hoje.\n\nRegista-te aqui: ",
-            "shareEmail": "Convidar por E-mail",
-            "shareLinkedIn": "Partilhar no LinkedIn",
-            "shareFacebook": "Partilhar no Facebook",
-            "shareWhatsApp": "Partilhar no WhatsApp",
-            "emailSubject": "Convite: Conheça a Inscreva-se - A Revolução dos Eventos e Networking",
-            "ranking": "Ranking de Impacto",
-            "adminTitle": "Gestão de Referenciações",
-            "assignReward": "Atribuir Prémio",
-            "benefits": {
-                "pro": "Plano Pro (30 dias)",
-                "enterprise": "Plano Enterprise (15 dias)",
-                "exclusive": "Funcionalidades Exclusivas"
-            },
-            "motivation": {
-                "education": "O conhecimento é a única riqueza que cresce quando é partilhada.",
-                "networking": "A sua rede é o seu património líquido. Traga os melhores para perto.",
-                "value": "Crie valor real para a sua comunidade através da Inscreva.se."
-            }
+        "motivation": {
+            "education": "O conhecimento é a única riqueza que cresce quando é partilhada.",
+            "networking": "A sua rede é o seu património líquido. Traga os melhores para perto.",
+            "value": "Crie valor real para a sua comunidade através da Inscreva.se."
         }
     }
 }

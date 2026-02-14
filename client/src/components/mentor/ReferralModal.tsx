@@ -13,7 +13,9 @@ import {
     Loader2,
     Mail,
     Linkedin,
-    Facebook
+    Facebook,
+    Instagram,
+    Youtube
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
@@ -364,6 +366,66 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                                                     <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{reward.label}</div>
                                                 </div>
                                                 <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#FFD700' }}>{reward.points} {t('referral.points')}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Social Missions Section */}
+                                <div style={{ background: '#fff', border: '1px solid #eee', borderRadius: '24px', padding: '1.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                        <div>
+                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>{t('referral.socialMissions')}</h3>
+                                            <p style={{ fontSize: '0.8rem', color: '#666', margin: '4px 0 0 0' }}>{t('referral.socialMissionsDesc')}</p>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 800 }}>
+                                            BÔNUS
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                        {[
+                                            { name: 'Instagram', icon: <div style={{ color: '#E1306C' }}><Instagram size={20} /></div>, url: 'https://instagram.com/inscrevase' },
+                                            { name: 'LinkedIn', icon: <div style={{ color: '#0077B5' }}><Linkedin size={20} /></div>, url: 'https://www.linkedin.com/company/inscreva-se' },
+                                            { name: 'YouTube', icon: <div style={{ color: '#FF0000' }}><Youtube size={20} /></div>, url: 'https://www.youtube.com/@Inscreva-se-events' },
+                                            {
+                                                name: 'TikTok',
+                                                icon: (
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                                                    </svg>
+                                                ),
+                                                url: 'https://www.tiktok.com/@inscreva_se_events'
+                                            }
+                                        ].map((social, idx) => (
+                                            <div key={idx} style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '1rem',
+                                                background: '#f8f9fa',
+                                                borderRadius: '16px',
+                                                border: '1px solid #f0f0f0'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    {social.icon}
+                                                    <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{social.name}</span>
+                                                </div>
+                                                <button
+                                                    onClick={() => window.open(social.url, '_blank')}
+                                                    style={{
+                                                        background: '#111',
+                                                        color: '#FFD700',
+                                                        border: 'none',
+                                                        padding: '0.4rem 0.8rem',
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 800,
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    {t('referral.followTask')}
+                                                </button>
                                             </div>
                                         ))}
                                     </div>
