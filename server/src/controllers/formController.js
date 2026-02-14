@@ -5,6 +5,8 @@ const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const mongoose = require('mongoose');
+const Visit = require('../models/Visit');
+const geoip = require('geoip-lite');
 
 
 exports.createForm = async (req, res) => {
@@ -453,16 +455,55 @@ exports.getFormsByMentor = async (req, res) => {
 exports.recordVisit = async (req, res) => {
     try {
         const { slug } = req.params;
-        const form = await Form.findOneAndUpdate(
-            { slug },
-            { $inc: { visits: 1 } },
-            { new: true }
-        );
-        if (!form) return res.status(404).json({ message: 'Form not found' });
-        res.json({ success: true, visits: form.visits });
+        const { visitorId, referrer, browser, os, deviceType, utmSource, utmMedium, utmCampaign, utmContent, utmTerm } = req.body;
+
+        // 1. IP Tracking & Geo
+        const ipRaw = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+        const ip = ipRaw.split(',')[0].trim();
+        const geo = geoip.lookup(ip);
+        const country = geo ? geo.country : null;
+        const city = geo ? geo.city : null;
+
+        // 2. Prevent F5 Spam (5 min logic)
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        const existingVisit = visitorId ? await Visit.findOne({
+            visitorId,
+            page: `event/${slug}`,
+            timestamp: { $gte: fiveMinutesAgo }
+        }) : null;
+
+        if (!existingVisit) {
+            // 3. Create Detailed Visit Record
+            const visit = new Visit({
+                visitorId: visitorId || 'anonymous',
+                ip,
+                page: `event/${slug}`,
+                referrer,
+                browser,
+                os,
+                deviceType,
+                country,
+                city,
+                utmSource,
+                utmMedium,
+                utmCampaign,
+                utmContent,
+                utmTerm
+            });
+            await visit.save();
+
+            // 4. Increment simple counter on Form
+            await Form.findOneAndUpdate(
+                { slug },
+                { $inc: { visits: 1 } }
+            );
+        }
+
+        res.json({ success: true });
     } catch (err) {
         console.error("Record form visit error:", err);
-        res.status(500).json({ message: 'Server error' });
+        // Fail silently to frontend but log error
+        res.status(200).json({ success: false });
     }
 };
 

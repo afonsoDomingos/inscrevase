@@ -16,6 +16,12 @@ const visitSchema = new mongoose.Schema({
     referrer: {
         type: String // De onde veio (Google, Link direto, etc)
     },
+    // UTM Parameters (Marketing Tracking)
+    utmSource: String,   // ex: google, facebook, newsletter
+    utmMedium: String,   // ex: cpc, banner, email
+    utmCampaign: String, // ex: spring_sale
+    utmContent: String,  // ex: logolink
+    utmTerm: String,     // ex: running+shoes
     browser: String,
     os: String,
     deviceType: {

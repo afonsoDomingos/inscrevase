@@ -4,7 +4,7 @@ const geoip = require('geoip-lite');
 // Registrar uma nova visita
 exports.recordVisit = async (req, res) => {
     try {
-        const { visitorId, page, referrer, browser, os, deviceType } = req.body;
+        const { visitorId, page, referrer, browser, os, deviceType, utmSource, utmMedium, utmCampaign, utmContent, utmTerm } = req.body;
 
         // Tenta pegar o IP (considerando proxies/render)
         // x-forwarded-for pode ser uma lista "clientAp, proxy1, proxy2..."
@@ -37,7 +37,13 @@ exports.recordVisit = async (req, res) => {
             os,
             deviceType,
             country, // Salva o país (BR, MZ, PT...)
-            city
+            city,
+            // UTM Tracking
+            utmSource,
+            utmMedium,
+            utmCampaign,
+            utmContent,
+            utmTerm
         });
 
         await newVisit.save();

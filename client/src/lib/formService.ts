@@ -256,7 +256,38 @@ export const formService = {
 
     async recordVisit(slug: string): Promise<void> {
         try {
-            await fetch(`${API_URL}/forms/${slug}/visit`, { method: 'POST' });
+            // 1. Get/Create Visitor ID
+            let visitorId = typeof window !== 'undefined' ? localStorage.getItem('visitor_id') : null;
+            if (!visitorId && typeof window !== 'undefined') {
+                visitorId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('visitor_id', visitorId);
+            }
+
+            if (typeof window === 'undefined') return;
+
+            // 2. Parse UTMs
+            const params = new URLSearchParams(window.location.search);
+
+            // 3. Simple Device/OS Detection
+            const userAgent = navigator.userAgent;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+
+            await fetch(`${API_URL}/forms/${slug}/visit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    visitorId,
+                    referrer: document.referrer,
+                    browser: userAgent,
+                    os: navigator.platform,
+                    deviceType: isMobile ? 'mobile' : 'desktop',
+                    utmSource: params.get('utm_source'),
+                    utmMedium: params.get('utm_medium'),
+                    utmCampaign: params.get('utm_campaign'),
+                    utmContent: params.get('utm_content'),
+                    utmTerm: params.get('utm_term')
+                })
+            });
         } catch (err) {
             console.error("Error recording form visit:", err);
         }

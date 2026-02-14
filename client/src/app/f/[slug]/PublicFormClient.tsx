@@ -22,7 +22,8 @@ import {
     Info,
     Coins,
     Star,
-    Users
+    Users,
+    X
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -49,6 +50,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [loading, setLoading] = useState(!initialForm);
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [showPromo, setShowPromo] = useState(false); // Promo Popup State
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -56,6 +58,14 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [paymentMode, setPaymentMode] = useState<'stripe' | 'manual' | null>(null);
     const visitRecorded = useRef(false);
     const { trackViewContent, trackAddToCart, trackPurchase } = useMetaPixelEvents();
+
+    // Trigger Promo Popup on Success
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setShowPromo(true), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
 
     // Animation Variants
     const containerVariants = {
@@ -1149,56 +1159,156 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 )}
             </AnimatePresence>
 
+            {/* Promo Popup (After Success) */}
+            <AnimatePresence>
+                {showPromo && (
+                    <motion.div
+                        initial={{ y: 50, opacity: 0, scale: 0.9 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        exit={{ y: 50, opacity: 0, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '30px',
+                            right: '30px',
+                            width: 'calc(100% - 60px)',
+                            maxWidth: '400px',
+                            background: '#111',
+                            color: '#fff',
+                            borderRadius: '24px',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                            zIndex: 10001,
+                            padding: '24px',
+                            border: '1px solid rgba(255,255,255,0.1)'
+                        }}
+                    >
+                        <button
+                            onClick={() => setShowPromo(false)}
+                            style={{
+                                position: 'absolute',
+                                top: '15px',
+                                right: '15px',
+                                background: 'rgba(255,255,255,0.1)',
+                                border: 'none',
+                                cursor: 'pointer',
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#aaa',
+                                transition: 'color 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.color = '#fff'}
+                            onMouseOut={(e) => e.currentTarget.style.color = '#aaa'}
+                        >
+                            <X size={16} />
+                        </button>
+
+                        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                            <div style={{
+                                width: '50px',
+                                height: '50px',
+                                background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                                borderRadius: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                                boxShadow: '0 8px 16px rgba(255, 215, 0, 0.25)'
+                            }}>
+                                <Zap size={28} color="#000" fill="#000" />
+                            </div>
+
+                            <div style={{ flex: 1 }}>
+                                <h4 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', fontWeight: 800, lineHeight: 1.2, color: '#fff' }}>Gostou deste evento?</h4>
+                                <p style={{ margin: '0 0 16px 0', fontSize: '0.9rem', color: '#aaa', lineHeight: '1.5' }}>
+                                    Descubra mais experiências incríveis na <strong>Inscreva-se.ai</strong> e gerencie suas inscrições.
+                                </p>
+
+                                <button
+                                    onClick={() => window.open('/register?utm_source=event_success_popup', '_blank')}
+                                    style={{
+                                        width: '100%',
+                                        background: '#fff',
+                                        color: '#000',
+                                        border: 'none',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        fontSize: '0.9rem',
+                                        transition: 'transform 0.2s',
+                                        whiteSpace: 'nowrap',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px'
+                                    }}
+                                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                >
+                                    Criar Conta Grátis <ArrowRight size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Floating Discover Platform Button */}
-            <motion.a
-                href="/"
-                target="_blank"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 0.6 }}
-                style={{
-                    position: 'fixed',
-                    bottom: '30px',
-                    right: '30px',
-                    zIndex: 100,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0',
-                    textDecoration: 'none',
-                    filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-            >
-                <div style={{
-                    background: '#1a1a1a',
-                    color: '#fff',
-                    padding: '10px 20px', // Smaller padding
-                    borderRadius: '10px 4px 4px 10px',
-                    fontSize: '0.65rem', // Smaller text
-                    fontWeight: 800,
-                    letterSpacing: '1.2px',
-                    textTransform: 'uppercase',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    whiteSpace: 'nowrap'
-                }}>
-                    {t('common.discoverPlatform')}
-                </div>
-                <div style={{
-                    background: '#FFD700',
-                    width: '42px', // Smaller icon part
-                    height: '42px',
-                    borderRadius: '4px 10px 10px 4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#000',
-                    marginLeft: '-1px',
-                    boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
-                }}>
-                    <ArrowRight size={18} strokeWidth={2.5} />
-                </div>
-            </motion.a>
+            {!showPromo && (
+                <motion.a
+                    href="/"
+                    target="_blank"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5, duration: 0.6 }}
+                    style={{
+                        position: 'fixed',
+                        bottom: '30px',
+                        right: '30px',
+                        zIndex: 100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0',
+                        textDecoration: 'none',
+                        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
+                    }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    <div style={{
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        padding: '10px 20px', // Smaller padding
+                        borderRadius: '10px 4px 4px 10px',
+                        fontSize: '0.65rem', // Smaller text
+                        fontWeight: 800,
+                        letterSpacing: '1.2px',
+                        textTransform: 'uppercase',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        whiteSpace: 'nowrap'
+                    }}>
+                        {t('common.discoverPlatform')}
+                    </div>
+                    <div style={{
+                        background: '#FFD700',
+                        width: '42px', // Smaller icon part
+                        height: '42px',
+                        borderRadius: '4px 10px 10px 4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#000',
+                        marginLeft: '-1px',
+                        boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
+                    }}>
+                        <ArrowRight size={18} strokeWidth={2.5} />
+                    </div>
+                </motion.a>
+            )}
         </main>
     );
 }
