@@ -1,7 +1,7 @@
 /* eslint-disable */
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, DollarSign, Users, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,6 +21,17 @@ interface PricingTiersEditorProps {
 
 export default function PricingTiersEditor({ tiers, currency, onUpdate }: PricingTiersEditorProps) {
     const [localTiers, setLocalTiers] = useState<PricingTier[]>(tiers);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Mobile Detection
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const checkMobile = () => setIsMobile(window.innerWidth <= 640);
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+            return () => window.removeEventListener('resize', checkMobile);
+        }
+    }, []);
 
     // Predefined category suggestions
     const categorySuggestions = [
@@ -155,7 +166,7 @@ export default function PricingTiersEditor({ tiers, currency, onUpdate }: Pricin
                                     <Trash2 size={14} /> Remover
                                 </button>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                     <div>
                                         <label style={{
                                             display: 'block',

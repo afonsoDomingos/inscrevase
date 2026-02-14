@@ -502,6 +502,14 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
                     className="edit-event-modal"
+                    style={{
+                        height: isMobile ? '100vh' : '90vh',
+                        maxWidth: isMobile ? '100%' : '1100px',
+                        borderRadius: isMobile ? '0' : '30px',
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : '280px 1fr',
+                        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr'
+                    }}
                 >
                     {/* Sidebar */}
                     <div className="edit-event-sidebar custom-scrollbar">
@@ -549,10 +557,17 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     </div>
 
                     {/* Content Wrapper */}
-                    <div className="edit-event-content">
+                    <div className="edit-event-content" style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
                         {/* Scrollable Area */}
-                        <div style={{ flex: 1, overflowY: 'auto', padding: '3rem', paddingBottom: '120px', minHeight: 0 }} className="custom-scrollbar">
-                            <div style={{ position: 'absolute', top: '2rem', right: '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
+                        <div style={{
+                            flex: 1,
+                            overflowY: 'auto',
+                            padding: isMobile ? '1.5rem' : '3rem',
+                            paddingBottom: '2rem',
+                            minHeight: 0,
+                            position: 'relative'
+                        }} className="custom-scrollbar">
+                            <div style={{ position: 'absolute', top: isMobile ? '1rem' : '2rem', right: isMobile ? '1rem' : '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
                                 <button
                                     onClick={() => setShowPreview(true)}
                                     title="Pré-visualizar Alterações"
@@ -2103,17 +2118,40 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                         </div >
 
                         {/* Footer Actions */}
-                        < div style={{ padding: '1.5rem 3rem', background: '#fff', borderTop: '2px solid #FFD700', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', boxShadow: '0 -4px 20px rgba(0,0,0,0.05)', zIndex: 20, flexShrink: 0 }
-                        }>
+                        <div style={{
+                            padding: isMobile ? '1rem 1.5rem' : '1.5rem 3rem',
+                            background: '#fff',
+                            borderTop: '2px solid #FFD700',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
+                            zIndex: 20,
+                            flexShrink: 0
+                        }}>
                             <button
                                 onClick={handleSubmit}
                                 disabled={loading}
                                 className="btn-primary"
-                                style={{ borderRadius: '12px', padding: '1rem 3rem', minWidth: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}
+                                style={{
+                                    borderRadius: '12px',
+                                    padding: '0.8rem 3rem',
+                                    minWidth: isMobile ? '100%' : '220px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px',
+                                    fontSize: '1rem',
+                                    fontWeight: 700,
+                                    background: '#111',
+                                    color: '#fff',
+                                    border: 'none',
+                                    cursor: 'pointer'
+                                }}
                             >
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> {t('events.profile.saveChanges')}</>}
                             </button>
-                        </div >
+                        </div>
                     </div >
                     {/* PREVIEW MODAL OVERLAY - Enhanced version */}
                     <AnimatePresence>

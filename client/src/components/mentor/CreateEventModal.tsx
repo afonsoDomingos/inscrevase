@@ -732,40 +732,40 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: isMobile ? '100%' : '900px',
+                        maxWidth: isMobile ? '100%' : '1000px',
                         background: '#fff',
                         borderRadius: isMobile ? '0' : '30px',
                         overflow: 'hidden',
                         display: 'grid',
-                        gridTemplateColumns: isMobile ? '1fr' : '280px 1fr',
-                        height: isMobile ? '100vh' : '85vh',
+                        gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
+                        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr',
+                        height: isMobile ? '100vh' : '90vh',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
                         zIndex: 2002
                     }}
                 >
                     {/* Sidebar / Top Nav */}
                     <div style={{
-                        background: '#000',
-                        padding: isMobile ? '1.5rem 1rem' : '3rem 2rem',
+                        background: '#111',
+                        padding: isMobile ? '1.5rem 1rem' : '2.5rem 1.5rem',
                         color: '#fff',
                         display: isMobile ? 'flex' : 'block',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
                         flexDirection: isMobile ? 'column' : 'initial',
                         gap: isMobile ? '1rem' : '0',
-                        position: 'relative'
+                        position: 'relative',
+                        borderRight: isMobile ? 'none' : '1px solid #111'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '3rem', color: '#FFD700' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '2.5rem', color: '#FFD700' }}>
                             <Layout size={isMobile ? 18 : 24} />
-                            <span style={{ fontWeight: 800, fontSize: isMobile ? '1rem' : '1.2rem' }}>{t('events.newTitle')}</span>
+                            <span style={{ fontWeight: 800, fontSize: isMobile ? '1rem' : '1.1rem' }}>{t('events.newTitle')}</span>
                         </div>
 
                         <div style={{
                             display: 'flex',
                             flexDirection: isMobile ? 'row' : 'column',
-                            gap: isMobile ? '0.5rem' : '1.5rem',
+                            gap: isMobile ? '0.5rem' : '0.75rem',
                             overflowX: isMobile ? 'auto' : 'visible',
-                            width: isMobile ? '100%' : 'auto',
+                            width: '100%',
                             paddingBottom: isMobile ? '10px' : '0',
                             justifyContent: isMobile ? 'center' : 'flex-start'
                         }} className="no-scrollbar">
@@ -785,19 +785,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
                                         gap: isMobile ? '0' : '12px',
-                                        padding: isMobile ? '0.75rem' : '1rem',
-                                        minWidth: isMobile ? '45px' : 'auto',
-                                        borderRadius: '12px',
+                                        padding: '0.85rem 1.25rem',
+                                        borderRadius: '14px',
                                         border: 'none',
                                         background: step === s.id ? '#FFD70015' : 'transparent',
-                                        color: step === s.id ? '#FFD700' : '#666',
-                                        fontWeight: 600,
+                                        color: step === s.id ? '#FFD700' : '#888',
+                                        fontWeight: 700,
                                         cursor: 'pointer',
                                         textAlign: 'left',
                                         transition: 'all 0.2s',
-                                        whiteSpace: 'nowrap'
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '0.9rem'
                                     }}
                                 >
                                     {s.icon}
@@ -805,277 +804,203 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 </button>
                             ))}
                         </div>
-
-                        {!isMobile && (
-                            <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
-                                <button
-                                    onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
-                                    disabled={loading}
-                                    className="btn-primary"
-                                    style={{ width: '100%', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
-                                </button>
-                                <div style={{
-                                    marginTop: '12px',
-                                    fontSize: '0.65rem',
-                                    color: '#666',
-                                    textAlign: 'center',
-                                    lineHeight: '1.4'
-                                }}>
-                                    <span style={{ opacity: 0.7 }}>⌨️ Atalhos:</span>{' '}
-                                    <span style={{ background: '#222', padding: '2px 6px', borderRadius: '4px', color: '#FFD700' }}>Ctrl+→</span> próximo{' '}
-                                    <span style={{ background: '#222', padding: '2px 6px', borderRadius: '4px', color: '#FFD700' }}>Ctrl+←</span> voltar
-                                    {step === 7 && <><br /><span style={{ background: '#222', padding: '2px 6px', borderRadius: '4px', color: '#FFD700' }}>Ctrl+Enter</span> publicar</>}
-                                </div>
-                            </div>
-                        )}
                     </div>
 
-                    {/* Content */}
+                    {/* Content Area */}
                     <div style={{
-                        padding: isMobile ? '1.5rem' : '3rem',
-                        paddingBottom: isMobile ? '7rem' : '3rem',
-                        overflowY: 'auto',
-                        background: '#f8f9fa'
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
+                        minWidth: 0,
+                        position: 'relative',
+                        background: '#fcfcfc'
                     }}>
-                        <div style={{ position: 'absolute', top: '2rem', right: '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
-                            <button
-                                onClick={() => setShowPreview(true)}
-                                title="Pré-visualizar Evento"
-                                style={{
-                                    background: '#fff',
-                                    border: '1px solid #ddd',
-                                    padding: '0.5rem 1rem',
-                                    borderRadius: '20px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    fontSize: '0.85rem',
-                                    fontWeight: 600,
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                    color: '#333'
-                                }}
-                            >
-                                <Eye size={18} />
-                                {!isMobile && "Pré-visualizar"}
-                            </button>
-                            <button
-                                onClick={onClose}
-                                style={{ background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        {/* Progress Indicator */}
-                        <div style={{ marginBottom: '2rem' }}>
-                            <div style={{
-                                background: '#e5e7eb',
-                                borderRadius: '999px',
-                                height: '8px',
-                                position: 'relative',
-                                overflow: 'hidden'
-                            }}>
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${calculateProgress()}%` }}
-                                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                        <div style={{
+                            flex: 1,
+                            padding: isMobile ? '1.5rem' : '3.5rem',
+                            paddingBottom: '2rem',
+                            overflowY: 'auto',
+                            minHeight: 0
+                        }} className="custom-scrollbar">
+                            <div style={{ position: 'absolute', top: '2rem', right: '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
+                                <button
+                                    onClick={() => setShowPreview(true)}
+                                    title="Pré-visualizar Evento"
                                     style={{
-                                        background: 'linear-gradient(90deg, #FFD700, #FFA500)',
-                                        height: '100%',
-                                        borderRadius: '999px'
-                                    }}
-                                />
-                            </div>
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginTop: '8px'
-                            }}>
-                                <span style={{
-                                    fontSize: '0.75rem',
-                                    color: '#666',
-                                    fontWeight: 600
-                                }}>
-                                    {calculateProgress()}% completo
-                                </span>
-                                {lastSaved && (
-                                    <span style={{
-                                        fontSize: '0.7rem',
-                                        color: '#10b981',
+                                        background: '#fff',
+                                        border: '1px solid #ddd',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '20px',
+                                        cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '4px'
-                                    }}>
-                                        <CheckCircle size={12} />
-                                        Salvo {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                )}
+                                        gap: '8px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 600,
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                        color: '#333'
+                                    }}
+                                >
+                                    <Eye size={18} />
+                                    {!isMobile && "Pré-visualizar"}
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    style={{ background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <X size={18} />
+                                </button>
                             </div>
-                        </div>
 
-                        {/* Draft Recovery Banner - Compacted */}
-                        {showDraftBanner && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                style={{
-                                    background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-                                    border: '1px solid #fbbf24',
-                                    borderRadius: '12px',
-                                    padding: '0.6rem 1rem',
-                                    marginBottom: '1rem',
-                                    boxShadow: '0 2px 4px rgba(251, 191, 36, 0.05)',
+                            {/* Progress Indicator */}
+                            <div style={{ marginBottom: '2rem' }}>
+                                <div style={{
+                                    background: '#e5e7eb',
+                                    borderRadius: '999px',
+                                    height: '8px',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}>
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${calculateProgress()}%` }}
+                                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                                        style={{
+                                            background: 'linear-gradient(90deg, #FFD700, #FFA500)',
+                                            height: '100%',
+                                            borderRadius: '999px'
+                                        }}
+                                    />
+                                </div>
+                                <div style={{
                                     display: 'flex',
-                                    alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    gap: '12px',
-                                    flexWrap: isMobile ? 'wrap' : 'nowrap'
-                                }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <AlertCircle size={18} color="#f59e0b" style={{ flexShrink: 0 }} />
-                                    <p style={{
-                                        fontSize: '0.8rem',
-                                        color: '#78350f',
-                                        fontWeight: 700,
-                                        margin: 0
+                                    alignItems: 'center',
+                                    marginTop: '8px'
+                                }}>
+                                    <span style={{
+                                        fontSize: '0.75rem',
+                                        color: '#666',
+                                        fontWeight: 600
                                     }}>
-                                        Rascunho disponível ({
-                                            draftData
-                                                ? Math.round((Date.now() - draftData.timestamp) / 60000) < 60
-                                                    ? `${Math.round((Date.now() - draftData.timestamp) / 60000)} min atrás`
-                                                    : `${Math.round((Date.now() - draftData.timestamp) / 3600000)} h atrás`
-                                                : 'recente'
-                                        })
-                                    </p>
+                                        {calculateProgress()}% completo
+                                    </span>
+                                    {lastSaved && (
+                                        <span style={{
+                                            fontSize: '0.7rem',
+                                            color: '#10b981',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}>
+                                            <CheckCircle size={12} />
+                                            Salvo {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    )}
                                 </div>
+                            </div>
 
-                                <div style={{ display: 'flex', gap: '8px', width: isMobile ? '100%' : 'auto', justifyContent: 'flex-end' }}>
-                                    <button
-                                        onClick={restoreDraft}
-                                        style={{
-                                            background: '#f59e0b',
-                                            color: '#fff',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '5px 12px',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 800,
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Restaurar
-                                    </button>
-                                    <button
-                                        onClick={discardDraft}
-                                        style={{
-                                            background: 'rgba(255,255,255,0.5)',
-                                            color: '#92400e',
-                                            border: '1px solid #fbbf24',
-                                            borderRadius: '6px',
-                                            padding: '5px 12px',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 600,
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Descartar
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
+                            {/* Draft Recovery Banner - Compacted */}
+                            {showDraftBanner && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                                        border: '1px solid #fbbf24',
+                                        borderRadius: '12px',
+                                        padding: '0.6rem 1rem',
+                                        marginBottom: '1rem',
+                                        boxShadow: '0 2px 4px rgba(251, 191, 36, 0.05)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        gap: '12px',
+                                        flexWrap: isMobile ? 'wrap' : 'nowrap'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <AlertCircle size={18} color="#f59e0b" style={{ flexShrink: 0 }} />
+                                        <p style={{
+                                            fontSize: '0.8rem',
+                                            color: '#78350f',
+                                            fontWeight: 700,
+                                            margin: 0
+                                        }}>
+                                            Rascunho disponível ({
+                                                draftData
+                                                    ? Math.round((Date.now() - draftData.timestamp) / 60000) < 60
+                                                        ? `${Math.round((Date.now() - draftData.timestamp) / 60000)} min atrás`
+                                                        : `${Math.round((Date.now() - draftData.timestamp) / 3600000)} h atrás`
+                                                    : 'recente'
+                                            })
+                                        </p>
+                                    </div>
 
-                        <AnimatePresence mode="wait">
-                            {step === 1 && (
-                                <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.basicInfo')}</h2>
+                                    <div style={{ display: 'flex', gap: '8px', width: isMobile ? '100%' : 'auto', justifyContent: 'flex-end' }}>
+                                        <button
+                                            onClick={restoreDraft}
+                                            style={{
+                                                background: '#f59e0b',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                padding: '5px 12px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 800,
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Restaurar
+                                        </button>
+                                        <button
+                                            onClick={discardDraft}
+                                            style={{
+                                                background: 'rgba(255,255,255,0.5)',
+                                                color: '#92400e',
+                                                border: '1px solid #fbbf24',
+                                                borderRadius: '6px',
+                                                padding: '5px 12px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 600,
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Descartar
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
 
-                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                {t('events.eventName')} <span style={{ color: '#ef4444' }}>*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={title}
-                                                onChange={(e) => {
-                                                    setTitle(e.target.value);
-                                                    setValidation(v => ({ ...v, title: validateTitle(e.target.value) }));
-                                                }}
-                                                onBlur={() => setValidation(v => ({ ...v, title: validateTitle(title) }))}
-                                                placeholder={t('events.namePlaceholder')}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '1rem',
-                                                    borderRadius: '12px',
-                                                    border: !validation.title.valid && title ? '2px solid #ef4444' : '1px solid #ddd',
-                                                    outline: 'none',
-                                                    transition: 'border 0.2s'
-                                                }}
-                                            />
-                                            {!validation.title.valid && title && (
-                                                <motion.p
-                                                    initial={{ opacity: 0, y: -5 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    style={{
-                                                        color: '#ef4444',
-                                                        fontSize: '0.75rem',
-                                                        marginTop: '4px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px'
-                                                    }}
-                                                >
-                                                    <AlertCircle size={12} />
-                                                    {validation.title.message}
-                                                </motion.p>
-                                            )}
-                                            {validation.title.valid && title && (
-                                                <motion.p
-                                                    initial={{ opacity: 0, y: -5 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    style={{
-                                                        color: '#10b981',
-                                                        fontSize: '0.75rem',
-                                                        marginTop: '4px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px'
-                                                    }}
-                                                >
-                                                    <CheckCircle size={12} />
-                                                    Perfeito!
-                                                </motion.p>
-                                            )}
-                                        </div>
+                            <AnimatePresence mode="wait">
+                                {step === 1 && (
+                                    <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.basicInfo')}</h2>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                        <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                    {t('events.eventDate')} <span style={{ color: '#ef4444' }}>*</span>
+                                                    {t('events.eventName')} <span style={{ color: '#ef4444' }}>*</span>
                                                 </label>
                                                 <input
-                                                    type="date"
-                                                    value={eventDate}
+                                                    type="text"
+                                                    value={title}
                                                     onChange={(e) => {
-                                                        setEventDate(e.target.value);
-                                                        setValidation(v => ({ ...v, eventDate: validateEventDate(e.target.value) }));
+                                                        setTitle(e.target.value);
+                                                        setValidation(v => ({ ...v, title: validateTitle(e.target.value) }));
                                                     }}
-                                                    onBlur={() => setValidation(v => ({ ...v, eventDate: validateEventDate(eventDate) }))}
+                                                    onBlur={() => setValidation(v => ({ ...v, title: validateTitle(title) }))}
+                                                    placeholder={t('events.namePlaceholder')}
                                                     style={{
                                                         width: '100%',
                                                         padding: '1rem',
                                                         borderRadius: '12px',
-                                                        border: !validation.eventDate.valid && eventDate ? '2px solid #ef4444' : '1px solid #ddd',
+                                                        border: !validation.title.valid && title ? '2px solid #ef4444' : '1px solid #ddd',
                                                         outline: 'none',
                                                         transition: 'border 0.2s'
                                                     }}
                                                 />
-                                                {!validation.eventDate.valid && eventDate && (
+                                                {!validation.title.valid && title && (
                                                     <motion.p
                                                         initial={{ opacity: 0, y: -5 }}
                                                         animate={{ opacity: 1, y: 0 }}
@@ -1089,266 +1014,244 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         }}
                                                     >
                                                         <AlertCircle size={12} />
-                                                        {validation.eventDate.message}
+                                                        {validation.title.message}
                                                     </motion.p>
                                                 )}
-                                            </div>
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventTime')}</label>
-                                                <input
-                                                    type="text"
-                                                    value={eventTime}
-                                                    onChange={(e) => setEventTime(e.target.value)}
-                                                    placeholder={t('events.eventTimePlaceholder')}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '1rem' }}>
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                    {t('events.capacityLabel')}
-                                                </label>
-                                                <input
-                                                    type="number"
-                                                    value={capacity}
-                                                    onChange={(e) => {
-                                                        setCapacity(e.target.value);
-                                                        setValidation(v => ({ ...v, capacity: validateCapacity(e.target.value) }));
-                                                    }}
-                                                    onBlur={() => setValidation(v => ({ ...v, capacity: validateCapacity(capacity) }))}
-                                                    placeholder={t('events.capacityPlaceholder')}
-                                                    style={{
-                                                        width: '100%',
-                                                        padding: '1rem',
-                                                        borderRadius: '12px',
-                                                        border: !validation.capacity.valid && capacity ? '2px solid #ef4444' : '1px solid #ddd',
-                                                        outline: 'none',
-                                                        transition: 'border 0.2s'
-                                                    }}
-                                                />
-                                                {!validation.capacity.valid && capacity ? (
+                                                {validation.title.valid && title && (
                                                     <motion.p
                                                         initial={{ opacity: 0, y: -5 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         style={{
-                                                            color: '#ef4444',
+                                                            color: '#10b981',
                                                             fontSize: '0.75rem',
-                                                            marginTop: '5px',
+                                                            marginTop: '4px',
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             gap: '4px'
                                                         }}
                                                     >
-                                                        <AlertCircle size={12} />
-                                                        {validation.capacity.message}
+                                                        <CheckCircle size={12} />
+                                                        Perfeito!
                                                     </motion.p>
-                                                ) : (
-                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                        {t('events.capacityHelp')}
-                                                    </p>
                                                 )}
                                             </div>
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.extraCapacityLabel')}</label>
-                                                <input
-                                                    type="number"
-                                                    value={extraCapacity}
-                                                    onChange={(e) => setExtraCapacity(e.target.value)}
-                                                    placeholder="Ex: 10"
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                />
-                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.extraCapacityHelp')}</p>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                        {t('events.eventDate')} <span style={{ color: '#ef4444' }}>*</span>
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        value={eventDate}
+                                                        onChange={(e) => {
+                                                            setEventDate(e.target.value);
+                                                            setValidation(v => ({ ...v, eventDate: validateEventDate(e.target.value) }));
+                                                        }}
+                                                        onBlur={() => setValidation(v => ({ ...v, eventDate: validateEventDate(eventDate) }))}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '1rem',
+                                                            borderRadius: '12px',
+                                                            border: !validation.eventDate.valid && eventDate ? '2px solid #ef4444' : '1px solid #ddd',
+                                                            outline: 'none',
+                                                            transition: 'border 0.2s'
+                                                        }}
+                                                    />
+                                                    {!validation.eventDate.valid && eventDate && (
+                                                        <motion.p
+                                                            initial={{ opacity: 0, y: -5 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            style={{
+                                                                color: '#ef4444',
+                                                                fontSize: '0.75rem',
+                                                                marginTop: '4px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px'
+                                                            }}
+                                                        >
+                                                            <AlertCircle size={12} />
+                                                            {validation.eventDate.message}
+                                                        </motion.p>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventTime')}</label>
+                                                    <input
+                                                        type="text"
+                                                        value={eventTime}
+                                                        onChange={(e) => setEventTime(e.target.value)}
+                                                        placeholder={t('events.eventTimePlaceholder')}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    />
+                                                </div>
                                             </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '1rem' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                        {t('events.capacityLabel')}
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        value={capacity}
+                                                        onChange={(e) => {
+                                                            setCapacity(e.target.value);
+                                                            setValidation(v => ({ ...v, capacity: validateCapacity(e.target.value) }));
+                                                        }}
+                                                        onBlur={() => setValidation(v => ({ ...v, capacity: validateCapacity(capacity) }))}
+                                                        placeholder={t('events.capacityPlaceholder')}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '1rem',
+                                                            borderRadius: '12px',
+                                                            border: !validation.capacity.valid && capacity ? '2px solid #ef4444' : '1px solid #ddd',
+                                                            outline: 'none',
+                                                            transition: 'border 0.2s'
+                                                        }}
+                                                    />
+                                                    {!validation.capacity.valid && capacity ? (
+                                                        <motion.p
+                                                            initial={{ opacity: 0, y: -5 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            style={{
+                                                                color: '#ef4444',
+                                                                fontSize: '0.75rem',
+                                                                marginTop: '5px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px'
+                                                            }}
+                                                        >
+                                                            <AlertCircle size={12} />
+                                                            {validation.capacity.message}
+                                                        </motion.p>
+                                                    ) : (
+                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                            {t('events.capacityHelp')}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.extraCapacityLabel')}</label>
+                                                    <input
+                                                        type="number"
+                                                        value={extraCapacity}
+                                                        onChange={(e) => setExtraCapacity(e.target.value)}
+                                                        placeholder="Ex: 10"
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    />
+                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.extraCapacityHelp')}</p>
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventMode')}</label>
+                                                    <select
+                                                        value={eventType}
+                                                        onChange={(e) => setEventType(e.target.value)}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
+                                                    >
+                                                        <option value="modePresencial">{t('events.modePresencial')}</option>
+                                                        <option value="modeOnline">{t('events.modeOnline')}</option>
+                                                        <option value="modeHybrid">{t('events.modeHybrid')}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventMode')}</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
                                                 <select
-                                                    value={eventType}
-                                                    onChange={(e) => setEventType(e.target.value)}
+                                                    value={category}
+                                                    onChange={(e) => setCategory(e.target.value)}
                                                     style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
                                                 >
-                                                    <option value="modePresencial">{t('events.modePresencial')}</option>
-                                                    <option value="modeOnline">{t('events.modeOnline')}</option>
-                                                    <option value="modeHybrid">{t('events.modeHybrid')}</option>
+                                                    <option value="Outros">Outros</option>
+                                                    <option value="Negócios">Negócios</option>
+                                                    <option value="Tecnologia">Tecnologia</option>
+                                                    <option value="Arte & Música">Arte & Música</option>
+                                                    <option value="Educação">Educação</option>
+                                                    <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
                                                 </select>
                                             </div>
-                                        </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Categoria</label>
-                                            <select
-                                                value={category}
-                                                onChange={(e) => setCategory(e.target.value)}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
-                                            >
-                                                <option value="Outros">Outros</option>
-                                                <option value="Negócios">Negócios</option>
-                                                <option value="Tecnologia">Tecnologia</option>
-                                                <option value="Arte & Música">Arte & Música</option>
-                                                <option value="Educação">Educação</option>
-                                                <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
-                                            </select>
-                                        </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.locationPhysical')}</label>
+                                                    <input
+                                                        type="text"
+                                                        value={location}
+                                                        onChange={(e) => setLocation(e.target.value)}
+                                                        placeholder={t('events.locationPlaceholder')}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.onlineLink')}</label>
+                                                    <input
+                                                        type="text"
+                                                        value={onlineLink}
+                                                        onChange={(e) => setOnlineLink(e.target.value)}
+                                                        placeholder={t('events.onlinePlaceholder')}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    />
+                                                </div>
+                                            </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.locationPhysical')}</label>
-                                                <input
-                                                    type="text"
-                                                    value={location}
-                                                    onChange={(e) => setLocation(e.target.value)}
-                                                    placeholder={t('events.locationPlaceholder')}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                                    <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t('events.description')}</label>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        type="button"
+                                                        onClick={handleAiGenerate}
+                                                        disabled={aiLoading}
+                                                        style={{
+                                                            background: 'rgba(255,215,0,0.1)',
+                                                            border: '1px solid rgba(255,215,0,0.3)',
+                                                            borderRadius: '20px',
+                                                            padding: '4px 10px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            color: '#b8860b',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        {aiLoading ? <Loader2 className="animate-spin" size={12} /> : <Wand2 size={12} />}
+                                                        {t('ai.buttonDescribe')}
+                                                    </motion.button>
+                                                </div>
+                                                <textarea
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
+                                                    maxLength={3000}
+                                                    rows={4}
+                                                    placeholder={t('events.descriptionPlaceholder')}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
                                                 />
+                                                <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
+                                                    {description.length}/3000
+                                                </div>
+
                                             </div>
+
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.onlineLink')}</label>
-                                                <input
-                                                    type="text"
-                                                    value={onlineLink}
-                                                    onChange={(e) => setOnlineLink(e.target.value)}
-                                                    placeholder={t('events.onlinePlaceholder')}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                                <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t('events.description')}</label>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.05 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    type="button"
-                                                    onClick={handleAiGenerate}
-                                                    disabled={aiLoading}
-                                                    style={{
-                                                        background: 'rgba(255,215,0,0.1)',
-                                                        border: '1px solid rgba(255,215,0,0.3)',
-                                                        borderRadius: '20px',
-                                                        padding: '4px 10px',
-                                                        fontSize: '0.7rem',
-                                                        fontWeight: 800,
-                                                        color: '#b8860b',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                >
-                                                    {aiLoading ? <Loader2 className="animate-spin" size={12} /> : <Wand2 size={12} />}
-                                                    {t('ai.buttonDescribe')}
-                                                </motion.button>
-                                            </div>
-                                            <textarea
-                                                value={description}
-                                                onChange={(e) => setDescription(e.target.value)}
-                                                maxLength={3000}
-                                                rows={4}
-                                                placeholder={t('events.descriptionPlaceholder')}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
-                                            />
-                                            <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
-                                                {description.length}/3000
-                                            </div>
-
-                                        </div>
-
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.coverImageLabel')}</label>
-                                            <div
-                                                onDragOver={(e) => { e.preventDefault(); setIsDraggingImage(true); }}
-                                                onDragLeave={() => setIsDraggingImage(false)}
-                                                onDrop={handleImageDrop}
-                                                style={{
-                                                    width: '100%',
-                                                    height: '180px',
-                                                    background: isDraggingImage ? '#fffbeb' : '#eee',
-                                                    borderRadius: '20px',
-                                                    border: isDraggingImage ? '3px dashed #FFD700' : '2px dashed #ccc',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    position: 'relative',
-                                                    overflow: 'hidden',
-                                                    transition: 'all 0.2s ease'
-                                                }}>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={handleImageUpload}
-                                                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: coverImage ? 0 : 1 }}
-                                                />
-                                                {uploadingImage ? <Loader2 className="animate-spin" /> : (
-                                                    coverImage ? (
-                                                        <>
-                                                            <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
-                                                            <div style={{ position: 'absolute', bottom: '10px', right: '10px', display: 'flex', gap: '8px', zIndex: 2 }}>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={(e) => { e.stopPropagation(); setCoverImage(''); }}
-                                                                    style={{
-                                                                        background: 'rgba(239, 68, 68, 0.9)',
-                                                                        color: '#fff',
-                                                                        border: 'none',
-                                                                        borderRadius: '8px',
-                                                                        padding: '8px 12px',
-                                                                        fontSize: '0.75rem',
-                                                                        fontWeight: 600,
-                                                                        cursor: 'pointer',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        gap: '4px'
-                                                                    }}
-                                                                >
-                                                                    <Trash2 size={14} /> Remover
-                                                                </button>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            {isDraggingImage ? (
-                                                                <>
-                                                                    <Upload size={48} color="#FFD700" />
-                                                                    <span style={{ fontSize: '0.9rem', color: '#FFD700', marginTop: '10px', fontWeight: 700 }}>
-                                                                        Solte a imagem aqui!
-                                                                    </span>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <ImageIcon size={32} color="#aaa" />
-                                                                    <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
-                                                                    <span style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '4px' }}>ou arraste e solte aqui</span>
-                                                                </>
-                                                            )}
-                                                        </>
-                                                    )
-                                                )}
-                                            </div>
-                                            {coverImage && !uploadingImage && (
-                                                <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '8px', fontWeight: 600 }}>
-                                                    ✓ Imagem carregada! Clique acima para alterar ou use o botão Remover.
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Logo da Empresa (Opcional)</label>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.coverImageLabel')}</label>
                                                 <div
-                                                    onDragOver={(e) => { e.preventDefault(); setIsDraggingLogo(true); }}
-                                                    onDragLeave={() => setIsDraggingLogo(false)}
-                                                    onDrop={handleLogoDrop}
+                                                    onDragOver={(e) => { e.preventDefault(); setIsDraggingImage(true); }}
+                                                    onDragLeave={() => setIsDraggingImage(false)}
+                                                    onDrop={handleImageDrop}
                                                     style={{
-                                                        width: '100px',
-                                                        height: '100px',
-                                                        background: isDraggingLogo ? '#fffbeb' : '#f8f9fa',
-                                                        borderRadius: '16px',
-                                                        border: isDraggingLogo ? '3px dashed #FFD700' : '2px dashed #ddd',
+                                                        width: '100%',
+                                                        height: '180px',
+                                                        background: isDraggingImage ? '#fffbeb' : '#eee',
+                                                        borderRadius: '20px',
+                                                        border: isDraggingImage ? '3px dashed #FFD700' : '2px dashed #ccc',
                                                         display: 'flex',
+                                                        flexDirection: 'column',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         cursor: 'pointer',
@@ -1356,1041 +1259,1150 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         overflow: 'hidden',
                                                         transition: 'all 0.2s ease'
                                                     }}>
-                                                    <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
-                                                    {uploadingLogo ? <Loader2 className="animate-spin" size={20} /> : (
-                                                        logo ? <Image src={logo} alt="Logo" fill style={{ objectFit: 'contain', padding: '10px' }} /> : (
-                                                            <div style={{ textAlign: 'center' }}>
-                                                                {isDraggingLogo ? (
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleImageUpload}
+                                                        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: coverImage ? 0 : 1 }}
+                                                    />
+                                                    {uploadingImage ? <Loader2 className="animate-spin" /> : (
+                                                        coverImage ? (
+                                                            <>
+                                                                <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+                                                                <div style={{ position: 'absolute', bottom: '10px', right: '10px', display: 'flex', gap: '8px', zIndex: 2 }}>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => { e.stopPropagation(); setCoverImage(''); }}
+                                                                        style={{
+                                                                            background: 'rgba(239, 68, 68, 0.9)',
+                                                                            color: '#fff',
+                                                                            border: 'none',
+                                                                            borderRadius: '8px',
+                                                                            padding: '8px 12px',
+                                                                            fontSize: '0.75rem',
+                                                                            fontWeight: 600,
+                                                                            cursor: 'pointer',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            gap: '4px'
+                                                                        }}
+                                                                    >
+                                                                        <Trash2 size={14} /> Remover
+                                                                    </button>
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                {isDraggingImage ? (
                                                                     <>
-                                                                        <Upload size={28} color="#FFD700" />
-                                                                        <p style={{ fontSize: '0.55rem', color: '#FFD700', marginTop: '4px', fontWeight: 700 }}>Solte!</p>
+                                                                        <Upload size={48} color="#FFD700" />
+                                                                        <span style={{ fontSize: '0.9rem', color: '#FFD700', marginTop: '10px', fontWeight: 700 }}>
+                                                                            Solte a imagem aqui!
+                                                                        </span>
                                                                     </>
                                                                 ) : (
                                                                     <>
-                                                                        <Upload size={20} color="#aaa" />
-                                                                        <p style={{ fontSize: '0.6rem', color: '#888', marginTop: '4px' }}>Logo</p>
+                                                                        <ImageIcon size={32} color="#aaa" />
+                                                                        <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
+                                                                        <span style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '4px' }}>ou arraste e solte aqui</span>
                                                                     </>
                                                                 )}
-                                                            </div>
+                                                            </>
                                                         )
                                                     )}
                                                 </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.4' }}>
-                                                        Adicione uma logo empresarial para aparecer no topo do seu formulário. Se não desejar usar uma logo, deixe este campo vazio.
+                                                {coverImage && !uploadingImage && (
+                                                    <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '8px', fontWeight: 600 }}>
+                                                        ✓ Imagem carregada! Clique acima para alterar ou use o botão Remover.
                                                     </p>
-                                                    <p style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '4px' }}>
-                                                        💡 Dica: Arraste e solte para upload rápido
-                                                    </p>
-                                                    {logo && (
-                                                        <button
-                                                            onClick={() => setLogo('')}
-                                                            style={{ marginTop: '8px', fontSize: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                                                        >
-                                                            Remover Logo
-                                                        </button>
-                                                    )}
-                                                </div>
+                                                )}
                                             </div>
-                                        </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>
-                                                {t('events.vslVideoLabel')}
-                                            </label>
-
-                                            {/* Video Preview */}
-                                            {videoUrl && (
-                                                <div style={{
-                                                    marginBottom: '1rem',
-                                                    padding: '1rem',
-                                                    background: '#000',
-                                                    borderRadius: '16px',
-                                                    position: 'relative'
-                                                }}>
-                                                    <button
-                                                        onClick={() => setVideoUrl('')}
-                                                        type="button"
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Logo da Empresa (Opcional)</label>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                                    <div
+                                                        onDragOver={(e) => { e.preventDefault(); setIsDraggingLogo(true); }}
+                                                        onDragLeave={() => setIsDraggingLogo(false)}
+                                                        onDrop={handleLogoDrop}
                                                         style={{
-                                                            position: 'absolute',
-                                                            top: '0.5rem',
-                                                            right: '0.5rem',
-                                                            background: 'rgba(255,0,0,0.9)',
-                                                            border: 'none',
-                                                            borderRadius: '8px',
-                                                            padding: '6px 10px',
+                                                            width: '100px',
+                                                            height: '100px',
+                                                            background: isDraggingLogo ? '#fffbeb' : '#f8f9fa',
+                                                            borderRadius: '16px',
+                                                            border: isDraggingLogo ? '3px dashed #FFD700' : '2px dashed #ddd',
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            gap: '4px',
+                                                            justifyContent: 'center',
                                                             cursor: 'pointer',
-                                                            zIndex: 10,
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: 600,
-                                                            color: '#fff'
-                                                        }}
-                                                    >
-                                                        <Trash2 size={14} /> Remover Vídeo
-                                                    </button>
-                                                    <div style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '10px',
-                                                        color: '#4ade80'
-                                                    }}>
-                                                        <Video size={20} />
-                                                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t('events.videoConfigured')}</span>
-                                                    </div>
-                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '6px', wordBreak: 'break-all' }}>
-                                                        {videoUrl.length > 60 ? videoUrl.substring(0, 60) + '...' : videoUrl}
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
-                                                {/* Upload Option */}
-                                                <label
-                                                    htmlFor="video-upload"
-                                                    onDragOver={(e) => { e.preventDefault(); setIsDraggingVideo(true); }}
-                                                    onDragLeave={() => setIsDraggingVideo(false)}
-                                                    onDrop={handleVideoDrop}
-                                                    style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        padding: '1.5rem',
-                                                        background: uploadingVideo ? '#f0fdf4' : (isDraggingVideo ? '#fffbeb' : '#f8f9fa'),
-                                                        border: isDraggingVideo ? '3px dashed #FFD700' : '2px dashed #ddd',
-                                                        borderRadius: '16px',
-                                                        cursor: uploadingVideo ? 'wait' : 'pointer',
-                                                        transition: 'all 0.2s',
-                                                        minHeight: '120px'
-                                                    }}>
-                                                    <input type="file" accept="video/*" onChange={handleVideoUpload} style={{ display: 'none' }} id="video-upload" disabled={uploadingVideo} />
-                                                    {uploadingVideo ? (
-                                                        <>
-                                                            <Loader2 className="animate-spin" size={28} color="#22c55e" />
-                                                            <span style={{ fontSize: '0.8rem', marginTop: '8px', color: '#22c55e', fontWeight: 600 }}>{t('events.processing')}</span>
-                                                        </>
-                                                    ) : isDraggingVideo ? (
-                                                        <>
-                                                            <Upload size={36} color="#FFD700" />
-                                                            <span style={{ fontSize: '0.9rem', marginTop: '8px', color: '#FFD700', fontWeight: 700 }}>Solte o vídeo aqui!</span>
-                                                            <span style={{ fontSize: '0.7rem', color: '#aaa' }}>Máx: 100MB</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Upload size={28} color="#888" />
-                                                            <span style={{ fontSize: '0.85rem', marginTop: '8px', fontWeight: 600 }}>{t('events.uploadVideo')}</span>
-                                                            <span style={{ fontSize: '0.7rem', color: '#888' }}>Máx: 100MB</span>
-                                                            <span style={{ fontSize: '0.65rem', color: '#aaa', marginTop: '4px' }}>ou arraste aqui</span>
-                                                        </>
-                                                    )}
-                                                </label>
-
-                                                {/* Link Option */}
-                                                <div style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    padding: '1rem',
-                                                    background: '#f8f9fa',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '16px'
-                                                }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                                        <Video size={16} color="#888" />
-                                                        <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{t('events.orPasteLink')}</span>
-                                                    </div>
-                                                    <input
-                                                        type="text"
-                                                        value={videoUrl}
-                                                        onChange={(e) => setVideoUrl(e.target.value)}
-                                                        placeholder="YouTube, Vimeo, etc."
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '0.7rem',
-                                                            borderRadius: '8px',
-                                                            border: '1px solid #e0e0e0',
-                                                            outline: 'none',
-                                                            fontSize: '0.85rem'
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {videoUrl && (
-                                                <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: '#fffbeb', borderRadius: '16px', border: '1px solid #fef3c7' }}>
-                                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9rem', color: '#92400e' }}>
-                                                        Orientação do Vídeo (VSL)
-                                                    </label>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setVideoOrientation('vertical')}
-                                                            style={{
-                                                                padding: '1rem',
-                                                                borderRadius: '12px',
-                                                                border: '2px solid',
-                                                                borderColor: videoOrientation === 'vertical' ? '#b45309' : '#e5e7eb',
-                                                                background: videoOrientation === 'vertical' ? '#fff' : '#f9fafb',
-                                                                color: videoOrientation === 'vertical' ? '#b45309' : '#6b7280',
-                                                                fontWeight: 700,
-                                                                cursor: 'pointer',
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                alignItems: 'center',
-                                                                gap: '8px',
-                                                                transition: 'all 0.2s'
-                                                            }}
-                                                        >
-                                                            <div style={{ width: '20px', height: '32px', border: '2px solid currentColor', borderRadius: '4px', position: 'relative' }}>
-                                                                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '8px', height: '8px', background: 'currentColor', borderRadius: '50%' }} />
-                                                            </div>
-                                                            Vertical (9:16)
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setVideoOrientation('horizontal')}
-                                                            style={{
-                                                                padding: '1rem',
-                                                                borderRadius: '12px',
-                                                                border: '2px solid',
-                                                                borderColor: videoOrientation === 'horizontal' ? '#b45309' : '#e5e7eb',
-                                                                background: videoOrientation === 'horizontal' ? '#fff' : '#f9fafb',
-                                                                color: videoOrientation === 'horizontal' ? '#b45309' : '#6b7280',
-                                                                fontWeight: 700,
-                                                                cursor: 'pointer',
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                alignItems: 'center',
-                                                                gap: '8px',
-                                                                transition: 'all 0.2s'
-                                                            }}
-                                                        >
-                                                            <div style={{ width: '32px', height: '20px', border: '2px solid currentColor', borderRadius: '4px', position: 'relative' }}>
-                                                                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '8px', height: '8px', background: 'currentColor', borderRadius: '50%' }} />
-                                                            </div>
-                                                            Horizontal (16:9)
-                                                        </button>
-                                                    </div>
-                                                    <p style={{ fontSize: '0.75rem', color: '#b45309', marginTop: '12px', lineHeight: '1.4' }}>
-                                                        Escolha a orientação correta do seu vídeo para garantir que ele seja exibido perfeitamente na página do evento.
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px' }}>
-                                                {t('events.videoTip')}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {step === 2 && (
-                                <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
-                                        <button
-                                            onClick={handleAddField}
-                                            style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
-                                        >
-                                            <Plus size={16} /> {t('events.addField')}
-                                        </button>
-                                    </div>
-
-                                    <div style={{ display: 'grid', gap: '1rem' }}>
-                                        {fields.map((field) => (
-                                            <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
-                                                    <input
-                                                        type="text"
-                                                        value={field.label}
-                                                        onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
-                                                        placeholder={t('events.fieldLabel')}
-                                                        style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
-                                                    />
-                                                    <select
-                                                        value={field.type}
-                                                        onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
-                                                        style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
-                                                    >
-                                                        <option value="text">{t('events.typeText')}</option>
-                                                        <option value="email">{t('events.typeEmail')}</option>
-                                                        <option value="number">{t('events.typeNumber')}</option>
-                                                        <option value="phone">{t('events.typePhone')}</option>
-                                                        <option value="select">{t('events.typeSelect')}</option>
-                                                        <option value="checkbox">{t('events.typeCheckbox')}</option>
-                                                        <option value="date">{t('events.typeDate')}</option>
-                                                        <option value="file">{t('events.typeFile')}</option>
-                                                        <option value="textarea">{t('events.typeTextarea')}</option>
-                                                    </select>
-                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={field.required}
-                                                            onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
-                                                        /> {t('events.requiredField')}
-                                                    </label>
-                                                    <button
-                                                        onClick={() => handleRemoveField(field.id)}
-                                                        style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-
-                                                {/* Options input for Select type */}
-                                                {field.type === 'select' && (
-                                                    <input
-                                                        type="text"
-                                                        value={field.options?.join(', ') || ''}
-                                                        onChange={(e) => handleFieldChange(field.id, 'options', e.target.value.split(',').map(s => s.trim()))}
-                                                        placeholder={t('events.optionsPlaceholder')}
-                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px dashed #ccc', fontSize: '0.85rem', background: '#f9f9f9' }}
-                                                    />
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {step === 3 && (
-                                <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>{t('events.customization')}</h2>
-                                    <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escolha um modelo pronto ou personalize as cores do seu evento.</p>
-
-                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '2rem', alignItems: 'start' }}>
-                                        <div style={{ display: 'grid', gap: '2rem' }}>
-                                            {/* Presets Gallery */}
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem', color: '#111' }}>
-                                                    {t('events.backgroundTemplates')}
-                                                </label>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                                    {[
-                                                        { id: 'darkLuxury', name: t('events.presets.darkLuxury'), bg: '#050505', primary: '#FFD700', style: 'luxury' },
-                                                        { id: 'royalGold', name: t('events.presets.royalGold'), bg: '#1a1a1a', primary: '#D4AF37', style: 'luxury' },
-                                                        { id: 'modernWhite', name: t('events.presets.modernWhite'), bg: '#FFFFFF', primary: '#000000', style: 'minimalist' },
-                                                        { id: 'oceanBlue', name: t('events.presets.oceanBlue'), bg: '#0f172a', primary: '#38bdf8', style: 'luxury' },
-                                                        { id: 'vibrantGreen', name: t('events.presets.vibrantGreen'), bg: '#064e3b', primary: '#4ade80', style: 'luxury' },
-                                                        { id: 'sunset', name: t('events.presets.sunset'), bg: '#450a0a', primary: '#f97316', style: 'luxury' }
-                                                    ].map((preset) => (
-                                                        <motion.button
-                                                            key={preset.id}
-                                                            whileHover={{ y: -4 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            onClick={() => setTheme({
-                                                                primaryColor: preset.primary,
-                                                                backgroundColor: preset.bg,
-                                                                style: preset.style as 'luxury' | 'minimalist',
-                                                                fontFamily: theme.fontFamily
-                                                            })}
-                                                            style={{
-                                                                background: preset.bg,
-                                                                border: theme.backgroundColor === preset.bg && theme.primaryColor === preset.primary ? `3px solid ${preset.primary}` : '1px solid #ddd',
-                                                                borderRadius: '16px',
-                                                                padding: '1.2rem',
-                                                                cursor: 'pointer',
-                                                                textAlign: 'left',
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                justifyContent: 'space-between',
-                                                                minHeight: '100px',
-                                                                position: 'relative',
-                                                                overflow: 'hidden',
-                                                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                                                            }}
-                                                        >
-                                                            <div style={{ color: preset.primary, fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{preset.name}</div>
-                                                            <div style={{ width: '24px', height: '24px', background: preset.primary, borderRadius: '50%', alignSelf: 'flex-end', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                {theme.backgroundColor === preset.bg && theme.primaryColor === preset.primary && <Check size={14} color={['#FFD700', '#FFFFFF', '#4ade80', '#38bdf8'].includes(preset.primary) ? '#000' : '#fff'} />}
-                                                            </div>
-                                                        </motion.button>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Customization Section */}
-                                            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
-                                                <label style={{ display: 'block', fontWeight: 800, marginBottom: '1.2rem', fontSize: '0.9rem', color: '#333' }}>
-                                                    {t('events.customBackground')}
-                                                </label>
-
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.primaryColor')}</label>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                            <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                                                                <input
-                                                                    type="color"
-                                                                    value={theme.primaryColor}
-                                                                    onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
-                                                                    style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
-                                                                />
-                                                            </div>
-                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.primaryColor.toUpperCase()}</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.backgroundColor')}</label>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                            <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                                                                <input
-                                                                    type="color"
-                                                                    value={theme.backgroundColor}
-                                                                    onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
-                                                                    style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
-                                                                />
-                                                            </div>
-                                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.backgroundColor.toUpperCase()}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div style={{ marginTop: '1.5rem' }}>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.8rem', color: '#666' }}>{t('events.visualStyle')}</label>
-                                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                                        <button
-                                                            onClick={() => setTheme({ ...theme, style: 'luxury' })}
-                                                            style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'luxury' ? '#111' : '#f4f4f4', color: theme.style === 'luxury' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
-                                                        >
-                                                            Premium (Luxury)
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setTheme({ ...theme, style: 'minimalist' })}
-                                                            style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'minimalist' ? '#111' : '#f4f4f4', color: theme.style === 'minimalist' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
-                                                        >
-                                                            Simples (Minimalist)
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Live Preview - Improved */}
-                                        <div style={{ position: 'sticky', top: '2rem' }}>
-                                            <label style={{ display: 'block', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem', color: '#111' }}>
-                                                {t('events.preview')}
-                                            </label>
-                                            <div style={{
-                                                background: theme.backgroundColor,
-                                                borderRadius: '30px',
-                                                padding: '2.5rem 1.5rem',
-                                                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
-                                                border: `1px solid ${theme.primaryColor}22`,
-                                                color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#1a1a1a',
-                                                position: 'relative',
-                                                overflow: 'hidden',
-                                                minHeight: '400px',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                textAlign: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                {theme.style === 'luxury' && (
-                                                    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent)', pointerEvents: 'none' }} />
-                                                )}
-
-                                                <div style={{ position: 'relative', zIndex: 2 }}>
-                                                    <div style={{
-                                                        fontSize: '0.65rem',
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '3px',
-                                                        color: theme.primaryColor,
-                                                        fontWeight: 900,
-                                                        marginBottom: '1rem',
-                                                        opacity: 0.8
-                                                    }}>
-                                                        EXCLUSIVO
-                                                    </div>
-
-                                                    <h3 style={{
-                                                        fontSize: '1.6rem',
-                                                        fontWeight: 900,
-                                                        marginBottom: '1.5rem',
-                                                        lineHeight: 1.1,
-                                                        fontFamily: theme.fontFamily,
-                                                        color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#000'
-                                                    }}>
-                                                        {title || "Nome do Evento"}
-                                                    </h3>
-
-                                                    <div style={{ padding: '0.8rem 1.2rem', borderRadius: '12px', background: 'rgba(0,0,0,0.05)', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '2rem', fontSize: '0.85rem' }}>
-                                                        <span style={{ opacity: 0.7 }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : "Data"}</span>
-                                                    </div>
-
-                                                    <button style={{
-                                                        width: '100%',
-                                                        padding: '1.2rem',
-                                                        borderRadius: '16px',
-                                                        background: theme.primaryColor,
-                                                        color: (['#FFD700', '#ffffff', '#e2e8f0', '#4ade80', '#38bdf8'].includes(theme.primaryColor.toUpperCase())) ? '#000' : '#fff',
-                                                        border: 'none',
-                                                        fontWeight: 900,
-                                                        fontSize: '1rem',
-                                                        boxShadow: `0 15px 30px ${theme.primaryColor}44`,
-                                                        cursor: 'default'
-                                                    }}>
-                                                        {t('events.registerNow')}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-
-                            {step === 4 && (
-                                <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.paymentConfig')}</h2>
-
-                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
-                                            <input
-                                                type="checkbox"
-                                                checked={paymentConfig.enabled}
-                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
-                                                style={{ width: '20px', height: '20px' }}
-                                            />
-                                            {t('events.isPaidEvent')}
-                                        </label>
-
-                                        {paymentConfig.enabled && (
-                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
-                                                {/* Currency Selector - Always Visible for Paid Events */}
-                                                <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currency')}</label>
-                                                    <select
-                                                        value={paymentConfig.currency}
-                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
-                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
-                                                    >
-                                                        <option value="USD">{t('events.dollar')}</option>
-                                                        <option value="EUR">{t('events.euro')}</option>
-                                                        <option value="MT">{t('events.metical')}</option>
-                                                        <option value="AOA">{t('events.kwanza')}</option>
-                                                        <option value="CVE">{t('events.escudo')}</option>
-                                                        <option value="XOF">{t('events.cfa')}</option>
-                                                        <option value="BRL">Real (BRL)</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* Tiered Pricing Toggle */}
-                                                <div style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    padding: '1rem',
-                                                    background: '#f0f9ff',
-                                                    border: '1px solid #bae6fd',
-                                                    borderRadius: '12px'
-                                                }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                        <Users2 size={24} color="#0284c7" />
-                                                        <div>
-                                                            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0369a1' }}>Preços Diferenciados</div>
-                                                            <div style={{ fontSize: '0.75rem', color: '#0c4a6e' }}>
-                                                                Cobrar preços diferentes por público? (Ex: Estudantes, VIP)
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '28px' }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={paymentConfig.useTieredPricing}
-                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, useTieredPricing: e.target.checked })}
-                                                            style={{ opacity: 0, width: 0, height: 0 }}
-                                                        />
-                                                        <span className="slider round" style={{
-                                                            position: 'absolute',
-                                                            cursor: 'pointer',
-                                                            top: 0,
-                                                            left: 0,
-                                                            right: 0,
-                                                            bottom: 0,
-                                                            backgroundColor: paymentConfig.useTieredPricing ? '#0ea5e9' : '#ccc',
-                                                            transition: '.4s',
-                                                            borderRadius: '34px'
+                                                            position: 'relative',
+                                                            overflow: 'hidden',
+                                                            transition: 'all 0.2s ease'
                                                         }}>
-                                                            <span style={{
-                                                                position: 'absolute',
-                                                                content: "",
-                                                                height: '20px',
-                                                                width: '20px',
-                                                                left: paymentConfig.useTieredPricing ? '26px' : '4px',
-                                                                bottom: '4px',
-                                                                backgroundColor: 'white',
-                                                                transition: '.4s',
-                                                                borderRadius: '50%'
-                                                            }} />
-                                                        </span>
-                                                    </label>
-                                                </div>
-
-                                                {/* Price Input OR Tier Editor */}
-                                                {!paymentConfig.useTieredPricing ? (
-                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
-                                                        <div style={{ position: 'relative' }}>
-                                                            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontWeight: 700, color: '#666' }}>
-                                                                {paymentConfig.currency === 'MT' ? 'MT' :
-                                                                    paymentConfig.currency === 'USD' ? '$' :
-                                                                        paymentConfig.currency === 'EUR' ? '€' :
-                                                                            paymentConfig.currency}
-                                                            </span>
-                                                            <input
-                                                                type="number"
-                                                                value={paymentConfig.price}
-                                                                onChange={(e) => {
-                                                                    const val = parseFloat(e.target.value);
-                                                                    setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
-                                                                }}
-                                                                placeholder="0.00"
-                                                                min="0"
-                                                                step="0.01"
-                                                                style={{ width: '100%', padding: '1rem 1rem 1rem 3.5rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: '1.1rem', fontWeight: 600 }}
-                                                            />
-                                                        </div>
-                                                    </motion.div>
-                                                ) : (
-                                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                        <PricingTiersEditor
-                                                            tiers={paymentConfig.pricingTiers}
-                                                            currency={paymentConfig.currency}
-                                                            onUpdate={(tiers) => setPaymentConfig({ ...paymentConfig, pricingTiers: tiers })}
-                                                        />
-                                                    </motion.div>
-                                                )}
-
-                                                <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        top: '12px',
-                                                        right: '12px',
-                                                        background: '#e2e8f0',
-                                                        color: '#475569',
-                                                        padding: '4px 10px',
-                                                        borderRadius: '20px',
-                                                        fontSize: '0.65rem',
-                                                        fontWeight: 800,
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.5px'
-                                                    }}>
-                                                        Em Breve
-                                                    </div>
-
-                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#64748b', cursor: 'not-allowed', marginBottom: '1rem' }}>
-                                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={false}
-                                                                disabled={true}
-                                                                style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
-                                                            />
-                                                            <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
-                                                                <Lock size={12} color="#64748b" />
-                                                            </div>
-                                                        </div>
-                                                        {t('events.stripeHeader')}
-                                                    </label>
-
-                                                    <div style={{ display: 'grid', gap: '1rem' }}>
-                                                        <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                                                            <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
-                                                                Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.paymentInstructionsHeader')}</label>
-                                                    <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem' }}>{t('events.paymentMethodsHelp')}</p>
-
-                                                    <div style={{ display: 'grid', gap: '1rem' }}>
-                                                        {/* Bank Account */}
-                                                        <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '1rem', fontSize: '0.85rem', color: '#1a1a1b' }}>
-                                                                <Database size={16} className="gold-text" /> {t('events.bankAccount')}
-                                                            </label>
-                                                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.accountHolder || ''}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, accountHolder: e.target.value })}
-                                                                    placeholder={t('events.accountHolderPlaceholder')}
-                                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                                />
-                                                                <input
-                                                                    type="text"
-                                                                    value={paymentConfig.bankAccount || ''}
-                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, bankAccount: e.target.value })}
-                                                                    placeholder={t('events.bankAccountPlaceholder')}
-                                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Dynamic Manual Methods (Global Support) */}
-                                                        <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
-                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '0.85rem', color: '#1a1a1b' }}>
-                                                                    <Coins size={16} className="gold-text" /> {t('events.customPayments')}
-                                                                </label>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setPaymentConfig({
-                                                                        ...paymentConfig,
-                                                                        manualMethods: [...(paymentConfig.manualMethods || []), { label: '', value: '', icon: 'phone' }]
-                                                                    })}
-                                                                    style={{ padding: '4px 10px', fontSize: '0.7rem', fontWeight: 700, borderRadius: '20px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                                                >
-                                                                    <Plus size={12} /> {t('events.addMethod')}
-                                                                </button>
-                                                            </div>
-
-                                                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                                                {paymentConfig.manualMethods?.length === 0 && (
-                                                                    <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', fontStyle: 'italic', padding: '1rem' }}>
-                                                                        {t('events.noCustomMethods')}
-                                                                    </p>
-                                                                )}
-
-                                                                {paymentConfig.manualMethods?.map((method, idx) => (
-                                                                    <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#f9f9f9', padding: '10px', borderRadius: '12px' }}>
-                                                                        <div style={{ flex: 1, display: 'grid', gap: '8px' }}>
-                                                                            <input
-                                                                                type="text"
-                                                                                placeholder={t('events.methodNamePlaceholder')}
-                                                                                value={method.label}
-                                                                                onChange={(e) => {
-                                                                                    const newMethods = [...paymentConfig.manualMethods];
-                                                                                    newMethods[idx].label = e.target.value;
-                                                                                    setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
-                                                                                }}
-                                                                                style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
-                                                                            />
-                                                                            <input
-                                                                                type="text"
-                                                                                placeholder={t('events.methodValuePlaceholder')}
-                                                                                value={method.value}
-                                                                                onChange={(e) => {
-                                                                                    const newMethods = [...paymentConfig.manualMethods];
-                                                                                    newMethods[idx].value = e.target.value;
-                                                                                    setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
-                                                                                }}
-                                                                                style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
-                                                                            />
-                                                                        </div>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => {
-                                                                                const newMethods = paymentConfig.manualMethods.filter((_, i) => i !== idx);
-                                                                                setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
-                                                                            }}
-                                                                            style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
-                                                                        >
-                                                                            <Minus size={14} />
-                                                                        </button>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-
-                                                        <div>
-                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.otherInstructionsLabel')}</label>
-                                                            <textarea
-                                                                value={paymentConfig.instructions || ''}
-                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
-                                                                rows={3}
-                                                                placeholder={t('events.otherInstructionsPlaceholder')}
-                                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', resize: 'vertical', fontSize: '0.9rem' }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 600, padding: '1rem', background: '#f8f9fa', borderRadius: '12px' }}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={paymentConfig.requireProof}
-                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, requireProof: e.target.checked })}
-                                                        style={{ width: '18px', height: '18px' }}
-                                                    />
-                                                    {t('events.requireProofLabel')}
-                                                </label>
-                                            </motion.div>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {step === 5 && (
-                                <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.whatsappConclusion')}</h2>
-
-                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                        <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
-                                            <div style={{ color: '#319795' }}><CheckCircle size={24} /></div>
-                                            <p style={{ color: '#2c7a7b', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                                                {t('events.whatsappHelp')}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappNumber')}</label>
-                                            <input
-                                                type="text"
-                                                value={whatsappConfig.phoneNumber}
-                                                onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
-                                                placeholder={t('events.whatsappNumberPlaceholder')}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappMessage')}</label>
-                                            <textarea
-                                                value={whatsappConfig.message}
-                                                onChange={(e) => setWhatsappConfig({ ...whatsappConfig, message: e.target.value })}
-                                                rows={3}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.communityLinkLabel')}</label>
-                                            <input
-                                                type="text"
-                                                value={whatsappConfig.communityUrl}
-                                                onChange={(e) => setWhatsappConfig({ ...whatsappConfig, communityUrl: e.target.value })}
-                                                placeholder={t('events.communityPlaceholder')}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                            />
-                                        </div>
-
-                                        <div style={{ marginTop: '1rem', padding: '1.5rem', background: '#FDF2F2', borderRadius: '20px', border: '1px solid #FEE2E2' }}>
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '0.5rem', fontSize: '1rem', color: '#9B1C1C' }}>
-                                                <MessageCircle size={20} />
-                                                Mensagem Automática de Boas-Vindas
-                                            </label>
-
-                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
-                                                    style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                >
-                                                    {t('events.welcomeTemplates.formal')}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
-                                                    style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                >
-                                                    {t('events.welcomeTemplates.excited')}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
-                                                    style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                >
-                                                    {t('events.welcomeTemplates.brief')}
-                                                </button>
-                                            </div>
-
-                                            <p style={{ fontSize: '0.8rem', color: '#7F1D1D', marginBottom: '1rem' }}>
-                                                Esta mensagem será enviada automaticamente pelo chat assim que o participante se inscrever.
-                                            </p>
-                                            <textarea
-                                                value={welcomeMessage}
-                                                onChange={(e) => setWelcomeMessage(e.target.value)}
-                                                placeholder="Ex: Olá! Seja bem-vindo ao evento. Estamos muito felizes com sua participação..."
-                                                rows={4}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #FCA5A5', outline: 'none', resize: 'none' }}
-                                            />
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {step === 6 && (
-                                <motion.div key="step6" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aulas do Evento</h2>
-                                    <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
-
-                                    {lessonsLoading ? (
-                                        <div style={{ padding: '3rem', textAlign: 'center' }}>
-                                            <Loader2 className="animate-spin" size={40} color="#FFD700" />
-                                            <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
-                                        </div>
-                                    ) : allLessons.length === 0 ? (
-                                        <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
-                                            <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
-                                            <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
-                                            <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-                                                Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
-                                            </p>
-                                            <a
-                                                href="/dashboard/mentor/lessons"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px',
-                                                    marginTop: '1rem',
-                                                    padding: '0.75rem 1.5rem',
-                                                    borderRadius: '12px',
-                                                    background: '#111',
-                                                    color: '#FFD700',
-                                                    textDecoration: 'none',
-                                                    fontWeight: 700,
-                                                    fontSize: '0.9rem'
-                                                }}
-                                            >
-                                                Criar Nova Aula <ExternalLink size={16} />
-                                            </a>
-                                        </div>
-                                    ) : (
-                                        <div style={{ display: 'grid', gap: '1rem' }}>
-                                            {allLessons.map((lesson) => (
-                                                <div
-                                                    key={lesson._id}
-                                                    onClick={() => toggleLessonSelection(lesson._id)}
-                                                    style={{
-                                                        padding: '1.25rem',
-                                                        borderRadius: '16px',
-                                                        border: '2px solid',
-                                                        borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
-                                                        background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '15px',
-                                                        transition: 'all 0.2s'
-                                                    }}
-                                                >
-                                                    <div style={{
-                                                        width: '24px',
-                                                        height: '24px',
-                                                        borderRadius: '6px',
-                                                        border: '2px solid',
-                                                        borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
-                                                        background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        color: '#fff'
-                                                    }}>
-                                                        {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
-                                                    </div>
-
-                                                    <div style={{
-                                                        width: '60px',
-                                                        height: '40px',
-                                                        borderRadius: '8px',
-                                                        background: '#eee',
-                                                        position: 'relative',
-                                                        overflow: 'hidden',
-                                                        flexShrink: 0
-                                                    }}>
-                                                        {lesson.thumbnailUrl ? (
-                                                            <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
-                                                        ) : (
-                                                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
-                                                                <Play size={16} color="#fff" fill="#fff" />
-                                                            </div>
+                                                        <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                        {uploadingLogo ? <Loader2 className="animate-spin" size={20} /> : (
+                                                            logo ? <Image src={logo} alt="Logo" fill style={{ objectFit: 'contain', padding: '10px' }} /> : (
+                                                                <div style={{ textAlign: 'center' }}>
+                                                                    {isDraggingLogo ? (
+                                                                        <>
+                                                                            <Upload size={28} color="#FFD700" />
+                                                                            <p style={{ fontSize: '0.55rem', color: '#FFD700', marginTop: '4px', fontWeight: 700 }}>Solte!</p>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <Upload size={20} color="#aaa" />
+                                                                            <p style={{ fontSize: '0.6rem', color: '#888', marginTop: '4px' }}>Logo</p>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            )
                                                         )}
                                                     </div>
-
                                                     <div style={{ flex: 1 }}>
-                                                        <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
-                                                        <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
+                                                        <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.4' }}>
+                                                            Adicione uma logo empresarial para aparecer no topo do seu formulário. Se não desejar usar uma logo, deixe este campo vazio.
+                                                        </p>
+                                                        <p style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '4px' }}>
+                                                            💡 Dica: Arraste e solte para upload rápido
+                                                        </p>
+                                                        {logo && (
+                                                            <button
+                                                                onClick={() => setLogo('')}
+                                                                style={{ marginTop: '8px', fontSize: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                                                            >
+                                                                Remover Logo
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>
+                                                    {t('events.vslVideoLabel')}
+                                                </label>
+
+                                                {/* Video Preview */}
+                                                {videoUrl && (
+                                                    <div style={{
+                                                        marginBottom: '1rem',
+                                                        padding: '1rem',
+                                                        background: '#000',
+                                                        borderRadius: '16px',
+                                                        position: 'relative'
+                                                    }}>
+                                                        <button
+                                                            onClick={() => setVideoUrl('')}
+                                                            type="button"
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '0.5rem',
+                                                                right: '0.5rem',
+                                                                background: 'rgba(255,0,0,0.9)',
+                                                                border: 'none',
+                                                                borderRadius: '8px',
+                                                                padding: '6px 10px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px',
+                                                                cursor: 'pointer',
+                                                                zIndex: 10,
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: 600,
+                                                                color: '#fff'
+                                                            }}
+                                                        >
+                                                            <Trash2 size={14} /> Remover Vídeo
+                                                        </button>
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '10px',
+                                                            color: '#4ade80'
+                                                        }}>
+                                                            <Video size={20} />
+                                                            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t('events.videoConfigured')}</span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '6px', wordBreak: 'break-all' }}>
+                                                            {videoUrl.length > 60 ? videoUrl.substring(0, 60) + '...' : videoUrl}
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                                                    {/* Upload Option */}
+                                                    <label
+                                                        htmlFor="video-upload"
+                                                        onDragOver={(e) => { e.preventDefault(); setIsDraggingVideo(true); }}
+                                                        onDragLeave={() => setIsDraggingVideo(false)}
+                                                        onDrop={handleVideoDrop}
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            padding: '1.5rem',
+                                                            background: uploadingVideo ? '#f0fdf4' : (isDraggingVideo ? '#fffbeb' : '#f8f9fa'),
+                                                            border: isDraggingVideo ? '3px dashed #FFD700' : '2px dashed #ddd',
+                                                            borderRadius: '16px',
+                                                            cursor: uploadingVideo ? 'wait' : 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            minHeight: '120px'
+                                                        }}>
+                                                        <input type="file" accept="video/*" onChange={handleVideoUpload} style={{ display: 'none' }} id="video-upload" disabled={uploadingVideo} />
+                                                        {uploadingVideo ? (
+                                                            <>
+                                                                <Loader2 className="animate-spin" size={28} color="#22c55e" />
+                                                                <span style={{ fontSize: '0.8rem', marginTop: '8px', color: '#22c55e', fontWeight: 600 }}>{t('events.processing')}</span>
+                                                            </>
+                                                        ) : isDraggingVideo ? (
+                                                            <>
+                                                                <Upload size={36} color="#FFD700" />
+                                                                <span style={{ fontSize: '0.9rem', marginTop: '8px', color: '#FFD700', fontWeight: 700 }}>Solte o vídeo aqui!</span>
+                                                                <span style={{ fontSize: '0.7rem', color: '#aaa' }}>Máx: 100MB</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Upload size={28} color="#888" />
+                                                                <span style={{ fontSize: '0.85rem', marginTop: '8px', fontWeight: 600 }}>{t('events.uploadVideo')}</span>
+                                                                <span style={{ fontSize: '0.7rem', color: '#888' }}>Máx: 100MB</span>
+                                                                <span style={{ fontSize: '0.65rem', color: '#aaa', marginTop: '4px' }}>ou arraste aqui</span>
+                                                            </>
+                                                        )}
+                                                    </label>
+
+                                                    {/* Link Option */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        padding: '1rem',
+                                                        background: '#f8f9fa',
+                                                        border: '1px solid #ddd',
+                                                        borderRadius: '16px'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                                            <Video size={16} color="#888" />
+                                                            <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{t('events.orPasteLink')}</span>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            value={videoUrl}
+                                                            onChange={(e) => setVideoUrl(e.target.value)}
+                                                            placeholder="YouTube, Vimeo, etc."
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '0.7rem',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #e0e0e0',
+                                                                outline: 'none',
+                                                                fontSize: '0.85rem'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {videoUrl && (
+                                                    <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: '#fffbeb', borderRadius: '16px', border: '1px solid #fef3c7' }}>
+                                                        <label style={{ display: 'block', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9rem', color: '#92400e' }}>
+                                                            Orientação do Vídeo (VSL)
+                                                        </label>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setVideoOrientation('vertical')}
+                                                                style={{
+                                                                    padding: '1rem',
+                                                                    borderRadius: '12px',
+                                                                    border: '2px solid',
+                                                                    borderColor: videoOrientation === 'vertical' ? '#b45309' : '#e5e7eb',
+                                                                    background: videoOrientation === 'vertical' ? '#fff' : '#f9fafb',
+                                                                    color: videoOrientation === 'vertical' ? '#b45309' : '#6b7280',
+                                                                    fontWeight: 700,
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    alignItems: 'center',
+                                                                    gap: '8px',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                            >
+                                                                <div style={{ width: '20px', height: '32px', border: '2px solid currentColor', borderRadius: '4px', position: 'relative' }}>
+                                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '8px', height: '8px', background: 'currentColor', borderRadius: '50%' }} />
+                                                                </div>
+                                                                Vertical (9:16)
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setVideoOrientation('horizontal')}
+                                                                style={{
+                                                                    padding: '1rem',
+                                                                    borderRadius: '12px',
+                                                                    border: '2px solid',
+                                                                    borderColor: videoOrientation === 'horizontal' ? '#b45309' : '#e5e7eb',
+                                                                    background: videoOrientation === 'horizontal' ? '#fff' : '#f9fafb',
+                                                                    color: videoOrientation === 'horizontal' ? '#b45309' : '#6b7280',
+                                                                    fontWeight: 700,
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    alignItems: 'center',
+                                                                    gap: '8px',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                            >
+                                                                <div style={{ width: '32px', height: '20px', border: '2px solid currentColor', borderRadius: '4px', position: 'relative' }}>
+                                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '8px', height: '8px', background: 'currentColor', borderRadius: '50%' }} />
+                                                                </div>
+                                                                Horizontal (16:9)
+                                                            </button>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: '#b45309', marginTop: '12px', lineHeight: '1.4' }}>
+                                                            Escolha a orientação correta do seu vídeo para garantir que ele seja exibido perfeitamente na página do evento.
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px' }}>
+                                                    {t('events.videoTip')}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {step === 2 && (
+                                    <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
+                                            <button
+                                                onClick={handleAddField}
+                                                style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                                            >
+                                                <Plus size={16} /> {t('events.addField')}
+                                            </button>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                            {fields.map((field) => (
+                                                <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
+                                                        <input
+                                                            type="text"
+                                                            value={field.label}
+                                                            onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
+                                                            placeholder={t('events.fieldLabel')}
+                                                            style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
+                                                        />
+                                                        <select
+                                                            value={field.type}
+                                                            onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
+                                                            style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
+                                                        >
+                                                            <option value="text">{t('events.typeText')}</option>
+                                                            <option value="email">{t('events.typeEmail')}</option>
+                                                            <option value="number">{t('events.typeNumber')}</option>
+                                                            <option value="phone">{t('events.typePhone')}</option>
+                                                            <option value="select">{t('events.typeSelect')}</option>
+                                                            <option value="checkbox">{t('events.typeCheckbox')}</option>
+                                                            <option value="date">{t('events.typeDate')}</option>
+                                                            <option value="file">{t('events.typeFile')}</option>
+                                                            <option value="textarea">{t('events.typeTextarea')}</option>
+                                                        </select>
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={field.required}
+                                                                onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
+                                                            /> {t('events.requiredField')}
+                                                        </label>
+                                                        <button
+                                                            onClick={() => handleRemoveField(field.id)}
+                                                            style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
                                                     </div>
 
-                                                    {!lesson.isPublished && (
-                                                        <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
+                                                    {/* Options input for Select type */}
+                                                    {field.type === 'select' && (
+                                                        <input
+                                                            type="text"
+                                                            value={field.options?.join(', ') || ''}
+                                                            onChange={(e) => handleFieldChange(field.id, 'options', e.target.value.split(',').map(s => s.trim()))}
+                                                            placeholder={t('events.optionsPlaceholder')}
+                                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px dashed #ccc', fontSize: '0.85rem', background: '#f9f9f9' }}
+                                                        />
                                                     )}
                                                 </div>
                                             ))}
                                         </div>
-                                    )}
-                                </motion.div>
-                            )}
-                            {step === 7 && (
-                                <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Parceiros & Publicação</h2>
+                                    </motion.div>
+                                )}
 
-                                    <PartnersEditor
-                                        partners={partners}
-                                        onChange={setPartners}
-                                    />
+                                {step === 3 && (
+                                    <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>{t('events.customization')}</h2>
+                                        <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escolha um modelo pronto ou personalize as cores do seu evento.</p>
 
-                                    <div style={{ marginTop: '3rem', padding: '1.5rem', background: isPublic ? '#f0fff4' : '#fff5f5', borderRadius: '16px', border: isPublic ? '1px solid #c6f6d5' : '1px solid #fed7d7', transition: 'all 0.3s' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ paddingRight: '20px' }}>
-                                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: isPublic ? '#22543d' : '#742a2a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    {isPublic ? <Globe size={20} /> : <Lock size={20} />}
-                                                    {isPublic ? 'Publicar Evento' : 'Salvar como Rascunho'}
-                                                </h3>
-                                                <p style={{ fontSize: '0.9rem', color: isPublic ? '#2f855a' : '#9b2c2c', margin: 0, lineHeight: 1.5 }}>
-                                                    {isPublic
-                                                        ? 'Seu evento ficará visível para todos os inscritos e aparecerá na busca.'
-                                                        : 'Seu evento ficará oculto (Inativo). Você poderá publicá-lo depois pelo painel.'}
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+                                            <div style={{ display: 'grid', gap: '2rem' }}>
+                                                {/* Presets Gallery */}
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem', color: '#111' }}>
+                                                        {t('events.backgroundTemplates')}
+                                                    </label>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                                        {[
+                                                            { id: 'darkLuxury', name: t('events.presets.darkLuxury'), bg: '#050505', primary: '#FFD700', style: 'luxury' },
+                                                            { id: 'royalGold', name: t('events.presets.royalGold'), bg: '#1a1a1a', primary: '#D4AF37', style: 'luxury' },
+                                                            { id: 'modernWhite', name: t('events.presets.modernWhite'), bg: '#FFFFFF', primary: '#000000', style: 'minimalist' },
+                                                            { id: 'oceanBlue', name: t('events.presets.oceanBlue'), bg: '#0f172a', primary: '#38bdf8', style: 'luxury' },
+                                                            { id: 'vibrantGreen', name: t('events.presets.vibrantGreen'), bg: '#064e3b', primary: '#4ade80', style: 'luxury' },
+                                                            { id: 'sunset', name: t('events.presets.sunset'), bg: '#450a0a', primary: '#f97316', style: 'luxury' }
+                                                        ].map((preset) => (
+                                                            <motion.button
+                                                                key={preset.id}
+                                                                whileHover={{ y: -4 }}
+                                                                whileTap={{ scale: 0.98 }}
+                                                                onClick={() => setTheme({
+                                                                    primaryColor: preset.primary,
+                                                                    backgroundColor: preset.bg,
+                                                                    style: preset.style as 'luxury' | 'minimalist',
+                                                                    fontFamily: theme.fontFamily
+                                                                })}
+                                                                style={{
+                                                                    background: preset.bg,
+                                                                    border: theme.backgroundColor === preset.bg && theme.primaryColor === preset.primary ? `3px solid ${preset.primary}` : '1px solid #ddd',
+                                                                    borderRadius: '16px',
+                                                                    padding: '1.2rem',
+                                                                    cursor: 'pointer',
+                                                                    textAlign: 'left',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    justifyContent: 'space-between',
+                                                                    minHeight: '100px',
+                                                                    position: 'relative',
+                                                                    overflow: 'hidden',
+                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                                                }}
+                                                            >
+                                                                <div style={{ color: preset.primary, fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{preset.name}</div>
+                                                                <div style={{ width: '24px', height: '24px', background: preset.primary, borderRadius: '50%', alignSelf: 'flex-end', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    {theme.backgroundColor === preset.bg && theme.primaryColor === preset.primary && <Check size={14} color={['#FFD700', '#FFFFFF', '#4ade80', '#38bdf8'].includes(preset.primary) ? '#000' : '#fff'} />}
+                                                                </div>
+                                                            </motion.button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Customization Section */}
+                                                <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                                    <label style={{ display: 'block', fontWeight: 800, marginBottom: '1.2rem', fontSize: '0.9rem', color: '#333' }}>
+                                                        {t('events.customBackground')}
+                                                    </label>
+
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                                        <div>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.primaryColor')}</label>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={theme.primaryColor}
+                                                                        onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
+                                                                        style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                </div>
+                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.primaryColor.toUpperCase()}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.backgroundColor')}</label>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={theme.backgroundColor}
+                                                                        onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
+                                                                        style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                </div>
+                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.backgroundColor.toUpperCase()}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ marginTop: '1.5rem' }}>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.8rem', color: '#666' }}>{t('events.visualStyle')}</label>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            <button
+                                                                onClick={() => setTheme({ ...theme, style: 'luxury' })}
+                                                                style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'luxury' ? '#111' : '#f4f4f4', color: theme.style === 'luxury' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                                                            >
+                                                                Premium (Luxury)
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setTheme({ ...theme, style: 'minimalist' })}
+                                                                style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'minimalist' ? '#111' : '#f4f4f4', color: theme.style === 'minimalist' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                                                            >
+                                                                Simples (Minimalist)
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Live Preview - Improved */}
+                                            <div style={{ position: 'sticky', top: '2rem' }}>
+                                                <label style={{ display: 'block', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem', color: '#111' }}>
+                                                    {t('events.preview')}
+                                                </label>
+                                                <div style={{
+                                                    background: theme.backgroundColor,
+                                                    borderRadius: '30px',
+                                                    padding: '2.5rem 1.5rem',
+                                                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
+                                                    border: `1px solid ${theme.primaryColor}22`,
+                                                    color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#1a1a1a',
+                                                    position: 'relative',
+                                                    overflow: 'hidden',
+                                                    minHeight: '400px',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    textAlign: 'center',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    {theme.style === 'luxury' && (
+                                                        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent)', pointerEvents: 'none' }} />
+                                                    )}
+
+                                                    <div style={{ position: 'relative', zIndex: 2 }}>
+                                                        <div style={{
+                                                            fontSize: '0.65rem',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '3px',
+                                                            color: theme.primaryColor,
+                                                            fontWeight: 900,
+                                                            marginBottom: '1rem',
+                                                            opacity: 0.8
+                                                        }}>
+                                                            EXCLUSIVO
+                                                        </div>
+
+                                                        <h3 style={{
+                                                            fontSize: '1.6rem',
+                                                            fontWeight: 900,
+                                                            marginBottom: '1.5rem',
+                                                            lineHeight: 1.1,
+                                                            fontFamily: theme.fontFamily,
+                                                            color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#000'
+                                                        }}>
+                                                            {title || "Nome do Evento"}
+                                                        </h3>
+
+                                                        <div style={{ padding: '0.8rem 1.2rem', borderRadius: '12px', background: 'rgba(0,0,0,0.05)', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '2rem', fontSize: '0.85rem' }}>
+                                                            <span style={{ opacity: 0.7 }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : "Data"}</span>
+                                                        </div>
+
+                                                        <button style={{
+                                                            width: '100%',
+                                                            padding: '1.2rem',
+                                                            borderRadius: '16px',
+                                                            background: theme.primaryColor,
+                                                            color: (['#FFD700', '#ffffff', '#e2e8f0', '#4ade80', '#38bdf8'].includes(theme.primaryColor.toUpperCase())) ? '#000' : '#fff',
+                                                            border: 'none',
+                                                            fontWeight: 900,
+                                                            fontSize: '1rem',
+                                                            boxShadow: `0 15px 30px ${theme.primaryColor}44`,
+                                                            cursor: 'default'
+                                                        }}>
+                                                            {t('events.registerNow')}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+
+                                {step === 4 && (
+                                    <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.paymentConfig')}</h2>
+
+                                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={paymentConfig.enabled}
+                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
+                                                    style={{ width: '20px', height: '20px' }}
+                                                />
+                                                {t('events.isPaidEvent')}
+                                            </label>
+
+                                            {paymentConfig.enabled && (
+                                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
+                                                    {/* Currency Selector - Always Visible for Paid Events */}
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currency')}</label>
+                                                        <select
+                                                            value={paymentConfig.currency}
+                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
+                                                        >
+                                                            <option value="USD">{t('events.dollar')}</option>
+                                                            <option value="EUR">{t('events.euro')}</option>
+                                                            <option value="MT">{t('events.metical')}</option>
+                                                            <option value="AOA">{t('events.kwanza')}</option>
+                                                            <option value="CVE">{t('events.escudo')}</option>
+                                                            <option value="XOF">{t('events.cfa')}</option>
+                                                            <option value="BRL">Real (BRL)</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {/* Tiered Pricing Toggle */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        padding: '1rem',
+                                                        background: '#f0f9ff',
+                                                        border: '1px solid #bae6fd',
+                                                        borderRadius: '12px'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <Users2 size={24} color="#0284c7" />
+                                                            <div>
+                                                                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0369a1' }}>Preços Diferenciados</div>
+                                                                <div style={{ fontSize: '0.75rem', color: '#0c4a6e' }}>
+                                                                    Cobrar preços diferentes por público? (Ex: Estudantes, VIP)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '28px' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={paymentConfig.useTieredPricing}
+                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, useTieredPricing: e.target.checked })}
+                                                                style={{ opacity: 0, width: 0, height: 0 }}
+                                                            />
+                                                            <span className="slider round" style={{
+                                                                position: 'absolute',
+                                                                cursor: 'pointer',
+                                                                top: 0,
+                                                                left: 0,
+                                                                right: 0,
+                                                                bottom: 0,
+                                                                backgroundColor: paymentConfig.useTieredPricing ? '#0ea5e9' : '#ccc',
+                                                                transition: '.4s',
+                                                                borderRadius: '34px'
+                                                            }}>
+                                                                <span style={{
+                                                                    position: 'absolute',
+                                                                    content: "",
+                                                                    height: '20px',
+                                                                    width: '20px',
+                                                                    left: paymentConfig.useTieredPricing ? '26px' : '4px',
+                                                                    bottom: '4px',
+                                                                    backgroundColor: 'white',
+                                                                    transition: '.4s',
+                                                                    borderRadius: '50%'
+                                                                }} />
+                                                            </span>
+                                                        </label>
+                                                    </div>
+
+                                                    {/* Price Input OR Tier Editor */}
+                                                    {!paymentConfig.useTieredPricing ? (
+                                                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
+                                                            <div style={{ position: 'relative' }}>
+                                                                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontWeight: 700, color: '#666' }}>
+                                                                    {paymentConfig.currency === 'MT' ? 'MT' :
+                                                                        paymentConfig.currency === 'USD' ? '$' :
+                                                                            paymentConfig.currency === 'EUR' ? '€' :
+                                                                                paymentConfig.currency}
+                                                                </span>
+                                                                <input
+                                                                    type="number"
+                                                                    value={paymentConfig.price}
+                                                                    onChange={(e) => {
+                                                                        const val = parseFloat(e.target.value);
+                                                                        setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
+                                                                    }}
+                                                                    placeholder="0.00"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    style={{ width: '100%', padding: '1rem 1rem 1rem 3.5rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: '1.1rem', fontWeight: 600 }}
+                                                                />
+                                                            </div>
+                                                        </motion.div>
+                                                    ) : (
+                                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                            <PricingTiersEditor
+                                                                tiers={paymentConfig.pricingTiers}
+                                                                currency={paymentConfig.currency}
+                                                                onUpdate={(tiers) => setPaymentConfig({ ...paymentConfig, pricingTiers: tiers })}
+                                                            />
+                                                        </motion.div>
+                                                    )}
+
+                                                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            top: '12px',
+                                                            right: '12px',
+                                                            background: '#e2e8f0',
+                                                            color: '#475569',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '20px',
+                                                            fontSize: '0.65rem',
+                                                            fontWeight: 800,
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px'
+                                                        }}>
+                                                            Em Breve
+                                                        </div>
+
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#64748b', cursor: 'not-allowed', marginBottom: '1rem' }}>
+                                                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={false}
+                                                                    disabled={true}
+                                                                    style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
+                                                                />
+                                                                <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
+                                                                    <Lock size={12} color="#64748b" />
+                                                                </div>
+                                                            </div>
+                                                            {t('events.stripeHeader')}
+                                                        </label>
+
+                                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                                            <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                                                                    Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.paymentInstructionsHeader')}</label>
+                                                        <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem' }}>{t('events.paymentMethodsHelp')}</p>
+
+                                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                                            {/* Bank Account */}
+                                                            <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '1rem', fontSize: '0.85rem', color: '#1a1a1b' }}>
+                                                                    <Database size={16} className="gold-text" /> {t('events.bankAccount')}
+                                                                </label>
+                                                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={paymentConfig.accountHolder || ''}
+                                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, accountHolder: e.target.value })}
+                                                                        placeholder={t('events.accountHolderPlaceholder')}
+                                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        value={paymentConfig.bankAccount || ''}
+                                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, bankAccount: e.target.value })}
+                                                                        placeholder={t('events.bankAccountPlaceholder')}
+                                                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Dynamic Manual Methods (Global Support) */}
+                                                            <div style={{ padding: '1.2rem', background: '#fff', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '0.85rem', color: '#1a1a1b' }}>
+                                                                        <Coins size={16} className="gold-text" /> {t('events.customPayments')}
+                                                                    </label>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setPaymentConfig({
+                                                                            ...paymentConfig,
+                                                                            manualMethods: [...(paymentConfig.manualMethods || []), { label: '', value: '', icon: 'phone' }]
+                                                                        })}
+                                                                        style={{ padding: '4px 10px', fontSize: '0.7rem', fontWeight: 700, borderRadius: '20px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                                    >
+                                                                        <Plus size={12} /> {t('events.addMethod')}
+                                                                    </button>
+                                                                </div>
+
+                                                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                                                    {paymentConfig.manualMethods?.length === 0 && (
+                                                                        <p style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', fontStyle: 'italic', padding: '1rem' }}>
+                                                                            {t('events.noCustomMethods')}
+                                                                        </p>
+                                                                    )}
+
+                                                                    {paymentConfig.manualMethods?.map((method, idx) => (
+                                                                        <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#f9f9f9', padding: '10px', borderRadius: '12px' }}>
+                                                                            <div style={{ flex: 1, display: 'grid', gap: '8px' }}>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    placeholder={t('events.methodNamePlaceholder')}
+                                                                                    value={method.label}
+                                                                                    onChange={(e) => {
+                                                                                        const newMethods = [...paymentConfig.manualMethods];
+                                                                                        newMethods[idx].label = e.target.value;
+                                                                                        setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                    }}
+                                                                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                                                                />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    placeholder={t('events.methodValuePlaceholder')}
+                                                                                    value={method.value}
+                                                                                    onChange={(e) => {
+                                                                                        const newMethods = [...paymentConfig.manualMethods];
+                                                                                        newMethods[idx].value = e.target.value;
+                                                                                        setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                    }}
+                                                                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                                                                />
+                                                                            </div>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    const newMethods = paymentConfig.manualMethods.filter((_, i) => i !== idx);
+                                                                                    setPaymentConfig({ ...paymentConfig, manualMethods: newMethods });
+                                                                                }}
+                                                                                style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+                                                                            >
+                                                                                <Minus size={14} />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+
+                                                            <div>
+                                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.otherInstructionsLabel')}</label>
+                                                                <textarea
+                                                                    value={paymentConfig.instructions || ''}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, instructions: e.target.value })}
+                                                                    rows={3}
+                                                                    placeholder={t('events.otherInstructionsPlaceholder')}
+                                                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', border: '1px solid #ddd', outline: 'none', resize: 'vertical', fontSize: '0.9rem' }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 600, padding: '1rem', background: '#f8f9fa', borderRadius: '12px' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={paymentConfig.requireProof}
+                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, requireProof: e.target.checked })}
+                                                            style={{ width: '18px', height: '18px' }}
+                                                        />
+                                                        {t('events.requireProofLabel')}
+                                                    </label>
+                                                </motion.div>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {step === 5 && (
+                                    <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.whatsappConclusion')}</h2>
+
+                                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                            <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
+                                                <div style={{ color: '#319795' }}><CheckCircle size={24} /></div>
+                                                <p style={{ color: '#2c7a7b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                                                    {t('events.whatsappHelp')}
                                                 </p>
                                             </div>
-                                            <label className="switch" style={{ transform: 'scale(1.2)' }}>
-                                                <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
-                                                <span className="slider round"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
 
-                        {/* Mobile Footer Action */}
-                        {
-                            isMobile && (
-                                <div style={{
-                                    position: 'fixed',
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                    padding: '1.25rem',
-                                    background: '#fff',
-                                    borderTop: '1px solid #eee',
-                                    zIndex: 2005,
-                                    boxShadow: '0 -4px 20px rgba(0,0,0,0.05)'
-                                }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappNumber')}</label>
+                                                <input
+                                                    type="text"
+                                                    value={whatsappConfig.phoneNumber}
+                                                    onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
+                                                    placeholder={t('events.whatsappNumberPlaceholder')}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappMessage')}</label>
+                                                <textarea
+                                                    value={whatsappConfig.message}
+                                                    onChange={(e) => setWhatsappConfig({ ...whatsappConfig, message: e.target.value })}
+                                                    rows={3}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', resize: 'none' }}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.communityLinkLabel')}</label>
+                                                <input
+                                                    type="text"
+                                                    value={whatsappConfig.communityUrl}
+                                                    onChange={(e) => setWhatsappConfig({ ...whatsappConfig, communityUrl: e.target.value })}
+                                                    placeholder={t('events.communityPlaceholder')}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                />
+                                            </div>
+
+                                            <div style={{ marginTop: '1rem', padding: '1.5rem', background: '#FDF2F2', borderRadius: '20px', border: '1px solid #FEE2E2' }}>
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, marginBottom: '0.5rem', fontSize: '1rem', color: '#9B1C1C' }}>
+                                                    <MessageCircle size={20} />
+                                                    Mensagem Automática de Boas-Vindas
+                                                </label>
+
+                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
+                                                        style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                    >
+                                                        {t('events.welcomeTemplates.formal')}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
+                                                        style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                    >
+                                                        {t('events.welcomeTemplates.excited')}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
+                                                        style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                    >
+                                                        {t('events.welcomeTemplates.brief')}
+                                                    </button>
+                                                </div>
+
+                                                <p style={{ fontSize: '0.8rem', color: '#7F1D1D', marginBottom: '1rem' }}>
+                                                    Esta mensagem será enviada automaticamente pelo chat assim que o participante se inscrever.
+                                                </p>
+                                                <textarea
+                                                    value={welcomeMessage}
+                                                    onChange={(e) => setWelcomeMessage(e.target.value)}
+                                                    placeholder="Ex: Olá! Seja bem-vindo ao evento. Estamos muito felizes com sua participação..."
+                                                    rows={4}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #FCA5A5', outline: 'none', resize: 'none' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {step === 6 && (
+                                    <motion.div key="step6" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aulas do Evento</h2>
+                                        <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
+
+                                        {lessonsLoading ? (
+                                            <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                                <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                                <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
+                                            </div>
+                                        ) : allLessons.length === 0 ? (
+                                            <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
+                                                <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
+                                                <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
+                                                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+                                                    Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
+                                                </p>
+                                                <a
+                                                    href="/dashboard/mentor/lessons"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        marginTop: '1rem',
+                                                        padding: '0.75rem 1.5rem',
+                                                        borderRadius: '12px',
+                                                        background: '#111',
+                                                        color: '#FFD700',
+                                                        textDecoration: 'none',
+                                                        fontWeight: 700,
+                                                        fontSize: '0.9rem'
+                                                    }}
+                                                >
+                                                    Criar Nova Aula <ExternalLink size={16} />
+                                                </a>
+                                            </div>
+                                        ) : (
+                                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                                {allLessons.map((lesson) => (
+                                                    <div
+                                                        key={lesson._id}
+                                                        onClick={() => toggleLessonSelection(lesson._id)}
+                                                        style={{
+                                                            padding: '1.25rem',
+                                                            borderRadius: '16px',
+                                                            border: '2px solid',
+                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
+                                                            background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '15px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '24px',
+                                                            height: '24px',
+                                                            borderRadius: '6px',
+                                                            border: '2px solid',
+                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
+                                                            background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#fff'
+                                                        }}>
+                                                            {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
+                                                        </div>
+
+                                                        <div style={{
+                                                            width: '60px',
+                                                            height: '40px',
+                                                            borderRadius: '8px',
+                                                            background: '#eee',
+                                                            position: 'relative',
+                                                            overflow: 'hidden',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            {lesson.thumbnailUrl ? (
+                                                                <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                                                            ) : (
+                                                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
+                                                                    <Play size={16} color="#fff" fill="#fff" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div style={{ flex: 1 }}>
+                                                            <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
+                                                            <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
+                                                        </div>
+
+                                                        {!lesson.isPublished && (
+                                                            <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+                                {step === 7 && (
+                                    <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Parceiros & Publicação</h2>
+
+                                        <PartnersEditor
+                                            partners={partners}
+                                            onChange={setPartners}
+                                        />
+
+                                        <div style={{ marginTop: '3rem', padding: '1.5rem', background: isPublic ? '#f0fff4' : '#fff5f5', borderRadius: '16px', border: isPublic ? '1px solid #c6f6d5' : '1px solid #fed7d7', transition: 'all 0.3s' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ paddingRight: '20px' }}>
+                                                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: isPublic ? '#22543d' : '#742a2a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        {isPublic ? <Globe size={20} /> : <Lock size={20} />}
+                                                        {isPublic ? 'Publicar Evento' : 'Salvar como Rascunho'}
+                                                    </h3>
+                                                    <p style={{ fontSize: '0.9rem', color: isPublic ? '#2f855a' : '#9b2c2c', margin: 0, lineHeight: 1.5 }}>
+                                                        {isPublic
+                                                            ? 'Seu evento ficará visível para todos os inscritos e aparecerá na busca.'
+                                                            : 'Seu evento ficará oculto (Inativo). Você poderá publicá-lo depois pelo painel.'}
+                                                    </p>
+                                                </div>
+                                                <label className="switch" style={{ transform: 'scale(1.2)' }}>
+                                                    <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+                                                    <span className="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Unified Sticky Footer Action */}
+                        <div style={{
+                            padding: isMobile ? '1rem 1.5rem' : '1.5rem 3.5rem',
+                            background: '#fff',
+                            borderTop: '2px solid #FFD700',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            zIndex: 2005,
+                            boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
+                            gap: '12px',
+                            flexShrink: 0
+                        }}>
+                            {/* Shortucts Info (Desktop Only) */}
+                            {!isMobile && (
+                                <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
+                                    <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
+                                    <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
+                                    {step === 7 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', marginLeft: 'auto' }}>
+                                {step > 1 && (
                                     <button
-                                        onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
-                                        disabled={loading}
-                                        className="btn-primary"
+                                        onClick={() => setStep(step - 1)}
                                         style={{
-                                            width: '100%',
-                                            borderRadius: '14px',
-                                            padding: '1.1rem',
+                                            padding: isMobile ? '0.8rem 1.5rem' : '0.8rem 2.5rem',
+                                            borderRadius: '12px',
+                                            border: '1px solid #ddd',
+                                            background: '#fff',
+                                            color: '#333',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '10px',
-                                            fontSize: '1rem',
-                                            fontWeight: 700
+                                            gap: '8px'
                                         }}
                                     >
-                                        {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
+                                        <ExternalLink size={18} style={{ transform: 'rotate(180deg)' }} /> {t('common.back')}
                                     </button>
-                                </div>
-                            )
-                        }
-                    </div >
+                                )}
+                                <button
+                                    onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
+                                    disabled={loading}
+                                    className="btn-primary"
+                                    style={{
+                                        minWidth: isMobile ? 'none' : '200px',
+                                        flex: isMobile ? 1 : 'initial',
+                                        borderRadius: '12px',
+                                        padding: '0.8rem 2.5rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px',
+                                        fontSize: '0.95rem',
+                                        fontWeight: 800
+                                    }}
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* SUCCESS MODAL OVERLAY */}
                     <AnimatePresence>
