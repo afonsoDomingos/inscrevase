@@ -62,7 +62,9 @@ import {
     Package,
     Megaphone,
     AlertTriangle,
-    Trophy
+    Trophy,
+    ExternalLink,
+    Monitor
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -1302,7 +1304,7 @@ function MentorDashboardContent() {
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Evento</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Status</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>{t('common.visibility')}</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Perfil</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Inscritos</th>
                                             <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'center' }}>Visitas</th>
@@ -1330,7 +1332,7 @@ function MentorDashboardContent() {
                                                             color: form.active ? '#38a169' : '#e53e3e'
                                                         }}
                                                     >
-                                                        {form.active ? t('common.active') : t('common.inactive')}
+                                                        {form.active ? t('common.public') : t('common.private')}
                                                     </button>
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
@@ -1367,6 +1369,8 @@ function MentorDashboardContent() {
                                                 </td>
                                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                                        <button onClick={() => window.open(`/f/${form.slug}`, '_blank')} title={t('common.viewPublicForm')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}><ExternalLink size={18} /></button>
+                                                        <button onClick={() => window.open(`/hub/${form.slug}`, '_blank')} title={t('common.viewEventHub')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1a1a1a' }}><Monitor size={18} /></button>
                                                         <button onClick={() => setEditModalData({ isOpen: true, form })} title={t('common.editEvent')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}><Pencil size={18} /></button>
                                                         <button onClick={() => setThemeModalData({ isOpen: true, form })} title={t('common.customizeTheme')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>
                                                         <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>

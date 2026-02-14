@@ -488,26 +488,29 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 ) : (
                     <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: '20px', paddingRight: '20px' }}>
 
-                        {/* Company Logo Option */}
+                        {/* Company Logo - Strategic positioning top-left */}
                         {form.logo && (
                             <motion.div
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                style={{
+                                    position: 'absolute',
+                                    top: '20px',
+                                    left: '20px',
+                                    zIndex: 20
+                                }}
                             >
                                 <div style={{
-                                    padding: '1rem 2rem',
-                                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                    borderRadius: '20px',
-                                    backdropFilter: 'blur(10px)',
-                                    border: `1px solid ${borderColor}`
+                                    padding: '8px 12px',
+                                    borderRadius: '12px',
+                                    transition: 'all 0.3s ease'
                                 }}>
                                     <Image
                                         src={form.logo}
                                         alt="Company Logo"
-                                        width={180}
-                                        height={60}
-                                        style={{ objectFit: 'contain', height: 'auto', maxWidth: '220px' }}
+                                        width={120}
+                                        height={40}
+                                        style={{ objectFit: 'contain', height: 'auto', maxWidth: '130px' }}
                                     />
                                 </div>
                             </motion.div>

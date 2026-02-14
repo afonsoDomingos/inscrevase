@@ -543,19 +543,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         }
 
 
-        // 4. Validação condicional: Location para eventos presenciais
-        if (eventType === 'modePresencial' && !location.trim()) {
-            toast.error('Localização é obrigatória para eventos presenciais');
-            setStep(1);
-            return;
-        }
-
-        // 5. Validação condicional: Online Link para eventos online
-        if ((eventType === 'modeOnline' || eventType === 'modeHibrido') && !onlineLink.trim()) {
-            toast.error('Link online é obrigatório para eventos online/híbridos');
-            setStep(1);
-            return;
-        }
+        // 4. Campos opcionais (Location e Online Link não são mais obrigatórios)
 
         // 6. Validar formato de URL do link online
         if (onlineLink.trim()) {
@@ -2399,7 +2387,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                     <div style={{ display: 'grid', gap: '1rem' }}>
                                         <button
-                                            onClick={() => window.open(`/event/${createdEventSlug}`, '_blank')}
+                                            onClick={() => window.open(`/f/${createdEventSlug}`, '_blank')}
                                             style={{ background: '#000', color: '#FFD700', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
                                             className="hover-scale"
                                         >

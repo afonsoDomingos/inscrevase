@@ -180,6 +180,7 @@ function HubContent() {
                     : `http://localhost:5000/api/submissions/${id}`;
                 const response = await fetch(url);
                 const data = await response.json();
+
                 if (response.ok) {
                     setSubmission(data);
                     if (data.form.showVideoOnStart) {
@@ -192,7 +193,35 @@ function HubContent() {
                         fetchLessons();
                     }
                 } else {
-                    toast.error(t('dashboard.submissionNotFound'));
+                    // FALLBACK: Try to fetch as a Form Slug (Mentor Preview Mode)
+                    try {
+                        const formUrl = process.env.NEXT_PUBLIC_API_URL
+                            ? `${process.env.NEXT_PUBLIC_API_URL}/forms/${id}`
+                            : `http://localhost:5000/api/forms/${id}`;
+                        const formResponse = await fetch(formUrl);
+                        const formData = await formResponse.json();
+
+                        if (formResponse.ok) {
+                            // Create a dummy submission object for preview
+                            setSubmission({
+                                _id: 'preview',
+                                status: 'approved',
+                                paymentStatus: 'paid',
+                                data: {},
+                                submittedAt: new Date().toISOString(),
+                                form: formData
+                            });
+                            document.title = `${formData.title} - Hub (Preview)`;
+
+                            // Load lessons for the form
+                            fetchLessons();
+                        } else {
+                            toast.error(t('dashboard.submissionNotFound'));
+                        }
+                    } catch (err) {
+                        console.error("Preview fallback failed:", err);
+                        toast.error(t('dashboard.submissionNotFound'));
+                    }
                 }
             } catch (err) {
                 console.error(err);
