@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -130,6 +130,202 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     // Partners State
     const [partners, setPartners] = useState<string[]>([]);
 
+    // Auto-Save & Draft Recovery State
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [showDraftBanner, setShowDraftBanner] = useState(false);
+    const [draftData, setDraftData] = useState<any>(null);
+    const [isDraggingImage, setIsDraggingImage] = useState(false);
+
+    // Validation State
+    const [validation, setValidation] = useState({
+        title: { valid: true, message: '' },
+        description: { valid: true, message: '' },
+        eventDate: { valid: true, message: '' },
+        capacity: { valid: true, message: '' }
+    });
+
+    // Calculate Progress
+    const calculateProgress = () => {
+        const totalFields = 8; // title, description, date, image, fields, theme, payment, communication
+        let completedFields = 0;
+
+        if (title.trim()) completedFields++;
+        if (description.trim()) completedFields++;
+        if (eventDate) completedFields++;
+        if (coverImage) completedFields++;
+        if (fields.length > 0 && fields.every(f => f.label.trim())) completedFields++;
+        if (theme.primaryColor) completedFields++;
+        if (whatsappConfig.phoneNumber || whatsappConfig.communityUrl) completedFields++;
+        if (step >= 4) completedFields++; // viewed payment config
+
+        return Math.round((completedFields / totalFields) * 100);
+    };
+
+    // Validation Functions
+    const validateTitle = (value: string) => {
+        if (!value.trim()) {
+            return { valid: false, message: t('events.titleRequired') || 'Título é obrigatório' };
+        }
+        if (value.length < 5) {
+            return { valid: false, message: 'Título muito curto (mín. 5 caracteres)' };
+        }
+        if (value.length > 100) {
+            return { valid: false, message: 'Título muito longo (máx. 100 caracteres)' };
+        }
+        return { valid: true, message: '' };
+    };
+
+    const validateDescription = (value: string) => {
+        if (!value.trim()) {
+            return { valid: false, message: 'Descrição é obrigatória' };
+        }
+        if (value.length < 20) {
+            return { valid: false, message: 'Descrição muito curta (mín. 20 caracteres)' };
+        }
+        return { valid: true, message: '' };
+    };
+
+    const validateEventDate = (value: string) => {
+        if (!value) {
+            return { valid: false, message: 'Data do evento é obrigatória' };
+        }
+        const selectedDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+            return { valid: false, message: 'Data não pode ser no passado' };
+        }
+        return { valid: true, message: '' };
+    };
+
+    const validateCapacity = (value: string) => {
+        if (value && (parseInt(value) < 1 || parseInt(value) > 10000)) {
+            return { valid: false, message: 'Capacidade deve estar entre 1 e 10.000' };
+        }
+        return { valid: true, message: '' };
+    };
+
+    // Auto-Save Effect
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const autoSaveInterval = setInterval(() => {
+            if (title || description || coverImage || fields.length > 2) {
+                const draftData = {
+                    title, description, eventDate, capacity, extraCapacity,
+                    coverImage, location, onlineLink, eventTime, eventType,
+                    category, videoUrl, videoOrientation, logo, fields,
+                    theme, paymentConfig, whatsappConfig, welcomeMessage,
+                    selectedLessons, partners,
+                    timestamp: Date.now(),
+                    step
+                };
+
+                localStorage.setItem('event-draft', JSON.stringify(draftData));
+                setLastSaved(new Date());
+            }
+        }, 30000); // Auto-save a cada 30 segundos
+
+        return () => clearInterval(autoSaveInterval);
+    }, [
+        isOpen, title, description, eventDate, capacity, extraCapacity,
+        coverImage, location, onlineLink, eventTime, eventType, category,
+        videoUrl, videoOrientation, logo, fields, theme, paymentConfig,
+        whatsappConfig, welcomeMessage, selectedLessons, partners, step
+    ]);
+
+    // Check for Draft on Open
+    useEffect(() => {
+        if (isOpen) {
+            const savedDraft = localStorage.getItem('event-draft');
+            if (savedDraft) {
+                try {
+                    const draft = JSON.parse(savedDraft);
+                    const draftAge = Date.now() - draft.timestamp;
+
+                    // Show banner if draft is less than 24 hours old
+                    if (draftAge < 24 * 60 * 60 * 1000) {
+                        setDraftData(draft);
+                        setShowDraftBanner(true);
+                    } else {
+                        // Remove old draft
+                        localStorage.removeItem('event-draft');
+                    }
+                } catch (err) {
+                    console.error('Error loading draft:', err);
+                }
+            }
+        }
+    }, [isOpen]);
+
+    const restoreDraft = () => {
+        if (draftData) {
+            setTitle(draftData.title || '');
+            setDescription(draftData.description || '');
+            setEventDate(draftData.eventDate || '');
+            setCapacity(draftData.capacity || '');
+            setExtraCapacity(draftData.extraCapacity || '0');
+            setCoverImage(draftData.coverImage || '');
+            setLocation(draftData.location || '');
+            setOnlineLink(draftData.onlineLink || '');
+            setEventTime(draftData.eventTime || '');
+            setEventType(draftData.eventType || 'modePresencial');
+            setCategory(draftData.category || 'Outros');
+            setVideoUrl(draftData.videoUrl || '');
+            setVideoOrientation(draftData.videoOrientation || 'vertical');
+            setLogo(draftData.logo || '');
+            setFields(draftData.fields || []);
+            setTheme(draftData.theme || theme);
+            setPaymentConfig(draftData.paymentConfig || paymentConfig);
+            setWhatsappConfig(draftData.whatsappConfig || whatsappConfig);
+            setWelcomeMessage(draftData.welcomeMessage || '');
+            setSelectedLessons(draftData.selectedLessons || []);
+            setPartners(draftData.partners || []);
+            setStep(draftData.step || 1);
+
+            setShowDraftBanner(false);
+            toast.success('Rascunho restaurado com sucesso!');
+        }
+    };
+
+    const discardDraft = () => {
+        localStorage.removeItem('event-draft');
+        setShowDraftBanner(false);
+        setDraftData(null);
+        toast.info('Rascunho descartado');
+    };
+
+    // Keyboard Shortcuts
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyboard = (e: KeyboardEvent) => {
+            // Ctrl/Cmd + Enter = Submit
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                if (step === 7) {
+                    handleSubmit();
+                }
+            }
+
+            // Ctrl/Cmd + → = Next step
+            if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight') {
+                e.preventDefault();
+                setStep(Math.min(7, step + 1));
+            }
+
+            // Ctrl/Cmd + ← = Previous step
+            if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setStep(Math.max(1, step - 1));
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyboard);
+        return () => window.removeEventListener('keydown', handleKeyboard);
+    }, [isOpen, step]);
+
     useEffect(() => {
         const fetchLessons = async () => {
             setLessonsLoading(true);
@@ -195,6 +391,31 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         }
     };
 
+    // Drag & Drop for Cover Image
+    const handleImageDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDraggingImage(false);
+
+        const files = Array.from(e.dataTransfer.files);
+        const imageFile = files.find(f => f.type.startsWith('image/'));
+
+        if (imageFile) {
+            setUploadingImage(true);
+            try {
+                const url = await formService.uploadFile(imageFile, 'covers');
+                setCoverImage(url);
+                toast.success('Imagem de capa carregada com sucesso!');
+            } catch (err: unknown) {
+                console.error("Cover Upload Error:", err);
+                toast.error('Erro ao carregar imagem. Por favor, tente novamente.');
+            } finally {
+                setUploadingImage(false);
+            }
+        } else {
+            toast.error('Por favor, solte apenas arquivos de imagem');
+        }
+    };
+
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setUploadingLogo(true);
@@ -210,6 +431,33 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 // Reset input para permitir re-upload do mesmo arquivo se necessário
                 e.target.value = '';
             }
+        }
+    };
+
+    // Drag & Drop for Logo
+    const [isDraggingLogo, setIsDraggingLogo] = useState(false);
+
+    const handleLogoDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDraggingLogo(false);
+
+        const files = Array.from(e.dataTransfer.files);
+        const imageFile = files.find(f => f.type.startsWith('image/'));
+
+        if (imageFile) {
+            setUploadingLogo(true);
+            try {
+                const url = await formService.uploadFile(imageFile, 'logos');
+                setLogo(url);
+                toast.success('Logo empresarial carregado!');
+            } catch (err: unknown) {
+                console.error("Logo Upload Error:", err);
+                toast.error('Erro ao carregar logo. Por favor, tente novamente.');
+            } finally {
+                setUploadingLogo(false);
+            }
+        } else {
+            toast.error('Por favor, solte apenas arquivos de imagem');
         }
     };
 
@@ -234,6 +482,37 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 // Reset input para permitir re-upload do mesmo arquivo se necessário
                 e.target.value = '';
             }
+        }
+    };
+
+    // Drag & Drop for Video
+    const [isDraggingVideo, setIsDraggingVideo] = useState(false);
+
+    const handleVideoDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDraggingVideo(false);
+
+        const files = Array.from(e.dataTransfer.files);
+        const videoFile = files.find(f => f.type.startsWith('video/'));
+
+        if (videoFile) {
+            if (videoFile.size > 100 * 1024 * 1024) {
+                toast.error('O vídeo deve ter no máximo 100MB');
+                return;
+            }
+            setUploadingVideo(true);
+            try {
+                const url = await formService.uploadFile(videoFile, 'videos');
+                setVideoUrl(url);
+                toast.success('Vídeo carregado com sucesso!');
+            } catch (err: unknown) {
+                console.error(err);
+                toast.error('Erro ao carregar vídeo. Por favor, tente novamente.');
+            } finally {
+                setUploadingVideo(false);
+            }
+        } else {
+            toast.error('Por favor, solte apenas arquivos de vídeo');
         }
     };
 
@@ -403,6 +682,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={18} /> {t('events.publish')}</> : t('common.next'))}
                                 </button>
+                                <div style={{
+                                    marginTop: '12px',
+                                    fontSize: '0.65rem',
+                                    color: '#666',
+                                    textAlign: 'center',
+                                    lineHeight: '1.4'
+                                }}>
+                                    <span style={{ opacity: 0.7 }}>⌨️ Atalhos:</span>{' '}
+                                    <span style={{ background: '#222', padding: '2px 6px', borderRadius: '4px', color: '#FFD700' }}>Ctrl+→</span> próximo{' '}
+                                    <span style={{ background: '#222', padding: '2px 6px', borderRadius: '4px', color: '#FFD700' }}>Ctrl+←</span> voltar
+                                    {step === 7 && <><br /><span style={{ background: '#222', padding: '2px 6px', borderRadius: '4px', color: '#FFD700' }}>Ctrl+Enter</span> publicar</>}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -416,10 +707,137 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     }}>
                         <button
                             onClick={onClose}
-                            style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
                         >
                             <X size={18} />
                         </button>
+
+                        {/* Progress Indicator */}
+                        <div style={{ marginBottom: '2rem' }}>
+                            <div style={{
+                                background: '#e5e7eb',
+                                borderRadius: '999px',
+                                height: '8px',
+                                position: 'relative',
+                                overflow: 'hidden'
+                            }}>
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${calculateProgress()}%` }}
+                                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                                    style={{
+                                        background: 'linear-gradient(90deg, #FFD700, #FFA500)',
+                                        height: '100%',
+                                        borderRadius: '999px'
+                                    }}
+                                />
+                            </div>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginTop: '8px'
+                            }}>
+                                <span style={{
+                                    fontSize: '0.75rem',
+                                    color: '#666',
+                                    fontWeight: 600
+                                }}>
+                                    {calculateProgress()}% completo
+                                </span>
+                                {lastSaved && (
+                                    <span style={{
+                                        fontSize: '0.7rem',
+                                        color: '#10b981',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}>
+                                        <CheckCircle size={12} />
+                                        Salvo {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Draft Recovery Banner */}
+                        {showDraftBanner && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                style={{
+                                    background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                                    border: '2px solid #fbbf24',
+                                    borderRadius: '12px',
+                                    padding: '1rem',
+                                    marginBottom: '1.5rem',
+                                    boxShadow: '0 4px 6px rgba(251, 191, 36, 0.1)'
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                                    <AlertCircle size={20} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
+                                    <div style={{ flex: 1 }}>
+                                        <h4 style={{
+                                            fontSize: '0.9rem',
+                                            fontWeight: 700,
+                                            color: '#92400e',
+                                            marginBottom: '4px'
+                                        }}>
+                                            Rascunho encontrado
+                                        </h4>
+                                        <p style={{
+                                            fontSize: '0.8rem',
+                                            color: '#78350f',
+                                            marginBottom: '12px',
+                                            lineHeight: '1.4'
+                                        }}>
+                                            Encontramos um rascunho salvo de {
+                                                draftData
+                                                    ? Math.round((Date.now() - draftData.timestamp) / 60000) < 60
+                                                        ? `${Math.round((Date.now() - draftData.timestamp) / 60000)} minutos atrás`
+                                                        : `${Math.round((Date.now() - draftData.timestamp) / 3600000)} horas atrás`
+                                                    : 'recentemente'
+                                            }. Deseja restaurar?
+                                        </p>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={restoreDraft}
+                                                style={{
+                                                    background: '#f59e0b',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    padding: '8px 16px',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseEnter={(e) => e.currentTarget.style.background = '#d97706'}
+                                                onMouseLeave={(e) => e.currentTarget.style.background = '#f59e0b'}
+                                            >
+                                                Restaurar Rascunho
+                                            </button>
+                                            <button
+                                                onClick={discardDraft}
+                                                style={{
+                                                    background: 'transparent',
+                                                    color: '#92400e',
+                                                    border: '1px solid #d97706',
+                                                    borderRadius: '8px',
+                                                    padding: '8px 16px',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Descartar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
 
                         <AnimatePresence mode="wait">
                             {step === 1 && (
@@ -428,25 +846,102 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                     <div style={{ display: 'grid', gap: '1.5rem' }}>
                                         <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventName')}</label>
+                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                {t('events.eventName')} <span style={{ color: '#ef4444' }}>*</span>
+                                            </label>
                                             <input
                                                 type="text"
                                                 value={title}
-                                                onChange={(e) => setTitle(e.target.value)}
+                                                onChange={(e) => {
+                                                    setTitle(e.target.value);
+                                                    setValidation(v => ({ ...v, title: validateTitle(e.target.value) }));
+                                                }}
+                                                onBlur={() => setValidation(v => ({ ...v, title: validateTitle(title) }))}
                                                 placeholder={t('events.namePlaceholder')}
-                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '1rem',
+                                                    borderRadius: '12px',
+                                                    border: !validation.title.valid && title ? '2px solid #ef4444' : '1px solid #ddd',
+                                                    outline: 'none',
+                                                    transition: 'border 0.2s'
+                                                }}
                                             />
+                                            {!validation.title.valid && title && (
+                                                <motion.p
+                                                    initial={{ opacity: 0, y: -5 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    style={{
+                                                        color: '#ef4444',
+                                                        fontSize: '0.75rem',
+                                                        marginTop: '4px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}
+                                                >
+                                                    <AlertCircle size={12} />
+                                                    {validation.title.message}
+                                                </motion.p>
+                                            )}
+                                            {validation.title.valid && title && (
+                                                <motion.p
+                                                    initial={{ opacity: 0, y: -5 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    style={{
+                                                        color: '#10b981',
+                                                        fontSize: '0.75rem',
+                                                        marginTop: '4px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}
+                                                >
+                                                    <CheckCircle size={12} />
+                                                    Perfeito!
+                                                </motion.p>
+                                            )}
                                         </div>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventDate')}</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                    {t('events.eventDate')} <span style={{ color: '#ef4444' }}>*</span>
+                                                </label>
                                                 <input
                                                     type="date"
                                                     value={eventDate}
-                                                    onChange={(e) => setEventDate(e.target.value)}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    onChange={(e) => {
+                                                        setEventDate(e.target.value);
+                                                        setValidation(v => ({ ...v, eventDate: validateEventDate(e.target.value) }));
+                                                    }}
+                                                    onBlur={() => setValidation(v => ({ ...v, eventDate: validateEventDate(eventDate) }))}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '1rem',
+                                                        borderRadius: '12px',
+                                                        border: !validation.eventDate.valid && eventDate ? '2px solid #ef4444' : '1px solid #ddd',
+                                                        outline: 'none',
+                                                        transition: 'border 0.2s'
+                                                    }}
                                                 />
+                                                {!validation.eventDate.valid && eventDate && (
+                                                    <motion.p
+                                                        initial={{ opacity: 0, y: -5 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        style={{
+                                                            color: '#ef4444',
+                                                            fontSize: '0.75rem',
+                                                            marginTop: '4px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px'
+                                                        }}
+                                                    >
+                                                        <AlertCircle size={12} />
+                                                        {validation.eventDate.message}
+                                                    </motion.p>
+                                                )}
                                             </div>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.eventTime')}</label>
@@ -462,15 +957,48 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '1rem' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.capacityLabel')}</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                    {t('events.capacityLabel')}
+                                                </label>
                                                 <input
                                                     type="number"
                                                     value={capacity}
-                                                    onChange={(e) => setCapacity(e.target.value)}
+                                                    onChange={(e) => {
+                                                        setCapacity(e.target.value);
+                                                        setValidation(v => ({ ...v, capacity: validateCapacity(e.target.value) }));
+                                                    }}
+                                                    onBlur={() => setValidation(v => ({ ...v, capacity: validateCapacity(capacity) }))}
                                                     placeholder={t('events.capacityPlaceholder')}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '1rem',
+                                                        borderRadius: '12px',
+                                                        border: !validation.capacity.valid && capacity ? '2px solid #ef4444' : '1px solid #ddd',
+                                                        outline: 'none',
+                                                        transition: 'border 0.2s'
+                                                    }}
                                                 />
-                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>{t('events.capacityHelp')}</p>
+                                                {!validation.capacity.valid && capacity ? (
+                                                    <motion.p
+                                                        initial={{ opacity: 0, y: -5 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        style={{
+                                                            color: '#ef4444',
+                                                            fontSize: '0.75rem',
+                                                            marginTop: '5px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px'
+                                                        }}
+                                                    >
+                                                        <AlertCircle size={12} />
+                                                        {validation.capacity.message}
+                                                    </motion.p>
+                                                ) : (
+                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                        {t('events.capacityHelp')}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.extraCapacityLabel')}</label>
@@ -579,20 +1107,25 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                         <div>
                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.coverImageLabel')}</label>
-                                            <div style={{
-                                                width: '100%',
-                                                height: '180px',
-                                                background: '#eee',
-                                                borderRadius: '20px',
-                                                border: '2px dashed #ccc',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                cursor: 'pointer',
-                                                position: 'relative',
-                                                overflow: 'hidden'
-                                            }}>
+                                            <div
+                                                onDragOver={(e) => { e.preventDefault(); setIsDraggingImage(true); }}
+                                                onDragLeave={() => setIsDraggingImage(false)}
+                                                onDrop={handleImageDrop}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '180px',
+                                                    background: isDraggingImage ? '#fffbeb' : '#eee',
+                                                    borderRadius: '20px',
+                                                    border: isDraggingImage ? '3px dashed #FFD700' : '2px dashed #ccc',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    position: 'relative',
+                                                    overflow: 'hidden',
+                                                    transition: 'all 0.2s ease'
+                                                }}>
                                                 <input
                                                     type="file"
                                                     accept="image/*"
@@ -627,8 +1160,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <ImageIcon size={32} color="#aaa" />
-                                                            <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
+                                                            {isDraggingImage ? (
+                                                                <>
+                                                                    <Upload size={48} color="#FFD700" />
+                                                                    <span style={{ fontSize: '0.9rem', color: '#FFD700', marginTop: '10px', fontWeight: 700 }}>
+                                                                        Solte a imagem aqui!
+                                                                    </span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <ImageIcon size={32} color="#aaa" />
+                                                                    <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
+                                                                    <span style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '4px' }}>ou arraste e solte aqui</span>
+                                                                </>
+                                                            )}
                                                         </>
                                                     )
                                                 )}
@@ -643,25 +1188,39 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         <div>
                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Logo da Empresa (Opcional)</label>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                                <div style={{
-                                                    width: '100px',
-                                                    height: '100px',
-                                                    background: '#f8f9fa',
-                                                    borderRadius: '16px',
-                                                    border: '2px dashed #ddd',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    position: 'relative',
-                                                    overflow: 'hidden'
-                                                }}>
-                                                    <input type="file" onChange={handleLogoUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                <div
+                                                    onDragOver={(e) => { e.preventDefault(); setIsDraggingLogo(true); }}
+                                                    onDragLeave={() => setIsDraggingLogo(false)}
+                                                    onDrop={handleLogoDrop}
+                                                    style={{
+                                                        width: '100px',
+                                                        height: '100px',
+                                                        background: isDraggingLogo ? '#fffbeb' : '#f8f9fa',
+                                                        borderRadius: '16px',
+                                                        border: isDraggingLogo ? '3px dashed #FFD700' : '2px dashed #ddd',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        position: 'relative',
+                                                        overflow: 'hidden',
+                                                        transition: 'all 0.2s ease'
+                                                    }}>
+                                                    <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
                                                     {uploadingLogo ? <Loader2 className="animate-spin" size={20} /> : (
                                                         logo ? <Image src={logo} alt="Logo" fill style={{ objectFit: 'contain', padding: '10px' }} /> : (
                                                             <div style={{ textAlign: 'center' }}>
-                                                                <Upload size={20} color="#aaa" />
-                                                                <p style={{ fontSize: '0.6rem', color: '#888', marginTop: '4px' }}>Logo</p>
+                                                                {isDraggingLogo ? (
+                                                                    <>
+                                                                        <Upload size={28} color="#FFD700" />
+                                                                        <p style={{ fontSize: '0.55rem', color: '#FFD700', marginTop: '4px', fontWeight: 700 }}>Solte!</p>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Upload size={20} color="#aaa" />
+                                                                        <p style={{ fontSize: '0.6rem', color: '#888', marginTop: '4px' }}>Logo</p>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         )
                                                     )}
@@ -669,6 +1228,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 <div style={{ flex: 1 }}>
                                                     <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.4' }}>
                                                         Adicione uma logo empresarial para aparecer no topo do seu formulário. Se não desejar usar uma logo, deixe este campo vazio.
+                                                    </p>
+                                                    <p style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '4px' }}>
+                                                        💡 Dica: Arraste e solte para upload rápido
                                                     </p>
                                                     {logo && (
                                                         <button
@@ -736,30 +1298,42 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                                                 {/* Upload Option */}
-                                                <label htmlFor="video-upload" style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    padding: '1.5rem',
-                                                    background: uploadingVideo ? '#f0fdf4' : '#f8f9fa',
-                                                    border: '2px dashed #ddd',
-                                                    borderRadius: '16px',
-                                                    cursor: uploadingVideo ? 'wait' : 'pointer',
-                                                    transition: 'all 0.2s',
-                                                    minHeight: '120px'
-                                                }}>
+                                                <label
+                                                    htmlFor="video-upload"
+                                                    onDragOver={(e) => { e.preventDefault(); setIsDraggingVideo(true); }}
+                                                    onDragLeave={() => setIsDraggingVideo(false)}
+                                                    onDrop={handleVideoDrop}
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        padding: '1.5rem',
+                                                        background: uploadingVideo ? '#f0fdf4' : (isDraggingVideo ? '#fffbeb' : '#f8f9fa'),
+                                                        border: isDraggingVideo ? '3px dashed #FFD700' : '2px dashed #ddd',
+                                                        borderRadius: '16px',
+                                                        cursor: uploadingVideo ? 'wait' : 'pointer',
+                                                        transition: 'all 0.2s',
+                                                        minHeight: '120px'
+                                                    }}>
                                                     <input type="file" accept="video/*" onChange={handleVideoUpload} style={{ display: 'none' }} id="video-upload" disabled={uploadingVideo} />
                                                     {uploadingVideo ? (
                                                         <>
                                                             <Loader2 className="animate-spin" size={28} color="#22c55e" />
                                                             <span style={{ fontSize: '0.8rem', marginTop: '8px', color: '#22c55e', fontWeight: 600 }}>{t('events.processing')}</span>
                                                         </>
+                                                    ) : isDraggingVideo ? (
+                                                        <>
+                                                            <Upload size={36} color="#FFD700" />
+                                                            <span style={{ fontSize: '0.9rem', marginTop: '8px', color: '#FFD700', fontWeight: 700 }}>Solte o vídeo aqui!</span>
+                                                            <span style={{ fontSize: '0.7rem', color: '#aaa' }}>Máx: 100MB</span>
+                                                        </>
                                                     ) : (
                                                         <>
                                                             <Upload size={28} color="#888" />
                                                             <span style={{ fontSize: '0.85rem', marginTop: '8px', fontWeight: 600 }}>{t('events.uploadVideo')}</span>
                                                             <span style={{ fontSize: '0.7rem', color: '#888' }}>Máx: 100MB</span>
+                                                            <span style={{ fontSize: '0.65rem', color: '#aaa', marginTop: '4px' }}>ou arraste aqui</span>
                                                         </>
                                                     )}
                                                 </label>
