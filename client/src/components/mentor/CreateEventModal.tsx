@@ -119,7 +119,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         stripeEnabled: false,
         stripePriceId: '',
         stripeProductId: '',
-        manualMethods: [] as { label: string; value: string; icon?: string }[]
+        manualMethods: [] as { label: string; value: string; icon?: string }[],
+        pricingTiers: [] as { id: string; category: string; price: number; description?: string }[], // NEW: Pricing tiers
+        useTieredPricing: false // NEW: Toggle between single price and tiered pricing
     });
 
     // Lesson Selection State
