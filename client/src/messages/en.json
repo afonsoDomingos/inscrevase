@@ -977,7 +977,14 @@
         "uploadError": "Upload error",
         "uploadSuccess": "File attached successfully!",
         "uploadFailed": "Error uploading file",
-        "viewPdf": "View PDF Document"
+        "viewPdf": "View PDF Document",
+        "suggestions": {
+            "title": "Suggested Questions",
+            "q1": "How can I create a successful event?",
+            "q2": "How do payments work on the platform?",
+            "q3": "How can I customize my form?",
+            "q4": "What are the best marketing strategies?"
+        }
     },
     "mentors": {
         "title": "Elite Experts",

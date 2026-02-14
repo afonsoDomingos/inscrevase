@@ -997,7 +997,14 @@
         "uploadError": "Erro no upload",
         "uploadSuccess": "Arquivo anexado com sucesso!",
         "uploadFailed": "Erro ao fazer upload do arquivo",
-        "viewPdf": "Ver Documento PDF"
+        "viewPdf": "Ver Documento PDF",
+        "suggestions": {
+            "title": "Sugestões de Perguntas",
+            "q1": "Como posso criar um evento de sucesso?",
+            "q2": "Como funcionam os pagamentos na plataforma?",
+            "q3": "Como posso personalizar meu formulário?",
+            "q4": "Quais são as melhores estratégias de marketing?"
+        }
     },
     "mentors": {
         "title": "Elite Experts",

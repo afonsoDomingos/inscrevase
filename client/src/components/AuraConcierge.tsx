@@ -50,13 +50,14 @@ export default function AuraConcierge() {
         }
     }, [isOpen, t, messages.length]);
 
-    const handleSend = async (e?: React.FormEvent) => {
+    const handleSend = async (e?: React.FormEvent, overrideMessage?: string) => {
         e?.preventDefault();
-        if (!message.trim()) return;
+        const finalMessage = overrideMessage || message;
+        if (!finalMessage.trim()) return;
 
         const userMsg: Message = {
             id: Date.now().toString(),
-            text: message,
+            text: finalMessage,
             sender: 'user',
             timestamp: new Date(),
             attachment: attachment || undefined
@@ -71,7 +72,7 @@ export default function AuraConcierge() {
             // If there's an attachment, we might want to tell Aura about it in the prompt
             const contextualMessage = attachment
                 ? t('aura.attachmentInfo', { attachment })
-                : message;
+                : finalMessage;
 
             const data = await aiService.chat(contextualMessage, locale);
 
@@ -260,6 +261,56 @@ export default function AuraConcierge() {
                                 </div>
                             )}
                             <div ref={messagesEndRef} />
+
+                            {messages.length === 1 && !isTyping && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.5 }}
+                                    style={{
+                                        marginTop: '1rem',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '0.8rem'
+                                    }}
+                                >
+                                    <div style={{ fontSize: '0.75rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                        {t('aura.suggestions.title')}
+                                    </div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                        {['q1', 'q2', 'q3', 'q4'].map((key) => (
+                                            <button
+                                                key={key}
+                                                onClick={() => {
+                                                    const text = t(`aura.suggestions.${key}`);
+                                                    handleSend(undefined, text);
+                                                }}
+                                                style={{
+                                                    background: 'rgba(212, 175, 55, 0.1)',
+                                                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                                                    color: '#000',
+                                                    padding: '0.5rem 1rem',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.8rem',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s ease',
+                                                    textAlign: 'left'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
+                                                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
+                                                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+                                                }}
+                                            >
+                                                {t(`aura.suggestions.${key}`)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
                         </div>
 
                         {/* Input Area */}
