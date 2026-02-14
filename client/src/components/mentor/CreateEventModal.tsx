@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { lessonService, Lesson } from '@/lib/lessonService';
 import PartnersEditor from './PartnersEditor';
+import PricingTiersEditor from './PricingTiersEditor'; // Import Pricing Editor
 import { Users2 } from 'lucide-react';
 
 interface CreateEventModalProps {
@@ -519,18 +520,146 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     };
 
     const handleSubmit = async () => {
+        // 1. Validar título e descrição
         if (!title || !description) {
             toast.error(t('events.fillTitleDescAlert'));
             setStep(1);
             return;
         }
 
-        // Validate Fields
+        // 2. Validar data obrigatória
+        if (!eventDate) {
+            toast.error('Data do evento é obrigatória');
+            setStep(1);
+            return;
+        }
+
+        // 3. Validar horário (formato HH:MM)
+        if (eventTime) {
+            const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+            if (!timeRegex.test(eventTime)) {
+                toast.error('Horário inválido. Use o formato HH:MM (ex: 14:30)');
+                setStep(1);
+                return;
+            }
+        }
+
+        // 4. Validação condicional: Location para eventos presenciais
+        if (eventType === 'modePresencial' && !location.trim()) {
+            toast.error('Localização é obrigatória para eventos presenciais');
+            setStep(1);
+            return;
+        }
+
+        // 5. Validação condicional: Online Link para eventos online
+        if ((eventType === 'modeOnline' || eventType === 'modeHibrido') && !onlineLink.trim()) {
+            toast.error('Link online é obrigatório para eventos online/híbridos');
+            setStep(1);
+            return;
+        }
+
+        // 6. Validar formato de URL do link online
+        if (onlineLink.trim()) {
+            try {
+                new URL(onlineLink);
+            } catch {
+                toast.error('Link online inválido. Use uma URL completa (ex: https://zoom.us/...)');
+                setStep(1);
+                return;
+            }
+        }
+
+        // 7. Validar campos do formulário
         const hasEmptyFields = fields.some(f => !f.label.trim());
         if (hasEmptyFields) {
             toast.error(t('events.emptyFieldsAlert'));
             setStep(2);
             return;
+        }
+
+        // 8. Validar campos Select têm opções
+        const selectFieldsWithoutOptions = fields.filter(f =>
+            f.type === 'select' && (!f.options || f.options.length === 0)
+        );
+        if (selectFieldsWithoutOptions.length > 0) {
+            toast.error(`Campo "${selectFieldsWithoutOptions[0].label}" do tipo Select precisa de opções`);
+            setStep(2);
+            return;
+        }
+
+        // 9. Validar configuração de pagamento
+        if (paymentConfig.enabled) {
+            // Se usa preços por categoria
+            if (paymentConfig.useTieredPricing) {
+                if (!paymentConfig.pricingTiers || paymentConfig.pricingTiers.length === 0) {
+                    toast.error('Adicione pelo menos uma categoria de preço');
+                    setStep(4);
+                    return;
+                }
+
+                // Validar cada tier
+                const invalidTiers = paymentConfig.pricingTiers.filter(t =>
+                    !t.category.trim() || t.price <= 0
+                );
+                if (invalidTiers.length > 0) {
+                    toast.error('Todas as categorias devem ter nome e preço maior que 0');
+                    setStep(4);
+                    return;
+                }
+            }
+            // Se usa preço único
+            else {
+                if (paymentConfig.price <= 0) {
+                    toast.error('Evento pago deve ter preço maior que 0');
+                    setStep(4);
+                    return;
+                }
+            }
+
+            // Validar métodos de pagamento manual
+            if (paymentConfig.manualMethods && paymentConfig.manualMethods.length > 0) {
+                const invalidMethods = paymentConfig.manualMethods.filter(m =>
+                    !m.label.trim() || !m.value.trim()
+                );
+                if (invalidMethods.length > 0) {
+                    toast.error('Métodos de pagamento devem ter nome e detalhes preenchidos');
+                    setStep(4);
+                    return;
+                }
+            }
+        }
+
+        // 10. Validar URL do vídeo se fornecido
+        if (videoUrl && videoUrl.trim()) {
+            try {
+                new URL(videoUrl);
+            } catch {
+                toast.error('URL do vídeo inválida');
+                setStep(1);
+                return;
+            }
+        }
+
+        // 11. Validar telefone WhatsApp se fornecido
+        if (whatsappConfig.phoneNumber && whatsappConfig.phoneNumber.trim()) {
+            const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+            const cleanPhone = whatsappConfig.phoneNumber.replace(/[\s\-()]/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
+                toast.error('Formato de telefone WhatsApp inválido. Use formato internacional: +258...');
+                setStep(5);
+                return;
+            }
+        }
+
+        // 12. Validar URL da comunidade WhatsApp se fornecida
+        if (whatsappConfig.communityUrl && whatsappConfig.communityUrl.trim()) {
+            try {
+                new URL(whatsappConfig.communityUrl);
+            } catch {
+                toast.error('URL da comunidade WhatsApp inválida');
+                setStep(5);
+                return;
+            }
         }
 
         // Clean up fields (remove temporary id)
@@ -552,7 +681,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     ...theme,
                     style: theme.style as "luxury" | "minimalist",
                     backgroundColor: theme.backgroundColor,
-                    fontFamily: theme.fontFamily // Use theme.fontFamily directly
+                    fontFamily: theme.fontFamily
                 },
                 paymentConfig,
                 capacity: capacity ? parseInt(capacity) : null,
@@ -570,6 +699,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 partners,
                 active: true
             });
+
+            // Limpar draft após sucesso
+            localStorage.removeItem('event-draft');
+
+            toast.success('Evento criado com sucesso! 🎉');
             onSuccess();
             onClose();
         } catch (err: unknown) {
@@ -1642,36 +1776,110 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                         {paymentConfig.enabled && (
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
-                                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
-                                                        <input
-                                                            type="number"
-                                                            value={paymentConfig.price}
-                                                            onChange={(e) => {
-                                                                const val = parseFloat(e.target.value);
-                                                                setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
-                                                            }}
-                                                            placeholder={t('events.pricePlaceholder')}
-                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currency')}</label>
-                                                        <select
-                                                            value={paymentConfig.currency}
-                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
-                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
-                                                        >
-                                                            <option value="USD">{t('events.dollar')}</option>
-                                                            <option value="EUR">{t('events.euro')}</option>
-                                                            <option value="MT">{t('events.metical')}</option>
-                                                            <option value="AOA">{t('events.kwanza')}</option>
-                                                            <option value="CVE">{t('events.escudo')}</option>
-                                                            <option value="XOF">{t('events.cfa')}</option>
-                                                        </select>
-                                                    </div>
+                                                {/* Currency Selector - Always Visible for Paid Events */}
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currency')}</label>
+                                                    <select
+                                                        value={paymentConfig.currency}
+                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
+                                                    >
+                                                        <option value="USD">{t('events.dollar')}</option>
+                                                        <option value="EUR">{t('events.euro')}</option>
+                                                        <option value="MT">{t('events.metical')}</option>
+                                                        <option value="AOA">{t('events.kwanza')}</option>
+                                                        <option value="CVE">{t('events.escudo')}</option>
+                                                        <option value="XOF">{t('events.cfa')}</option>
+                                                        <option value="BRL">Real (BRL)</option>
+                                                    </select>
                                                 </div>
+
+                                                {/* Tiered Pricing Toggle */}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    padding: '1rem',
+                                                    background: '#f0f9ff',
+                                                    border: '1px solid #bae6fd',
+                                                    borderRadius: '12px'
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <Users2 size={24} color="#0284c7" />
+                                                        <div>
+                                                            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0369a1' }}>Preços Diferenciados</div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#0c4a6e' }}>
+                                                                Cobrar preços diferentes por público? (Ex: Estudantes, VIP)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '28px' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={paymentConfig.useTieredPricing}
+                                                            onChange={(e) => setPaymentConfig({ ...paymentConfig, useTieredPricing: e.target.checked })}
+                                                            style={{ opacity: 0, width: 0, height: 0 }}
+                                                        />
+                                                        <span className="slider round" style={{
+                                                            position: 'absolute',
+                                                            cursor: 'pointer',
+                                                            top: 0,
+                                                            left: 0,
+                                                            right: 0,
+                                                            bottom: 0,
+                                                            backgroundColor: paymentConfig.useTieredPricing ? '#0ea5e9' : '#ccc',
+                                                            transition: '.4s',
+                                                            borderRadius: '34px'
+                                                        }}>
+                                                            <span style={{
+                                                                position: 'absolute',
+                                                                content: "",
+                                                                height: '20px',
+                                                                width: '20px',
+                                                                left: paymentConfig.useTieredPricing ? '26px' : '4px',
+                                                                bottom: '4px',
+                                                                backgroundColor: 'white',
+                                                                transition: '.4s',
+                                                                borderRadius: '50%'
+                                                            }} />
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                {/* Price Input OR Tier Editor */}
+                                                {!paymentConfig.useTieredPricing ? (
+                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
+                                                        <div style={{ position: 'relative' }}>
+                                                            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontWeight: 700, color: '#666' }}>
+                                                                {paymentConfig.currency === 'MT' ? 'MT' :
+                                                                    paymentConfig.currency === 'USD' ? '$' :
+                                                                        paymentConfig.currency === 'EUR' ? '€' :
+                                                                            paymentConfig.currency}
+                                                            </span>
+                                                            <input
+                                                                type="number"
+                                                                value={paymentConfig.price}
+                                                                onChange={(e) => {
+                                                                    const val = parseFloat(e.target.value);
+                                                                    setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
+                                                                }}
+                                                                placeholder="0.00"
+                                                                min="0"
+                                                                step="0.01"
+                                                                style={{ width: '100%', padding: '1rem 1rem 1rem 3.5rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: '1.1rem', fontWeight: 600 }}
+                                                            />
+                                                        </div>
+                                                    </motion.div>
+                                                ) : (
+                                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                        <PricingTiersEditor
+                                                            tiers={paymentConfig.pricingTiers}
+                                                            currency={paymentConfig.currency}
+                                                            onUpdate={(tiers) => setPaymentConfig({ ...paymentConfig, pricingTiers: tiers })}
+                                                        />
+                                                    </motion.div>
+                                                )}
 
                                                 <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
                                                     <div style={{
