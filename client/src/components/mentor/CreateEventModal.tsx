@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -99,6 +99,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
     ]);
 
+    // Visibility & Preview
+    const [isPublic, setIsPublic] = useState(true);
+    const [showPreview, setShowPreview] = useState(false);
+
     const [whatsappConfig, setWhatsappConfig] = useState({
         phoneNumber: '',
         message: t('events.whatsappDefaultMessage'),
@@ -128,6 +132,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     // Lesson Selection State
     const [allLessons, setAllLessons] = useState<Lesson[]>([]);
     const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
+
+    // Success State
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [createdEventSlug, setCreatedEventSlug] = useState('');
     const [lessonsLoading, setLessonsLoading] = useState(false);
 
     // Partners State
@@ -670,7 +678,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
         setLoading(true);
         try {
-            await formService.createForm({
+            const createdForm = await formService.createForm({
                 title,
                 description,
                 eventDate,
@@ -697,15 +705,25 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 welcomeMessage,
                 associatedLessons: selectedLessons,
                 partners,
-                active: true
+                active: isPublic
             });
 
             // Limpar draft após sucesso
             localStorage.removeItem('event-draft');
 
             toast.success('Evento criado com sucesso! 🎉');
+
+            // Show Success Screen
+            try {
+                if (createdForm && createdForm.slug) {
+                    setCreatedEventSlug(createdForm.slug);
+                }
+            } catch (e) { console.error(e); }
+
+            setShowSuccess(true);
+
             onSuccess();
-            onClose();
+            // onClose(); // Don't close immediately
         } catch (err: unknown) {
             const error = err as Error;
             console.error("Create Event Error:", error);
@@ -841,12 +859,35 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         overflowY: 'auto',
                         background: '#f8f9fa'
                     }}>
-                        <button
-                            onClick={onClose}
-                            style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
-                        >
-                            <X size={18} />
-                        </button>
+                        <div style={{ position: 'absolute', top: '2rem', right: '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
+                            <button
+                                onClick={() => setShowPreview(true)}
+                                title="Pré-visualizar Evento"
+                                style={{
+                                    background: '#fff',
+                                    border: '1px solid #ddd',
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '20px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 600,
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                    color: '#333'
+                                }}
+                            >
+                                <Eye size={18} />
+                                {!isMobile && "Pré-visualizar"}
+                            </button>
+                            <button
+                                onClick={onClose}
+                                style={{ background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
 
                         {/* Progress Indicator */}
                         <div style={{ marginBottom: '2rem' }}>
@@ -1646,77 +1687,119 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                     <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.customization')}</h2>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 300px', gap: '2rem', alignItems: 'start' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '2rem', alignItems: 'start' }}>
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.primaryColor')}</label>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                    {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
+                                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                    {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e', '#000000', '#ffffff'].map((color) => (
                                                         <motion.button
                                                             key={color}
                                                             onClick={() => setTheme({ ...theme, primaryColor: color })}
                                                             style={{
-                                                                width: '40px',
-                                                                height: '40px',
+                                                                width: '36px',
+                                                                height: '36px',
                                                                 borderRadius: '50%',
                                                                 background: color,
-                                                                border: theme.primaryColor === color ? '3px solid #000' : '3px solid transparent',
-                                                                cursor: 'pointer'
+                                                                border: theme.primaryColor === color ? '3px solid #000' : '1px solid #ddd',
+                                                                cursor: 'pointer',
+                                                                boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                                                             }}
                                                             whileHover={{ scale: 1.1 }}
+                                                            whileTap={{ scale: 0.95 }}
                                                         />
                                                     ))}
-                                                    <input
-                                                        type="color"
-                                                        value={theme.primaryColor}
-                                                        onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
-                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                    />
+                                                    <div style={{ position: 'relative', width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #ddd' }}>
+                                                        <input
+                                                            type="color"
+                                                            value={theme.primaryColor}
+                                                            onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
+                                                            style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.backgroundColor')}</label>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <input
-                                                        type="color"
-                                                        value={theme.backgroundColor}
-                                                        onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
-                                                        style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                    />
-                                                    <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
+                                                    <div style={{ position: 'relative', width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ddd' }}>
+                                                        <input
+                                                            type="color"
+                                                            value={theme.backgroundColor}
+                                                            onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
+                                                            style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
+                                                        />
+                                                    </div>
+                                                    <span style={{ fontSize: '0.9rem', color: '#666', fontFamily: 'monospace' }}>{theme.backgroundColor}</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Live Preview */}
+                                        {/* Live Preview - Improved */}
                                         <div style={{
                                             background: theme.backgroundColor,
-                                            borderRadius: '16px',
-                                            padding: '1.5rem',
-                                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                            border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.1)' : '#eee'}`,
-                                            color: theme.style === 'luxury' ? '#fff' : '#000',
-                                            marginTop: '0'
+                                            borderRadius: '20px',
+                                            padding: '2rem',
+                                            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
+                                            border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.05)'}`,
+                                            color: theme.style === 'luxury' || theme.backgroundColor === '#000000' ? '#fff' : '#000',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            minHeight: '280px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
                                         }}>
-                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
-                                                {t('events.preview')}
+                                            {/* Preview Background/Overlay Logic */}
+                                            {theme.style === 'luxury' && (
+                                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%)', pointerEvents: 'none' }} />
+                                            )}
+
+                                            <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
+                                                <div style={{
+                                                    fontSize: '0.75rem',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '2px',
+                                                    color: theme.primaryColor,
+                                                    fontWeight: 800,
+                                                    marginBottom: '1rem',
+                                                    opacity: 0.9
+                                                }}>
+                                                    {t('events.preview')}
+                                                </div>
+
+                                                <h3 style={{
+                                                    fontSize: '1.5rem',
+                                                    fontWeight: 800,
+                                                    marginBottom: '1.5rem',
+                                                    lineHeight: 1.2,
+                                                    color: theme.style === 'luxury' || theme.backgroundColor.toLowerCase() === '#050505' || theme.backgroundColor.toLowerCase() === '#000000' ? '#fff' : '#1a1a1a'
+                                                }}>
+                                                    {title || "Título do Seu Evento Incrível"}
+                                                </h3>
+
+                                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '1.5rem', opacity: 0.7, fontSize: '0.85rem' }}>
+                                                    <span>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : "Data do Evento"}</span>
+                                                    <span>•</span>
+                                                    <span>📍 {eventType === 'modeOnline' ? 'Online' : (location || 'Local')}</span>
+                                                </div>
+
+                                                <button style={{
+                                                    width: '100%',
+                                                    padding: '1rem',
+                                                    borderRadius: '12px',
+                                                    background: theme.primaryColor,
+                                                    color: (['#FFD700', '#ffffff', '#e2e8f0'].includes(theme.primaryColor)) ? '#000' : '#fff',
+                                                    border: 'none',
+                                                    fontWeight: 700,
+                                                    fontSize: '0.95rem',
+                                                    boxShadow: `0 10px 20px -5px ${theme.primaryColor}66`,
+                                                    cursor: 'default'
+                                                }}>
+                                                    {t('events.registerNow')}
+                                                </button>
                                             </div>
-                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', lineHeight: 1.2 }}>
-                                                {title || t('events.title')}
-                                            </h3>
-                                            <button style={{
-                                                width: '100%',
-                                                padding: '0.8rem',
-                                                borderRadius: '8px',
-                                                background: `linear-gradient(45deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
-                                                color: '#000',
-                                                border: 'none',
-                                                fontWeight: 700,
-                                                fontSize: '0.8rem'
-                                            }}>
-                                                {t('events.registerNow')}
-                                            </button>
                                         </div>
                                     </div>
 
@@ -2192,10 +2275,32 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             )}
                             {step === 7 && (
                                 <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Parceiros & Publicação</h2>
+
                                     <PartnersEditor
                                         partners={partners}
                                         onChange={setPartners}
                                     />
+
+                                    <div style={{ marginTop: '3rem', padding: '1.5rem', background: isPublic ? '#f0fff4' : '#fff5f5', borderRadius: '16px', border: isPublic ? '1px solid #c6f6d5' : '1px solid #fed7d7', transition: 'all 0.3s' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ paddingRight: '20px' }}>
+                                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: isPublic ? '#22543d' : '#742a2a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    {isPublic ? <Globe size={20} /> : <Lock size={20} />}
+                                                    {isPublic ? 'Publicar Evento' : 'Salvar como Rascunho'}
+                                                </h3>
+                                                <p style={{ fontSize: '0.9rem', color: isPublic ? '#2f855a' : '#9b2c2c', margin: 0, lineHeight: 1.5 }}>
+                                                    {isPublic
+                                                        ? 'Seu evento ficará visível para todos os inscritos e aparecerá na busca.'
+                                                        : 'Seu evento ficará oculto (Inativo). Você poderá publicá-lo depois pelo painel.'}
+                                                </p>
+                                            </div>
+                                            <label className="switch" style={{ transform: 'scale(1.2)' }}>
+                                                <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+                                                <span className="slider round"></span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -2236,6 +2341,106 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             )
                         }
                     </div >
+
+                    {/* SUCCESS MODAL OVERLAY */}
+                    <AnimatePresence>
+                        {showSuccess && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                style={{ position: 'fixed', inset: 0, zIndex: 3000, background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
+                            >
+                                <div style={{ textAlign: 'center', maxWidth: '500px', width: '100%' }}>
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1, rotate: 360 }}
+                                        transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                                        style={{ width: '80px', height: '80px', background: '#e6fffa', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: '#319795' }}
+                                    >
+                                        <CheckCircle size={40} strokeWidth={3} />
+                                    </motion.div>
+                                    <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: '#1a202c' }}>Evento Criado! 🎉</h2>
+                                    <p style={{ color: '#4a5568', marginBottom: '2.5rem', lineHeight: 1.6, fontSize: '1.1rem' }}>
+                                        Seu evento <strong>"{title}"</strong> foi salvo com sucesso. O que você gostaria de fazer agora?
+                                    </p>
+
+                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                        <button
+                                            onClick={() => window.open(`/event/${createdEventSlug}`, '_blank')}
+                                            style={{ background: '#000', color: '#FFD700', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
+                                            className="hover-scale"
+                                        >
+                                            <Globe size={20} /> Ver Página Pública
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`/hub/${createdEventSlug}`, '_blank')}
+                                            style={{ background: '#fff', color: '#1a202c', border: '2px solid #e2e8f0', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                            className="hover-scale"
+                                        >
+                                            <Layout size={20} /> Ver Hub do Inscrito
+                                        </button>
+                                        <button onClick={onClose} style={{ marginTop: '1rem', color: '#718096', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.9rem' }}>
+                                            Voltar para o Painel
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* PREVIEW MODAL OVERLAY */}
+                    <AnimatePresence>
+                        {showPreview && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.9)', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <div style={{ width: '100%', maxWidth: '1000px', height: '90vh', background: '#fff', borderRadius: '24px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                                    <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', color: '#333', fontWeight: 700 }}>
+                                            <Eye size={18} /> Pré-visualização do Evento
+                                        </h3>
+                                        <button onClick={() => setShowPreview(false)} style={{ background: '#f7fafc', border: 'none', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
+                                    </div>
+                                    <div style={{ flex: 1, overflowY: 'auto', background: theme.backgroundColor, color: theme.style === 'luxury' && (theme.backgroundColor === '#050505' || theme.backgroundColor === '#000000') ? '#fff' : '#1a202c' }}>
+                                        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' }}>
+                                            {coverImage && (
+                                                <div style={{ width: '100%', height: '300px', position: 'relative', borderRadius: '20px', overflow: 'hidden', marginBottom: '2rem', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.2)' }}>
+                                                    <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+                                                </div>
+                                            )}
+
+                                            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2, color: theme.primaryColor }}>{title || 'Título do seu evento incrível'}</h1>
+
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem', opacity: 0.8, fontSize: '1rem' }}>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Data a definir'}</span>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>📍 {location || 'Local a definir'}</span>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    💰 {paymentConfig.enabled
+                                                        ? (paymentConfig.useTieredPricing ? 'Vários Preços' : `${paymentConfig.currency} ${paymentConfig.price}`)
+                                                        : 'Gratuito'}
+                                                </span>
+                                            </div>
+
+                                            <div style={{ lineHeight: 1.8, fontSize: '1.1rem', opacity: 0.9, whiteSpace: 'pre-line' }}>
+                                                {description || 'A descrição do seu evento aparecerá aqui...'}
+                                            </div>
+
+                                            <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px dashed ' + theme.primaryColor, textAlign: 'center' }}>
+                                                <p style={{ marginBottom: '1rem', fontWeight: 600 }}>Área de Inscrição (Simulação)</p>
+                                                <button style={{ background: theme.primaryColor, color: (['#FFD700', '#ffffff', '#e2e8f0'].includes(theme.primaryColor)) ? '#000' : '#fff', padding: '1rem 2rem', borderRadius: '12px', fontWeight: 700, border: 'none', fontSize: '1rem' }}>
+                                                    Inscrever-se Agora
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     <style jsx>{`
                         .no-scrollbar::-webkit-scrollbar {
