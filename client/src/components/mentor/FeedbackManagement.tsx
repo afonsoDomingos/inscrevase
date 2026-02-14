@@ -6,9 +6,7 @@ import {
     Star,
     CheckCircle,
     Archive,
-    Trash2,
     Calendar,
-    User,
     Mail,
     AlertCircle,
     Loader2,
@@ -31,7 +29,8 @@ export default function FeedbackManagement() {
         try {
             const data = await feedbackService.getMyFeedbacks();
             setFeedbacks(data);
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(error);
             toast.error('Erro ao carregar feedbacks');
         } finally {
             setLoading(false);
@@ -41,9 +40,10 @@ export default function FeedbackManagement() {
     const handleUpdateStatus = async (id: string, status: string) => {
         try {
             await feedbackService.updateStatus(id, status);
-            setFeedbacks(feedbacks.map(f => f._id === id ? { ...f, status: status as any } : f));
+            setFeedbacks(feedbacks.map(f => f._id === id ? { ...f, status: status as FeedbackModel['status'] } : f));
             toast.success('Status atualizado');
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(error);
             toast.error('Erro ao atualizar status');
         }
     };
@@ -153,7 +153,7 @@ export default function FeedbackManagement() {
                                         </div>
 
                                         <p style={{ background: '#fff', padding: '1.2rem', borderRadius: '16px', border: '1px solid #f0f0f0', margin: '1rem 0', lineHeight: 1.6, color: '#444' }}>
-                                            "{feedback.message}"
+                                            &quot;{feedback.message}&quot;
                                         </p>
 
                                         <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>

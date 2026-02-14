@@ -16,7 +16,7 @@ export interface FeedbackModel {
 export const feedbackService = {
     async sendFeedback(data: { name: string; email: string; type: string; rating: number; message: string; targetUserId?: string }) {
         const token = Cookies.get('token');
-        const headers: any = { 'Content-Type': 'application/json' };
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
         const response = await fetch(`${API_URL}/feedback`, {
