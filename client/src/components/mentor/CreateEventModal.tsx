@@ -183,11 +183,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             try {
                 const url = await formService.uploadFile(e.target.files[0], 'covers');
                 setCoverImage(url);
+                toast.success('Imagem de capa carregada com sucesso!');
             } catch (err: unknown) {
                 console.error("Cover Upload Error:", err);
-                toast.error(t('common.error'));
+                toast.error('Erro ao carregar imagem. Por favor, tente novamente.');
             } finally {
                 setUploadingImage(false);
+                // Reset input para permitir re-upload do mesmo arquivo se necessário
+                e.target.value = '';
             }
         }
     };
@@ -201,9 +204,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 toast.success('Logo empresarial carregado!');
             } catch (err: unknown) {
                 console.error("Logo Upload Error:", err);
-                toast.error(t('common.error'));
+                toast.error('Erro ao carregar logo. Por favor, tente novamente.');
             } finally {
                 setUploadingLogo(false);
+                // Reset input para permitir re-upload do mesmo arquivo se necessário
+                e.target.value = '';
             }
         }
     };
@@ -213,18 +218,21 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             const file = e.target.files[0];
             if (file.size > 100 * 1024 * 1024) {
                 toast.error('O vídeo deve ter no máximo 100MB');
+                e.target.value = ''; // Reset input
                 return;
             }
             setUploadingVideo(true);
             try {
                 const url = await formService.uploadFile(file, 'videos');
                 setVideoUrl(url);
-                toast.success(t('events.toastSuccessVideo'));
+                toast.success('Vídeo carregado com sucesso!');
             } catch (err: unknown) {
                 console.error(err);
-                toast.error(t('events.toastErrorVideo'));
+                toast.error('Erro ao carregar vídeo. Por favor, tente novamente.');
             } finally {
                 setUploadingVideo(false);
+                // Reset input para permitir re-upload do mesmo arquivo se necessário
+                e.target.value = '';
             }
         }
     };
@@ -585,9 +593,39 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                 position: 'relative',
                                                 overflow: 'hidden'
                                             }}>
-                                                <input type="file" onChange={handleImageUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleImageUpload}
+                                                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: coverImage ? 0 : 1 }}
+                                                />
                                                 {uploadingImage ? <Loader2 className="animate-spin" /> : (
-                                                    coverImage ? <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} /> : (
+                                                    coverImage ? (
+                                                        <>
+                                                            <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+                                                            <div style={{ position: 'absolute', bottom: '10px', right: '10px', display: 'flex', gap: '8px', zIndex: 2 }}>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => { e.stopPropagation(); setCoverImage(''); }}
+                                                                    style={{
+                                                                        background: 'rgba(239, 68, 68, 0.9)',
+                                                                        color: '#fff',
+                                                                        border: 'none',
+                                                                        borderRadius: '8px',
+                                                                        padding: '8px 12px',
+                                                                        fontSize: '0.75rem',
+                                                                        fontWeight: 600,
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '4px'
+                                                                    }}
+                                                                >
+                                                                    <Trash2 size={14} /> Remover
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    ) : (
                                                         <>
                                                             <ImageIcon size={32} color="#aaa" />
                                                             <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
@@ -595,6 +633,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     )
                                                 )}
                                             </div>
+                                            {coverImage && !uploadingImage && (
+                                                <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '8px', fontWeight: 600 }}>
+                                                    ✓ Imagem carregada! Clique acima para alterar ou use o botão Remover.
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div>
@@ -660,19 +703,21 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                             position: 'absolute',
                                                             top: '0.5rem',
                                                             right: '0.5rem',
-                                                            background: 'rgba(255,0,0,0.8)',
+                                                            background: 'rgba(255,0,0,0.9)',
                                                             border: 'none',
-                                                            borderRadius: '50%',
-                                                            width: '28px',
-                                                            height: '28px',
+                                                            borderRadius: '8px',
+                                                            padding: '6px 10px',
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            justifyContent: 'center',
+                                                            gap: '4px',
                                                             cursor: 'pointer',
-                                                            zIndex: 10
+                                                            zIndex: 10,
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 600,
+                                                            color: '#fff'
                                                         }}
                                                     >
-                                                        <X size={14} color="#fff" />
+                                                        <Trash2 size={14} /> Remover Vídeo
                                                     </button>
                                                     <div style={{
                                                         display: 'flex',
