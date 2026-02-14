@@ -1193,114 +1193,186 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
                                 {step === 3 && (
                                     <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.customization')}</h2>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>{t('events.customization')}</h2>
+                                        <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escolha um modelo pronto ou personalize as cores do seu evento.</p>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem', alignItems: 'start' }}>
-                                            <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+                                            <div style={{ display: 'grid', gap: '2rem' }}>
+                                                {/* Presets Gallery */}
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.primaryColor')}</label>
-                                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                                        {['#FFD700', '#3182ce', '#38a169', '#e53e3e', '#805ad5', '#d69e2e'].map((color) => (
+                                                    <label style={{ display: 'block', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem', color: '#111' }}>
+                                                        {t('events.backgroundTemplates')}
+                                                    </label>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                                        {[
+                                                            { id: 'darkLuxury', name: t('events.presets.darkLuxury'), bg: '#050505', primary: '#FFD700', style: 'luxury' },
+                                                            { id: 'royalGold', name: t('events.presets.royalGold'), bg: '#1a1a1a', primary: '#D4AF37', style: 'luxury' },
+                                                            { id: 'modernWhite', name: t('events.presets.modernWhite'), bg: '#FFFFFF', primary: '#000000', style: 'minimalist' },
+                                                            { id: 'oceanBlue', name: t('events.presets.oceanBlue'), bg: '#0f172a', primary: '#38bdf8', style: 'luxury' },
+                                                            { id: 'vibrantGreen', name: t('events.presets.vibrantGreen'), bg: '#064e3b', primary: '#4ade80', style: 'luxury' },
+                                                            { id: 'sunset', name: t('events.presets.sunset'), bg: '#450a0a', primary: '#f97316', style: 'luxury' }
+                                                        ].map((preset) => (
                                                             <motion.button
-                                                                key={color}
-                                                                onClick={() => setTheme({ ...theme, primaryColor: color })}
+                                                                key={preset.id}
+                                                                whileHover={{ y: -4 }}
+                                                                whileTap={{ scale: 0.98 }}
+                                                                onClick={() => setTheme({
+                                                                    primaryColor: preset.primary,
+                                                                    backgroundColor: preset.bg,
+                                                                    style: preset.style as 'luxury' | 'minimalist',
+                                                                    fontFamily: theme.fontFamily
+                                                                })}
                                                                 style={{
-                                                                    width: '40px',
-                                                                    height: '40px',
-                                                                    borderRadius: '50%',
-                                                                    background: color,
-                                                                    border: theme.primaryColor === color ? '3px solid #000' : '3px solid transparent',
-                                                                    cursor: 'pointer'
+                                                                    background: preset.bg,
+                                                                    border: theme.backgroundColor === preset.bg && theme.primaryColor === preset.primary ? `3px solid ${preset.primary}` : '1px solid #ddd',
+                                                                    borderRadius: '16px',
+                                                                    padding: '1.2rem',
+                                                                    cursor: 'pointer',
+                                                                    textAlign: 'left',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    justifyContent: 'space-between',
+                                                                    minHeight: '100px',
+                                                                    position: 'relative',
+                                                                    overflow: 'hidden',
+                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                                                                 }}
-                                                                whileHover={{ scale: 1.1 }}
-                                                            />
+                                                            >
+                                                                <div style={{ color: preset.primary, fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{preset.name}</div>
+                                                                <div style={{ width: '24px', height: '24px', background: preset.primary, borderRadius: '50%', alignSelf: 'flex-end', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    {theme.backgroundColor === preset.bg && theme.primaryColor === preset.primary && <Check size={14} color={['#FFD700', '#FFFFFF', '#4ade80', '#38bdf8'].includes(preset.primary) ? '#000' : '#fff'} />}
+                                                                </div>
+                                                            </motion.button>
                                                         ))}
-                                                        <input
-                                                            type="color"
-                                                            value={theme.primaryColor}
-                                                            onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
-                                                            style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                        />
                                                     </div>
                                                 </div>
 
-                                                <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.backgroundColor')}</label>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                        <input
-                                                            type="color"
-                                                            value={theme.backgroundColor}
-                                                            onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
-                                                            style={{ width: '40px', height: '40px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                        />
-                                                        <span style={{ fontSize: '0.9rem', color: '#666' }}>{theme.backgroundColor}</span>
+                                                {/* Customization Section */}
+                                                <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                                    <label style={{ display: 'block', fontWeight: 800, marginBottom: '1.2rem', fontSize: '0.9rem', color: '#333' }}>
+                                                        {t('events.customBackground')}
+                                                    </label>
+
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                                        <div>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.primaryColor')}</label>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={theme.primaryColor}
+                                                                        onChange={(e) => setTheme({ ...theme, primaryColor: e.target.value })}
+                                                                        style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                </div>
+                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.primaryColor.toUpperCase()}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.backgroundColor')}</label>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={theme.backgroundColor}
+                                                                        onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
+                                                                        style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
+                                                                    />
+                                                                </div>
+                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.backgroundColor.toUpperCase()}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ marginTop: '1.5rem' }}>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.8rem', color: '#666' }}>{t('events.visualStyle')}</label>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            <button
+                                                                onClick={() => setTheme({ ...theme, style: 'luxury' })}
+                                                                style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'luxury' ? '#111' : '#f4f4f4', color: theme.style === 'luxury' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                                                            >
+                                                                Premium (Luxury)
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setTheme({ ...theme, style: 'minimalist' })}
+                                                                style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'minimalist' ? '#111' : '#f4f4f4', color: theme.style === 'minimalist' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                                                            >
+                                                                Simples (Minimalist)
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Live Preview */}
-                                            <div style={{
-                                                background: theme.backgroundColor,
-                                                borderRadius: '16px',
-                                                padding: '1.5rem',
-                                                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                                border: `1px solid ${theme.style === 'luxury' ? 'rgba(255,255,255,0.1)' : '#eee'} `,
-                                                color: theme.style === 'luxury' ? '#fff' : '#000',
-                                                marginTop: '0'
-                                            }}>
-                                                <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: theme.primaryColor, fontWeight: 700, marginBottom: '0.5rem' }}>
+                                            {/* Live Preview - Improved */}
+                                            <div style={{ position: 'sticky', top: '2rem' }}>
+                                                <label style={{ display: 'block', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem', color: '#111' }}>
                                                     {t('events.preview')}
-                                                </div>
-                                                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', lineHeight: 1.2 }}>
-                                                    {title || t('events.eventName')}
-                                                </h3>
-                                                <button style={{
-                                                    width: '100%',
-                                                    padding: '0.8rem',
-                                                    borderRadius: '8px',
-                                                    background: `linear - gradient(45deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
-                                                    color: '#000',
-                                                    border: 'none',
-                                                    fontWeight: 700,
-                                                    fontSize: '0.8rem'
+                                                </label>
+                                                <div style={{
+                                                    background: theme.backgroundColor,
+                                                    borderRadius: '30px',
+                                                    padding: '2.5rem 1.5rem',
+                                                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
+                                                    border: `1px solid ${theme.primaryColor}22`,
+                                                    color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#1a1a1a',
+                                                    position: 'relative',
+                                                    overflow: 'hidden',
+                                                    minHeight: '400px',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    textAlign: 'center',
+                                                    justifyContent: 'center'
                                                 }}>
-                                                    {t('events.registerNow')}
-                                                </button>
-                                            </div>
-                                        </div>
+                                                    {theme.style === 'luxury' && (
+                                                        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent)', pointerEvents: 'none' }} />
+                                                    )}
 
-                                        <div>
-                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.9rem' }}>{t('events.visualStyle')}</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                                <div
-                                                    onClick={() => setTheme({ ...theme, style: 'luxury', backgroundColor: '#050505' })}
-                                                    style={{
-                                                        padding: '1.5rem',
-                                                        borderRadius: '12px',
-                                                        border: theme.style === 'luxury' ? '2px solid #FFD700' : '1px solid #ddd',
-                                                        background: '#000',
-                                                        color: '#fff',
-                                                        cursor: 'pointer',
-                                                        textAlign: 'center'
-                                                    }}
-                                                >
-                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>{t('events.luxuryStyle')}</div>
-                                                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('events.luxuryHelp')}</div>
-                                                </div>
-                                                <div
-                                                    onClick={() => setTheme({ ...theme, style: 'minimalist', backgroundColor: '#FFFFFF' })}
-                                                    style={{
-                                                        padding: '1.5rem',
-                                                        borderRadius: '12px',
-                                                        border: theme.style === 'minimalist' ? '2px solid #3182ce' : '1px solid #ddd',
-                                                        background: '#fff',
-                                                        color: '#000',
-                                                        cursor: 'pointer',
-                                                        textAlign: 'center'
-                                                    }}
-                                                >
-                                                    <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>{t('events.minimalistStyle')}</div>
-                                                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t('events.minimalistHelp')}</div>
+                                                    <div style={{ position: 'relative', zIndex: 2 }}>
+                                                        <div style={{
+                                                            fontSize: '0.65rem',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '3px',
+                                                            color: theme.primaryColor,
+                                                            fontWeight: 900,
+                                                            marginBottom: '1rem',
+                                                            opacity: 0.8
+                                                        }}>
+                                                            EXCLUSIVO
+                                                        </div>
+
+                                                        <h3 style={{
+                                                            fontSize: '1.6rem',
+                                                            fontWeight: 900,
+                                                            marginBottom: '1.5rem',
+                                                            lineHeight: 1.1,
+                                                            fontFamily: theme.fontFamily,
+                                                            color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#000'
+                                                        }}>
+                                                            {title || "Nome do Evento"}
+                                                        </h3>
+
+                                                        <div style={{ padding: '0.8rem 1.2rem', borderRadius: '12px', background: 'rgba(0,0,0,0.05)', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '2rem', fontSize: '0.85rem' }}>
+                                                            <span style={{ opacity: 0.7 }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : "Data"}</span>
+                                                        </div>
+
+                                                        <button style={{
+                                                            width: '100%',
+                                                            padding: '1.2rem',
+                                                            borderRadius: '16px',
+                                                            background: theme.primaryColor,
+                                                            color: (['#FFD700', '#ffffff', '#e2e8f0', '#4ade80', '#38bdf8'].includes(theme.primaryColor.toUpperCase())) ? '#000' : '#fff',
+                                                            border: 'none',
+                                                            fontWeight: 900,
+                                                            fontSize: '1rem',
+                                                            boxShadow: `0 15px 30px ${theme.primaryColor}44`,
+                                                            cursor: 'default'
+                                                        }}>
+                                                            {t('events.registerNow')}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

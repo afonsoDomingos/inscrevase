@@ -1,4 +1,8 @@
 {
+    "preview": {
+        "title": "Pré-visualização",
+        "registrationTitle": "Faça sua Inscrição"
+    },
     "home": {
         "stats": {
             "title": "Resultados que Falam",
@@ -103,10 +107,6 @@
             "oct": "Out",
             "nov": "Nov",
             "dec": "Dez"
-        },
-        "preview": {
-            "title": "Pré-visualização do Evento",
-            "registrationTitle": "Faça sua Inscrição"
         },
         "newEra": "A Nova Era de Eventos",
         "menu": "Menu",
@@ -701,6 +701,17 @@
         "luxuryHelp": "Premium e elegante",
         "minimalistStyle": "Minimalista",
         "minimalistHelp": "Limpo e direto",
+        "backgroundTemplates": "Modelos de Fundo",
+        "customBackground": "Cor de Fundo Personalizada",
+        "presets": {
+            "darkLuxury": "Luxo Sombrio",
+            "royalGold": "Ouro Real",
+            "modernWhite": "Branco Moderno",
+            "oceanBlue": "Azul Oceano",
+            "vibrantGreen": "Verde Vibrante",
+            "deepPurple": "Púrpura Profundo",
+            "sunset": "Pôr do Sol"
+        },
         "isPaidEvent": "Este é um evento pago?",
         "priceLabel": "Valor (Preço)",
         "currencyLabel": "Moeda",
