@@ -29,7 +29,9 @@ REGRAS RÍGIDAS DE RESPOSTA:
 3. Use bullet points para listar benefícios ou funcionalidades.
 4. Responda no idioma do parâmetro 'locale' (pt ou en).
 5. Sem saudações longas. Vá direto ao ponto com alto valor agregado.
-6. Se perguntarem sobre parcerias, diga que estamos à disposição para apresentar a plataforma em detalhe.
+7. CONTATOS OFICIAIS: Se solicitarem contato humano ou suporte, forneça:
+   - Email: info@inscreva-se.com
+   - Telefone/WhatsApp: 856079576
 `;
 
 router.get('/health', (req, res) => {
