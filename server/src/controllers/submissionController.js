@@ -118,6 +118,31 @@ const submitForm = async (req, res) => {
                 );
 
                 await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml);
+
+                // --- AUTOMATION: First Submission Ever ---
+                if (!mentor.receivedFirstSubmissionNudge) {
+                    const totalSubmissions = await Submission.countDocuments({
+                        form: { $in: await Form.find({ creator: mentor._id }).distinct('_id') }
+                    });
+
+                    if (totalSubmissions === 1) {
+                        const content = `Que momento fantástico! Acabamos de registar a <strong>primeira inscrição</strong> num evento criado por ti. Este é o início oficial da tua faturação e impacto através do teu conhecimento. O primeiro passo foi dado com sucesso!`;
+                        const congratsHtml = generateBasicEmail(
+                            '🎉 Parabéns! A tua PRIMEIRA inscrição chegou!',
+                            mentor.name,
+                            content,
+                            'Ver Submissão',
+                            dashboardUrl
+                        );
+
+                        await sendEmail(mentor.email, '🎉 Vitória! Recebeste a tua primeira inscrição! - Inscreva-se', congratsHtml);
+
+                        // Mark as nudge sent
+                        mentor.receivedFirstSubmissionNudge = true;
+                        await mentor.save();
+                    }
+                }
+                // ------------------------------------------
             }
         } catch (notifErr) {
             console.error('[Submission] Error sending notifications:', notifErr);

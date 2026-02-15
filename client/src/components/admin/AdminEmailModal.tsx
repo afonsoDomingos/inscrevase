@@ -38,6 +38,12 @@ const TEMPLATES = [
         content: 'Olá! É inspirador ver a sua consistência na plataforma. Acabamos de notar a criação de mais um evento no seu perfil. Mentores consistentes como você são os que mais escalam resultados a longo prazo. Desejamos que este novo projeto supere todas as expectativas e traga resultados incríveis para os seus alunos. Boa sorte no lançamento!'
     },
     {
+        id: 'first_submission_congrats',
+        category: 'Sucesso',
+        subject: '🎉 Parabéns! Sua PRIMEIRA inscrição chegou!',
+        content: 'Olá! Que momento fantástico! Acabamos de registar aprimeira inscrição num evento criado por si. Este é o início oficial da sua faturação e impacto através do seu conhecimento na plataforma. O primeiro passo foi dado com sucesso, e muitos outros alunos estão a caminho. Parabéns por esta conquista!'
+    },
+    {
         id: 'onboarding_nudge',
         category: 'Conversão',
         subject: '💡 Comece hoje: Transforme seu conhecimento em faturação!',
