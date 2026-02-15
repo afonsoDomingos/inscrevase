@@ -207,6 +207,10 @@ mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI)
     .then(() => {
         console.log('MongoDB Connected');
 
+        // Initialize automations
+        const { initAutomations } = require('./services/automationService');
+        initAutomations();
+
         // Initialize exchange rates on startup
         const exchangeRateService = require('./services/exchangeRateService');
         exchangeRateService.getCurrentRates()
