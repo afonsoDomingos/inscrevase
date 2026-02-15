@@ -885,9 +885,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         overflow: 'hidden',
                         display: 'grid',
                         gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
-                        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr',
+                        gridTemplateRows: isMobile ? 'auto 1fr auto' : '1fr', // Changed to include footer in grid track for mobile if needed, or keep auto 1fr
                         height: isMobile ? '100dvh' : '90vh',
-                        maxHeight: '900px',
+                        maxHeight: isMobile ? '100dvh' : '900px',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
                         zIndex: 2002
                     }}
@@ -1054,11 +1054,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         {/* Scrollable Area */}
                         <div style={{
                             flex: 1,
-                            padding: isMobile ? '1rem 1.5rem 3rem' : '1rem 2rem 5rem',
+                            padding: isMobile ? '1rem 1.5rem 8rem' : '1rem 2rem 5rem', // Increased bottom padding for mobile
                             overflowY: 'auto',
                             minHeight: 0,
                             scrollbarWidth: 'auto',
-                            msOverflowStyle: 'auto'
+                            msOverflowStyle: 'auto',
+                            paddingBottom: isMobile ? 'calc(8rem + env(safe-area-inset-bottom))' : '5rem' // Ensure safe area
                         }}>
 
 
@@ -2623,7 +2624,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                         {/* Unified Sticky Footer Action */}
                         < div style={{
-                            padding: isMobile ? '1rem 1.5rem' : '1rem 2rem',
+                            padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', // Safe area for footer
                             background: '#fff',
                             borderTop: '2px solid #FFD700',
                             display: 'flex',
