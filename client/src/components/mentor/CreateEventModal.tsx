@@ -1054,8 +1054,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         {/* Scrollable Area */}
                         <div style={{
                             flex: 1,
-                            padding: isMobile ? '1rem 1.5rem 8rem' : '1rem 2rem 5rem', // Increased bottom padding for mobile
+                            padding: isMobile ? '1rem 1rem 8rem' : '1rem 2rem 5rem', // Reduced side padding for mobile
                             overflowY: 'auto',
+                            overflowX: 'hidden', // prevent horizontal scroll
                             minHeight: 0,
                             scrollbarWidth: 'auto',
                             msOverflowStyle: 'auto',
@@ -1138,7 +1139,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             <AnimatePresence mode="wait">
                                 {step === 1 && (
                                     <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.basicInfo')}</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.basicInfo')}</h2>
 
                                         {previousEvents.length > 0 && (
                                             <div style={{ marginBottom: '2rem' }}>
@@ -1160,9 +1161,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                         {/* Smart Templates Selector */}
                                         <div style={{
-                                            marginBottom: '2.5rem',
+                                            marginBottom: '2rem',
                                             background: 'linear-gradient(145deg, #f8fafc, #f1f5f9)',
-                                            padding: '1.5rem',
+                                            padding: isMobile ? '1rem' : '1.5rem', // Compact padding on mobile
                                             borderRadius: '20px',
                                             border: '1px dashed #cbd5e1'
                                         }}>
@@ -1856,12 +1857,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 {step === 2 && (
                                     <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
+                                            <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.formFields')}</h2>
                                             <button
                                                 onClick={handleAddField}
                                                 style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
                                             >
-                                                <Plus size={16} /> {t('events.addField')}
+                                                <Plus size={16} /> {isMobile ? '' : t('events.addField')}
                                             </button>
                                         </div>
 
@@ -1869,41 +1870,53 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             {fields.map((field) => (
                                                 <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
-                                                        <input
-                                                            type="text"
-                                                            value={field.label}
-                                                            onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
-                                                            placeholder={t('events.fieldLabel')}
-                                                            style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
-                                                        />
-                                                        <select
-                                                            value={field.type}
-                                                            onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
-                                                            style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
-                                                        >
-                                                            <option value="text">{t('events.typeText')}</option>
-                                                            <option value="email">{t('events.typeEmail')}</option>
-                                                            <option value="number">{t('events.typeNumber')}</option>
-                                                            <option value="phone">{t('events.typePhone')}</option>
-                                                            <option value="select">{t('events.typeSelect')}</option>
-                                                            <option value="checkbox">{t('events.typeCheckbox')}</option>
-                                                            <option value="date">{t('events.typeDate')}</option>
-                                                            <option value="file">{t('events.typeFile')}</option>
-                                                            <option value="textarea">{t('events.typeTextarea')}</option>
-                                                        </select>
-                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                                            {isMobile && <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666' }}>Nome do Campo</label>}
                                                             <input
-                                                                type="checkbox"
-                                                                checked={field.required}
-                                                                onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
-                                                            /> {t('events.requiredField')}
-                                                        </label>
-                                                        <button
-                                                            onClick={() => handleRemoveField(field.id)}
-                                                            style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
+                                                                type="text"
+                                                                value={field.label}
+                                                                onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
+                                                                placeholder={t('events.fieldLabel')}
+                                                                style={{ border: 'none', borderBottom: '1px solid #eee', padding: '8px', outline: 'none', fontSize: '0.9rem', width: '100%' }}
+                                                            />
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                                            <div style={{ flex: 1 }}>
+                                                                {isMobile && <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '4px', display: 'block' }}>Tipo</label>}
+                                                                <select
+                                                                    value={field.type}
+                                                                    onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
+                                                                    style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', outline: 'none', fontSize: '0.85rem', width: '100%', background: '#f8f9fa' }}
+                                                                >
+                                                                    <option value="text">{t('events.typeText')}</option>
+                                                                    <option value="email">{t('events.typeEmail')}</option>
+                                                                    <option value="number">{t('events.typeNumber')}</option>
+                                                                    <option value="phone">{t('events.typePhone')}</option>
+                                                                    <option value="select">{t('events.typeSelect')}</option>
+                                                                    <option value="checkbox">{t('events.typeCheckbox')}</option>
+                                                                    <option value="date">{t('events.typeDate')}</option>
+                                                                    <option value="file">{t('events.typeFile')}</option>
+                                                                    <option value="textarea">{t('events.typeTextarea')}</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={field.required}
+                                                                        onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
+                                                                        style={{ width: '16px', height: '16px' }}
+                                                                    /> {isMobile ? 'Obrig.' : t('events.requiredField')}
+                                                                </label>
+                                                                <button
+                                                                    onClick={() => handleRemoveField(field.id)}
+                                                                    style={{ color: '#e53e3e', background: '#fee2e2', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                >
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                     {/* Options input for Select type */}
@@ -1924,7 +1937,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                 {step === 3 && (
                                     <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>{t('events.customization')}</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.customization')}</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escolha um modelo pronto ou personalize as cores do seu evento.</p>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '2rem', alignItems: 'start' }}>
@@ -2113,7 +2126,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                 {step === 4 && (
                                     <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.paymentConfig')}</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.paymentConfig')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
@@ -2398,7 +2411,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                 {step === 5 && (
                                     <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.whatsappConclusion')}</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.whatsappConclusion')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
@@ -2487,7 +2500,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                 {step === 6 && (
                                     <motion.div key="step6" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aulas do Evento</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
 
                                         {lessonsLoading ? (
@@ -2591,7 +2604,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 )}
                                 {step === 7 && (
                                     <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Parceiros & Publicação</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>Parceiros & Publicação</h2>
 
                                         <PartnersEditor
                                             partners={partners}
@@ -2653,16 +2666,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     <button
                                         onClick={() => setStep(step - 1)}
                                         style={{
-                                            padding: isMobile ? '0.8rem 1.5rem' : '0.8rem 2.5rem',
+                                            padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem',
                                             borderRadius: '12px',
                                             border: '1px solid #ddd',
                                             background: '#fff',
                                             color: '#333',
                                             fontWeight: 700,
+                                            fontSize: isMobile ? '0.9rem' : '1rem', // Smaller font on mobile
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '8px'
+                                            gap: '8px',
+                                            whiteSpace: 'nowrap' // Prevent text wrap inside button
                                         }}
                                     >
                                         <ExternalLink size={18} style={{ transform: 'rotate(180deg)' }} /> {t('common.back')}
@@ -2676,13 +2691,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         minWidth: isMobile ? 'none' : '200px',
                                         flex: isMobile ? 1 : 'initial',
                                         borderRadius: '12px',
-                                        padding: '0.8rem 2.5rem',
+                                        padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem', // Reduced padding on mobile
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '10px',
-                                        fontSize: '0.95rem',
-                                        fontWeight: 800
+                                        gap: '8px',
+                                        fontSize: isMobile ? '0.85rem' : '0.95rem', // Reduced font size
+                                        fontWeight: 800,
+                                        whiteSpace: 'nowrap' // Prevent wrapping
                                     }}
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
