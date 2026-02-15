@@ -45,7 +45,6 @@ const TEMPLATES = [
     },
     {
         id: 'congrats',
-        id: 'congrats',
         category: 'Sucesso',
         subject: '🚀 Parabéns pelo seu Evento na Inscreva-se!',
         content: 'Olá! Passamos para parabenizar pela excelente organização do seu último evento. O feedback dos participantes tem sido incrível e o seu perfil está a ganhar muito destaque na nossa rede de Elite. Continue o excelente trabalho!'
