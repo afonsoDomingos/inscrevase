@@ -48,7 +48,6 @@ function LoginContent() {
         const shuffled = [...BACKGROUND_IMAGES].sort(() => Math.random() - 0.5);
         setShuffledImages(shuffled);
     }, []);
-    const router = useRouter();
 
     useEffect(() => {
         if (shuffledImages.length === 0) return;
