@@ -84,6 +84,42 @@ const TEMPLATES = [
         category: 'Novidade',
         subject: '✨ Nova Funcionalidade: Certificados Automáticos',
         content: 'Olá! Acabamos de lançar a funcionalidade de Certificação Automática. Agora, assim que o seu evento terminar, os participantes podem baixar um certificado personalizado com a sua assinatura diretamente da plataforma. Isso adiciona um valor imenso para o seu público!'
+    },
+    {
+        id: 'pending_approvals',
+        category: 'Gestão',
+        subject: '⌛ Atenção: Há Inscrições Pendentes de Aprovação',
+        content: 'Olá! Notamos que o seu evento tem participantes aguardando validação manual no seu dashboard. Recomendamos que valide estas inscrições o quanto antes para garantir a melhor experiência ao aluno. A agilidade na aprovação é o fator principal para manter o interesse do seu público ativo. Vamos liberar estes acessos?'
+    },
+    {
+        id: 'whatsapp_community',
+        category: 'Engajamento',
+        subject: '📱 Dica: Crie uma Comunidade no WhatsApp para o seu Evento',
+        content: 'Olá! Sabia que eventos com grupos de suporte no WhatsApp têm uma taxa de presença 60% maior? No seu painel de edição de evento, pode adicionar o link direto da sua comunidade. Assim, assim que o participante for aprovado, ele recebe o convite automaticamente. Vamos estreitar os laços com os seus alunos?'
+    },
+    {
+        id: 'impact_congrats',
+        category: 'Impacto',
+        subject: '💎 Reconhecimento: O seu impacto está a crescer!',
+        content: 'Olá! Estamos a acompanhar as métricas da plataforma e o seu perfil destaca-se pelo engajamento. O seu conhecimento está a transformar vidas e queremos parabenizá-lo por ser um pilar fundamental na nossa rede de elite. Continue com esse foco – o sucesso é uma consequência do seu valor!'
+    },
+    {
+        id: 'tiered_pricing_tip',
+        category: 'Estratégia',
+        subject: '📈 Dica de Vendas: Use Lotes para Criar Urgência',
+        content: 'Olá! Notamos que o seu evento está a usar um preço único. Sabia que eventos que utilizam "Lote Early Bird" (Preço Antecipado) tendem a vender 30% mais nas primeiras 48 horas? No seu painel, pode configurar categorias de bilhetes com preços diferentes. Criar o sentimento de "quem chega primeiro paga menos" é uma das técnicas mais eficazes no marketing de eventos. Vamos testar?'
+    },
+    {
+        id: 'post_event_stats',
+        category: 'Analytics',
+        subject: '📊 Resumo de Performance: Veja os seus resultados',
+        content: 'Olá! O seu evento acabou de terminar e os dados já estão disponíveis. Acesse o seu dashboard para ver o relatório de conversão, origem dos inscritos (redes sociais vs direto) e o volume de transações. Estes dados são ouro para planear a sua próxima Masterclass de forma ainda mais estratégica. O seu crescimento é o nosso sucesso!'
+    },
+    {
+        id: 'referral_champion',
+        category: 'Crescimento',
+        subject: '🏆 Convite: Torne-se um Embaixador Inscreva-se',
+        content: 'Olá! Você tem sido um dos usuários mais ativos da plataforma. Queremos convidá-lo para o nosso Programa de Embaixadores. Ao indicar outros mentores de elite, você não só ganha pontos de impacto, mas pode desbloquear o Plano Enterprise com Taxa Zero de comissão. Que tal transformar a sua influência em benefícios reais para a sua empresa?'
     }
 ];
 

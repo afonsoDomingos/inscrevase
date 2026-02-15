@@ -5,7 +5,7 @@ const Notification = require('../models/Notification');
 const Submission = require('../models/Submission');
 const Referral = require('../models/Referral');
 const sendEmail = require('../utils/emailService');
-const { generateWelcomeEmail, generateBasicEmail } = require('../utils/emailTemplates');
+const { generateWelcomeEmail, generateBasicEmail, generateReferralBonusEmail } = require('../utils/emailTemplates');
 
 const register = async (req, res) => {
     try {
@@ -33,11 +33,15 @@ const register = async (req, res) => {
             referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
         });
 
+        // Initial registration save
+        await user.save();
+
         // Handle Referral logic
         if (referralCode) {
             const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
             if (referrer) {
                 user.referredBy = referrer._id;
+                user.referralPoints = 10; // WIN-WIN: New user also gets points!
 
                 // Track referral
                 const newReferral = new Referral({
@@ -48,22 +52,29 @@ const register = async (req, res) => {
                 await newReferral.save();
 
                 // Update referrer stats
-                referrer.referralPoints += 10;
-                referrer.referralCount += 1;
+                referrer.referralPoints = (referrer.referralPoints || 0) + 10;
+                referrer.referralCount = (referrer.referralCount || 0) + 1;
                 await referrer.save();
 
                 // Notify referrer
+                const admin = await User.findOne({ role: { $in: ['admin', 'SuperAdmin'] } });
                 const referralNotification = new Notification({
                     recipient: referrer._id,
+                    sender: admin ? admin._id : referrer._id,
                     title: 'Nova Indicação de Sucesso! 🚀',
                     content: `Parabéns! ${name} juntou-se à elite da Inscreva.se através do seu convite. Ganhou 10 pontos de impacto!`,
                     type: 'referral'
                 });
                 await referralNotification.save();
+
+                // Notify new user via Email about the bonus
+                const bonusEmailHtml = generateReferralBonusEmail(name, referrer.name, 10, `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`);
+                await sendEmail(email, '🎁 Bónus de Boas-vindas Creditado! - Inscreva-se', bonusEmailHtml);
+
+                // Final save for the new user with points and referrer link
+                await user.save();
             }
         }
-
-        await user.save();
 
         // Send Verification Email
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';

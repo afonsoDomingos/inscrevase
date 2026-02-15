@@ -51,6 +51,7 @@ function RegisterContent() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get('redirect');
     const initialRole = searchParams.get('role') || 'mentor';
+    const referralCode = searchParams.get('ref') || searchParams.get('referral');
 
     const [formData, setFormData] = useState<{
         name: string;
@@ -59,20 +60,25 @@ function RegisterContent() {
         businessName: string;
         country: string;
         role: 'mentor' | 'participant' | 'company' | 'specialist';
+        referralCode?: string;
     }>({
         name: '',
         email: '',
         password: '',
         businessName: '',
         country: '',
-        role: (initialRole as 'mentor' | 'participant' | 'company' | 'specialist') || 'mentor'
+        role: (initialRole as 'mentor' | 'participant' | 'company' | 'specialist') || 'mentor',
+        referralCode: referralCode || ''
     });
 
     useEffect(() => {
         if (initialRole) {
             setFormData(prev => ({ ...prev, role: initialRole as 'mentor' | 'participant' | 'company' | 'specialist' }));
         }
-    }, [initialRole]);
+        if (referralCode) {
+            setFormData(prev => ({ ...prev, referralCode }));
+        }
+    }, [initialRole, referralCode]);
 
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);

@@ -70,8 +70,10 @@ const assignReward = async (req, res) => {
         user.plan = planType;
         await user.save();
 
+        const admin = await User.findOne({ role: { $in: ['admin', 'SuperAdmin'] } });
         const notification = new Notification({
             recipient: user._id,
+            sender: admin ? admin._id : user._id,
             title: 'Parabéns! Recompensa Atribuída 🏆',
             content: `Pelo seu excelente trabalho a expandir a nossa comunidade, recebeu acesso ao plano ${planType.toUpperCase()} por ${days} dias. Continue a partilhar conhecimento!`,
             type: 'reward'

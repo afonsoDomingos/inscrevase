@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { Suspense } from 'react';
 
@@ -32,6 +32,8 @@ export default function Login() {
 
 function LoginContent() {
     const { t } = useTranslate();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -181,7 +183,10 @@ function LoginContent() {
                             <div style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
                                 <LogIn size={16} /> {t('auth.signIn')}
                             </div>
-                            <Link href="/cadastro" style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}>
+                            <Link
+                                href={`/cadastro${searchParams.toString() ? '?' + searchParams.toString() : ''}`}
+                                style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}
+                            >
                                 <UserPlus size={16} /> {t('auth.signUp')}
                             </Link>
                         </div>

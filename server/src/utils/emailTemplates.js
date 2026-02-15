@@ -123,9 +123,93 @@ const generateBasicEmail = (title, name, content, buttonText, buttonUrl, color =
     `;
 };
 
+const generatePendingApprovalEmail = (mentorName, participantName, eventTitle, dashboardUrl) => {
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #D4AF37 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Aprovação Pendente ⏳</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá, <strong>${mentorName}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Você tem uma nova inscrição aguardando sua análise para o evento: <br>
+                        <strong style="color: #000; font-size: 18px;">${eventTitle}</strong>
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #eee;">
+                        <p style="margin: 5px 0; color: #666;"><strong>Participante:</strong> <span style="color: #333;">${participantName}</span></p>
+                        <p style="margin: 5px 0; color: #666;"><strong>Status:</strong> <span style="color: #D4AF37; font-weight: bold;">Aguardando Aprovação</span></p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        O sucesso do seu evento começa com uma gestão ágil! Recomendamos que valide esta inscrição o quanto antes para garantir a melhor experiência ao seu novo aluno.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Acessar Painel e Aprovar
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #888; text-align: center;">
+                        Ao aprovar, o participante receberá automaticamente o acesso ao Hub do Evento.
+                    </p>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateReferralBonusEmail = (name, referrerName, points, dashboardUrl) => {
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #D4AF37 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Bónus de Boas-vindas! 🎁</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Parabéns, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Vimos que você se juntou à nossa elite através do convite de <strong>${referrerName}</strong>. 
+                        Como presente de boas-vindas, acabamos de creditar na sua conta:
+                    </p>
+
+                    <div style="text-align: center; margin: 25px 0;">
+                        <span style="font-size: 48px; font-weight: 900; color: #D4AF37;">+${points}</span>
+                        <p style="font-size: 14px; color: #666; font-weight: bold; text-transform: uppercase; margin-top: 5px;">Pontos de Impacto</p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        Use seus pontos para desbloquear planos premium, recursos exclusivos e aumentar seu alcance. Sua jornada para o sucesso começou com o pé direito!
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Explorar Meu Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
+    generatePendingApprovalEmail,
+    generateReferralBonusEmail,
     getSocialFooter,
     socialLinks
 };

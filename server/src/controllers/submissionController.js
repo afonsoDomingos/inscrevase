@@ -12,7 +12,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
-const { generateBasicEmail } = require('../utils/emailTemplates');
+const { generateBasicEmail, generatePendingApprovalEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
     console.log('[Submission] Starting submission process for form:', req.body.formId);
@@ -108,16 +108,16 @@ const submitForm = async (req, res) => {
             const mentor = await User.findById(form.creator);
             if (mentor && mentor.email) {
                 const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
-                const content = `
-                    Acabamos de receber uma nova inscrição para o seu evento "<strong>${form.title}</strong>".
-                    <div style="background-color: white; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #eee;">
-                        <p style="margin: 5px 0;"><strong>Participante:</strong> ${participantName}</p>
-                        <p style="margin: 5px 0;"><strong>E-mail:</strong> ${data.email || data.Email || 'Não informado'}</p>
-                    </div>
-                `;
-                const emailHtml = generateBasicEmail('Nova Inscrição Recebida! 📩', mentor.name, content, 'Ver Detalhes no Dashboard', dashboardUrl);
 
-                await sendEmail(mentor.email, `Nova Inscrição: ${form.title} - Inscreva-se`, emailHtml);
+                // Use the new "Pending Approval" template if the form expects manual validation (default behavior)
+                const emailHtml = generatePendingApprovalEmail(
+                    mentor.name,
+                    participantName,
+                    form.title,
+                    dashboardUrl
+                );
+
+                await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml);
             }
         } catch (notifErr) {
             console.error('[Submission] Error sending notifications:', notifErr);
