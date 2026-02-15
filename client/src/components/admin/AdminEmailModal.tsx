@@ -38,6 +38,12 @@ const TEMPLATES = [
         content: 'Olá! É inspirador ver a sua consistência na plataforma. Acabamos de notar a criação de mais um evento no seu perfil. Mentores consistentes como você são os que mais escalam resultados a longo prazo. Desejamos que este novo projeto supere todas as expectativas e traga resultados incríveis para os seus alunos. Boa sorte no lançamento!'
     },
     {
+        id: 'onboarding_nudge',
+        category: 'Conversão',
+        subject: '💡 Comece hoje: Transforme seu conhecimento em faturação!',
+        content: 'Olá! Vimos que você se juntou à nossa comunidade de mentores de elite, mas ainda não deu o primeiro passo. O seu conhecimento tem um valor imenso e estamos aqui para ajudá-lo a monetizá-lo! Que tal criar o seu primeiro evento hoje? Leva menos de 5 minutos e você já pode começar a receber inscrições. Vamos colocar o seu projeto no ar?'
+    },
+    {
         id: 'pending_approvals',
         category: 'Gestão',
         subject: '⌛ Atenção: Há Inscrições Pendentes de Aprovação',

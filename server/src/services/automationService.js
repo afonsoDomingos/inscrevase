@@ -138,6 +138,53 @@ const initAutomations = () => {
             console.error('❌ [Automation] Referral milestone error:', err);
         }
     });
+
+    // 4. Every 6 hours: Nudge new users who haven't created an event within 24h
+    cron.schedule('0 */6 * * *', async () => {
+        console.log('🔍 [Automation] Checking for users needing an onboarding nudge...');
+        try {
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+            // Find users created more than 24h ago, but less than 7 days (to target recent ones)
+            // who haven't been nudged yet and are mentors
+            const potentialUsers = await User.find({
+                onboardingNudgeSent: false,
+                createdAt: { $lt: twentyFourHoursAgo },
+                role: { $in: ['mentor', 'specialist', null] }
+            });
+
+            for (const user of potentialUsers) {
+                // Check if they have ANY event
+                const eventCount = await Form.countDocuments({ creator: user._id });
+
+                if (eventCount === 0) {
+                    const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                    const content = `Olá ${user.name}! Vimos que te juntaste ao <strong>Inscreva-se</strong>, mas ainda não publicaste o teu primeiro evento. O teu conhecimento é o teu maior ativo! Sabias que podes criar um formulário de inscrição profissional em menos de 5 minutos e começar a faturar? Vamos colocar o teu primeiro projeto no ar hoje?`;
+
+                    const emailHtml = generateBasicEmail(
+                        '💡 Começa hoje: Ganha com o teu Conhecimento',
+                        user.name,
+                        content,
+                        'Criar Meu Primeiro Evento',
+                        dashboardUrl,
+                        '#D4AF37'
+                    );
+
+                    await sendEmail(user.email, '💡 Dica: Começa a faturar com o teu conhecimento - Inscreva-se', emailHtml);
+
+                    // Mark as sent
+                    user.onboardingNudgeSent = true;
+                    await user.save();
+                } else {
+                    // If they already have an event, just mark as true so we don't check again
+                    user.onboardingNudgeSent = true;
+                    await user.save();
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Onboarding nudge error:', err);
+        }
+    });
 };
 
 module.exports = { initAutomations };
