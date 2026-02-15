@@ -26,6 +26,25 @@ interface EmailLog {
 
 const TEMPLATES = [
     {
+        id: 'first_event_congrats',
+        category: 'Sucesso',
+        subject: '🚀 Parabéns pela criação do seu 1º Evento!',
+        content: 'Olá! Vimos que acabou de lançar o seu primeiro evento na Inscreva-se. Este é um marco importante na sua jornada como mentor de elite! Estamos aqui para garantir que a sua experiência seja extraordinária. Desejamos-lhe o maior sucesso e muitas conversões. Se precisar de qualquer suporte estratégico, a nossa equipa está ao seu lado!'
+    },
+    {
+        id: 'recurring_event_congrats',
+        category: 'Sucesso',
+        subject: '🌟 Mais um Evento de Sucesso a Caminho!',
+        content: 'Olá! É inspirador ver a sua consistência na plataforma. Acabamos de notar a criação de mais um evento no seu perfil. Mentores consistentes como você são os que mais escalam resultados a longo prazo. Desejamos que este novo projeto supere todas as expectativas e traga resultados incríveis para os seus alunos. Boa sorte no lançamento!'
+    },
+    {
+        id: 'pending_approvals',
+        category: 'Gestão',
+        subject: '⌛ Atenção: Há Inscrições Pendentes de Aprovação',
+        content: 'Olá! Notamos que o seu evento tem participantes aguardando validação manual no seu dashboard. Recomendamos que valide estas inscrições o quanto antes para garantir a melhor experiência ao aluno. A agilidade na aprovação é o fator principal para manter o interesse do seu público ativo. Vamos liberar estes acessos?'
+    },
+    {
+        id: 'congrats',
         id: 'congrats',
         category: 'Sucesso',
         subject: '🚀 Parabéns pelo seu Evento na Inscreva-se!',
@@ -35,7 +54,19 @@ const TEMPLATES = [
         id: 'branding',
         category: 'Melhoria',
         subject: '🎨 Dica de Branding: Eleve o Nível do seu Formulário',
-        content: 'Olá! Notamos o seu novo evento e temos uma sugestão para aumentar as suas conversões: que tal atualizar a imagem de capa para uma foto de alta resolução e ajustar as cores do tema para combinarem com a sua marca? Formulários com branding forte convertem até 40% mais. Se precisar de ajuda, a Aura AI pode gerar uma descrição de luxo para si!'
+        content: 'Olá! Notamos o seu novo evento e temos uma sugestão para aumentar as suas conversões: que tal atualizar a imagem de capa para uma foto de alta resolução e ajustar as cores do tema para combinarem com a sua marca? Formulários com branding forte convertem até 40% mais. Se precisar de ajuda, a nossa equipa pode guiá-lo!'
+    },
+    {
+        id: 'tiered_pricing_tip',
+        category: 'Estratégia',
+        subject: '📈 Dica de Vendas: Use Lotes para Criar Urgência',
+        content: 'Olá! Notamos que o seu evento está a usar um preço único. Sabia que eventos que utilizam "Lote Early Bird" (Preço Antecipado) tendem a vender 30% mais nas primeiras 48 horas? No seu painel, pode configurar categorias de bilhetes com preços diferentes. Criar o sentimento de "quem chega primeiro paga menos" é uma das técnicas mais eficazes no marketing de eventos. Vamos testar?'
+    },
+    {
+        id: 'whatsapp_community',
+        category: 'Engajamento',
+        subject: '📱 Dica: Crie uma Comunidade no WhatsApp para o seu Evento',
+        content: 'Olá! Sabia que eventos com grupos de suporte no WhatsApp têm uma taxa de presença 60% maior? No seu painel de edição de evento, pode adicionar o link direto da sua comunidade. Assim, assim que o participante for aprovado, ele recebe o convite automaticamente. Vamos estreitar os laços com os seus alunos?'
     },
     {
         id: 'verification',
@@ -50,64 +81,10 @@ const TEMPLATES = [
         content: 'Olá! Estamos a selecionar os melhores especialistas para a nossa vitrine de Masterclasses na página principal. Vimos o seu potencial e gostaríamos de saber se tem interesse em criar um conteúdo exclusivo para este destaque. Vamos elevar o seu alcance?'
     },
     {
-        id: 'dormant',
-        category: 'Retenção',
-        subject: '👋 Sentimos sua falta no ecossistema!',
-        content: 'Olá! Notamos que já faz algum tempo que não cria um evento na Inscreva-se. A plataforma evoluiu com novas ferramentas de IA e automação que podem facilitar muito a sua gestão. Gostaria de agendar uma breve chamada para vermos como podemos impulsionar os seus próximos projetos?'
-    },
-    {
-        id: 'support_tech',
-        category: 'Suporte',
-        subject: '🛠️ Atualização do Suporte Técnico',
-        content: 'Olá! Identificamos o problema técnico que reportou no carregamento de ficheiros. A nossa equipa de engenharia já aplicou uma correção e tudo deve estar a funcionar normalmente agora. Pedimos desculpa pelo transtorno e agradecemos a sua paciência.'
-    },
-    {
-        id: 'billing_stripe',
-        category: 'Pagamentos',
-        subject: '💳 Configuração de Checkout Global (Stripe)',
-        content: 'Olá! Vimos que o seu evento está a atrair tráfego internacional. Recomendamos configurar a sua conta Stripe para aceitar pagamentos em USD/EUR, permitindo que participantes de fora de África comprem os seus bilhetes com cartão de crédito de forma instantânea. Vamos habilitar esta opção?'
-    },
-    {
-        id: 'partnership',
-        category: 'Parceria',
-        subject: '🤝 Proposta de Parceria Estratégica',
-        content: 'Olá! O Inscreva-se está a expandir a sua rede de parceiros institucionais. Dado o impacto dos seus eventos para a comunidade, gostaríamos de discutir um modelo de parceria onde poderíamos oferecer taxas reduzidas ou suporte de marketing dedicado para os seus futuros lançamentos.'
-    },
-    {
-        id: 'remind_event',
-        category: 'Engajamento',
-        subject: '⏰ Lembrete: Seu evento começa em breve!',
-        content: 'Olá! O seu evento está quase a começar e notamos que ainda restam algumas vagas. Sugerimos fazer um "último aviso" nas suas redes sociais para atrair os retardatários. Lembre-se que pode exportar a lista de participantes em formato Excel a qualquer momento no seu dashboard.'
-    },
-    {
-        id: 'feature_update',
-        category: 'Novidade',
-        subject: '✨ Nova Funcionalidade: Certificados Automáticos',
-        content: 'Olá! Acabamos de lançar a funcionalidade de Certificação Automática. Agora, assim que o seu evento terminar, os participantes podem baixar um certificado personalizado com a sua assinatura diretamente da plataforma. Isso adiciona um valor imenso para o seu público!'
-    },
-    {
-        id: 'pending_approvals',
-        category: 'Gestão',
-        subject: '⌛ Atenção: Há Inscrições Pendentes de Aprovação',
-        content: 'Olá! Notamos que o seu evento tem participantes aguardando validação manual no seu dashboard. Recomendamos que valide estas inscrições o quanto antes para garantir a melhor experiência ao aluno. A agilidade na aprovação é o fator principal para manter o interesse do seu público ativo. Vamos liberar estes acessos?'
-    },
-    {
-        id: 'whatsapp_community',
-        category: 'Engajamento',
-        subject: '📱 Dica: Crie uma Comunidade no WhatsApp para o seu Evento',
-        content: 'Olá! Sabia que eventos com grupos de suporte no WhatsApp têm uma taxa de presença 60% maior? No seu painel de edição de evento, pode adicionar o link direto da sua comunidade. Assim, assim que o participante for aprovado, ele recebe o convite automaticamente. Vamos estreitar os laços com os seus alunos?'
-    },
-    {
         id: 'impact_congrats',
         category: 'Impacto',
         subject: '💎 Reconhecimento: O seu impacto está a crescer!',
         content: 'Olá! Estamos a acompanhar as métricas da plataforma e o seu perfil destaca-se pelo engajamento. O seu conhecimento está a transformar vidas e queremos parabenizá-lo por ser um pilar fundamental na nossa rede de elite. Continue com esse foco – o sucesso é uma consequência do seu valor!'
-    },
-    {
-        id: 'tiered_pricing_tip',
-        category: 'Estratégia',
-        subject: '📈 Dica de Vendas: Use Lotes para Criar Urgência',
-        content: 'Olá! Notamos que o seu evento está a usar um preço único. Sabia que eventos que utilizam "Lote Early Bird" (Preço Antecipado) tendem a vender 30% mais nas primeiras 48 horas? No seu painel, pode configurar categorias de bilhetes com preços diferentes. Criar o sentimento de "quem chega primeiro paga menos" é uma das técnicas mais eficazes no marketing de eventos. Vamos testar?'
     },
     {
         id: 'post_event_stats',
@@ -122,16 +99,40 @@ const TEMPLATES = [
         content: 'Olá! Você tem sido um dos usuários mais ativos da plataforma. Queremos convidá-lo para o nosso Programa de Embaixadores. Ao indicar outros mentores de elite, você não só ganha pontos de impacto, mas pode desbloquear o Plano Enterprise com Taxa Zero de comissão. Que tal transformar a sua influência em benefícios reais para a sua empresa?'
     },
     {
-        id: 'first_event_congrats',
-        category: 'Sucesso',
-        subject: '🚀 Parabéns pela criação do seu 1º Evento!',
-        content: 'Olá! Vimos que acabou de lançar o seu primeiro evento na Inscreva-se. Este é um marco importante na sua jornada como mentor de elite! Estamos aqui para garantir que a sua experiência seja extraordinária. Desejamos-lhe o maior sucesso e muitas conversões. Se precisar de qualquer suporte estratégico, a nossa equipa e a Aura AI estão ao seu lado!'
+        id: 'remind_event',
+        category: 'Engajamento',
+        subject: '⏰ Lembrete: Seu evento começa em breve!',
+        content: 'Olá! O seu evento está quase a começar e notamos que ainda restam algumas vagas. Sugerimos fazer um "último aviso" nas suas redes sociais para atrair os retardatários. Lembre-se que pode exportar a lista de participantes em formato Excel a qualquer momento no seu dashboard.'
     },
     {
-        id: 'recurring_event_congrats',
-        category: 'Sucesso',
-        subject: '🌟 Mais um Evento de Sucesso a Caminho!',
-        content: 'Olá! É inspirador ver a sua consistência na plataforma. Acabamos de notar a criação de mais um evento no seu perfil. Mentores consistentes como você são os que mais escalam resultados a longo prazo. Desejamos que este novo projeto supere todas as expectativas e traga resultados incríveis para os seus alunos. Boa sorte no lançamento!'
+        id: 'feature_update',
+        category: 'Novidade',
+        subject: '✨ Nova Funcionalidade: Certificados Automáticos',
+        content: 'Olá! Acabamos de lançar a funcionalidade de Certificação Automática. Agora, assim que o seu evento terminar, os participantes podem baixar um certificado personalizado com a sua assinatura diretamente da plataforma. Isso adiciona um valor imenso para o seu público!'
+    },
+    {
+        id: 'billing_stripe',
+        category: 'Pagamentos',
+        subject: '💳 Configuração de Checkout Global (Stripe)',
+        content: 'Olá! Vimos que o seu evento está a atrair tráfego internacional. Recomendamos configurar a sua conta Stripe para aceitar pagamentos em USD/EUR, permitindo que participantes de fora de África comprem os seus bilhetes com cartão de crédito de forma instantânea. Vamos habilitar esta opção?'
+    },
+    {
+        id: 'dormant',
+        category: 'Retenção',
+        subject: '👋 Sentimos sua falta no ecossistema!',
+        content: 'Olá! Notamos que já faz algum tempo que não cria um evento na Inscreva-se. A plataforma evoluiu com novas ferramentas de IA e automação que podem facilitar muito a sua gestão. Gostaria de agendar uma breve chamada para vermos como podemos impulsionar os seus próximos projetos?'
+    },
+    {
+        id: 'partnership',
+        category: 'Parceria',
+        subject: '🤝 Proposta de Parceria Estratégica',
+        content: 'Olá! O Inscreva-se está a expandir a sua rede de parceiros institucionais. Dado o impacto dos seus eventos para a comunidade, gostaríamos de discutir um modelo de parceria onde poderíamos oferecer taxas reduzidas ou suporte de marketing dedicado para os seus futuros lançamentos.'
+    },
+    {
+        id: 'support_tech',
+        category: 'Suporte',
+        subject: '🛠️ Atualização do Suporte Técnico',
+        content: 'Olá! Identificamos o problema técnico que reportou no carregamento de ficheiros. A nossa equipa de engenharia já aplicou uma correção e tudo deve estar a funcionar normalmente agora. Pedimos desculpa pelo transtorno e agradecemos a sua paciência.'
     }
 ];
 
