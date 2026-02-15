@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -34,6 +34,35 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+    const [previousEvents, setPreviousEvents] = useState<FormModel[]>([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            formService.getMyForms()
+                .then(events => setPreviousEvents(events))
+                .catch(err => console.error("Failed to load previous events", err));
+        }
+    }, [isOpen]);
+
+    const copyFromEvent = (eventId: string) => {
+        if (!eventId) return;
+        const event = previousEvents.find(e => e._id === eventId);
+        if (!event) return;
+
+        if (event.title) setTitle(event.title);
+        if (event.description) setDescription(event.description);
+        if (event.category) setCategory(event.category);
+        if (event.fields) setFields(event.fields.map(f => ({ ...f, options: f.options || [] })));
+        if (event.capacity) setCapacity(event.capacity.toString());
+        if (event.extraCapacity) setExtraCapacity(event.extraCapacity.toString());
+        if (event.eventType) setEventType(event.eventType);
+        if (event.location) setLocation(event.location);
+        if (event.onlineLink) setOnlineLink(event.onlineLink);
+        if (event.theme) setTheme(event.theme);
+        if (event.paymentConfig) setPaymentConfig(event.paymentConfig);
+
+        toast.success(`Dados importados de "${event.title}"`);
+    };
     const [isMobile, setIsMobile] = useState(false);
 
     // Mobile Detection
@@ -215,6 +244,106 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
             return { valid: false, message: 'Capacidade deve estar entre 1 e 10.000' };
         }
         return { valid: true, message: '' };
+    };
+
+    // --- SMART TEMPLATES & DEFAULTS ---
+    const eventTemplates = {
+        workshop: {
+            label: 'Workshop',
+            icon: <GraduationCap size={24} />,
+            data: {
+                title: 'Workshop: [Tema Principal]',
+                description: 'Participe deste workshop prático onde você aprenderá as melhores técnicas sobre [Tema]. Ideal para iniciantes e profissionais que desejam aprimorar suas habilidades.\n\nO que você vai aprender:\n- Tópico 1\n- Tópico 2\n- Aplicação prática',
+                category: 'Educação',
+                fields: [
+                    { id: '1', label: 'Nome Completo', type: 'text', required: true },
+                    { id: '2', label: 'Email', type: 'email', required: true },
+                    { id: '3', label: 'WhatsApp', type: 'phone', required: true },
+                    { id: '4', label: 'Nível de Conhecimento', type: 'select', required: true, options: ['Iniciante', 'Intermediário', 'Avançado'] }
+                ],
+                capacity: '30',
+                eventType: 'modePresencial',
+                videoOrientation: 'horizontal'
+            }
+        },
+        webinar: {
+            label: 'Webinar',
+            icon: <Video size={24} />,
+            data: {
+                title: 'Masterclass Online: [Assunto]',
+                description: 'Inscreva-se nesta aula exclusiva online. Descubra os segredos de [Assunto] sem sair de casa.',
+                category: 'Tecnologia',
+                fields: [
+                    { id: '1', label: 'Nome', type: 'text', required: true },
+                    { id: '2', label: 'Email', type: 'email', required: true },
+                    { id: '3', label: 'Pergunta para o Mentor', type: 'text', required: false }
+                ],
+                eventType: 'modeOnline',
+                onlineLink: 'https://zoom.us/',
+                videoOrientation: 'horizontal'
+            }
+        },
+        networking: {
+            label: 'Networking',
+            icon: <Users2 size={24} />,
+            data: {
+                title: 'Encontro de Líderes & Networking',
+                description: 'Uma oportunidade única para conectar com profissionais da área, trocar experiências e expandir sua rede de contatos. Traga seus cartões de visita!',
+                category: 'Negócios',
+                fields: [
+                    { id: '1', label: 'Nome', type: 'text', required: true },
+                    { id: '2', label: 'Email', type: 'email', required: true },
+                    { id: '3', label: 'Empresa', type: 'text', required: true },
+                    { id: '4', label: 'Cargo', type: 'text', required: true },
+                    { id: '5', label: 'LinkedIn', type: 'text', required: false }
+                ],
+                eventType: 'modePresencial',
+                videoOrientation: 'vertical'
+            }
+        },
+        mentorship: {
+            label: 'Mentoria',
+            icon: <Briefcase size={24} />,
+            data: {
+                title: 'Mentoria Individual com [Seu Nome]',
+                description: 'Sessão exclusiva de 1 hora para desbloquear seu potencial e traçar um plano de carreira personalizado.',
+                category: 'Negócios',
+                fields: [
+                    { id: '1', label: 'Nome Completo', type: 'text', required: true },
+                    { id: '2', label: 'Email', type: 'email', required: true },
+                    { id: '3', label: 'Qual seu maior desafio hoje?', type: 'textarea', required: true }
+                ],
+                capacity: '5',
+                eventType: 'modeOnline',
+                onlineLink: 'https://meet.google.com/',
+                videoOrientation: 'vertical'
+            }
+        }
+    };
+
+    const applyTemplate = (key: keyof typeof eventTemplates) => {
+        const template = eventTemplates[key].data as any;
+        if (template.title) setTitle(template.title);
+        if (template.description) setDescription(template.description);
+        if (template.category) setCategory(template.category);
+        if (template.fields) setFields(template.fields);
+        if (template.capacity) setCapacity(template.capacity);
+        if (template.eventType) setEventType(template.eventType);
+        if (template.onlineLink) setOnlineLink(template.onlineLink);
+        if (template.videoOrientation) setVideoOrientation(template.videoOrientation as 'vertical' | 'horizontal');
+
+        toast.success(`Modelo "${eventTemplates[key].label}" aplicado! Personalize conforme necessário.`);
+    };
+
+    const clearForm = () => {
+        setTitle('');
+        setDescription('');
+        setEventDate('');
+        setCapacity('');
+        setFields([{ id: '1', label: t('events.defaultFieldName'), type: 'text', required: true }, { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }]);
+        setCategory('Outros');
+        setEventType('modePresencial');
+        toast.info('Formulário limpo para começar do zero.');
     };
 
     // Auto-Save Effect
@@ -739,7 +868,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         display: 'grid',
                         gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
                         gridTemplateRows: isMobile ? 'auto 1fr' : '1fr',
-                        height: isMobile ? '100vh' : '90vh',
+                        height: isMobile ? '100dvh' : '90vh',
+                        maxHeight: '900px',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
                         zIndex: 2002
                     }}
@@ -811,53 +941,55 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         display: 'flex',
                         flexDirection: 'column',
                         height: '100%',
+                        minHeight: 0,
                         minWidth: 0,
                         position: 'relative',
-                        background: '#fcfcfc'
+                        background: '#fcfcfc',
+                        overflow: 'hidden'
                     }}>
+                        {/* Header Area (Sticky) */}
                         <div style={{
-                            flex: 1,
-                            padding: isMobile ? '1.5rem' : '3.5rem',
-                            paddingBottom: '2rem',
-                            overflowY: 'auto',
-                            minHeight: 0
-                        }} className="custom-scrollbar">
-                            <div style={{ position: 'absolute', top: '2rem', right: '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
+                            padding: isMobile ? '1.5rem 1.5rem 0.5rem' : '2rem 3.5rem 1rem',
+                            background: '#fcfcfc',
+                            zIndex: 20,
+                            position: 'relative'
+                        }}>
+                            <div style={{ position: 'absolute', top: isMobile ? '1.2rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
                                 <button
                                     onClick={() => setShowPreview(true)}
                                     title="Pré-visualizar Evento"
                                     style={{
                                         background: '#fff',
                                         border: '1px solid #ddd',
-                                        padding: '0.5rem 1rem',
+                                        padding: '0.4rem 0.8rem',
                                         borderRadius: '20px',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '8px',
-                                        fontSize: '0.85rem',
+                                        gap: '6px',
+                                        fontSize: '0.75rem',
                                         fontWeight: 600,
                                         boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
                                         color: '#333'
                                     }}
                                 >
-                                    <Eye size={18} />
+                                    <Eye size={16} />
                                     {!isMobile && "Pré-visualizar"}
                                 </button>
                                 <button
                                     onClick={onClose}
-                                    style={{ background: '#eee', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                    <X size={18} />
+                                    <X size={16} />
                                 </button>
                             </div>
 
-                            {/* Progress Indicator */}
-                            <div style={{ marginBottom: '2rem' }}>
+                            {/* Progress Indicator (Sticky) */}
+                            <div style={{ marginBottom: '1rem', maxWidth: '90%' }}>
                                 <div style={{
                                     background: '#e5e7eb',
                                     borderRadius: '999px',
-                                    height: '8px',
+                                    height: '6px',
                                     position: 'relative',
                                     overflow: 'hidden'
                                 }}>
@@ -876,29 +1008,39 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    marginTop: '8px'
+                                    marginTop: '6px'
                                 }}>
                                     <span style={{
-                                        fontSize: '0.75rem',
-                                        color: '#666',
+                                        fontSize: '0.65rem',
+                                        color: '#888',
                                         fontWeight: 600
                                     }}>
-                                        {calculateProgress()}% completo
+                                        {calculateProgress()}% {t('common.complete') || 'completo'}
                                     </span>
                                     {lastSaved && (
                                         <span style={{
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.65rem',
                                             color: '#10b981',
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '4px'
                                         }}>
-                                            <CheckCircle size={12} />
-                                            Salvo {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                            <CheckCircle size={10} />
+                                            {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                     )}
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Scrollable Area */}
+                        <div style={{
+                            flex: 1,
+                            padding: isMobile ? '1rem 1.5rem 3rem' : '1rem 3.5rem 4rem',
+                            overflowY: 'auto',
+                            minHeight: 0
+                        }} className="custom-scrollbar">
+
 
                             {/* Draft Recovery Banner - Compacted */}
                             {showDraftBanner && (
@@ -976,6 +1118,104 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 {step === 1 && (
                                     <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.basicInfo')}</h2>
+
+                                        {previousEvents.length > 0 && (
+                                            <div style={{ marginBottom: '2rem' }}>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem', color: '#64748b' }}>
+                                                    <BookOpen size={16} style={{ display: 'inline', marginRight: '5px' }} />
+                                                    Importar de evento anterior:
+                                                </label>
+                                                <select
+                                                    onChange={(e) => copyFromEvent(e.target.value)}
+                                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid #cbd5e1', outline: 'none', background: '#f8fafc', color: '#334155' }}
+                                                >
+                                                    <option value="">Selecione um evento para copiar...</option>
+                                                    {previousEvents.map(evt => (
+                                                        <option key={evt._id} value={evt._id}>{evt.title}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
+
+                                        {/* Smart Templates Selector */}
+                                        <div style={{
+                                            marginBottom: '2.5rem',
+                                            background: 'linear-gradient(145deg, #f8fafc, #f1f5f9)',
+                                            padding: '1.5rem',
+                                            borderRadius: '20px',
+                                            border: '1px dashed #cbd5e1'
+                                        }}>
+                                            <h3 style={{
+                                                fontSize: '0.95rem',
+                                                fontWeight: 700,
+                                                color: '#334155',
+                                                marginBottom: '1rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px'
+                                            }}>
+                                                <Sparkles size={18} color="#eab308" />
+                                                Começar com um modelo inteligente:
+                                            </h3>
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)',
+                                                gap: '12px'
+                                            }}>
+                                                {Object.entries(eventTemplates).map(([key, template]) => (
+                                                    <motion.button
+                                                        key={key}
+                                                        whileHover={{ scale: 1.05, borderColor: '#FFD700' }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        onClick={() => applyTemplate(key as any)}
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '8px',
+                                                            padding: '1rem 0.5rem',
+                                                            background: '#fff',
+                                                            border: '1px solid #e2e8f0',
+                                                            borderRadius: '16px',
+                                                            cursor: 'pointer',
+                                                            color: '#64748b',
+                                                            minHeight: '100px',
+                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                                                        }}
+                                                    >
+                                                        <div style={{ color: '#eab308', background: '#fefce8', padding: '8px', borderRadius: '50%' }}>
+                                                            {template.icon}
+                                                        </div>
+                                                        <span style={{ fontSize: '0.8rem', fontWeight: 600, textAlign: 'center' }}>{template.label}</span>
+                                                    </motion.button>
+                                                ))}
+                                                <motion.button
+                                                    whileHover={{ scale: 1.05, borderColor: '#94a3b8' }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={clearForm}
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px',
+                                                        padding: '1rem 0.5rem',
+                                                        background: 'transparent',
+                                                        border: '2px dashed #cbd5e1',
+                                                        borderRadius: '16px',
+                                                        cursor: 'pointer',
+                                                        color: '#94a3b8',
+                                                        minHeight: '100px'
+                                                    }}
+                                                >
+                                                    <div style={{ color: '#94a3b8', padding: '8px' }}>
+                                                        <Layout size={24} />
+                                                    </div>
+                                                    <span style={{ fontSize: '0.8rem', fontWeight: 600, textAlign: 'center' }}>Do Zero</span>
+                                                </motion.button>
+                                            </div>
+                                        </div>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div>
@@ -1090,8 +1330,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '1rem' }}>
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                    <label style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                         {t('events.capacityLabel')}
+                                                        <div title="Número máximo de participantes. Quando atingido, as inscrições fecham automaticamente.">
+                                                            <Info size={14} style={{ color: '#aaa', cursor: 'help' }} />
+                                                        </div>
                                                     </label>
                                                     <input
                                                         type="number"
@@ -1134,7 +1377,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.extraCapacityLabel')}</label>
+                                                    <label style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        {t('events.extraCapacityLabel')}
+                                                        <div title='Vagas adicionais que abrem automaticamente após a capacidade principal esgotar ("Lote Extra").'>
+                                                            <Info size={14} style={{ color: '#aaa', cursor: 'help' }} />
+                                                        </div>
+                                                    </label>
                                                     <input
                                                         type="number"
                                                         value={extraCapacity}
@@ -1175,26 +1423,40 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             </div>
 
                                             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
-                                                <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.locationPhysical')}</label>
-                                                    <input
-                                                        type="text"
-                                                        value={location}
-                                                        onChange={(e) => setLocation(e.target.value)}
-                                                        placeholder={t('events.locationPlaceholder')}
-                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.onlineLink')}</label>
-                                                    <input
-                                                        type="text"
-                                                        value={onlineLink}
-                                                        onChange={(e) => setOnlineLink(e.target.value)}
-                                                        placeholder={t('events.onlinePlaceholder')}
-                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                    />
-                                                </div>
+                                                {eventType !== 'modeOnline' && (
+                                                    <div style={{ gridColumn: eventType === 'modePresencial' ? (isMobile ? 'auto' : 'span 2') : 'auto' }}>
+                                                        <label style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                            {t('events.locationPhysical')}
+                                                            <div title="Endereço físico onde o evento acontecerá.">
+                                                                <Info size={14} style={{ color: '#aaa', cursor: 'help' }} />
+                                                            </div>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={location}
+                                                            onChange={(e) => setLocation(e.target.value)}
+                                                            placeholder={t('events.locationPlaceholder')}
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                        />
+                                                    </div>
+                                                )}
+                                                {eventType !== 'modePresencial' && (
+                                                    <div style={{ gridColumn: eventType === 'modeOnline' ? (isMobile ? 'auto' : 'span 2') : 'auto' }}>
+                                                        <label style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                            {t('events.onlineLink')}
+                                                            <div title="Link da sala de conferência (Zoom, Meet). Só será enviado aos inscritos confirmados.">
+                                                                <Info size={14} style={{ color: '#aaa', cursor: 'help' }} />
+                                                            </div>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={onlineLink}
+                                                            onChange={(e) => setOnlineLink(e.target.value)}
+                                                            placeholder={t('events.onlinePlaceholder')}
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div>
@@ -2337,10 +2599,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                        </div>
+                        </div >
 
                         {/* Unified Sticky Footer Action */}
-                        <div style={{
+                        < div style={{
                             padding: isMobile ? '1rem 1.5rem' : '1.5rem 3.5rem',
                             background: '#fff',
                             borderTop: '2px solid #FFD700',
@@ -2351,15 +2613,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
                             gap: '12px',
                             flexShrink: 0
-                        }}>
+                        }
+                        }>
                             {/* Shortucts Info (Desktop Only) */}
-                            {!isMobile && (
-                                <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
-                                    <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
-                                    <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
-                                    {step === 7 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
-                                </div>
-                            )}
+                            {
+                                !isMobile && (
+                                    <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
+                                        <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
+                                        <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
+                                        {step === 7 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
+                                    </div>
+                                )
+                            }
 
                             <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', marginLeft: 'auto' }}>
                                 {step > 1 && (
@@ -2401,205 +2666,204 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
                                 </button>
                             </div>
-                        </div>
-                    </div>
+                        </div >
+                    </div >
 
                     {/* SUCCESS MODAL OVERLAY */}
                     <AnimatePresence>
-                        {showSuccess && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                style={{ position: 'fixed', inset: 0, zIndex: 3000, background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
-                            >
-                                <div style={{ textAlign: 'center', maxWidth: '500px', width: '100%' }}>
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1, rotate: 360 }}
-                                        transition={{ type: 'spring', stiffness: 200, damping: 10 }}
-                                        style={{ width: '80px', height: '80px', background: '#e6fffa', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: '#319795' }}
-                                    >
-                                        <CheckCircle size={40} strokeWidth={3} />
-                                    </motion.div>
-                                    <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: '#1a202c' }}>Evento Criado! 🎉</h2>
-                                    <p style={{ color: '#4a5568', marginBottom: '2.5rem', lineHeight: 1.6, fontSize: '1.1rem' }}>
-                                        Seu evento <strong>"{title}"</strong> foi salvo com sucesso. O que você gostaria de fazer agora?
-                                    </p>
-
-                                    <div style={{ display: 'grid', gap: '1rem' }}>
-                                        <button
-                                            onClick={() => window.open(`/f/${createdEventSlug}`, '_blank')}
-                                            style={{ background: '#000', color: '#FFD700', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
-                                            className="hover-scale"
-                                        >
-                                            <Globe size={20} /> Ver Página Pública
-                                        </button>
-                                        <button
-                                            onClick={() => window.open(`/hub/${createdEventSlug}`, '_blank')}
-                                            style={{ background: '#fff', color: '#1a202c', border: '2px solid #e2e8f0', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                                            className="hover-scale"
-                                        >
-                                            <Layout size={20} /> Ver Hub do Inscrito
-                                        </button>
-                                        <button onClick={onClose} style={{ marginTop: '1rem', color: '#718096', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.9rem' }}>
-                                            Voltar para o Painel
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* PREVIEW MODAL OVERLAY - Enhanced with field list and structured content */}
-                    <AnimatePresence>
-                        {showPreview && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                style={{ position: 'fixed', inset: 0, zIndex: 3100, background: 'rgba(0,0,0,0.85)', padding: isMobile ? '0' : '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}
-                            >
+                        {
+                            showSuccess && (
                                 <motion.div
-                                    initial={{ scale: 0.9, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    style={{
-                                        width: '100%',
-                                        maxWidth: '1000px',
-                                        height: isMobile ? '100vh' : '90vh',
-                                        background: theme.backgroundColor || '#fff',
-                                        borderRadius: isMobile ? '0' : '24px',
-                                        overflow: 'hidden',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                                        border: `1px solid ${theme.primaryColor}33`
-                                    }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    style={{ position: 'fixed', inset: 0, zIndex: 3000, background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
                                 >
-                                    <div style={{ padding: '1.2rem 1.5rem', borderBottom: `1px solid ${theme.primaryColor}22`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.02)' }}>
-                                        <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '10px', color: theme.primaryColor, fontWeight: 700 }}>
-                                            <Eye size={20} /> {t('preview.title') || 'Pré-visualização do Evento'}
-                                        </h3>
-                                        <button onClick={() => setShowPreview(false)} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}><X size={20} /></button>
-                                    </div>
+                                    <div style={{ textAlign: 'center', maxWidth: '500px', width: '100%' }}>
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1, rotate: 360 }}
+                                            transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                                            style={{ width: '80px', height: '80px', background: '#e6fffa', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: '#319795' }}
+                                        >
+                                            <CheckCircle size={40} strokeWidth={3} />
+                                        </motion.div>
+                                        <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: '#1a202c' }}>Evento Criado! 🎉</h2>
+                                        <p style={{ color: '#4a5568', marginBottom: '2.5rem', lineHeight: 1.6, fontSize: '1.1rem' }}>
+                                            Seu evento <strong>"{title}"</strong> foi salvo com sucesso. O que você gostaria de fazer agora?
+                                        </p>
 
-                                    <div style={{ flex: 1, overflowY: 'auto', color: theme.style === 'luxury' && (theme.backgroundColor === '#050505' || theme.backgroundColor === '#000000') ? '#fff' : '#1a202c', position: 'relative' }}>
-                                        {/* Logo Preview */}
-                                        {logo && (
-                                            <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
-                                                <Image src={logo} alt="Logo" width={100} height={35} style={{ objectFit: 'contain' }} />
-                                            </div>
-                                        )}
-
-                                        {/* Cover Image */}
-                                        {coverImage ? (
-                                            <div style={{ width: '100%', height: '350px', position: 'relative' }}>
-                                                <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
-                                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))' }} />
-                                            </div>
-                                        ) : (
-                                            <div style={{ width: '100%', height: '100px', background: theme.primaryColor + '11' }} />
-                                        )}
-
-                                        <div style={{ maxWidth: '850px', margin: '0 auto', padding: '3rem 2rem', marginTop: coverImage ? '-60px' : '0', position: 'relative', zIndex: 2 }}>
-                                            <div style={{ background: theme.backgroundColor, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', border: `1px solid ${theme.primaryColor}22` }}>
-                                                <h1 style={{ fontSize: isMobile ? '2.2rem' : '3rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1, color: theme.primaryColor, fontFamily: theme.fontFamily }}>
-                                                    {title || 'Título do seu evento incrível'}
-                                                </h1>
-
-                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', opacity: 0.9, fontSize: '1rem', fontWeight: 600 }}>
-                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Data a definir'}</span>
-                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📍 {location || (onlineLink ? 'Online' : 'Local a definir')}</span>
-                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.primaryColor }}>
-                                                        💰 {paymentConfig.enabled
-                                                            ? (paymentConfig.useTieredPricing ? 'Várias Categorias' : `${paymentConfig.currency} ${paymentConfig.price}`)
-                                                            : 'Gratuito'}
-                                                    </span>
-                                                </div>
-
-                                                {/* Video Preview */}
-                                                {videoUrl && (
-                                                    <div style={{ marginBottom: '3rem', borderRadius: '24px', overflow: 'hidden', border: `1px solid ${theme.primaryColor}44`, aspectRatio: videoOrientation === 'vertical' ? '9/16' : '16/9', maxHeight: '500px', margin: '0 auto 3rem', background: '#000' }}>
-                                                        <video src={videoUrl} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                    </div>
-                                                )}
-
-                                                <div style={{ lineHeight: 1.8, fontSize: '1.15rem', opacity: 0.95, whiteSpace: 'pre-line', marginBottom: '4rem' }}>
-                                                    {description || 'A descrição do seu evento aparecerá aqui detalhando tudo o que seus participantes precisam saber...'}
-                                                </div>
-
-                                                {/* Form Fields Preview Section */}
-                                                <div style={{ borderTop: `1px solid ${theme.primaryColor}22`, paddingTop: '3rem' }}>
-                                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                        <FileText size={24} color={theme.primaryColor} /> {t('preview.registrationTitle') || 'Faça sua Inscrição'}
-                                                    </h3>
-
-                                                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                                        {fields.map((field) => (
-                                                            <div key={field.id}>
-                                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.6rem', fontSize: '0.9rem', opacity: 0.8 }}>
-                                                                    {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
-                                                                </label>
-                                                                <div style={{
-                                                                    width: '100%',
-                                                                    padding: '1.2rem',
-                                                                    borderRadius: '16px',
-                                                                    background: theme.style === 'luxury' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                                                    border: `1px solid ${theme.primaryColor}33`,
-                                                                    color: '#888',
-                                                                    fontSize: '0.95rem'
-                                                                }}>
-                                                                    {field.type === 'date' ? '00/00/0000' : field.type === 'select' ? 'Selecione uma opção...' : `Digite seu ${field.label.toLowerCase()}...`}
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                        {/* WhatsApp Trigger Preview */}
-                                                        {(whatsappConfig.phoneNumber || whatsappConfig.communityUrl) && (
-                                                            <div style={{ marginTop: '1rem', padding: '1.5rem', borderRadius: '20px', background: 'rgba(37, 211, 102, 0.05)', border: '1px solid rgba(37, 211, 102, 0.2)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                                                <div style={{ width: '45px', height: '45px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                                                                    <MessageCircle size={24} />
-                                                                </div>
-                                                                <div>
-                                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Botão do WhatsApp Ativo</div>
-                                                                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Os participantes poderão te contactar via WhatsApp.</div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        <button
-                                                            disabled
-                                                            style={{
-                                                                marginTop: '1.5rem',
-                                                                width: '100%',
-                                                                padding: '1.5rem',
-                                                                borderRadius: '20px',
-                                                                background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
-                                                                color: '#000',
-                                                                fontWeight: 900,
-                                                                fontSize: '1.1rem',
-                                                                border: 'none',
-                                                                opacity: 0.8,
-                                                                boxShadow: `0 10px 30px ${theme.primaryColor}33`
-                                                            }}
-                                                        >
-                                                            {paymentConfig.enabled ? 'PAGAR E INSCREVER' : 'CONFIRMAR INSCRIÇÃO'}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div style={{ textAlign: 'center', marginTop: '3rem', opacity: 0.5, fontSize: '0.8rem' }}>
-                                                © {new Date().getFullYear()} Inscreva.se - Todos os direitos reservados
-                                            </div>
+                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                            <button
+                                                onClick={() => window.open(`/f/${createdEventSlug}`, '_blank')}
+                                                style={{ background: '#000', color: '#FFD700', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
+                                                className="hover-scale"
+                                            >
+                                                <Globe size={20} /> Ver Página Pública
+                                            </button>
+                                            <button
+                                                onClick={() => window.open(`/hub/${createdEventSlug}`, '_blank')}
+                                                style={{ background: '#fff', color: '#1a202c', border: '2px solid #e2e8f0', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                                className="hover-scale"
+                                            >
+                                                <Layout size={20} /> Ver Hub do Inscrito
+                                            </button>
+                                            <button onClick={onClose} style={{ marginTop: '1rem', color: '#718096', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.9rem' }}>
+                                                Voltar para o Painel
+                                            </button>
                                         </div>
                                     </div>
                                 </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                            )
+                        }
+                    </AnimatePresence >
 
-                    <style jsx>{`
+                    {/* PREVIEW MODAL OVERLAY - Enhanced with field list and structured content */}
+                    <AnimatePresence>
+                        {
+                            showPreview && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    style={{ position: 'fixed', inset: 0, zIndex: 3100, background: 'rgba(0,0,0,0.85)', padding: isMobile ? '0' : '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}
+                                >
+                                    <motion.div
+                                        initial={{ scale: 0.9, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        style={{
+                                            width: '100%',
+                                            maxWidth: '1000px',
+                                            height: isMobile ? '100vh' : '90vh',
+                                            background: theme.backgroundColor || '#fff',
+                                            borderRadius: isMobile ? '0' : '24px',
+                                            overflow: 'hidden',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                                            border: `1px solid ${theme.primaryColor}33`
+                                        }}
+                                    >
+                                        <div style={{ padding: '1.2rem 1.5rem', borderBottom: `1px solid ${theme.primaryColor}22`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.02)' }}>
+                                            <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '10px', color: theme.primaryColor, fontWeight: 700 }}>
+                                                <Eye size={20} /> {t('preview.title') || 'Pré-visualização do Evento'}
+                                            </h3>
+                                            <button onClick={() => setShowPreview(false)} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}><X size={20} /></button>
+                                        </div>
+
+                                        <div style={{ flex: 1, overflowY: 'auto', color: theme.style === 'luxury' && (theme.backgroundColor === '#050505' || theme.backgroundColor === '#000000') ? '#fff' : '#1a202c', position: 'relative' }}>
+                                            {/* Logo Preview */}
+                                            {logo && (
+                                                <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
+                                                    <Image src={logo} alt="Logo" width={100} height={35} style={{ objectFit: 'contain' }} />
+                                                </div>
+                                            )}
+
+                                            {/* Cover Image */}
+                                            {coverImage ? (
+                                                <div style={{ width: '100%', height: '350px', position: 'relative' }}>
+                                                    <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))' }} />
+                                                </div>
+                                            ) : (
+                                                <div style={{ width: '100%', height: '100px', background: theme.primaryColor + '11' }} />
+                                            )}
+
+                                            <div style={{ maxWidth: '850px', margin: '0 auto', padding: '3rem 2rem', marginTop: coverImage ? '-60px' : '0', position: 'relative', zIndex: 2 }}>
+                                                <div style={{ background: theme.backgroundColor, padding: '2.5rem', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', border: `1px solid ${theme.primaryColor}22` }}>
+                                                    <h1 style={{ fontSize: isMobile ? '2.2rem' : '3rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1, color: theme.primaryColor, fontFamily: theme.fontFamily }}>
+                                                        {title || 'Título do seu evento incrível'}
+                                                    </h1>
+
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', opacity: 0.9, fontSize: '1rem', fontWeight: 600 }}>
+                                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Data a definir'}</span>
+                                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>📍 {location || (onlineLink ? 'Online' : 'Local a definir')}</span>
+                                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.primaryColor }}>
+                                                            💰 {paymentConfig.enabled
+                                                                ? (paymentConfig.useTieredPricing ? 'Várias Categorias' : `${paymentConfig.currency} ${paymentConfig.price}`)
+                                                                : 'Gratuito'}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Video Preview */}
+                                                    {videoUrl && (
+                                                        <div style={{ marginBottom: '3rem', borderRadius: '24px', overflow: 'hidden', border: `1px solid ${theme.primaryColor}44`, aspectRatio: videoOrientation === 'vertical' ? '9/16' : '16/9', maxHeight: '500px', margin: '0 auto 3rem', background: '#000' }}>
+                                                            <video src={videoUrl} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        </div>
+                                                    )}
+
+                                                    <div style={{ lineHeight: 1.8, fontSize: '1.15rem', opacity: 0.95, whiteSpace: 'pre-line', marginBottom: '4rem' }}>
+                                                        {description || 'A descrição do seu evento aparecerá aqui detalhando tudo o que seus participantes precisam saber...'}
+                                                    </div>
+
+                                                    {/* Form Fields Preview Section */}
+                                                    <div style={{ borderTop: `1px solid ${theme.primaryColor}22`, paddingTop: '3rem' }}>
+                                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <FileText size={24} color={theme.primaryColor} /> {t('preview.registrationTitle') || 'Faça sua Inscrição'}
+                                                        </h3>
+
+                                                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                                            {fields.map((field) => (
+                                                                <div key={field.id}>
+                                                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.6rem', fontSize: '0.9rem', opacity: 0.8 }}>
+                                                                        {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+                                                                    </label>
+                                                                    <div style={{
+                                                                        width: '100%',
+                                                                        padding: '1.2rem',
+                                                                        borderRadius: '16px',
+                                                                        background: theme.style === 'luxury' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                                                        border: `1px solid ${theme.primaryColor}33`,
+                                                                        color: '#888',
+                                                                        fontSize: '0.95rem'
+                                                                    }}>
+                                                                        {field.type === 'date' ? '00/00/0000' : field.type === 'select' ? 'Selecione uma opção...' : `Digite seu ${field.label.toLowerCase()}...`}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+
+                                                            {/* WhatsApp Trigger Preview */}
+                                                            {(whatsappConfig.phoneNumber || whatsappConfig.communityUrl) && (
+                                                                <div style={{ marginTop: '1rem', padding: '1.5rem', borderRadius: '20px', background: 'rgba(37, 211, 102, 0.05)', border: '1px solid rgba(37, 211, 102, 0.2)', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                                    <div style={{ width: '45px', height: '45px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                                                        <MessageCircle size={24} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Botão do WhatsApp Ativo</div>
+                                                                        <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Os participantes poderão te contactar via WhatsApp.</div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            <button
+                                                                disabled
+                                                                style={{
+                                                                    marginTop: '1.5rem',
+                                                                    width: '100%',
+                                                                    padding: '1.5rem',
+                                                                    borderRadius: '20px',
+                                                                    background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.primaryColor}dd)`,
+                                                                    color: '#000',
+                                                                    fontWeight: 900,
+                                                                    fontSize: '1.1rem',
+                                                                    border: 'none',
+                                                                    opacity: 0.8,
+                                                                    boxShadow: `0 10px 30px ${theme.primaryColor}33`
+                                                                }}
+                                                            >
+                                                                {paymentConfig.enabled ? 'PAGAR E INSCREVER' : 'CONFIRMAR INSCRIÇÃO'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ textAlign: 'center', marginTop: '3rem', opacity: 0.5, fontSize: '0.8rem' }}>
+                                                    © {new Date().getFullYear()} Inscreva.se - Todos os direitos reservados
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <style jsx>{`
                         .no-scrollbar::-webkit-scrollbar {
                             display: none;
                         }
@@ -2608,8 +2872,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             scrollbar-width: none;
                         }
                     `}</style>
-                </motion.div >
-            </div >
+                                    </motion.div >
+                                </div >
         </AnimatePresence >
-    );
+                    );
 }
