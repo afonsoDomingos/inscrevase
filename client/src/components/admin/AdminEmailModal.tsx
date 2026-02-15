@@ -50,6 +50,12 @@ const TEMPLATES = [
         content: 'Olá! Notamos que o seu evento foi lançado há 48 horas, mas ainda está com pouca visibilidade (menos de 10 visitas). O seu conteúdo é incrível e merece ser visto! Que tal partilhar o link do evento nos seus grupos de WhatsApp, Instagram ou LinkedIn? Pequenas ações de divulgação podem gerar as suas primeiras vendas hoje mesmo. Vamos impulsionar esse alcance?'
     },
     {
+        id: 'high_performance_congrats',
+        category: 'Sucesso',
+        subject: '🔥 Fenomenal! O seu evento está a explodir!',
+        content: 'Olá! Uau, que tração incrível! Notamos que o seu evento atingiu mais de 50 visitas em menos de 24 horas. Isso é um sinal claro de que o seu tema é de alto interesse e que a sua audiência está engajada. Parabéns pela excelente estratégia de lançamento! Continue assim, pois grandes resultados estão a caminho. Vamos rumo ao Sold Out?'
+    },
+    {
         id: 'pending_approvals',
         category: 'Gestão',
         subject: '⌛ Atenção: Há Inscrições Pendentes de Aprovação',

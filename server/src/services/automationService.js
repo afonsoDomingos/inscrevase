@@ -227,6 +227,48 @@ const initAutomations = () => {
             console.error('❌ [Automation] Visibility nudge error:', err);
         }
     });
+
+    // 6. Every 4 hours: Celebrate high-performance events (50+ visits in first 24h)
+    cron.schedule('0 */4 * * *', async () => {
+        console.log('🔍 [Automation] Checking for high-performing events...');
+        try {
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+            // Find active forms created in the last 24h
+            // with more than 50 visits and nudge not sent yet
+            const viralForms = await Form.find({
+                active: true,
+                highPerformanceNudgeSent: false,
+                createdAt: { $gte: twentyFourHoursAgo },
+                visits: { $gte: 50 }
+            }).populate('creator');
+
+            for (const form of viralForms) {
+                const mentor = form.creator;
+                if (mentor && mentor.email) {
+                    const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                    const content = `Uau, ${mentor.name}! Que tração incrível! Notamos que o teu evento "<strong>${form.title}</strong>" atingiu mais de <strong>50 visitas</strong> em menos de 24 horas. Isso é um sinal claro de impacto e de que a tua audiência está super engajada. Parabéns pela excelente estratégia de lançamento! Continua com esse foco – o sucesso é uma consequência do teu valor!`;
+
+                    const emailHtml = generateBasicEmail(
+                        '🔥 Fenomenal! O teu evento está a explodir',
+                        mentor.name,
+                        content,
+                        'Ver Meu Sucesso',
+                        dashboardUrl,
+                        '#D4AF37'
+                    );
+
+                    await sendEmail(mentor.email, `🔥 Fenomenal: ${form.title} está a explodir! - Inscreva-se`, emailHtml);
+
+                    // Mark as sent
+                    form.highPerformanceNudgeSent = true;
+                    await form.save();
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] High performance check error:', err);
+        }
+    });
 };
 
 module.exports = { initAutomations };
