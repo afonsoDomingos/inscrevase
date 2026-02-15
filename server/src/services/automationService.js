@@ -185,6 +185,48 @@ const initAutomations = () => {
             console.error('❌ [Automation] Onboarding nudge error:', err);
         }
     });
+
+    // 5. Every 12 hours: Nudge mentors with low event visits after 48h
+    cron.schedule('0 */12 * * *', async () => {
+        console.log('🔍 [Automation] Checking for events needing a visibility nudge...');
+        try {
+            const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+
+            // Find active forms created more than 48h ago but less than 10 days
+            // with less than 10 visits and nudge not sent yet
+            const strugglingForms = await Form.find({
+                active: true,
+                lowVisitsNudgeSent: false,
+                createdAt: { $lt: fortyEightHoursAgo },
+                visits: { $lt: 10 }
+            }).populate('creator');
+
+            for (const form of strugglingForms) {
+                const mentor = form.creator;
+                if (mentor && mentor.email) {
+                    const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                    const content = `Olá ${mentor.name}! Notamos que o teu evento "<strong>${form.title}</strong>" foi lançado há mais de 48 horas, mas ainda está com pouca visibilidade (menos de 10 visitas). O teu conhecimento merece chegar a mais pessoas! Que tal partilhares o link do evento nos teus grupos de WhatsApp ou redes sociais hoje? Pequenas ações de divulgação fazem toda a diferença!`;
+
+                    const emailHtml = generateBasicEmail(
+                        '🚀 Dica: Aumenta o alcance do teu evento',
+                        mentor.name,
+                        content,
+                        'Partilhar Meu Evento',
+                        dashboardUrl,
+                        '#D4AF37'
+                    );
+
+                    await sendEmail(mentor.email, `🚀 Dica de Alcance: ${form.title} - Inscreva-se`, emailHtml);
+
+                    // Mark as sent
+                    form.lowVisitsNudgeSent = true;
+                    await form.save();
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Visibility nudge error:', err);
+        }
+    });
 };
 
 module.exports = { initAutomations };

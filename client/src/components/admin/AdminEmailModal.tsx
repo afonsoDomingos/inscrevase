@@ -44,6 +44,12 @@ const TEMPLATES = [
         content: 'Olá! Vimos que você se juntou à nossa comunidade de mentores de elite, mas ainda não deu o primeiro passo. O seu conhecimento tem um valor imenso e estamos aqui para ajudá-lo a monetizá-lo! Que tal criar o seu primeiro evento hoje? Leva menos de 5 minutos e você já pode começar a receber inscrições. Vamos colocar o seu projeto no ar?'
     },
     {
+        id: 'low_visits_nudge',
+        category: 'Estratégia',
+        subject: '🚀 Dica: Aumente o alcance do seu evento!',
+        content: 'Olá! Notamos que o seu evento foi lançado há 48 horas, mas ainda está com pouca visibilidade (menos de 10 visitas). O seu conteúdo é incrível e merece ser visto! Que tal partilhar o link do evento nos seus grupos de WhatsApp, Instagram ou LinkedIn? Pequenas ações de divulgação podem gerar as suas primeiras vendas hoje mesmo. Vamos impulsionar esse alcance?'
+    },
+    {
         id: 'pending_approvals',
         category: 'Gestão',
         subject: '⌛ Atenção: Há Inscrições Pendentes de Aprovação',
