@@ -59,7 +59,25 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         if (event.location) setLocation(event.location);
         if (event.onlineLink) setOnlineLink(event.onlineLink);
         if (event.theme) setTheme(event.theme);
-        if (event.paymentConfig) setPaymentConfig(event.paymentConfig);
+        if (event.paymentConfig) {
+            setPaymentConfig({
+                enabled: event.paymentConfig.enabled || false,
+                price: event.paymentConfig.price || 0,
+                currency: event.paymentConfig.currency || 'MZN',
+                mpesaNumber: event.paymentConfig.mpesaNumber || '',
+                emolaNumber: event.paymentConfig.emolaNumber || '',
+                bankAccount: event.paymentConfig.bankAccount || '',
+                accountHolder: event.paymentConfig.accountHolder || '',
+                instructions: event.paymentConfig.instructions || '',
+                requireProof: event.paymentConfig.requireProof || false,
+                stripeEnabled: event.paymentConfig.stripeEnabled || false,
+                stripePriceId: event.paymentConfig.stripePriceId || '',
+                stripeProductId: event.paymentConfig.stripeProductId || '',
+                manualMethods: event.paymentConfig.manualMethods || [],
+                pricingTiers: (event.paymentConfig as any).pricingTiers || [],
+                useTieredPricing: (event.paymentConfig as any).useTieredPricing || false
+            });
+        }
 
         toast.success(`Dados importados de "${event.title}"`);
     };
