@@ -1036,10 +1036,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         {/* Scrollable Area */}
                         <div style={{
                             flex: 1,
-                            padding: isMobile ? '1rem 1.5rem 3rem' : '1rem 3.5rem 4rem',
+                            padding: isMobile ? '1rem 1.5rem 3rem' : '1rem 2rem 5rem',
                             overflowY: 'auto',
-                            minHeight: 0
-                        }} className="custom-scrollbar">
+                            minHeight: 0,
+                            scrollbarWidth: 'auto',
+                            msOverflowStyle: 'auto'
+                        }}>
 
 
                             {/* Draft Recovery Banner - Compacted */}
@@ -2603,7 +2605,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                         {/* Unified Sticky Footer Action */}
                         < div style={{
-                            padding: isMobile ? '1rem 1.5rem' : '1.5rem 3.5rem',
+                            padding: isMobile ? '1rem 1.5rem' : '1rem 2rem',
                             background: '#fff',
                             borderTop: '2px solid #FFD700',
                             display: 'flex',
@@ -2612,7 +2614,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             zIndex: 2005,
                             boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
                             gap: '12px',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            position: 'relative'
                         }
                         }>
                             {/* Shortucts Info (Desktop Only) */}
