@@ -9,6 +9,7 @@ router.get('/validate/:code', referralController.validateReferralCode);
 // Protected (User)
 router.get('/stats', authMiddleware, referralController.getReferralStats);
 router.get('/history', authMiddleware, referralController.getReferralHistory);
+router.post('/redeem', authMiddleware, referralController.redeemPoints);
 
 // Protected (Admin)
 router.get('/admin/ranking', authMiddleware, adminMiddleware, referralController.getAdminRanking);

@@ -13,14 +13,64 @@ const getReferralStats = async (req, res) => {
             await user.save();
         }
 
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const inviteLink = `${frontendUrl}/cadastro?ref=${user.referralCode}`;
+
         res.json({
             referralCode: user.referralCode,
-            points: user.referralPoints,
-            totalInvites: user.referralCount,
+            inviteLink,
+            points: user.referralPoints || 0,
+            totalInvites: user.referralCount || 0,
             convertedCount: await Referral.countDocuments({ referrer: user._id, status: 'converted' })
         });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const redeemPoints = async (req, res) => {
+    try {
+        const { rewardId } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+
+        // Reward Tiers: 100 points = 30 days Pro
+        const REWARDS = {
+            'pro_30': { points: 100, days: 30, plan: 'pro', label: 'Plano Pro (30 dias)' }
+        };
+
+        const reward = REWARDS[rewardId];
+        if (!reward) return res.status(400).json({ message: 'Recompensa inválida' });
+
+        if ((user.referralPoints || 0) < reward.points) {
+            return res.status(400).json({ message: `Saldo insuficiente. Precisas de ${reward.points} pontos.` });
+        }
+
+        // Deduct points and update plan
+        user.referralPoints -= reward.points;
+        user.plan = reward.plan;
+
+        // In a more complete system, we'd handle plan expiration dates here.
+        await user.save();
+
+        // Notify user
+        const notification = new Notification({
+            recipient: user._id,
+            sender: user._id, // Self-system notification
+            title: 'Recompensa Resgatada! 🏆',
+            content: `Parabéns! Você trocou ${reward.points} pontos por ${reward.label}. O seu acesso premium já está ativo!`,
+            type: 'reward'
+        });
+        await notification.save();
+
+        res.json({
+            message: 'Resgate efetuado com sucesso!',
+            points: user.referralPoints,
+            plan: user.plan
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao processar resgate', error: err.message });
     }
 };
 
@@ -91,5 +141,6 @@ module.exports = {
     getReferralHistory,
     validateReferralCode,
     getAdminRanking,
-    assignReward
+    assignReward,
+    redeemPoints
 };

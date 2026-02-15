@@ -120,6 +120,18 @@ const TEMPLATES = [
         category: 'Crescimento',
         subject: '🏆 Convite: Torne-se um Embaixador Inscreva-se',
         content: 'Olá! Você tem sido um dos usuários mais ativos da plataforma. Queremos convidá-lo para o nosso Programa de Embaixadores. Ao indicar outros mentores de elite, você não só ganha pontos de impacto, mas pode desbloquear o Plano Enterprise com Taxa Zero de comissão. Que tal transformar a sua influência em benefícios reais para a sua empresa?'
+    },
+    {
+        id: 'first_event_congrats',
+        category: 'Sucesso',
+        subject: '🚀 Parabéns pela criação do seu 1º Evento!',
+        content: 'Olá! Vimos que acabou de lançar o seu primeiro evento na Inscreva-se. Este é um marco importante na sua jornada como mentor de elite! Estamos aqui para garantir que a sua experiência seja extraordinária. Desejamos-lhe o maior sucesso e muitas conversões. Se precisar de qualquer suporte estratégico, a nossa equipa e a Aura AI estão ao seu lado!'
+    },
+    {
+        id: 'recurring_event_congrats',
+        category: 'Sucesso',
+        subject: '🌟 Mais um Evento de Sucesso a Caminho!',
+        content: 'Olá! É inspirador ver a sua consistência na plataforma. Acabamos de notar a criação de mais um evento no seu perfil. Mentores consistentes como você são os que mais escalam resultados a longo prazo. Desejamos que este novo projeto supere todas as expectativas e traga resultados incríveis para os seus alunos. Boa sorte no lançamento!'
     }
 ];
 
