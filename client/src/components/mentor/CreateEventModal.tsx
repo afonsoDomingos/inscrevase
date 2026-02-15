@@ -2875,8 +2875,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             scrollbar-width: none;
                         }
                     `}</style>
-                                    </motion.div >
-                                </div >
-        </AnimatePresence >
-                    );
+                                    </motion.div>
+                                </motion.div>
+                            )}
+                    </AnimatePresence>
+                </motion.div>
+            </div>
+        </AnimatePresence>
+    );
 }
