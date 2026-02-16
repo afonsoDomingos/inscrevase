@@ -16,6 +16,42 @@
         "testimonials": {
             "title": "What Our Mentors Say",
             "description": "Join hundreds of professionals who have already transformed their events"
+        },
+        "sectors": {
+            "title": "Sectors of Action",
+            "description": "Multichannel communication for all sectors. Inscreva-se supports organizations in the fast, reliable, and scalable management of their events.",
+            "education": {
+                "title": "Education & Training",
+                "description": "Management of courses, workshops, and mentorships with automatic certificate issuance."
+            },
+            "corporate": {
+                "title": "Companies & Corporations",
+                "description": "Internal events, corporate training, and large-scale conferences."
+            },
+            "tech": {
+                "title": "Technology & Startups",
+                "description": "Hackathons, bootcamps, and digital product launches."
+            },
+            "entertainment": {
+                "title": "Entertainment & Culture",
+                "description": "Festivals, shows, and art exhibitions with ticketing management."
+            },
+            "health": {
+                "title": "Health & Wellness",
+                "description": "Retreats, yoga classes, and medical symposiums."
+            },
+            "finance": {
+                "title": "Finance & Business",
+                "description": "Networking, investment rounds, and business talks."
+            },
+            "marketing": {
+                "title": "Marketing & Sales",
+                "description": "Masterclasses, launches, and branding events."
+            },
+            "community": {
+                "title": "Communities & NGOs",
+                "description": "Community gatherings, fundraising, and volunteering."
+            }
         }
     },
     "common": {
@@ -690,7 +726,6 @@
         "minimalistHelp": "Clean and direct",
         "isPaidEvent": "Is this a paid event?",
         "priceLabel": "Value (Price)",
-        "currency": "Currency",
         "currencyLabel": "Currency",
         "paymentInstructions": "Payment Instructions",
         "requireProof": "Require payment proof on registration?",

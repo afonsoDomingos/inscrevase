@@ -20,6 +20,42 @@
         "testimonials": {
             "title": "O Que Nossos Mentores Dizem",
             "description": "Junte-se a centenas de profissionais que já transformaram seus eventos"
+        },
+        "sectors": {
+            "title": "Sectores de Atuação",
+            "description": "Comunicação multicanal para todos os sectores. A Inscreva-se apoia organizações na gestão rápida, confiável e escalável dos seus eventos.",
+            "education": {
+                "title": "Educação & Formação",
+                "description": "Gestão de cursos, workshops e mentorias com emissão automática de certificados."
+            },
+            "corporate": {
+                "title": "Empresas & Corporações",
+                "description": "Eventos internos, treinamentos corporativos e conferências de grande porte."
+            },
+            "tech": {
+                "title": "Tecnologia & Startups",
+                "description": "Hackathons, bootcamps e lançamentos de produtos digitais."
+            },
+            "entertainment": {
+                "title": "Entretenimento & Cultura",
+                "description": "Festivais, shows e exposições artísticas com gestão de bilheteira."
+            },
+            "health": {
+                "title": "Saúde & Bem-estar",
+                "description": "Retiros, aulas de yoga e simpósios médicos."
+            },
+            "finance": {
+                "title": "Finanças & Negócios",
+                "description": "Networking, rodadas de investimento e palestras de negócios."
+            },
+            "marketing": {
+                "title": "Marketing & Vendas",
+                "description": "Masterclasses, lançamentos e eventos de branding."
+            },
+            "community": {
+                "title": "Comunidades & ONGs",
+                "description": "Encontros comunitários, angariação de fundos e voluntariado."
+            }
         }
     },
     "common": {
