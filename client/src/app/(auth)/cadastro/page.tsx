@@ -280,7 +280,10 @@ function RegisterContent() {
         setError('');
 
         try {
-            await authService.register(formData);
+            await authService.register({
+                ...formData,
+                role: formData.role as 'mentor' | 'participant' | 'company' | 'specialist'
+            });
             toast.success(t('auth.registerSuccess'));
 
             if (typeof window !== 'undefined' && window.fbq) {
