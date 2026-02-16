@@ -1233,13 +1233,13 @@ export default function Home() {
               flex: '1 1 300px',
               maxWidth: '350px',
               position: 'relative',
-              minHeight: '500px',
+              minHeight: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '30px',
+              padding: '24px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1256,18 +1256,18 @@ export default function Home() {
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.free.name')}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '0.9rem' }}>{t('plans.free.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>{t('plans.free.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '1.5rem', color: '#fff', fontSize: '0.9rem' }}>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.fee')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f1')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f2')}</span>
               </div>
-              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '2rem' }}>
+              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem' }}>
                 {t('common.free') || 'Gratis'}
               </p>
               <Link href={isLoggedIn ? "/planos" : "/cadastro"} style={{
                 display: 'inline-block',
-                padding: '12px 0',
+                padding: '10px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: 'rgba(255,255,255,0.9)',
@@ -1292,13 +1292,13 @@ export default function Home() {
               flex: '1 1 300px',
               maxWidth: '350px',
               position: 'relative',
-              minHeight: '540px',
+              minHeight: '480px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '30px',
+              padding: '24px',
               textAlign: 'center',
               transform: 'scale(1.05)',
               zIndex: 2,
@@ -1372,14 +1372,14 @@ export default function Home() {
                 {t('plans.perMonth')}
               </p>
               <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.4 }}>{t('plans.pro.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.fee')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f1')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f2')}</div>
               </div>
               <Link href={isLoggedIn ? "/planos" : "/cadastro?plan=pro"} style={{
                 display: 'inline-block',
-                padding: '12px 0',
+                padding: '10px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: 'var(--gold-gradient)',
@@ -1404,13 +1404,13 @@ export default function Home() {
               flex: '1 1 300px',
               maxWidth: '350px',
               position: 'relative',
-              minHeight: '500px',
+              minHeight: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '30px',
+              padding: '24px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1452,8 +1452,8 @@ export default function Home() {
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
                 {t('plans.perMonth')}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem', lineHeight: 1.4 }}>{t('plans.enterprise.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.95rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.4 }}>{t('plans.enterprise.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
                 <div style={{ padding: '6px 16px', background: 'var(--gold-gradient)', color: '#000', borderRadius: '20px', width: '100%', maxWidth: '250px', fontWeight: 800 }}>{t('plans.enterprise.fee')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.enterprise.f1')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.enterprise.f2')}</div>
