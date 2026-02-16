@@ -87,7 +87,17 @@ const submitForm = async (req, res) => {
         console.log('[Submission] Submission saved successfully:', submission._id);
 
         // Notify Creator and Partners (Non-blocking)
-        const participantName = data.nome || data.name || (req.user ? req.user.name : 'Um novo participante');
+        // Try to find participant name in data with case-insensitive search
+        let participantName = data.nome || data.name;
+        if (!participantName) {
+            const nameKey = Object.keys(data).find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
+            if (nameKey) participantName = data[nameKey];
+        }
+
+        // Fallback to logged user name or default
+        if (!participantName) {
+            participantName = (req.user && req.user.name) ? req.user.name : 'Um novo participante';
+        }
         try {
             console.log('[Submission] Sending notification to creator:', form.creator);
             const recipients = [form.creator, ...(form.partners || [])];

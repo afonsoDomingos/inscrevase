@@ -690,6 +690,7 @@
         "minimalistHelp": "Clean and direct",
         "isPaidEvent": "Is this a paid event?",
         "priceLabel": "Value (Price)",
+        "currency": "Currency",
         "currencyLabel": "Currency",
         "paymentInstructions": "Payment Instructions",
         "requireProof": "Require payment proof on registration?",

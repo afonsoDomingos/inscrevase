@@ -724,6 +724,7 @@
         },
         "isPaidEvent": "Este é um evento pago?",
         "priceLabel": "Valor (Preço)",
+        "currency": "Moeda",
         "currencyLabel": "Moeda",
         "paymentInstructions": "Instruções de Pagamento",
         "requireProof": "Exigir comprovativo de pagamento na inscrição?",

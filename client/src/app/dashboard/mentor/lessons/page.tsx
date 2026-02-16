@@ -58,7 +58,7 @@ interface Lesson {
     views: number;
     createdAt: string;
     order?: number;
-    targetAudience?: 'mentors' | 'participants' | 'both';
+    targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
     // Client-side augmented props
     isCompleted?: boolean;
     isFavorite?: boolean;
@@ -122,7 +122,7 @@ export default function MentorLessonsPage() {
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
         order: 0,
-        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both',
+        targetAudience: 'mentors' as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all',
         associatedEvents: [] as string[],
         isLocked: false
     });
@@ -458,7 +458,7 @@ export default function MentorLessonsPage() {
                 category: lesson.category,
                 isPublished: lesson.isPublished,
                 order: lesson.order || 0,
-                targetAudience: lesson.targetAudience || 'mentors',
+                targetAudience: (lesson.targetAudience || 'mentors') as any,
                 associatedEvents: lesson.associatedEvents || [],
                 isLocked: lesson.isLocked || false
             });
@@ -473,7 +473,7 @@ export default function MentorLessonsPage() {
                 category: 'basico',
                 isPublished: false,
                 order: 0,
-                targetAudience: 'mentors',
+                targetAudience: 'mentors' as any,
                 associatedEvents: [],
                 isLocked: false
             });
@@ -731,7 +731,8 @@ export default function MentorLessonsPage() {
                                                         src={lesson.thumbnailUrl}
                                                         alt={lesson.title}
                                                         fill
-                                                        style={{ objectFit: 'cover' }}
+                                                        style={{ objectFit: 'cover', pointerEvents: 'none' }}
+                                                        unoptimized
                                                     />
                                                     <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
                                                 </div>
@@ -932,10 +933,24 @@ export default function MentorLessonsPage() {
                                                         padding: '4px 8px',
                                                         borderRadius: '8px',
                                                         fontWeight: '600',
-                                                        background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'participants' ? '#f3f4f6' : '#e0f2fe',
-                                                        color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'participants' ? '#4b5563' : '#0369a1'
+                                                        textTransform: 'uppercase',
+                                                        background: lesson.targetAudience === 'both' ? '#fef3c7' :
+                                                            lesson.targetAudience === 'mentors' ? '#e0f2fe' :
+                                                                lesson.targetAudience === 'companies' ? '#f3e8ff' :
+                                                                    lesson.targetAudience === 'specialists' ? '#fae8ff' :
+                                                                        lesson.targetAudience === 'all' ? '#dcfce7' : '#f3f4f6',
+                                                        color: lesson.targetAudience === 'both' ? '#92400e' :
+                                                            lesson.targetAudience === 'mentors' ? '#0369a1' :
+                                                                lesson.targetAudience === 'companies' ? '#6b21a8' :
+                                                                    lesson.targetAudience === 'specialists' ? '#86198f' :
+                                                                        lesson.targetAudience === 'all' ? '#166534' : '#4b5563',
+                                                        border: '1px solid transparent'
                                                     }}>
-                                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'participants' ? '👥 Participantes' : '🎓 Experts'}
+                                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
+                                                            lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
+                                                                lesson.targetAudience === 'companies' ? '🏢 Empresa' :
+                                                                    lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
+                                                                        lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
                                                     </span>
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
@@ -1279,15 +1294,28 @@ export default function MentorLessonsPage() {
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Público-Alvo</label>
                                         <select
                                             value={formData.targetAudience}
-                                            onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as 'mentors' | 'participants' | 'both' })}
+                                            onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' })}
                                             style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e0e0e0' }}
                                         >
-                                            <option value="mentors">Experts (Academia)</option>
-                                            <option value="participants">Participantes (Eventos)</option>
-                                            <option value="both">Ambos (Experts e Participantes)</option>
+                                            <option value="mentors">🎓 Experts (Academia)</option>
+                                            <option value="participants">👥 Participantes (Eventos)</option>
+                                            <option value="companies">🏢 Empresas</option>
+                                            <option value="specialists">⚡ Especialistas</option>
+                                            <option value="both">🔄 Experts e Participantes</option>
+                                            <option value="all">🌍 Todos os Públicos</option>
                                         </select>
                                         <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
-                                            Defina se esta aula é para treinamento de experts, para participantes ou para ambos.
+                                            {formData.targetAudience === 'mentors'
+                                                ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
+                                                : formData.targetAudience === 'participants'
+                                                    ? '👥 Visível para os participantes no dashboard deles.'
+                                                    : formData.targetAudience === 'companies'
+                                                        ? '🏢 Visível apenas para perfis de empresa.'
+                                                        : formData.targetAudience === 'specialists'
+                                                            ? '⚡ Visível apenas para especialistas.'
+                                                            : formData.targetAudience === 'all'
+                                                                ? '🌍 Visível para todos os tipos de usuários.'
+                                                                : '👥🎓 Visível para mentores e participantes.'}
                                         </p>
                                     </div>
                                     <div>
