@@ -1002,12 +1002,12 @@ export default function Home() {
       {/* Tesla-inspired Events Showcase (Original) */}
       < section style={{ padding: '0 20px 80px', background: '#fff' }}>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
           gap: '24px',
-          maxWidth: '1600px',
-          margin: '0 auto',
-          justifyContent: 'center'
+          maxWidth: '1100px',
+          margin: '0 auto'
         }}>
           {/* Block 1: Masterclasses */}
           <motion.div
@@ -1016,6 +1016,8 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
+              flex: '1 1 450px',
+              maxWidth: '540px',
               position: 'relative',
               height: '450px',
               borderRadius: '12px',
@@ -1075,6 +1077,8 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             style={{
+              flex: '1 1 450px',
+              maxWidth: '540px',
               position: 'relative',
               height: '450px',
               borderRadius: '12px',
