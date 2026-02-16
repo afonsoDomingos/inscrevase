@@ -71,10 +71,23 @@ if (googleClientId && googleClientSecret) {
                 const email = profile.emails[0].value;
                 user = await User.findOne({ email });
 
+                // Extract role from state
+                let role = 'mentor';
+                if (req.query.state) {
+                    try {
+                        const state = JSON.parse(req.query.state);
+                        if (state.role) role = state.role;
+                    } catch (e) {
+                        console.error("[Passport Google] Error parsing state:", e);
+                    }
+                }
+
                 if (user) {
                     user.googleId = profile.id;
                     user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
+                    // Update role if user already exists? Usually not, but for first-time social linking it might be okay.
+                    // For now, let's keep the existing role if they have one.
                     await user.save();
                     return done(null, user);
                 }
@@ -84,7 +97,7 @@ if (googleClientId && googleClientSecret) {
                     email: email,
                     googleId: profile.id,
                     profilePhoto: profile.photos[0].value,
-                    role: 'mentor',
+                    role: role,
                     password: '',
                     isEmailVerified: true,
                     country: await detectCountry(req, profile)
@@ -179,6 +192,17 @@ if (linkedinClientId && linkedinClientSecret) {
 
                 user = await User.findOne({ email });
 
+                // Extract role from state
+                let role = 'mentor';
+                if (req.query.state) {
+                    try {
+                        const state = JSON.parse(req.query.state);
+                        if (state.role) role = state.role;
+                    } catch (e) {
+                        console.error("[Passport LinkedIn] Error parsing state:", e);
+                    }
+                }
+
                 if (user) {
                     user.linkedinId = linkedinId;
                     user.isEmailVerified = true;
@@ -192,7 +216,7 @@ if (linkedinClientId && linkedinClientSecret) {
                     email: email,
                     linkedinId: linkedinId,
                     profilePhoto: photo,
-                    role: 'mentor',
+                    role: role,
                     password: '',
                     isEmailVerified: true,
                     country: await detectCountry(req, data)
