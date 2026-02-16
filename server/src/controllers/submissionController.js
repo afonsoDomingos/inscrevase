@@ -308,6 +308,50 @@ const updateStatus = async (req, res) => {
         }
         // -----------------------------------------------
 
+        // --- NOTIFY PARTICIPANT OF APPROVAL ---
+        if (status === 'approved') {
+            try {
+                // Find email in submission data if not linked to user
+                let participantEmail = null;
+                if (submission.user) {
+                    const user = await User.findById(submission.user);
+                    if (user) participantEmail = user.email;
+                }
+
+                if (!participantEmail) {
+                    const dataObj = Object.fromEntries(submission.data);
+                    const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                    for (const key of emailKeys) {
+                        if (dataObj[key]) {
+                            participantEmail = dataObj[key];
+                            break;
+                        }
+                    }
+                }
+
+                if (participantEmail) {
+                    const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${submission._id}`;
+                    const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
+                    const content = `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${submission.form.title}</strong>" foi aprovada com sucesso! Agora já tens acesso total ao Hub do Inscrito, onde poderás ver as aulas, descarregar materiais e (brevemente) obter o teu certificado.`;
+
+                    const emailHtml = generateBasicEmail(
+                        '✅ Inscrição Confirmada!',
+                        participantName,
+                        content,
+                        'Aceder ao Hub do Inscrito',
+                        hubUrl,
+                        '#28a745'
+                    );
+
+                    await sendEmail(participantEmail, `✅ Inscrição Confirmada: ${submission.form.title} - Inscreva-se`, emailHtml);
+                    console.log('[Submission] Approval email sent to:', participantEmail);
+                }
+            } catch (emailErr) {
+                console.error('[Submission] Error sending approval email:', emailErr);
+            }
+        }
+        // --------------------------------------
+
         await submission.save();
         res.json(submission);
     } catch (err) {

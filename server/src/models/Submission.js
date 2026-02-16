@@ -33,6 +33,8 @@ const SubmissionSchema = new mongoose.Schema({
         default: 'none'
     },
     certificateIssuedAt: { type: Date },
+    eventReminderSent: { type: Boolean, default: false },
+    completionIncentiveSent: { type: Boolean, default: false },
     submittedAt: { type: Date, default: Date.now }
 });
 

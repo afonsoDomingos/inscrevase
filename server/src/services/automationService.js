@@ -2,6 +2,8 @@ const cron = require('node-cron');
 const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Form = require('../models/Form');
+const Lesson = require('../models/Lesson');
+const LessonProgress = require('../models/LessonProgress');
 const sendEmail = require('../utils/emailService');
 const {
     generatePendingApprovalEmail,
@@ -267,6 +269,172 @@ const initAutomations = () => {
             }
         } catch (err) {
             console.error('❌ [Automation] High performance check error:', err);
+        }
+    });
+
+    // 7. Every hour: Event Reminder (24h before event starts)
+    cron.schedule('0 * * * *', async () => {
+        console.log('🔍 [Automation] Checking for upcoming events for reminders...');
+        try {
+            const now = new Date();
+            const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+            // Set range for the entire day of "tomorrow"
+            const startOfTomorrow = new Date(tomorrow);
+            startOfTomorrow.setHours(0, 0, 0, 0);
+
+            const endOfTomorrow = new Date(tomorrow);
+            endOfTomorrow.setHours(23, 59, 59, 999);
+
+            // Find events happening tomorrow
+            const upcomingEvents = await Form.find({
+                eventDate: { $gte: startOfTomorrow, $lte: endOfTomorrow },
+                active: true
+            });
+
+            for (const event of upcomingEvents) {
+                // Find approved submissions that haven't received reminder
+                const submissions = await Submission.find({
+                    form: event._id,
+                    status: 'approved',
+                    eventReminderSent: false
+                });
+
+                for (const sub of submissions) {
+                    let participantEmail = null;
+                    let participantName = sub.data.get('nome') || sub.data.get('name') || 'Participante';
+
+                    if (sub.user) {
+                        const user = await User.findById(sub.user);
+                        if (user) participantEmail = user.email;
+                    }
+
+                    if (!participantEmail) {
+                        const dataObj = Object.fromEntries(sub.data);
+                        const emailKeys = ['email', 'Email', 'e-mail', 'E-mail'];
+                        for (const key of emailKeys) {
+                            if (dataObj[key]) { participantEmail = dataObj[key]; break; }
+                        }
+                    }
+
+                    if (participantEmail) {
+                        const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${sub._id}`;
+                        const locationInfo = event.eventType === 'modeOnline' ? `Online (Link: ${event.onlineLink || 'Disponível no Hub'})` : (event.location || 'Local a definir');
+                        const content = `Olá ${participantName}! Falta apenas **24 horas** para o início do evento "<strong>${event.title}</strong>". Estamos muito entusiasmados por te receber!<br><br>📍 **Local/Acesso:** ${locationInfo}<br>⏰ **Horário:** ${event.eventTime || 'A definir'}<br><br>Todos os detalhes e materiais já estão disponíveis no teu Hub do Inscrito.`;
+
+                        const emailHtml = generateBasicEmail(
+                            '📅 Lembrete: É Amanhã!',
+                            participantName,
+                            content,
+                            'Aceder ao Hub do Evento',
+                            hubUrl,
+                            '#D4AF37'
+                        );
+
+                        await sendEmail(participantEmail, `📅 Lembrete: O evento ${event.title} é amanhã! - Inscreva-se`, emailHtml);
+                        sub.eventReminderSent = true;
+                        await sub.save();
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Event reminder error:', err);
+        }
+    });
+
+    // 8. Every 6 hours: Completion Incentive (80% progress reached)
+    cron.schedule('0 */6 * * *', async () => {
+        console.log('🔍 [Automation] Checking for participants needing a completion push...');
+        try {
+            // Find approved submissions that haven't received incentive and are linked to users
+            const submissions = await Submission.find({
+                status: 'approved',
+                completionIncentiveSent: false,
+                user: { $ne: null },
+                certificateStatus: 'none'
+            }).populate('form');
+
+            for (const sub of submissions) {
+                const lessons = await Lesson.find({ associatedEvents: sub.form._id }).select('_id');
+                if (lessons.length === 0) continue;
+
+                const completedCount = await LessonProgress.countDocuments({
+                    user: sub.user,
+                    lesson: { $in: lessons.map(l => l._id) },
+                    completed: true
+                });
+
+                const progressPercentage = (completedCount / lessons.length) * 100;
+
+                if (progressPercentage >= 80) {
+                    const user = await User.findById(sub.user);
+                    if (user && user.email) {
+                        const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${sub._id}`;
+                        const content = `Olá ${user.name}! Parabéns pela tua dedicação no evento "<strong>${sub.form.title}</strong>". Notamos que já completaste **${Math.round(progressPercentage)}%** das aulas! Falta muito pouco para garantires o teu certificado oficial. Que tal terminares as últimas aulas hoje e dares esse passo importante no teu currículo?`;
+
+                        const emailHtml = generateBasicEmail(
+                            '🎓 Quase lá! O teu certificado espera por ti',
+                            user.name,
+                            content,
+                            'Terminar Minhas Aulas',
+                            hubUrl,
+                            '#D4AF37'
+                        );
+
+                        await sendEmail(user.email, `🎓 Estás a 80% do teu certificado: ${sub.form.title} - Inscreva-se`, emailHtml);
+                        sub.completionIncentiveSent = true;
+                        await sub.save();
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Completion incentive error:', err);
+        }
+    });
+
+    // 9. Every 24 hours: Mentor Reactivation (Inactive for 30 days)
+    cron.schedule('0 11 * * *', async () => {
+        console.log('🔍 [Automation] Checking for inactive mentors to reactivate...');
+        try {
+            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+            // Mentors who haven't received a nudge recently (or ever) and were created > 30 days ago
+            const inactiveMentors = await User.find({
+                role: 'mentor',
+                createdAt: { $lt: thirtyDaysAgo },
+                $or: [
+                    { lastReactivationNudgeAt: { $lt: thirtyDaysAgo } },
+                    { lastReactivationNudgeAt: { $exists: false } }
+                ]
+            });
+
+            for (const mentor of inactiveMentors) {
+                // Check if they created any form in the last 30 days
+                const recentForm = await Form.findOne({
+                    creator: mentor._id,
+                    createdAt: { $gte: thirtyDaysAgo }
+                });
+
+                if (!recentForm) {
+                    const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                    const content = `Olá ${mentor.name}! Sentimos a tua falta no <strong>Inscreva-se</strong>. O mundo nunca parou de precisar de conhecimento, e o teu é valioso! Sabias que as tendências de mercado indicam uma alta procura por mentorias este mês? Que tal lançares um novo workshop ou masterclass e reconectares com a tua audiência?<br><br>💡 **Dica:** Pequenos webinars gratuitos são ótimos para reaquecer os teus alunos antes de um lançamento maior!`;
+
+                    const emailHtml = generateBasicEmail(
+                        '💤 Sentimos a tua falta! Vamos criar algo novo?',
+                        mentor.name,
+                        content,
+                        'Criar Novo Evento',
+                        dashboardUrl,
+                        '#D4AF37'
+                    );
+
+                    await sendEmail(mentor.email, '💤 Volta a impactar: Sentimos a tua falta! - Inscreva-se', emailHtml);
+                    mentor.lastReactivationNudgeAt = new Date();
+                    await mentor.save();
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Mentor reactivation error:', err);
         }
     });
 };

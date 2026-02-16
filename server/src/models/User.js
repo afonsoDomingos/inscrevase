@@ -47,6 +47,7 @@ const UserSchema = new mongoose.Schema({
     referralCount: { type: Number, default: 0 },
     onboardingNudgeSent: { type: Boolean, default: false },
     receivedFirstSubmissionNudge: { type: Boolean, default: false },
+    lastReactivationNudgeAt: { type: Date },
     createdAt: { type: Date, default: Date.now }
 });
 
