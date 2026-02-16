@@ -458,7 +458,7 @@ export default function MentorLessonsPage() {
                 category: lesson.category,
                 isPublished: lesson.isPublished,
                 order: lesson.order || 0,
-                targetAudience: (lesson.targetAudience || 'mentors') as any,
+                targetAudience: lesson.targetAudience || 'mentors',
                 associatedEvents: lesson.associatedEvents || [],
                 isLocked: lesson.isLocked || false
             });
@@ -473,7 +473,7 @@ export default function MentorLessonsPage() {
                 category: 'basico',
                 isPublished: false,
                 order: 0,
-                targetAudience: 'mentors' as any,
+                targetAudience: 'mentors',
                 associatedEvents: [],
                 isLocked: false
             });

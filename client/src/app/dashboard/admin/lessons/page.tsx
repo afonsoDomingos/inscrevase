@@ -254,7 +254,7 @@ export default function AdminLessonsPage() {
                 category: lesson.category,
                 isPublished: lesson.isPublished,
                 order: lesson.order,
-                targetAudience: (lesson.targetAudience || 'mentors') as any
+                targetAudience: lesson.targetAudience || 'mentors'
             });
         } else {
             setEditingLesson(null);
@@ -267,7 +267,7 @@ export default function AdminLessonsPage() {
                 category: 'basico',
                 isPublished: false,
                 order: 0,
-                targetAudience: 'mentors' as any
+                targetAudience: 'mentors'
             });
         }
         setShowModal(true);
@@ -962,7 +962,7 @@ export default function AdminLessonsPage() {
                                     </label>
                                     <select
                                         value={formData.targetAudience}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as any }))}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
                                         style={{
                                             width: '100%',
                                             padding: '12px',

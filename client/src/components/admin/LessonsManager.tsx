@@ -250,7 +250,7 @@ export default function LessonsManager() {
                 category: lesson.category,
                 isPublished: lesson.isPublished,
                 order: lesson.order,
-                targetAudience: (lesson.targetAudience || 'mentors') as any
+                targetAudience: lesson.targetAudience || 'mentors'
             });
         } else {
             setEditingLesson(null);
@@ -968,7 +968,7 @@ export default function LessonsManager() {
                                     </label>
                                     <select
                                         value={formData.targetAudience}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as any }))}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
                                         style={{
                                             width: '100%',
                                             padding: '12px',

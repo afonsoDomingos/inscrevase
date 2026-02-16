@@ -59,7 +59,7 @@ function RegisterContent() {
         password: string;
         businessName: string;
         country: string;
-        role: 'mentor' | 'participant' | 'company' | 'specialist';
+        role: 'mentor' | 'participant' | 'company' | 'specialist' | '';
         referralCode?: string;
     }>({
         name: '',
@@ -67,7 +67,7 @@ function RegisterContent() {
         password: '',
         businessName: '',
         country: '',
-        role: (initialRole as 'mentor' | 'participant' | 'company' | 'specialist') || '' as any,
+        role: (initialRole as 'mentor' | 'participant' | 'company' | 'specialist') || '',
         referralCode: referralCode || ''
     });
 
