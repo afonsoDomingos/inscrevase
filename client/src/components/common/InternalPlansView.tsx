@@ -166,56 +166,56 @@ export default function InternalPlansView() {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
                 {/* Free Plan */}
-                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--paper)', border: '1px solid var(--border)' }}>
-                    <div style={{ marginBottom: '2rem' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>Free</h3>
+                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', background: 'var(--paper)', border: '1px solid var(--border)', padding: '2rem' }}>
+                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Free</h3>
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('plans.free.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900 }}>{t('common.free')}</div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.free.fee').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.unlimitedForms')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.participantManagement')}</li>
+                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.free.fee').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.unlimitedForms')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.participantManagement')}</li>
                     </ul>
                     <button
                         disabled={user?.plan === 'free'}
-                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'var(--muted)', color: 'var(--text-muted)', border: 'none', fontWeight: 700 }}
+                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--muted)', color: 'var(--text-muted)', border: 'none', fontWeight: 700, fontSize: '0.9rem' }}
                     >
                         {user?.plan === 'free' ? t('plans.currentPlan') : t('plans.standardPlan')}
                     </button>
                 </motion.div>
 
                 {/* Pro Plan */}
-                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--primary)', background: 'var(--paper)', position: 'relative' }}>
-                    <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--gold-gradient)', color: '#000', padding: '4px 12px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 900 }}>{t('common.recommended')}</div>
-                    <div style={{ marginBottom: '2rem' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>Pro</h3>
+                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', border: '2px solid var(--primary)', background: 'var(--paper)', position: 'relative', transform: 'scale(1.05)', zIndex: 2, padding: '2.5rem 2rem' }}>
+                    <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: '#000', padding: '6px 16px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 900, boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)' }}>{t('common.recommended')}</div>
+                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--primary)' }}>Pro</h3>
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('plans.pro.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900 }}>
-                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6 }}>{t('plans.perMonth')}</span>
+                    <div style={{ marginBottom: '2rem', fontSize: '3rem', fontWeight: 900, textAlign: 'center', color: 'var(--primary)' }}>
+                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--text-foreground)' }}>{t('plans.perMonth')}</span>
                     </div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}><Zap size={18} color="#B8860B" /> {t('dashboard.plans.f1').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('dashboard.plans.f2').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.pro.f1').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.pro.f2').replace('• ', '')}</li>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}><Zap size={18} color="#D4AF37" /> {t('dashboard.plans.f1').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('dashboard.plans.f2').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('plans.pro.f1').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('plans.pro.f2').replace('• ', '')}</li>
                     </ul>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <button
                             onClick={() => handleSubscribe('pro')}
                             disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
                             className="btn-primary"
-                            style={{ width: '100%', borderRadius: '12px' }}
+                            style={{ width: '100%', borderRadius: '8px', padding: '1rem', fontSize: '1rem' }}
                         >
-                            {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'pro' ? t('plans.currentPlan') : t('plans.payWithCardStripe'))}
+                            {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'pro' ? t('plans.currentPlan') : t('plans.pro.cta'))}
                         </button>
                         {user?.plan !== 'pro' && (
                             <button
                                 onClick={() => setIsUpgradeModalOpen(true)}
-                                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontWeight: 600, cursor: 'pointer' }}
+                                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
                             >
                                 {t('plans.alternativePayment')}
                             </button>
@@ -224,35 +224,35 @@ export default function InternalPlansView() {
                 </motion.div>
 
                 {/* Enterprise Plan */}
-                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--secondary)', color: 'var(--paper)', border: 'none' }}>
-                    <div style={{ marginBottom: '2rem' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--paper)' }}>Enterprise</h3>
+                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', background: 'var(--secondary)', color: 'var(--paper)', border: 'none', padding: '2rem' }}>
+                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--paper)' }}>Enterprise</h3>
                         <p style={{ opacity: 0.7, fontSize: '0.9rem' }}>{t('plans.enterprise.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, color: '#FFD700' }}>
+                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
                         {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--paper)' }}>{t('plans.perMonth')}</span>
                     </div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 900, color: '#FFD700' }}><Crown size={18} /> {t('plans.enterprise.fee').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><ShieldCheck size={18} /> {t('plans.enterprise.f1').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><ShieldCheck size={18} /> {t('plans.enterprise.f2').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} /> {t('plans.apiIntegration')}</li>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 900, color: '#FFD700' }}><Crown size={16} /> {t('plans.enterprise.fee').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><ShieldCheck size={16} /> {t('plans.enterprise.f1').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><ShieldCheck size={16} /> {t('plans.enterprise.f2').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} /> {t('plans.apiIntegration')}</li>
                     </ul>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <button
                             onClick={() => handleSubscribe('enterprise')}
                             disabled={loadingPlan === 'enterprise' || user?.plan === 'enterprise'}
-                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'var(--paper)', color: 'var(--secondary)', border: 'none', fontWeight: 900, cursor: 'pointer' }}
+                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--paper)', color: 'var(--secondary)', border: 'none', fontWeight: 900, cursor: 'pointer', fontSize: '0.9rem' }}
                         >
-                            {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'enterprise' ? t('plans.currentPlan') : t('plans.payWithCardStripe'))}
+                            {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'enterprise' ? t('plans.currentPlan') : t('plans.enterprise.cta'))}
                         </button>
                         {user?.plan !== 'enterprise' && (
                             <button
                                 onClick={() => setIsUpgradeModalOpen(true)}
                                 style={{
-                                    width: '100%', padding: '0.8rem', borderRadius: '12px',
+                                    width: '100%', padding: '0.8rem', borderRadius: '8px',
                                     background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-                                    color: '#fff', fontWeight: 600, cursor: 'pointer'
+                                    color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem'
                                 }}
                             >
                                 {t('plans.alternativePayment')}
