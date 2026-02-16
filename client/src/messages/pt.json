@@ -74,8 +74,8 @@
         "visibility": "Visibilidade",
         "public": "Público",
         "private": "Privado",
-        "viewPublicForm": "Ver Formulário Público",
-        "viewEventHub": "Ver Hub do Evento",
+        "viewPublicForm": "Ver Página Pública",
+        "viewEventHub": "Ver Hub do Inscrito",
         "link": "Link",
         "confirmDelete": "Tem certeza que deseja excluir?",
         "customizeTheme": "Personalizar Tema",
@@ -646,6 +646,16 @@
             "soldOutBadge": "VAGAS ESGOTADAS",
             "extraCapacityTitle": "VAGAS INICIAIS ESGOTADAS!",
             "extraCapacityDesc": "O mentor liberou algumas vagas extras. Garanta a sua agora!"
+        },
+        "successHelp": {
+            "public": {
+                "title": "Página Pública",
+                "description": "É o link que você compartilha com o público. É onde as pessoas verão as informações do evento e farão a inscrição."
+            },
+            "hub": {
+                "title": "Hub do Inscrito",
+                "description": "É a área logada do participante. Após a inscrição, é aqui que eles acessam as aulas, materiais e o certificado do evento."
+            }
         },
         "createEvent": "Criar Evento",
         "editEvent": "Editar Evento",

@@ -66,6 +66,8 @@
         "view": "View",
         "active": "Active",
         "inactive": "Inactive",
+        "viewPublicForm": "View Public Page",
+        "viewEventHub": "View Participant Hub",
         "actions": "Actions",
         "link": "Link",
         "confirmDelete": "Are you sure you want to delete?",
@@ -623,6 +625,16 @@
             "registrationsClosed": "REGISTRATIONS CLOSED",
             "capacityReachedDesc": "This event has reached maximum capacity. Stay tuned for future editions!",
             "vipGroup": "JOIN VIP GROUP"
+        },
+        "successHelp": {
+            "public": {
+                "title": "Public Page",
+                "description": "This is the link you share with the public. It's where people will see the event information and register."
+            },
+            "hub": {
+                "title": "Participant Hub",
+                "description": "This is the logged-in area for the participant. After registration, this is where they access lessons, materials, and the event certificate."
+            }
         },
         "createEvent": "Create Event",
         "editEvent": "Edit Event",
