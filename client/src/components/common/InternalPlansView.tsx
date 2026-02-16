@@ -198,8 +198,8 @@ export default function InternalPlansView() {
                         {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6 }}>{t('plans.perMonth')}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}><Zap size={18} color="#B8860B" /> {t('plans.f1').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.f2').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}><Zap size={18} color="#B8860B" /> {t('dashboard.plans.f1').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('dashboard.plans.f2').replace('• ', '')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.pro.f1').replace('• ', '')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#B8860B" /> {t('plans.pro.f2').replace('• ', '')}</li>
                     </ul>
