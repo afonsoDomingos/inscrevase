@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useTranslate } from '@/context/LanguageContext';
 import Image from 'next/image';
-import { Bell, BarChart2, FileText, Headphones, ArrowRight, Zap, LucideIcon } from 'lucide-react';
+import { BarChart2, FileText, Headphones, Zap, LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 
 interface FeatureCardProps {
