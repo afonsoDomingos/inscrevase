@@ -1017,13 +1017,13 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
               position: 'relative',
-              height: '600px',
+              height: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '60px',
+              padding: '40px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1040,7 +1040,7 @@ export default function Home() {
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landing.showcase.masterclasses.title')}</h2>
-              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.masterclasses.description')}</p>
+              <p style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.masterclasses.description')}</p>
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
                   padding: '12px 60px',
@@ -1076,13 +1076,13 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             style={{
               position: 'relative',
-              height: '600px',
+              height: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '60px',
+              padding: '40px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1099,7 +1099,7 @@ export default function Home() {
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landing.showcase.gala.title')}</h2>
-              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.gala.description')}</p>
+              <p style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.gala.description')}</p>
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                   padding: '12px 60px',
