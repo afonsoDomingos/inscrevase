@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useTranslate } from '@/context/LanguageContext';
 import {
     GraduationCap,
@@ -108,8 +109,11 @@ export default function SectorsSection() {
     );
 }
 
+
+
 function SectorCard({ icon: Icon, titleKey, descriptionKey, color, delay }: SectorCardProps) {
     const { t } = useTranslate();
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
         <motion.div
@@ -129,26 +133,44 @@ function SectorCard({ icon: Icon, titleKey, descriptionKey, color, delay }: Sect
                 overflow: 'hidden'
             }}
             whileHover={{ y: -10, borderColor: `${color}40`, boxShadow: `0 20px 40px -10px ${color}15` }}
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
         >
-            <div style={{
-                marginBottom: '20px',
-                background: `${color}15`,
-                width: '60px',
-                height: '60px',
-                borderRadius: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: color
-            }}>
-                <Icon size={30} strokeWidth={1.5} />
+            {/* Gradient Overlay */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: `linear-gradient(135deg, ${color}25 0%, transparent 100%)`,
+                    zIndex: 0,
+                    pointerEvents: 'none'
+                }}
+            />
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{
+                    marginBottom: '20px',
+                    background: `${color}15`,
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: color
+                }}>
+                    <Icon size={30} strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', marginBottom: '10px' }}>
+                    {t(titleKey)}
+                </h3>
+                <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.6 }}>
+                    {t(descriptionKey)}
+                </p>
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', marginBottom: '10px' }}>
-                {t(titleKey)}
-            </h3>
-            <p style={{ color: '#888', fontSize: '0.95rem', lineHeight: 1.6 }}>
-                {t(descriptionKey)}
-            </p>
 
             {/* Hover dash at bottom */}
             <div className="hover-line" style={{
@@ -158,7 +180,8 @@ function SectorCard({ icon: Icon, titleKey, descriptionKey, color, delay }: Sect
                 width: '0%',
                 height: '3px',
                 background: color,
-                transition: 'width 0.4s ease'
+                transition: 'width 0.4s ease',
+                zIndex: 2
             }} />
 
             <style jsx>{`

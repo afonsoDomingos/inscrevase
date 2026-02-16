@@ -52,6 +52,28 @@
                 "title": "Communities & NGOs",
                 "description": "Community gatherings, fundraising, and volunteering."
             }
+        },
+        "communicationHub": {
+            "title": "Everything you need in one place",
+            "subtitle": "in customer communication",
+            "cards": {
+                "notifications": {
+                    "title": "Real-time Notifications",
+                    "description": "Send alerts and updates instantly."
+                },
+                "stats": {
+                    "title": "Detailed Statistics",
+                    "description": "Visualize detailed engagement metrics."
+                },
+                "reports": {
+                    "title": "Full Reports",
+                    "description": "Export complete data for analysis."
+                },
+                "support": {
+                    "title": "24/7 Support",
+                    "description": "Team ready to assist at any moment."
+                }
+            }
         }
     },
     "common": {

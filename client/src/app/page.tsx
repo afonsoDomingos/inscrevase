@@ -21,6 +21,7 @@ import SponsoredAdCard from "@/components/home/SponsoredAdCard";
 import Typewriter from "@/components/common/Typewriter";
 import { publicService, PublicImpactStats } from "@/lib/publicService";
 import SectorsSection from "@/components/home/SectorsSection";
+import CommunicationHubSection from "@/components/home/CommunicationHubSection";
 
 
 const galleryImages = [
@@ -557,6 +558,7 @@ export default function Home() {
       </section>
 
       <SectorsSection />
+      <CommunicationHubSection />
 
 
 

@@ -56,6 +56,28 @@
                 "title": "Comunidades & ONGs",
                 "description": "Encontros comunitários, angariação de fundos e voluntariado."
             }
+        },
+        "communicationHub": {
+            "title": "Tudo o que você precisa em um só lugar",
+            "subtitle": "na comunicação com o cliente",
+            "cards": {
+                "notifications": {
+                    "title": "Notificações Reais",
+                    "description": "Envie alertas e novidades em tempo real."
+                },
+                "stats": {
+                    "title": "Estatísticas",
+                    "description": "Visualize métricas de engajamento detalhadas."
+                },
+                "reports": {
+                    "title": "Relatórios",
+                    "description": "Exporte dados completos para análise."
+                },
+                "support": {
+                    "title": "Suporte 24/7",
+                    "description": "Equipa pronta para auxiliar em qualquer momento."
+                }
+            }
         }
     },
     "common": {
