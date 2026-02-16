@@ -1216,12 +1216,12 @@ export default function Home() {
         </div>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
           gap: '24px',
-          maxWidth: '1600px',
-          margin: '0 auto',
-          justifyContent: 'center'
+          maxWidth: '1100px',
+          margin: '0 auto'
         }}>
           {/* Package 1: Free */}
           <motion.div
@@ -1230,15 +1230,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             style={{
+              flex: '1 1 300px',
+              maxWidth: '350px',
               position: 'relative',
-              height: 'auto',
-              minHeight: 'clamp(480px, 80vh, 520px)',
+              minHeight: '500px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: 'clamp(15px, 4vw, 30px)',
+              padding: '30px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1251,11 +1252,11 @@ export default function Home() {
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
-              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.free.name')}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>{t('plans.free.description')}</p>
+              <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.free.name')}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '0.9rem' }}>{t('plans.free.description')}</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.fee')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f1')}</span>
@@ -1288,16 +1289,20 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
             style={{
+              flex: '1 1 300px',
+              maxWidth: '350px',
               position: 'relative',
-              height: 'auto',
-              minHeight: 'clamp(500px, 85vh, 540px)',
+              minHeight: '540px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: 'clamp(15px, 4vw, 30px)',
-              textAlign: 'center'
+              padding: '30px',
+              textAlign: 'center',
+              transform: 'scale(1.05)',
+              zIndex: 2,
+              boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
             }}
             className="gold-shimmer-sweep"
             onMouseMove={handleMouseMove}
@@ -1309,7 +1314,7 @@ export default function Home() {
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <div style={{
@@ -1325,6 +1330,8 @@ export default function Home() {
               }}>
                 {t('plans.pro.badge')}
               </div>
+              <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.pro.name')}</h3>
+
               <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 🔥 {t('plans.limitedOffer') || 'Oferta por tempo limitado'}
               </div>
@@ -1332,7 +1339,7 @@ export default function Home() {
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontWeight: 500, textDecoration: 'line-through' }}>
                   {formatPrice(45, 'USD', currency)}
                 </span>
-                <p style={{ color: '#fff', fontSize: 'clamp(1.8rem, 5vw, 2.2rem)', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                <p style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('pro'), currency, currency)}
                 </p>
                 <div style={{
@@ -1364,8 +1371,8 @@ export default function Home() {
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
                 {t('plans.perMonth')}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem', lineHeight: 1.4 }}>{t('plans.pro.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.95rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.4 }}>{t('plans.pro.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.9rem' }}>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.fee')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f1')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f2')}</div>
@@ -1394,15 +1401,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
             style={{
+              flex: '1 1 300px',
+              maxWidth: '350px',
               position: 'relative',
-              height: 'auto',
-              minHeight: 'clamp(480px, 80vh, 520px)',
+              minHeight: '500px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: 'clamp(15px, 4vw, 30px)',
+              padding: '30px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1415,9 +1423,10 @@ export default function Home() {
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
+              <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.enterprise.name')}</h3>
               <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 👑 {t('plans.exclusiveAccess') || 'Acesso Exclusivo'}
               </div>
@@ -1425,7 +1434,7 @@ export default function Home() {
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: 500, textDecoration: 'line-through' }}>
                   {formatPrice(450, 'USD', currency)}
                 </span>
-                <p style={{ color: '#fff', fontSize: 'clamp(1.6rem, 5vw, 2rem)', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                <p style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('enterprise'), currency, currency)}
                 </p>
                 <div style={{
