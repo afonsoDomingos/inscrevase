@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, Image as ImageIcon, User as UserIcon } from 'lucide-react';
+import { X, MessageSquare, Plus, Send, Loader2, LifeBuoy, Paperclip, FileText, Image as ImageIcon, User as UserIcon, Headphones, GraduationCap, CheckCircle2 as CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supportService, Ticket } from '@/lib/supportService';
 import { useTranslate } from '@/context/LanguageContext';
@@ -348,24 +348,207 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                     <div style={{ padding: isMobile ? '1.5rem' : '3rem', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
                                         <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 700, marginBottom: isMobile ? '1.5rem' : '2rem' }}>{t('support.openNewTicket')}</h2>
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            {/* Recipient Selection */}
-                                            {mode === 'user' && !targetMentorId && availableMentors.length > 0 && (
+                                            {/* Recipient Selection - Visual Cards */}
+                                            {mode === 'user' && !targetMentorId && (
                                                 <div>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Para quem é a mensagem?</label>
-                                                    <select
-                                                        value={selectedRecipient}
-                                                        onChange={(e) => setSelectedRecipient(e.target.value)}
-                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff', cursor: 'pointer' }}
+                                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '1rem', fontSize: '1.05rem', color: '#111' }}>
+                                                        Para quem você quer enviar?
+                                                    </label>
+
+                                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+                                                        {/* Platform Support Card */}
+                                                        <motion.button
+                                                            type="button"
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                            onClick={() => setSelectedRecipient('platform')}
+                                                            style={{
+                                                                padding: '1.5rem',
+                                                                borderRadius: '16px',
+                                                                border: selectedRecipient === 'platform' ? '3px solid #FFD700' : '2px solid #e5e7eb',
+                                                                background: selectedRecipient === 'platform' ? 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)' : '#fff',
+                                                                cursor: 'pointer',
+                                                                textAlign: 'left',
+                                                                position: 'relative',
+                                                                transition: 'all 0.3s ease',
+                                                                boxShadow: selectedRecipient === 'platform' ? '0 8px 20px rgba(218, 165, 32, 0.2)' : '0 2px 8px rgba(0,0,0,0.05)'
+                                                            }}
+                                                        >
+                                                            {selectedRecipient === 'platform' && (
+                                                                <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#059669', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    <CheckCircle size={16} />
+                                                                </div>
+                                                            )}
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                                                <div style={{
+                                                                    width: '48px',
+                                                                    height: '48px',
+                                                                    borderRadius: '12px',
+                                                                    background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                                                                }}>
+                                                                    <Headphones size={24} color="#FFD700" />
+                                                                </div>
+                                                                <div>
+                                                                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#111', marginBottom: '2px' }}>
+                                                                        Suporte da Plataforma
+                                                                    </div>
+                                                                    <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 500 }}>
+                                                                        Equipe Inscreva.se
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: '1.5' }}>
+                                                                💡 Problemas técnicos, pagamentos, bugs ou dúvidas sobre a plataforma
+                                                            </div>
+                                                        </motion.button>
+
+                                                        {/* Mentors Card - Only show if there are mentors */}
+                                                        {availableMentors.length > 0 && (
+                                                            <motion.button
+                                                                type="button"
+                                                                whileHover={{ scale: 1.02 }}
+                                                                whileTap={{ scale: 0.98 }}
+                                                                onClick={() => {
+                                                                    // If only one mentor, select them directly
+                                                                    if (availableMentors.length === 1) {
+                                                                        setSelectedRecipient(availableMentors[0]._id);
+                                                                    } else {
+                                                                        // Show mentor selection (we'll set to first mentor by default)
+                                                                        setSelectedRecipient(availableMentors[0]._id);
+                                                                    }
+                                                                }}
+                                                                style={{
+                                                                    padding: '1.5rem',
+                                                                    borderRadius: '16px',
+                                                                    border: selectedRecipient !== 'platform' ? '3px solid #FFD700' : '2px solid #e5e7eb',
+                                                                    background: selectedRecipient !== 'platform' ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : '#fff',
+                                                                    cursor: 'pointer',
+                                                                    textAlign: 'left',
+                                                                    position: 'relative',
+                                                                    transition: 'all 0.3s ease',
+                                                                    boxShadow: selectedRecipient !== 'platform' ? '0 8px 20px rgba(218, 165, 32, 0.2)' : '0 2px 8px rgba(0,0,0,0.05)'
+                                                                }}
+                                                            >
+                                                                {selectedRecipient !== 'platform' && (
+                                                                    <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#059669', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        <CheckCircle size={16} />
+                                                                    </div>
+                                                                )}
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                                                    <div style={{
+                                                                        width: '48px',
+                                                                        height: '48px',
+                                                                        borderRadius: '12px',
+                                                                        background: 'linear-gradient(135deg, #b45309 0%, #92400e 100%)',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        boxShadow: '0 4px 12px rgba(180, 83, 9, 0.3)'
+                                                                    }}>
+                                                                        <GraduationCap size={24} color="#FFD700" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#111', marginBottom: '2px' }}>
+                                                                            Meus Mentores
+                                                                        </div>
+                                                                        <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 500 }}>
+                                                                            {availableMentors.length} {availableMentors.length === 1 ? 'mentor disponível' : 'mentores disponíveis'}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: '1.5' }}>
+                                                                    📚 Dúvidas sobre aulas, conteúdo, eventos ou certificados
+                                                                </div>
+                                                            </motion.button>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Mentor Selection Dropdown - Show only if mentor option is selected and there are multiple mentors */}
+                                                    {selectedRecipient !== 'platform' && availableMentors.length > 1 && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                            transition={{ duration: 0.3 }}
+                                                            style={{ overflow: 'hidden' }}
+                                                        >
+                                                            <div style={{ marginTop: '1rem', padding: '1rem', background: '#fef3c7', borderRadius: '12px', border: '2px solid #fde68a' }}>
+                                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.75rem', fontSize: '0.9rem', color: '#92400e' }}>
+                                                                    👨‍🏫 Selecione o mentor:
+                                                                </label>
+                                                                <select
+                                                                    value={selectedRecipient}
+                                                                    onChange={(e) => setSelectedRecipient(e.target.value)}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        padding: '0.875rem',
+                                                                        borderRadius: '10px',
+                                                                        border: '2px solid #fbbf24',
+                                                                        outline: 'none',
+                                                                        background: '#fff',
+                                                                        cursor: 'pointer',
+                                                                        fontSize: '0.95rem',
+                                                                        fontWeight: 600,
+                                                                        color: '#111'
+                                                                    }}
+                                                                >
+                                                                    {availableMentors.map(mentor => (
+                                                                        <option key={mentor._id} value={mentor._id}>
+                                                                            {mentor.businessName || mentor.name}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+
+                                                    {/* Preview Card - Shows who will receive the ticket */}
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: -10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.2 }}
+                                                        style={{
+                                                            marginTop: '1rem',
+                                                            padding: '1rem',
+                                                            background: '#f0fdf4',
+                                                            borderRadius: '12px',
+                                                            border: '2px solid #86efac',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '10px'
+                                                        }}
                                                     >
-                                                        <option value="platform">Equipe Inscreva.se (Suporte Geral)</option>
-                                                        <optgroup label="Meus Mentores">
-                                                            {availableMentors.map(mentor => (
-                                                                <option key={mentor._id} value={mentor._id}>
-                                                                    {mentor.businessName || mentor.name}
-                                                                </option>
-                                                            ))}
-                                                        </optgroup>
-                                                    </select>
+                                                        <div style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            borderRadius: '8px',
+                                                            background: '#059669',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            {selectedRecipient === 'platform' ? (
+                                                                <Headphones size={20} color="#fff" />
+                                                            ) : (
+                                                                <GraduationCap size={20} color="#fff" />
+                                                            )}
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontSize: '0.75rem', color: '#047857', fontWeight: 600, marginBottom: '2px' }}>
+                                                                📨 Seu ticket será enviado para:
+                                                            </div>
+                                                            <div style={{ fontSize: '0.9rem', color: '#065f46', fontWeight: 700 }}>
+                                                                {selectedRecipient === 'platform'
+                                                                    ? 'Equipe de Suporte Inscreva.se'
+                                                                    : availableMentors.find(m => m._id === selectedRecipient)?.businessName || availableMentors.find(m => m._id === selectedRecipient)?.name || 'Mentor'}
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
                                                 </div>
                                             )}
 
