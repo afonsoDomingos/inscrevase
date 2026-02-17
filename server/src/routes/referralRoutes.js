@@ -14,6 +14,7 @@ router.post('/social-points', authMiddleware, referralController.awardSocialPoin
 
 // Protected (Admin)
 router.get('/admin/ranking', authMiddleware, adminMiddleware, referralController.getAdminRanking);
+router.get('/admin/user-referrals/:userId', authMiddleware, adminMiddleware, referralController.getAdminUserReferrals);
 router.post('/admin/reward', authMiddleware, adminMiddleware, referralController.assignReward);
 
 module.exports = router;

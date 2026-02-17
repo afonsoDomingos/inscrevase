@@ -90,5 +90,14 @@ export const referralService = {
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Erro ao atribuir pontos sociais');
         return data;
+    },
+
+    async getAdminUserReferrals(userId: string): Promise<{ user: any, history: ReferralHistory[] }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/referrals/admin/user-referrals/${userId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Erro ao buscar auditoria de convites');
+        return response.json();
     }
 };

@@ -205,6 +205,90 @@ const generateReferralBonusEmail = (name, referrerName, points, dashboardUrl) =>
     `;
 };
 
+const generateReferralPointsEarnedEmail = (name, referredName, points, totalPoints, dashboardUrl) => {
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #D4AF37 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Nova Conquista de Impacto! 🚀</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Parabéns, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Seu impacto na comunidade continua a crescer! Recebemos uma nova indicação através do seu convite: <strong>${referredName}</strong> acaba de se juntar a nós.
+                    </p>
+
+                    <div style="text-align: center; margin: 25px 0;">
+                        <span style="font-size: 48px; font-weight: 900; color: #D4AF37;">+${points}</span>
+                        <p style="font-size: 14px; color: #666; font-weight: bold; text-transform: uppercase; margin-top: 5px;">Pontos Adicionados</p>
+                    </div>
+
+                    <p style="font-size: 16px; color: #333; text-align: center; font-weight: 700;">
+                        Balanço Atual: <span style="color: #D4AF37;">${totalPoints} Pontos</span>
+                    </p>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6; margin-top: 20px;">
+                        Continue a partilhar o seu link e a transformar vidas. Cada indicação aproxima-o de novos níveis de influência e recompensas exclusivas na nossa plataforma. Estamos muito orgulhosos do seu percurso!
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Ver Meu Ranking
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateSocialPointsEmail = (name, missionName, points, totalPoints, dashboardUrl) => {
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #10b981 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Missão Cumprida! 🎯</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #10b981;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Excelente trabalho, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Você completou com sucesso a missão: <strong>${missionName}</strong>. Sua dedicação é inspiradora!
+                    </p>
+
+                    <div style="text-align: center; margin: 25px 0;">
+                        <span style="font-size: 48px; font-weight: 900; color: #10b981;">+${points}</span>
+                        <p style="font-size: 14px; color: #666; font-weight: bold; text-transform: uppercase; margin-top: 5px;">Pontos Conquistados</p>
+                    </div>
+
+                    <p style="font-size: 16px; color: #333; text-align: center; font-weight: 700;">
+                        Novo Saldo: <span style="color: #10b981;">${totalPoints} Pontos</span>
+                    </p>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6; margin-top: 20px;">
+                        Continue a participar nas nossas iniciativas. Cada ponto acumula para o seu crescimento pessoal e profissional dentro da Inscreva.se. Mantenha esse foco!
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Ir para o Ranking
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 const generateSubscriptionConfirmationEmail = (name, planName, dashboardUrl) => {
     const isEnterprise = planName.toLowerCase() === 'enterprise';
     const accentColor = isEnterprise ? "#000000" : "#D4AF37";
@@ -373,11 +457,46 @@ const generatePaymentRejectedEmail = (name, planName, dashboardUrl) => {
     `;
 };
 
+const generateAdminPointsNotificationEmail = (userName, userEmail, points, reason) => {
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 100px; height: auto;">
+                <h1 style="color: #000; font-size: 24px; font-weight: 800; margin-top: 15px; letter-spacing: 2px;">NOTIFICAÇÃO <span style="color: #D4AF37;">ADMIN</span></h1>
+            </div>
+            
+            <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #000;">
+                <h2 style="color: #333; margin-top: 0;">Pontos Atribuídos 💎</h2>
+                <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                    Olá Admin, informamos que foram atribuídos pontos a um usuário:
+                </p>
+                
+                <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee;">
+                    <p style="margin: 5px 0; color: #666;"><strong>Usuário:</strong> <span style="color: #000; font-weight: bold;">${userName}</span> (${userEmail})</p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Pontos:</strong> <span style="color: #D4AF37; font-weight: 900;">+${points}</span></p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Motivo:</strong> <span style="color: #333;">${reason}</span></p>
+                </div>
+                
+                <p style="font-size: 14px; color: #666;">
+                    Esta notificação é automática para fins de monitoramento e auditoria do sistema de recompensas. No dashboard administrativo, pode rever o histórico completo de convites e missões deste usuário.
+                </p>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center; border-top: 1px solid #eee; padding-top: 30px;">
+                <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se Admin Panel.</p>
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
     generatePendingApprovalEmail,
     generateReferralBonusEmail,
+    generateReferralPointsEarnedEmail,
+    generateSocialPointsEmail,
+    generateAdminPointsNotificationEmail,
     generateSubscriptionConfirmationEmail,
     generatePaymentProofReceivedEmail,
     generatePaymentFailedEmail,

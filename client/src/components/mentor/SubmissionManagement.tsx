@@ -28,6 +28,7 @@ import {
 import { stripeService } from '@/lib/stripeService';
 import { lessonService } from '@/lib/lessonService';
 import { motion, AnimatePresence } from 'framer-motion';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -407,9 +408,8 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                     </div>
                 ) : (
                     <>
-                        {/* Desktop Table */}
-                        <div style={{ overflowX: 'auto' }} className="desktop-table">
-                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px', fontSize: '0.85rem' }}>
+                        <TableScrollWrapper>
+                            <table style={{ minWidth: '1200px', width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                                 <thead>
                                     <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.75rem', color: '#666' }}>
                                         <th style={{ padding: '0.6rem 0.8rem', width: '40px' }}>
@@ -657,7 +657,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                        </TableScrollWrapper>
 
                         {/* Pagination Controls */}
                         {

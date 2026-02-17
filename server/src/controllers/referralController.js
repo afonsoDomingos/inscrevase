@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Referral = require('../models/Referral');
 const Notification = require('../models/Notification');
+const sendEmail = require('../utils/emailService');
+const { generateSocialPointsEmail, generateAdminPointsNotificationEmail } = require('../utils/emailTemplates');
 
 const getReferralStats = async (req, res) => {
     try {
@@ -167,10 +169,40 @@ const awardSocialPoints = async (req, res) => {
         });
         await notification.save();
 
+        // Send Email notification
+        const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/referrals`;
+        const emailHtml = generateSocialPointsEmail(user.name, missionId, POINTS_PER_MISSION, user.referralPoints, dashboardUrl);
+        await sendEmail(user.email, 'Missão Cumprida! 🎯 - Inscreva-se', emailHtml);
+
+        // Notify Admin
+        const adminUser = await User.findOne({ role: 'SuperAdmin' });
+        if (adminUser) {
+            const adminEmailHtml = generateAdminPointsNotificationEmail(user.name, user.email, POINTS_PER_MISSION, `Missão concluída: ${missionId}`);
+            await sendEmail(adminUser.email, 'Notificação Admin: Pontos Sociais Atribuídos 🎯', adminEmailHtml);
+        }
+
         res.json({
             message: 'Pontos atribuídos com sucesso!',
             points: user.referralPoints,
             completedMissions: user.completedMissions
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const getAdminUserReferrals = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const history = await Referral.find({ referrer: userId })
+            .populate('referredUser', 'name email createdAt status plan')
+            .sort({ createdAt: -1 });
+
+        const user = await User.findById(userId).select('name email referralPoints referralCount');
+
+        res.json({
+            user,
+            history
         });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
@@ -184,5 +216,6 @@ module.exports = {
     getAdminRanking,
     assignReward,
     redeemPoints,
-    awardSocialPoints
+    awardSocialPoints,
+    getAdminUserReferrals
 };

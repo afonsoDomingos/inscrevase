@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 import PremiumBadge from '../common/PremiumBadge';
 import { useSocket } from '@/context/SocketContext';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 interface UsersListProps {
     onMessageUser?: (user: UserData) => void;
@@ -243,8 +244,8 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                 )}
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <TableScrollWrapper>
+                <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Nome</th>
@@ -428,7 +429,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </TableScrollWrapper>
 
             {/* Pagination Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.9rem', color: '#666' }}>

@@ -19,7 +19,7 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
-// import { useTranslate } from '@/context/LanguageContext';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 interface Lesson {
     _id: string;
@@ -406,8 +406,8 @@ export default function LessonsManager() {
             </div>
 
             {/* Lessons Table */}
-            <div style={{ background: 'white', borderRadius: '16px', overflowX: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+            <TableScrollWrapper>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                     <thead>
                         <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Aula</th>
@@ -565,7 +565,7 @@ export default function LessonsManager() {
                         <p>Nenhuma aula encontrada</p>
                     </div>
                 )}
-            </div>
+            </TableScrollWrapper>
 
             {/* Modal */}
             <AnimatePresence>

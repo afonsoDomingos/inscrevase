@@ -5,7 +5,7 @@ const Notification = require('../models/Notification');
 const Submission = require('../models/Submission');
 const Referral = require('../models/Referral');
 const sendEmail = require('../utils/emailService');
-const { generateWelcomeEmail, generateBasicEmail, generateReferralBonusEmail } = require('../utils/emailTemplates');
+const { generateWelcomeEmail, generateBasicEmail, generateReferralBonusEmail, generateReferralPointsEarnedEmail, generateAdminPointsNotificationEmail } = require('../utils/emailTemplates');
 
 const register = async (req, res) => {
     try {
@@ -66,6 +66,18 @@ const register = async (req, res) => {
                     type: 'referral'
                 });
                 await referralNotification.save();
+
+                // Notify referrer via Email
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/referrals`;
+                const referrerEmailHtml = generateReferralPointsEarnedEmail(referrer.name, name, 10, referrer.referralPoints, dashboardUrl);
+                await sendEmail(referrer.email, 'Nova Indicação de Sucesso! 🚀 - Inscreva-se', referrerEmailHtml);
+
+                // Notify Admin about the points awarded
+                const adminUser = await User.findOne({ role: 'SuperAdmin' }) || admin;
+                if (adminUser) {
+                    const adminEmailHtml = generateAdminPointsNotificationEmail(referrer.name, referrer.email, 10, `Indicação de ${name}`);
+                    await sendEmail(adminUser.email, 'Notificação de Recompensa: Indicação Premiada 💎', adminEmailHtml);
+                }
 
                 // Notify new user via Email about the bonus
                 const bonusEmailHtml = generateReferralBonusEmail(name, referrer.name, 10, `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`);

@@ -126,6 +126,9 @@ export default function AdminDashboard() {
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
+    const [auditUser, setAuditUser] = useState<any>(null);
+    const [auditHistory, setAuditHistory] = useState<any[]>([]);
+    const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     const handleMigrateUsers = async () => {
@@ -244,6 +247,20 @@ export default function AdminDashboard() {
             setUnreadCount(data.count);
         } catch (error) {
             console.error('Error loading unread count:', error);
+        }
+    };
+
+    const handleAuditUser = async (userId: string) => {
+        try {
+            setLoading(true);
+            const data = await referralService.getAdminUserReferrals(userId);
+            setAuditUser(data.user);
+            setAuditHistory(data.history);
+            setIsAuditModalOpen(true);
+        } catch (error) {
+            toast.error('Erro ao buscar auditoria de convites');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -1387,6 +1404,13 @@ export default function AdminDashboard() {
                                                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                                             <button
+                                                                onClick={() => handleAuditUser(r._id)}
+                                                                style={{ padding: '6px', borderRadius: '8px', background: '#f0f0f0', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                title="Ver Indicações (Audit)"
+                                                            >
+                                                                <Eye size={16} />
+                                                            </button>
+                                                            <button
                                                                 onClick={async () => {
                                                                     if (confirm(`Atribuir Plano Pro (30 dias) a ${r.name}?`)) {
                                                                         try {
@@ -1478,6 +1502,99 @@ export default function AdminDashboard() {
                         if (updatedUser) setUser(updatedUser);
                     }}
                 />
+
+                {/* Audit Modal */}
+                <AnimatePresence>
+                    {isAuditModalOpen && auditUser && (
+                        <div style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.8)',
+                            backdropFilter: 'blur(10px)',
+                            zIndex: 3000,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px'
+                        }}>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                style={{
+                                    background: '#fff',
+                                    borderRadius: '30px',
+                                    width: '100%',
+                                    maxWidth: '800px',
+                                    maxHeight: '90vh',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                                }}
+                            >
+                                <div style={{ background: 'linear-gradient(135deg, #000 0%, #333 100%)', padding: '30px', color: '#fff', position: 'relative' }}>
+                                    <button
+                                        onClick={() => setIsAuditModalOpen(false)}
+                                        style={{ position: 'absolute', right: '25px', top: '25px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px', borderRadius: '50%', cursor: 'pointer' }}
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ background: 'var(--gold-gradient)', padding: '15px', borderRadius: '20px', color: '#000' }}>
+                                            <Trophy size={32} />
+                                        </div>
+                                        <div>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Auditoria de Convites</h3>
+                                            <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '0.9rem' }}>Explorando o impacto de <strong>{auditUser.name}</strong></p>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '20px', marginTop: '25px' }}>
+                                        <div style={{ background: 'rgba(255,215,0,0.1)', padding: '10px 20px', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>Pontos Totais</div>
+                                            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#FFD700' }}>{auditUser.referralPoints} pts</div>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>Total Invitados</div>
+                                            <div style={{ fontSize: '1.2rem', fontWeight: 900 }}>{auditUser.referralCount}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ padding: '30px', overflowY: 'auto', maxHeight: 'calc(90vh - 250px)' }}>
+                                    {auditHistory.length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                            {auditHistory.map((item, idx) => (
+                                                <div key={idx} style={{ padding: '20px', borderRadius: '15px', background: '#f8f9fa', border: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1a1a1a' }}>{item.referredUser?.name}</div>
+                                                        <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '8px' }}>{item.referredUser?.email}</div>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            <span style={{ fontSize: '0.7rem', background: '#fff', padding: '3px 8px', borderRadius: '5px', border: '1px solid #ddd', fontWeight: 600 }}>
+                                                                Plano: {item.referredUser?.plan || 'free'}
+                                                            </span>
+                                                            <span style={{ fontSize: '0.7rem', background: '#fff', padding: '3px 8px', borderRadius: '5px', border: '1px solid #ddd' }}>
+                                                                Desde: {new Date(item.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <div style={{ color: '#FFD700', fontWeight: 900, fontSize: '1.2rem' }}>+{item.pointsEarned} pts</div>
+                                                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase' }}>{item.status}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+                                            <Database size={48} style={{ opacity: 0.2, marginBottom: '15px' }} />
+                                            <p>Este usuário ainda não possui indicações registradas.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 <OnboardingTour steps={adminSteps} storageKey="inscrevase_admin_tour_completed" />
 

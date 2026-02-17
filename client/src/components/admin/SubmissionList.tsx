@@ -5,6 +5,7 @@ import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminSe
 import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, X, MessageCircle, Copy, ExternalLink, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
@@ -81,8 +82,8 @@ export default function SubmissionList() {
                 </div>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <TableScrollWrapper>
+                <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Inscrito / Dados</th>
@@ -208,7 +209,7 @@ export default function SubmissionList() {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </TableScrollWrapper>
 
             {/* Pagination Controls */}
             {filteredSubmissions.length > 0 && (
