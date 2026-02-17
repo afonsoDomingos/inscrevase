@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2 } from 'lucide-react';
+import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -173,9 +173,9 @@ export default function AdManagement() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5rem' }}>
                 <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                    <Megaphone size={40} className="text-gold" />
+                    <Megaphone size={40} color="#FFD700" />
                 </motion.div>
             </div>
         );
@@ -183,24 +183,30 @@ export default function AdManagement() {
 
     if (showCreateForm) {
         return (
-            <div className="space-y-6">
-                <div className="flex items-center gap-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <button
                         onClick={() => setShowCreateForm(false)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        style={{ padding: '0.5rem', borderRadius: '50%', border: 'none', background: '#f5f5f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <ArrowLeft size={24} />
                     </button>
-                    <h2 className="text-2xl font-black">Solicitar Novo Destaque</h2>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Solicitar Novo Destaque</h2>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                     {/* Form Part */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-xl">
-                            <div className="flex gap-2 mb-8">
+                    <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div className="luxury-card" style={{ background: '#fff', padding: '2rem', borderRadius: '24px', position: 'relative' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
                                 {[1, 2, 3].map((s) => (
-                                    <div key={s} className={`flex-1 h-2 rounded-full transition-all duration-500 ${s <= step ? 'bg-gradient-to-r from-gold to-yellow-500' : 'bg-gray-100'}`} />
+                                    <div key={s} style={{
+                                        flex: 1,
+                                        height: '6px',
+                                        borderRadius: '3px',
+                                        background: s <= step ? 'var(--gold-gradient)' : '#f0f0f0',
+                                        transition: 'all 0.5s'
+                                    }} />
                                 ))}
                             </div>
 
@@ -211,11 +217,11 @@ export default function AdManagement() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: 20 }}
-                                        className="space-y-6"
+                                        style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
                                     >
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">O que deseja promover?</label>
-                                            <div className="grid grid-cols-3 gap-3">
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>O que deseja promover?</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                                                 {[
                                                     { id: 'event', label: 'Evento', icon: Calendar },
                                                     { id: 'service', label: 'Serviço', icon: Briefcase },
@@ -224,22 +230,34 @@ export default function AdManagement() {
                                                     <button
                                                         key={cat.id}
                                                         onClick={() => setForm({ ...form, category: cat.id as AdRequestModel['category'] })}
-                                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${form.category === cat.id ? 'border-gold bg-gold/5 text-yellow-800' : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}
+                                                        style={{
+                                                            padding: '1.5rem 1rem',
+                                                            borderRadius: '16px',
+                                                            border: form.category === cat.id ? '2px solid #FFD700' : '2px solid #f0f0f0',
+                                                            background: form.category === cat.id ? 'rgba(255, 215, 0, 0.05)' : '#fff',
+                                                            color: form.category === cat.id ? '#B8860B' : '#999',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            gap: '0.5rem',
+                                                            transition: 'all 0.2s'
+                                                        }}
                                                     >
                                                         <cat.icon size={24} />
-                                                        <span className="text-xs font-bold">{cat.label}</span>
+                                                        <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>{cat.label}</span>
                                                     </button>
                                                 ))}
                                             </div>
                                         </div>
 
                                         {form.category === 'event' && (
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Selecione o Evento</label>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Selecione o Evento</label>
                                                 <select
                                                     value={selectedEventId}
                                                     onChange={handleEventSelect}
-                                                    className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-gold outline-none font-bold"
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f9f9f9', outline: 'none', fontWeight: 600, fontSize: '0.95rem' }}
                                                 >
                                                     <option value="">-- Escolher um evento meu --</option>
                                                     {myEvents.map(ev => (
@@ -251,25 +269,25 @@ export default function AdManagement() {
                                         )}
 
                                         {(form.category !== 'event' || selectedEventId === 'custom') && (
-                                            <div className="space-y-4">
-                                                <div className="space-y-2">
-                                                    <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Título do Anúncio</label>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Título do Anúncio</label>
                                                     <input
                                                         type="text"
                                                         value={form.title}
                                                         onChange={(e) => setForm({ ...form, title: e.target.value })}
                                                         placeholder="Ex: Masterclass Premium"
-                                                        className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-gold outline-none"
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f9f9f9', outline: 'none', fontWeight: 600, fontSize: '0.95rem' }}
                                                     />
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Descrição</label>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Descrição</label>
                                                     <textarea
                                                         value={form.description}
                                                         onChange={(e) => setForm({ ...form, description: e.target.value })}
                                                         rows={3}
                                                         placeholder="Breve descrição para atrair cliques..."
-                                                        className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-gold outline-none resize-none"
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f9f9f9', outline: 'none', resize: 'none', fontFamily: 'inherit' }}
                                                     />
                                                 </div>
                                             </div>
@@ -278,7 +296,18 @@ export default function AdManagement() {
                                         <button
                                             onClick={() => setStep(2)}
                                             disabled={!form.title}
-                                            className="w-full p-4 bg-black text-white rounded-xl font-bold hover:bg-gray-900 transition-all disabled:opacity-50"
+                                            style={{
+                                                width: '100%',
+                                                padding: '1rem',
+                                                background: '#000',
+                                                color: '#fff',
+                                                borderRadius: '12px',
+                                                border: 'none',
+                                                fontWeight: 800,
+                                                cursor: !form.title ? 'not-allowed' : 'pointer',
+                                                opacity: !form.title ? 0.5 : 1,
+                                                marginTop: '1rem'
+                                            }}
                                         >
                                             Continuar
                                         </button>
@@ -291,74 +320,134 @@ export default function AdManagement() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: 20 }}
-                                        className="space-y-6"
+                                        style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
                                     >
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Visual e Mídia</label>
-                                            <div className="relative border-4 border-dashed border-gray-100 rounded-3xl p-8 text-center hover:border-gold/30 transition-colors group">
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Visual e Mídia</label>
+                                            <div style={{
+                                                position: 'relative',
+                                                border: '2px dashed #ddd',
+                                                borderRadius: '24px',
+                                                padding: '2rem',
+                                                textAlign: 'center',
+                                                background: '#f9f9f9',
+                                                transition: 'all 0.2s',
+                                                cursor: 'pointer'
+                                            }}
+                                                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#FFD700'}
+                                                onMouseLeave={(e) => e.currentTarget.style.borderColor = '#ddd'}
+                                            >
                                                 {form.mediaUrl ? (
-                                                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+                                                    <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                                                         {form.mediaType === 'video' ? (
-                                                            <video src={form.mediaUrl} autoPlay muted loop className="w-full h-full object-cover" />
+                                                            <video src={form.mediaUrl} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                         ) : (
-                                                            <Image src={form.mediaUrl} alt="Preview" fill className="object-cover" />
+                                                            <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
                                                         )}
                                                         <button
-                                                            onClick={() => setForm({ ...form, mediaUrl: '' })}
-                                                            className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white p-2 rounded-full hover:bg-red-500 transition-colors"
+                                                            onClick={(e) => { e.stopPropagation(); setForm({ ...form, mediaUrl: '' }); }}
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '1rem',
+                                                                right: '1rem',
+                                                                background: 'rgba(0,0,0,0.6)',
+                                                                backdropFilter: 'blur(4px)',
+                                                                color: '#fff',
+                                                                padding: '0.5rem',
+                                                                borderRadius: '50%',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}
                                                         >
                                                             <Trash2 size={18} />
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <div className="py-10">
-                                                        <Upload className="mx-auto text-gray-300 mb-4 group-hover:text-gold transition-colors" size={48} />
-                                                        <p className="text-gray-500 font-bold mb-1">Upload de Imagem ou Vídeo</p>
-                                                        <p className="text-xs text-gray-400">Arraste aqui ou clique para selecionar</p>
+                                                    <div style={{ padding: '2rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                        <Upload size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
+                                                        <p style={{ fontWeight: 700, color: '#666', marginBottom: '0.25rem' }}>Upload de Imagem ou Vídeo</p>
+                                                        <p style={{ fontSize: '0.8rem', color: '#999' }}>Arraste aqui ou clique para selecionar</p>
                                                         <input
                                                             type="file"
                                                             onChange={handleFileUpload}
-                                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                                            style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
                                                             accept="image/*,video/*"
                                                         />
                                                     </div>
                                                 )}
                                                 {uploading && (
-                                                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-3xl">
-                                                        <div className="flex flex-col items-center gap-3">
-                                                            <div className="w-10 h-10 border-4 border-gold border-t-transparent rounded-full animate-spin" />
-                                                            <p className="text-sm font-black text-gray-900 tracking-widest uppercase">Subindo...</p>
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '24px', zIndex: 10 }}>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                                                            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                                                                <Loader2 size={32} color="#FFD700" />
+                                                            </motion.div>
+                                                            <p style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Subindo...</p>
                                                         </div>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Duração do Destaque</label>
-                                            <div className="grid grid-cols-4 gap-2">
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Duração do Destaque</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                                                 {[1, 2, 3, 4].map(w => (
                                                     <button
                                                         key={w}
                                                         onClick={() => setForm({ ...form, durationWeeks: w, priceTotal: w * PRICING_PER_WEEK })}
-                                                        className={`p-3 rounded-xl border-2 font-black transition-all ${form.durationWeeks === w ? 'border-gold bg-gold text-black' : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}
+                                                        style={{
+                                                            padding: '0.75rem',
+                                                            borderRadius: '12px',
+                                                            border: form.durationWeeks === w ? '2px solid #FFD700' : '2px solid #eee',
+                                                            background: form.durationWeeks === w ? '#FFD700' : '#fff',
+                                                            color: form.durationWeeks === w ? '#000' : '#999',
+                                                            fontWeight: 800,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}
                                                     >
                                                         {w}W
                                                     </button>
                                                 ))}
                                             </div>
-                                            <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100 flex items-center justify-between">
-                                                <span className="text-sm font-bold text-yellow-800">Investimento Total</span>
-                                                <span className="text-lg font-black text-yellow-900">{formatPrice(form.durationWeeks * PRICING_PER_WEEK, 'USD')}</span>
+                                            <div style={{
+                                                padding: '1rem',
+                                                background: '#FFF8E1',
+                                                border: '1px solid #FFECB3',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                color: '#B8860B'
+                                            }}>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Investimento Total</span>
+                                                <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{formatPrice(form.durationWeeks * PRICING_PER_WEEK, 'USD')}</span>
                                             </div>
                                         </div>
 
-                                        <div className="flex gap-3">
-                                            <button onClick={() => setStep(1)} className="flex-1 p-4 bg-gray-100 rounded-xl font-bold">Voltar</button>
+                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                            <button
+                                                onClick={() => setStep(1)}
+                                                style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: 'none', background: '#f0f0f0', fontWeight: 700, cursor: 'pointer', color: '#666' }}>
+                                                Voltar
+                                            </button>
                                             <button
                                                 onClick={() => setStep(3)}
                                                 disabled={!form.mediaUrl}
-                                                className="flex-[2] p-4 bg-black text-white rounded-xl font-bold disabled:opacity-50"
+                                                style={{
+                                                    flex: 2,
+                                                    padding: '1rem',
+                                                    background: '#000',
+                                                    color: '#fff',
+                                                    borderRadius: '12px',
+                                                    border: 'none',
+                                                    fontWeight: 800,
+                                                    cursor: !form.mediaUrl ? 'not-allowed' : 'pointer',
+                                                    opacity: !form.mediaUrl ? 0.5 : 1
+                                                }}
                                             >
                                                 Ir para Pagamento
                                             </button>
@@ -372,58 +461,106 @@ export default function AdManagement() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: 20 }}
-                                        className="space-y-6"
+                                        style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
                                     >
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Método de Pagamento</label>
-                                            <div className="grid grid-cols-2 gap-4">
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Método de Pagamento</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                 <button
                                                     onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
-                                                    className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${form.paymentMethod === 'stripe' ? 'border-gold bg-gold/5 text-yellow-900' : 'border-gray-100 text-gray-400 hover:shadow-md'}`}
+                                                    style={{
+                                                        padding: '1.5rem',
+                                                        borderRadius: '20px',
+                                                        border: form.paymentMethod === 'stripe' ? '2px solid #FFD700' : '2px solid #eee',
+                                                        background: form.paymentMethod === 'stripe' ? 'rgba(255, 215, 0, 0.05)' : '#fff',
+                                                        color: form.paymentMethod === 'stripe' ? '#B8860B' : '#999',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        gap: '0.5rem',
+                                                        transition: 'all 0.2s'
+                                                    }}
                                                 >
                                                     <CreditCard size={32} />
-                                                    <span className="font-black text-sm">Cartão / Stripe</span>
+                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>Cartão / Stripe</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
-                                                    className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${form.paymentMethod === 'manual' ? 'border-gold bg-gold/5 text-yellow-900' : 'border-gray-100 text-gray-400 hover:shadow-md'}`}
+                                                    style={{
+                                                        padding: '1.5rem',
+                                                        borderRadius: '20px',
+                                                        border: form.paymentMethod === 'manual' ? '2px solid #FFD700' : '2px solid #eee',
+                                                        background: form.paymentMethod === 'manual' ? 'rgba(255, 215, 0, 0.05)' : '#fff',
+                                                        color: form.paymentMethod === 'manual' ? '#B8860B' : '#999',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        gap: '0.5rem',
+                                                        transition: 'all 0.2s'
+                                                    }}
                                                 >
                                                     <Megaphone size={32} />
-                                                    <span className="font-black text-sm">M-Pesa / E-Mola</span>
+                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>M-Pesa / E-Mola</span>
                                                 </button>
                                             </div>
                                         </div>
 
                                         {form.paymentMethod === 'manual' && (
-                                            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-200 space-y-4">
-                                                <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Contas para Depósito</p>
-                                                <div className="text-sm space-y-2 font-bold text-gray-700">
-                                                    <div className="flex justify-between"><span>M-Pesa:</span> <span>84 123 4567</span></div>
-                                                    <div className="flex justify-between"><span>E-Mola:</span> <span>86 123 4567</span></div>
-                                                    <div className="flex justify-between"><span>NIB:</span> <span>123456789 (BCI)</span></div>
+                                            <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                <p style={{ fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Contas para Depósito</p>
+                                                <div style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, color: '#444' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>M-Pesa:</span> <span>84 123 4567</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>E-Mola:</span> <span>86 123 4567</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>NIB:</span> <span>123456789 (BCI)</span></div>
                                                 </div>
-                                                <div className="relative border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-gold/30 transition-colors">
+                                                <div style={{
+                                                    position: 'relative',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: '12px',
+                                                    padding: '1rem',
+                                                    textAlign: 'center',
+                                                    cursor: 'pointer',
+                                                    background: '#fff',
+                                                    marginTop: '0.5rem'
+                                                }}>
                                                     {paymentProof ? (
-                                                        <div className="flex items-center justify-center gap-2 text-green-600 font-black">
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'green', fontWeight: 800 }}>
                                                             <CheckCircle2 size={20} /> Comprovativo Anexado
                                                         </div>
                                                     ) : (
                                                         <>
-                                                            <Upload className="mx-auto text-gray-300 mb-2" size={24} />
-                                                            <p className="text-xs text-gray-400 font-bold">Anexar Comprovativo</p>
-                                                            <input type="file" onChange={handleProofUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                                            <Upload size={24} color="#ccc" style={{ marginBottom: '0.5rem' }} />
+                                                            <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#999' }}>Anexar Comprovativo</p>
+                                                            <input type="file" onChange={handleProofUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
                                                         </>
                                                     )}
                                                 </div>
                                             </div>
                                         )}
 
-                                        <div className="flex gap-3">
-                                            <button onClick={() => setStep(2)} className="flex-1 p-4 bg-gray-100 rounded-xl font-bold">Voltar</button>
+                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                            <button
+                                                onClick={() => setStep(2)}
+                                                style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: 'none', background: '#f0f0f0', fontWeight: 700, cursor: 'pointer', color: '#666' }}>
+                                                Voltar
+                                            </button>
                                             <button
                                                 onClick={handleSubmitAd}
                                                 disabled={isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)}
-                                                className="flex-[2] p-4 bg-gradient-to-r from-gold to-yellow-500 text-black font-black rounded-xl hover:shadow-xl transition-all disabled:opacity-50"
+                                                style={{
+                                                    flex: 2,
+                                                    padding: '1rem',
+                                                    background: 'var(--gold-gradient)',
+                                                    color: '#000',
+                                                    borderRadius: '12px',
+                                                    border: 'none',
+                                                    fontWeight: 900,
+                                                    cursor: (isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)) ? 'not-allowed' : 'pointer',
+                                                    opacity: (isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)) ? 0.5 : 1,
+                                                    boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)'
+                                                }}
                                             >
                                                 {isSubmitting ? 'Processando...' : `Pagar ${formatPrice(form.priceTotal, 'USD')}`}
                                             </button>
@@ -435,38 +572,72 @@ export default function AdManagement() {
                     </div>
 
                     {/* Preview Part */}
-                    <div className="space-y-4">
-                        <label className="block text-sm font-black text-gray-500 uppercase tracking-wider text-center">Pré-visualização</label>
-                        <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 sticky top-24">
-                            <div className="relative aspect-[4/5] bg-gray-50">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#999', textAlign: 'center', letterSpacing: '0.5px' }}>Pré-visualização</label>
+                        <div style={{
+                            background: '#fff',
+                            borderRadius: '24px',
+                            overflow: 'hidden',
+                            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                            position: 'sticky',
+                            top: '2rem'
+                        }}>
+                            <div style={{ position: 'relative', aspectRatio: '4/5', background: '#f0f0f0' }}>
                                 {form.mediaUrl ? (
                                     form.mediaType === 'video' ? (
-                                        <video src={form.mediaUrl} autoPlay muted loop className="w-full h-full object-cover" />
+                                        <video src={form.mediaUrl} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                        <Image src={form.mediaUrl} alt="Preview" fill className="object-cover" />
+                                        <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
                                     )
                                 ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Megaphone size={64} className="text-gray-100" />
+                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Megaphone size={64} color="#ddd" />
                                     </div>
                                 )}
-                                <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md text-gold px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
-                                    <Zap size={12} fill="#FFD700" className="animate-pulse" /> {form.category || 'Patrocinado'}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '1rem',
+                                    left: '1rem',
+                                    background: 'rgba(0,0,0,0.6)',
+                                    backdropFilter: 'blur(4px)',
+                                    color: '#FFD700',
+                                    padding: '0.4rem 0.8rem',
+                                    borderRadius: '20px',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 900,
+                                    textTransform: 'uppercase',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.4rem',
+                                    boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                                }}>
+                                    <Zap size={12} fill="#FFD700" /> {form.category || 'Patrocinado'}
                                 </div>
                             </div>
-                            <div className="p-6 space-y-4">
-                                <h4 className="text-xl font-black text-gray-900 leading-tight">
+                            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <h4 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#000', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>
                                     {form.title || 'Título do seu anúncio premium'}
                                 </h4>
-                                <div className="flex flex-wrap gap-3">
-                                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
-                                        <Calendar size={14} className="text-gold" /> Hoje
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 700, color: '#666' }}>
+                                        <Calendar size={14} color="#FFD700" /> Hoje
                                     </div>
-                                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
-                                        <MapPin size={14} className="text-gold" /> Global
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 700, color: '#666' }}>
+                                        <MapPin size={14} color="#FFD700" /> Global
                                     </div>
                                 </div>
-                                <div className="w-full p-4 bg-black text-white rounded-2xl text-center font-black text-sm uppercase tracking-widest shadow-lg">
+                                <div style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    background: '#000',
+                                    color: '#fff',
+                                    borderRadius: '12px',
+                                    textAlign: 'center',
+                                    fontWeight: 900,
+                                    fontSize: '0.8rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px'
+                                }}>
                                     Saiba Mais
                                 </div>
                             </div>
@@ -478,29 +649,57 @@ export default function AdManagement() {
     }
 
     return (
-        <div className="space-y-6">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Header section */}
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-gold/10 via-yellow-50 to-orange-50 p-6 md:p-8 rounded-3xl border border-gold/20 shadow-sm"
+                style={{
+                    background: 'linear-gradient(to right, rgba(255,215,0,0.1), #FFF8E1)',
+                    padding: '2rem',
+                    borderRadius: '24px',
+                    border: '1px solid rgba(255,215,0,0.2)'
+                }}
             >
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <Megaphone className="text-white" size={28} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <div style={{
+                                width: '3.5rem',
+                                height: '3.5rem',
+                                borderRadius: '16px',
+                                background: 'linear-gradient(135deg, #FFD700, #B8860B)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 4px 12px rgba(184, 134, 11, 0.3)'
+                            }}>
+                                <Megaphone color="#fff" size={24} />
+                            </div>
+                            <div>
+                                <h2 style={{ fontSize: '1.75rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0, lineHeight: 1.1 }}>Meus Anúncios</h2>
+                                <p style={{ color: '#666', margin: '4px 0 0', fontSize: '0.95rem' }}>Gerencie sua publicidade e acompanhe os resultados em tempo real</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-1">Meus Anúncios</h2>
-                            <p className="text-gray-600 text-sm md:text-base">Gerencie sua publicidade e acompanhe os resultados em tempo real</p>
-                        </div>
+                        <button
+                            onClick={() => setShowCreateForm(true)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                background: '#000',
+                                color: '#fff',
+                                padding: '0.8rem 1.5rem',
+                                borderRadius: '12px',
+                                fontWeight: 800,
+                                border: 'none',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            <Plus size={20} /> Solicitar Destaque
+                        </button>
                     </div>
-                    <button
-                        onClick={() => setShowCreateForm(true)}
-                        className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3.5 rounded-xl hover:bg-gray-900 hover:scale-105 transition-all font-bold shadow-lg hover:shadow-xl text-sm md:text-base w-full lg:w-auto"
-                    >
-                        <Plus size={20} /> Solicitar Destaque
-                    </button>
                 </div>
             </motion.div>
 
@@ -508,258 +707,197 @@ export default function AdManagement() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white p-12 md:p-20 rounded-3xl border-2 border-dashed border-gray-200 text-center flex flex-col items-center"
+                    style={{
+                        background: '#fff',
+                        padding: '4rem 2rem',
+                        borderRadius: '24px',
+                        border: '2px dashed #eee',
+                        textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                    }}
                 >
-                    <div className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                        <Megaphone size={48} className="text-gray-300" />
+                    <div style={{
+                        width: '6rem',
+                        height: '6rem',
+                        background: '#f9f9f9',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1.5rem'
+                    }}>
+                        <Megaphone size={48} color="#ddd" />
                     </div>
-                    <h3 className="text-2xl font-black mb-3 text-gray-900">Nenhum anúncio ainda</h3>
-                    <p className="text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.75rem', fontFamily: 'var(--font-playfair)' }}>Nenhum anúncio ainda</h3>
+                    <p style={{ color: '#888', maxWidth: '450px', margin: '0 auto 2rem', lineHeight: 1.6 }}>
                         Comece a promover seus eventos, serviços ou produtos para milhares de potenciais clientes na nossa plataforma.
                     </p>
                     <button
                         onClick={() => setShowCreateForm(true)}
-                        className="bg-gradient-to-r from-gold to-yellow-500 text-black px-10 py-4 rounded-xl font-black hover:shadow-2xl hover:scale-105 transition-all text-lg"
+                        style={{
+                            background: 'var(--gold-gradient)',
+                            color: '#000',
+                            padding: '1rem 2.5rem',
+                            borderRadius: '12px',
+                            fontWeight: 900,
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)'
+                        }}
                     >
                         Começar Agora
                     </button>
                 </motion.div>
             ) : (
-                <div className="space-y-4">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                     {ads.map((ad, index) => (
                         <motion.div
                             key={ad._id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all overflow-hidden group"
+                            style={{
+                                background: '#fff',
+                                borderRadius: '20px',
+                                overflow: 'hidden',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                                border: '1px solid #f0f0f0',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}
                         >
-                            {/* Mobile Layout */}
-                            <div className="lg:hidden">
-                                {/* Media Preview - Full Width on Mobile */}
-                                <div className="relative w-full h-48 bg-gray-100">
-                                    {ad.mediaType === 'video' ? (
-                                        <video
-                                            src={ad.mediaUrl}
-                                            className="w-full h-full object-cover"
-                                            autoPlay
-                                            muted
-                                            loop
-                                        />
-                                    ) : (
-                                        <Image
-                                            src={ad.mediaUrl}
-                                            alt={ad.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    )}
-                                    {/* Status Badge */}
-                                    <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
-                                        <span className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${ad.status === 'approved' ? 'bg-green-500 text-white' :
-                                            ad.status === 'pending' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
-                                            }`}>
-                                            {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
+                            <div style={{ position: 'relative', height: '200px', background: '#f5f5f5' }}>
+                                {ad.mediaType === 'video' ? (
+                                    <video
+                                        src={ad.mediaUrl}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        autoPlay
+                                        muted
+                                        loop
+                                    />
+                                ) : (
+                                    <Image
+                                        src={ad.mediaUrl}
+                                        alt={ad.title}
+                                        fill
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                )}
+                                <div style={{ position: 'absolute', top: '1rem', left: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <span style={{
+                                        padding: '0.25rem 0.75rem',
+                                        borderRadius: '20px',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 800,
+                                        textTransform: 'uppercase',
+                                        background: ad.status === 'approved' ? '#16a34a' : ad.status === 'pending' ? '#3b82f6' : '#ef4444',
+                                        color: '#fff',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                                    }}>
+                                        {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
+                                    </span>
+                                    {ad.status === 'approved' && (
+                                        <span style={{
+                                            padding: '0.25rem 0.75rem',
+                                            borderRadius: '20px',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 800,
+                                            textTransform: 'uppercase',
+                                            background: ad.isActive ? '#16a34a' : '#6b7280',
+                                            color: '#fff',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                                        }}>
+                                            {ad.isActive ? '● Ativo' : '○ Pausado'}
                                         </span>
-                                        {ad.status === 'approved' && (
-                                            <span className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg ${ad.isActive ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'
-                                                }`}>
-                                                {ad.isActive ? '● Ativo' : '○ Pausado'}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="p-5 space-y-4">
-                                    <div>
-                                        <h3 className="text-xl font-black text-gray-900 mb-1 line-clamp-1">{ad.title}</h3>
-                                        <p className="text-gray-600 text-sm line-clamp-2">{ad.description}</p>
-                                    </div>
-
-                                    {/* Stats Grid - 2 columns on mobile */}
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-xl border border-blue-200">
-                                            <div className="flex items-center gap-2 text-blue-600 mb-1">
-                                                <Eye size={16} />
-                                                <span className="text-xs font-bold uppercase tracking-wide">Views</span>
-                                            </div>
-                                            <div className="text-2xl font-black text-blue-900">{ad.views || 0}</div>
-                                        </div>
-                                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 rounded-xl border border-purple-200">
-                                            <div className="flex items-center gap-2 text-purple-600 mb-1">
-                                                <MousePointer2 size={16} />
-                                                <span className="text-xs font-bold uppercase tracking-wide">Clicks</span>
-                                            </div>
-                                            <div className="text-2xl font-black text-purple-900">{ad.clicks || 0}</div>
-                                        </div>
-                                        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-3 rounded-xl border border-orange-200">
-                                            <div className="flex items-center gap-2 text-orange-600 mb-1">
-                                                <Clock size={16} />
-                                                <span className="text-xs font-bold uppercase tracking-wide">Duração</span>
-                                            </div>
-                                            <div className="text-lg font-black text-orange-900">{ad.durationWeeks} Semanas</div>
-                                        </div>
-                                        <div className="bg-gradient-to-br from-green-50 to-green-100 p-3 rounded-xl border border-green-200">
-                                            <div className="flex items-center gap-2 text-green-600 mb-1">
-                                                <ExternalLink size={16} />
-                                                <span className="text-xs font-bold uppercase tracking-wide">Investido</span>
-                                            </div>
-                                            <div className="text-lg font-black text-green-900">{formatPrice(ad.priceTotal, ad.currency || 'USD')}</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 pt-2">
-                                        {ad.status === 'approved' && (
-                                            <button
-                                                onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
-                                                className={`flex-1 p-3 rounded-xl transition-all font-bold text-sm flex items-center justify-center gap-2 ${ad.isActive
-                                                    ? 'bg-yellow-50 text-yellow-700 border-2 border-yellow-200 hover:bg-yellow-100'
-                                                    : 'bg-green-50 text-green-700 border-2 border-green-200 hover:bg-green-100'
-                                                    }`}
-                                            >
-                                                {ad.isActive ? <PowerOff size={18} /> : <Power size={18} />}
-                                                {ad.isActive ? 'Pausar' : 'Ativar'}
-                                            </button>
-                                        )}
-                                        <button
-                                            onClick={() => ad._id && handleDeleteAd(ad._id)}
-                                            className="flex-1 p-3 bg-red-50 text-red-700 rounded-xl border-2 border-red-200 hover:bg-red-100 transition-all font-bold text-sm flex items-center justify-center gap-2"
-                                        >
-                                            <Trash2 size={18} /> Excluir
-                                        </button>
-                                        {ad.targetUrl && (
-                                            <a
-                                                href={ad.targetUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="p-3 bg-gray-50 text-gray-700 rounded-xl border-2 border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center"
-                                            >
-                                                <ExternalLink size={18} />
-                                            </a>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Desktop Layout */}
-                            <div className="hidden lg:block">
-                                <div className="flex gap-6 p-6 relative">
-                                    {/* Status Stripe */}
-                                    <div className={`absolute top-0 left-0 w-1.5 h-full ${ad.status === 'approved' ? (ad.isActive ? 'bg-gradient-to-b from-green-400 to-green-600' : 'bg-gradient-to-b from-yellow-400 to-yellow-600') :
-                                        ad.status === 'pending' ? 'bg-gradient-to-b from-blue-400 to-blue-600' : 'bg-gradient-to-b from-red-400 to-red-600'
-                                        }`} />
+                            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '0.5rem', lineHeight: 1.3 }}>{ad.title}</h3>
+                                    <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{ad.description}</p>
+                                </div>
 
-                                    {/* Media Preview */}
-                                    <div className="relative w-40 h-40 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-md">
-                                        {ad.mediaType === 'video' ? (
-                                            <video
-                                                src={ad.mediaUrl}
-                                                className="w-full h-full object-cover"
-                                                autoPlay
-                                                muted
-                                                loop
-                                            />
-                                        ) : (
-                                            <Image
-                                                src={ad.mediaUrl}
-                                                alt={ad.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        )}
-                                    </div>
-
-                                    {/* Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-4 mb-3">
-                                            <div className="flex-1">
-                                                <h3 className="text-2xl font-black text-gray-900 mb-2">{ad.title}</h3>
-                                                <p className="text-gray-600 line-clamp-2 leading-relaxed">{ad.description}</p>
-                                            </div>
-                                            <div className="flex flex-col gap-2">
-                                                <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap ${ad.status === 'approved' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                                    ad.status === 'pending' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                                                        'bg-red-100 text-red-700 border border-red-200'
-                                                    }`}>
-                                                    {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
-                                                </span>
-                                                {ad.status === 'approved' && (
-                                                    <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap ${ad.isActive ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'
-                                                        }`}>
-                                                        {ad.isActive ? '● Ativo' : '○ Pausado'}
-                                                    </span>
-                                                )}
-                                            </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                                    <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#3b82f6', marginBottom: '0.25rem' }}>
+                                            <Eye size={14} /> Views
                                         </div>
-
-                                        {/* Performance Grid */}
-                                        <div className="grid grid-cols-4 gap-4">
-                                            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
-                                                <div className="flex items-center gap-2 text-blue-600 mb-2">
-                                                    <Eye size={16} />
-                                                    <span className="text-xs font-bold uppercase tracking-wide">Views</span>
-                                                </div>
-                                                <div className="text-2xl font-black text-blue-900">{ad.views || 0}</div>
-                                            </div>
-                                            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
-                                                <div className="flex items-center gap-2 text-purple-600 mb-2">
-                                                    <MousePointer2 size={16} />
-                                                    <span className="text-xs font-bold uppercase tracking-wide">Clicks</span>
-                                                </div>
-                                                <div className="text-2xl font-black text-purple-900">{ad.clicks || 0}</div>
-                                            </div>
-                                            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
-                                                <div className="flex items-center gap-2 text-orange-600 mb-2">
-                                                    <Clock size={16} />
-                                                    <span className="text-xs font-bold uppercase tracking-wide">Duração</span>
-                                                </div>
-                                                <div className="text-xl font-black text-orange-900">{ad.durationWeeks} Semanas</div>
-                                            </div>
-                                            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
-                                                <div className="flex items-center gap-2 text-green-600 mb-2">
-                                                    <ExternalLink size={16} />
-                                                    <span className="text-xs font-bold uppercase tracking-wide">Investido</span>
-                                                </div>
-                                                <div className="text-xl font-black text-green-900">{formatPrice(ad.priceTotal, ad.currency || 'USD')}</div>
-                                            </div>
-                                        </div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>{ad.views || 0}</div>
                                     </div>
+                                    <div style={{ background: '#faf5ff', padding: '0.75rem', borderRadius: '12px', border: '1px solid #e9d5ff' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#a855f7', marginBottom: '0.25rem' }}>
+                                            <MousePointer2 size={14} /> Clicks
+                                        </div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>{ad.clicks || 0}</div>
+                                    </div>
+                                </div>
 
-                                    {/* Actions */}
-                                    <div className="flex flex-col gap-2 justify-center">
-                                        {ad.status === 'approved' && (
-                                            <button
-                                                onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
-                                                className={`p-3 rounded-xl transition-all hover:scale-110 ${ad.isActive
-                                                    ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100 border-2 border-yellow-200'
-                                                    : 'bg-green-50 text-green-600 hover:bg-green-100 border-2 border-green-200'
-                                                    }`}
-                                                title={ad.isActive ? 'Pausar Anúncio' : 'Ativar Anúncio'}
-                                            >
-                                                {ad.isActive ? <PowerOff size={22} /> : <Power size={22} />}
-                                            </button>
-                                        )}
+                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+                                    {ad.status === 'approved' && (
                                         <button
-                                            onClick={() => ad._id && handleDeleteAd(ad._id)}
-                                            className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 hover:scale-110 transition-all border-2 border-red-200"
-                                            title="Excluir Anúncio"
+                                            onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
+                                            style={{
+                                                flex: 1,
+                                                padding: '0.6rem',
+                                                borderRadius: '10px',
+                                                border: 'none',
+                                                background: ad.isActive ? '#FFF8E1' : '#DCFCE7',
+                                                color: ad.isActive ? '#B8860B' : '#166534',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                            title={ad.isActive ? 'Pausar' : 'Ativar'}
                                         >
-                                            <Trash2 size={22} />
+                                            {ad.isActive ? <PowerOff size={18} /> : <Power size={18} />}
                                         </button>
-                                        {ad.targetUrl && (
-                                            <a
-                                                href={ad.targetUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="p-3 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 hover:scale-110 transition-all flex items-center justify-center border-2 border-gray-200"
-                                                title="Ver Link do Anúncio"
-                                            >
-                                                <ExternalLink size={22} />
-                                            </a>
-                                        )}
-                                    </div>
+                                    )}
+                                    <button
+                                        onClick={() => ad._id && handleDeleteAd(ad._id)}
+                                        style={{
+                                            flex: 1,
+                                            padding: '0.6rem',
+                                            borderRadius: '10px',
+                                            border: 'none',
+                                            background: '#FEF2F2',
+                                            color: '#DC2626',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                        title="Excluir"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                    {ad.targetUrl && (
+                                        <a
+                                            href={ad.targetUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                flex: 1,
+                                                padding: '0.6rem',
+                                                borderRadius: '10px',
+                                                border: 'none',
+                                                background: '#F3F4F6',
+                                                color: '#4B5563',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                            title="Ver Link"
+                                        >
+                                            <ExternalLink size={18} />
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
@@ -772,13 +910,21 @@ export default function AdManagement() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-200 flex gap-4 text-blue-800"
+                style={{
+                    background: '#EFF6FF',
+                    padding: '1.25rem',
+                    borderRadius: '16px',
+                    border: '1px solid #BFDBFE',
+                    display: 'flex',
+                    gap: '1rem',
+                    color: '#1E40AF'
+                }}
             >
-                <AlertCircle className="flex-shrink-0 mt-0.5" size={22} />
-                <div className="text-sm leading-relaxed">
-                    <strong className="font-black block mb-1">💡 Dica Importante:</strong>
-                    Anúncios marcados como <span className="font-bold">pausados</span> não aparecem nas seções patrocinadas.
-                    Anúncios <span className="font-bold">pendentes</span> aguardam aprovação da nossa equipe de moderação.
+                <AlertCircle size={24} style={{ flexShrink: 0 }} />
+                <div style={{ fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    <strong style={{ fontWeight: 900, display: 'block', marginBottom: '0.25rem' }}>💡 Dica Importante:</strong>
+                    Anúncios marcados como <strong>pausados</strong> não aparecem nas seções patrocinadas.
+                    Anúncios <strong>pendentes</strong> aguardam aprovação da nossa equipe de moderacão.
                 </div>
             </motion.div>
         </div>

@@ -149,6 +149,11 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
         return true;
     });
 
+    // Pagination Logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+
     // Selection handlers
     const handleSelectUser = (userId: string) => {
         setSelectedUsers(prev => {
@@ -163,19 +168,20 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
     };
 
     const handleSelectAll = () => {
-        if (selectedUsers.size === currentItems.length) {
+        // If all currently visible items are selected, deselect all provided they have some items
+        const allCurrentSelected = currentItems.length > 0 && currentItems.every(u => selectedUsers.has(u.id || u._id || ''));
+
+        if (allCurrentSelected) {
             setSelectedUsers(new Set());
         } else {
-            setSelectedUsers(new Set(currentItems.map(u => u.id || u._id || '')));
+            // Select all current items
+            const newSelected = new Set(selectedUsers);
+            currentItems.forEach(u => newSelected.add(u.id || u._id || ''));
+            setSelectedUsers(newSelected);
         }
     };
 
-    const isAllSelected = currentItems.length > 0 && selectedUsers.size === currentItems.length;
-
-    // Pagination Logic
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+    const isAllSelected = currentItems.length > 0 && currentItems.every(u => selectedUsers.has(u.id || u._id || ''));
 
     if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando usuários...</div>;
 

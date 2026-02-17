@@ -76,14 +76,20 @@ export default function SubmissionList() {
     };
 
     const handleSelectAll = () => {
-        if (selectedSubmissions.size === currentSubmissions.length) {
-            setSelectedSubmissions(new Set());
+        const allCurrentSelected = currentSubmissions.length > 0 && currentSubmissions.every(s => selectedSubmissions.has(s._id));
+
+        if (allCurrentSelected) {
+            const newSelected = new Set(selectedSubmissions);
+            currentSubmissions.forEach(s => newSelected.delete(s._id));
+            setSelectedSubmissions(newSelected);
         } else {
-            setSelectedSubmissions(new Set(currentSubmissions.map(s => s._id)));
+            const newSelected = new Set(selectedSubmissions);
+            currentSubmissions.forEach(s => newSelected.add(s._id));
+            setSelectedSubmissions(newSelected);
         }
     };
 
-    const isAllSelected = currentSubmissions.length > 0 && selectedSubmissions.size === currentSubmissions.length;
+    const isAllSelected = currentSubmissions.length > 0 && currentSubmissions.every(s => selectedSubmissions.has(s._id));
 
     if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando inscrições...</div>;
 
