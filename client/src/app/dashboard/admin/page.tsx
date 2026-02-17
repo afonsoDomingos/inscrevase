@@ -19,7 +19,7 @@ import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashbo
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
-import { referralService, ReferralRanking } from '@/lib/referralService';
+import { referralService, ReferralRanking, ReferralHistory } from '@/lib/referralService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
