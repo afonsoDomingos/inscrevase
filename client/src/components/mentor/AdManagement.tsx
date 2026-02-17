@@ -677,7 +677,12 @@ export default function AdManagement() {
                                 <Megaphone color="#fff" size={24} />
                             </div>
                             <div>
-                                <h2 style={{ fontSize: '1.75rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0, lineHeight: 1.1 }}>Meus Anúncios</h2>
+                                <h2 style={{ fontSize: '1.75rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    Meus Anúncios
+                                    <span style={{ fontSize: '0.9rem', background: 'rgba(0,0,0,0.05)', padding: '0.2rem 0.8rem', borderRadius: '20px', color: '#666', fontWeight: 700 }}>
+                                        {ads.length}
+                                    </span>
+                                </h2>
                                 <p style={{ color: '#666', margin: '4px 0 0', fontSize: '0.95rem' }}>Gerencie sua publicidade e acompanhe os resultados em tempo real</p>
                             </div>
                         </div>

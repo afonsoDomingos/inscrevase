@@ -188,7 +188,12 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
     return (
         <div className="luxury-card" style={{ background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Gestão de Usuários</h3>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    Gestão de Usuários
+                    <span style={{ fontSize: '0.8rem', background: '#f0f0f0', padding: '0.2rem 0.6rem', borderRadius: '20px', color: '#666' }}>
+                        {filteredUsers.length} {filteredUsers.length === 1 ? 'resultado' : 'resultados'}
+                    </span>
+                </h3>
                 <div style={{ position: 'relative', width: '250px' }}>
                     <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                     <input
