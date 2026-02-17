@@ -11,12 +11,12 @@ export interface SponsoredItem {
     _id: string;
     title: string;
     description: string;
-    mediaUrl: string;
+    mediaUrl: string | null;
     mediaType: 'image' | 'video';
     targetUrl: string;
     metadata: {
-        date?: string;
-        location?: string;
+        date?: string | null;
+        location?: string | null;
         category?: string;
     };
 }

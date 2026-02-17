@@ -59,9 +59,6 @@ export default function Home() {
 
         const sponsoredEvents = events.filter(e => e.isSponsored);
 
-        // Map Ads to a compatible format or just combine them
-        // For simplicity, we can pass both to the component if we update it
-        // Or just map them to a common interface
         const combined = [
           ...sponsoredEvents.map(e => ({
             _id: e._id,
@@ -81,7 +78,7 @@ export default function Home() {
             targetUrl: ad.targetUrl,
             metadata: { category: ad.category }
           }))
-        ].sort(() => Math.random() - 0.5);
+        ].sort(() => Math.random() - 0.5) as SponsoredItem[];
 
         setSponsoredItems(combined);
       } catch (error) {
