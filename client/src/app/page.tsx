@@ -17,7 +17,7 @@ import Footer from "@/components/Footer";
 import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
-import { formService, FormModel } from "@/lib/formService";
+import { formService } from "@/lib/formService";
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import Typewriter from "@/components/common/Typewriter";
 import { publicService, PublicImpactStats } from "@/lib/publicService";

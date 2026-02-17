@@ -64,7 +64,8 @@ import {
     AlertTriangle,
     Trophy,
     ExternalLink,
-    Monitor
+    Monitor,
+    Zap
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -1150,8 +1151,8 @@ function MentorDashboardContent() {
                                                 whiteSpace: 'nowrap',
                                                 boxShadow: '0 10px 20px rgba(255,255,255,0.1)'
                                             }}
-                                            onMouseOver={(e: any) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                            onMouseOut={(e: any) => e.currentTarget.style.transform = 'translateY(0)'}
+                                            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0)'}
                                         >
                                             Solicitar Destaque <Megaphone size={18} />
                                         </button>

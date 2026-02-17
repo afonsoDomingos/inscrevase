@@ -6,7 +6,6 @@ import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function AdManagement() {
