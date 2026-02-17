@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
