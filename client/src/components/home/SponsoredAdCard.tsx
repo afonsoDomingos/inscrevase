@@ -6,10 +6,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, MapPin, ChevronRight, Zap, X } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
-import { FormModel } from '@/lib/formService';
+
+export interface SponsoredItem {
+    _id: string;
+    title: string;
+    description: string;
+    mediaUrl: string;
+    mediaType: 'image' | 'video';
+    targetUrl: string;
+    metadata: {
+        date?: string;
+        location?: string;
+        category?: string;
+    };
+}
 
 interface SponsoredAdCardProps {
-    events: any[];
+    events: SponsoredItem[];
 }
 
 export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
@@ -67,7 +80,9 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                 try {
                     const { adService } = await import('@/lib/adService');
                     await adService.trackAdImpression(currentItem._id);
-                } catch (e) { console.error("Error tracking impression", e); }
+                } catch (error: unknown) {
+                    console.error("Error tracking impression", error);
+                }
             };
             trackImpression();
         }
@@ -82,7 +97,9 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
             try {
                 const { adService } = await import('@/lib/adService');
                 await adService.trackAdClick(currentItem._id);
-            } catch (e) { console.error("Error tracking click", e); }
+            } catch (error: unknown) {
+                console.error("Error tracking click", error);
+            }
         }
     };
 
@@ -290,4 +307,3 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         </AnimatePresence>
     );
 }
-

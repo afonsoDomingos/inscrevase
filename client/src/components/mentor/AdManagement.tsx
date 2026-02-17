@@ -1,6 +1,6 @@
 "use client";
 
-import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2 } from 'lucide-react';
+import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -18,10 +18,7 @@ export default function AdManagement() {
     const [uploading, setUploading] = useState(false);
     const [myEvents, setMyEvents] = useState<FormModel[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string>('');
-    const [whatsappNumber, setWhatsappNumber] = useState('');
-    const [linkType, setLinkType] = useState<'url' | 'whatsapp'>('url');
-    const { formatPrice, currency } = useCurrency();
-    const router = useRouter();
+    const { formatPrice } = useCurrency();
 
     const PRICING_PER_WEEK = 5; // USD
 

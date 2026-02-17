@@ -18,7 +18,7 @@ import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService, FormModel } from "@/lib/formService";
-import SponsoredAdCard from "@/components/home/SponsoredAdCard";
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import Typewriter from "@/components/common/Typewriter";
 import { publicService, PublicImpactStats } from "@/lib/publicService";
 import SectorsSection from "@/components/home/SectorsSection";
@@ -41,7 +41,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
-  const [sponsoredItems, setSponsoredItems] = useState<any[]>([]);
+  const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
   const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
   useEffect(() => {
