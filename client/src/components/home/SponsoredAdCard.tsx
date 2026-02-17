@@ -11,7 +11,7 @@ export interface SponsoredItem {
     _id: string;
     title: string;
     description: string;
-    mediaUrl: string | null;
+    mediaUrl?: string | null;
     mediaType: 'image' | 'video';
     targetUrl: string;
     metadata: {
@@ -180,7 +180,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             <div style={{ position: 'relative', height: '140px', width: '100%', background: '#f0f0f0' }}>
                                 {currentItem.mediaType === 'video' ? (
                                     <video
-                                        src={currentItem.mediaUrl}
+                                        src={currentItem.mediaUrl || ""}
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         autoPlay
                                         muted
