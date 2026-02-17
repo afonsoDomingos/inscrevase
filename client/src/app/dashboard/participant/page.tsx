@@ -50,6 +50,8 @@ import { useCurrency } from '@/context/CurrencyContext';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
+import { adService } from '@/lib/adService';
 
 type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile';
 
@@ -89,6 +91,7 @@ export default function ParticipantDashboard() {
     const [targetMentor, setTargetMentor] = useState<{ id: string, name: string } | null>(null);
     const [tickets, setTickets] = useState<SubmissionModel[]>([]);
     const [ticketsLoading, setTicketsLoading] = useState(true);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     const availableMentors = useMemo(() => {
         const mentorsMap = new Map();
@@ -195,9 +198,39 @@ export default function ParticipantDashboard() {
 
                 loadUnreadCounts();
 
-                // Fetch tickets
-                const ticketsData = await submissionService.getParticipantSubmissions();
+                // Fetch tickets and ads simultaneously
+                const [ticketsData, events, activeAds] = await Promise.all([
+                    submissionService.getParticipantSubmissions(),
+                    formService.getExploreEvents().catch(() => []),
+                    adService.getActiveAds().catch(() => [])
+                ]);
+
                 setTickets(ticketsData);
+
+                // Process sponsored items (similar to Home page logic)
+                const sponsoredEvents = events.filter(e => e.isSponsored);
+                const combinedAds = [
+                    ...sponsoredEvents.map(e => ({
+                        _id: e._id,
+                        title: e.title,
+                        description: e.description,
+                        mediaUrl: e.coverImage,
+                        mediaType: 'image' as const,
+                        targetUrl: `/f/${e.slug}`,
+                        metadata: { date: e.eventDate, location: e.location }
+                    })),
+                    ...activeAds.map(ad => ({
+                        _id: ad._id,
+                        title: ad.title,
+                        description: ad.description,
+                        mediaUrl: ad.mediaUrl,
+                        mediaType: ad.mediaType,
+                        targetUrl: ad.targetUrl,
+                        metadata: { category: ad.category }
+                    }))
+                ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+                setSponsoredItems(combinedAds);
             } catch (error) {
                 console.error("Error loading profile:", error);
                 router.push('/entrar');
@@ -684,6 +717,13 @@ export default function ParticipantDashboard() {
                         </div>
                     </div>
                 </header>
+
+                {/* Sponsored Ads Section */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 {user && !user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin' && (
                     <motion.div

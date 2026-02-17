@@ -30,6 +30,9 @@ import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, Cartes
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals';
@@ -123,6 +126,7 @@ export default function AdminDashboard() {
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     const handleMigrateUsers = async () => {
         if (!confirm('Você tem certeza que deseja marcar TODOS os usuários como verificados? Esta ação é irreversível.')) {
@@ -170,12 +174,41 @@ export default function AdminDashboard() {
                 setTrafficStats(trafficData);
 
                 try {
-                    const topMentorsData = await dashboardService.getTopMentors();
+                    const [topMentorsData, ranking, events, activeAds] = await Promise.all([
+                        dashboardService.getTopMentors(),
+                        referralService.getRanking(),
+                        formService.getExploreEvents().catch(() => []),
+                        adService.getActiveAds().catch(() => [])
+                    ]);
                     setTopMentors(topMentorsData);
-                    const ranking = await referralService.getRanking();
                     setReferralRanking(ranking);
+
+                    // Process sponsored items
+                    const sponsoredEvents = events.filter(e => e.isSponsored);
+                    const combinedAds = [
+                        ...sponsoredEvents.map(e => ({
+                            _id: e._id,
+                            title: e.title,
+                            description: e.description,
+                            mediaUrl: e.coverImage,
+                            mediaType: 'image' as const,
+                            targetUrl: `/f/${e.slug}`,
+                            metadata: { date: e.eventDate, location: e.location }
+                        })),
+                        ...activeAds.map(ad => ({
+                            _id: ad._id,
+                            title: ad.title,
+                            description: ad.description,
+                            mediaUrl: ad.mediaUrl,
+                            mediaType: ad.mediaType,
+                            targetUrl: ad.targetUrl,
+                            metadata: { category: ad.category }
+                        }))
+                    ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+                    setSponsoredItems(combinedAds);
                 } catch (e) {
-                    console.error("Top mentors error", e);
+                    console.error("Top mentors or ads error", e);
                 }
 
                 console.log('✅ [Admin Dashboard] Dashboard loaded successfully');
@@ -576,6 +609,13 @@ export default function AdminDashboard() {
                         </button>
                     </div>
                 </header>
+
+                {/* Sponsored Ads Section */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (

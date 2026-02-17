@@ -8,6 +8,9 @@ import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import axios from 'axios';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 
 export default function BlogManagement() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -32,6 +35,7 @@ export default function BlogManagement() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
     const isMobile = windowWidth < 768;
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -47,7 +51,43 @@ export default function BlogManagement() {
 
     useEffect(() => {
         fetchPosts();
+        fetchAds();
     }, []);
+
+    const fetchAds = async () => {
+        try {
+            const [events, activeAds] = await Promise.all([
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
+            ]);
+
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combined = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combined);
+        } catch (error) {
+            console.error("Error fetching ads:", error);
+        }
+    };
 
     const fetchPosts = async () => {
         try {
@@ -237,6 +277,13 @@ export default function BlogManagement() {
                     <Plus size={20} /> Novo Artigo
                 </button>
             </div>
+
+            {/* Sponsored Ads */}
+            {sponsoredItems.length > 0 && (
+                <div style={{ marginBottom: '2.5rem' }}>
+                    <SponsoredAdCard events={sponsoredItems} />
+                </div>
+            )}
 
             {loading ? (
                 <div style={{ textAlign: 'center', padding: '4rem', color: '#666' }}>Carregando...</div>

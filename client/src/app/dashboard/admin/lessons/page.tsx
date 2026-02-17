@@ -19,6 +19,9 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 
 interface Lesson {
     _id: string;
@@ -61,6 +64,7 @@ export default function AdminLessonsPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'url'>('upload');
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -86,7 +90,43 @@ export default function AdminLessonsPage() {
 
     useEffect(() => {
         fetchLessons();
+        fetchAds();
     }, []);
+
+    const fetchAds = async () => {
+        try {
+            const [events, activeAds] = await Promise.all([
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
+            ]);
+
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combined = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combined);
+        } catch (error) {
+            console.error("Error fetching ads:", error);
+        }
+    };
 
     const fetchLessons = async () => {
         try {
@@ -312,6 +352,13 @@ export default function AdminLessonsPage() {
                 </h1>
                 <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para seus usuários</p>
             </div>
+
+            {/* Sponsored Ads */}
+            {sponsoredItems.length > 0 && (
+                <div style={{ marginBottom: '2.5rem' }}>
+                    <SponsoredAdCard events={sponsoredItems} />
+                </div>
+            )}
 
             {/* Stats Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>

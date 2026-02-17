@@ -18,14 +18,54 @@ interface Certificate {
 }
 
 import MentorDashboardShell from '@/components/mentor/MentorDashboardShell';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 
 export default function MyCertificatesPage() {
     const [certificates, setCertificates] = useState<Certificate[]>([]);
     const [loading, setLoading] = useState(true);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     useEffect(() => {
         fetchCertificates();
+        fetchAds();
     }, []);
+
+    const fetchAds = async () => {
+        try {
+            const [events, activeAds] = await Promise.all([
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
+            ]);
+
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combined = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combined);
+        } catch (error) {
+            console.error("Error fetching ads:", error);
+        }
+    };
 
     const fetchCertificates = async () => {
         try {
@@ -64,6 +104,13 @@ export default function MyCertificatesPage() {
                         Visualize e baixe seus certificados de conclusão.
                     </p>
                 </div>
+
+                {/* Sponsored Ads */}
+                {sponsoredItems.length > 0 && (
+                    <div className="mb-10">
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 {certificates.length === 0 ? (
                     <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">

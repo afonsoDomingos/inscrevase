@@ -18,6 +18,8 @@ import Link from 'next/link';
 import AdManagement from '@/components/mentor/AdManagement';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
+import { adService } from '@/lib/adService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
 import ReferralModal from '@/components/mentor/ReferralModal';
@@ -108,6 +110,7 @@ function MentorDashboardContent() {
     const [isResending, setIsResending] = useState(false);
     const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -156,13 +159,40 @@ function MentorDashboardContent() {
 
     const loadDashboard = useCallback(async () => {
         try {
-            const [userProfile, statsData, formsData] = await Promise.all([
+            const [userProfile, statsData, formsData, events, activeAds] = await Promise.all([
                 authService.getProfile(),
                 dashboardService.getMentorStats().catch(() => null), // Fail gracefully if not mentor yet
-                formService.getMyForms().catch(() => [])
+                formService.getMyForms().catch(() => []),
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
             ]);
 
             setUser(userProfile);
+
+            // Process sponsored items
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combinedAds = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combinedAds);
 
             // Redirect if not a mentor or admin
             if (userProfile.role === 'participant') {
@@ -1056,6 +1086,13 @@ function MentorDashboardContent() {
                         </div>
                     </div>
                 </header >
+
+                {/* Sponsored Ads Section */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (

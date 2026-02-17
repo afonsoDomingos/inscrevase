@@ -32,6 +32,9 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import MentorDashboardShell from '@/components/mentor/MentorDashboardShell';
 import { useTranslate } from '@/context/LanguageContext';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -129,6 +132,7 @@ export default function MentorLessonsPage() {
 
 
     const [loading, setLoading] = useState(true);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     useEffect(() => {
         if (activeTab === 'learn') {
@@ -137,7 +141,43 @@ export default function MentorLessonsPage() {
             fetchManageLessons();
             fetchMentorEvents();
         }
+        fetchAds();
     }, [activeTab]);
+
+    const fetchAds = async () => {
+        try {
+            const [events, activeAds] = await Promise.all([
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
+            ]);
+
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combined = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combined);
+        } catch (error) {
+            console.error("Error fetching ads:", error);
+        }
+    };
 
     const fetchMentorEvents = async () => {
         try {
@@ -580,6 +620,13 @@ export default function MentorLessonsPage() {
                         </button>
                     </div>
                 </div>
+
+                {/* Sponsored Ads */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 {/* LEARN TAB CONTENT */}
                 {activeTab === 'learn' && (
