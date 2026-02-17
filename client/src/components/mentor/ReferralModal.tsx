@@ -412,7 +412,22 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                                                     <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{social.name}</span>
                                                 </div>
                                                 <button
-                                                    onClick={() => window.open(social.url, '_blank')}
+                                                    onClick={async () => {
+                                                        window.open(social.url, '_blank');
+                                                        try {
+                                                            const result = await referralService.awardSocialPoints(social.name);
+                                                            toast.success(`+5 pontos por seguir no ${social.name}! 🎯`);
+                                                            // Reload stats to reflect new points
+                                                            loadReferralData();
+                                                        } catch (err: any) {
+                                                            // Fail silently or show specific message if already completed
+                                                            if (err.message && err.message.includes('Missão já concluída')) {
+                                                                // mission already claimed, no need for toast
+                                                            } else {
+                                                                console.error(err);
+                                                            }
+                                                        }
+                                                    }}
                                                     style={{
                                                         background: '#111',
                                                         color: '#FFD700',

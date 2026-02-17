@@ -313,7 +313,11 @@ function LoginContent() {
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <button
                                 type="button"
-                                onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
+                                onClick={() => {
+                                    const ref = searchParams.get('ref') || searchParams.get('referral');
+                                    const refParam = ref ? `?referralCode=${ref}` : '';
+                                    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google${refParam}`;
+                                }}
                                 style={{ flex: 1, padding: '1rem', background: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600 }}
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24">
@@ -325,7 +329,11 @@ function LoginContent() {
                             </button>
                             <button
                                 type="button"
-                                onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`}
+                                onClick={() => {
+                                    const ref = searchParams.get('ref') || searchParams.get('referral');
+                                    const refParam = ref ? `?referralCode=${ref}` : '';
+                                    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin${refParam}`;
+                                }}
                                 style={{ flex: 1, padding: '1rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600 }}
                             >
                                 <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={20} height={20} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn

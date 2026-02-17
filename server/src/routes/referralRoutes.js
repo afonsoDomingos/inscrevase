@@ -10,6 +10,7 @@ router.get('/validate/:code', referralController.validateReferralCode);
 router.get('/stats', authMiddleware, referralController.getReferralStats);
 router.get('/history', authMiddleware, referralController.getReferralHistory);
 router.post('/redeem', authMiddleware, referralController.redeemPoints);
+router.post('/social-points', authMiddleware, referralController.awardSocialPoints);
 
 // Protected (Admin)
 router.get('/admin/ranking', authMiddleware, adminMiddleware, referralController.getAdminRanking);

@@ -27,10 +27,13 @@ router.get('/search-mentors', authMiddleware, searchMentors);
 
 // Google Auth Routes
 router.get('/google', (req, res, next) => {
-    const { role } = req.query;
+    const { role, referralCode } = req.query;
     passport.authenticate('google', {
         scope: ['profile', 'email'],
-        state: JSON.stringify({ role: role || 'mentor' })
+        state: JSON.stringify({
+            role: role || 'mentor',
+            referralCode: referralCode || null
+        })
     })(req, res, next);
 });
 
@@ -45,9 +48,12 @@ router.get('/google/callback',
 
 // LinkedIn Auth Routes
 router.get('/linkedin', (req, res, next) => {
-    const { role } = req.query;
+    const { role, referralCode } = req.query;
     passport.authenticate('linkedin', {
-        state: JSON.stringify({ role: role || 'mentor' })
+        state: JSON.stringify({
+            role: role || 'mentor',
+            referralCode: referralCode || null
+        })
     })(req, res, next);
 });
 

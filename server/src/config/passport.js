@@ -5,8 +5,56 @@ const User = require('../models/User');
 const Submission = require('../models/Submission');
 const axios = require('axios');
 const Notification = require('../models/Notification');
+const Referral = require('../models/Referral');
 const sendEmail = require('../utils/emailService');
-const { generateWelcomeEmail } = require('../utils/emailTemplates');
+const { generateWelcomeEmail, generateReferralBonusEmail } = require('../utils/emailTemplates');
+
+// Helper to handle referrals for social login
+const handleReferral = async (user, referralCode) => {
+    if (!referralCode) return;
+
+    try {
+        const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
+        if (referrer && referrer._id.toString() !== user._id.toString()) {
+            user.referredBy = referrer._id;
+            user.referralPoints = 10; // New user bonus
+
+            // Track referral
+            const newReferral = new Referral({
+                referrer: referrer._id,
+                referredUser: user._id,
+                pointsEarned: 10
+            });
+            await newReferral.save();
+
+            // Update referrer stats
+            referrer.referralPoints = (referrer.referralPoints || 0) + 10;
+            referrer.referralCount = (referrer.referralCount || 0) + 1;
+            await referrer.save();
+
+            // Notify referrer
+            const admin = await User.findOne({ role: { $in: ['admin', 'SuperAdmin'] } });
+            const referralNotification = new Notification({
+                recipient: referrer._id,
+                sender: admin ? admin._id : referrer._id,
+                title: 'Nova Indicação de Sucesso! 🚀',
+                content: `Parabéns! ${user.name} juntou-se à elite da Inscreva.se através do seu convite. Ganhou 10 pontos de impacto!`,
+                type: 'referral'
+            });
+            await referralNotification.save();
+
+            // Notify new user via Email about the bonus
+            try {
+                const bonusEmailHtml = generateReferralBonusEmail(user.name, referrer.name, 10, `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`);
+                await sendEmail(user.email, '🎁 Bónus de Boas-vindas Creditado! - Inscreva-se', bonusEmailHtml);
+            } catch (emailErr) {
+                console.error("Error sending social referral bonus email:", emailErr);
+            }
+        }
+    } catch (err) {
+        console.error("Handle Referral Error (Social):", err);
+    }
+};
 
 // Helper to detect country from profile or IP
 const detectCountry = async (req, profileData) => {
@@ -71,12 +119,14 @@ if (googleClientId && googleClientSecret) {
                 const email = profile.emails[0].value;
                 user = await User.findOne({ email });
 
-                // Extract role from state
+                // Extract role and referralCode from state
                 let role = 'mentor';
+                let referralCode = null;
                 if (req.query.state) {
                     try {
                         const state = JSON.parse(req.query.state);
                         if (state.role) role = state.role;
+                        if (state.referralCode) referralCode = state.referralCode;
                     } catch (e) {
                         console.error("[Passport Google] Error parsing state:", e);
                     }
@@ -100,8 +150,12 @@ if (googleClientId && googleClientSecret) {
                     role: role,
                     password: '',
                     isEmailVerified: true,
-                    country: await detectCountry(req, profile)
+                    country: await detectCountry(req, profile),
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
                 });
+
+                // Apply Referral Logic if applicable
+                await handleReferral(user, referralCode);
 
                 await user.save();
 
@@ -192,12 +246,14 @@ if (linkedinClientId && linkedinClientSecret) {
 
                 user = await User.findOne({ email });
 
-                // Extract role from state
+                // Extract role and referralCode from state
                 let role = 'mentor';
+                let referralCode = null;
                 if (req.query.state) {
                     try {
                         const state = JSON.parse(req.query.state);
                         if (state.role) role = state.role;
+                        if (state.referralCode) referralCode = state.referralCode;
                     } catch (e) {
                         console.error("[Passport LinkedIn] Error parsing state:", e);
                     }
@@ -219,8 +275,12 @@ if (linkedinClientId && linkedinClientSecret) {
                     role: role,
                     password: '',
                     isEmailVerified: true,
-                    country: await detectCountry(req, data)
+                    country: await detectCountry(req, data),
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
                 });
+
+                // Apply Referral Logic if applicable
+                await handleReferral(user, referralCode);
 
                 await user.save();
 

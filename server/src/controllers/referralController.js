@@ -136,11 +136,53 @@ const assignReward = async (req, res) => {
     }
 };
 
+const awardSocialPoints = async (req, res) => {
+    try {
+        const { missionId } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Check if mission already completed
+        if (user.completedMissions && user.completedMissions.includes(missionId)) {
+            return res.status(400).json({ message: 'Missão já concluída anteriormente.' });
+        }
+
+        const POINTS_PER_MISSION = 5;
+
+        // Update user
+        user.referralPoints = (user.referralPoints || 0) + POINTS_PER_MISSION;
+        if (!user.completedMissions) user.completedMissions = [];
+        user.completedMissions.push(missionId);
+
+        await user.save();
+
+        // Notify user
+        const notification = new Notification({
+            recipient: user._id,
+            sender: user._id,
+            title: 'Missão Cumprida! 🎯',
+            content: `Você ganhou ${POINTS_PER_MISSION} pontos por completar a missão "${missionId}". Continue assim!`,
+            type: 'reward'
+        });
+        await notification.save();
+
+        res.json({
+            message: 'Pontos atribuídos com sucesso!',
+            points: user.referralPoints,
+            completedMissions: user.completedMissions
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 module.exports = {
     getReferralStats,
     getReferralHistory,
     validateReferralCode,
     getAdminRanking,
     assignReward,
-    redeemPoints
+    redeemPoints,
+    awardSocialPoints
 };

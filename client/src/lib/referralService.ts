@@ -75,5 +75,20 @@ export const referralService = {
             body: JSON.stringify({ userId, planType, days })
         });
         if (!response.ok) throw new Error('Erro ao atribuir recompensa');
+    },
+
+    async awardSocialPoints(missionId: string): Promise<{ points: number }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/referrals/social-points`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ missionId })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Erro ao atribuir pontos sociais');
+        return data;
     }
 };
