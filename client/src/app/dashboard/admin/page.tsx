@@ -257,7 +257,7 @@ export default function AdminDashboard() {
             setAuditUser(data.user);
             setAuditHistory(data.history);
             setIsAuditModalOpen(true);
-        } catch (_error) {
+        } catch {
             toast.error('Erro ao buscar auditoria de convites');
         } finally {
             setLoading(false);
