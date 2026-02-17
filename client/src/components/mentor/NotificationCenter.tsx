@@ -39,7 +39,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
     useEffect(() => {
         if (!socket) return;
 
-        const handleNewNotification = (notification: any) => {
+        const handleNewNotification = (notification: NotificationModel) => {
             console.log('🔔 Nova notificação recebida via Socket:', notification);
             loadNotifications();
             // Optional: toast.info(`Nova notificação: ${notification.title}`);

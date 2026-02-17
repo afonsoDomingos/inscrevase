@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function AdManagement() {
     const [ads, setAds] = useState<AdRequestModel[]>([]);
@@ -124,8 +124,9 @@ export default function AdManagement() {
             const url = await formService.uploadFile(file, 'ads');
             setForm(prev => ({ ...prev, mediaUrl: url, mediaType }));
             toast.success('Arquivo enviado com sucesso');
-        } catch (err: any) {
-            toast.error(err.message || 'Erro ao subir arquivo');
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message || 'Erro ao subir arquivo');
         } finally {
             setUploading(false);
         }
@@ -141,8 +142,9 @@ export default function AdManagement() {
             setPaymentProof(url);
             setForm(prev => ({ ...prev, paymentProofUrl: url }));
             toast.success('Comprovativo anexado');
-        } catch (err: any) {
-            toast.error(err.message || 'Erro ao subir comprovativo');
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message || 'Erro ao subir comprovativo');
         } finally {
             setUploading(false);
         }
@@ -164,8 +166,9 @@ export default function AdManagement() {
             setShowCreateForm(false);
             setStep(1);
             loadAds();
-        } catch (err: any) {
-            toast.error(err.message || 'Erro ao enviar pedido');
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message || 'Erro ao enviar pedido');
         } finally {
             setIsSubmitting(false);
         }
@@ -223,7 +226,7 @@ export default function AdManagement() {
                                                 ].map((cat) => (
                                                     <button
                                                         key={cat.id}
-                                                        onClick={() => setForm({ ...form, category: cat.id as any })}
+                                                        onClick={() => setForm({ ...form, category: cat.id as AdRequestModel['category'] })}
                                                         className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${form.category === cat.id ? 'border-gold bg-gold/5 text-yellow-800' : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}
                                                     >
                                                         <cat.icon size={24} />
