@@ -15,7 +15,7 @@ import LessonsManager from '@/components/admin/LessonsManager';
 import AdRequestList from '@/components/admin/AdRequestList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -30,6 +30,8 @@ import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, Cartes
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
+import NotificationCenter from '@/components/mentor/NotificationCenter';
+import { notificationService } from '@/lib/notificationService';
 import { adService } from '@/lib/adService';
 import { formService } from '@/lib/formService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
@@ -130,6 +132,8 @@ export default function AdminDashboard() {
     const [auditHistory, setAuditHistory] = useState<ReferralHistory[]>([]);
     const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
 
     const handleMigrateUsers = async () => {
         if (!confirm('Você tem certeza que deseja marcar TODOS os usuários como verificados? Esta ação é irreversível.')) {
@@ -152,6 +156,22 @@ export default function AdminDashboard() {
     };
 
     const { handleMouseMove } = useSpotlight();
+
+    useEffect(() => {
+        loadUnreadNotifications();
+
+        const interval = setInterval(loadUnreadNotifications, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const loadUnreadNotifications = async () => {
+        try {
+            const data = await notificationService.getMyNotifications();
+            setUnreadNotifications(data.filter(n => !n.read).length);
+        } catch {
+            // Silently fail - não é crítico
+        }
+    };
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -507,6 +527,66 @@ export default function AdminDashboard() {
                         alignItems: 'center'
                     }}>
                         <ThemeToggle />
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                title="Notificações"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '40px',
+                                    height: '40px',
+                                    background: '#fff',
+                                    border: '1px solid #FFD700',
+                                    borderRadius: '12px',
+                                    color: '#000',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                    position: 'relative'
+                                }}
+                            >
+                                <Bell size={20} />
+                                {unreadNotifications > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-5px',
+                                        right: '-5px',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 900,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid #fff'
+                                    }}>
+                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '55px',
+                                            right: 0,
+                                            zIndex: 2000
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => { setIsNotificationsOpen(false); loadUnreadNotifications(); }} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                         <button
                             onClick={() => setShowValues(!showValues)}
                             style={{
