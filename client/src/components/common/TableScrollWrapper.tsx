@@ -92,13 +92,14 @@ export default function TableScrollWrapper({ children }: TableScrollWrapperProps
                 ref={scrollRef}
                 style={{
                     overflowX: 'auto',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
+                    overflowY: 'auto',
+                    maxHeight: '600px',
+                    scrollbarWidth: 'thin',
                     position: 'relative',
                     width: '100%',
                     WebkitOverflowScrolling: 'touch'
                 }}
-                className="hide-scrollbar"
+                className="table-wrapper-scroll"
             >
                 {children}
             </div>
@@ -145,6 +146,39 @@ export default function TableScrollWrapper({ children }: TableScrollWrapperProps
                 .hide-scrollbar {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
+                }
+                
+                /* Table wrapper scrollbar styling */
+                .table-wrapper-scroll::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .table-wrapper-scroll::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 10px;
+                }
+                .table-wrapper-scroll::-webkit-scrollbar-thumb {
+                    background: #FFD700;
+                    border-radius: 10px;
+                }
+                .table-wrapper-scroll::-webkit-scrollbar-thumb:hover {
+                    background: #B8860B;
+                }
+                
+                /* Sticky table header */
+                .table-wrapper-scroll table thead th {
+                    position: sticky;
+                    top: 0;
+                    background: #fff;
+                    z-index: 10;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                
+                /* Dark mode support */
+                @media (prefers-color-scheme: dark) {
+                    .table-wrapper-scroll table thead th {
+                        background: #1a1a1a;
+                    }
                 }
             `}</style>
         </div>
