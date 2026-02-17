@@ -25,6 +25,7 @@ router.get('/connect/status', authMiddleware, stripeController.getAccountStatus)
 
 // Create checkout session for event payment
 router.post('/checkout/create', stripeController.createCheckoutSession);
+router.post('/checkout/ad', authMiddleware, stripeController.createAdCheckoutSession);
 
 // Verify payment after checkout
 router.post('/payment/verify', stripeController.verifyPayment);

@@ -4,8 +4,16 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const Submission = require('../models/Submission');
+const AdRequest = require('../models/AdRequest');
 const { PLANS } = require('../config/stripe');
 const GlobalSettings = require('../models/GlobalSettings');
+const sendEmail = require('../utils/emailService');
+const {
+    generateSubscriptionConfirmationEmail,
+    generatePaymentProofReceivedEmail,
+    generatePaymentFailedEmail,
+    generatePaymentRejectedEmail
+} = require('../utils/emailTemplates');
 
 
 /**
@@ -188,6 +196,55 @@ exports.createCheckoutSession = async (req, res) => {
     }
 };
 
+exports.createAdCheckoutSession = async (req, res) => {
+    try {
+        const { adData } = req.body;
+        const userId = req.user.id;
+
+        // Duration weeks * base price ($5)
+        const amount = Math.round(adData.durationWeeks * 5 * 100);
+
+        const session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            payment_method_types: ['card'],
+            customer_email: req.user.email,
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: `Anúncio: ${adData.title}`,
+                        description: `Publicidade Premium no Inscreva-se - ${adData.durationWeeks} semanas`,
+                        images: adData.mediaType === 'image' ? [adData.mediaUrl] : [],
+                    },
+                    unit_amount: amount,
+                },
+                quantity: 1,
+            }],
+            metadata: {
+                type: 'ad_purchase',
+                userId: userId,
+                adData: JSON.stringify({
+                    title: adData.title,
+                    description: adData.description,
+                    category: adData.category,
+                    mediaUrl: adData.mediaUrl,
+                    mediaType: adData.mediaType,
+                    durationWeeks: adData.durationWeeks,
+                    targetUrl: adData.targetUrl,
+                    paymentMethod: 'stripe'
+                })
+            },
+            success_url: `${process.env.CLIENT_URL}/dashboard/mentor?ad_payment=success`,
+            cancel_url: `${process.env.CLIENT_URL}/anunciar?payment=cancel`,
+        });
+
+        res.status(200).json({ success: true, url: session.url, sessionId: session.id });
+    } catch (error) {
+        console.error('Ad Checkout Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const completeOrder = async (session) => {
     try {
         console.log('--- PROCESSING SUCCESSFUL ORDER ---');
@@ -214,6 +271,52 @@ const completeOrder = async (session) => {
 
         // 3. Extract metadata
         const metadata = expandedSession.metadata;
+
+        // --- Handle Ad Purchase ---
+        if (metadata.type === 'ad_purchase') {
+            console.log('💎 [Stripe Webhook] Processing Ad Purchase...');
+            const adData = JSON.parse(metadata.adData);
+            const userId = metadata.userId;
+
+            // Create the AdRequest
+            const adRequest = new AdRequest({
+                ...adData,
+                userId,
+                status: 'pending', // Still needs admin review of content
+                paymentStatus: 'paid',
+                stripePaymentIntentId: paymentIntent.id,
+                stripeSessionId: session.id,
+                priceTotal: expandedSession.amount_total / 100,
+                currency: expandedSession.currency.toUpperCase()
+            });
+
+            await adRequest.save();
+            console.log('✅ [Stripe Webhook] AdRequest created:', adRequest._id);
+
+            // Create transaction for platform revenue (Admin view)
+            const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+            const amount = expandedSession.amount_total / 100;
+
+            const transaction = new Transaction({
+                type: 'ad_purchase',
+                user: userId,
+                amount: amount,
+                currency: expandedSession.currency.toUpperCase(),
+                baseAmount: amount * rate,
+                exchangeRate: rate,
+                platformFee: amount, // Full amount goes to platform
+                basePlatformFee: amount * rate,
+                status: 'completed',
+                paymentMethod: 'stripe',
+                stripePaymentIntentId: paymentIntent.id,
+                stripeSessionId: session.id,
+                metadata: { adRequestId: adRequest._id.toString() }
+            });
+            await transaction.save();
+
+            return adRequest;
+        }
+
         const formId = metadata.formId;
         const submissionData = JSON.parse(metadata.submissionData);
 
@@ -413,6 +516,13 @@ exports.handleWebhook = async (req, res) => {
                 await User.findByIdAndUpdate(userId, updateData);
                 console.log(`✅ [Stripe Webhook] User ${userId} (${user?.role}) upgraded to ${plan}`);
 
+                // Enviar e-mail de confirmação
+                if (user && user.email) {
+                    const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl);
+                    sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
+                }
+
                 // Check if transaction already created by invoice.paid
                 const existingTx = await Transaction.findOne({ stripeSessionId: session.id });
                 if (!existingTx) {
@@ -463,6 +573,13 @@ exports.handleWebhook = async (req, res) => {
 
                 await User.findByIdAndUpdate(userId, updateData);
 
+                // Enviar e-mail de confirmação
+                if (user && user.email) {
+                    const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl);
+                    sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
+                }
+
                 const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
                 if (!existingTx) {
                     const rate = invoice.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
@@ -485,6 +602,23 @@ exports.handleWebhook = async (req, res) => {
                     await tx.save();
                     console.log('💰 [Stripe Webhook] Transaction created/verified via Invoice');
                 }
+            }
+        }
+    } else if (event.type === 'invoice.payment_failed') {
+        const invoice = event.data.object;
+        if (invoice.subscription) {
+            const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+            const userId = subscription.metadata.userId;
+            const plan = subscription.metadata.plan || 'pro';
+
+            if (userId) {
+                const user = await User.findById(userId);
+                if (user && user.email) {
+                    const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+                    const emailHtml = generatePaymentFailedEmail(user.name, plan, dashboardUrl);
+                    sendEmail(user.email, `Problema com o Pagamento: Plano ${plan.toUpperCase()}`, emailHtml);
+                }
+                console.log(`❌ [Stripe Webhook] Payment failed for user ${userId}`);
             }
         }
     } else if (event.type === 'customer.subscription.deleted') {
@@ -777,6 +911,13 @@ exports.confirmTransactionPayment = async (req, res) => {
 
             await User.findByIdAndUpdate(transaction.user._id, updateData);
             console.log(`User ${transaction.user._id} manually upgraded to ${plan}. Final Role: ${updateData.role || user?.role}`);
+
+            // Enviar e-mail de confirmação (Manual)
+            if (user && user.email) {
+                const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+                const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl);
+                sendEmail(user.email, `Sua Assinatura foi Ativada: Plano ${plan.toUpperCase()}`, emailHtml);
+            }
         }
 
         res.status(200).json({ success: true, message: 'Pagamento confirmado e plano atualizado.' });
@@ -795,6 +936,14 @@ exports.rejectTransactionPayment = async (req, res) => {
 
         transaction.status = 'rejected';
         await transaction.save();
+
+        const user = await User.findById(transaction.user);
+        const plan = transaction.metadata.get('plan') || 'pro';
+        if (user && user.email) {
+            const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+            const emailHtml = generatePaymentRejectedEmail(user.name, plan, dashboardUrl);
+            sendEmail(user.email, `Pagamento Rejeitado: Plano ${plan.toUpperCase()}`, emailHtml);
+        }
 
         res.status(200).json({ success: true, message: 'Pagamento rejeitado.' });
     } catch (error) {
@@ -847,6 +996,13 @@ exports.submitManualSubscription = async (req, res) => {
         });
 
         await transaction.save();
+
+        // Enviar e-mail de recepção de comprovante
+        if (user && user.email) {
+            const emailHtml = generatePaymentProofReceivedEmail(user.name, plan);
+            sendEmail(user.email, `Recebemos seu comprovante: Plano ${plan.toUpperCase()}`, emailHtml);
+        }
+
         res.status(201).json({ success: true, message: 'Solicitação de assinatura enviada com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: error.message });

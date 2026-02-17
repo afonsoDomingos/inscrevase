@@ -9,6 +9,7 @@ import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
+import { adService } from "@/lib/adService";
 import Cookies from "js-cookie";
 import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
@@ -40,7 +41,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
-  const [sponsoredEvents, setSponsoredEvents] = useState<FormModel[]>([]);
+  const [sponsoredItems, setSponsoredItems] = useState<any[]>([]);
   const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
   useEffect(() => {
@@ -51,13 +52,40 @@ export default function Home() {
 
     const fetchSponsored = async () => {
       try {
-        const events = await formService.getExploreEvents();
-        const sponsored = events.filter(e => e.isSponsored);
-        // Randomize the order so different ads get featured first
-        const shuffled = [...sponsored].sort(() => Math.random() - 0.5);
-        setSponsoredEvents(shuffled);
+        const [events, activeAds] = await Promise.all([
+          formService.getExploreEvents(),
+          adService.getActiveAds()
+        ]);
+
+        const sponsoredEvents = events.filter(e => e.isSponsored);
+
+        // Map Ads to a compatible format or just combine them
+        // For simplicity, we can pass both to the component if we update it
+        // Or just map them to a common interface
+        const combined = [
+          ...sponsoredEvents.map(e => ({
+            _id: e._id,
+            title: e.title,
+            description: e.description,
+            mediaUrl: e.coverImage,
+            mediaType: 'image' as const,
+            targetUrl: `/f/${e.slug}`,
+            metadata: { date: e.eventDate, location: e.location }
+          })),
+          ...activeAds.map(ad => ({
+            _id: ad._id,
+            title: ad.title,
+            description: ad.description,
+            mediaUrl: ad.mediaUrl,
+            mediaType: ad.mediaType,
+            targetUrl: ad.targetUrl,
+            metadata: { category: ad.category }
+          }))
+        ].sort(() => Math.random() - 0.5);
+
+        setSponsoredItems(combined);
       } catch (error) {
-        console.error("Error fetching sponsored events:", error);
+        console.error("Error fetching sponsored items:", error);
       }
     };
     fetchSponsored();
@@ -405,8 +433,8 @@ export default function Home() {
       </section>
 
       {/* Sponsored Ad System */}
-      {sponsoredEvents.length > 0 && (
-        <SponsoredAdCard events={sponsoredEvents} />
+      {sponsoredItems.length > 0 && (
+        <SponsoredAdCard events={sponsoredItems} />
       )}
 
       {/* Stats Section - Luxury Dark Mode */}

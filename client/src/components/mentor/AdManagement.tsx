@@ -1,19 +1,58 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle } from 'lucide-react';
+import { Megaphone, Plus, Clock, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
+import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
 
 export default function AdManagement() {
     const [ads, setAds] = useState<AdRequestModel[]>([]);
     const [loading, setLoading] = useState(true);
-    const { formatPrice } = useCurrency();
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [step, setStep] = useState(1);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [myEvents, setMyEvents] = useState<FormModel[]>([]);
+    const [selectedEventId, setSelectedEventId] = useState<string>('');
+    const [whatsappNumber, setWhatsappNumber] = useState('');
+    const [linkType, setLinkType] = useState<'url' | 'whatsapp'>('url');
+    const { formatPrice, currency } = useCurrency();
     const router = useRouter();
+
+    const PRICING_PER_WEEK = 5; // USD
+
+    const [form, setForm] = useState<AdRequestModel>({
+        title: '',
+        description: '',
+        category: 'event',
+        mediaUrl: '',
+        mediaType: 'image',
+        durationWeeks: 1,
+        priceTotal: PRICING_PER_WEEK,
+        paymentMethod: 'manual',
+        status: 'pending',
+        targetUrl: ''
+    });
+
+    const [paymentProof, setPaymentProof] = useState<string | null>(null);
+
+    useEffect(() => {
+        loadAds();
+        loadMyEvents();
+    }, []);
+
+    const loadMyEvents = async () => {
+        try {
+            const data = await formService.getMyForms();
+            setMyEvents(data);
+        } catch (error) {
+            console.error('Error loading events:', error);
+        }
+    };
 
     useEffect(() => {
         loadAds();
@@ -55,12 +94,385 @@ export default function AdManagement() {
         }
     };
 
+    const handleEventSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const eventId = e.target.value;
+        setSelectedEventId(eventId);
+
+        if (eventId && eventId !== 'custom') {
+            const event = myEvents.find(ev => ev._id === eventId);
+            if (event) {
+                setForm(prev => ({
+                    ...prev,
+                    title: event.title,
+                    description: event.description.substring(0, 150),
+                    mediaUrl: event.coverImage || '',
+                    targetUrl: `${window.location.origin}/f/${event.slug}`
+                }));
+            }
+        }
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const isVideo = file.type.startsWith('video/');
+        const mediaType = isVideo ? 'video' : 'image';
+
+        setUploading(true);
+        try {
+            const url = await formService.uploadFile(file, 'ads');
+            setForm(prev => ({ ...prev, mediaUrl: url, mediaType }));
+            toast.success('Arquivo enviado com sucesso');
+        } catch (err: any) {
+            toast.error(err.message || 'Erro ao subir arquivo');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleProofUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const url = await formService.uploadFile(file, 'payments');
+            setPaymentProof(url);
+            setForm(prev => ({ ...prev, paymentProofUrl: url }));
+            toast.success('Comprovativo anexado');
+        } catch (err: any) {
+            toast.error(err.message || 'Erro ao subir comprovativo');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleSubmitAd = async () => {
+        setIsSubmitting(true);
+        try {
+            if (form.paymentMethod === 'stripe') {
+                const checkout = await adService.createAdCheckout(form);
+                if (checkout.url) {
+                    window.location.href = checkout.url;
+                    return;
+                }
+            }
+
+            await adService.submitAdRequest(form);
+            toast.success('Pedido de anúncio enviado com sucesso!');
+            setShowCreateForm(false);
+            setStep(1);
+            loadAds();
+        } catch (err: any) {
+            toast.error(err.message || 'Erro ao enviar pedido');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center p-20">
                 <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
                     <Megaphone size={40} className="text-gold" />
                 </motion.div>
+            </div>
+        );
+    }
+
+    if (showCreateForm) {
+        return (
+            <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setShowCreateForm(false)}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                        <ArrowLeft size={24} />
+                    </button>
+                    <h2 className="text-2xl font-black">Solicitar Novo Destaque</h2>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Form Part */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-xl">
+                            <div className="flex gap-2 mb-8">
+                                {[1, 2, 3].map((s) => (
+                                    <div key={s} className={`flex-1 h-2 rounded-full transition-all duration-500 ${s <= step ? 'bg-gradient-to-r from-gold to-yellow-500' : 'bg-gray-100'}`} />
+                                ))}
+                            </div>
+
+                            <AnimatePresence mode="wait">
+                                {step === 1 && (
+                                    <motion.div
+                                        key="step1"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 20 }}
+                                        className="space-y-6"
+                                    >
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">O que deseja promover?</label>
+                                            <div className="grid grid-cols-3 gap-3">
+                                                {[
+                                                    { id: 'event', label: 'Evento', icon: Calendar },
+                                                    { id: 'service', label: 'Serviço', icon: Briefcase },
+                                                    { id: 'product', label: 'Produto', icon: Package }
+                                                ].map((cat) => (
+                                                    <button
+                                                        key={cat.id}
+                                                        onClick={() => setForm({ ...form, category: cat.id as any })}
+                                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${form.category === cat.id ? 'border-gold bg-gold/5 text-yellow-800' : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}
+                                                    >
+                                                        <cat.icon size={24} />
+                                                        <span className="text-xs font-bold">{cat.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {form.category === 'event' && (
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Selecione o Evento</label>
+                                                <select
+                                                    value={selectedEventId}
+                                                    onChange={handleEventSelect}
+                                                    className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-gold outline-none font-bold"
+                                                >
+                                                    <option value="">-- Escolher um evento meu --</option>
+                                                    {myEvents.map(ev => (
+                                                        <option key={ev._id} value={ev._id}>{ev.title}</option>
+                                                    ))}
+                                                    <option value="custom">-- Criar anúncio personalizado --</option>
+                                                </select>
+                                            </div>
+                                        )}
+
+                                        {(form.category !== 'event' || selectedEventId === 'custom') && (
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Título do Anúncio</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.title}
+                                                        onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                                        placeholder="Ex: Masterclass Premium"
+                                                        className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-gold outline-none"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Descrição</label>
+                                                    <textarea
+                                                        value={form.description}
+                                                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                                        rows={3}
+                                                        placeholder="Breve descrição para atrair cliques..."
+                                                        className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-gold outline-none resize-none"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            onClick={() => setStep(2)}
+                                            disabled={!form.title}
+                                            className="w-full p-4 bg-black text-white rounded-xl font-bold hover:bg-gray-900 transition-all disabled:opacity-50"
+                                        >
+                                            Continuar
+                                        </button>
+                                    </motion.div>
+                                )}
+
+                                {step === 2 && (
+                                    <motion.div
+                                        key="step2"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 20 }}
+                                        className="space-y-6"
+                                    >
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Visual e Mídia</label>
+                                            <div className="relative border-4 border-dashed border-gray-100 rounded-3xl p-8 text-center hover:border-gold/30 transition-colors group">
+                                                {form.mediaUrl ? (
+                                                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+                                                        {form.mediaType === 'video' ? (
+                                                            <video src={form.mediaUrl} autoPlay muted loop className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <Image src={form.mediaUrl} alt="Preview" fill className="object-cover" />
+                                                        )}
+                                                        <button
+                                                            onClick={() => setForm({ ...form, mediaUrl: '' })}
+                                                            className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white p-2 rounded-full hover:bg-red-500 transition-colors"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="py-10">
+                                                        <Upload className="mx-auto text-gray-300 mb-4 group-hover:text-gold transition-colors" size={48} />
+                                                        <p className="text-gray-500 font-bold mb-1">Upload de Imagem ou Vídeo</p>
+                                                        <p className="text-xs text-gray-400">Arraste aqui ou clique para selecionar</p>
+                                                        <input
+                                                            type="file"
+                                                            onChange={handleFileUpload}
+                                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                                            accept="image/*,video/*"
+                                                        />
+                                                    </div>
+                                                )}
+                                                {uploading && (
+                                                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-3xl">
+                                                        <div className="flex flex-col items-center gap-3">
+                                                            <div className="w-10 h-10 border-4 border-gold border-t-transparent rounded-full animate-spin" />
+                                                            <p className="text-sm font-black text-gray-900 tracking-widest uppercase">Subindo...</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Duração do Destaque</label>
+                                            <div className="grid grid-cols-4 gap-2">
+                                                {[1, 2, 3, 4].map(w => (
+                                                    <button
+                                                        key={w}
+                                                        onClick={() => setForm({ ...form, durationWeeks: w, priceTotal: w * PRICING_PER_WEEK })}
+                                                        className={`p-3 rounded-xl border-2 font-black transition-all ${form.durationWeeks === w ? 'border-gold bg-gold text-black' : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}
+                                                    >
+                                                        {w}W
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100 flex items-center justify-between">
+                                                <span className="text-sm font-bold text-yellow-800">Investimento Total</span>
+                                                <span className="text-lg font-black text-yellow-900">{formatPrice(form.durationWeeks * PRICING_PER_WEEK, 'USD')}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                            <button onClick={() => setStep(1)} className="flex-1 p-4 bg-gray-100 rounded-xl font-bold">Voltar</button>
+                                            <button
+                                                onClick={() => setStep(3)}
+                                                disabled={!form.mediaUrl}
+                                                className="flex-[2] p-4 bg-black text-white rounded-xl font-bold disabled:opacity-50"
+                                            >
+                                                Ir para Pagamento
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {step === 3 && (
+                                    <motion.div
+                                        key="step3"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 20 }}
+                                        className="space-y-6"
+                                    >
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-black text-gray-700 uppercase tracking-wider">Método de Pagamento</label>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <button
+                                                    onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
+                                                    className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${form.paymentMethod === 'stripe' ? 'border-gold bg-gold/5 text-yellow-900' : 'border-gray-100 text-gray-400 hover:shadow-md'}`}
+                                                >
+                                                    <CreditCard size={32} />
+                                                    <span className="font-black text-sm">Cartão / Stripe</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
+                                                    className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${form.paymentMethod === 'manual' ? 'border-gold bg-gold/5 text-yellow-900' : 'border-gray-100 text-gray-400 hover:shadow-md'}`}
+                                                >
+                                                    <Megaphone size={32} />
+                                                    <span className="font-black text-sm">M-Pesa / E-Mola</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {form.paymentMethod === 'manual' && (
+                                            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-200 space-y-4">
+                                                <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Contas para Depósito</p>
+                                                <div className="text-sm space-y-2 font-bold text-gray-700">
+                                                    <div className="flex justify-between"><span>M-Pesa:</span> <span>84 123 4567</span></div>
+                                                    <div className="flex justify-between"><span>E-Mola:</span> <span>86 123 4567</span></div>
+                                                    <div className="flex justify-between"><span>NIB:</span> <span>123456789 (BCI)</span></div>
+                                                </div>
+                                                <div className="relative border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-gold/30 transition-colors">
+                                                    {paymentProof ? (
+                                                        <div className="flex items-center justify-center gap-2 text-green-600 font-black">
+                                                            <CheckCircle2 size={20} /> Comprovativo Anexado
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <Upload className="mx-auto text-gray-300 mb-2" size={24} />
+                                                            <p className="text-xs text-gray-400 font-bold">Anexar Comprovativo</p>
+                                                            <input type="file" onChange={handleProofUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-3">
+                                            <button onClick={() => setStep(2)} className="flex-1 p-4 bg-gray-100 rounded-xl font-bold">Voltar</button>
+                                            <button
+                                                onClick={handleSubmitAd}
+                                                disabled={isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)}
+                                                className="flex-[2] p-4 bg-gradient-to-r from-gold to-yellow-500 text-black font-black rounded-xl hover:shadow-xl transition-all disabled:opacity-50"
+                                            >
+                                                {isSubmitting ? 'Processando...' : `Pagar ${formatPrice(form.priceTotal, 'USD')}`}
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+
+                    {/* Preview Part */}
+                    <div className="space-y-4">
+                        <label className="block text-sm font-black text-gray-500 uppercase tracking-wider text-center">Pré-visualização</label>
+                        <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 sticky top-24">
+                            <div className="relative aspect-[4/5] bg-gray-50">
+                                {form.mediaUrl ? (
+                                    form.mediaType === 'video' ? (
+                                        <video src={form.mediaUrl} autoPlay muted loop className="w-full h-full object-cover" />
+                                    ) : (
+                                        <Image src={form.mediaUrl} alt="Preview" fill className="object-cover" />
+                                    )
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <Megaphone size={64} className="text-gray-100" />
+                                    </div>
+                                )}
+                                <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md text-gold px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
+                                    <Zap size={12} fill="#FFD700" className="animate-pulse" /> {form.category || 'Patrocinado'}
+                                </div>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <h4 className="text-xl font-black text-gray-900 leading-tight">
+                                    {form.title || 'Título do seu anúncio premium'}
+                                </h4>
+                                <div className="flex flex-wrap gap-3">
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
+                                        <Calendar size={14} className="text-gold" /> Hoje
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
+                                        <MapPin size={14} className="text-gold" /> Global
+                                    </div>
+                                </div>
+                                <div className="w-full p-4 bg-black text-white rounded-2xl text-center font-black text-sm uppercase tracking-widest shadow-lg">
+                                    Saiba Mais
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -84,10 +496,10 @@ export default function AdManagement() {
                         </div>
                     </div>
                     <button
-                        onClick={() => router.push('/anunciar')}
+                        onClick={() => setShowCreateForm(true)}
                         className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3.5 rounded-xl hover:bg-gray-900 hover:scale-105 transition-all font-bold shadow-lg hover:shadow-xl text-sm md:text-base w-full lg:w-auto"
                     >
-                        <Plus size={20} /> Criar Novo Anúncio
+                        <Plus size={20} /> Solicitar Destaque
                     </button>
                 </div>
             </motion.div>
@@ -106,7 +518,7 @@ export default function AdManagement() {
                         Comece a promover seus eventos, serviços ou produtos para milhares de potenciais clientes na nossa plataforma.
                     </p>
                     <button
-                        onClick={() => router.push('/anunciar')}
+                        onClick={() => setShowCreateForm(true)}
                         className="bg-gradient-to-r from-gold to-yellow-500 text-black px-10 py-4 rounded-xl font-black hover:shadow-2xl hover:scale-105 transition-all text-lg"
                     >
                         Começar Agora

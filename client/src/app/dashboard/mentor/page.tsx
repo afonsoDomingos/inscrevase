@@ -247,6 +247,15 @@ function MentorDashboardContent() {
         }
     }, [searchParams, router, t]);
 
+    // Handle ad payment success
+    useEffect(() => {
+        if (searchParams.get('ad_payment') === 'success') {
+            toast.success('Pagamento do anúncio confirmado! Nosso time irá revisar o conteúdo em breve.');
+            setActiveTab('ads');
+            router.replace('/dashboard/mentor'); // clear param
+        }
+    }, [searchParams, router]);
+
     const refreshData = useCallback(async () => {
         try {
             const [supportData, notificationData, statsData] = await Promise.all([
@@ -1092,6 +1101,62 @@ function MentorDashboardContent() {
                                 <div style={{ position: 'absolute', bottom: '-5%', left: '-5%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)', pointerEvents: 'none' }} />
 
                                 <div style={{ position: 'relative', zIndex: 1 }}>
+                                    {/* Promotion Banner for Ads Portal */}
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        style={{
+                                            background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
+                                            borderRadius: '24px',
+                                            padding: isMobile ? '1.5rem' : '2rem',
+                                            marginBottom: '2rem',
+                                            display: 'flex',
+                                            flexDirection: isMobile ? 'column' : 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: '2rem',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+                                        }}
+                                    >
+                                        <div style={{ position: 'absolute', top: 0, right: 0, width: '40%', height: '100%', background: 'radial-gradient(circle at 70% 30%, rgba(255,215,0,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+                                        <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
+                                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'var(--gold-gradient)', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#000', marginBottom: '1rem' }}>
+                                                <Zap size={12} fill="#000" /> Novidade: Portal de Destaques
+                                            </div>
+                                            <h4 style={{ color: '#fff', fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Destaque seu Evento hoje!</h4>
+                                            <p style={{ color: '#aaa', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                                                Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={() => setActiveTab('ads')}
+                                            style={{
+                                                background: '#fff',
+                                                color: '#000',
+                                                padding: '1rem 2rem',
+                                                borderRadius: '12px',
+                                                fontWeight: 800,
+                                                fontSize: '0.9rem',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                transition: 'all 0.3s',
+                                                whiteSpace: 'nowrap',
+                                                boxShadow: '0 10px 20px rgba(255,255,255,0.1)'
+                                            }}
+                                            onMouseOver={(e: any) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                            onMouseOut={(e: any) => e.currentTarget.style.transform = 'translateY(0)'}
+                                        >
+                                            Solicitar Destaque <Megaphone size={18} />
+                                        </button>
+                                    </motion.div>
+
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                         <h3 style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{t('dashboard.recentEvents')}</h3>
                                         <button onClick={() => setActiveTab('forms')} style={{ background: 'none', border: 'none', color: '#FFD700', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>{t('dashboard.viewAll')}</button>

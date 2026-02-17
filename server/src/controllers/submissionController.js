@@ -663,10 +663,139 @@ const updateCertificateStatus = async (req, res) => {
     }
 };
 
+const bulkUpdateSubmissions = async (req, res) => {
+    try {
+        const { submissionIds, status, action } = req.body;
+        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
+            return res.status(400).json({ message: 'Nenhuma inscrição selecionada' });
+        }
+
+        console.log(`[Submission] Bulk ${action || 'status update'} for ${submissionIds.length} items to ${status}`);
+
+        // Get all target submissions to verify ownership
+        const submissions = await Submission.find({ _id: { $in: submissionIds } }).populate('form');
+
+        // Filter those that the user is authorized to modify
+        const authorizedSubmissions = submissions.filter(sub => {
+            const isCreator = sub.form.creator.toString() === req.user.id;
+            const isPartner = sub.form.partners && sub.form.partners.some(p => p.toString() === req.user.id);
+            const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+            return isCreator || isPartner || isAdmin;
+        });
+
+        if (authorizedSubmissions.length === 0) {
+            return res.status(403).json({ message: 'Não autorizado para modificar estas inscrições' });
+        }
+
+        const authorizedIds = authorizedSubmissions.map(s => s._id);
+
+        if (action === 'delete') {
+            await Submission.deleteMany({ _id: { $in: authorizedIds } });
+            return res.json({ success: true, message: `${authorizedIds.length} inscrições eliminadas com sucesso` });
+        }
+
+        // For status updates, we loop to trigger the notification and financial logic
+        // This is safer than updateMany which bypasses middleware/hooks and manual logic
+        const results = await Promise.all(authorizedSubmissions.map(async (sub) => {
+            try {
+                // Reuse existing updateStatus logic but locally
+                sub.status = status;
+
+                // Logic for notification & finance (simplified version of updateStatus)
+                if (status === 'approved' && sub.form.paymentConfig?.enabled) {
+                    const existingTx = await Transaction.findOne({ submission: sub._id });
+                    if (!existingTx) {
+                        const mentor = await User.findById(sub.form.creator);
+                        if (mentor) {
+                            const mentorPlan = mentor.plan || 'free';
+                            const planConfig = PLANS[mentorPlan] || PLANS.free;
+                            const amount = sub.form.paymentConfig.price || 0;
+                            const platformFee = amount * planConfig.commissionRate;
+                            const currency = sub.form.paymentConfig.currency || 'MZN';
+
+                            const transaction = new Transaction({
+                                user: sub.user || mentor._id,
+                                mentor: mentor._id,
+                                form: sub.form._id,
+                                submission: sub._id,
+                                amount, currency, baseAmount: amount,
+                                platformFee, basePlatformFee: platformFee,
+                                mentorEarnings: amount, baseMentorEarnings: amount,
+                                status: 'pending', paymentMethod: 'manual'
+                            });
+                            await transaction.save();
+                            sub.paymentStatus = 'paid';
+                        }
+                    }
+                }
+
+                // Notifications
+                if (status === 'approved' || status === 'rejected') {
+                    let participantEmail = null;
+                    if (sub.user) {
+                        const user = await User.findById(sub.user);
+                        if (user) participantEmail = user.email;
+                    }
+
+                    if (!participantEmail) {
+                        const dataObj = sub.data instanceof Map ? Object.fromEntries(sub.data) : (typeof sub.data === 'object' ? sub.data : {});
+                        const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                        for (const key of emailKeys) {
+                            if (dataObj[key]) { participantEmail = dataObj[key]; break; }
+                        }
+                    }
+
+                    if (participantEmail) {
+                        const participantName = (sub.data instanceof Map ? sub.data.get('nome') : sub.data.nome) || 'Participante';
+                        const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${sub._id}`;
+
+                        let content = status === 'approved'
+                            ? `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${sub.form.title}</strong>" foi aprovada com sucesso!`
+                            : `Olá ${participantName}. Informamos que sua inscrição no evento "<strong>${sub.form.title}</strong>" não pôde ser aprovada neste momento.`;
+
+                        const title = status === 'approved' ? '✅ Inscrição Confirmada!' : '❌ Status da Inscrição';
+                        const color = status === 'approved' ? '#28a745' : '#e02424';
+
+                        const emailHtml = generateBasicEmail(title, participantName, content, status === 'approved' ? 'Aceder ao Hub' : 'Contactar Suporte', status === 'approved' ? hubUrl : '/suporte', color);
+                        sendEmail(participantEmail, `${title}: ${sub.form.title}`, emailHtml);
+                    }
+
+                    if (sub.user) {
+                        await NotificationService.notify({
+                            recipient: sub.user,
+                            sender: sub.form.creator,
+                            title: status === 'approved' ? 'Inscrição Aprovada! 🎉' : 'Atualização na Inscrição ⚠️',
+                            content: status === 'approved' ? `Sua inscrição em "${sub.form.title}" foi aprovada.` : `Sua inscrição em "${sub.form.title}" não foi aprovada.`,
+                            type: status === 'approved' ? 'personal' : 'alert',
+                            actionUrl: status === 'approved' ? `/hub/${sub._id}` : '/dashboard/participant'
+                        });
+                    }
+                }
+
+                await sub.save();
+                return { id: sub._id, success: true };
+            } catch (err) {
+                return { id: sub._id, success: false, error: err.message };
+            }
+        }));
+
+        res.json({
+            success: true,
+            message: `${results.filter(r => r.success).length} inscrições atualizadas com sucesso`,
+            results
+        });
+
+    } catch (err) {
+        console.error('[Submission] Bulk error:', err);
+        res.status(500).json({ message: 'Erro ao processar atualização em massa', error: err.message });
+    }
+};
+
 module.exports = {
     submitForm,
     getFormSubmissions,
     updateStatus,
+    bulkUpdateSubmissions,
     getAllSubmissionsAdmin,
     getMySubmissions,
     getSubmissionPublic,

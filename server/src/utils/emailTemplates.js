@@ -205,11 +205,183 @@ const generateReferralBonusEmail = (name, referrerName, points, dashboardUrl) =>
     `;
 };
 
+const generateSubscriptionConfirmationEmail = (name, planName, dashboardUrl) => {
+    const isEnterprise = planName.toLowerCase() === 'enterprise';
+    const accentColor = isEnterprise ? "#000000" : "#D4AF37";
+    const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Pagamento Confirmado! 💎</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Incrível, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Seu pagamento foi processado com sucesso e sua conta acaba de ser elevada ao status de elite. Bem-vindo ao plano: 
+                        <br>
+                        <strong style="color: #D4AF37; font-size: 20px;">Inscreva-se ${planLabel}</strong>
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee;">
+                        <p style="margin: 0 0 15px 0; color: #666; font-weight: bold; font-size: 13px; text-transform: uppercase;">O que muda para você agora:</p>
+                        <ul style="padding: 0; margin: 0; list-style: none;">
+                            <li style="margin-bottom: 10px; color: #444; font-size: 14px; display: flex; align-items: center;">
+                                <span style="color: #25D366; margin-right: 10px;">✓</span> Taxas reduzidas em todas as suas vendas.
+                            </li>
+                            <li style="margin-bottom: 10px; color: #444; font-size: 14px; display: flex; align-items: center;">
+                                <span style="color: #25D366; margin-right: 10px;">✓</span> Criação ilimitada de eventos e formulários.
+                            </li>
+                            <li style="margin-bottom: 10px; color: #444; font-size: 14px; display: flex; align-items: center;">
+                                <span style="color: #25D366; margin-right: 10px;">✓</span> Acesso completo a ferramentas de gestão e automação.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        Estamos animados por fazer parte da sua jornada de crescimento. Seu painel já está configurado com todos os novos recursos.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Explorar Novos Recursos
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generatePaymentProofReceivedEmail = (name, planName) => {
+    const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #D4AF37 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Comprovante Recebido 📦</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Recebemos o seu comprovante de pagamento para o plano <strong>Inscreva-se ${planLabel}</strong>. 
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee; text-align: center;">
+                        <p style="margin: 0; color: #666; font-size: 15px;">
+                            Nossa equipe financeira já está validando a transação. O prazo de processamento é de até <strong>24 horas úteis</strong>.
+                        </p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        Assim que for confirmado, você receberá um novo e-mail e sua conta será atualizada automaticamente. Fique atento à sua caixa de entrada!
+                    </p>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generatePaymentFailedEmail = (name, planName, dashboardUrl) => {
+    const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Ops! Houve um problema ⚠️</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #ff4b2b;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Infelizmente, não conseguimos processar o pagamento para a sua assinatura do plano <strong>Inscreva-se ${planLabel}</strong>.
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee;">
+                        <p style="margin: 0; color: #666; font-size: 15px;">
+                            Não se preocupe, seus dados estão seguros. Isso pode ter acontecido por diversos motivos (limite do cartão, Expiração ou bloqueio de segurança do banco).
+                        </p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        Recomendamos que você tente novamente ou utilize um método de pagamento diferente para não perder o acesso aos recursos premium.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(255, 75, 43, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Tentar Novamente
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generatePaymentRejectedEmail = (name, planName, dashboardUrl) => {
+    const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #000000 0%, #333333 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Pagamento Rejeitado ❌</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #000000;">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        O seu comprovante de pagamento para o plano <strong>Inscreva-se ${planLabel}</strong> foi analisado e, infelizmente, não pôde ser validado pela nossa equipa financeira.
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee;">
+                        <p style="margin: 0; color: #666; font-size: 15px;">
+                            Por favor, verifique se o valor transferido está correto ou se o comprovante enviado está legível e completo.
+                        </p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        Você pode submeter um novo comprovante ou entrar em contacto com o nosso suporte para resolver esta situação.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: #000000; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 1px;">
+                            Ir para o Suporte
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
     generatePendingApprovalEmail,
     generateReferralBonusEmail,
+    generateSubscriptionConfirmationEmail,
+    generatePaymentProofReceivedEmail,
+    generatePaymentFailedEmail,
+    generatePaymentRejectedEmail,
     getSocialFooter,
     socialLinks
 };

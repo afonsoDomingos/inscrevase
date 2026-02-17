@@ -125,5 +125,30 @@ export const adService = {
     async trackAdClick(id: string): Promise<void> {
         // No token needed for clicks
         await fetch(`${API_URL}/ads/${id}/click`, { method: 'POST' });
+    },
+
+    async createAdCheckout(adData: AdRequestModel): Promise<{ success: boolean; url: string }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/stripe/checkout/ad`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ adData })
+        });
+
+        if (!response.ok) {
+            const result = await response.json();
+            throw new Error(result.message || 'Falha ao criar checkout de anúncio');
+        }
+        return response.json();
+    },
+
+    async getActiveAds(category?: string): Promise<AdRequestModel[]> {
+        const url = category ? `${API_URL}/ads/active?category=${category}` : `${API_URL}/ads/active`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Falha ao buscar anúncios ativos');
+        return response.json();
     }
 };
