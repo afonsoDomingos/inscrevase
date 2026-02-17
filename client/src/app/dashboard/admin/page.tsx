@@ -126,8 +126,8 @@ export default function AdminDashboard() {
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
-    const [auditUser, setAuditUser] = useState<any>(null);
-    const [auditHistory, setAuditHistory] = useState<any[]>([]);
+    const [auditUser, setAuditUser] = useState<ReferralRanking | null>(null);
+    const [auditHistory, setAuditHistory] = useState<ReferralHistory[]>([]);
     const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
             setAuditUser(data.user);
             setAuditHistory(data.history);
             setIsAuditModalOpen(true);
-        } catch (error) {
+        } catch (_error) {
             toast.error('Erro ao buscar auditoria de convites');
         } finally {
             setLoading(false);

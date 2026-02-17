@@ -92,7 +92,7 @@ export const referralService = {
         return data;
     },
 
-    async getAdminUserReferrals(userId: string): Promise<{ user: any, history: ReferralHistory[] }> {
+    async getAdminUserReferrals(userId: string): Promise<{ user: ReferralRanking, history: ReferralHistory[] }> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/referrals/admin/user-referrals/${userId}`, {
             headers: { 'Authorization': `Bearer ${token}` }

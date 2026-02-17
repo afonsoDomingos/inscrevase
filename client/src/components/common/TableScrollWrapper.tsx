@@ -52,7 +52,7 @@ export default function TableScrollWrapper({ children }: TableScrollWrapperProps
     };
 
     return (
-        <div style={{ position: 'relative', width: '100%', group: 'true' } as any} className="table-scroll-container">
+        <div style={{ position: 'relative', width: '100%' }} className="table-scroll-container">
             <AnimatePresence>
                 {showLeft && (
                     <motion.button
