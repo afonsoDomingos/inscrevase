@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Lesson = require('../models/Lesson');
 const LessonProgress = require('../models/LessonProgress');
 const Notification = require('../models/Notification');
+const NotificationService = require('../services/notificationService');
 const { PLANS } = require('../config/stripe');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -103,7 +104,7 @@ const submitForm = async (req, res) => {
             const recipients = [form.creator, ...(form.partners || [])];
 
             await Promise.all(recipients.map(async (recipientId) => {
-                const notification = new Notification({
+                await NotificationService.notify({
                     recipient: recipientId,
                     sender: req.user ? req.user.id : recipientId,
                     title: 'Nova Inscrição Recebida! 📩',
@@ -111,7 +112,6 @@ const submitForm = async (req, res) => {
                     type: 'personal',
                     actionUrl: '/dashboard/mentor'
                 });
-                await notification.save();
             }));
 
             // Notify Creator via Email
@@ -362,9 +362,77 @@ const updateStatus = async (req, res) => {
 
                     await sendEmail(participantEmail, `✅ Inscrição Confirmada: ${submission.form.title} - Inscreva-se`, emailHtml);
                     console.log('[Submission] Approval email sent to:', participantEmail);
+
+                    // --- NEW: IN-APP NOTIFICATION FOR APPROVAL ---
+                    if (submission.user) {
+                        try {
+                            await NotificationService.notify({
+                                recipient: submission.user,
+                                sender: submission.form.creator,
+                                title: 'Inscrição Aprovada! 🎉',
+                                content: `Sua inscrição no evento "${submission.form.title}" foi aprovada. Acesse agora o seu Hub!`,
+                                type: 'personal',
+                                actionUrl: `/hub/${submission._id}`
+                            });
+                        } catch (notifErr) {
+                            console.error('[Submission] Error sending in-app approval notification:', notifErr);
+                        }
+                    }
                 }
             } catch (emailErr) {
                 console.error('[Submission] Error sending approval email:', emailErr);
+            }
+        } else if (status === 'rejected') {
+            // --- NEW: NOTIFY PARTICIPANT OF REJECTION ---
+            try {
+                let participantEmail = null;
+                if (submission.user) {
+                    const user = await User.findById(submission.user);
+                    if (user) participantEmail = user.email;
+                }
+
+                if (!participantEmail) {
+                    const dataObj = Object.fromEntries(submission.data);
+                    const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                    for (const key of emailKeys) {
+                        if (dataObj[key]) {
+                            participantEmail = dataObj[key];
+                            break;
+                        }
+                    }
+                }
+
+                const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
+
+                if (participantEmail) {
+                    const content = `Olá ${participantName}. Informamos que sua inscrição no evento "<strong>${submission.form.title}</strong>" não pôde ser aprovada neste momento. <br><br>Se você acredita que houve um erro ou deseja fornecer mais informações (como um novo comprovativo), entre em contato diretamente com o mentor ou responda a este e-mail.`;
+
+                    const emailHtml = generateBasicEmail(
+                        '❌ Status da Inscrição',
+                        participantName,
+                        content,
+                        'Contactar Suporte',
+                        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/suporte`,
+                        '#e02424' // Red color for rejection
+                    );
+
+                    await sendEmail(participantEmail, `⚠️ Atualização: Inscrição em ${submission.form.title}`, emailHtml);
+                    console.log('[Submission] Rejection email sent to:', participantEmail);
+                }
+
+                // In-app notification
+                if (submission.user) {
+                    await NotificationService.notify({
+                        recipient: submission.user,
+                        sender: submission.form.creator,
+                        title: 'Atualização na Inscrição ⚠️',
+                        content: `Sua inscrição no evento "${submission.form.title}" não foi aprovada. Verifique seu e-mail para mais detalhes.`,
+                        type: 'alert',
+                        actionUrl: '/dashboard/participant'
+                    });
+                }
+            } catch (rejErr) {
+                console.error('[Submission] Error in rejection notification flow:', rejErr);
             }
         }
         // --------------------------------------

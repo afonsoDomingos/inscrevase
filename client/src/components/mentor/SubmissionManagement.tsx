@@ -91,6 +91,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
             if (selectedSubmission?._id === id) {
                 setSelectedSubmission({ ...selectedSubmission, status });
             }
+            toast.success(status === 'approved' ? 'Inscrição aprovada com sucesso!' : 'Inscrição rejeitada.');
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error(t('common.updateStatusError'));

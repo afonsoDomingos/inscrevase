@@ -34,6 +34,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import NotificationCenter from '@/components/mentor/NotificationCenter';
+import { useSocket } from '@/context/SocketContext';
 
 interface MentorDashboardShellProps {
     children: React.ReactNode;
@@ -53,6 +54,21 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
 
+    const { socket } = useSocket();
+
+    const loadUnreadCounts = async () => {
+        try {
+            const [supportData, notificationData] = await Promise.all([
+                supportService.getUnreadCount(),
+                notificationService.getUnreadCount()
+            ]);
+            setUnreadCount(supportData.count);
+            setUnreadNotifications(notificationData.count);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         const loadUser = async () => {
             try {
@@ -63,19 +79,6 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 router.push('/entrar');
             } finally {
                 setLoading(false);
-            }
-        };
-
-        const loadUnreadCounts = async () => {
-            try {
-                const [supportData, notificationData] = await Promise.all([
-                    supportService.getUnreadCount(),
-                    notificationService.getUnreadCount()
-                ]);
-                setUnreadCount(supportData.count);
-                setUnreadNotifications(notificationData.count);
-            } catch (error) {
-                console.error(error);
             }
         };
 
@@ -91,6 +94,19 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
 
         return () => window.removeEventListener('resize', checkMobile);
     }, [router]);
+
+    // Socket listeners for counts
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('unread_count_update', loadUnreadCounts);
+        socket.on('new_notification', loadUnreadCounts);
+
+        return () => {
+            socket.off('unread_count_update', loadUnreadCounts);
+            socket.off('new_notification', loadUnreadCounts);
+        };
+    }, [socket]);
 
     const navItems = [
         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} />, link: '/dashboard/mentor' },

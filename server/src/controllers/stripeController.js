@@ -398,13 +398,20 @@ exports.handleWebhook = async (req, res) => {
             const plan = session.metadata.plan;
 
             if (userId) {
-                await User.findByIdAndUpdate(userId, {
+                const user = await User.findById(userId);
+                const updateData = {
                     plan: plan,
-                    role: 'mentor',
                     canCreateEvents: true,
                     stripeCustomerId: session.customer
-                });
-                console.log(`✅ [Stripe Webhook] User ${userId} upgraded to ${plan}`);
+                };
+
+                // Soberania de papel: Só mudamos se for participante
+                if (user && user.role === 'participant') {
+                    updateData.role = 'mentor';
+                }
+
+                await User.findByIdAndUpdate(userId, updateData);
+                console.log(`✅ [Stripe Webhook] User ${userId} (${user?.role}) upgraded to ${plan}`);
 
                 // Check if transaction already created by invoice.paid
                 const existingTx = await Transaction.findOne({ stripeSessionId: session.id });
@@ -443,12 +450,18 @@ exports.handleWebhook = async (req, res) => {
             const plan = subscription.metadata.plan;
 
             if (userId) {
-                await User.findByIdAndUpdate(userId, {
+                const user = await User.findById(userId);
+                const updateData = {
                     plan: plan,
-                    role: 'mentor',
                     canCreateEvents: true,
                     stripeCustomerId: invoice.customer
-                });
+                };
+
+                if (user && user.role === 'participant') {
+                    updateData.role = 'mentor';
+                }
+
+                await User.findByIdAndUpdate(userId, updateData);
 
                 const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
                 if (!existingTx) {
@@ -480,9 +493,13 @@ exports.handleWebhook = async (req, res) => {
         const user = await User.findOne({ stripeCustomerId: customerId });
         if (user) {
             user.plan = 'free';
-            user.role = 'participant'; // Or keep as mentor but restricted
+            // Se for mentor, volta a ser participante. Se for Empresa/Especialista, mantém mas perde privilégios se necessário.
+            if (user.role === 'mentor') {
+                user.role = 'participant';
+            }
+            // canCreateEvents: false? Opcional dependendo da política
             await user.save();
-            console.log(`User ${user._id} downgraded due to subscription cancellation`);
+            console.log(`User ${user._id} downgraded due to subscription cancellation. Role: ${user.role}`);
         }
     } else if (event.type === 'account.updated') {
         const account = event.data.object;
@@ -663,12 +680,14 @@ exports.syncSubscription = async (req, res) => {
             const planName = activeSub.metadata.plan || 'pro'; // Default to pro if metadata missing
 
             // Only update if not already correct
-            if (user.role !== 'mentor' || user.plan !== planName) {
-                user.role = 'mentor';
+            if (user.plan !== planName || (user.role === 'participant')) {
+                if (user.role === 'participant') {
+                    user.role = 'mentor';
+                }
                 user.plan = planName;
                 user.canCreateEvents = true;
                 await user.save();
-                console.log(`Manual sync: User ${user._id} upgraded to ${planName} found in Stripe`);
+                console.log(`Manual sync: User ${user._id} (${user.role}) updated to ${planName} found in Stripe`);
             }
 
             // Ensure admin transaction exists regardless of whether user update was needed
@@ -746,12 +765,18 @@ exports.confirmTransactionPayment = async (req, res) => {
         // If it's a subscription, upgrade the user
         if (transaction.type === 'subscription') {
             const plan = transaction.metadata.get('plan') || 'pro';
-            await User.findByIdAndUpdate(transaction.user._id, {
+            const user = await User.findById(transaction.user._id);
+            const updateData = {
                 plan: plan,
-                role: 'mentor',
                 canCreateEvents: true
-            });
-            console.log(`User ${transaction.user._id} manually upgraded to ${plan}`);
+            };
+
+            if (user && user.role === 'participant') {
+                updateData.role = 'mentor';
+            }
+
+            await User.findByIdAndUpdate(transaction.user._id, updateData);
+            console.log(`User ${transaction.user._id} manually upgraded to ${plan}. Final Role: ${updateData.role || user?.role}`);
         }
 
         res.status(200).json({ success: true, message: 'Pagamento confirmado e plano atualizado.' });

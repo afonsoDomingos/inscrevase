@@ -80,11 +80,18 @@ io.use((socket, next) => {
 // Map<UserId, Set<SocketId>>
 const onlineUsers = new Map();
 
+// Initialize NotificationService
+const NotificationService = require('./services/notificationService');
+NotificationService.init(io);
+
 io.on('connection', (socket) => {
     // UserId agora vem do middleware de autenticação (seguro)
     const userId = socket.userId;
 
     if (userId) {
+        // Join individual room for direct notifications
+        socket.join(userId.toString());
+        console.log(`[Socket.IO] User ${userId} joined their private room.`);
         if (!onlineUsers.has(userId)) {
             onlineUsers.set(userId, new Set());
         }

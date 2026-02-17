@@ -4,6 +4,7 @@ const slugify = require('slugify');
 const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const NotificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
 const Visit = require('../models/Visit');
 const geoip = require('geoip-lite');
@@ -101,7 +102,7 @@ exports.createForm = async (req, res) => {
                 const creator = await User.findById(req.user.id);
                 if (creator) {
                     await Promise.all(safePartners.map(async (partnerId) => {
-                        return Notification.create({
+                        return NotificationService.notify({
                             recipient: partnerId,
                             sender: req.user.id,
                             title: 'Convite de Colaboração! 🤝',
@@ -323,7 +324,7 @@ exports.updateForm = async (req, res) => {
                         await Promise.all(newPartners.map(async (partnerId) => {
                             if (!mongoose.Types.ObjectId.isValid(partnerId)) return;
 
-                            return Notification.create({
+                            return NotificationService.notify({
                                 recipient: partnerId,
                                 sender: req.user.id,
                                 title: 'Convite de Colaboração! 🤝',

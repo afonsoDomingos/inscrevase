@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
+import { useSocket } from '@/context/SocketContext';
 
 interface NotificationCenterProps {
     onClose?: () => void;
@@ -29,9 +30,26 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
         }
     };
 
+    const { socket } = useSocket();
+
     useEffect(() => {
         loadNotifications();
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewNotification = (notification: any) => {
+            console.log('🔔 Nova notificação recebida via Socket:', notification);
+            loadNotifications();
+            // Optional: toast.info(`Nova notificação: ${notification.title}`);
+        };
+
+        socket.on('new_notification', handleNewNotification);
+        return () => {
+            socket.off('new_notification', handleNewNotification);
+        };
+    }, [socket]);
 
     const loadNotifications = async () => {
         try {

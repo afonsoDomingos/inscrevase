@@ -1,5 +1,6 @@
 const Notification = require('../models/Notification');
 const User = require('../models/User');
+const NotificationService = require('../services/notificationService');
 
 exports.sendNotification = async (req, res) => {
     try {
@@ -8,38 +9,33 @@ exports.sendNotification = async (req, res) => {
 
         // Send to multiple specific recipients
         if (Array.isArray(recipientId)) {
-            const notifications = recipientId.map(id => ({
-                recipient: id,
-                sender: senderId,
-                title,
-                content,
-                type: type || 'announcement',
-                actionUrl,
-                department,
-                attachmentUrl
-            }));
-            await Notification.insertMany(notifications);
+            await Promise.all(recipientId.map(id =>
+                NotificationService.notify({
+                    recipient: id,
+                    sender: senderId,
+                    title,
+                    content,
+                    type: type || 'announcement',
+                    actionUrl,
+                    department,
+                    attachmentUrl
+                })
+            ));
             return res.status(201).json({ message: 'Mensagens enviadas com sucesso' });
         }
 
-        // If recipientId is 'all', broadcast to all mentors
+        // If recipientId is 'all', broadcast
         if (recipientId === 'all') {
-            const mentors = await User.find({ role: 'mentor' });
-            const notifications = mentors.map(mentor => ({
-                recipient: mentor._id,
+            await NotificationService.broadcast({
                 sender: senderId,
                 title,
                 content,
-                type: type || 'announcement',
-                actionUrl,
-                department,
-                attachmentUrl
-            }));
-            await Notification.insertMany(notifications);
+                type: type || 'announcement'
+            });
             return res.status(201).json({ message: 'Broadcast enviado com sucesso' });
         }
 
-        const notification = new Notification({
+        const notification = await NotificationService.notify({
             recipient: recipientId,
             sender: senderId,
             title,
@@ -50,7 +46,6 @@ exports.sendNotification = async (req, res) => {
             attachmentUrl
         });
 
-        await notification.save();
         res.status(201).json(notification);
     } catch (error) {
         res.status(500).json({ message: error.message });
