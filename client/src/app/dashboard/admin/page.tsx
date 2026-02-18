@@ -1435,7 +1435,7 @@ export default function AdminDashboard() {
                     }
 
                     {
-                        activeTab === 'ads' && (
+                        activeTab === 'ads' && user?.role === 'SuperAdmin' && (
                             <motion.div key="ads" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                                 <AdRequestList />
                             </motion.div>

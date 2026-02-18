@@ -15,7 +15,7 @@ export interface AdRequestModel {
     currency?: string;
     paymentMethod: 'stripe' | 'manual';
     paymentProofUrl?: string;
-    status: 'pending' | 'approved' | 'rejected';
+    status: 'pending' | 'approved' | 'rejected' | 'suspended';
     isActive?: boolean;
     clicks?: number;
     views?: number;
@@ -56,7 +56,7 @@ export const adService = {
         return response.json();
     },
 
-    async updateAdRequestStatus(id: string, status: 'approved' | 'rejected'): Promise<AdRequestModel> {
+    async updateAdRequestStatus(id: string, status: 'approved' | 'rejected' | 'suspended'): Promise<AdRequestModel> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/ads/${id}/status`, {
             method: 'PUT',

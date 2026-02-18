@@ -22,10 +22,51 @@ exports.submitAdRequest = async (req, res) => {
         const newAd = new AdRequest(adData);
         await newAd.save();
 
+        // 📧 Notificar Super Admin sobre novo anúncio com pagamento
+        try {
+            const superAdmins = await User.find({ role: 'SuperAdmin' });
+            const advertiser = await User.findById(userId);
+
+            if (superAdmins.length > 0 && advertiser) {
+                const subject = `🚀 Novo Pagamento de Anúncio: ${newAd.title}`;
+                const emailHtml = `
+                    <div style="font-family: sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #eee; border-radius: 10px;">
+                        <h2 style="color: #B8860B;">Novo Anúncio Recebido!</h2>
+                        <p>Alguém acabou de efetuar um pagamento para um novo anúncio na plataforma.</p>
+                        <hr style="border: 0; border-top: 1px solid #eee;" />
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p><strong>Anunciante:</strong> ${advertiser.name} (${advertiser.email})</p>
+                            <p><strong>Título:</strong> ${newAd.title}</p>
+                            <p><strong>Categoria:</strong> ${newAd.category}</p>
+                            <p><strong>Duração:</strong> ${newAd.durationWeeks} semanas</p>
+                            <p><strong>Investimento:</strong> ${newAd.priceTotal} ${newAd.currency}</p>
+                            <p><strong>Método de Pagamento:</strong> ${newAd.paymentMethod.toUpperCase()}</p>
+                        </div>
+                        <p>Por favor, aceda ao painel administrativo para rever e aprovar este anúncio.</p>
+                        <br />
+                        <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/admin" 
+                           style="background: #000; color: #FFD700; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                           Ver no Painel Admin
+                        </a>
+                        <br /><br />
+                        <p style="font-size: 0.8rem; color: #999;">Equipe Inscreva-se</p>
+                    </div>
+                `;
+
+                for (const admin of superAdmins) {
+                    if (admin.email) {
+                        await sendEmail(admin.email, subject, emailHtml);
+                    }
+                }
+            }
+        } catch (emailError) {
+            console.error('⚠️ [AdController] Error notifying super admins:', emailError);
+        }
+
         console.log(`✅ [AdController] New ad request created by user ${userId}`, newAd._id);
         res.status(201).json({
             success: true,
-            message: 'Pedido de anúncio enviado com sucesso!',
+            message: 'Pedido de anúncio enviado com sucesso e notificação enviada à administração!',
             ad: newAd
         });
     } catch (error) {
@@ -92,17 +133,32 @@ exports.updateAdStatus = async (req, res) => {
             ad.endDate = new Date();
             ad.endDate.setDate(ad.endDate.getDate() + (ad.durationWeeks * 7));
             ad.isActive = true;
+        } else if (status === 'suspended' || status === 'rejected') {
+            ad.isActive = false;
+        } else if (status === 'approved' && ad.startDate) {
+            // If re-approving a suspended ad, make it active again
+            ad.isActive = true;
         }
 
         await ad.save();
 
         // Notify User
         try {
-            const adminSender = await User.findOne({ role: 'admin' });
+            const superAdmin = await User.findOne({ role: 'SuperAdmin' });
+            const adminSender = superAdmin || await User.findOne({ role: 'admin' });
+
             if (adminSender) {
-                const statusText = status === 'approved' ? 'aprovado' : 'rejeitado';
-                const title = `Atualização do Anúncio: ${ad.title}`;
-                const content = `Olá! Seu anúncio "${ad.title}" foi ${statusText} pela nossa equipe. ${status === 'approved' ? 'Ele já está ativo.' : 'Verifique as diretrizes e tente novamente.'}`;
+                let statusText = status === 'approved' ? 'aprovado' : status === 'rejected' ? 'rejeitado' : 'suspenso';
+                let title = `Atualização do Anúncio: ${ad.title}`;
+                let content = `Olá! Seu anúncio "${ad.title}" foi ${statusText} pela nossa equipe.`;
+
+                if (status === 'approved') {
+                    content += ' Ele já está ativo e visível na plataforma.';
+                } else if (status === 'suspended') {
+                    content += ' O anúncio foi temporariamente suspenso. Entre em contacto com o suporte para mais informações.';
+                } else {
+                    content += ' Verifique as diretrizes e tente novamente.';
+                }
 
                 // In-app Logic
                 await Notification.create({

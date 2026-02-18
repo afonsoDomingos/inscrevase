@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, CreditCard, Trash2, Power, PowerOff, Eye, MousePointer2 } from 'lucide-react';
+import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, CreditCard, Trash2, Power, PowerOff, Eye, MousePointer2, TrendingUp } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 export default function AdRequestList() {
     const [requests, setRequests] = useState<AdRequestModel[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'suspended'>('all');
     const { formatPrice } = useCurrency();
 
     useEffect(() => {
@@ -31,10 +31,11 @@ export default function AdRequestList() {
         }
     };
 
-    const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
+    const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected' | 'suspended') => {
         try {
             await adService.updateAdRequestStatus(id, status);
-            toast.success(`Anúncio ${status === 'approved' ? 'aprovado' : 'rejeitado'} com sucesso`);
+            const msg = status === 'approved' ? 'aprovado' : status === 'rejected' ? 'rejeitado' : 'suspenso';
+            toast.success(`Anúncio ${msg} com sucesso`);
             loadRequests();
         } catch (err) {
             console.error('Error updating ad status:', err);
@@ -123,7 +124,7 @@ export default function AdRequestList() {
 
                 {/* Filter Tabs */}
                 <div className="mt-8 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                    {(['all', 'pending', 'approved', 'rejected'] as const).map((f) => (
+                    {(['all', 'pending', 'approved', 'rejected', 'suspended'] as const).map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
@@ -135,7 +136,8 @@ export default function AdRequestList() {
                             {f === 'pending' && <Clock size={16} />}
                             {f === 'approved' && <CheckCircle size={16} />}
                             {f === 'rejected' && <XCircle size={16} />}
-                            {f === 'all' ? 'Todos' : f === 'pending' ? 'Pendentes' : f === 'approved' ? 'Aprovados' : 'Rejeitados'}
+                            {f === 'suspended' && <PowerOff size={16} />}
+                            {f === 'all' ? 'Todos' : f === 'pending' ? 'Pendentes' : f === 'approved' ? 'Aprovados' : f === 'rejected' ? 'Rejeitados' : 'Suspensos'}
                         </button>
                     ))}
                 </div>
@@ -184,11 +186,11 @@ export default function AdRequestList() {
                                         {/* Overlay Status Badge for Mobile/Desktop */}
                                         <div className="absolute top-3 left-3 flex flex-wrap gap-2">
                                             <span className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider shadow-sm backdrop-blur-md ${req.status === 'approved' ? 'bg-green-500/90 text-white' :
-                                                req.status === 'pending' ? 'bg-blue-500/90 text-white' : 'bg-red-500/90 text-white'
+                                                req.status === 'pending' ? 'bg-blue-500/90 text-white' : req.status === 'suspended' ? 'bg-yellow-600/90 text-white' : 'bg-red-500/90 text-white'
                                                 }`}>
-                                                {req.status === 'approved' ? 'Aprovado' : req.status === 'pending' ? 'Pendente' : 'Rejeitado'}
+                                                {req.status === 'approved' ? 'Aprovado' : req.status === 'pending' ? 'Pendente' : req.status === 'suspended' ? 'Suspenso' : 'Rejeitado'}
                                             </span>
-                                            {req.isActive && (
+                                            {req.isActive && req.status === 'approved' && (
                                                 <span className="px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-yellow-400/90 text-black shadow-sm backdrop-blur-md">
                                                     Ativo
                                                 </span>
@@ -227,7 +229,7 @@ export default function AdRequestList() {
                                     </div>
 
                                     {/* User Info & Stats */}
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
                                         <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
                                             <div className="text-xs text-blue-500 font-bold uppercase mb-1 flex items-center gap-1"><Eye size={12} /> Views</div>
                                             <div className="font-black text-blue-900 text-lg">{req.views || 0}</div>
@@ -236,13 +238,30 @@ export default function AdRequestList() {
                                             <div className="text-xs text-purple-500 font-bold uppercase mb-1 flex items-center gap-1"><MousePointer2 size={12} /> Clicks</div>
                                             <div className="font-black text-purple-900 text-lg">{req.clicks || 0}</div>
                                         </div>
-                                        <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 col-span-2">
-                                            <div className="text-xs text-gray-500 font-bold uppercase mb-1">Anunciante</div>
-                                            <div className="font-bold text-gray-800 truncate text-sm">
-                                                {typeof req.userId === 'object' ? (req.userId as { name: string })?.name : 'Usuário'}
+                                        <div className="bg-yellow-50 p-3 rounded-xl border border-yellow-100">
+                                            <div className="text-xs text-yellow-600 font-bold uppercase mb-1 flex items-center gap-1"><TrendingUp size={12} /> CTR</div>
+                                            <div className="font-black text-yellow-900 text-lg">
+                                                {req.views && req.views > 0 ? ((req.clicks || 0) / req.views * 100).toFixed(1) : '0.0'}%
                                             </div>
-                                            <div className="text-xs text-gray-400 truncate">
-                                                {typeof req.userId === 'object' ? (req.userId as { email: string })?.email : req.userId}
+                                        </div>
+                                        <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 col-span-2 flex justify-between items-center">
+                                            <div>
+                                                <div className="text-xs text-gray-500 font-bold uppercase mb-1">Anunciante</div>
+                                                <div className="font-bold text-gray-800 truncate text-sm">
+                                                    {(req.userId as any)?.name || 'Usuário'}
+                                                </div>
+                                                <div className="text-xs text-gray-400 truncate">
+                                                    {(req.userId as any)?.email || (typeof req.userId === 'string' ? req.userId : 'N/A')}
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-[10px] text-gray-400 font-bold uppercase">Pagamento</div>
+                                                <div className="flex items-center gap-1 justify-end">
+                                                    <span className={`text-[11px] font-black uppercase ${req.paymentMethod === 'stripe' ? 'text-indigo-600' : 'text-orange-600'}`}>
+                                                        {req.paymentMethod === 'stripe' ? 'STRIPE' : 'MANUAL'}
+                                                    </span>
+                                                    <span className={`w-2 h-2 rounded-full ${(req as any).paymentStatus === 'paid' ? 'bg-green-500' : 'bg-gray-300'}`} title={(req as any).paymentStatus || 'pending'} />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -297,17 +316,33 @@ export default function AdRequestList() {
                                                 </>
                                             )}
 
-                                            {req.status === 'approved' && (
-                                                <button
-                                                    onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
-                                                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-bold w-full sm:w-auto ${req.isActive
-                                                        ? 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
-                                                        : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                                                        }`}
-                                                >
-                                                    {req.isActive ? <PowerOff size={18} /> : <Power size={18} />}
-                                                    {req.isActive ? 'Pausar' : 'Reativar'}
-                                                </button>
+                                            {(req.status === 'approved' || req.status === 'suspended') && (
+                                                <div className="flex gap-2 w-full sm:w-auto">
+                                                    <button
+                                                        onClick={() => req._id && handleUpdateStatus(req._id, req.status === 'suspended' ? 'approved' : 'suspended')}
+                                                        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-bold flex-1 sm:flex-none ${req.status === 'suspended'
+                                                            ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                                                            : 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
+                                                            }`}
+                                                    >
+                                                        {req.status === 'suspended' ? <CheckCircle size={18} /> : <PowerOff size={18} />}
+                                                        {req.status === 'suspended' ? 'Reativar' : 'Suspender'}
+                                                    </button>
+
+                                                    {req.status === 'approved' && (
+                                                        <button
+                                                            onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
+                                                            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-bold flex-1 sm:flex-none ${req.isActive
+                                                                ? 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                                                                : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                                                                }`}
+                                                            title={req.isActive ? 'Pausar exibição' : 'Retomar exibição'}
+                                                        >
+                                                            {req.isActive ? <PowerOff size={18} /> : <Power size={18} />}
+                                                            {req.isActive ? 'Pausar' : 'Ativar'}
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
 
                                             <button

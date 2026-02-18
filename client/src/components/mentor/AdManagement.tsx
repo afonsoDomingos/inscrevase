@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2 } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, Coins, ChevronDown } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -18,7 +18,7 @@ export default function AdManagement() {
     const [uploading, setUploading] = useState(false);
     const [myEvents, setMyEvents] = useState<FormModel[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string>('');
-    const { formatPrice } = useCurrency();
+    const { currency: globalCurrency, formatPrice, convertAmount } = useCurrency();
 
     const PRICING_PER_WEEK = 5; // USD
 
@@ -30,12 +30,20 @@ export default function AdManagement() {
         mediaType: 'image',
         durationWeeks: 1,
         priceTotal: PRICING_PER_WEEK,
+        currency: 'USD',
         paymentMethod: 'manual',
         status: 'pending',
         targetUrl: ''
     });
 
     const [paymentProof, setPaymentProof] = useState<string | null>(null);
+    const [showOtherCurrencies, setShowOtherCurrencies] = useState(false);
+
+    useEffect(() => {
+        const baseUSD = form.durationWeeks * PRICING_PER_WEEK;
+        const converted = convertAmount(baseUSD, 'USD', form.currency || 'USD');
+        setForm(prev => ({ ...prev, priceTotal: converted }));
+    }, [form.durationWeeks, form.currency, convertAmount]);
 
     useEffect(() => {
         loadAds();
@@ -391,13 +399,110 @@ export default function AdManagement() {
                                             </div>
                                         </div>
 
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Moeda de Pagamento</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                                                {['USD', 'EUR'].map(curr => (
+                                                    <button
+                                                        key={curr}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setForm({ ...form, currency: curr });
+                                                            setShowOtherCurrencies(false);
+                                                        }}
+                                                        style={{
+                                                            padding: '0.75rem',
+                                                            borderRadius: '12px',
+                                                            border: (form.currency === curr && !showOtherCurrencies) ? '2px solid #FFD700' : '2px solid #eee',
+                                                            background: (form.currency === curr && !showOtherCurrencies) ? '#FFD700' : '#fff',
+                                                            color: (form.currency === curr && !showOtherCurrencies) ? '#000' : '#666',
+                                                            fontWeight: 800,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '0.5rem'
+                                                        }}
+                                                    >
+                                                        {curr}
+                                                    </button>
+                                                ))}
+                                                <div style={{ position: 'relative' }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowOtherCurrencies(!showOtherCurrencies)}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '0.75rem',
+                                                            borderRadius: '12px',
+                                                            border: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '2px solid #eee' : '2px solid #FFD700',
+                                                            background: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '#fff' : '#FFD700',
+                                                            color: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '#666' : '#000',
+                                                            fontWeight: 800,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '0.5rem'
+                                                        }}
+                                                    >
+                                                        {['USD', 'EUR'].includes(form.currency || '') ? 'Outras' : form.currency}
+                                                        <ChevronDown size={14} />
+                                                    </button>
+
+                                                    {showOtherCurrencies && (
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            top: '100%',
+                                                            right: 0,
+                                                            left: 0,
+                                                            background: '#fff',
+                                                            border: '1px solid #eee',
+                                                            borderRadius: '12px',
+                                                            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                                                            zIndex: 50,
+                                                            marginTop: '5px',
+                                                            padding: '4px'
+                                                        }}>
+                                                            {['MZN', 'AOA', 'CVE', 'XOF'].map(curr => (
+                                                                <button
+                                                                    key={curr}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setForm({ ...form, currency: curr });
+                                                                        setShowOtherCurrencies(false);
+                                                                    }}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        padding: '0.6rem 1rem',
+                                                                        border: 'none',
+                                                                        background: form.currency === curr ? 'rgba(255, 215, 0, 0.1)' : 'transparent',
+                                                                        borderRadius: '8px',
+                                                                        textAlign: 'left',
+                                                                        cursor: 'pointer',
+                                                                        fontSize: '0.85rem',
+                                                                        fontWeight: 700,
+                                                                        color: form.currency === curr ? '#B8860B' : '#666'
+                                                                    }}
+                                                                >
+                                                                    {curr}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                             <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Duração do Destaque</label>
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                                                 {[1, 2, 3, 4].map(w => (
                                                     <button
                                                         key={w}
-                                                        onClick={() => setForm({ ...form, durationWeeks: w, priceTotal: w * PRICING_PER_WEEK })}
+                                                        onClick={() => setForm({ ...form, durationWeeks: w })}
                                                         style={{
                                                             padding: '0.75rem',
                                                             borderRadius: '12px',
@@ -424,7 +529,7 @@ export default function AdManagement() {
                                                 color: '#B8860B'
                                             }}>
                                                 <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Investimento Total</span>
-                                                <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{formatPrice(form.durationWeeks * PRICING_PER_WEEK, 'USD')}</span>
+                                                <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{formatPrice(form.priceTotal, form.currency, form.currency)}</span>
                                             </div>
                                         </div>
 
@@ -562,7 +667,7 @@ export default function AdManagement() {
                                                     boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)'
                                                 }}
                                             >
-                                                {isSubmitting ? 'Processando...' : `Pagar ${formatPrice(form.priceTotal, 'USD')}`}
+                                                {isSubmitting ? 'Processando...' : `Pagar ${formatPrice(form.priceTotal, form.currency, form.currency)}`}
                                             </button>
                                         </div>
                                     </motion.div>
@@ -798,11 +903,11 @@ export default function AdManagement() {
                                         fontSize: '0.7rem',
                                         fontWeight: 800,
                                         textTransform: 'uppercase',
-                                        background: ad.status === 'approved' ? '#16a34a' : ad.status === 'pending' ? '#3b82f6' : '#ef4444',
+                                        background: ad.status === 'approved' ? '#16a34a' : ad.status === 'pending' ? '#3b82f6' : ad.status === 'suspended' ? '#ca8a04' : '#ef4444',
                                         color: '#fff',
                                         boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                                     }}>
-                                        {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : '✗ Rejeitado'}
+                                        {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : ad.status === 'suspended' ? '⚠ Suspenso' : '✗ Rejeitado'}
                                     </span>
                                     {ad.status === 'approved' && (
                                         <span style={{
@@ -827,7 +932,7 @@ export default function AdManagement() {
                                     <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{ad.description}</p>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                                     <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#3b82f6', marginBottom: '0.25rem' }}>
                                             <Eye size={14} /> Views
@@ -839,6 +944,14 @@ export default function AdManagement() {
                                             <MousePointer2 size={14} /> Clicks
                                         </div>
                                         <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>{ad.clicks || 0}</div>
+                                    </div>
+                                    <div style={{ background: '#fffbeb', padding: '0.75rem', borderRadius: '12px', border: '1px solid #fef3c7' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#d97706', marginBottom: '0.25rem' }}>
+                                            <TrendingUp size={14} /> CTR
+                                        </div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>
+                                            {ad.views && ad.views > 0 ? ((ad.clicks || 0) / ad.views * 100).toFixed(1) : '0.0'}%
+                                        </div>
                                     </div>
                                 </div>
 
@@ -930,6 +1043,7 @@ export default function AdManagement() {
                     <strong style={{ fontWeight: 900, display: 'block', marginBottom: '0.25rem' }}>💡 Dica Importante:</strong>
                     Anúncios marcados como <strong>pausados</strong> não aparecem nas seções patrocinadas.
                     Anúncios <strong>pendentes</strong> aguardam aprovação da nossa equipe de moderacão.
+                    Anúncios <strong>suspensos</strong> foram desativados pela moderação por violação de termos.
                 </div>
             </motion.div>
         </div>
