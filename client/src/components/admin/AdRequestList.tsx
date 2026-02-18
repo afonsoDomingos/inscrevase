@@ -248,10 +248,10 @@ export default function AdRequestList() {
                                             <div>
                                                 <div className="text-xs text-gray-500 font-bold uppercase mb-1">Anunciante</div>
                                                 <div className="font-bold text-gray-800 truncate text-sm">
-                                                    {(req.userId as any)?.name || 'Usuário'}
+                                                    {typeof req.userId === 'object' ? req.userId.name : 'Usuário'}
                                                 </div>
                                                 <div className="text-xs text-gray-400 truncate">
-                                                    {(req.userId as any)?.email || (typeof req.userId === 'string' ? req.userId : 'N/A')}
+                                                    {typeof req.userId === 'object' ? req.userId.email : (typeof req.userId === 'string' ? req.userId : 'N/A')}
                                                 </div>
                                             </div>
                                             <div className="text-right">
@@ -260,7 +260,7 @@ export default function AdRequestList() {
                                                     <span className={`text-[11px] font-black uppercase ${req.paymentMethod === 'stripe' ? 'text-indigo-600' : 'text-orange-600'}`}>
                                                         {req.paymentMethod === 'stripe' ? 'STRIPE' : 'MANUAL'}
                                                     </span>
-                                                    <span className={`w-2 h-2 rounded-full ${(req as any).paymentStatus === 'paid' ? 'bg-green-500' : 'bg-gray-300'}`} title={(req as any).paymentStatus || 'pending'} />
+                                                    <span className={`w-2 h-2 rounded-full ${req.paymentStatus === 'paid' ? 'bg-green-500' : 'bg-gray-300'}`} title={req.paymentStatus || 'pending'} />
                                                 </div>
                                             </div>
                                         </div>

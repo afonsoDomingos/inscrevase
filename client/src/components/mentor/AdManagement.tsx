@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, Coins, ChevronDown } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -18,7 +18,7 @@ export default function AdManagement() {
     const [uploading, setUploading] = useState(false);
     const [myEvents, setMyEvents] = useState<FormModel[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string>('');
-    const { currency: globalCurrency, formatPrice, convertAmount } = useCurrency();
+    const { formatPrice, convertAmount } = useCurrency();
 
     const PRICING_PER_WEEK = 5; // USD
 

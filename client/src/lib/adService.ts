@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface AdRequestModel {
     _id?: string;
-    userId?: string;
+    userId?: string | { _id: string; name: string; email: string };
     title: string;
     description: string;
     category: 'event' | 'service' | 'product';
@@ -15,6 +15,7 @@ export interface AdRequestModel {
     currency?: string;
     paymentMethod: 'stripe' | 'manual';
     paymentProofUrl?: string;
+    paymentStatus?: 'pending' | 'paid' | 'failed';
     status: 'pending' | 'approved' | 'rejected' | 'suspended';
     isActive?: boolean;
     clicks?: number;
