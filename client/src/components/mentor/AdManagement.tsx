@@ -191,30 +191,75 @@ export default function AdManagement() {
 
     if (showCreateForm) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <button
-                        onClick={() => setShowCreateForm(false)}
-                        style={{ padding: '0.5rem', borderRadius: '50%', border: 'none', background: '#f5f5f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                        <ArrowLeft size={24} />
-                    </button>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Solicitar Novo Destaque</h2>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <motion.button
+                            whileHover={{ scale: 1.1, background: '#fff', color: '#000' }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setShowCreateForm(false)}
+                            style={{
+                                width: '50px',
+                                height: '50px',
+                                borderRadius: '15px',
+                                border: '1px solid rgba(0,0,0,0.05)',
+                                background: 'white',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                            }}
+                        >
+                            <ArrowLeft size={24} />
+                        </motion.button>
+                        <div>
+                            <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0 }}>Solicitar Novo Destaque</h2>
+                            <p style={{ color: '#64748b', margin: '4px 0 0', fontWeight: 500 }}>Siga os passos para colocar sua marca em evidência</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2.5rem' }}>
                     {/* Form Part */}
-                    <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <div className="luxury-card" style={{ background: '#fff', padding: '2rem', borderRadius: '24px', position: 'relative' }}>
-                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div style={{
+                            background: '#0f172a',
+                            padding: '3rem',
+                            borderRadius: '32px',
+                            position: 'relative',
+                            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                            border: '1px solid rgba(255,255,255,0.05)'
+                        }}>
+                            {/* Stepper */}
+                            <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem' }}>
                                 {[1, 2, 3].map((s) => (
                                     <div key={s} style={{
                                         flex: 1,
-                                        height: '6px',
-                                        borderRadius: '3px',
-                                        background: s <= step ? 'var(--gold-gradient)' : '#f0f0f0',
-                                        transition: 'all 0.5s'
-                                    }} />
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '0.75rem'
+                                    }}>
+                                        <div style={{
+                                            height: '4px',
+                                            borderRadius: '2px',
+                                            background: s <= step ? '#FFD700' : 'rgba(255,255,255,0.1)',
+                                            transition: 'all 0.5s'
+                                        }} />
+                                        <span style={{
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            textTransform: 'uppercase',
+                                            color: s <= step ? '#FFD700' : 'rgba(255,255,255,0.3)',
+                                            letterSpacing: '1px'
+                                        }}>
+                                            Passo {s}
+                                        </span>
+                                    </div>
                                 ))}
                             </div>
 
@@ -227,34 +272,36 @@ export default function AdManagement() {
                                         exit={{ opacity: 0, x: 20 }}
                                         style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
                                     >
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>O que deseja promover?</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px' }}>O que deseja promover?</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                                                 {[
                                                     { id: 'event', label: 'Evento', icon: Calendar },
                                                     { id: 'service', label: 'Serviço', icon: Briefcase },
                                                     { id: 'product', label: 'Produto', icon: Package }
                                                 ].map((cat) => (
-                                                    <button
+                                                    <motion.button
                                                         key={cat.id}
+                                                        whileHover={{ scale: 1.02, background: 'rgba(255,215,0,0.1)' }}
+                                                        whileTap={{ scale: 0.98 }}
                                                         onClick={() => setForm({ ...form, category: cat.id as AdRequestModel['category'] })}
                                                         style={{
-                                                            padding: '1.5rem 1rem',
-                                                            borderRadius: '16px',
-                                                            border: form.category === cat.id ? '2px solid #FFD700' : '2px solid #f0f0f0',
-                                                            background: form.category === cat.id ? 'rgba(255, 215, 0, 0.05)' : '#fff',
-                                                            color: form.category === cat.id ? '#B8860B' : '#999',
+                                                            padding: '2rem 1rem',
+                                                            borderRadius: '24px',
+                                                            border: form.category === cat.id ? '2px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
+                                                            background: form.category === cat.id ? 'rgba(255, 215, 0, 0.05)' : 'rgba(255,255,255,0.02)',
+                                                            color: form.category === cat.id ? '#FFD700' : 'rgba(255,255,255,0.4)',
                                                             cursor: 'pointer',
                                                             display: 'flex',
                                                             flexDirection: 'column',
                                                             alignItems: 'center',
-                                                            gap: '0.5rem',
-                                                            transition: 'all 0.2s'
+                                                            gap: '0.75rem',
+                                                            transition: 'all 0.3s'
                                                         }}
                                                     >
-                                                        <cat.icon size={24} />
-                                                        <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>{cat.label}</span>
-                                                    </button>
+                                                        <cat.icon size={32} />
+                                                        <span style={{ fontSize: '0.9rem', fontWeight: 800 }}>{cat.label}</span>
+                                                    </motion.button>
                                                 ))}
                                             </div>
                                         </div>
@@ -749,7 +796,7 @@ export default function AdManagement() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
@@ -757,58 +804,85 @@ export default function AdManagement() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Header section */}
             <motion.div
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
-                    background: 'linear-gradient(to right, rgba(255,215,0,0.1), #FFF8E1)',
-                    padding: '2rem',
-                    borderRadius: '24px',
-                    border: '1px solid rgba(255,215,0,0.2)'
+                    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                    padding: '3rem',
+                    borderRadius: '32px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    marginBottom: '2.5rem'
                 }}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <div style={{
-                                width: '3.5rem',
-                                height: '3.5rem',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, #FFD700, #B8860B)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 4px 12px rgba(184, 134, 11, 0.3)'
-                            }}>
-                                <Megaphone color="#fff" size={24} />
-                            </div>
-                            <div>
-                                <h2 style={{ fontSize: '1.75rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                    Meus Anúncios
-                                    <span style={{ fontSize: '0.9rem', background: 'rgba(0,0,0,0.05)', padding: '0.2rem 0.8rem', borderRadius: '20px', color: '#666', fontWeight: 700 }}>
-                                        {ads.length}
-                                    </span>
-                                </h2>
-                                <p style={{ color: '#666', margin: '4px 0 0', fontSize: '0.95rem' }}>Gerencie sua publicidade e acompanhe os resultados em tempo real</p>
-                            </div>
+                {/* Decorative background glass elements */}
+                <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '24px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            backdropFilter: 'blur(10px)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            boxShadow: 'inset 0 0 20px rgba(255,215,0,0.1)'
+                        }}>
+                            <Megaphone className="text-yellow-400" size={40} />
                         </div>
-                        <button
-                            onClick={() => setShowCreateForm(true)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                background: '#000',
-                                color: '#fff',
-                                padding: '0.8rem 1.5rem',
-                                borderRadius: '12px',
-                                fontWeight: 800,
-                                border: 'none',
-                                cursor: 'pointer',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                            }}
-                        >
-                            <Plus size={20} /> Solicitar Destaque
-                        </button>
+                        <div>
+                            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-1px', fontFamily: 'var(--font-playfair)' }}>
+                                Meus <span style={{ color: '#FFD700' }}>Anúncios</span>
+                            </h2>
+                            <p style={{ color: '#94a3b8', margin: '8px 0 0', fontSize: '1.1rem', fontWeight: 500 }}>
+                                Gestão de publicidade premium para escalar seu alcance
+                            </p>
+                        </div>
+                    </div>
+                    <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowCreateForm(true)}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            background: '#FFD700',
+                            color: '#000',
+                            padding: '1.2rem 2.5rem',
+                            borderRadius: '20px',
+                            fontWeight: 900,
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            boxShadow: '0 10px 25px rgba(255, 215, 0, 0.2)'
+                        }}
+                    >
+                        <Plus size={24} /> Criar Novo Anúncio
+                    </motion.button>
+                </div>
+
+                <div style={{ marginTop: '2.5rem', display: 'flex', gap: '2rem', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', minWidth: '160px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Total de Campanhas</div>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff' }}>{ads.length}</div>
+                    </div>
+                    <div style={{ background: 'rgba(34, 197, 94, 0.05)', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid rgba(34, 197, 94, 0.2)', minWidth: '160px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Ativos Agora</div>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#86efac' }}>{ads.filter(a => a.isActive && a.status === 'approved').length}</div>
+                    </div>
+                    <div style={{ background: 'rgba(59, 130, 246, 0.05)', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)', minWidth: '160px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#60a5fa', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Aguardando Moderação</div>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#93c5fd' }}>{ads.filter(a => a.status === 'pending').length}</div>
                     </div>
                 </div>
             </motion.div>
@@ -862,159 +936,183 @@ export default function AdManagement() {
                     </button>
                 </motion.div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2rem' }}>
                     {ads.map((ad, index) => (
                         <motion.div
                             key={ad._id}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
+                            transition={{ delay: index * 0.1, type: 'spring', stiffness: 50 }}
                             style={{
                                 background: '#fff',
-                                borderRadius: '20px',
+                                borderRadius: '32px',
                                 overflow: 'hidden',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-                                border: '1px solid #f0f0f0',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.06)',
+                                border: '1px solid #f1f5f9',
                                 display: 'flex',
-                                flexDirection: 'column'
+                                flexDirection: 'column',
+                                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                position: 'relative'
                             }}
                         >
-                            <div style={{ position: 'relative', height: '200px', background: '#f5f5f5' }}>
-                                {ad.mediaType === 'video' ? (
-                                    <video
-                                        src={ad.mediaUrl}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        autoPlay
-                                        muted
-                                        loop
-                                    />
+                            <div style={{ position: 'relative', height: '240px', background: '#f8fafc', overflow: 'hidden' }}>
+                                {ad.mediaUrl ? (
+                                    ad.mediaType === 'video' ? (
+                                        <video
+                                            src={ad.mediaUrl}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            autoPlay muted loop
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={ad.mediaUrl}
+                                            alt={ad.title}
+                                            fill
+                                            style={{ objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                                        />
+                                    )
                                 ) : (
-                                    <Image
-                                        src={ad.mediaUrl}
-                                        alt={ad.title}
-                                        fill
-                                        style={{ objectFit: 'cover' }}
-                                    />
+                                    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                                        <Megaphone size={60} opacity={0.2} />
+                                    </div>
                                 )}
-                                <div style={{ position: 'absolute', top: '1rem', left: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                    <span style={{
-                                        padding: '0.25rem 0.75rem',
-                                        borderRadius: '20px',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 800,
-                                        textTransform: 'uppercase',
-                                        background: ad.status === 'approved' ? '#16a34a' : ad.status === 'pending' ? '#3b82f6' : ad.status === 'suspended' ? '#ca8a04' : '#ef4444',
-                                        color: '#fff',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+
+                                <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', flexWrap: 'wrap', gap: '8px', zIndex: 10 }}>
+                                    <div style={{
+                                        padding: '6px 14px', borderRadius: '12px', fontSize: '0.65rem', fontWeight: 900,
+                                        textTransform: 'uppercase', backdropFilter: 'blur(10px)', color: '#fff',
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                                        background: ad.status === 'approved' ? 'rgba(34, 197, 94, 0.9)' :
+                                            ad.status === 'pending' ? 'rgba(59, 130, 246, 0.9)' :
+                                                ad.status === 'suspended' ? 'rgba(217, 119, 6, 0.9)' : 'rgba(239, 68, 68, 0.9)'
                                     }}>
                                         {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : ad.status === 'suspended' ? '⚠ Suspenso' : '✗ Rejeitado'}
-                                    </span>
+                                    </div>
+
                                     {ad.status === 'approved' && (
-                                        <span style={{
-                                            padding: '0.25rem 0.75rem',
-                                            borderRadius: '20px',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 800,
-                                            textTransform: 'uppercase',
-                                            background: ad.isActive ? '#16a34a' : '#6b7280',
-                                            color: '#fff',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                                        <div style={{
+                                            padding: '6px 14px', borderRadius: '12px', fontSize: '0.65rem', fontWeight: 900,
+                                            textTransform: 'uppercase', color: '#000', backdropFilter: 'blur(10px)',
+                                            background: ad.isActive ? 'rgba(255, 215, 0, 0.95)' : 'rgba(255, 255, 255, 0.8)',
+                                            boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
                                         }}>
                                             {ad.isActive ? '● Ativo' : '○ Pausado'}
-                                        </span>
+                                        </div>
                                     )}
                                 </div>
                             </div>
 
-                            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
-                                <div>
-                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '0.5rem', lineHeight: 1.3 }}>{ad.title}</h3>
-                                    <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{ad.description}</p>
+                            <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
+                                <div style={{ minHeight: '80px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#94a3b8', background: '#f8fafc', padding: '4px 10px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
+                                            {ad.category}
+                                        </span>
+                                        <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Calendar size={12} /> {ad.createdAt ? new Date(ad.createdAt).toLocaleDateString() : 'Recent'}
+                                        </span>
+                                    </div>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px 0', lineHeight: 1.2 }}>{ad.title}</h3>
+                                    <p style={{ fontSize: '0.95rem', color: '#64748b', lineHeight: 1.6, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                        {ad.description}
+                                    </p>
                                 </div>
 
+                                {/* Stats Grid */}
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                                    <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#3b82f6', marginBottom: '0.25rem' }}>
-                                            <Eye size={14} /> Views
+                                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563eb', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                            <Eye size={12} /> Views
                                         </div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>{ad.views || 0}</div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e3a8a' }}>{ad.views || 0}</div>
                                     </div>
-                                    <div style={{ background: '#faf5ff', padding: '0.75rem', borderRadius: '12px', border: '1px solid #e9d5ff' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#a855f7', marginBottom: '0.25rem' }}>
-                                            <MousePointer2 size={14} /> Clicks
+                                    <div style={{ background: '#fff9eb', padding: '1rem', borderRadius: '16px', border: '1px solid #fef3c7' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ca8a04', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                            <MousePointer2 size={12} /> Clicks
                                         </div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>{ad.clicks || 0}</div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#854d0e' }}>{ad.clicks || 0}</div>
                                     </div>
-                                    <div style={{ background: '#fffbeb', padding: '0.75rem', borderRadius: '12px', border: '1px solid #fef3c7' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: '#d97706', marginBottom: '0.25rem' }}>
-                                            <TrendingUp size={14} /> CTR
+                                    <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '16px', border: '1px solid #dcfce7' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#15803d', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                            <TrendingUp size={12} /> CTR
                                         </div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b' }}>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#14532d' }}>
                                             {ad.views && ad.views > 0 ? ((ad.clicks || 0) / ad.views * 100).toFixed(1) : '0.0'}%
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+                                <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '8px' }}>
                                     {ad.status === 'approved' && (
-                                        <button
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
                                             onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
                                             style={{
-                                                flex: 1,
-                                                padding: '0.6rem',
-                                                borderRadius: '10px',
+                                                flex: 2,
+                                                padding: '0.85rem',
+                                                borderRadius: '16px',
                                                 border: 'none',
-                                                background: ad.isActive ? '#FFF8E1' : '#DCFCE7',
-                                                color: ad.isActive ? '#B8860B' : '#166534',
+                                                background: ad.isActive ? '#0f172a' : 'var(--gold-gradient)',
+                                                color: ad.isActive ? '#fff' : '#000',
+                                                fontWeight: 800,
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
+                                                gap: '8px',
+                                                fontSize: '0.85rem'
                                             }}
-                                            title={ad.isActive ? 'Pausar' : 'Ativar'}
                                         >
-                                            {ad.isActive ? <PowerOff size={18} /> : <Power size={18} />}
-                                        </button>
+                                            {ad.isActive ? <><PowerOff size={18} /> Pausar</> : <><Power size={18} /> Reativar</>}
+                                        </motion.button>
                                     )}
-                                    <button
+                                    <motion.button
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={() => ad._id && handleDeleteAd(ad._id)}
                                         style={{
-                                            flex: 1,
-                                            padding: '0.6rem',
-                                            borderRadius: '10px',
-                                            border: 'none',
-                                            background: '#FEF2F2',
-                                            color: '#DC2626',
+                                            width: '50px',
+                                            height: '50px',
+                                            borderRadius: '16px',
+                                            border: '1px solid #fee2e2',
+                                            background: '#fff',
+                                            color: '#ef4444',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center'
+                                            justifyContent: 'center',
+                                            transition: 'all 0.2s'
                                         }}
+                                        onMouseOver={e => e.currentTarget.style.background = '#fef2f2'}
+                                        onMouseOut={e => e.currentTarget.style.background = '#fff'}
                                         title="Excluir"
                                     >
-                                        <Trash2 size={18} />
-                                    </button>
+                                        <Trash2 size={20} />
+                                    </motion.button>
+
                                     {ad.targetUrl && (
-                                        <a
+                                        <motion.a
+                                            whileTap={{ scale: 0.95 }}
                                             href={ad.targetUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
-                                                flex: 1,
-                                                padding: '0.6rem',
-                                                borderRadius: '10px',
-                                                border: 'none',
-                                                background: '#F3F4F6',
-                                                color: '#4B5563',
-                                                cursor: 'pointer',
+                                                width: '50px',
+                                                height: '50px',
+                                                borderRadius: '16px',
+                                                border: '1px solid #f1f5f9',
+                                                background: '#f8fafc',
+                                                color: '#64748b',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
+                                                transition: 'all 0.2s'
                                             }}
+                                            onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
+                                            onMouseOut={e => e.currentTarget.style.background = '#f8fafc'}
                                             title="Ver Link"
                                         >
-                                            <ExternalLink size={18} />
-                                        </a>
+                                            <ExternalLink size={20} />
+                                        </motion.a>
                                     )}
                                 </div>
                             </div>
