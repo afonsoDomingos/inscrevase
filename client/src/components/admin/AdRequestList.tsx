@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Megaphone, CheckCircle, XCircle, Clock, ExternalLink,
-    Image as ImageIcon, CreditCard, Trash2, Power, PowerOff,
-    Eye, MousePointer2, TrendingUp, AlertCircle, Calendar,
-    User, DollarSign, BarChart3, ChevronRight, Activity
+    Image as ImageIcon, CreditCard, Trash2, PowerOff,
+    Eye, MousePointer2, AlertCircle, Calendar,
+    User, Activity
 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -217,7 +217,7 @@ export default function AdRequestList() {
                             <div>
                                 <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Nenhum anúncio encontrado</h3>
                                 <p style={{ color: '#64748b', maxWidth: '300px', margin: '0 auto' }}>
-                                    Não existem registros correspondentes ao filtro "{filter}" no momento.
+                                    Não existem registros correspondentes ao filtro &quot;{filter}&quot; no momento.
                                 </p>
                             </div>
                         </motion.div>
