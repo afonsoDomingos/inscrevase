@@ -172,34 +172,32 @@ export default function AdRequestList() {
                 initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
-                    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                    background: '#fff',
                     padding: '2.5rem',
                     borderRadius: '32px',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                    boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.1)',
                     position: 'relative',
                     overflow: 'hidden',
-                    border: '1px solid rgba(255, 255, 255, 0.05)'
+                    border: '1px solid #f1f5f9'
                 }}
             >
-                {/* Decorative background elements */}
-                <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+                {/* Decorative background elements removed for cleaner look */}
 
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div style={{
                             width: '72px', height: '72px', borderRadius: '20px',
-                            background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(10px)',
+                            background: '#f8fafc',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            boxShadow: 'inset 0 0 20px rgba(255,215,0,0.1)'
+                            border: '1px solid #e2e8f0',
                         }}>
-                            <Megaphone className="text-yellow-400" size={36} />
+                            <Megaphone className="text-black" size={36} />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.5px' }}>
-                                Gestão de <span style={{ color: '#FFD700' }}>Anúncios</span>
+                            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000', margin: 0, letterSpacing: '-0.5px' }}>
+                                Gestão de <span style={{ color: '#000' }}>Anúncios</span>
                             </h2>
-                            <p style={{ color: '#94a3b8', fontSize: '1rem', marginTop: '4px', fontWeight: 500 }}>
+                            <p style={{ color: '#64748b', fontSize: '1rem', marginTop: '4px', fontWeight: 500 }}>
                                 Controle total da publicidade e faturamento da plataforma.
                             </p>
                         </div>
@@ -207,25 +205,25 @@ export default function AdRequestList() {
 
                     <div className="ad-header-stats" style={{ display: 'flex', gap: '1rem' }}>
                         <div style={{
-                            background: 'rgba(255,255,255,0.03)', padding: '1rem 1.5rem', borderRadius: '18px',
-                            border: '1px solid rgba(255,255,255,0.05)', minWidth: '100px'
+                            background: '#f8fafc', padding: '1rem 1.5rem', borderRadius: '18px',
+                            border: '1px solid #e2e8f0', minWidth: '100px'
                         }}>
                             <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Total</div>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>{requests.length}</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#000' }}>{requests.length}</div>
                         </div>
                         <div style={{
-                            background: 'rgba(59, 130, 246, 0.1)', padding: '1rem 1.5rem', borderRadius: '18px',
-                            border: '1px solid rgba(59, 130, 246, 0.2)', minWidth: '100px'
+                            background: '#eff6ff', padding: '1rem 1.5rem', borderRadius: '18px',
+                            border: '1px solid #dbeafe', minWidth: '100px'
                         }}>
-                            <div style={{ fontSize: '0.7rem', color: '#60a5fa', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Pendentes</div>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#93c5fd' }}>{requests.filter(r => r.status === 'pending').length}</div>
+                            <div style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Pendentes</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1d4ed8' }}>{requests.filter(r => r.status === 'pending').length}</div>
                         </div>
                         <div style={{
-                            background: 'rgba(34, 197, 94, 0.1)', padding: '1rem 1.5rem', borderRadius: '18px',
-                            border: '1px solid rgba(34, 197, 94, 0.2)', minWidth: '100px'
+                            background: '#f0fdf4', padding: '1rem 1.5rem', borderRadius: '18px',
+                            border: '1px solid #dcfce7', minWidth: '100px'
                         }}>
-                            <div style={{ fontSize: '0.7rem', color: '#4ade80', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Ativos</div>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#86efac' }}>{requests.filter(r => r.isActive).length}</div>
+                            <div style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Ativos</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#15803d' }}>{requests.filter(r => r.isActive).length}</div>
                         </div>
                     </div>
                 </div>
@@ -233,8 +231,8 @@ export default function AdRequestList() {
                 {/* Glass Tabs */}
                 <div style={{
                     marginTop: '2.5rem', display: 'flex', gap: '0.75rem',
-                    padding: '6px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px',
-                    width: 'fit-content', border: '1px solid rgba(255,255,255,0.05)',
+                    padding: '6px', background: '#f8fafc', borderRadius: '16px',
+                    width: 'fit-content', border: '1px solid #e2e8f0',
                     maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch'
                 }}>
                     {(['all', 'pending', 'approved', 'rejected', 'suspended'] as const).map((f) => (
@@ -246,7 +244,7 @@ export default function AdRequestList() {
                                 borderRadius: '12px',
                                 border: 'none',
                                 background: filter === f ? '#FFD700' : 'transparent',
-                                color: filter === f ? '#000' : '#94a3b8',
+                                color: filter === f ? '#000' : '#64748b',
                                 fontSize: '0.8rem',
                                 fontWeight: 800,
                                 textTransform: 'uppercase',
