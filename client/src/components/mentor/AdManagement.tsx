@@ -807,13 +807,13 @@ export default function AdManagement() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
-                    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                    background: '#fff',
                     padding: '3rem',
                     borderRadius: '32px',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.05)',
                     position: 'relative',
                     overflow: 'hidden',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    border: '1px solid #f1f5f9',
                     marginBottom: '2.5rem'
                 }}
             >
@@ -838,10 +838,10 @@ export default function AdManagement() {
                             <Megaphone className="text-yellow-400" size={40} />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-1px', fontFamily: 'var(--font-playfair)' }}>
-                                Meus <span style={{ color: '#FFD700' }}>Anúncios</span>
+                            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-1px', fontFamily: 'var(--font-playfair)' }}>
+                                Meus <span style={{ color: '#D4AF37' }}>Anúncios</span>
                             </h2>
-                            <p style={{ color: '#94a3b8', margin: '8px 0 0', fontSize: '1.1rem', fontWeight: 500 }}>
+                            <p style={{ color: '#64748b', margin: '8px 0 0', fontSize: '1.1rem', fontWeight: 500 }}>
                                 Gestão de publicidade premium para escalar seu alcance
                             </p>
                         </div>
@@ -872,17 +872,17 @@ export default function AdManagement() {
                 </div>
 
                 <div style={{ marginTop: '2.5rem', display: 'flex', gap: '2rem', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
-                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', minWidth: '160px' }}>
+                    <div style={{ background: '#f8fafc', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid #e2e8f0', minWidth: '160px' }}>
                         <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Total de Campanhas</div>
-                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff' }}>{ads.length}</div>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0f172a' }}>{ads.length}</div>
                     </div>
-                    <div style={{ background: 'rgba(34, 197, 94, 0.05)', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid rgba(34, 197, 94, 0.2)', minWidth: '160px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Ativos Agora</div>
-                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#86efac' }}>{ads.filter(a => a.isActive && a.status === 'approved').length}</div>
+                    <div style={{ background: '#f0fdf4', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid #dcfce7', minWidth: '160px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Ativos Agora</div>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#15803d' }}>{ads.filter(a => a.isActive && a.status === 'approved').length}</div>
                     </div>
-                    <div style={{ background: 'rgba(59, 130, 246, 0.05)', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)', minWidth: '160px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#60a5fa', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Aguardando Moderação</div>
-                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#93c5fd' }}>{ads.filter(a => a.status === 'pending').length}</div>
+                    <div style={{ background: '#eff6ff', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid #dbeafe', minWidth: '160px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Aguardando Moderação</div>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1d4ed8' }}>{ads.filter(a => a.status === 'pending').length}</div>
                     </div>
                 </div>
             </motion.div>

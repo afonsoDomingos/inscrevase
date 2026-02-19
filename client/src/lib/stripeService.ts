@@ -33,5 +33,16 @@ export const stripeService = {
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Erro ao buscar status do Stripe');
         return data;
+    },
+
+    async verifyPayment(sessionId: string) {
+        const response = await fetch(`${API_URL}/stripe/payment/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Falha na verificação do pagamento');
+        return data;
     }
 };

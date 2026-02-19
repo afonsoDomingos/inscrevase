@@ -24,6 +24,7 @@ import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
 import ReferralModal from '@/components/mentor/ReferralModal';
 import { referralService, ReferralRanking } from '@/lib/referralService';
+import { stripeService } from '@/lib/stripeService';
 
 import NotificationCenter from '@/components/mentor/NotificationCenter';
 import { notificationService } from '@/lib/notificationService';
@@ -280,12 +281,35 @@ function MentorDashboardContent() {
 
     // Handle ad payment success
     useEffect(() => {
-        if (searchParams.get('ad_payment') === 'success') {
-            toast.success('Pagamento do anúncio confirmado! Nosso time irá revisar o conteúdo em breve.');
-            setActiveTab('ads');
-            router.replace('/dashboard/mentor'); // clear param
-        }
-    }, [searchParams, router]);
+        const verifyAdPayment = async () => {
+            const sessionId = searchParams.get('session_id');
+            if (searchParams.get('ad_payment') === 'success' && sessionId) {
+                setLoading(true);
+                try {
+                    await stripeService.verifyPayment(sessionId);
+                    toast.success('Pagamento do anúncio confirmado! Nosso time irá revisar o conteúdo em breve.');
+                    await loadDashboard(); // Reload ads list
+                    await refreshData();
+                    setActiveTab('ads');
+                } catch (error) {
+                    console.error('Error verifying ad payment:', error);
+                    toast.error('Erro ao verificar pagamento do anúncio.');
+                } finally {
+                    setLoading(false);
+                    // Clear search params
+                    const newUrl = window.location.pathname;
+                    router.replace(newUrl);
+                }
+            } else if (searchParams.get('ad_payment') === 'success') {
+                // Legacy or fallback (no sessionId)
+                toast.success('Pagamento do anúncio confirmado!');
+                setActiveTab('ads');
+                router.replace('/dashboard/mentor');
+            }
+        };
+
+        verifyAdPayment();
+    }, [searchParams, router, loadDashboard]);
 
     const refreshData = useCallback(async () => {
         try {

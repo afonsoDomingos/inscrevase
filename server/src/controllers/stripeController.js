@@ -233,7 +233,7 @@ exports.createAdCheckoutSession = async (req, res) => {
                     paymentMethod: 'stripe'
                 })
             },
-            success_url: `${process.env.CLIENT_URL}/dashboard/mentor?ad_payment=success`,
+            success_url: `${process.env.CLIENT_URL}/dashboard/mentor?ad_payment=success&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/anunciar?payment=cancel`,
         });
 
@@ -264,8 +264,10 @@ const completeOrder = async (session) => {
         const existingTx = await Transaction.findOne({ stripePaymentIntentId: paymentIntent.id });
         if (existingTx) {
             console.log('Order already processed for PaymentIntent:', paymentIntent.id);
-            const submission = await Submission.findOne({ stripePaymentIntentId: paymentIntent.id });
-            return submission;
+            if (metadata.type === 'ad_purchase') {
+                return await AdRequest.findOne({ stripePaymentIntentId: paymentIntent.id });
+            }
+            return await Submission.findOne({ stripePaymentIntentId: paymentIntent.id });
         }
 
         // 3. Extract metadata
@@ -299,7 +301,7 @@ const completeOrder = async (session) => {
 
                 if (superAdmins.length > 0 && advertiser) {
                     const subject = `🚀 Novo Pagamento de Anúncio (Stripe): ${adRequest.title}`;
-                    const dashboardUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/admin/ads`;
+                    const dashboardUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/admin`;
 
                     const emailHtml = generateAdminAdNotificationEmail(
                         advertiser.name,
@@ -1154,7 +1156,7 @@ let cachedExchangeRate = 63.8; // Fallback rate
 let lastRateFetch = 0;
 const RATE_TTL = 1000 * 60 * 60 * 12; // 12 hours
 
-const getLatestRate = async () => {
+async function getLatestRate() {
     try {
         // 1. Tentativo de buscar na base de dados (Persistência)
         let settings = await GlobalSettings.findOne({ key: 'exchange_rate_usd_mzn' });
