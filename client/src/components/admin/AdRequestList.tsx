@@ -13,6 +13,74 @@ import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
 import { toast } from 'sonner';
 
+const cardStyles = `
+    .ad-card-container {
+        display: flex;
+        flex-direction: row;
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+    }
+    .ad-card-preview {
+        width: 320px;
+        min-height: 200px;
+        background: #f8fafc;
+        position: relative;
+        flex-shrink: 0;
+    }
+    .ad-card-content {
+        flex: 1;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .ad-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .ad-user-info {
+        grid-column: span 2;
+    }
+    
+    @media (max-width: 1024px) {
+        .ad-card-container {
+            flex-direction: column;
+        }
+        .ad-card-preview {
+            width: 100%;
+            height: 250px;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .ad-card-content {
+            padding: 1.25rem;
+        }
+        .ad-metrics-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .ad-user-info {
+            grid-column: span 2;
+        }
+        .ad-header-stats {
+            display: none !important;
+        }
+        .ad-action-bar {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .ad-action-buttons {
+            flex-direction: column;
+        }
+    }
+`;
+
 export default function AdRequestList() {
     const [requests, setRequests] = useState<AdRequestModel[]>([]);
     const [loading, setLoading] = useState(true);
@@ -98,6 +166,7 @@ export default function AdRequestList() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', paddingBottom: '4rem' }}>
+            <style>{cardStyles}</style>
             {/* Premium Header */}
             <motion.div
                 initial={{ opacity: 0, y: -30 }}
@@ -136,27 +205,27 @@ export default function AdRequestList() {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div className="ad-header-stats" style={{ display: 'flex', gap: '1rem' }}>
                         <div style={{
                             background: 'rgba(255,255,255,0.03)', padding: '1rem 1.5rem', borderRadius: '18px',
-                            border: '1px solid rgba(255,255,255,0.05)', minWidth: '120px'
+                            border: '1px solid rgba(255,255,255,0.05)', minWidth: '100px'
                         }}>
                             <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Total</div>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff' }}>{requests.length}</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>{requests.length}</div>
                         </div>
                         <div style={{
                             background: 'rgba(59, 130, 246, 0.1)', padding: '1rem 1.5rem', borderRadius: '18px',
-                            border: '1px solid rgba(59, 130, 246, 0.2)', minWidth: '120px'
+                            border: '1px solid rgba(59, 130, 246, 0.2)', minWidth: '100px'
                         }}>
                             <div style={{ fontSize: '0.7rem', color: '#60a5fa', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Pendentes</div>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#93c5fd' }}>{requests.filter(r => r.status === 'pending').length}</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#93c5fd' }}>{requests.filter(r => r.status === 'pending').length}</div>
                         </div>
                         <div style={{
                             background: 'rgba(34, 197, 94, 0.1)', padding: '1rem 1.5rem', borderRadius: '18px',
-                            border: '1px solid rgba(34, 197, 94, 0.2)', minWidth: '120px'
+                            border: '1px solid rgba(34, 197, 94, 0.2)', minWidth: '100px'
                         }}>
                             <div style={{ fontSize: '0.7rem', color: '#4ade80', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Ativos</div>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#86efac' }}>{requests.filter(r => r.isActive).length}</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#86efac' }}>{requests.filter(r => r.isActive).length}</div>
                         </div>
                     </div>
                 </div>
@@ -165,7 +234,8 @@ export default function AdRequestList() {
                 <div style={{
                     marginTop: '2.5rem', display: 'flex', gap: '0.75rem',
                     padding: '6px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px',
-                    width: 'fit-content', border: '1px solid rgba(255,255,255,0.05)'
+                    width: 'fit-content', border: '1px solid rgba(255,255,255,0.05)',
+                    maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch'
                 }}>
                     {(['all', 'pending', 'approved', 'rejected', 'suspended'] as const).map((f) => (
                         <button
@@ -228,16 +298,11 @@ export default function AdRequestList() {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.05 }}
-                                style={{
-                                    background: '#fff', borderRadius: '24px', overflow: 'hidden',
-                                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
-                                    border: '1px solid #f1f5f9',
-                                    display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease'
-                                }}
+                                className="ad-card-container"
                             >
-                                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                <div style={{ display: 'flex', flexDirection: 'inherit', width: '100%' }}>
                                     {/* Preview Container */}
-                                    <div style={{ width: '320px', minHeight: '200px', background: '#f8fafc', position: 'relative', flexShrink: 0 }}>
+                                    <div className="ad-card-preview">
                                         {req.mediaUrl ? (
                                             req.mediaType === 'video' ? (
                                                 <video
@@ -278,7 +343,7 @@ export default function AdRequestList() {
                                     </div>
 
                                     {/* Content Area */}
-                                    <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+                                    <div className="ad-card-content">
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
                                             <div style={{ flex: 1, minWidth: '300px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
@@ -317,7 +382,7 @@ export default function AdRequestList() {
                                         </div>
 
                                         {/* Metrics & Advertiser */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                                        <div className="ad-metrics-grid">
                                             <div style={{ background: 'rgba(59, 130, 246, 0.03)', border: '1px solid rgba(59, 130, 246, 0.1)', padding: '1rem', borderRadius: '16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
                                                     <Eye size={14} /> Views
@@ -338,7 +403,7 @@ export default function AdRequestList() {
                                                     {req.views && req.views > 0 ? ((req.clicks || 0) / req.views * 100).toFixed(2) : '0.00'}%
                                                 </div>
                                             </div>
-                                            <div style={{ gridColumn: 'span 2', background: '#f8fafc', border: '1px solid #f1f5f9', padding: '1rem', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div className="ad-user-info" style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '1rem', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                                     <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
                                                         <User size={18} />
@@ -378,8 +443,8 @@ export default function AdRequestList() {
                                         </div>
 
                                         {/* Action Bar */}
-                                        <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                        <div className="ad-action-bar" style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                                            <div className="ad-action-buttons" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                 {req.paymentProofUrl && (
                                                     <a href={req.paymentProofUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                                                         <div style={{
@@ -406,7 +471,7 @@ export default function AdRequestList() {
                                                 )}
                                             </div>
 
-                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <div className="ad-action-buttons" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                                                 {req.status === 'pending' && (
                                                     <>
                                                         <button
