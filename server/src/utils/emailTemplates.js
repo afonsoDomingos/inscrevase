@@ -531,21 +531,67 @@ const generateAdminAdNotificationEmail = (advertiserName, advertiserEmail, adTit
             </div>
         </div>
     `;
-};
+    const generateAdStatusUpdateEmail = (name, adTitle, status, dashboardUrl) => {
+        const isApproved = status === 'approved';
+        const accentColor = isApproved ? "#22c55e" : "#ef4444";
+        const statusText = isApproved ? 'Aprovado' : status === 'rejected' ? 'Rejeitado' : 'Suspenso';
 
-module.exports = {
-    generateWelcomeEmail,
-    generateBasicEmail,
-    generatePendingApprovalEmail,
-    generateReferralBonusEmail,
-    generateReferralPointsEarnedEmail,
-    generateSocialPointsEmail,
-    generateAdminPointsNotificationEmail,
-    generateSubscriptionConfirmationEmail,
-    generatePaymentProofReceivedEmail,
-    generatePaymentFailedEmail,
-    generatePaymentRejectedEmail,
-    generateAdminAdNotificationEmail,
-    getSocialFooter,
-    socialLinks
-};
+        return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">Atualização de Anúncio 📢</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #333; margin-top: 0;">Olá, <strong>${name}</strong>!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                        Temos uma atualização sobre o seu anúncio:
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee; text-align: center;">
+                        <p style="margin: 0 0 10px 0; color: #666; font-size: 14px; text-transform: uppercase; font-weight: 700;">Anúncio:</p>
+                        <p style="margin: 0 0 15px 0; color: #000; font-size: 18px; font-weight: 800;">${adTitle}</p>
+                        <div style="display: inline-block; padding: 8px 20px; border-radius: 30px; background: ${accentColor}; color: #fff; font-weight: 900; font-size: 14px; text-transform: uppercase;">
+                            ${statusText}
+                        </div>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.6;">
+                        ${isApproved
+                ? 'Excelente notícia! O seu anúncio já foi validado e está agora ativo na plataforma, gerando visibilidade para o seu negócio.'
+                : 'O seu anúncio não pôde ser publicado conforme solicitado. Por favor, verifique se o conteúdo cumpre as nossas diretrizes ou entre em contacto com o suporte.'}
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 1px;">
+                            ${isApproved ? 'Ver Performance do Anúncio' : 'Rever Anúncio'}
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+    };
+
+    module.exports = {
+        generateWelcomeEmail,
+        generateBasicEmail,
+        generatePendingApprovalEmail,
+        generateReferralBonusEmail,
+        generateReferralPointsEarnedEmail,
+        generateSocialPointsEmail,
+        generateAdminPointsNotificationEmail,
+        generateSubscriptionConfirmationEmail,
+        generatePaymentProofReceivedEmail,
+        generatePaymentFailedEmail,
+        generatePaymentRejectedEmail,
+        generateAdminAdNotificationEmail,
+        generateAdStatusUpdateEmail,
+        getSocialFooter,
+        socialLinks
+    };

@@ -3,7 +3,7 @@ const Notification = require('../models/Notification');
 const NotificationService = require('../services/notificationService');
 const User = require('../models/User');
 const sendEmail = require('../utils/emailService');
-const { generateAdminAdNotificationEmail } = require('../utils/emailTemplates');
+const { generateAdminAdNotificationEmail, generateAdStatusUpdateEmail } = require('../utils/emailTemplates');
 
 // Submit a new ad request
 exports.submitAdRequest = async (req, res) => {
@@ -177,7 +177,9 @@ exports.updateAdStatus = async (req, res) => {
                 // Email Logic
                 const user = await User.findById(ad.userId);
                 if (user && user.email) {
-                    await sendEmail(user.email, title, `<div style="font-family: sans-serif; padding: 20px;"><h2>${title}</h2><p>${content}</p><br><p>Equipe Inscreva-se</p></div>`);
+                    const dashboardUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                    const emailHtml = generateAdStatusUpdateEmail(user.name, ad.title, status, dashboardUrl);
+                    await sendEmail(user.email, title, emailHtml);
                 }
             }
         } catch (notifyError) {
