@@ -489,6 +489,50 @@ const generateAdminPointsNotificationEmail = (userName, userEmail, points, reaso
     `;
 };
 
+const generateAdminAdNotificationEmail = (advertiserName, advertiserEmail, adTitle, adCategory, duration, investment, currency, paymentMethod, dashboardUrl) => {
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #000000 0%, #333333 100%); padding: 40px 20px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+                <h1 style="color: #ffffff; font-size: 20px; font-weight: 800; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase;">🚀 Novo Anúncio Recebido</h1>
+            </div>
+
+            <div style="padding: 40px;">
+                <div style="background-color: #f9f9f9; padding: 30px; border-radius: 15px; border-left: 4px solid #D4AF37;">
+                    <p style="font-size: 16px; color: #333; margin-top: 0;">Olá Admin,</p>
+                    
+                    <p style="font-size: 15px; color: #555; line-height: 1.6;">
+                        Um novo pedido de publicidade foi submetido na plataforma e aguarda a sua revisão.
+                    </p>
+
+                    <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; margin: 25px 0; border: 1px solid #eee;">
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Anunciante:</strong> <span style="color: #000;">${advertiserName} (${advertiserEmail})</span></p>
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Título:</strong> <span style="color: #000; font-weight: bold;">${adTitle}</span></p>
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Categoria:</strong> <span style="color: #000;">${adCategory.toUpperCase()}</span></p>
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Duração:</strong> <span style="color: #000;">${duration} Semanas</span></p>
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Investimento:</strong> <span style="color: #22c55e; font-weight: 800;">${investment} ${currency}</span></p>
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Pagamento:</strong> <span style="color: #3b82f6; font-weight: 800; text-transform: uppercase;">${paymentMethod}</span></p>
+                    </div>
+
+                    <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                        Por favor, aceda ao painel administrativo para validar o conteúdo da mídia e o status do pagamento antes de publicar.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${dashboardUrl}" style="background: #000; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 1px;">
+                            Rever no Painel Admin
+                        </a>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; text-align: center; border-top: 1px solid #eee; padding-top: 30px;">
+                    <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Inscreva-se Admin Notifications.</p>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
@@ -501,6 +545,7 @@ module.exports = {
     generatePaymentProofReceivedEmail,
     generatePaymentFailedEmail,
     generatePaymentRejectedEmail,
+    generateAdminAdNotificationEmail,
     getSocialFooter,
     socialLinks
 };

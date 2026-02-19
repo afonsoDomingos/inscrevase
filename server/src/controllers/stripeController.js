@@ -4,15 +4,14 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const Submission = require('../models/Submission');
+const NotificationService = require('../services/notificationService');
 const AdRequest = require('../models/AdRequest');
 const { PLANS } = require('../config/stripe');
 const GlobalSettings = require('../models/GlobalSettings');
 const sendEmail = require('../utils/emailService');
-const {
-    generateSubscriptionConfirmationEmail,
-    generatePaymentProofReceivedEmail,
-    generatePaymentFailedEmail,
-    generatePaymentRejectedEmail
+generatePaymentFailedEmail,
+    generatePaymentRejectedEmail,
+    generateAdminAdNotificationEmail
 } = require('../utils/emailTemplates');
 
 
@@ -292,6 +291,47 @@ const completeOrder = async (session) => {
 
             await adRequest.save();
             console.log('✅ [Stripe Webhook] AdRequest created:', adRequest._id);
+
+            // 📧 Notify Super Admins
+            try {
+                const superAdmins = await User.find({ role: 'SuperAdmin' });
+                const advertiser = await User.findById(userId);
+
+                if (superAdmins.length > 0 && advertiser) {
+                    const subject = `🚀 Novo Pagamento de Anúncio (Stripe): ${adRequest.title}`;
+                    const dashboardUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/admin/ads`;
+
+                    const emailHtml = generateAdminAdNotificationEmail(
+                        advertiser.name,
+                        advertiser.email,
+                        adRequest.title,
+                        adRequest.category,
+                        adRequest.durationWeeks,
+                        adRequest.priceTotal,
+                        adRequest.currency,
+                        'Stripe / Cartão',
+                        dashboardUrl
+                    );
+
+                    for (const admin of superAdmins) {
+                        if (admin.email) {
+                            await sendEmail(admin.email, subject, emailHtml);
+                        }
+
+                        // Notificação In-App
+                        await NotificationService.notify({
+                            recipient: admin._id,
+                            sender: userId,
+                            title: 'Novo Anúncio (Pago)! 💎',
+                            content: `${advertiser.name} pagou por um novo anúncio via Stripe: "${adRequest.title}".`,
+                            type: 'system',
+                            actionUrl: '/dashboard/admin/ads'
+                        });
+                    }
+                }
+            } catch (emailError) {
+                console.error('⚠️ [Stripe Webhook] Error notifying super admins:', emailError);
+            }
 
             // Create transaction for platform revenue (Admin view)
             const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
