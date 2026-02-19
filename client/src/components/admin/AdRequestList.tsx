@@ -237,7 +237,7 @@ export default function AdRequestList() {
                             >
                                 <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                     {/* Preview Container */}
-                                    <div style={{ width: '320px', minHeight: '200px', background: '#f8fafc', position: 'relative', shrink: 0 }}>
+                                    <div style={{ width: '320px', minHeight: '200px', background: '#f8fafc', position: 'relative', flexShrink: 0 }}>
                                         {req.mediaUrl ? (
                                             req.mediaType === 'video' ? (
                                                 <video
