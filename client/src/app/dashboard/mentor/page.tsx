@@ -279,6 +279,25 @@ function MentorDashboardContent() {
         }
     }, [searchParams, router, t]);
 
+    const refreshData = useCallback(async () => {
+        try {
+            const [supportData, notificationData, statsData] = await Promise.all([
+                supportService.getUnreadCount(),
+                notificationService.getUnreadCount(),
+                dashboardService.getMentorStats().catch(() => null)
+            ]);
+            setUnreadCount(supportData.count);
+            setUnreadNotifications(notificationData.count);
+            if (statsData) setStats(statsData);
+
+            // Load referral ranking for overview
+            const ranking = await referralService.getRanking().catch(() => []);
+            setReferralRanking(ranking);
+        } catch (error) {
+            console.error('Error refreshing data:', error);
+        }
+    }, []);
+
     // Handle ad payment success
     useEffect(() => {
         const verifyAdPayment = async () => {
@@ -309,26 +328,7 @@ function MentorDashboardContent() {
         };
 
         verifyAdPayment();
-    }, [searchParams, router, loadDashboard]);
-
-    const refreshData = useCallback(async () => {
-        try {
-            const [supportData, notificationData, statsData] = await Promise.all([
-                supportService.getUnreadCount(),
-                notificationService.getUnreadCount(),
-                dashboardService.getMentorStats().catch(() => null)
-            ]);
-            setUnreadCount(supportData.count);
-            setUnreadNotifications(notificationData.count);
-            if (statsData) setStats(statsData);
-
-            // Load referral ranking for overview
-            const ranking = await referralService.getRanking().catch(() => []);
-            setReferralRanking(ranking);
-        } catch (error) {
-            console.error('Error refreshing data:', error);
-        }
-    }, []);
+    }, [searchParams, router, loadDashboard, refreshData]);
 
     useEffect(() => {
         loadDashboard();

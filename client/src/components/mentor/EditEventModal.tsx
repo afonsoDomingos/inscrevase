@@ -557,7 +557,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     </div>
 
                     {/* Content Wrapper */}
-                    <div className="edit-event-content" style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
+                    <div className="edit-event-content" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
                         {/* Scrollable Area */}
                         <div style={{
                             flex: 1,

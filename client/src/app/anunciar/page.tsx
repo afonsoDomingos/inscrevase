@@ -11,6 +11,7 @@ import { adService, AdRequestModel } from '@/lib/adService';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FormModel } from '@/lib/formService';
+import Cookies from 'js-cookie';
 
 const PRICING_PER_WEEK = 5; // USD
 
@@ -44,7 +45,7 @@ export default function AnunciarPage() {
 
     // Check authentication
     useEffect(() => {
-        const token = typeof window !== 'undefined' ? require('js-cookie').get('token') : null;
+        const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
         if (!token) {
             router.push('/login?redirect=/anunciar');
         }
