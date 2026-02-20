@@ -53,7 +53,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const notificationBellRef = useRef<HTMLDivElement>(null);
-
+    const bellButtonRef = useRef<HTMLButtonElement>(null);
+    const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
 
     const { socket } = useSocket();
 
@@ -480,7 +481,16 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <button
-                                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                    ref={bellButtonRef}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                        setDropdownPos({
+                                            top: rect.bottom + 8,
+                                            right: window.innerWidth - rect.right
+                                        });
+                                        setIsNotificationsOpen(prev => !prev);
+                                    }}
                                     title={t('dashboard.notifications')}
                                     style={{
                                         display: 'flex',
@@ -519,25 +529,27 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                         </span>
                                     )}
                                 </button>
-
-                                <AnimatePresence>
-                                    {isNotificationsOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            style={{
-                                                position: 'absolute',
-                                                top: '50px',
-                                                right: 0,
-                                                zIndex: 3000
-                                            }}
-                                        >
-                                            <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
                             </div>
+
+                            {/* Notification dropdown rendered at fixed position, immune to parent overflow */}
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'fixed',
+                                            top: dropdownPos.top,
+                                            right: dropdownPos.right,
+                                            zIndex: 9999,
+                                            transformOrigin: 'top right'
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             <button
                                 onClick={() => authService.logout()}
