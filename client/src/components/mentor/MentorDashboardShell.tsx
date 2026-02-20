@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -52,6 +52,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
     const [unreadCount, setUnreadCount] = useState(0);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const notificationBellRef = useRef<HTMLDivElement>(null);
 
 
     const { socket } = useSocket();
@@ -107,6 +108,17 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
             socket.off('new_notification', loadUnreadCounts);
         };
     }, [socket]);
+
+    // Close notification panel on outside click
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (notificationBellRef.current && !notificationBellRef.current.contains(e.target as Node)) {
+                setIsNotificationsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, []);
 
     const navItems = [
         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} />, link: '/dashboard/mentor' },
@@ -466,7 +478,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <ThemeToggle />
-                            <div style={{ position: 'relative' }}>
+                            <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <button
                                     onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                                     title={t('dashboard.notifications')}
@@ -476,10 +488,10 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                         justifyContent: 'center',
                                         width: '40px',
                                         height: '40px',
-                                        background: 'var(--paper)',
+                                        background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
                                         border: '1px solid #FFD700',
                                         borderRadius: '12px',
-                                        color: '#000',
+                                        color: isNotificationsOpen ? '#000' : 'var(--foreground)',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         position: 'relative'
@@ -491,8 +503,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                             position: 'absolute',
                                             top: '-5px',
                                             right: '-5px',
-                                            background: 'var(--gold-gradient)',
-                                            color: '#000',
+                                            background: '#ef4444',
+                                            color: '#fff',
                                             width: '18px',
                                             height: '18px',
                                             borderRadius: '50%',
@@ -518,7 +530,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                                 position: 'absolute',
                                                 top: '50px',
                                                 right: 0,
-                                                zIndex: 2000
+                                                zIndex: 3000
                                             }}
                                         >
                                             <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
