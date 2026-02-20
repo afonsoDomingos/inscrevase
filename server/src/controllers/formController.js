@@ -199,9 +199,27 @@ exports.getFormBySlug = async (req, res) => {
         // Get submission count to calculate remaining slots
         const submissionCount = await Submission.countDocuments({ form: form._id });
 
+        // Calculate real data for social proof
+        const totalEvents = await Form.countDocuments({ creator: form.creator._id, active: true });
+
+        const allFormsByCreator = await Form.find({ creator: form.creator._id }).select('_id');
+        const formIds = allFormsByCreator.map(f => f._id);
+        const totalStudents = await Submission.countDocuments({ form: { $in: formIds } });
+
+        const Feedback = require('../models/Feedback');
+        const feedbacks = await Feedback.find({ targetUser: form.creator._id });
+        let averageRating = null;
+        if (feedbacks && feedbacks.length > 0) {
+            const sum = feedbacks.reduce((acc, curr) => acc + (curr.rating || 5), 0);
+            averageRating = parseFloat((sum / feedbacks.length).toFixed(1));
+        }
+
         res.json({
             ...form.toObject(),
-            submissionCount
+            submissionCount,
+            totalStudents,
+            totalEvents,
+            averageRating
         });
     } catch (err) {
         console.error(`ERROR in getFormBySlug for slug "${req.params.slug}":`, err);

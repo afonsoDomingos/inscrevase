@@ -10,6 +10,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import CurrencySwitcher from './CurrencySwitcher';
 import { useTranslate } from '@/context/LanguageContext';
 import InstallPrompt from './common/InstallPrompt';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { t } = useTranslate();
@@ -91,6 +92,7 @@ export default function Navbar() {
           <InstallPrompt />
           <LanguageSwitcher />
           <CurrencySwitcher />
+          <NotificationBell />
           {isLoggedIn ? (
             <Link href={getDashboardLink()} className="icon-link" title={t('nav.dashboard')}>
               <LayoutDashboard size={20} />

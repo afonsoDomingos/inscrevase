@@ -644,43 +644,51 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 )}
 
                                 {/* Social Proof Metrics */}
-                                <motion.div
-                                    variants={itemVariants}
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                                        gap: '15px',
-                                        marginBottom: '2rem'
-                                    }}
-                                >
-                                    <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                        <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
-                                            <Users size={24} />
-                                        </div>
-                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalStudents || 120}+</div>
-                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.students')}</div>
-                                    </div>
+                                {((form.totalStudents !== undefined && form.totalStudents > 0) || (form.totalEvents !== undefined && form.totalEvents > 0) || (form.averageRating !== undefined && form.averageRating > 0)) && (
+                                    <motion.div
+                                        variants={itemVariants}
+                                        style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                                            gap: '15px',
+                                            marginBottom: '2rem'
+                                        }}
+                                    >
+                                        {(form.totalStudents !== undefined && form.totalStudents > 0) && (
+                                            <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                                <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                                                    <Users size={24} />
+                                                </div>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalStudents}+</div>
+                                                <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.students')}</div>
+                                            </div>
+                                        )}
 
-                                    <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                        <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
-                                            <Zap size={24} />
-                                        </div>
-                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalEvents || 12}+</div>
-                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.eventsCreated')}</div>
-                                    </div>
+                                        {(form.totalEvents !== undefined && form.totalEvents > 0) && (
+                                            <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                                <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                                                    <Zap size={24} />
+                                                </div>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalEvents}+</div>
+                                                <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.eventsCreated')}</div>
+                                            </div>
+                                        )}
 
-                                    <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                        <div style={{ color: '#FFD700', marginBottom: '8px', display: 'flex', justifyContent: 'center', gap: '2px' }}>
-                                            <Star size={18} fill="#FFD700" />
-                                            <Star size={18} fill="#FFD700" />
-                                            <Star size={18} fill="#FFD700" />
-                                            <Star size={18} fill="#FFD700" />
-                                            <Star size={18} fill="#FFD700" />
-                                        </div>
-                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.averageRating || 4.9}</div>
-                                        <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.eventRating.stats.average')}</div>
-                                    </div>
-                                </motion.div>
+                                        {(form.averageRating !== undefined && form.averageRating > 0) && (
+                                            <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                                <div style={{ color: '#FFD700', marginBottom: '8px', display: 'flex', justifyContent: 'center', gap: '2px' }}>
+                                                    <Star size={18} fill="#FFD700" />
+                                                    <Star size={18} fill="#FFD700" />
+                                                    <Star size={18} fill="#FFD700" />
+                                                    <Star size={18} fill="#FFD700" />
+                                                    <Star size={18} fill="#FFD700" />
+                                                </div>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.averageRating}</div>
+                                                <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.eventRating.stats.average')}</div>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
 
                                 {form.creator && (
                                     <motion.div
