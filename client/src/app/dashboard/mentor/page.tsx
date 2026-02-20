@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
@@ -112,6 +112,9 @@ function MentorDashboardContent() {
     const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
+    const notificationBellRef = useRef<HTMLDivElement>(null);
+    const bellButtonRef = useRef<HTMLButtonElement>(null);
+    const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -278,6 +281,17 @@ function MentorDashboardContent() {
             return () => clearInterval(interval);
         }
     }, [searchParams, router, t]);
+
+    // Close notification panel on outside click
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (notificationBellRef.current && !notificationBellRef.current.contains(e.target as Node)) {
+                setIsNotificationsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, []);
 
     const refreshData = useCallback(async () => {
         try {
@@ -1024,9 +1038,29 @@ function MentorDashboardContent() {
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <ThemeToggle />
-                            <div style={{ position: 'relative' }}>
+                            <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <button
-                                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                    ref={bellButtonRef}
+                                    onClick={(e) => {
+                                        try {
+                                            console.log('🔔 [Bell-Page] click fired, isOpen =', isNotificationsOpen);
+                                            e.stopPropagation();
+                                            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                            console.log('🔔 [Bell-Page] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
+                                            const newPos = {
+                                                top: rect.bottom + 8,
+                                                right: window.innerWidth - rect.right
+                                            };
+                                            console.log('🔔 [Bell-Page] dropdownPos =', newPos);
+                                            setDropdownPos(newPos);
+                                            setIsNotificationsOpen(prev => {
+                                                console.log('🔔 [Bell-Page] state toggle:', prev, '->', !prev);
+                                                return !prev;
+                                            });
+                                        } catch (err) {
+                                            console.error('🔴 [Bell-Page] onClick error:', err);
+                                        }
+                                    }}
                                     title={t('dashboard.notifications')}
                                     style={{
                                         display: 'flex',
@@ -1034,10 +1068,10 @@ function MentorDashboardContent() {
                                         justifyContent: 'center',
                                         width: '40px',
                                         height: '40px',
-                                        background: 'var(--paper)',
+                                        background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
                                         border: '1px solid #FFD700',
                                         borderRadius: '12px',
-                                        color: '#000',
+                                        color: isNotificationsOpen ? '#000' : 'var(--foreground)',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         position: 'relative'
@@ -1049,8 +1083,8 @@ function MentorDashboardContent() {
                                             position: 'absolute',
                                             top: '-5px',
                                             right: '-5px',
-                                            background: 'var(--gold-gradient)',
-                                            color: '#000',
+                                            background: '#ef4444',
+                                            color: '#fff',
                                             width: '20px',
                                             height: '20px',
                                             borderRadius: '50%',
@@ -1065,25 +1099,27 @@ function MentorDashboardContent() {
                                         </span>
                                     )}
                                 </button>
-
-                                <AnimatePresence>
-                                    {isNotificationsOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            style={{
-                                                position: 'absolute',
-                                                top: '55px',
-                                                right: 0,
-                                                zIndex: 2000
-                                            }}
-                                        >
-                                            <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
                             </div>
+
+                            {/* Notification dropdown rendered at fixed position, immune to parent overflow */}
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'fixed',
+                                            top: dropdownPos.top,
+                                            right: dropdownPos.right,
+                                            zIndex: 9999,
+                                            transformOrigin: 'top right'
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             <button
                                 onClick={() => authService.logout()}
