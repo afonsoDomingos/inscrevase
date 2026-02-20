@@ -483,13 +483,24 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                 <button
                                     ref={bellButtonRef}
                                     onClick={(e) => {
-                                        e.stopPropagation();
-                                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                                        setDropdownPos({
-                                            top: rect.bottom + 8,
-                                            right: window.innerWidth - rect.right
-                                        });
-                                        setIsNotificationsOpen(prev => !prev);
+                                        try {
+                                            console.log('🔔 [Bell] click fired, isOpen =', isNotificationsOpen);
+                                            e.stopPropagation();
+                                            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                            console.log('🔔 [Bell] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
+                                            const newPos = {
+                                                top: rect.bottom + 8,
+                                                right: window.innerWidth - rect.right
+                                            };
+                                            console.log('🔔 [Bell] dropdownPos =', newPos);
+                                            setDropdownPos(newPos);
+                                            setIsNotificationsOpen(prev => {
+                                                console.log('🔔 [Bell] state toggle:', prev, '->', !prev);
+                                                return !prev;
+                                            });
+                                        } catch (err) {
+                                            console.error('🔴 [Bell] onClick error:', err);
+                                        }
                                     }}
                                     title={t('dashboard.notifications')}
                                     style={{
