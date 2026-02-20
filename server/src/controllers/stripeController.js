@@ -260,18 +260,18 @@ const completeOrder = async (session) => {
             return null;
         }
 
+        // 3. Extract metadata
+        const metadata = expandedSession.metadata;
+
         // 2. Check if transaction already exists to avoid duplicates
         const existingTx = await Transaction.findOne({ stripePaymentIntentId: paymentIntent.id });
         if (existingTx) {
             console.log('Order already processed for PaymentIntent:', paymentIntent.id);
-            if (metadata.type === 'ad_purchase') {
+            if (metadata && metadata.type === 'ad_purchase') {
                 return await AdRequest.findOne({ stripePaymentIntentId: paymentIntent.id });
             }
             return await Submission.findOne({ stripePaymentIntentId: paymentIntent.id });
         }
-
-        // 3. Extract metadata
-        const metadata = expandedSession.metadata;
 
         // --- Handle Ad Purchase ---
         if (metadata.type === 'ad_purchase') {
