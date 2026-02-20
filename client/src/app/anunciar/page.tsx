@@ -42,6 +42,14 @@ export default function AnunciarPage() {
 
     const [paymentProof, setPaymentProof] = useState<string | null>(null);
 
+    // Check authentication
+    useEffect(() => {
+        const token = typeof window !== 'undefined' ? require('js-cookie').get('token') : null;
+        if (!token) {
+            router.push('/login?redirect=/anunciar');
+        }
+    }, [router]);
+
     // Load user events
     useEffect(() => {
         const loadMyEvents = async () => {
@@ -72,7 +80,7 @@ export default function AnunciarPage() {
                     ...prev,
                     title: event.title,
                     description: event.description.substring(0, 150),
-                    imageUrl: event.coverImage || '',
+                    mediaUrl: event.coverImage || '',
                     targetUrl: `${window.location.origin}/f/${event.slug}`
                 }));
             }
