@@ -19,7 +19,7 @@ interface Lesson {
     isCompleted?: boolean;
     views: number;
     order?: number;
-    targetAudience?: 'mentors' | 'participants' | 'both';
+    targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
     associatedEvents?: { _id: string; title: string }[];
     createdBy?: { _id: string; name: string; role: string };
 }

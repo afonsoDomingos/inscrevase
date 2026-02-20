@@ -861,7 +861,7 @@ function HubContent() {
                                             >
                                                 <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
                                                     {lesson.thumbnailUrl ? (
-                                                        <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                                                        <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover', pointerEvents: 'none' }} unoptimized />
                                                     ) : (
                                                         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                             {locked ? <Loader2 size={32} color="#666" /> : <Play size={32} color={primaryColor} />}

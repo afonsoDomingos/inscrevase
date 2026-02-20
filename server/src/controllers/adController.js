@@ -1,7 +1,9 @@
 const AdRequest = require('../models/AdRequest');
 const Notification = require('../models/Notification');
+const NotificationService = require('../services/notificationService');
 const User = require('../models/User');
 const sendEmail = require('../utils/emailService');
+const { generateAdminAdNotificationEmail, generateAdStatusUpdateEmail } = require('../utils/emailTemplates');
 
 // Submit a new ad request
 exports.submitAdRequest = async (req, res) => {
@@ -17,15 +19,58 @@ exports.submitAdRequest = async (req, res) => {
             userId
         };
 
-        console.log('🔍 [AdController] Creating ad with data:', adData);
-
-        const newAd = new AdRequest(adData);
+        const newAd = new AdRequest({
+            ...adData,
+            status: 'pending',
+            isActive: false
+        });
         await newAd.save();
+
+        // 📧 Notificar Super Admin sobre novo anúncio com pagamento manual
+        try {
+            const superAdmins = await User.find({ role: 'SuperAdmin' });
+            const advertiser = await User.findById(userId);
+
+            if (superAdmins.length > 0 && advertiser) {
+                const subject = `🚀 Novo Pedido de Anúncio: ${newAd.title}`;
+                const dashboardUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/admin`;
+
+                const emailHtml = generateAdminAdNotificationEmail(
+                    advertiser.name,
+                    advertiser.email,
+                    newAd.title,
+                    newAd.category,
+                    newAd.durationWeeks,
+                    newAd.priceTotal,
+                    newAd.currency,
+                    newAd.paymentMethod,
+                    dashboardUrl
+                );
+
+                for (const admin of superAdmins) {
+                    if (admin.email) {
+                        await sendEmail(admin.email, subject, emailHtml);
+                    }
+
+                    // Notificação In-App
+                    await NotificationService.notify({
+                        recipient: admin._id,
+                        sender: userId,
+                        title: 'Novo Anúncio Pendente! 🚀',
+                        content: `${advertiser.name} enviou um novo anúncio: "${newAd.title}".`,
+                        type: 'system',
+                        actionUrl: '/dashboard/admin'
+                    });
+                }
+            }
+        } catch (emailError) {
+            console.error('⚠️ [AdController] Error notifying super admins:', emailError);
+        }
 
         console.log(`✅ [AdController] New ad request created by user ${userId}`, newAd._id);
         res.status(201).json({
             success: true,
-            message: 'Pedido de anúncio enviado com sucesso!',
+            message: 'Pedido de anúncio enviado com sucesso e notificação enviada à administração!',
             ad: newAd
         });
     } catch (error) {
@@ -92,17 +137,32 @@ exports.updateAdStatus = async (req, res) => {
             ad.endDate = new Date();
             ad.endDate.setDate(ad.endDate.getDate() + (ad.durationWeeks * 7));
             ad.isActive = true;
+        } else if (status === 'suspended' || status === 'rejected') {
+            ad.isActive = false;
+        } else if (status === 'approved' && ad.startDate) {
+            // If re-approving a suspended ad, make it active again
+            ad.isActive = true;
         }
 
         await ad.save();
 
         // Notify User
         try {
-            const adminSender = await User.findOne({ role: 'admin' });
+            const superAdmin = await User.findOne({ role: 'SuperAdmin' });
+            const adminSender = superAdmin || await User.findOne({ role: 'admin' });
+
             if (adminSender) {
-                const statusText = status === 'approved' ? 'aprovado' : 'rejeitado';
-                const title = `Atualização do Anúncio: ${ad.title}`;
-                const content = `Olá! Seu anúncio "${ad.title}" foi ${statusText} pela nossa equipe. ${status === 'approved' ? 'Ele já está ativo.' : 'Verifique as diretrizes e tente novamente.'}`;
+                let statusText = status === 'approved' ? 'aprovado' : status === 'rejected' ? 'rejeitado' : 'suspenso';
+                let title = `Atualização do Anúncio: ${ad.title}`;
+                let content = `Olá! Seu anúncio "${ad.title}" foi ${statusText} pela nossa equipe.`;
+
+                if (status === 'approved') {
+                    content += ' Ele já está ativo e visível na plataforma.';
+                } else if (status === 'suspended') {
+                    content += ' O anúncio foi temporariamente suspenso. Entre em contacto com o suporte para mais informações.';
+                } else {
+                    content += ' Verifique as diretrizes e tente novamente.';
+                }
 
                 // In-app Logic
                 await Notification.create({
@@ -117,7 +177,9 @@ exports.updateAdStatus = async (req, res) => {
                 // Email Logic
                 const user = await User.findById(ad.userId);
                 if (user && user.email) {
-                    await sendEmail(user.email, title, `<div style="font-family: sans-serif; padding: 20px;"><h2>${title}</h2><p>${content}</p><br><p>Equipe Inscreva-se</p></div>`);
+                    const dashboardUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                    const emailHtml = generateAdStatusUpdateEmail(user.name, ad.title, status, dashboardUrl);
+                    await sendEmail(user.email, title, emailHtml);
                 }
             }
         } catch (notifyError) {

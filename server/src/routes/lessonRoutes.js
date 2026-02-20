@@ -63,15 +63,26 @@ router.get('/', protect, async (req, res) => {
 
             const approvedFormIds = userSubmissions.map(s => s.form);
 
-            const roleCondition = ['mentor', 'specialist', 'company'].includes(req.user.role) ? 'mentors' : 'participants';
+            // Map user roles to target audiences
+            let roleConditions = [];
+            if (['mentor', 'specialist', 'company'].includes(req.user.role)) {
+                // These roles should see mentors content
+                roleConditions.push('mentors');
+                if (req.user.role === 'specialist') roleConditions.push('specialists');
+                if (req.user.role === 'company') roleConditions.push('companies');
+            } else {
+                // participant role
+                roleConditions.push('participants');
+            }
 
             conditions.push({
                 $and: [
                     // Must match the role/audience OR be general
                     {
                         $or: [
-                            { targetAudience: roleCondition },
+                            { targetAudience: { $in: roleConditions } },
                             { targetAudience: 'both' },
+                            { targetAudience: 'all' },
                             { targetAudience: { $exists: false } },
                             { targetAudience: null }
                         ]

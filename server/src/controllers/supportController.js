@@ -1,5 +1,6 @@
 const SupportTicket = require('../models/SupportTicket');
 const Notification = require('../models/Notification');
+const NotificationService = require('../services/notificationService');
 
 exports.createTicket = async (req, res) => {
     try {
@@ -15,7 +16,7 @@ exports.createTicket = async (req, res) => {
 
         // Notify Mentor if applicable
         if (mentorId) {
-            await Notification.create({
+            await NotificationService.notify({
                 recipient: mentorId,
                 sender: req.user.id,
                 type: 'personal',
@@ -97,23 +98,23 @@ exports.addMessage = async (req, res) => {
             ticket.unreadByUser = true;
             ticket.unreadByMentor = ticket.mentor ? true : false;
             // Notify User
-            await Notification.create({ ...notificationBase, recipient: ticket.user, actionUrl: '/dashboard/participant?tab=tickets' });
+            await NotificationService.notify({ ...notificationBase, recipient: ticket.user, actionUrl: '/dashboard/participant?tab=tickets' });
             // Notify Mentor if involved
             if (ticket.mentor) {
-                await Notification.create({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
+                await NotificationService.notify({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
             }
 
         } else if (role === 'mentor') {
             ticket.unreadByUser = true;
             ticket.unreadByAdmin = false;
             // Notify User
-            await Notification.create({ ...notificationBase, recipient: ticket.user, actionUrl: '/dashboard/participant?tab=tickets' });
+            await NotificationService.notify({ ...notificationBase, recipient: ticket.user, actionUrl: '/dashboard/participant?tab=tickets' });
 
         } else if (role === 'user') {
             if (ticket.mentor) {
                 ticket.unreadByMentor = true;
                 // Notify Mentor
-                await Notification.create({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
+                await NotificationService.notify({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
             } else {
                 ticket.unreadByAdmin = true;
                 // Notify Admin (optional, or just rely on unread flag)

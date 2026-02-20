@@ -127,6 +127,15 @@ export default function AnunciarPage() {
         setError(null);
         try {
             console.log('📤 [AnunciarPage] Submitting ad request:', form);
+
+            if (form.paymentMethod === 'stripe') {
+                const checkout = await adService.createAdCheckout(form);
+                if (checkout.url) {
+                    window.location.href = checkout.url;
+                    return;
+                }
+            }
+
             const response = await adService.submitAdRequest(form);
             console.log('✅ [AnunciarPage] Ad submitted successfully:', response);
             setSuccess(true);

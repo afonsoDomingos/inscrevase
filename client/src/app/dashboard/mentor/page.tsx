@@ -18,10 +18,13 @@ import Link from 'next/link';
 import AdManagement from '@/components/mentor/AdManagement';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
+import { adService } from '@/lib/adService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { Pencil } from 'lucide-react';
 import { supportService } from '@/lib/supportService';
 import ReferralModal from '@/components/mentor/ReferralModal';
 import { referralService, ReferralRanking } from '@/lib/referralService';
+import { stripeService } from '@/lib/stripeService';
 
 import NotificationCenter from '@/components/mentor/NotificationCenter';
 import { notificationService } from '@/lib/notificationService';
@@ -64,7 +67,8 @@ import {
     AlertTriangle,
     Trophy,
     ExternalLink,
-    Monitor
+    Monitor,
+    Zap
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -107,6 +111,7 @@ function MentorDashboardContent() {
     const [isResending, setIsResending] = useState(false);
     const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -155,13 +160,40 @@ function MentorDashboardContent() {
 
     const loadDashboard = useCallback(async () => {
         try {
-            const [userProfile, statsData, formsData] = await Promise.all([
+            const [userProfile, statsData, formsData, events, activeAds] = await Promise.all([
                 authService.getProfile(),
                 dashboardService.getMentorStats().catch(() => null), // Fail gracefully if not mentor yet
-                formService.getMyForms().catch(() => [])
+                formService.getMyForms().catch(() => []),
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
             ]);
 
             setUser(userProfile);
+
+            // Process sponsored items
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combinedAds = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combinedAds);
 
             // Redirect if not a mentor or admin
             if (userProfile.role === 'participant') {
@@ -246,6 +278,38 @@ function MentorDashboardContent() {
             return () => clearInterval(interval);
         }
     }, [searchParams, router, t]);
+
+    // Handle ad payment success
+    useEffect(() => {
+        const verifyAdPayment = async () => {
+            const sessionId = searchParams.get('session_id');
+            if (searchParams.get('ad_payment') === 'success' && sessionId) {
+                setLoading(true);
+                try {
+                    await stripeService.verifyPayment(sessionId);
+                    toast.success('Pagamento do anúncio confirmado! Nosso time irá revisar o conteúdo em breve.');
+                    await loadDashboard(); // Reload ads list
+                    await refreshData();
+                    setActiveTab('ads');
+                } catch (error) {
+                    console.error('Error verifying ad payment:', error);
+                    toast.error('Erro ao verificar pagamento do anúncio.');
+                } finally {
+                    setLoading(false);
+                    // Clear search params
+                    const newUrl = window.location.pathname;
+                    router.replace(newUrl);
+                }
+            } else if (searchParams.get('ad_payment') === 'success') {
+                // Legacy or fallback (no sessionId)
+                toast.success('Pagamento do anúncio confirmado!');
+                setActiveTab('ads');
+                router.replace('/dashboard/mentor');
+            }
+        };
+
+        verifyAdPayment();
+    }, [searchParams, router, loadDashboard]);
 
     const refreshData = useCallback(async () => {
         try {
@@ -1047,6 +1111,13 @@ function MentorDashboardContent() {
                     </div>
                 </header >
 
+                {/* Sponsored Ads Section */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
+
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -1092,6 +1163,62 @@ function MentorDashboardContent() {
                                 <div style={{ position: 'absolute', bottom: '-5%', left: '-5%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)', pointerEvents: 'none' }} />
 
                                 <div style={{ position: 'relative', zIndex: 1 }}>
+                                    {/* Promotion Banner for Ads Portal */}
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        style={{
+                                            background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
+                                            borderRadius: '24px',
+                                            padding: isMobile ? '1.5rem' : '2rem',
+                                            marginBottom: '2rem',
+                                            display: 'flex',
+                                            flexDirection: isMobile ? 'column' : 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: '2rem',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+                                        }}
+                                    >
+                                        <div style={{ position: 'absolute', top: 0, right: 0, width: '40%', height: '100%', background: 'radial-gradient(circle at 70% 30%, rgba(255,215,0,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+                                        <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
+                                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'var(--gold-gradient)', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#000', marginBottom: '1rem' }}>
+                                                <Zap size={12} fill="#000" /> Novidade: Portal de Destaques
+                                            </div>
+                                            <h4 style={{ color: '#fff', fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Destaque seu Evento hoje!</h4>
+                                            <p style={{ color: '#aaa', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                                                Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={() => setActiveTab('ads')}
+                                            style={{
+                                                background: '#fff',
+                                                color: '#000',
+                                                padding: '1rem 2rem',
+                                                borderRadius: '12px',
+                                                fontWeight: 800,
+                                                fontSize: '0.9rem',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                transition: 'all 0.3s',
+                                                whiteSpace: 'nowrap',
+                                                boxShadow: '0 10px 20px rgba(255,255,255,0.1)'
+                                            }}
+                                            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0)'}
+                                        >
+                                            Solicitar Destaque <Megaphone size={18} />
+                                        </button>
+                                    </motion.div>
+
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                         <h3 style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>{t('dashboard.recentEvents')}</h3>
                                         <button onClick={() => setActiveTab('forms')} style={{ background: 'none', border: 'none', color: '#FFD700', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>{t('dashboard.viewAll')}</button>

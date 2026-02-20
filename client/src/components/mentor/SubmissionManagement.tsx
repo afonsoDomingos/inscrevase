@@ -28,6 +28,7 @@ import {
 import { stripeService } from '@/lib/stripeService';
 import { lessonService } from '@/lib/lessonService';
 import { motion, AnimatePresence } from 'framer-motion';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -67,6 +68,8 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
     const [currentPage, setCurrentPage] = useState(1);
     const [studentProgress, setStudentProgress] = useState<StudentProgress | null>(null);
     const [loadingProgress, setLoadingProgress] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [isBulkLoading, setIsBulkLoading] = useState(false);
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -91,6 +94,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
             if (selectedSubmission?._id === id) {
                 setSelectedSubmission({ ...selectedSubmission, status });
             }
+            toast.success(status === 'approved' ? 'Inscrição aprovada com sucesso!' : 'Inscrição rejeitada.');
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error(t('common.updateStatusError'));
@@ -172,6 +176,51 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
         }
     };
 
+    const handleBulkAction = async (action: 'approved' | 'rejected' | 'delete') => {
+        if (selectedIds.length === 0) return;
+
+        const confirmMsg = action === 'delete'
+            ? `Tem certeza que deseja excluir ${selectedIds.length} inscrições?`
+            : `Deseja ${action === 'approved' ? 'aprovar' : 'rejeitar'} ${selectedIds.length} inscrições?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        setIsBulkLoading(true);
+        try {
+            if (action === 'delete') {
+                await submissionService.bulkUpdate(selectedIds, undefined, 'delete');
+                setSubmissions(prev => prev.filter(s => !selectedIds.includes(s._id)));
+                toast.success(`${selectedIds.length} inscrições eliminadas.`);
+            } else {
+                await submissionService.bulkUpdate(selectedIds, action);
+                setSubmissions(prev => prev.map(s =>
+                    selectedIds.includes(s._id) ? { ...s, status: action } : s
+                ));
+                toast.success(`${selectedIds.length} inscrições ${action === 'approved' ? 'aprovadas' : 'rejeitadas'}.`);
+            }
+            setSelectedIds([]);
+        } catch (error) {
+            console.error('Bulk action error:', error);
+            toast.error('Erro ao processar ação em massa');
+        } finally {
+            setIsBulkLoading(false);
+        }
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === paginatedSubmissions.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(paginatedSubmissions.map(s => s._id));
+        }
+    };
+
+    const toggleSelect = (id: string) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
     const getMainIdentifier = (data: Record<string, unknown>) => {
         if (!data) return t('events.noIdentification');
         const keys = Object.keys(data);
@@ -246,7 +295,76 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>{t('events.loading')}</div>;
 
     return (
-        <div>
+        <div style={{ position: 'relative' }}>
+            {/* Bulk Action Bar */}
+            <AnimatePresence>
+                {selectedIds.length > 0 && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '2rem',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            background: '#000',
+                            padding: '1rem 2rem',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '2rem',
+                            zIndex: 2500,
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                            border: '1px solid #FFD700',
+                            color: '#fff'
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ background: '#FFD700', color: '#000', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                                {selectedIds.length}
+                            </div>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t('events.submissions.selected') || 'Selecionados'}</span>
+                        </div>
+
+                        <div style={{ width: '1px', height: '20px', background: '#333' }} />
+
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <button
+                                onClick={() => handleBulkAction('approved')}
+                                disabled={isBulkLoading}
+                                style={{ background: '#38a169', color: '#fff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                            >
+                                {isBulkLoading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
+                                {t('events.submissions.approve') || 'Aprovar'}
+                            </button>
+                            <button
+                                onClick={() => handleBulkAction('rejected')}
+                                disabled={isBulkLoading}
+                                style={{ background: '#e53e3e', color: '#fff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                            >
+                                <XCircle size={16} />
+                                {t('events.submissions.reject') || 'Rejeitar'}
+                            </button>
+                            <button
+                                onClick={() => handleBulkAction('delete')}
+                                disabled={isBulkLoading}
+                                style={{ background: 'transparent', color: '#ffcccb', border: '1px solid #ffcccb', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                            >
+                                <Trash2 size={16} />
+                                {t('common.delete') || 'Excluir'}
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={() => setSelectedIds([])}
+                            style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }}
+                        >
+                            {t('common.cancel') || 'Cancelar'}
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             {/* Filters */}
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
@@ -290,11 +408,18 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                     </div>
                 ) : (
                     <>
-                        {/* Desktop Table */}
-                        <div style={{ overflowX: 'auto' }} className="desktop-table">
-                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px', fontSize: '0.85rem' }}>
+                        <TableScrollWrapper>
+                            <table style={{ minWidth: '1200px', width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                                 <thead>
                                     <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.75rem', color: '#666' }}>
+                                        <th style={{ padding: '0.6rem 0.8rem', width: '40px' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.length === paginatedSubmissions.length && paginatedSubmissions.length > 0}
+                                                onChange={toggleSelectAll}
+                                                style={{ cursor: 'pointer' }}
+                                            />
+                                        </th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '150px' }}>{t('events.submissions.registrant')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '110px' }}>{t('events.submissions.contact')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '130px' }}>{t('events.submissions.event')}</th>
@@ -308,7 +433,15 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                 </thead>
                                 <tbody>
                                     {paginatedSubmissions.map(submission => (
-                                        <tr key={submission._id} style={{ borderBottom: '1px solid #eee' }}>
+                                        <tr key={submission._id} style={{ borderBottom: '1px solid #eee', background: selectedIds.includes(submission._id) ? '#fffdf0' : 'transparent' }}>
+                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(submission._id)}
+                                                    onChange={() => toggleSelect(submission._id)}
+                                                    style={{ cursor: 'pointer' }}
+                                                />
+                                            </td>
                                             <td style={{ padding: '0.6rem 0.8rem' }}>
                                                 <div style={{ fontWeight: 700, color: '#000', fontSize: '0.9rem' }}>{getMainIdentifier(submission.data)}</div>
                                                 <div style={{ fontSize: '0.7rem', color: '#666' }}>{getEmailIdentifier(submission.data) || '---'}</div>
@@ -524,7 +657,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                        </TableScrollWrapper>
 
                         {/* Pagination Controls */}
                         {

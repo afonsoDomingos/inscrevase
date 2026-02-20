@@ -32,6 +32,12 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
     const [history, setHistory] = useState<ReferralHistory[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [origin, setOrigin] = useState('');
+
+    useEffect(() => {
+        setOrigin(window.location.origin);
+    }, []);
+
     useEffect(() => {
         if (isOpen) {
             loadReferralData();
@@ -57,21 +63,21 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
 
     const copyInviteLink = () => {
         if (!stats) return;
-        const link = `${window.location.origin}/entrar?ref=${stats.referralCode}`;
+        const link = `${origin}/entrar?ref=${stats.referralCode}`;
         navigator.clipboard.writeText(link);
         toast.success(t('referral.linkCopied'));
     };
 
     const shareOnWhatsApp = () => {
         if (!stats) return;
-        const link = `${window.location.origin}/entrar?ref=${stats.referralCode}`;
+        const link = `${origin}/entrar?ref=${stats.referralCode}`;
         const message = encodeURIComponent(`${t('referral.shareMessage')}${link}`);
         window.open(`https://wa.me/?text=${message}`, '_blank');
     };
 
     const shareByEmail = () => {
         if (!stats) return;
-        const link = `${window.location.origin}/entrar?ref=${stats.referralCode}`;
+        const link = `${origin}/entrar?ref=${stats.referralCode}`;
         const subject = encodeURIComponent(t('referral.emailSubject'));
         const body = encodeURIComponent(`${t('referral.shareMessage')}${link}`);
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
@@ -79,13 +85,13 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
 
     const shareOnLinkedIn = () => {
         if (!stats) return;
-        const link = encodeURIComponent(`${window.location.origin}/entrar?ref=${stats.referralCode}`);
+        const link = encodeURIComponent(`${origin}/entrar?ref=${stats.referralCode}`);
         window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${link}`, '_blank');
     };
 
     const shareOnFacebook = () => {
         if (!stats) return;
-        const link = encodeURIComponent(`${window.location.origin}/entrar?ref=${stats.referralCode}`);
+        const link = encodeURIComponent(`${origin}/entrar?ref=${stats.referralCode}`);
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${link}`, '_blank');
     };
 
@@ -204,7 +210,7 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                                             textOverflow: 'ellipsis',
                                             whiteSpace: 'nowrap'
                                         }}>
-                                            {window.location.origin}/entrar?ref={stats?.referralCode}
+                                            {origin}/entrar?ref={stats?.referralCode}
                                         </div>
                                         <button
                                             onClick={copyInviteLink}
@@ -412,7 +418,23 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                                                     <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{social.name}</span>
                                                 </div>
                                                 <button
-                                                    onClick={() => window.open(social.url, '_blank')}
+                                                    onClick={async () => {
+                                                        window.open(social.url, '_blank');
+                                                        try {
+                                                            await referralService.awardSocialPoints(social.name);
+                                                            toast.success(`+5 pontos por seguir no ${social.name}! 🎯`);
+                                                            // Reload stats to reflect new points
+                                                            loadReferralData();
+                                                        } catch (err: unknown) {
+                                                            // Fail silently or show specific message if already completed
+                                                            const error = err as { message?: string };
+                                                            if (error.message && error.message.includes('Missão já concluída')) {
+                                                                // mission already claimed, no need for toast
+                                                            } else {
+                                                                console.error(err);
+                                                            }
+                                                        }
+                                                    }}
                                                     style={{
                                                         background: '#111',
                                                         color: '#FFD700',

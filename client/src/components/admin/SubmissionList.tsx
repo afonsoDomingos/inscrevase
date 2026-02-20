@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { submissionAdminService, SubmissionModel } from '@/lib/submissionAdminService';
-import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, X, MessageCircle, Copy, ExternalLink, Eye } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, X, MessageCircle, Copy, ExternalLink, Eye, CheckSquare, Square } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
@@ -12,6 +13,7 @@ export default function SubmissionList() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
+    const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString('pt-BR', {
@@ -60,12 +62,46 @@ export default function SubmissionList() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentSubmissions = filteredSubmissions.slice(indexOfFirstItem, indexOfLastItem);
 
+    // Selection handlers
+    const handleSelectSubmission = (subId: string) => {
+        setSelectedSubmissions(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(subId)) {
+                newSet.delete(subId);
+            } else {
+                newSet.add(subId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleSelectAll = () => {
+        const allCurrentSelected = currentSubmissions.length > 0 && currentSubmissions.every(s => selectedSubmissions.has(s._id));
+
+        if (allCurrentSelected) {
+            const newSelected = new Set(selectedSubmissions);
+            currentSubmissions.forEach(s => newSelected.delete(s._id));
+            setSelectedSubmissions(newSelected);
+        } else {
+            const newSelected = new Set(selectedSubmissions);
+            currentSubmissions.forEach(s => newSelected.add(s._id));
+            setSelectedSubmissions(newSelected);
+        }
+    };
+
+    const isAllSelected = currentSubmissions.length > 0 && currentSubmissions.every(s => selectedSubmissions.has(s._id));
+
     if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando inscrições...</div>;
 
     return (
         <div className="luxury-card" style={{ background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Gestão de Inscrições</h3>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    Gestão de Inscrições
+                    <span style={{ fontSize: '0.8rem', background: '#f0f0f0', padding: '0.2rem 0.6rem', borderRadius: '20px', color: '#666' }}>
+                        {filteredSubmissions.length} {filteredSubmissions.length === 1 ? 'resultado' : 'resultados'}
+                    </span>
+                </h3>
                 <div style={{ position: 'relative', width: '250px' }}>
                     <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                     <input
@@ -81,10 +117,27 @@ export default function SubmissionList() {
                 </div>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <TableScrollWrapper>
+                <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
+                            <th style={{ padding: '1rem', width: '40px' }}>
+                                <button
+                                    onClick={handleSelectAll}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#FFD700',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    title={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}
+                                >
+                                    {isAllSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                                </button>
+                            </th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Inscrito / Dados</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Evento</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Data / Hora</th>
@@ -99,10 +152,36 @@ export default function SubmissionList() {
                             <motion.tr
                                 layout
                                 key={sub._id}
-                                style={{ borderBottom: '1px solid #f9f9f9' }}
+                                style={{
+                                    borderBottom: '1px solid #f9f9f9',
+                                    background: selectedSubmissions.has(sub._id)
+                                        ? 'rgba(255, 215, 0, 0.08)'
+                                        : 'transparent',
+                                    transition: 'all 0.2s ease'
+                                }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                             >
+                                <td style={{ padding: '1rem', width: '40px' }}>
+                                    <button
+                                        onClick={() => handleSelectSubmission(sub._id)}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: selectedSubmissions.has(sub._id) ? '#FFD700' : '#ddd',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'color 0.2s'
+                                        }}
+                                        title={selectedSubmissions.has(sub._id) ? 'Desmarcar' : 'Selecionar'}
+                                    >
+                                        {selectedSubmissions.has(sub._id)
+                                            ? <CheckSquare size={20} />
+                                            : <Square size={20} />}
+                                    </button>
+                                </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontWeight: 600 }}>
                                         {(() => {
@@ -208,7 +287,7 @@ export default function SubmissionList() {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </TableScrollWrapper>
 
             {/* Pagination Controls */}
             {filteredSubmissions.length > 0 && (

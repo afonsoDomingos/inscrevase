@@ -15,11 +15,11 @@ import LessonsManager from '@/components/admin/LessonsManager';
 import AdRequestList from '@/components/admin/AdRequestList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
-import { referralService, ReferralRanking } from '@/lib/referralService';
+import { referralService, ReferralRanking, ReferralHistory } from '@/lib/referralService';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -30,6 +30,11 @@ import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, Cartes
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
+import NotificationCenter from '@/components/mentor/NotificationCenter';
+import { notificationService } from '@/lib/notificationService';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals';
@@ -123,6 +128,12 @@ export default function AdminDashboard() {
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
+    const [auditUser, setAuditUser] = useState<ReferralRanking | null>(null);
+    const [auditHistory, setAuditHistory] = useState<ReferralHistory[]>([]);
+    const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
 
     const handleMigrateUsers = async () => {
         if (!confirm('Você tem certeza que deseja marcar TODOS os usuários como verificados? Esta ação é irreversível.')) {
@@ -145,6 +156,22 @@ export default function AdminDashboard() {
     };
 
     const { handleMouseMove } = useSpotlight();
+
+    useEffect(() => {
+        loadUnreadNotifications();
+
+        const interval = setInterval(loadUnreadNotifications, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const loadUnreadNotifications = async () => {
+        try {
+            const data = await notificationService.getMyNotifications();
+            setUnreadNotifications(data.filter(n => !n.read).length);
+        } catch {
+            // Silently fail - não é crítico
+        }
+    };
 
     useEffect(() => {
         const loadDashboard = async () => {
@@ -170,12 +197,41 @@ export default function AdminDashboard() {
                 setTrafficStats(trafficData);
 
                 try {
-                    const topMentorsData = await dashboardService.getTopMentors();
+                    const [topMentorsData, ranking, events, activeAds] = await Promise.all([
+                        dashboardService.getTopMentors(),
+                        referralService.getRanking(),
+                        formService.getExploreEvents().catch(() => []),
+                        adService.getActiveAds().catch(() => [])
+                    ]);
                     setTopMentors(topMentorsData);
-                    const ranking = await referralService.getRanking();
                     setReferralRanking(ranking);
+
+                    // Process sponsored items
+                    const sponsoredEvents = events.filter(e => e.isSponsored);
+                    const combinedAds = [
+                        ...sponsoredEvents.map(e => ({
+                            _id: e._id,
+                            title: e.title,
+                            description: e.description,
+                            mediaUrl: e.coverImage,
+                            mediaType: 'image' as const,
+                            targetUrl: `/f/${e.slug}`,
+                            metadata: { date: e.eventDate, location: e.location }
+                        })),
+                        ...activeAds.map(ad => ({
+                            _id: ad._id,
+                            title: ad.title,
+                            description: ad.description,
+                            mediaUrl: ad.mediaUrl,
+                            mediaType: ad.mediaType,
+                            targetUrl: ad.targetUrl,
+                            metadata: { category: ad.category }
+                        }))
+                    ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+                    setSponsoredItems(combinedAds);
                 } catch (e) {
-                    console.error("Top mentors error", e);
+                    console.error("Top mentors or ads error", e);
                 }
 
                 console.log('✅ [Admin Dashboard] Dashboard loaded successfully');
@@ -211,6 +267,20 @@ export default function AdminDashboard() {
             setUnreadCount(data.count);
         } catch (error) {
             console.error('Error loading unread count:', error);
+        }
+    };
+
+    const handleAuditUser = async (userId: string) => {
+        try {
+            setLoading(true);
+            const data = await referralService.getAdminUserReferrals(userId);
+            setAuditUser(data.user);
+            setAuditHistory(data.history);
+            setIsAuditModalOpen(true);
+        } catch {
+            toast.error('Erro ao buscar auditoria de convites');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -457,6 +527,66 @@ export default function AdminDashboard() {
                         alignItems: 'center'
                     }}>
                         <ThemeToggle />
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                title="Notificações"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '40px',
+                                    height: '40px',
+                                    background: '#fff',
+                                    border: '1px solid #FFD700',
+                                    borderRadius: '12px',
+                                    color: '#000',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                    position: 'relative'
+                                }}
+                            >
+                                <Bell size={20} />
+                                {unreadNotifications > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-5px',
+                                        right: '-5px',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 900,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid #fff'
+                                    }}>
+                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '55px',
+                                            right: 0,
+                                            zIndex: 2000
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => { setIsNotificationsOpen(false); loadUnreadNotifications(); }} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                         <button
                             onClick={() => setShowValues(!showValues)}
                             style={{
@@ -576,6 +706,13 @@ export default function AdminDashboard() {
                         </button>
                     </div>
                 </header>
+
+                {/* Sponsored Ads Section */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
@@ -1298,7 +1435,7 @@ export default function AdminDashboard() {
                     }
 
                     {
-                        activeTab === 'ads' && (
+                        activeTab === 'ads' && user?.role === 'SuperAdmin' && (
                             <motion.div key="ads" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
                                 <AdRequestList />
                             </motion.div>
@@ -1346,6 +1483,13 @@ export default function AdminDashboard() {
                                                     <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} pts</td>
                                                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                                            <button
+                                                                onClick={() => handleAuditUser(r._id)}
+                                                                style={{ padding: '6px', borderRadius: '8px', background: '#f0f0f0', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                title="Ver Indicações (Audit)"
+                                                            >
+                                                                <Eye size={16} />
+                                                            </button>
                                                             <button
                                                                 onClick={async () => {
                                                                     if (confirm(`Atribuir Plano Pro (30 dias) a ${r.name}?`)) {
@@ -1439,6 +1583,99 @@ export default function AdminDashboard() {
                     }}
                 />
 
+                {/* Audit Modal */}
+                <AnimatePresence>
+                    {isAuditModalOpen && auditUser && (
+                        <div style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.8)',
+                            backdropFilter: 'blur(10px)',
+                            zIndex: 3000,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px'
+                        }}>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                style={{
+                                    background: '#fff',
+                                    borderRadius: '30px',
+                                    width: '100%',
+                                    maxWidth: '800px',
+                                    maxHeight: '90vh',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                                }}
+                            >
+                                <div style={{ background: 'linear-gradient(135deg, #000 0%, #333 100%)', padding: '30px', color: '#fff', position: 'relative' }}>
+                                    <button
+                                        onClick={() => setIsAuditModalOpen(false)}
+                                        style={{ position: 'absolute', right: '25px', top: '25px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px', borderRadius: '50%', cursor: 'pointer' }}
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ background: 'var(--gold-gradient)', padding: '15px', borderRadius: '20px', color: '#000' }}>
+                                            <Trophy size={32} />
+                                        </div>
+                                        <div>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Auditoria de Convites</h3>
+                                            <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '0.9rem' }}>Explorando o impacto de <strong>{auditUser.name}</strong></p>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '20px', marginTop: '25px' }}>
+                                        <div style={{ background: 'rgba(255,215,0,0.1)', padding: '10px 20px', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>Pontos Totais</div>
+                                            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#FFD700' }}>{auditUser.referralPoints} pts</div>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>Total Invitados</div>
+                                            <div style={{ fontSize: '1.2rem', fontWeight: 900 }}>{auditUser.referralCount}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ padding: '30px', overflowY: 'auto', maxHeight: 'calc(90vh - 250px)' }}>
+                                    {auditHistory.length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                            {auditHistory.map((item, idx) => (
+                                                <div key={idx} style={{ padding: '20px', borderRadius: '15px', background: '#f8f9fa', border: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1a1a1a' }}>{item.referredUser?.name}</div>
+                                                        <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '8px' }}>{item.referredUser?.email}</div>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            <span style={{ fontSize: '0.7rem', background: '#fff', padding: '3px 8px', borderRadius: '5px', border: '1px solid #ddd', fontWeight: 600 }}>
+                                                                Plano: {item.referredUser?.plan || 'free'}
+                                                            </span>
+                                                            <span style={{ fontSize: '0.7rem', background: '#fff', padding: '3px 8px', borderRadius: '5px', border: '1px solid #ddd' }}>
+                                                                Desde: {new Date(item.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <div style={{ color: '#FFD700', fontWeight: 900, fontSize: '1.2rem' }}>+{item.pointsEarned} pts</div>
+                                                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase' }}>{item.status}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+                                            <Database size={48} style={{ opacity: 0.2, marginBottom: '15px' }} />
+                                            <p>Este usuário ainda não possui indicações registradas.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
                 <OnboardingTour steps={adminSteps} storageKey="inscrevase_admin_tour_completed" />
 
                 <style jsx>{`
@@ -1470,22 +1707,6 @@ export default function AdminDashboard() {
                         }
                     }
 
-                    /* Readability Boost */
-                    :global(.admin-main h1), :global(.admin-main h2), :global(.admin-main h3), :global(.admin-main h4) {
-                        color: #1a1a1a !important;
-                        text-shadow: none !important;
-                    }
-                    :global(.admin-main p), :global(.admin-main span:not(.gold-text)), :global(.admin-main td) {
-                        color: #333 !important;
-                    }
-                    :global(.gold-text) {
-                        color: #B8860B !important; /* Darker gold for better contrast on white/light grey */
-                        font-weight: 800 !important;
-                    }
-                    :global(.admin-main input), :global(.admin-main select) {
-                        color: #000 !important;
-                        border-color: #ccc !important;
-                    }
                     .split-grid {
                         display: grid;
                         grid-template-columns: 2fr 1fr;

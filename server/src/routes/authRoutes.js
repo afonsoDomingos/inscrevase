@@ -26,7 +26,16 @@ router.post('/mentors/:id/follow', authMiddleware, toggleFollow);
 router.get('/search-mentors', authMiddleware, searchMentors);
 
 // Google Auth Routes
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+    const { role, referralCode } = req.query;
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        state: JSON.stringify({
+            role: role || 'mentor',
+            referralCode: referralCode || null
+        })
+    })(req, res, next);
+});
 
 router.get('/google/callback',
     passport.authenticate('google', { session: false, failureRedirect: '/entrar' }),
@@ -38,7 +47,15 @@ router.get('/google/callback',
 );
 
 // LinkedIn Auth Routes
-router.get('/linkedin', passport.authenticate('linkedin'));
+router.get('/linkedin', (req, res, next) => {
+    const { role, referralCode } = req.query;
+    passport.authenticate('linkedin', {
+        state: JSON.stringify({
+            role: role || 'mentor',
+            referralCode: referralCode || null
+        })
+    })(req, res, next);
+});
 
 router.get('/linkedin/callback',
     passport.authenticate('linkedin', { session: false, failureRedirect: '/entrar' }),

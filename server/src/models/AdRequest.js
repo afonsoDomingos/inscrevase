@@ -51,7 +51,7 @@ const adRequestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'approved', 'rejected'],
+        enum: ['pending', 'approved', 'rejected', 'suspended'],
         default: 'pending'
     },
     isActive: {
@@ -67,6 +67,17 @@ const adRequestSchema = new mongoose.Schema({
         default: 0
     },
     targetUrl: {
+        type: String
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'paid', 'refunded'],
+        default: 'pending'
+    },
+    stripePaymentIntentId: {
+        type: String
+    },
+    stripeSessionId: {
         type: String
     },
     startDate: {

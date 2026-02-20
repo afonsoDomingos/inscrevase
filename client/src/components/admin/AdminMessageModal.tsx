@@ -45,7 +45,7 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
         setFetchingMentors(true);
         try {
             const allUsers = await userService.getAllUsers();
-            const mentorList = allUsers.filter(u => u.role === 'mentor');
+            const mentorList = allUsers.filter(u => ['mentor', 'specialist', 'company'].includes(u.role || ''));
             setMentors(mentorList);
         } catch (error) {
             console.error('Error loading mentors:', error);

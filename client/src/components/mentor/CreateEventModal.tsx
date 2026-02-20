@@ -193,6 +193,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const [showDraftBanner, setShowDraftBanner] = useState(false);
     const [draftData, setDraftData] = useState<any>(null);
     const [isDraggingImage, setIsDraggingImage] = useState(false);
+    const [activeHelp, setActiveHelp] = useState<'public' | 'hub' | null>(null);
 
     // Validation State
     const [validation, setValidation] = useState({
@@ -2732,20 +2733,66 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         </p>
 
                                         <div style={{ display: 'grid', gap: '1rem' }}>
-                                            <button
-                                                onClick={() => window.open(`/f/${createdEventSlug}`, '_blank')}
-                                                style={{ background: '#000', color: '#FFD700', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
-                                                className="hover-scale"
-                                            >
-                                                <Globe size={20} /> Ver Página Pública
-                                            </button>
-                                            <button
-                                                onClick={() => window.open(`/hub/${createdEventSlug}`, '_blank')}
-                                                style={{ background: '#fff', color: '#1a202c', border: '2px solid #e2e8f0', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                                                className="hover-scale"
-                                            >
-                                                <Layout size={20} /> Ver Hub do Inscrito
-                                            </button>
+                                            <div style={{ position: 'relative' }}>
+                                                <button
+                                                    onClick={() => window.open(`/f/${createdEventSlug}`, '_blank')}
+                                                    style={{ width: '100%', background: '#000', color: '#FFD700', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
+                                                    className="hover-scale"
+                                                >
+                                                    <Globe size={20} /> {t('common.viewPublicForm') || 'Ver Página Pública'}
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setActiveHelp(activeHelp === 'public' ? null : 'public'); }}
+                                                    style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,215,0,0.2)', border: 'none', color: '#FFD700', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'help', transition: 'all 0.2s' }}
+                                                >
+                                                    <HelpCircle size={18} />
+                                                </button>
+                                            </div>
+
+                                            <AnimatePresence>
+                                                {activeHelp === 'public' && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px', fontSize: '0.9rem', color: '#4a5568', textAlign: 'left', borderLeft: '4px solid #000', overflow: 'hidden' }}
+                                                    >
+                                                        <strong style={{ display: 'block', marginBottom: '5px', color: '#000' }}>{t('events.successHelp.public.title') || 'Página Pública'}:</strong>
+                                                        {t('events.successHelp.public.description') || 'É o link que você compartilha com o público. É onde as pessoas verão as informações do evento e farão a inscrição.'}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+
+                                            <div style={{ position: 'relative' }}>
+                                                <button
+                                                    onClick={() => window.open(`/hub/${createdEventSlug}`, '_blank')}
+                                                    style={{ width: '100%', background: '#fff', color: '#1a202c', border: '2px solid #e2e8f0', padding: '1.2rem', borderRadius: '16px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                                    className="hover-scale"
+                                                >
+                                                    <Layout size={20} /> {t('common.viewEventHub') || 'Ver Hub do Inscrito'}
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setActiveHelp(activeHelp === 'hub' ? null : 'hub'); }}
+                                                    style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.05)', border: 'none', color: '#333', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'help', transition: 'all 0.2s' }}
+                                                >
+                                                    <HelpCircle size={18} />
+                                                </button>
+                                            </div>
+
+                                            <AnimatePresence>
+                                                {activeHelp === 'hub' && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px', fontSize: '0.9rem', color: '#4a5568', textAlign: 'left', borderLeft: '4px solid #FFD700', overflow: 'hidden' }}
+                                                    >
+                                                        <strong style={{ display: 'block', marginBottom: '5px', color: '#000' }}>{t('events.successHelp.hub.title') || 'Hub do Inscrito'}:</strong>
+                                                        {t('events.successHelp.hub.description') || 'É a área logada do participante. Após a inscrição, é aqui que eles acessam as aulas, materiais e o certificado do evento.'}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+
                                             <button onClick={onClose} style={{ marginTop: '1rem', color: '#718096', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.9rem' }}>
                                                 Voltar para o Painel
                                             </button>

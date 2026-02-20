@@ -7,12 +7,17 @@ exports.createFeedback = async (req, res) => {
         const { name, email, type, rating, message, targetUserId } = req.body;
         const userId = req.user ? req.user.id : null;
 
+        // Basic validation
+        if (!name || !email || !message) {
+            return res.status(400).json({ message: 'Nome, email e mensagem são obrigatórios' });
+        }
+
         const feedback = new Feedback({
             user: userId,
             name,
             email,
-            type,
-            rating,
+            type: type || 'suggestion',
+            rating: rating || 5,
             message,
             targetUser: targetUserId || null
         });
@@ -20,27 +25,31 @@ exports.createFeedback = async (req, res) => {
         await feedback.save();
 
         // Reward the user with points if they are logged in
+        let rewardMessage = 'Feedback enviado com sucesso!';
         if (userId) {
             await User.findByIdAndUpdate(userId, {
                 $inc: { referralPoints: 10 } // Reward 10 points for feedback
             });
+            rewardMessage += ' Ganhaste 10 pontos.';
         }
 
         // If target exists, notify them
         if (targetUserId) {
+            const admin = await User.findOne({ role: 'admin' });
             const notification = new Notification({
-                user: targetUserId,
-                type: 'system',
+                recipient: targetUserId,
+                sender: userId || (admin ? admin._id : targetUserId),
+                type: 'feedback',
                 title: 'Novo Feedback Recebido',
-                message: `${name} enviou uma sugestão: "${message.substring(0, 50)}..."`,
-                link: '/dashboard/mentor?tab=feedback'
+                content: `${name || 'Alguém'} enviou uma sugestão: "${message.substring(0, 50)}..."`,
+                actionUrl: '/dashboard/mentor?tab=feedback'
             });
             await notification.save();
         }
 
-        res.status(201).json({ message: 'Feedback enviado com sucesso! Ganhaste 10 pontos.', feedback });
+        res.status(201).json({ message: rewardMessage, feedback });
     } catch (error) {
-        console.error(error);
+        console.error('Error creating feedback:', error);
         res.status(500).json({ message: 'Erro ao enviar feedback' });
     }
 };

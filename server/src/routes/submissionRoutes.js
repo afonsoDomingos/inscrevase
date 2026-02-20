@@ -4,6 +4,7 @@ const {
     submitForm,
     getFormSubmissions,
     updateStatus,
+    bulkUpdateSubmissions,
     getAllSubmissionsAdmin,
     getMySubmissions,
     getSubmissionPublic,
@@ -20,6 +21,7 @@ router.get('/my-submissions', authMiddleware, getMySubmissions);
 router.get('/form/:formId', authMiddleware, getFormSubmissions);
 router.get('/all', authMiddleware, adminMiddleware, getAllSubmissionsAdmin);
 router.patch('/:id/status', authMiddleware, updateStatus);
+router.post('/bulk-update', authMiddleware, bulkUpdateSubmissions);
 router.post('/:submissionId/analyze-receipt', authMiddleware, analyzeReceipt);
 router.delete('/:id', authMiddleware, deleteSubmission);
 router.post('/:id/request-certificate', authMiddleware, requestCertificate);

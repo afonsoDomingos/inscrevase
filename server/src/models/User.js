@@ -45,6 +45,10 @@ const UserSchema = new mongoose.Schema({
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     referralPoints: { type: Number, default: 0 },
     referralCount: { type: Number, default: 0 },
+    onboardingNudgeSent: { type: Boolean, default: false },
+    receivedFirstSubmissionNudge: { type: Boolean, default: false },
+    lastReactivationNudgeAt: { type: Date },
+    completedMissions: [{ type: String }], // Track social follows, etc.
     createdAt: { type: Date, default: Date.now }
 });
 

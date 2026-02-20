@@ -103,5 +103,21 @@ export const submissionService = {
             body: JSON.stringify({ status })
         });
         if (!response.ok) throw new Error('Falha ao atualizar status do certificado');
+    },
+
+    async bulkUpdate(submissionIds: string[], status?: 'approved' | 'rejected', action?: 'delete'): Promise<void> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/submissions/bulk-update`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ submissionIds, status, action })
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Falha na atualização em massa');
+        }
     }
 };

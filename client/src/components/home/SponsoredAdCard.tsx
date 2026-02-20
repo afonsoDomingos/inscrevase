@@ -6,10 +6,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, MapPin, ChevronRight, Zap, X } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
-import { FormModel } from '@/lib/formService';
+
+export interface SponsoredItem {
+    _id: string;
+    title: string;
+    description: string;
+    mediaUrl?: string | null;
+    mediaType: 'image' | 'video';
+    targetUrl: string;
+    metadata: {
+        date?: string | null;
+        location?: string | null;
+        category?: string;
+    };
+}
 
 interface SponsoredAdCardProps {
-    events: FormModel[];
+    events: SponsoredItem[];
 }
 
 export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
@@ -58,9 +71,37 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         return () => clearInterval(timer);
     }, [isVisible, isClosed, events.length, currentIndex, nextAd]);
 
+    // Impression tracking for AdRequest items
+    useEffect(() => {
+        const currentItem = events[currentIndex];
+        if (isVisible && currentItem?._id && !currentItem.targetUrl.startsWith('/f/')) {
+            // It's a new AdRequest system ad (not an internal form)
+            const trackImpression = async () => {
+                try {
+                    const { adService } = await import('@/lib/adService');
+                    await adService.trackAdImpression(currentItem._id);
+                } catch (error: unknown) {
+                    console.error("Error tracking impression", error);
+                }
+            };
+            trackImpression();
+        }
+    }, [currentIndex, isVisible, events]);
+
     if (!events || events.length === 0 || isClosed) return null;
 
-    const currentEvent = events[currentIndex];
+    const currentItem = events[currentIndex];
+
+    const handleClickLink = async () => {
+        if (currentItem._id && !currentItem.targetUrl.startsWith('/f/')) {
+            try {
+                const { adService } = await import('@/lib/adService');
+                await adService.trackAdClick(currentItem._id);
+            } catch (error: unknown) {
+                console.error("Error tracking click", error);
+            }
+        }
+    };
 
     return (
         <AnimatePresence>
@@ -136,13 +177,24 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
 
                             {/* Multimedia Section */}
-                            <div style={{ position: 'relative', height: '140px', width: '100%' }}>
-                                <Image
-                                    src={currentEvent.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1000'}
-                                    alt={currentEvent.title}
-                                    fill
-                                    style={{ objectFit: 'cover' }}
-                                />
+                            <div style={{ position: 'relative', height: '140px', width: '100%', background: '#f0f0f0' }}>
+                                {currentItem.mediaType === 'video' ? (
+                                    <video
+                                        src={currentItem.mediaUrl || ""}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                    />
+                                ) : (
+                                    <Image
+                                        src={currentItem.mediaUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1000'}
+                                        alt={currentItem.title}
+                                        fill
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                )}
                                 <div style={{
                                     position: 'absolute',
                                     top: '8px',
@@ -177,23 +229,34 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     WebkitBoxOrient: 'vertical',
                                     overflow: 'hidden'
                                 }}>
-                                    {currentEvent.title}
+                                    {currentItem.title}
                                 </h3>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '1rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
-                                        <Calendar size={12} className="gold-text" />
-                                        {currentEvent.eventDate ? new Date(currentEvent.eventDate).toLocaleDateString() : 'Em breve'}
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
-                                        <MapPin size={12} className="gold-text" />
-                                        {currentEvent.location || 'Online'}
-                                    </div>
+                                    {currentItem.metadata?.date && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
+                                            <Calendar size={12} className="gold-text" />
+                                            {new Date(currentItem.metadata.date).toLocaleDateString()}
+                                        </div>
+                                    )}
+                                    {currentItem.metadata?.location && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
+                                            <MapPin size={12} className="gold-text" />
+                                            {currentItem.metadata.location}
+                                        </div>
+                                    )}
+                                    {currentItem.metadata?.category && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#3182ce', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase' }}>
+                                            <Zap size={10} /> {currentItem.metadata.category}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <Link
-                                        href={`/f/${currentEvent.slug}`}
+                                        href={currentItem.targetUrl}
+                                        onClick={handleClickLink}
+                                        target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
                                         style={{
                                             flex: 1,
                                             padding: '8px 0',
@@ -244,4 +307,3 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         </AnimatePresence>
     );
 }
-

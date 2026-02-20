@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const transactionSchema = new mongoose.Schema({
     type: {
         type: String,
-        enum: ['event_registration', 'subscription'],
+        enum: ['event_registration', 'subscription', 'ad_purchase'],
         default: 'event_registration'
     },
     user: {

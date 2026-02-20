@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { authService } from '@/lib/authService';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { Suspense } from 'react';
 
@@ -32,6 +32,8 @@ export default function Login() {
 
 function LoginContent() {
     const { t } = useTranslate();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +48,6 @@ function LoginContent() {
         const shuffled = [...BACKGROUND_IMAGES].sort(() => Math.random() - 0.5);
         setShuffledImages(shuffled);
     }, []);
-    const router = useRouter();
 
     useEffect(() => {
         if (shuffledImages.length === 0) return;
@@ -181,7 +182,10 @@ function LoginContent() {
                             <div style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
                                 <LogIn size={16} /> {t('auth.signIn')}
                             </div>
-                            <Link href="/cadastro" style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}>
+                            <Link
+                                href={`/cadastro${searchParams.toString() ? '?' + searchParams.toString() : ''}`}
+                                style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}
+                            >
                                 <UserPlus size={16} /> {t('auth.signUp')}
                             </Link>
                         </div>
@@ -309,7 +313,11 @@ function LoginContent() {
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <button
                                 type="button"
-                                onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`}
+                                onClick={() => {
+                                    const ref = searchParams.get('ref') || searchParams.get('referral');
+                                    const refParam = ref ? `?referralCode=${ref}` : '';
+                                    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google${refParam}`;
+                                }}
                                 style={{ flex: 1, padding: '1rem', background: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600 }}
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24">
@@ -321,7 +329,11 @@ function LoginContent() {
                             </button>
                             <button
                                 type="button"
-                                onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin`}
+                                onClick={() => {
+                                    const ref = searchParams.get('ref') || searchParams.get('referral');
+                                    const refParam = ref ? `?referralCode=${ref}` : '';
+                                    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin${refParam}`;
+                                }}
                                 style={{ flex: 1, padding: '1rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600 }}
                             >
                                 <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={20} height={20} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn

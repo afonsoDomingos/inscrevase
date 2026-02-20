@@ -127,6 +127,8 @@ const FormSchema = new mongoose.Schema({
     isSponsored: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     visits: { type: Number, default: 0 },
+    lowVisitsNudgeSent: { type: Boolean, default: false },
+    highPerformanceNudgeSent: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
 

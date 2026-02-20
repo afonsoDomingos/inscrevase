@@ -43,6 +43,7 @@ export interface RegisterData {
     businessName: string;
     country?: string;
     role?: 'participant' | 'mentor' | 'company' | 'specialist';
+    referralCode?: string;
 }
 
 export interface AuthResponse {

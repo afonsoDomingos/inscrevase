@@ -19,6 +19,9 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
+import { adService } from '@/lib/adService';
+import { formService } from '@/lib/formService';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 
 interface Lesson {
     _id: string;
@@ -31,7 +34,7 @@ interface Lesson {
     isPublished: boolean;
     views: number;
     order: number;
-    targetAudience: 'mentors' | 'participants' | 'both';
+    targetAudience: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
     createdAt: string;
 }
 
@@ -61,6 +64,7 @@ export default function AdminLessonsPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'url'>('upload');
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -72,7 +76,7 @@ export default function AdminLessonsPage() {
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
         order: 0,
-        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both'
+        targetAudience: 'mentors' as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all'
     });
 
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -86,7 +90,43 @@ export default function AdminLessonsPage() {
 
     useEffect(() => {
         fetchLessons();
+        fetchAds();
     }, []);
+
+    const fetchAds = async () => {
+        try {
+            const [events, activeAds] = await Promise.all([
+                formService.getExploreEvents().catch(() => []),
+                adService.getActiveAds().catch(() => [])
+            ]);
+
+            const sponsoredEvents = events.filter(e => e.isSponsored);
+            const combined = [
+                ...sponsoredEvents.map(e => ({
+                    _id: e._id,
+                    title: e.title,
+                    description: e.description,
+                    mediaUrl: e.coverImage,
+                    mediaType: 'image' as const,
+                    targetUrl: `/f/${e.slug}`,
+                    metadata: { date: e.eventDate, location: e.location }
+                })),
+                ...activeAds.map(ad => ({
+                    _id: ad._id,
+                    title: ad.title,
+                    description: ad.description,
+                    mediaUrl: ad.mediaUrl,
+                    mediaType: ad.mediaType,
+                    targetUrl: ad.targetUrl,
+                    metadata: { category: ad.category }
+                }))
+            ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+            setSponsoredItems(combined);
+        } catch (error) {
+            console.error("Error fetching ads:", error);
+        }
+    };
 
     const fetchLessons = async () => {
         try {
@@ -313,6 +353,13 @@ export default function AdminLessonsPage() {
                 <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para seus usuários</p>
             </div>
 
+            {/* Sponsored Ads */}
+            {sponsoredItems.length > 0 && (
+                <div style={{ marginBottom: '2.5rem' }}>
+                    <SponsoredAdCard events={sponsoredItems} />
+                </div>
+            )}
+
             {/* Stats Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
                 {[
@@ -491,11 +538,23 @@ export default function AdminLessonsPage() {
                                         fontSize: '0.7rem',
                                         fontWeight: 'bold',
                                         textTransform: 'uppercase',
-                                        background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'mentors' ? '#e0f2fe' : '#f3f4f6',
-                                        color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'mentors' ? '#0369a1' : '#4b5563',
-                                        border: lesson.targetAudience === 'both' ? '1px solid #fde68a' : lesson.targetAudience === 'mentors' ? '1px solid #bae6fd' : '1px solid #e5e7eb'
+                                        background: lesson.targetAudience === 'both' ? '#fef3c7' :
+                                            lesson.targetAudience === 'mentors' ? '#e0f2fe' :
+                                                lesson.targetAudience === 'companies' ? '#f3e8ff' :
+                                                    lesson.targetAudience === 'specialists' ? '#fae8ff' :
+                                                        lesson.targetAudience === 'all' ? '#dcfce7' : '#f3f4f6',
+                                        color: lesson.targetAudience === 'both' ? '#92400e' :
+                                            lesson.targetAudience === 'mentors' ? '#0369a1' :
+                                                lesson.targetAudience === 'companies' ? '#6b21a8' :
+                                                    lesson.targetAudience === 'specialists' ? '#86198f' :
+                                                        lesson.targetAudience === 'all' ? '#166534' : '#4b5563',
+                                        border: '1px solid transparent'
                                     }}>
-                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'mentors' ? '🎓 Mentor' : '👥 Participante'}
+                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
+                                            lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
+                                                lesson.targetAudience === 'companies' ? '🏢 Empresa' :
+                                                    lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
+                                                        lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -950,7 +1009,7 @@ export default function AdminLessonsPage() {
                                     </label>
                                     <select
                                         value={formData.targetAudience}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'both' }))}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
                                         style={{
                                             width: '100%',
                                             padding: '12px',
@@ -962,14 +1021,23 @@ export default function AdminLessonsPage() {
                                     >
                                         <option value="mentors">Mentores (Academia)</option>
                                         <option value="participants">Participantes</option>
+                                        <option value="companies">🏢 Empresas</option>
+                                        <option value="specialists">⚡ Especialistas</option>
                                         <option value="both">Ambos (Mentores e Participantes)</option>
+                                        <option value="all">🌍 Todos os Públicos</option>
                                     </select>
                                     <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
                                         {formData.targetAudience === 'mentors'
                                             ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
                                             : formData.targetAudience === 'participants'
                                                 ? '👥 Visível para os participantes no dashboard deles.'
-                                                : '👥🎓 Visível para mentores E participantes.'}
+                                                : formData.targetAudience === 'companies'
+                                                    ? '🏢 Visível apenas para perfis de empresa.'
+                                                    : formData.targetAudience === 'specialists'
+                                                        ? '⚡ Visível apenas para especialistas.'
+                                                        : formData.targetAudience === 'all'
+                                                            ? '🌍 Visível para todos os tipos de usuários.'
+                                                            : '👥🎓 Visível para mentores e participantes.'}
                                     </p>
                                 </div>
 

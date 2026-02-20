@@ -4,6 +4,7 @@ const slugify = require('slugify');
 const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const NotificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
 const Visit = require('../models/Visit');
 const geoip = require('geoip-lite');
@@ -101,7 +102,7 @@ exports.createForm = async (req, res) => {
                 const creator = await User.findById(req.user.id);
                 if (creator) {
                     await Promise.all(safePartners.map(async (partnerId) => {
-                        return Notification.create({
+                        return NotificationService.notify({
                             recipient: partnerId,
                             sender: req.user.id,
                             title: 'Convite de Colaboração! 🤝',
@@ -116,14 +117,38 @@ exports.createForm = async (req, res) => {
             }
         }
 
-        // Handle Lesson Associations
-        if (req.body.associatedLessons && Array.isArray(req.body.associatedLessons)) {
-            const Lesson = require('../models/Lesson');
-            await Lesson.updateMany(
-                { _id: { $in: req.body.associatedLessons }, createdBy: req.user.id },
-                { $addToSet: { associatedEvents: form._id } }
-            );
+        // --- AUTOMATION: Milestone Emails ---
+        try {
+            const user = await User.findById(req.user.id);
+            const eventCount = await Form.countDocuments({ creator: user._id });
+            const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
+            const sendEmail = require('../utils/emailService');
+            const { generateBasicEmail } = require('../utils/emailTemplates');
+
+            if (eventCount === 1) {
+                // First Event Ever!
+                const content = `Vimos que acabaste de lançar o teu primeiro evento na Inscreva-se. Este é um marco importante na tua jornada como mentor de elite! Estamos aqui para garantir que a tua experiência seja extraordinária. Desejamos-te o maior sucesso e muitas conversões.`;
+                const emailHtml = generateBasicEmail('🚀 Parabéns pela criação do seu 1º Evento!', user.name, content, 'Ver Dashboard', dashboardUrl);
+                await sendEmail(user.email, '🚀 Primeiro Passo Concluído! - Inscreva-se', emailHtml);
+            } else {
+                // Recurring SUCCESS
+                const content = `É inspirador ver a tua consistência na plataforma. Acabamos de notar a criação de mais um evento no teu perfil. Mentores consistentes como tu são os que mais escalam resultados a longo prazo. Boa sorte no lançamento!`;
+                const emailHtml = generateBasicEmail('🌟 Mais um Evento de Sucesso!', user.name, content, 'Ver Dashboard', dashboardUrl);
+                await sendEmail(user.email, `🌟 Novo Projeto: ${form.title} - Inscreva-se`, emailHtml);
+            }
+
+            // Dica de Preços (Se for pago e não tiver lotes)
+            if (form.price > 0 && (!form.tickets || form.tickets.length <= 1)) {
+                setTimeout(async () => {
+                    const tipContent = `Notamos que o teu evento pago está com preço único. Sabias que eventos com "Lotes Early Bird" tendem a vender 30% mais? No teu painel, podes configurar categorias de bilhetes com preços diferentes para criar urgência. Vamos testar?`;
+                    const tipHtml = generateBasicEmail('📈 Dica: Cria Lotes para Vender Mais', user.name, tipContent, 'Ajustar Bilhetes', dashboardUrl);
+                    await sendEmail(user.email, '📈 Estratégia de Vendas: Lotes Early Bird', tipHtml);
+                }, 1000 * 60 * 30); // 30 minutes later
+            }
+        } catch (autoErr) {
+            console.error('Automation Email Error:', autoErr);
         }
+        // ------------------------------------
 
         res.status(201).json(form);
     } catch (err) {
@@ -299,7 +324,7 @@ exports.updateForm = async (req, res) => {
                         await Promise.all(newPartners.map(async (partnerId) => {
                             if (!mongoose.Types.ObjectId.isValid(partnerId)) return;
 
-                            return Notification.create({
+                            return NotificationService.notify({
                                 recipient: partnerId,
                                 sender: req.user.id,
                                 title: 'Convite de Colaboração! 🤝',

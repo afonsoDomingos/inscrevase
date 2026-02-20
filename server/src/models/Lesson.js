@@ -26,7 +26,7 @@ const LessonSchema = new mongoose.Schema({
     },
     targetAudience: {
         type: String,
-        enum: ['mentors', 'participants', 'both'],
+        enum: ['mentors', 'participants', 'companies', 'specialists', 'both', 'all'],
         default: 'mentors'
     },
     associatedEvents: [{

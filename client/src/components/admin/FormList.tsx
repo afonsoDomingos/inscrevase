@@ -6,6 +6,7 @@ import { authService, UserData } from '@/lib/authService';
 import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap, Pencil, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditEventModal from '@/components/mentor/EditEventModal';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 interface FormListProps {
     onEmailMentor?: (mentorId: string, mentorName: string, formDetails: FormModel) => void;
@@ -114,8 +115,8 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                 </div>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <TableScrollWrapper>
+                <table style={{ minWidth: '900px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Título do Evento</th>
@@ -231,7 +232,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                         <p style={{ color: '#999' }}>Nenhum formulário encontrado.</p>
                     </div>
                 )}
-            </div>
+            </TableScrollWrapper>
 
             {/* Pagination Controls */}
             {filteredForms.length > 0 && (

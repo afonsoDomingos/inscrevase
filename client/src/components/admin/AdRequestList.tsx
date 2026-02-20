@@ -1,17 +1,90 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Megaphone, CheckCircle, XCircle, Clock, ExternalLink, Image as ImageIcon, CreditCard, Trash2, Power, PowerOff, Eye, MousePointer2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Megaphone, CheckCircle, XCircle, Clock, ExternalLink,
+    Image as ImageIcon, CreditCard, Trash2, PowerOff,
+    Eye, MousePointer2, AlertCircle, Calendar,
+    User, Activity
+} from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
 import { toast } from 'sonner';
 
+const cardStyles = `
+    .ad-card-container {
+        display: flex;
+        flex-direction: row;
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+    }
+    .ad-card-preview {
+        width: 320px;
+        min-height: 200px;
+        background: #f8fafc;
+        position: relative;
+        flex-shrink: 0;
+    }
+    .ad-card-content {
+        flex: 1;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .ad-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .ad-user-info {
+        grid-column: span 2;
+    }
+    
+    @media (max-width: 1024px) {
+        .ad-card-container {
+            flex-direction: column;
+        }
+        .ad-card-preview {
+            width: 100%;
+            height: 250px;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .ad-card-content {
+            padding: 1.25rem;
+        }
+        .ad-metrics-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .ad-user-info {
+            grid-column: span 2;
+        }
+        .ad-header-stats {
+            display: none !important;
+        }
+        .ad-action-bar {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .ad-action-buttons {
+            flex-direction: column;
+        }
+    }
+`;
+
 export default function AdRequestList() {
     const [requests, setRequests] = useState<AdRequestModel[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'suspended'>('all');
     const { formatPrice } = useCurrency();
 
     useEffect(() => {
@@ -26,42 +99,47 @@ export default function AdRequestList() {
         } catch (error) {
             console.error('Error loading ads:', error);
             setRequests([]);
+            toast.error('Erro ao carregar anúncios');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
+    const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected' | 'suspended') => {
+        const loadingToast = toast.loading('Atualizando status...');
         try {
             await adService.updateAdRequestStatus(id, status);
-            toast.success(`Anúncio ${status === 'approved' ? 'aprovado' : 'rejeitado'} com sucesso`);
+            const msg = status === 'approved' ? 'aprovado' : status === 'rejected' ? 'rejeitado' : 'suspenso';
+            toast.success(`Anúncio ${msg} com sucesso`, { id: loadingToast });
             loadRequests();
         } catch (err) {
             console.error('Error updating ad status:', err);
-            toast.error('Erro ao atualizar status do anúncio');
+            toast.error('Erro ao atualizar status do anúncio', { id: loadingToast });
         }
     };
 
     const handleToggleActive = async (id: string, current: boolean | undefined) => {
+        const loadingToast = toast.loading(current ? 'Pausando...' : 'Ativando...');
         try {
             await adService.toggleAdStatus(id, !current);
-            toast.success(`Anúncio ${!current ? 'ativado' : 'pausado'} com sucesso`);
+            toast.success(`Anúncio ${!current ? 'ativado' : 'pausado'} com sucesso`, { id: loadingToast });
             loadRequests();
         } catch (err) {
             console.error('Error toggling ad status:', err);
-            toast.error('Erro ao alternar status do anúncio');
+            toast.error('Erro ao alternar status do anúncio', { id: loadingToast });
         }
     };
 
     const handleDelete = async (id: string) => {
         if (confirm('Deseja realmente excluir este anúncio permanentemente?')) {
+            const loadingToast = toast.loading('Excluindo...');
             try {
                 await adService.deleteAdRequest(id);
-                toast.success('Anúncio excluído');
+                toast.success('Anúncio excluído', { id: loadingToast });
                 loadRequests();
             } catch (err) {
                 console.error('Error deleting ad:', err);
-                toast.error('Erro ao excluir anúncio');
+                toast.error('Erro ao excluir anúncio', { id: loadingToast });
             }
         }
     };
@@ -72,258 +150,402 @@ export default function AdRequestList() {
     });
 
     if (loading) return (
-        <div className="p-8 text-center flex flex-col items-center justify-center min-h-[300px] gap-4">
+        <div style={{ padding: '4rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', gap: '1.5rem' }}>
             <motion.div
                 animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                style={{ color: '#FFD700' }}
             >
-                <Megaphone size={48} className="text-yellow-500" />
+                <Megaphone size={60} />
             </motion.div>
-            <p className="text-gray-500 font-medium animate-pulse">Carregando painel de gestão...</p>
+            <p style={{ color: '#666', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem' }} className="animate-pulse">
+                Sincronizando Publicidade Global...
+            </p>
         </div>
     );
 
     return (
-        <div className="space-y-8">
-            {/* Header Section */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', paddingBottom: '4rem' }}>
+            <style>{cardStyles}</style>
+            {/* Premium Header */}
             <motion.div
-                initial={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 md:p-8 rounded-3xl shadow-xl text-white relative overflow-hidden"
+                style={{
+                    background: '#fff',
+                    padding: '2.5rem',
+                    borderRadius: '32px',
+                    boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.1)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    border: '1px solid #f1f5f9'
+                }}
             >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+                {/* Decorative background elements removed for cleaner look */}
 
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    <div className="flex items-start gap-5">
-                        <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                            <Megaphone className="text-yellow-400" size={32} />
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div style={{
+                            width: '72px', height: '72px', borderRadius: '20px',
+                            background: '#f8fafc',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            border: '1px solid #e2e8f0',
+                        }}>
+                            <Megaphone className="text-black" size={36} />
                         </div>
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-black text-white mb-2">Gestão de Anúncios</h2>
-                            <p className="text-gray-400 text-sm md:text-base max-w-md">Painel administrativo para controle total de publicidade, aprovações e métricas.</p>
+                            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000', margin: 0, letterSpacing: '-0.5px' }}>
+                                Gestão de <span style={{ color: '#000' }}>Anúncios</span>
+                            </h2>
+                            <p style={{ color: '#64748b', fontSize: '1rem', marginTop: '4px', fontWeight: 500 }}>
+                                Controle total da publicidade e faturamento da plataforma.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Stats Compact */}
-                    <div className="flex gap-3 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
-                        <div className="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10 min-w-[100px]">
-                            <div className="text-xs text-gray-400 uppercase font-bold mb-1">Total</div>
-                            <div className="text-2xl font-black">{requests.length}</div>
+                    <div className="ad-header-stats" style={{ display: 'flex', gap: '1rem' }}>
+                        <div style={{
+                            background: '#f8fafc', padding: '1rem 1.5rem', borderRadius: '18px',
+                            border: '1px solid #e2e8f0', minWidth: '100px'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Total</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#000' }}>{requests.length}</div>
                         </div>
-                        <div className="bg-blue-500/20 backdrop-blur-md px-4 py-3 rounded-xl border border-blue-500/30 min-w-[100px]">
-                            <div className="text-xs text-blue-300 uppercase font-bold mb-1">Pendentes</div>
-                            <div className="text-2xl font-black text-blue-200">{requests.filter(r => r.status === 'pending').length}</div>
+                        <div style={{
+                            background: '#eff6ff', padding: '1rem 1.5rem', borderRadius: '18px',
+                            border: '1px solid #dbeafe', minWidth: '100px'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Pendentes</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1d4ed8' }}>{requests.filter(r => r.status === 'pending').length}</div>
                         </div>
-                        <div className="bg-green-500/20 backdrop-blur-md px-4 py-3 rounded-xl border border-green-500/30 min-w-[100px]">
-                            <div className="text-xs text-green-300 uppercase font-bold mb-1">Ativos</div>
-                            <div className="text-2xl font-black text-green-200">{requests.filter(r => r.isActive).length}</div>
+                        <div style={{
+                            background: '#f0fdf4', padding: '1rem 1.5rem', borderRadius: '18px',
+                            border: '1px solid #dcfce7', minWidth: '100px'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Ativos</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#15803d' }}>{requests.filter(r => r.isActive).length}</div>
                         </div>
                     </div>
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="mt-8 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                    {(['all', 'pending', 'approved', 'rejected'] as const).map((f) => (
+                {/* Glass Tabs */}
+                <div style={{
+                    marginTop: '2.5rem', display: 'flex', gap: '0.75rem',
+                    padding: '6px', background: '#f8fafc', borderRadius: '16px',
+                    width: 'fit-content', border: '1px solid #e2e8f0',
+                    maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch'
+                }}>
+                    {(['all', 'pending', 'approved', 'rejected', 'suspended'] as const).map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wide transition-all whitespace-nowrap flex items-center gap-2 ${filter === f
-                                ? 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/20 scale-105'
-                                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                                }`}
+                            style={{
+                                padding: '0.6rem 1.2rem',
+                                borderRadius: '12px',
+                                border: 'none',
+                                background: filter === f ? '#FFD700' : 'transparent',
+                                color: filter === f ? '#000' : '#64748b',
+                                fontSize: '0.8rem',
+                                fontWeight: 800,
+                                textTransform: 'uppercase',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}
                         >
-                            {f === 'pending' && <Clock size={16} />}
-                            {f === 'approved' && <CheckCircle size={16} />}
-                            {f === 'rejected' && <XCircle size={16} />}
-                            {f === 'all' ? 'Todos' : f === 'pending' ? 'Pendentes' : f === 'approved' ? 'Aprovados' : 'Rejeitados'}
+                            {f === 'pending' && <Clock size={14} />}
+                            {f === 'approved' && <CheckCircle size={14} />}
+                            {f === 'rejected' && <XCircle size={14} />}
+                            {f === 'suspended' && <PowerOff size={14} />}
+                            {f === 'all' ? 'Ver Todos' : f === 'pending' ? 'Solicitações' : f === 'approved' ? 'Em Exibição' : f === 'rejected' ? 'Reprovados' : 'Suspensos'}
                         </button>
                     ))}
                 </div>
             </motion.div>
 
-            {/* Content Grid */}
-            <div className="space-y-4">
-                {filteredRequests.length === 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white p-12 md:p-20 rounded-3xl border-2 border-dashed border-gray-200 text-center flex flex-col items-center"
-                    >
-                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                            <Megaphone size={40} className="text-gray-300" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Nenhum anúncio encontrado</h3>
-                        <p className="text-gray-500 max-w-sm mx-auto">
-                            Não há solicitações de anúncios com o filtro selecionado no momento.
-                        </p>
-                    </motion.div>
-                ) : (
-                    filteredRequests.map((req, index) => (
+            {/* Content List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <AnimatePresence mode='popLayout'>
+                    {filteredRequests.length === 0 ? (
                         <motion.div
-                            key={req._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all group"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            style={{
+                                background: '#fff', padding: '5rem', borderRadius: '32px',
+                                border: '2px dashed #e2e8f0', textAlign: 'center',
+                                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem'
+                            }}
                         >
-                            <div className="flex flex-col lg:flex-row">
-                                {/* Media Preview Section */}
-                                <div className="lg:w-72 bg-gray-100 relative shrink-0">
-                                    <div className="aspect-video lg:h-full w-full relative">
-                                        {req.mediaUrl ? (
-                                            req.mediaType === 'video' ? (
-                                                <video src={req.mediaUrl} className="w-full h-full object-cover" autoPlay muted loop />
-                                            ) : (
-                                                <Image src={req.mediaUrl} alt={req.title} fill className="object-cover" />
-                                            )
-                                        ) : (
-                                            <div className="flex items-center justify-center h-full text-gray-400 bg-gray-50">
-                                                <ImageIcon size={40} />
-                                            </div>
-                                        )}
-                                        {/* Overlay Status Badge for Mobile/Desktop */}
-                                        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                                            <span className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider shadow-sm backdrop-blur-md ${req.status === 'approved' ? 'bg-green-500/90 text-white' :
-                                                req.status === 'pending' ? 'bg-blue-500/90 text-white' : 'bg-red-500/90 text-white'
-                                                }`}>
-                                                {req.status === 'approved' ? 'Aprovado' : req.status === 'pending' ? 'Pendente' : 'Rejeitado'}
-                                            </span>
-                                            {req.isActive && (
-                                                <span className="px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-yellow-400/90 text-black shadow-sm backdrop-blur-md">
-                                                    Ativo
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Content Section */}
-                                <div className="p-4 lg:p-6 flex-1 flex flex-col">
-                                    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-4">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                                                    {req.category || 'Geral'}
-                                                </span>
-                                                <span className="text-gray-400 text-xs flex items-center gap-1">
-                                                    <Clock size={12} /> {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'N/A'}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-xl font-black text-gray-900 leading-tight mb-2">{req.title}</h3>
-                                            <p className="text-gray-600 text-sm line-clamp-2">{req.description}</p>
-                                        </div>
-
-                                        <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 shrink-0">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-gray-400 uppercase">Investimento</span>
-                                                <span className="text-lg font-black text-green-600">{formatPrice(req.priceTotal, req.currency || 'USD')}</span>
-                                            </div>
-                                            <div className="w-px h-8 bg-gray-200" />
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-gray-400 uppercase">Duração</span>
-                                                <span className="text-sm font-bold text-gray-700">{req.durationWeeks} sem.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* User Info & Stats */}
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                                        <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                                            <div className="text-xs text-blue-500 font-bold uppercase mb-1 flex items-center gap-1"><Eye size={12} /> Views</div>
-                                            <div className="font-black text-blue-900 text-lg">{req.views || 0}</div>
-                                        </div>
-                                        <div className="bg-purple-50 p-3 rounded-xl border border-purple-100">
-                                            <div className="text-xs text-purple-500 font-bold uppercase mb-1 flex items-center gap-1"><MousePointer2 size={12} /> Clicks</div>
-                                            <div className="font-black text-purple-900 text-lg">{req.clicks || 0}</div>
-                                        </div>
-                                        <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 col-span-2">
-                                            <div className="text-xs text-gray-500 font-bold uppercase mb-1">Anunciante</div>
-                                            <div className="font-bold text-gray-800 truncate text-sm">
-                                                {typeof req.userId === 'object' ? (req.userId as { name: string })?.name : 'Usuário'}
-                                            </div>
-                                            <div className="text-xs text-gray-400 truncate">
-                                                {typeof req.userId === 'object' ? (req.userId as { email: string })?.email : req.userId}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Actions Toolbar */}
-                                    <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col sm:flex-row flex-wrap gap-2 sm:items-center justify-end">
-                                        <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:gap-2">
-                                            {/* Proof of Payment Link */}
-                                            {req.paymentProofUrl && (
-                                                <a
-                                                    href={req.paymentProofUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-bold w-full sm:w-auto"
-                                                    title="Ver Comprovante"
-                                                >
-                                                    <CreditCard size={16} /> <span className="sm:inline">Comprovante</span>
-                                                </a>
-                                            )}
-
-                                            {/* Target Link */}
-                                            {req.targetUrl && (
-                                                <a
-                                                    href={req.targetUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-bold w-full sm:w-auto"
-                                                    title="Ver Link de Destino"
-                                                >
-                                                    <ExternalLink size={16} /> <span className="sm:inline">Link</span>
-                                                </a>
-                                            )}
-                                        </div>
-
-                                        <div className="hidden sm:block sm:flex-1" />
-
-                                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                                            {req.status === 'pending' && (
-                                                <>
-                                                    <button
-                                                        onClick={() => req._id && handleUpdateStatus(req._id, 'rejected')}
-                                                        className="flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 border border-red-200 transition-colors text-sm font-bold w-full sm:w-auto"
-                                                    >
-                                                        <XCircle size={18} /> Rejeitar
-                                                    </button>
-                                                    <button
-                                                        onClick={() => req._id && handleUpdateStatus(req._id, 'approved')}
-                                                        className="flex items-center justify-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-lg shadow-green-200 hover:shadow-xl transition-all text-sm font-bold w-full sm:w-auto"
-                                                    >
-                                                        <CheckCircle size={18} /> Aprovar Publicação
-                                                    </button>
-                                                </>
-                                            )}
-
-                                            {req.status === 'approved' && (
-                                                <button
-                                                    onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
-                                                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-bold w-full sm:w-auto ${req.isActive
-                                                        ? 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
-                                                        : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                                                        }`}
-                                                >
-                                                    {req.isActive ? <PowerOff size={18} /> : <Power size={18} />}
-                                                    {req.isActive ? 'Pausar' : 'Reativar'}
-                                                </button>
-                                            )}
-
-                                            <button
-                                                onClick={() => req._id && handleDelete(req._id)}
-                                                className="flex items-center justify-center gap-2 px-3 py-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors w-full sm:w-auto"
-                                                title="Excluir permanentemente"
-                                            >
-                                                <Trash2 size={18} /> <span className="sm:hidden">Excluir</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div style={{ width: '100px', height: '100px', background: '#f8fafc', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                                <AlertCircle size={48} />
+                            </div>
+                            <div>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Nenhum anúncio encontrado</h3>
+                                <p style={{ color: '#64748b', maxWidth: '300px', margin: '0 auto' }}>
+                                    Não existem registros correspondentes ao filtro &quot;{filter}&quot; no momento.
+                                </p>
                             </div>
                         </motion.div>
-                    ))
-                )}
+                    ) : (
+                        filteredRequests.map((req, idx) => (
+                            <motion.div
+                                key={req._id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                className="ad-card-container"
+                            >
+                                <div style={{ display: 'flex', flexDirection: 'inherit', width: '100%' }}>
+                                    {/* Preview Container */}
+                                    <div className="ad-card-preview">
+                                        {req.mediaUrl ? (
+                                            req.mediaType === 'video' ? (
+                                                <video
+                                                    src={req.mediaUrl}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    autoPlay muted loop
+                                                />
+                                            ) : (
+                                                <Image src={req.mediaUrl} alt={req.title} fill style={{ objectFit: 'cover' }} />
+                                            )
+                                        ) : (
+                                            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                                                <ImageIcon size={48} />
+                                            </div>
+                                        )}
+
+                                        {/* Dynamic Status Badges */}
+                                        <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+                                            <div style={{
+                                                padding: '6px 12px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 900,
+                                                textTransform: 'uppercase', backdropFilter: 'blur(10px)', color: '#fff',
+                                                background: req.status === 'approved' ? 'rgba(34, 197, 94, 0.85)' :
+                                                    req.status === 'pending' ? 'rgba(59, 130, 246, 0.85)' :
+                                                        req.status === 'suspended' ? 'rgba(217, 119, 6, 0.85)' : 'rgba(239, 68, 68, 0.85)'
+                                            }}>
+                                                {req.status === 'approved' ? 'Publicado' : req.status === 'pending' ? 'Pendente' : req.status === 'suspended' ? 'Suspenso' : 'Reprovado'}
+                                            </div>
+                                            {req.isActive && req.status === 'approved' && (
+                                                <div style={{
+                                                    padding: '6px 12px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 900,
+                                                    textTransform: 'uppercase', background: 'rgba(255, 215, 0, 0.95)', color: '#000',
+                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                                }}>
+                                                    🟢 Ativo
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Content Area */}
+                                    <div className="ad-card-content">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+                                            <div style={{ flex: 1, minWidth: '300px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                                                    <span style={{
+                                                        background: '#f1f5f9', color: '#475569', padding: '4px 10px',
+                                                        borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase'
+                                                    }}>
+                                                        {req.category}
+                                                    </span>
+                                                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <Calendar size={12} /> {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'N/A'}
+                                                    </span>
+                                                </div>
+                                                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.2 }}>
+                                                    {req.title}
+                                                </h3>
+                                                <p style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                                                    {req.description}
+                                                </p>
+                                            </div>
+
+                                            <div style={{
+                                                background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '20px',
+                                                padding: '1.25rem', display: 'flex', gap: '1.5rem', alignItems: 'center'
+                                            }}>
+                                                <div>
+                                                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Investimento</div>
+                                                    <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#059669' }}>{formatPrice(req.priceTotal, req.currency || 'USD')}</div>
+                                                </div>
+                                                <div style={{ width: '1px', height: '32px', background: '#e2e8f0' }} />
+                                                <div>
+                                                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Duração</div>
+                                                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>{req.durationWeeks} Semanas</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Metrics & Advertiser */}
+                                        <div className="ad-metrics-grid">
+                                            <div style={{ background: 'rgba(59, 130, 246, 0.03)', border: '1px solid rgba(59, 130, 246, 0.1)', padding: '1rem', borderRadius: '16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                                    <Eye size={14} /> Views
+                                                </div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e3a8a' }}>{req.views || 0}</div>
+                                            </div>
+                                            <div style={{ background: 'rgba(147, 51, 234, 0.03)', border: '1px solid rgba(147, 51, 234, 0.1)', padding: '1rem', borderRadius: '16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9333ea', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                                    <MousePointer2 size={14} /> Clicks
+                                                </div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#581c87' }}>{req.clicks || 0}</div>
+                                            </div>
+                                            <div style={{ background: 'rgba(234, 179, 8, 0.03)', border: '1px solid rgba(234, 179, 8, 0.1)', padding: '1rem', borderRadius: '16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ca8a04', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                                    <Activity size={14} /> CTR
+                                                </div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#854d0e' }}>
+                                                    {req.views && req.views > 0 ? ((req.clicks || 0) / req.views * 100).toFixed(2) : '0.00'}%
+                                                </div>
+                                            </div>
+                                            <div className="ad-user-info" style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '1rem', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                                                        <User size={18} />
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1e293b' }}>
+                                                            {typeof req.userId === 'object' ? req.userId.name : 'Vendedor/Mentor'}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                                                            {typeof req.userId === 'object' ? req.userId.email : 'Proprietário do anúncio'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontSize: '0.6rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Pagamento</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
+                                                        <span style={{ fontSize: '0.75rem', fontWeight: 900, color: req.paymentMethod === 'stripe' ? '#4f46e5' : '#ea580c' }}>
+                                                            {req.paymentMethod.toUpperCase()}
+                                                        </span>
+                                                        <div style={{
+                                                            display: 'flex', alignItems: 'center', gap: '4px',
+                                                            background: req.paymentStatus === 'paid' ? '#dcfce7' : '#f1f5f9',
+                                                            padding: '2px 8px', borderRadius: '10px',
+                                                            border: `1px solid ${req.paymentStatus === 'paid' ? '#bbf7d0' : '#e2e8f0'}`
+                                                        }}>
+                                                            <div style={{
+                                                                width: '6px', height: '6px', borderRadius: '50%',
+                                                                background: req.paymentStatus === 'paid' ? '#22c55e' : '#94a3b8'
+                                                            }} />
+                                                            <span style={{ fontSize: '0.65rem', fontWeight: 900, color: req.paymentStatus === 'paid' ? '#166534' : '#64748b', textTransform: 'uppercase' }}>
+                                                                {req.paymentStatus === 'paid' ? 'Pago' : 'Pendente'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Action Bar */}
+                                        <div className="ad-action-bar" style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                                            <div className="ad-action-buttons" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                {req.paymentProofUrl && (
+                                                    <a href={req.paymentProofUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                        <div style={{
+                                                            padding: '8px 16px', background: '#f1f5f9', color: '#475569',
+                                                            borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800,
+                                                            display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}>
+                                                            <CreditCard size={16} /> Comprovativo
+                                                        </div>
+                                                    </a>
+                                                )}
+                                                {req.targetUrl && (
+                                                    <a href={req.targetUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                        <div style={{
+                                                            padding: '8px 16px', background: '#f1f5f9', color: '#475569',
+                                                            borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800,
+                                                            display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}>
+                                                            <ExternalLink size={16} /> Link Destino
+                                                        </div>
+                                                    </a>
+                                                )}
+                                            </div>
+
+                                            <div className="ad-action-buttons" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                                {req.status === 'pending' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => req._id && handleUpdateStatus(req._id, 'rejected')}
+                                                            style={{
+                                                                padding: '10px 20px', background: 'transparent', color: '#ef4444',
+                                                                border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px',
+                                                                fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            Recusar
+                                                        </button>
+                                                        <button
+                                                            onClick={() => req._id && handleUpdateStatus(req._id, 'approved')}
+                                                            style={{
+                                                                padding: '10px 24px', background: '#000', color: '#FFD700',
+                                                                border: 'none', borderRadius: '12px',
+                                                                fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer',
+                                                                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                                                            }}
+                                                        >
+                                                            Aprovar & Publicar
+                                                        </button>
+                                                    </>
+                                                )}
+
+                                                {(req.status === 'approved' || req.status === 'suspended') && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => req._id && handleUpdateStatus(req._id, req.status === 'suspended' ? 'approved' : 'suspended')}
+                                                            style={{
+                                                                padding: '10px 20px',
+                                                                background: req.status === 'suspended' ? '#ecfdf5' : '#fff7ed',
+                                                                color: req.status === 'suspended' ? '#059669' : '#d97706',
+                                                                border: req.status === 'suspended' ? '1px solid #a7f3d0' : '1px solid #ffedd5',
+                                                                borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            {req.status === 'suspended' ? 'Reativar' : 'Suspender'}
+                                                        </button>
+                                                        {req.status === 'approved' && (
+                                                            <button
+                                                                onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
+                                                                style={{
+                                                                    padding: '10px 20px',
+                                                                    background: req.isActive ? '#f8fafc' : '#eff6ff',
+                                                                    color: req.isActive ? '#64748b' : '#2563eb',
+                                                                    border: req.isActive ? '1px solid #e2e8f0' : '1px solid #bfdbfe',
+                                                                    borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                {req.isActive ? 'Pausar Exibição' : 'Retomar Exibição'}
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
+
+                                                <button
+                                                    onClick={() => req._id && handleDelete(req._id)}
+                                                    style={{
+                                                        padding: '10px', background: 'transparent', color: '#cbd5e1',
+                                                        border: 'none', cursor: 'pointer', transition: 'color 0.2s'
+                                                    }}
+                                                    onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
+                                                    onMouseOut={e => e.currentTarget.style.color = '#cbd5e1'}
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

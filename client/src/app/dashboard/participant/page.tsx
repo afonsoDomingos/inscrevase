@@ -39,14 +39,19 @@ import {
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
+import NotificationCenter from '@/components/mentor/NotificationCenter';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { supportService } from '@/lib/supportService';
+import { notificationService } from '@/lib/notificationService';
+import { useSocket } from '@/context/SocketContext';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import { useCurrency } from '@/context/CurrencyContext';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
+import { adService } from '@/lib/adService';
 
 type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile';
 
@@ -81,9 +86,12 @@ export default function ParticipantDashboard() {
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [unreadSupport, setUnreadSupport] = useState(0);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [targetMentor, setTargetMentor] = useState<{ id: string, name: string } | null>(null);
     const [tickets, setTickets] = useState<SubmissionModel[]>([]);
     const [ticketsLoading, setTicketsLoading] = useState(true);
+    const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     const availableMentors = useMemo(() => {
         const mentorsMap = new Map();
@@ -163,6 +171,21 @@ export default function ParticipantDashboard() {
         }
     };
 
+    const { socket } = useSocket();
+
+    const loadUnreadCounts = async () => {
+        try {
+            const [supportData, notificationData] = await Promise.all([
+                supportService.getUnreadCount(),
+                notificationService.getUnreadCount()
+            ]);
+            setUnreadSupport(supportData.count);
+            setUnreadNotifications(notificationData.count);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         const loadProfile = async () => {
             try {
@@ -173,13 +196,41 @@ export default function ParticipantDashboard() {
                 }
                 setUser(userProfile);
 
-                // Fetch unread support
-                const supportData = await supportService.getUnreadCount();
-                setUnreadSupport(supportData.count);
+                loadUnreadCounts();
 
-                // Fetch tickets
-                const ticketsData = await submissionService.getParticipantSubmissions();
+                // Fetch tickets and ads simultaneously
+                const [ticketsData, events, activeAds] = await Promise.all([
+                    submissionService.getParticipantSubmissions(),
+                    formService.getExploreEvents().catch(() => []),
+                    adService.getActiveAds().catch(() => [])
+                ]);
+
                 setTickets(ticketsData);
+
+                // Process sponsored items (similar to Home page logic)
+                const sponsoredEvents = events.filter(e => e.isSponsored);
+                const combinedAds = [
+                    ...sponsoredEvents.map(e => ({
+                        _id: e._id,
+                        title: e.title,
+                        description: e.description,
+                        mediaUrl: e.coverImage,
+                        mediaType: 'image' as const,
+                        targetUrl: `/f/${e.slug}`,
+                        metadata: { date: e.eventDate, location: e.location }
+                    })),
+                    ...activeAds.map(ad => ({
+                        _id: ad._id,
+                        title: ad.title,
+                        description: ad.description,
+                        mediaUrl: ad.mediaUrl,
+                        mediaType: ad.mediaType,
+                        targetUrl: ad.targetUrl,
+                        metadata: { category: ad.category }
+                    }))
+                ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+                setSponsoredItems(combinedAds);
             } catch (error) {
                 console.error("Error loading profile:", error);
                 router.push('/entrar');
@@ -189,17 +240,20 @@ export default function ParticipantDashboard() {
             }
         };
         loadProfile();
-
-        // Poll for unread count
-        const interval = setInterval(async () => {
-            try {
-                const data = await supportService.getUnreadCount();
-                setUnreadSupport(data.count);
-            } catch { }
-        }, 30000);
-
-        return () => clearInterval(interval);
     }, [router]);
+
+    // Socket listeners for counts
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('unread_count_update', loadUnreadCounts);
+        socket.on('new_notification', loadUnreadCounts);
+
+        return () => {
+            socket.off('unread_count_update', loadUnreadCounts);
+            socket.off('new_notification', loadUnreadCounts);
+        };
+    }, [socket]);
 
     // Handle initial mobile check and window resize
     useEffect(() => {
@@ -594,18 +648,63 @@ export default function ParticipantDashboard() {
 
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                         <ThemeToggle />
-                        <div style={{
-                            width: '40px',
-                            height: '40px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: '1px solid #eee',
-                            cursor: 'pointer'
-                        }}>
-                            <Bell size={20} color="#333" />
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                title={t('dashboard.notifications')}
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    background: '#fff',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    border: '1px solid #eee',
+                                    cursor: 'pointer',
+                                    position: 'relative'
+                                }}
+                            >
+                                <Bell size={20} color="#333" />
+                                {unreadNotifications > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-4px',
+                                        right: '-4px',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        width: '18px',
+                                        height: '18px',
+                                        borderRadius: '50%',
+                                        fontSize: '0.65rem',
+                                        fontWeight: 900,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid #fff'
+                                    }}>
+                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {isNotificationsOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50px',
+                                            right: 0,
+                                            zIndex: 2000
+                                        }}
+                                    >
+                                        <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                         <div style={{ width: '48px', height: '48px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #FFD700' }}>
                             {user.profilePhoto ? (
@@ -618,6 +717,13 @@ export default function ParticipantDashboard() {
                         </div>
                     </div>
                 </header>
+
+                {/* Sponsored Ads Section */}
+                {sponsoredItems.length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <SponsoredAdCard events={sponsoredItems} />
+                    </div>
+                )}
 
                 {user && !user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin' && (
                     <motion.div

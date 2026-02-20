@@ -9,6 +9,7 @@ import { useTranslate } from "@/context/LanguageContext";
 import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
+import { adService } from "@/lib/adService";
 import Cookies from "js-cookie";
 import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
@@ -16,10 +17,12 @@ import Footer from "@/components/Footer";
 import { Calendar, Users, TrendingUp, Star } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
-import { formService, FormModel } from "@/lib/formService";
-import SponsoredAdCard from "@/components/home/SponsoredAdCard";
+import { formService } from "@/lib/formService";
+import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import Typewriter from "@/components/common/Typewriter";
 import { publicService, PublicImpactStats } from "@/lib/publicService";
+import SectorsSection from "@/components/home/SectorsSection";
+import CommunicationHubSection from "@/components/home/CommunicationHubSection";
 
 
 const galleryImages = [
@@ -38,7 +41,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
-  const [sponsoredEvents, setSponsoredEvents] = useState<FormModel[]>([]);
+  const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
   const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
   useEffect(() => {
@@ -49,13 +52,37 @@ export default function Home() {
 
     const fetchSponsored = async () => {
       try {
-        const events = await formService.getExploreEvents();
-        const sponsored = events.filter(e => e.isSponsored);
-        // Randomize the order so different ads get featured first
-        const shuffled = [...sponsored].sort(() => Math.random() - 0.5);
-        setSponsoredEvents(shuffled);
+        const [events, activeAds] = await Promise.all([
+          formService.getExploreEvents(),
+          adService.getActiveAds()
+        ]);
+
+        const sponsoredEvents = events.filter(e => e.isSponsored);
+
+        const combined = [
+          ...sponsoredEvents.map(e => ({
+            _id: e._id,
+            title: e.title,
+            description: e.description,
+            mediaUrl: e.coverImage,
+            mediaType: 'image' as const,
+            targetUrl: `/f/${e.slug}`,
+            metadata: { date: e.eventDate, location: e.location }
+          })),
+          ...activeAds.map(ad => ({
+            _id: ad._id,
+            title: ad.title,
+            description: ad.description,
+            mediaUrl: ad.mediaUrl,
+            mediaType: ad.mediaType,
+            targetUrl: ad.targetUrl,
+            metadata: { category: ad.category }
+          }))
+        ].sort(() => Math.random() - 0.5) as SponsoredItem[];
+
+        setSponsoredItems(combined);
       } catch (error) {
-        console.error("Error fetching sponsored events:", error);
+        console.error("Error fetching sponsored items:", error);
       }
     };
     fetchSponsored();
@@ -403,8 +430,8 @@ export default function Home() {
       </section>
 
       {/* Sponsored Ad System */}
-      {sponsoredEvents.length > 0 && (
-        <SponsoredAdCard events={sponsoredEvents} />
+      {sponsoredItems.length > 0 && (
+        <SponsoredAdCard events={sponsoredItems} />
       )}
 
       {/* Stats Section - Luxury Dark Mode */}
@@ -553,31 +580,10 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Curved Divider to White Section */}
-        <div style={{
-          position: 'absolute',
-          bottom: '-1px',
-          left: 0,
-          width: '100%',
-          overflow: 'hidden',
-          lineHeight: 0,
-          transform: 'rotate(180deg)'
-        }}>
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            style={{
-              position: 'relative',
-              display: 'block',
-              width: 'calc(100% + 1.3px)',
-              height: '100px',
-              fill: '#fff'
-            }}
-          >
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
-          </svg>
-        </div>
       </section>
+
+      <SectorsSection />
+      <CommunicationHubSection />
 
 
 
@@ -1023,12 +1029,12 @@ export default function Home() {
       {/* Tesla-inspired Events Showcase (Original) */}
       < section style={{ padding: '0 20px 80px', background: '#fff' }}>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
           gap: '24px',
-          maxWidth: '1600px',
-          margin: '0 auto',
-          justifyContent: 'center'
+          maxWidth: '1100px',
+          margin: '0 auto'
         }}>
           {/* Block 1: Masterclasses */}
           <motion.div
@@ -1037,14 +1043,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
+              flex: '1 1 450px',
+              maxWidth: '540px',
               position: 'relative',
-              height: '600px',
+              height: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '60px',
+              padding: '40px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1061,7 +1069,7 @@ export default function Home() {
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landing.showcase.masterclasses.title')}</h2>
-              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.masterclasses.description')}</p>
+              <p style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.masterclasses.description')}</p>
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href={isLoggedIn ? getDashboardLink() : "/cadastro"} style={{
                   padding: '12px 60px',
@@ -1096,14 +1104,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             style={{
+              flex: '1 1 450px',
+              maxWidth: '540px',
               position: 'relative',
-              height: '600px',
+              height: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: '60px',
+              padding: '40px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1120,7 +1130,7 @@ export default function Home() {
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h2 style={{ fontSize: '3rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landing.showcase.gala.title')}</h2>
-              <p style={{ color: '#fff', marginBottom: '2.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.gala.description')}</p>
+              <p style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '1.1rem', fontWeight: 400 }}>{t('landing.showcase.gala.description')}</p>
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href={isLoggedIn ? getDashboardLink() : "/entrar"} style={{
                   padding: '12px 60px',
@@ -1237,12 +1247,12 @@ export default function Home() {
         </div>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
           gap: '24px',
-          maxWidth: '1600px',
-          margin: '0 auto',
-          justifyContent: 'center'
+          maxWidth: '1100px',
+          margin: '0 auto'
         }}>
           {/* Package 1: Free */}
           <motion.div
@@ -1251,15 +1261,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             style={{
+              flex: '1 1 300px',
+              maxWidth: '350px',
               position: 'relative',
-              height: 'auto',
-              minHeight: 'clamp(480px, 80vh, 520px)',
+              minHeight: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: 'clamp(15px, 4vw, 30px)',
+              padding: '24px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1272,22 +1283,22 @@ export default function Home() {
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
-              <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.free.name')}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>{t('plans.free.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
+              <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.free.name')}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>{t('plans.free.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '1.5rem', color: '#fff', fontSize: '0.9rem' }}>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.fee')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f1')}</span>
                 <span style={{ opacity: 0.9 }}>{t('plans.free.f2')}</span>
               </div>
-              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '2rem' }}>
+              <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem' }}>
                 {t('common.free') || 'Gratis'}
               </p>
               <Link href={isLoggedIn ? "/planos" : "/cadastro"} style={{
                 display: 'inline-block',
-                padding: '12px 0',
+                padding: '10px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: 'rgba(255,255,255,0.9)',
@@ -1309,16 +1320,20 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
             style={{
+              flex: '1 1 300px',
+              maxWidth: '350px',
               position: 'relative',
-              height: 'auto',
-              minHeight: 'clamp(500px, 85vh, 540px)',
+              minHeight: '480px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: 'clamp(15px, 4vw, 30px)',
-              textAlign: 'center'
+              padding: '24px',
+              textAlign: 'center',
+              transform: 'scale(1.05)',
+              zIndex: 2,
+              boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
             }}
             className="gold-shimmer-sweep"
             onMouseMove={handleMouseMove}
@@ -1330,7 +1345,7 @@ export default function Home() {
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
               <div style={{
@@ -1346,6 +1361,8 @@ export default function Home() {
               }}>
                 {t('plans.pro.badge')}
               </div>
+              <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.pro.name')}</h3>
+
               <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 🔥 {t('plans.limitedOffer') || 'Oferta por tempo limitado'}
               </div>
@@ -1353,7 +1370,7 @@ export default function Home() {
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontWeight: 500, textDecoration: 'line-through' }}>
                   {formatPrice(45, 'USD', currency)}
                 </span>
-                <p style={{ color: '#fff', fontSize: 'clamp(1.8rem, 5vw, 2.2rem)', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                <p style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('pro'), currency, currency)}
                 </p>
                 <div style={{
@@ -1385,15 +1402,15 @@ export default function Home() {
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
                 {t('plans.perMonth')}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem', lineHeight: 1.4 }}>{t('plans.pro.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.95rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.4 }}>{t('plans.pro.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.fee')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f1')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.pro.f2')}</div>
               </div>
               <Link href={isLoggedIn ? "/planos" : "/cadastro?plan=pro"} style={{
                 display: 'inline-block',
-                padding: '12px 0',
+                padding: '10px 0',
                 borderRadius: '4px',
                 fontSize: '0.85rem',
                 background: 'var(--gold-gradient)',
@@ -1415,15 +1432,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
             style={{
+              flex: '1 1 300px',
+              maxWidth: '350px',
               position: 'relative',
-              height: 'auto',
-              minHeight: 'clamp(480px, 80vh, 520px)',
+              minHeight: '450px',
               borderRadius: '12px',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              padding: 'clamp(15px, 4vw, 30px)',
+              padding: '24px',
               textAlign: 'center'
             }}
             className="gold-shimmer-sweep"
@@ -1436,9 +1454,10 @@ export default function Home() {
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)', zIndex: 1 }} />
 
             <div style={{ position: 'relative', zIndex: 2 }}>
+              <h3 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>{t('plans.enterprise.name')}</h3>
               <div style={{ color: '#FFD700', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 👑 {t('plans.exclusiveAccess') || 'Acesso Exclusivo'}
               </div>
@@ -1446,7 +1465,7 @@ export default function Home() {
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: 500, textDecoration: 'line-through' }}>
                   {formatPrice(450, 'USD', currency)}
                 </span>
-                <p style={{ color: '#fff', fontSize: 'clamp(1.6rem, 5vw, 2rem)', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                <p style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 900, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   {formatPrice(getPlanPrice('enterprise'), currency, currency)}
                 </p>
                 <div style={{
@@ -1464,8 +1483,8 @@ export default function Home() {
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
                 {t('plans.perMonth')}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem', lineHeight: 1.4 }}>{t('plans.enterprise.description')}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', marginBottom: '2.5rem', color: '#fff', fontSize: '0.95rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.4 }}>{t('plans.enterprise.description')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
                 <div style={{ padding: '6px 16px', background: 'var(--gold-gradient)', color: '#000', borderRadius: '20px', width: '100%', maxWidth: '250px', fontWeight: 800 }}>{t('plans.enterprise.fee')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.enterprise.f1')}</div>
                 <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', width: '100%', maxWidth: '250px' }}>{t('plans.enterprise.f2')}</div>

@@ -15,7 +15,7 @@ export interface Lesson {
     views: number;
     createdAt: string;
     order?: number;
-    targetAudience?: 'mentors' | 'participants' | 'both';
+    targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
     associatedEvents?: string[];
 }
 

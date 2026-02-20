@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData, authService } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Mail, Lock, Unlock, MessageSquare, BadgeCheck, XOctagon } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Mail, Lock, Unlock, MessageSquare, BadgeCheck, XOctagon, CheckSquare, Square } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 import PremiumBadge from '../common/PremiumBadge';
 import { useSocket } from '@/context/SocketContext';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 interface UsersListProps {
     onMessageUser?: (user: UserData) => void;
@@ -33,6 +34,9 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+
+    // Selection State
+    const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const loggedUser = authService.getCurrentUser();
@@ -150,12 +154,46 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
+    // Selection handlers
+    const handleSelectUser = (userId: string) => {
+        setSelectedUsers(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(userId)) {
+                newSet.delete(userId);
+            } else {
+                newSet.add(userId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleSelectAll = () => {
+        // If all currently visible items are selected, deselect all provided they have some items
+        const allCurrentSelected = currentItems.length > 0 && currentItems.every(u => selectedUsers.has(u.id || u._id || ''));
+
+        if (allCurrentSelected) {
+            setSelectedUsers(new Set());
+        } else {
+            // Select all current items
+            const newSelected = new Set(selectedUsers);
+            currentItems.forEach(u => newSelected.add(u.id || u._id || ''));
+            setSelectedUsers(newSelected);
+        }
+    };
+
+    const isAllSelected = currentItems.length > 0 && currentItems.every(u => selectedUsers.has(u.id || u._id || ''));
+
     if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando usuários...</div>;
 
     return (
         <div className="luxury-card" style={{ background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Gestão de Usuários</h3>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    Gestão de Usuários
+                    <span style={{ fontSize: '0.8rem', background: '#f0f0f0', padding: '0.2rem 0.6rem', borderRadius: '20px', color: '#666' }}>
+                        {filteredUsers.length} {filteredUsers.length === 1 ? 'resultado' : 'resultados'}
+                    </span>
+                </h3>
                 <div style={{ position: 'relative', width: '250px' }}>
                     <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                     <input
@@ -243,10 +281,27 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                 )}
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <TableScrollWrapper>
+                <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
+                            <th style={{ padding: '1rem', width: '40px' }}>
+                                <button
+                                    onClick={handleSelectAll}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#FFD700',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    title={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}
+                                >
+                                    {isAllSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                                </button>
+                            </th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Nome</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Origem</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Cadastro</th>
@@ -263,10 +318,36 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                             <motion.tr
                                 layout
                                 key={user.id || user._id}
-                                style={{ borderBottom: '1px solid #f9f9f9' }}
+                                style={{
+                                    borderBottom: '1px solid #f9f9f9',
+                                    background: selectedUsers.has(user.id || user._id || '')
+                                        ? 'rgba(255, 215, 0, 0.08)'
+                                        : 'transparent',
+                                    transition: 'all 0.2s ease'
+                                }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                             >
+                                <td style={{ padding: '1rem', width: '40px' }}>
+                                    <button
+                                        onClick={() => handleSelectUser(user.id || user._id || '')}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: selectedUsers.has(user.id || user._id || '') ? '#FFD700' : '#ddd',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'color 0.2s'
+                                        }}
+                                        title={selectedUsers.has(user.id || user._id || '') ? 'Desmarcar' : 'Selecionar'}
+                                    >
+                                        {selectedUsers.has(user.id || user._id || '')
+                                            ? <CheckSquare size={20} />
+                                            : <Square size={20} />}
+                                    </button>
+                                </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         {user.name}
@@ -428,7 +509,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </TableScrollWrapper>
 
             {/* Pagination Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.9rem', color: '#666' }}>

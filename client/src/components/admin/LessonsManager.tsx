@@ -19,7 +19,7 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
-// import { useTranslate } from '@/context/LanguageContext';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 
 interface Lesson {
     _id: string;
@@ -32,7 +32,7 @@ interface Lesson {
     isPublished: boolean;
     views: number;
     order: number;
-    targetAudience?: 'mentors' | 'participants' | 'both';
+    targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
     createdAt: string;
 }
 
@@ -68,7 +68,7 @@ export default function LessonsManager() {
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
         order: 0,
-        targetAudience: 'mentors' as 'mentors' | 'participants' | 'both'
+        targetAudience: 'mentors' as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all'
     });
 
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -406,8 +406,8 @@ export default function LessonsManager() {
             </div>
 
             {/* Lessons Table */}
-            <div style={{ background: 'white', borderRadius: '16px', overflowX: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+            <TableScrollWrapper>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                     <thead>
                         <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Aula</th>
@@ -477,11 +477,24 @@ export default function LessonsManager() {
                                         borderRadius: '6px',
                                         fontSize: '0.7rem',
                                         fontWeight: 'bold',
-                                        background: lesson.targetAudience === 'both' ? '#fef3c7' : lesson.targetAudience === 'mentors' ? '#e0f2fe' : '#f3f4f6',
-                                        color: lesson.targetAudience === 'both' ? '#92400e' : lesson.targetAudience === 'mentors' ? '#0369a1' : '#4b5563',
-                                        border: lesson.targetAudience === 'both' ? '1px solid #fde68a' : lesson.targetAudience === 'mentors' ? '1px solid #bae6fd' : '1px solid #e5e7eb'
+                                        textTransform: 'uppercase',
+                                        background: lesson.targetAudience === 'both' ? '#fef3c7' :
+                                            lesson.targetAudience === 'mentors' ? '#e0f2fe' :
+                                                lesson.targetAudience === 'companies' ? '#f3e8ff' :
+                                                    lesson.targetAudience === 'specialists' ? '#fae8ff' :
+                                                        lesson.targetAudience === 'all' ? '#dcfce7' : '#f3f4f6',
+                                        color: lesson.targetAudience === 'both' ? '#92400e' :
+                                            lesson.targetAudience === 'mentors' ? '#0369a1' :
+                                                lesson.targetAudience === 'companies' ? '#6b21a8' :
+                                                    lesson.targetAudience === 'specialists' ? '#86198f' :
+                                                        lesson.targetAudience === 'all' ? '#166534' : '#4b5563',
+                                        border: '1px solid transparent'
                                     }}>
-                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' : lesson.targetAudience === 'mentors' ? '🎓 Mentor' : '👥 Participante'}
+                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
+                                            lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
+                                                lesson.targetAudience === 'companies' ? '🏢 Empresa' :
+                                                    lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
+                                                        lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -552,7 +565,7 @@ export default function LessonsManager() {
                         <p>Nenhuma aula encontrada</p>
                     </div>
                 )}
-            </div>
+            </TableScrollWrapper>
 
             {/* Modal */}
             <AnimatePresence>
@@ -955,7 +968,7 @@ export default function LessonsManager() {
                                     </label>
                                     <select
                                         value={formData.targetAudience}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'both' }))}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
                                         style={{
                                             width: '100%',
                                             padding: '12px',
@@ -967,14 +980,23 @@ export default function LessonsManager() {
                                     >
                                         <option value="mentors">Mentores (Academia)</option>
                                         <option value="participants">Participantes</option>
+                                        <option value="companies">🏢 Empresas</option>
+                                        <option value="specialists">⚡ Especialistas</option>
                                         <option value="both">Ambos (Mentores e Participantes)</option>
+                                        <option value="all">🌍 Todos os Públicos</option>
                                     </select>
                                     <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
                                         {formData.targetAudience === 'mentors'
                                             ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
                                             : formData.targetAudience === 'participants'
                                                 ? '👥 Visível para os participantes no dashboard deles.'
-                                                : '👥🎓 Visível para mentores E participantes.'}
+                                                : formData.targetAudience === 'companies'
+                                                    ? '🏢 Visível apenas para perfis de empresa.'
+                                                    : formData.targetAudience === 'specialists'
+                                                        ? '⚡ Visível apenas para especialistas.'
+                                                        : formData.targetAudience === 'all'
+                                                            ? '🌍 Visível para todos os tipos de usuários.'
+                                                            : '👥🎓 Visível para mentores e participantes.'}
                                     </p>
                                 </div>
 

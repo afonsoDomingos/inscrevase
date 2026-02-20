@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
+import { useSocket } from '@/context/SocketContext';
 
 interface NotificationCenterProps {
     onClose?: () => void;
@@ -29,9 +30,26 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
         }
     };
 
+    const { socket } = useSocket();
+
     useEffect(() => {
         loadNotifications();
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewNotification = (notification: NotificationModel) => {
+            console.log('🔔 Nova notificação recebida via Socket:', notification);
+            loadNotifications();
+            // Optional: toast.info(`Nova notificação: ${notification.title}`);
+        };
+
+        socket.on('new_notification', handleNewNotification);
+        return () => {
+            socket.off('new_notification', handleNewNotification);
+        };
+    }, [socket]);
 
     const loadNotifications = async () => {
         try {
@@ -123,7 +141,9 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }} className="custom-scrollbar">
                 {loading ? (
-                    <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>Carregandou...</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                        <Loader2 className="animate-spin" size={24} color="#FFD700" />
+                    </div>
                 ) : notifications.length === 0 ? (
                     <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
                         <Mail size={48} style={{ color: '#eee', marginBottom: '1rem' }} />
@@ -180,7 +200,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                                             {getDepartmentInfo(notification.department).name}
                                                         </strong>
                                                     </span>
-                                                ) : notification.sender && (
+                                                ) : notification.sender?.name && (
                                                     <span style={{ fontSize: '0.75rem', color: '#666', display: 'block', marginTop: '2px' }}>
                                                         De: <strong>{notification.sender.name}</strong>
                                                     </span>
@@ -239,7 +259,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                                     <ExternalLink size={14} /> Ver detalhes
                                                 </a>
                                             )}
-                                            {notification.sender && (
+                                            {notification.sender?.name && (
                                                 <button
                                                     onClick={() => {
                                                         if (replyMode === notification._id) {
@@ -273,7 +293,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
                                                 <textarea
                                                     value={replyText}
                                                     onChange={(e) => setReplyText(e.target.value)}
-                                                    placeholder={`Escreva sua resposta para ${notification.department ? getDepartmentInfo(notification.department).name : notification.sender.name}...`}
+                                                    placeholder={`Escreva sua resposta para ${notification.department ? getDepartmentInfo(notification.department).name : (notification.sender?.name || 'Sistema')}...`}
                                                     rows={2}
                                                     style={{
                                                         width: '100%',

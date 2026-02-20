@@ -20,6 +20,7 @@ import {
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import TableScrollWrapper from '../common/TableScrollWrapper';
 import {
     AreaChart,
     Area,
@@ -381,8 +382,8 @@ export default function AdminFinance() {
             </div>
 
             {/* Transactions Table */}
-            <div className="luxury-card" style={{ background: '#fff', padding: 0, overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <TableScrollWrapper>
+                <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', background: '#fcfcfc', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Mentor / Business</th>
@@ -505,7 +506,7 @@ export default function AdminFinance() {
                         <p>Nenhuma transação encontrada.</p>
                     </div>
                 )}
-            </div>
+            </TableScrollWrapper>
 
             {/* Pagination Controls */}
             {filteredTransactions.length > 0 && (

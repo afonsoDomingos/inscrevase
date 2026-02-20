@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Lesson = require('../models/Lesson');
 const LessonProgress = require('../models/LessonProgress');
 const Notification = require('../models/Notification');
+const NotificationService = require('../services/notificationService');
 const { PLANS } = require('../config/stripe');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -12,7 +13,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
-const { generateBasicEmail } = require('../utils/emailTemplates');
+const { generateBasicEmail, generatePendingApprovalEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
     console.log('[Submission] Starting submission process for form:', req.body.formId);
@@ -87,13 +88,23 @@ const submitForm = async (req, res) => {
         console.log('[Submission] Submission saved successfully:', submission._id);
 
         // Notify Creator and Partners (Non-blocking)
-        const participantName = data.nome || data.name || (req.user ? req.user.name : 'Um novo participante');
+        // Try to find participant name in data with case-insensitive search
+        let participantName = data.nome || data.name;
+        if (!participantName) {
+            const nameKey = Object.keys(data).find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
+            if (nameKey) participantName = data[nameKey];
+        }
+
+        // Fallback to logged user name or default
+        if (!participantName) {
+            participantName = (req.user && req.user.name) ? req.user.name : 'Um novo participante';
+        }
         try {
             console.log('[Submission] Sending notification to creator:', form.creator);
             const recipients = [form.creator, ...(form.partners || [])];
 
             await Promise.all(recipients.map(async (recipientId) => {
-                const notification = new Notification({
+                await NotificationService.notify({
                     recipient: recipientId,
                     sender: req.user ? req.user.id : recipientId,
                     title: 'Nova Inscrição Recebida! 📩',
@@ -101,23 +112,47 @@ const submitForm = async (req, res) => {
                     type: 'personal',
                     actionUrl: '/dashboard/mentor'
                 });
-                await notification.save();
             }));
 
             // Notify Creator via Email
             const mentor = await User.findById(form.creator);
             if (mentor && mentor.email) {
                 const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
-                const content = `
-                    Acabamos de receber uma nova inscrição para o seu evento "<strong>${form.title}</strong>".
-                    <div style="background-color: white; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #eee;">
-                        <p style="margin: 5px 0;"><strong>Participante:</strong> ${participantName}</p>
-                        <p style="margin: 5px 0;"><strong>E-mail:</strong> ${data.email || data.Email || 'Não informado'}</p>
-                    </div>
-                `;
-                const emailHtml = generateBasicEmail('Nova Inscrição Recebida! 📩', mentor.name, content, 'Ver Detalhes no Dashboard', dashboardUrl);
 
-                await sendEmail(mentor.email, `Nova Inscrição: ${form.title} - Inscreva-se`, emailHtml);
+                // Use the new "Pending Approval" template if the form expects manual validation (default behavior)
+                const emailHtml = generatePendingApprovalEmail(
+                    mentor.name,
+                    participantName,
+                    form.title,
+                    dashboardUrl
+                );
+
+                await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml);
+
+                // --- AUTOMATION: First Submission Ever ---
+                if (!mentor.receivedFirstSubmissionNudge) {
+                    const totalSubmissions = await Submission.countDocuments({
+                        form: { $in: await Form.find({ creator: mentor._id }).distinct('_id') }
+                    });
+
+                    if (totalSubmissions === 1) {
+                        const content = `Que momento fantástico! Acabamos de registar a <strong>primeira inscrição</strong> num evento criado por ti. Este é o início oficial da tua faturação e impacto através do teu conhecimento. O primeiro passo foi dado com sucesso!`;
+                        const congratsHtml = generateBasicEmail(
+                            '🎉 Parabéns! A tua PRIMEIRA inscrição chegou!',
+                            mentor.name,
+                            content,
+                            'Ver Submissão',
+                            dashboardUrl
+                        );
+
+                        await sendEmail(mentor.email, '🎉 Vitória! Recebeste a tua primeira inscrição! - Inscreva-se', congratsHtml);
+
+                        // Mark as nudge sent
+                        mentor.receivedFirstSubmissionNudge = true;
+                        await mentor.save();
+                    }
+                }
+                // ------------------------------------------
             }
         } catch (notifErr) {
             console.error('[Submission] Error sending notifications:', notifErr);
@@ -282,6 +317,125 @@ const updateStatus = async (req, res) => {
             }
         }
         // -----------------------------------------------
+
+        // --- NOTIFY PARTICIPANT OF APPROVAL ---
+        if (status === 'approved') {
+            try {
+                // Find email in submission data if not linked to user
+                let participantEmail = null;
+                if (submission.user) {
+                    const user = await User.findById(submission.user);
+                    if (user) participantEmail = user.email;
+                }
+
+                if (!participantEmail) {
+                    const dataObj = Object.fromEntries(submission.data);
+                    const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                    for (const key of emailKeys) {
+                        if (dataObj[key]) {
+                            participantEmail = dataObj[key];
+                            break;
+                        }
+                    }
+                }
+
+                if (participantEmail) {
+                    const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${submission._id}`;
+                    const signupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/entrar`;
+                    const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
+
+                    let content = `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${submission.form.title}</strong>" foi aprovada com sucesso! Agora já tens acesso total ao Hub do Inscrito, onde poderás ver as aulas, descarregar materiais e (brevemente) obter o teu certificado.`;
+
+                    // If participant doesn't have a linked account, add an incentive to create one
+                    if (!submission.user) {
+                        content += `<br><br>💡 **Dica Profissional:** Notamos que ainda não tens uma conta oficial no <strong>Inscreva-se</strong>. Sabias que ao criares uma conta gratuita (com o mesmo email desta inscrição), poderás gerir todos os teus eventos, cursos e certificados num único painel organizado? <a href="${signupUrl}">Clica aqui para criar a tua conta agora!</a>`;
+                    }
+
+                    const emailHtml = generateBasicEmail(
+                        '✅ Inscrição Confirmada!',
+                        participantName,
+                        content,
+                        'Aceder ao Hub do Inscrito',
+                        hubUrl,
+                        '#28a745'
+                    );
+
+                    await sendEmail(participantEmail, `✅ Inscrição Confirmada: ${submission.form.title} - Inscreva-se`, emailHtml);
+                    console.log('[Submission] Approval email sent to:', participantEmail);
+
+                    // --- NEW: IN-APP NOTIFICATION FOR APPROVAL ---
+                    if (submission.user) {
+                        try {
+                            await NotificationService.notify({
+                                recipient: submission.user,
+                                sender: submission.form.creator,
+                                title: 'Inscrição Aprovada! 🎉',
+                                content: `Sua inscrição no evento "${submission.form.title}" foi aprovada. Acesse agora o seu Hub!`,
+                                type: 'personal',
+                                actionUrl: `/hub/${submission._id}`
+                            });
+                        } catch (notifErr) {
+                            console.error('[Submission] Error sending in-app approval notification:', notifErr);
+                        }
+                    }
+                }
+            } catch (emailErr) {
+                console.error('[Submission] Error sending approval email:', emailErr);
+            }
+        } else if (status === 'rejected') {
+            // --- NEW: NOTIFY PARTICIPANT OF REJECTION ---
+            try {
+                let participantEmail = null;
+                if (submission.user) {
+                    const user = await User.findById(submission.user);
+                    if (user) participantEmail = user.email;
+                }
+
+                if (!participantEmail) {
+                    const dataObj = Object.fromEntries(submission.data);
+                    const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                    for (const key of emailKeys) {
+                        if (dataObj[key]) {
+                            participantEmail = dataObj[key];
+                            break;
+                        }
+                    }
+                }
+
+                const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
+
+                if (participantEmail) {
+                    const content = `Olá ${participantName}. Informamos que sua inscrição no evento "<strong>${submission.form.title}</strong>" não pôde ser aprovada neste momento. <br><br>Se você acredita que houve um erro ou deseja fornecer mais informações (como um novo comprovativo), entre em contato diretamente com o mentor ou responda a este e-mail.`;
+
+                    const emailHtml = generateBasicEmail(
+                        '❌ Status da Inscrição',
+                        participantName,
+                        content,
+                        'Contactar Suporte',
+                        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/suporte`,
+                        '#e02424' // Red color for rejection
+                    );
+
+                    await sendEmail(participantEmail, `⚠️ Atualização: Inscrição em ${submission.form.title}`, emailHtml);
+                    console.log('[Submission] Rejection email sent to:', participantEmail);
+                }
+
+                // In-app notification
+                if (submission.user) {
+                    await NotificationService.notify({
+                        recipient: submission.user,
+                        sender: submission.form.creator,
+                        title: 'Atualização na Inscrição ⚠️',
+                        content: `Sua inscrição no evento "${submission.form.title}" não foi aprovada. Verifique seu e-mail para mais detalhes.`,
+                        type: 'alert',
+                        actionUrl: '/dashboard/participant'
+                    });
+                }
+            } catch (rejErr) {
+                console.error('[Submission] Error in rejection notification flow:', rejErr);
+            }
+        }
+        // --------------------------------------
 
         await submission.save();
         res.json(submission);
@@ -509,10 +663,139 @@ const updateCertificateStatus = async (req, res) => {
     }
 };
 
+const bulkUpdateSubmissions = async (req, res) => {
+    try {
+        const { submissionIds, status, action } = req.body;
+        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
+            return res.status(400).json({ message: 'Nenhuma inscrição selecionada' });
+        }
+
+        console.log(`[Submission] Bulk ${action || 'status update'} for ${submissionIds.length} items to ${status}`);
+
+        // Get all target submissions to verify ownership
+        const submissions = await Submission.find({ _id: { $in: submissionIds } }).populate('form');
+
+        // Filter those that the user is authorized to modify
+        const authorizedSubmissions = submissions.filter(sub => {
+            const isCreator = sub.form.creator.toString() === req.user.id;
+            const isPartner = sub.form.partners && sub.form.partners.some(p => p.toString() === req.user.id);
+            const isAdmin = req.user.role === 'admin' || req.user.role === 'SuperAdmin';
+            return isCreator || isPartner || isAdmin;
+        });
+
+        if (authorizedSubmissions.length === 0) {
+            return res.status(403).json({ message: 'Não autorizado para modificar estas inscrições' });
+        }
+
+        const authorizedIds = authorizedSubmissions.map(s => s._id);
+
+        if (action === 'delete') {
+            await Submission.deleteMany({ _id: { $in: authorizedIds } });
+            return res.json({ success: true, message: `${authorizedIds.length} inscrições eliminadas com sucesso` });
+        }
+
+        // For status updates, we loop to trigger the notification and financial logic
+        // This is safer than updateMany which bypasses middleware/hooks and manual logic
+        const results = await Promise.all(authorizedSubmissions.map(async (sub) => {
+            try {
+                // Reuse existing updateStatus logic but locally
+                sub.status = status;
+
+                // Logic for notification & finance (simplified version of updateStatus)
+                if (status === 'approved' && sub.form.paymentConfig?.enabled) {
+                    const existingTx = await Transaction.findOne({ submission: sub._id });
+                    if (!existingTx) {
+                        const mentor = await User.findById(sub.form.creator);
+                        if (mentor) {
+                            const mentorPlan = mentor.plan || 'free';
+                            const planConfig = PLANS[mentorPlan] || PLANS.free;
+                            const amount = sub.form.paymentConfig.price || 0;
+                            const platformFee = amount * planConfig.commissionRate;
+                            const currency = sub.form.paymentConfig.currency || 'MZN';
+
+                            const transaction = new Transaction({
+                                user: sub.user || mentor._id,
+                                mentor: mentor._id,
+                                form: sub.form._id,
+                                submission: sub._id,
+                                amount, currency, baseAmount: amount,
+                                platformFee, basePlatformFee: platformFee,
+                                mentorEarnings: amount, baseMentorEarnings: amount,
+                                status: 'pending', paymentMethod: 'manual'
+                            });
+                            await transaction.save();
+                            sub.paymentStatus = 'paid';
+                        }
+                    }
+                }
+
+                // Notifications
+                if (status === 'approved' || status === 'rejected') {
+                    let participantEmail = null;
+                    if (sub.user) {
+                        const user = await User.findById(sub.user);
+                        if (user) participantEmail = user.email;
+                    }
+
+                    if (!participantEmail) {
+                        const dataObj = sub.data instanceof Map ? Object.fromEntries(sub.data) : (typeof sub.data === 'object' ? sub.data : {});
+                        const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                        for (const key of emailKeys) {
+                            if (dataObj[key]) { participantEmail = dataObj[key]; break; }
+                        }
+                    }
+
+                    if (participantEmail) {
+                        const participantName = (sub.data instanceof Map ? sub.data.get('nome') : sub.data.nome) || 'Participante';
+                        const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${sub._id}`;
+
+                        let content = status === 'approved'
+                            ? `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${sub.form.title}</strong>" foi aprovada com sucesso!`
+                            : `Olá ${participantName}. Informamos que sua inscrição no evento "<strong>${sub.form.title}</strong>" não pôde ser aprovada neste momento.`;
+
+                        const title = status === 'approved' ? '✅ Inscrição Confirmada!' : '❌ Status da Inscrição';
+                        const color = status === 'approved' ? '#28a745' : '#e02424';
+
+                        const emailHtml = generateBasicEmail(title, participantName, content, status === 'approved' ? 'Aceder ao Hub' : 'Contactar Suporte', status === 'approved' ? hubUrl : '/suporte', color);
+                        sendEmail(participantEmail, `${title}: ${sub.form.title}`, emailHtml);
+                    }
+
+                    if (sub.user) {
+                        await NotificationService.notify({
+                            recipient: sub.user,
+                            sender: sub.form.creator,
+                            title: status === 'approved' ? 'Inscrição Aprovada! 🎉' : 'Atualização na Inscrição ⚠️',
+                            content: status === 'approved' ? `Sua inscrição em "${sub.form.title}" foi aprovada.` : `Sua inscrição em "${sub.form.title}" não foi aprovada.`,
+                            type: status === 'approved' ? 'personal' : 'alert',
+                            actionUrl: status === 'approved' ? `/hub/${sub._id}` : '/dashboard/participant'
+                        });
+                    }
+                }
+
+                await sub.save();
+                return { id: sub._id, success: true };
+            } catch (err) {
+                return { id: sub._id, success: false, error: err.message };
+            }
+        }));
+
+        res.json({
+            success: true,
+            message: `${results.filter(r => r.success).length} inscrições atualizadas com sucesso`,
+            results
+        });
+
+    } catch (err) {
+        console.error('[Submission] Bulk error:', err);
+        res.status(500).json({ message: 'Erro ao processar atualização em massa', error: err.message });
+    }
+};
+
 module.exports = {
     submitForm,
     getFormSubmissions,
     updateStatus,
+    bulkUpdateSubmissions,
     getAllSubmissionsAdmin,
     getMySubmissions,
     getSubmissionPublic,

@@ -23,6 +23,7 @@ interface CurrencyContextType {
     currency: Currency;
     setCurrency: (currency: Currency) => void;
     formatPrice: (amount: number, fromCurrency?: string, targetCurrency?: string) => string;
+    convertAmount: (amount: number, fromCurrency?: string, targetCurrency?: string) => number;
     getPlanPrice: (planId: 'pro' | 'enterprise') => number;
     exchangeRate: number;
     loading: boolean;
@@ -162,8 +163,31 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         return formatted;
     };
 
+    const convertAmount = (amount: number, fromCurrency: string = 'MZN', targetCurrency: string = currency): number => {
+        const normalize = (c: string): Currency => {
+            if (!c) return 'USD';
+            const up = c.toString().toUpperCase().trim();
+            if (up === 'MZN' || up === 'MT' || up === 'MTN' || up === 'METICAIS' || up === 'METICAL') return 'MZN';
+            if (up === 'USD' || up === 'DOLAR' || up === 'DOLLAR' || up === '$') return 'USD';
+            if (up === 'EUR' || up === 'EURO' || up === '€') return 'EUR';
+            if (up === 'AOA' || up === 'KWANZA') return 'AOA';
+            if (up === 'CVE' || up === 'ESCUDO') return 'CVE';
+            if (up === 'XOF' || up === 'CFA' || up === 'FCFA') return 'XOF';
+            return 'MZN';
+        };
+
+        const from = normalize(fromCurrency);
+        const target = normalize(targetCurrency);
+
+        if (from === target) return amount;
+
+        // Convert from source to USD, then to target
+        const amountInUSD = amount / allRates[from];
+        return amountInUSD * allRates[target];
+    };
+
     return (
-        <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, getPlanPrice, exchangeRate, loading }}>
+        <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertAmount, getPlanPrice, exchangeRate, loading }}>
             {children}
         </CurrencyContext.Provider>
     );

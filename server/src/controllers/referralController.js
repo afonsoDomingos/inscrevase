@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Referral = require('../models/Referral');
 const Notification = require('../models/Notification');
+const sendEmail = require('../utils/emailService');
+const { generateSocialPointsEmail, generateAdminPointsNotificationEmail } = require('../utils/emailTemplates');
 
 const getReferralStats = async (req, res) => {
     try {
@@ -13,14 +15,64 @@ const getReferralStats = async (req, res) => {
             await user.save();
         }
 
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const inviteLink = `${frontendUrl}/cadastro?ref=${user.referralCode}`;
+
         res.json({
             referralCode: user.referralCode,
-            points: user.referralPoints,
-            totalInvites: user.referralCount,
+            inviteLink,
+            points: user.referralPoints || 0,
+            totalInvites: user.referralCount || 0,
             convertedCount: await Referral.countDocuments({ referrer: user._id, status: 'converted' })
         });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const redeemPoints = async (req, res) => {
+    try {
+        const { rewardId } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+
+        // Reward Tiers: 100 points = 30 days Pro
+        const REWARDS = {
+            'pro_30': { points: 100, days: 30, plan: 'pro', label: 'Plano Pro (30 dias)' }
+        };
+
+        const reward = REWARDS[rewardId];
+        if (!reward) return res.status(400).json({ message: 'Recompensa inválida' });
+
+        if ((user.referralPoints || 0) < reward.points) {
+            return res.status(400).json({ message: `Saldo insuficiente. Precisas de ${reward.points} pontos.` });
+        }
+
+        // Deduct points and update plan
+        user.referralPoints -= reward.points;
+        user.plan = reward.plan;
+
+        // In a more complete system, we'd handle plan expiration dates here.
+        await user.save();
+
+        // Notify user
+        const notification = new Notification({
+            recipient: user._id,
+            sender: user._id, // Self-system notification
+            title: 'Recompensa Resgatada! 🏆',
+            content: `Parabéns! Você trocou ${reward.points} pontos por ${reward.label}. O seu acesso premium já está ativo!`,
+            type: 'reward'
+        });
+        await notification.save();
+
+        res.json({
+            message: 'Resgate efetuado com sucesso!',
+            points: user.referralPoints,
+            plan: user.plan
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao processar resgate', error: err.message });
     }
 };
 
@@ -70,8 +122,10 @@ const assignReward = async (req, res) => {
         user.plan = planType;
         await user.save();
 
+        const admin = await User.findOne({ role: { $in: ['admin', 'SuperAdmin'] } });
         const notification = new Notification({
             recipient: user._id,
+            sender: admin ? admin._id : user._id,
             title: 'Parabéns! Recompensa Atribuída 🏆',
             content: `Pelo seu excelente trabalho a expandir a nossa comunidade, recebeu acesso ao plano ${planType.toUpperCase()} por ${days} dias. Continue a partilhar conhecimento!`,
             type: 'reward'
@@ -84,10 +138,84 @@ const assignReward = async (req, res) => {
     }
 };
 
+const awardSocialPoints = async (req, res) => {
+    try {
+        const { missionId } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Check if mission already completed
+        if (user.completedMissions && user.completedMissions.includes(missionId)) {
+            return res.status(400).json({ message: 'Missão já concluída anteriormente.' });
+        }
+
+        const POINTS_PER_MISSION = 5;
+
+        // Update user
+        user.referralPoints = (user.referralPoints || 0) + POINTS_PER_MISSION;
+        if (!user.completedMissions) user.completedMissions = [];
+        user.completedMissions.push(missionId);
+
+        await user.save();
+
+        // Notify user
+        const notification = new Notification({
+            recipient: user._id,
+            sender: user._id,
+            title: 'Missão Cumprida! 🎯',
+            content: `Você ganhou ${POINTS_PER_MISSION} pontos por completar a missão "${missionId}". Continue assim!`,
+            type: 'reward'
+        });
+        await notification.save();
+
+        // Send Email notification
+        const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/referrals`;
+        const emailHtml = generateSocialPointsEmail(user.name, missionId, POINTS_PER_MISSION, user.referralPoints, dashboardUrl);
+        await sendEmail(user.email, 'Missão Cumprida! 🎯 - Inscreva-se', emailHtml);
+
+        // Notify Admin
+        const adminUser = await User.findOne({ role: 'SuperAdmin' });
+        if (adminUser) {
+            const adminEmailHtml = generateAdminPointsNotificationEmail(user.name, user.email, POINTS_PER_MISSION, `Missão concluída: ${missionId}`);
+            await sendEmail(adminUser.email, 'Notificação Admin: Pontos Sociais Atribuídos 🎯', adminEmailHtml);
+        }
+
+        res.json({
+            message: 'Pontos atribuídos com sucesso!',
+            points: user.referralPoints,
+            completedMissions: user.completedMissions
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const getAdminUserReferrals = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const history = await Referral.find({ referrer: userId })
+            .populate('referredUser', 'name email createdAt status plan')
+            .sort({ createdAt: -1 });
+
+        const user = await User.findById(userId).select('name email referralPoints referralCount');
+
+        res.json({
+            user,
+            history
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 module.exports = {
     getReferralStats,
     getReferralHistory,
     validateReferralCode,
     getAdminRanking,
-    assignReward
+    assignReward,
+    redeemPoints,
+    awardSocialPoints,
+    getAdminUserReferrals
 };

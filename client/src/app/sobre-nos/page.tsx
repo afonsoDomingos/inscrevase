@@ -152,7 +152,7 @@ export default function SobreNos() {
                         minHeight: '4.5rem'
                     }}>
                         <Typewriter
-                            text="Plataforma completa para criar e gerenciar eventos."
+                            text="Plataforma completa para criar e gerenciar eventos ou cursos, pensada para Mentores, Especialistas e Empresas."
                             duration={3}
                         />
                         <div style={{ fontSize: '0.85em', opacity: 0.8, marginTop: '10px' }}>
