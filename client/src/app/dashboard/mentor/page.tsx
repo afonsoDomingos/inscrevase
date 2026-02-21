@@ -113,6 +113,7 @@ function MentorDashboardContent() {
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
     const notificationBellRef = useRef<HTMLDivElement>(null);
+    const notificationDropdownRef = useRef<HTMLDivElement>(null);
     const bellButtonRef = useRef<HTMLButtonElement>(null);
     const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
 
@@ -285,7 +286,10 @@ function MentorDashboardContent() {
     // Close notification panel on outside click
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
-            if (notificationBellRef.current && !notificationBellRef.current.contains(e.target as Node)) {
+            const isInsideBell = notificationBellRef.current && notificationBellRef.current.contains(e.target as Node);
+            const isInsideDropdown = notificationDropdownRef.current && notificationDropdownRef.current.contains(e.target as Node);
+
+            if (!isInsideBell && !isInsideDropdown) {
                 setIsNotificationsOpen(false);
             }
         };
@@ -1105,6 +1109,7 @@ function MentorDashboardContent() {
                             <AnimatePresence>
                                 {isNotificationsOpen && (
                                     <motion.div
+                                        ref={notificationDropdownRef}
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
