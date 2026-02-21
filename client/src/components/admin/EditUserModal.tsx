@@ -125,13 +125,14 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                         position: 'relative',
                         width: '100%',
                         maxWidth: '800px', // Wider layout for desktop
-                        maxHeight: '90vh',
+                        maxHeight: '85vh', // Slightly smaller for better fit
                         background: '#fff',
-                        borderRadius: '30px',
+                        borderRadius: '24px',
                         display: 'flex',
                         flexDirection: 'column',
-                        overflow: 'hidden', // Contain children
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                        overflow: 'hidden',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+                        border: '1px solid rgba(0,0,0,0.1)'
                     }}
                 >
                     {/* Header */}
@@ -452,12 +453,50 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                         </div>
 
                         {/* Footer (Sticky Button) */}
-                        <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #eee', background: '#fff', flexShrink: 0 }}>
+                        <div style={{
+                            padding: '1.2rem 2rem',
+                            borderTop: '1px solid #eee',
+                            background: '#f8f9fa',
+                            flexShrink: 0,
+                            boxShadow: '0 -10px 20px rgba(0,0,0,0.05)',
+                            display: 'flex',
+                            gap: '1rem',
+                            zIndex: 10
+                        }}>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                style={{
+                                    padding: '0.8rem 1.5rem',
+                                    borderRadius: '12px',
+                                    background: '#fff',
+                                    border: '1px solid #ddd',
+                                    color: '#666',
+                                    fontWeight: 600,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancelar
+                            </button>
                             <button
                                 type="submit"
                                 disabled={loading}
                                 className="btn-primary"
-                                style={{ padding: '1rem', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                style={{
+                                    padding: '1rem',
+                                    flex: 1,
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px',
+                                    background: 'var(--gold-gradient)',
+                                    color: '#000',
+                                    fontWeight: 800,
+                                    border: 'none',
+                                    boxShadow: '0 4px 12px rgba(212,175,55,0.3)',
+                                    cursor: 'pointer'
+                                }}
                             >
                                 {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Salvar Alterações</>}
                             </button>
