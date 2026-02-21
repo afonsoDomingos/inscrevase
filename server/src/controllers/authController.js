@@ -261,7 +261,13 @@ const updateByAdmin = async (req, res) => {
         }
 
         if (name) user.name = name;
-        if (email) user.email = email;
+        if (email && email !== user.email) {
+            const emailExists = await User.findOne({ email });
+            if (emailExists) {
+                return res.status(400).json({ message: 'Este e-mail já está em uso por outro utilizador.' });
+            }
+            user.email = email;
+        }
         if (role) user.role = role;
         if (status) user.status = status;
         if (plan) user.plan = plan;

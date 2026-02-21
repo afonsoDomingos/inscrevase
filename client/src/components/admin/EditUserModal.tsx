@@ -22,6 +22,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
     // Form State
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [role, setRole] = useState('mentor');
     const [plan, setPlan] = useState('free');
     const [status, setStatus] = useState('active');
@@ -42,6 +43,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
         if (user) {
             setName(user.name || '');
+            setEmail(user.email || '');
             setRole(user.role || 'mentor');
             setPlan(user.plan || 'free');
             setStatus(user.status || 'active');
@@ -80,6 +82,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
         try {
             await userService.updateUser(user.id || user._id || '', {
                 name,
+                email,
                 role: role as UserData['role'],
                 plan: plan as UserData['plan'],
                 status: status as UserData['status'],
@@ -305,6 +308,19 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                         className="input-luxury"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="input-group">
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                        <Globe size={14} /> Endereço de E-mail
+                                    </label>
+                                    <input
+                                        type="email"
+                                        className="input-luxury"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
                                 </div>
