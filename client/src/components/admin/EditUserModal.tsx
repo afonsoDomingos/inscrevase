@@ -114,25 +114,27 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
                 />
 
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 50 }}
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '800px', // Wider layout for desktop
-                        maxHeight: '85vh', // Slightly smaller for better fit
+                        maxWidth: '750px',
+                        maxHeight: '92vh', // Use more of the screen
+                        marginTop: '2vh', // Start near the top
                         background: '#fff',
-                        borderRadius: '24px',
+                        borderRadius: '20px',
                         display: 'flex',
                         flexDirection: 'column',
                         overflow: 'hidden',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
-                        border: '1px solid rgba(0,0,0,0.1)'
+                        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.8)',
+                        border: '1px solid rgba(0,0,0,0.1)',
+                        zIndex: 2001
                     }}
                 >
                     {/* Header */}
@@ -150,10 +152,24 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                     </div>
 
                     {/* Form Layout */}
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                    <form onSubmit={handleSubmit} style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1,
+                        overflow: 'hidden',
+                        minHeight: 0 // Crucial for flex scrolling
+                    }}>
 
                         {/* Scrollable Content */}
-                        <div style={{ flex: 1, overflowY: 'auto', padding: '0 2rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                        <div style={{
+                            flex: 1,
+                            overflowY: 'auto',
+                            padding: '1rem 1.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1rem',
+                            minHeight: 0
+                        }}>
 
                             {/* Avatar Upload */}
                             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
@@ -454,21 +470,21 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
                         {/* Footer (Sticky Button) */}
                         <div style={{
-                            padding: '1.2rem 2rem',
+                            padding: '1rem 1.5rem',
                             borderTop: '1px solid #eee',
-                            background: '#f8f9fa',
+                            background: '#fcfcfc',
                             flexShrink: 0,
-                            boxShadow: '0 -10px 20px rgba(0,0,0,0.05)',
+                            boxShadow: '0 -4px 15px rgba(0,0,0,0.05)',
                             display: 'flex',
-                            gap: '1rem',
+                            gap: '0.8rem',
                             zIndex: 10
                         }}>
                             <button
                                 type="button"
                                 onClick={onClose}
                                 style={{
-                                    padding: '0.8rem 1.5rem',
-                                    borderRadius: '12px',
+                                    padding: '0.7rem 1.2rem',
+                                    borderRadius: '10px',
                                     background: '#fff',
                                     border: '1px solid #ddd',
                                     color: '#666',
@@ -483,9 +499,9 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                 disabled={loading}
                                 className="btn-primary"
                                 style={{
-                                    padding: '1rem',
+                                    padding: '0.8rem',
                                     flex: 1,
-                                    borderRadius: '12px',
+                                    borderRadius: '10px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -498,7 +514,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                     cursor: 'pointer'
                                 }}
                             >
-                                {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Salvar Alterações</>}
+                                {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> Salvar Alterações</>}
                             </button>
                         </div>
                     </form>
