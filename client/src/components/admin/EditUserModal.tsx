@@ -108,7 +108,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
     return (
         <AnimatePresence>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '2vh 1rem', overflowY: 'auto' }}>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -125,8 +125,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                         position: 'relative',
                         width: '100%',
                         maxWidth: '750px',
-                        maxHeight: '92vh', // Use more of the screen
-                        marginTop: '2vh', // Start near the top
+                        height: 'auto',
+                        maxHeight: '85vh',
                         background: '#fff',
                         borderRadius: '20px',
                         display: 'flex',
@@ -156,8 +156,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                         display: 'flex',
                         flexDirection: 'column',
                         flex: 1,
-                        overflow: 'hidden',
-                        minHeight: 0 // Crucial for flex scrolling
+                        maxHeight: '100%',
+                        overflow: 'hidden'
                     }}>
 
                         {/* Scrollable Content */}
@@ -167,8 +167,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                             padding: '1rem 1.5rem',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '1rem',
-                            minHeight: 0
+                            gap: '1rem'
                         }}>
 
                             {/* Avatar Upload */}
