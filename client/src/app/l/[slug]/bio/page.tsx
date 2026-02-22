@@ -21,7 +21,8 @@ import {
     Mail,
     Phone,
     MapPin,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Share2
 } from 'lucide-react';
 
 // ──────────────────────────────────────────────────────────────
@@ -121,16 +122,35 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
             position: 'relative',
             overflow: 'hidden'
         }}>
-            {/* Dynamic Background Glow */}
-            <div style={{
-                position: 'fixed',
-                top: 0, left: 0, right: 0, bottom: 0,
-                background: theme === 'dark'
-                    ? `radial-gradient(circle at 20% 20%, ${brandColor}15 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${brandColor}10 0%, transparent 40%)`
-                    : `radial-gradient(circle at 20% 20%, ${brandColor}08 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${brandColor}06 0%, transparent 40%)`,
-                zIndex: 0,
-                pointerEvents: 'none'
-            }} />
+            {/* Dynamic Animated Background Glows */}
+            <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+                <motion.div
+                    animate={{
+                        x: [0, 40, -20, 0],
+                        y: [0, -30, 20, 0],
+                        scale: [1, 1.1, 0.9, 1]
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                        position: 'absolute', top: '-10%', left: '-10%', width: '50%', height: '50%',
+                        background: `radial-gradient(circle, ${brandColor}15 0%, transparent 70%)`,
+                        filter: 'blur(60px)'
+                    }}
+                />
+                <motion.div
+                    animate={{
+                        x: [0, -40, 30, 0],
+                        y: [0, 40, -20, 0],
+                        scale: [1, 1.2, 0.8, 1]
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                        position: 'absolute', bottom: '-10%', right: '-10%', width: '60%', height: '60%',
+                        background: `radial-gradient(circle, ${brandColor}12 0%, transparent 70%)`,
+                        filter: 'blur(80px)'
+                    }}
+                />
+            </div>
 
             {/* Profile Header */}
             <motion.div
@@ -138,9 +158,9 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                 animate={{ opacity: 1, y: 0 }}
                 style={{ textAlign: 'center', marginBottom: '2.5rem', maxWidth: '450px', position: 'relative', zIndex: 1 }}
             >
-                <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.75rem', letterSpacing: '-1px', color: textColor }}>{link.title}</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.75rem', letterSpacing: '-1.5px', color: textColor, lineHeight: 1.1 }}>{link.title}</h1>
                 {link.bioSettings?.bioText && (
-                    <p style={{ opacity: 0.75, fontSize: '1rem', lineHeight: 1.6, fontWeight: 500, color: textColor }}>{link.bioSettings.bioText}</p>
+                    <p style={{ opacity: 0.6, fontSize: '1.05rem', lineHeight: 1.6, fontWeight: 500, color: textColor, maxWidth: '90%', margin: '0 auto' }}>{link.bioSettings.bioText}</p>
                 )}
             </motion.div>
 
@@ -186,14 +206,16 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                                 justifyContent: 'space-between',
                                 padding: '1.1rem 1.6rem',
                                 borderRadius: '20px',
-                                background: theme === 'light' ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.04)',
-                                border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)',
-                                backdropFilter: 'blur(12px)',
+                                background: theme === 'light' ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.03)',
+                                border: theme === 'light' ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.08)',
+                                backdropFilter: 'blur(20px)',
                                 textDecoration: 'none',
                                 color: textColor,
                                 fontWeight: 700,
-                                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                boxShadow: theme === 'light' ? '0 6px 24px rgba(0,0,0,0.05)' : '0 6px 30px rgba(0,0,0,0.2)'
+                                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                boxShadow: theme === 'light'
+                                    ? '0 10px 30px -10px rgba(0,0,0,0.08)'
+                                    : '0 10px 40px -15px rgba(0,0,0,0.3)'
                             }}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -219,12 +241,35 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
             </div>
 
             {/* Footer */}
-            <div style={{ marginTop: 'auto', paddingTop: '6rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+            <div style={{ marginTop: 'auto', paddingTop: '6rem', textAlign: 'center', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                {/* Share Button */}
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                        if (navigator.share) {
+                            navigator.share({ title: link.title, url: window.location.href });
+                        } else {
+                            navigator.clipboard.writeText(window.location.href);
+                            alert('Link copiado!');
+                        }
+                    }}
+                    style={{
+                        background: theme === 'light' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
+                        border: 'none', padding: '12px 20px', borderRadius: '50px',
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        color: textColor, fontSize: '0.8rem', fontWeight: 700,
+                        cursor: 'pointer', transition: 'all 0.2s'
+                    }}
+                >
+                    <Share2 size={16} /> Partilhar Perfil
+                </motion.button>
+
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 0.45 }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', color: textColor }}
+                    style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', color: textColor }}
                 >
-                    Powered by <span style={{ color: brandColor, textShadow: `0 0 10px ${brandColor}60` }}>Inscreva-se</span>
+                    Powered by <span style={{ color: brandColor }}>Inscreva-se</span>
                 </motion.div>
             </div>
 
