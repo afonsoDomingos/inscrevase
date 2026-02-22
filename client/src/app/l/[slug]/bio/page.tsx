@@ -22,19 +22,18 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
     const [error, setError] = useState(false);
 
     useEffect(() => {
+        const loadData = async () => {
+            try {
+                const data = await smartLinkService.getLinkBySlug(params.slug);
+                setLink(data);
+            } catch {
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
         loadData();
     }, [params.slug]);
-
-    const loadData = async () => {
-        try {
-            const data = await smartLinkService.getLinkBySlug(params.slug);
-            setLink(data);
-        } catch (err) {
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) return (
         <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
