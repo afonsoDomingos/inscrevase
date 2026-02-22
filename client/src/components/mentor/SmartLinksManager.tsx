@@ -460,23 +460,29 @@ export const SmartLinksManager = () => {
                                             {/* Theme Selector */}
                                             <div style={{ marginTop: '1.5rem' }}>
                                                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Tema da Página Bio</label>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                                     {[
                                                         { value: 'light', label: '☀️ Claro', bg: '#ffffff', text: '#0f172a', border: '#e2e8f0' },
-                                                        { value: 'dark', label: '🌙 Escuro', bg: '#0f172a', text: '#ffffff', border: '#334155' },
+                                                        { value: 'dark', label: '🌙 Escuro', bg: '#1e293b', text: '#ffffff', border: '#334155' },
                                                         { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
+                                                        { value: 'orange-white', label: '🟠 Laranja', bg: 'linear-gradient(135deg, #fff 0%, #ff8c00 100%)', text: '#000', border: '#ff8c00' },
+                                                        { value: 'sunset', label: '🌇 Sunset', bg: 'linear-gradient(135deg, #ff8c00 0%, #f72585 100%)', text: '#fff', border: '#f72585' },
+                                                        { value: 'ocean', label: '🌊 Oceano', bg: 'linear-gradient(135deg, #4895ef 0%, #4cc9f0 100%)', text: '#fff', border: '#4cc9f0' },
+                                                        { value: 'royal', label: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', text: '#fff', border: '#FFD700' },
+                                                        { value: 'aurora', label: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', text: '#fff', border: '#4facfe' },
                                                     ].map(t => (
                                                         <button
                                                             key={t.value}
                                                             type="button"
                                                             onClick={() => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, theme: t.value } })}
                                                             style={{
-                                                                flex: 1, padding: '10px 8px', borderRadius: '12px',
+                                                                flex: '1 0 calc(33.33% - 14px)', minWidth: '80px', padding: '12px 8px', borderRadius: '12px',
                                                                 background: t.bg, color: t.text,
-                                                                border: formData.bioSettings.theme === t.value ? `2px solid #FFD700` : `2px solid ${t.border}`,
-                                                                fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer',
+                                                                border: formData.bioSettings.theme === t.value ? `2px solid #FFD700` : `1px solid ${t.border}`,
+                                                                fontWeight: 800, fontSize: '0.7rem', cursor: 'pointer',
                                                                 boxShadow: formData.bioSettings.theme === t.value ? '0 0 0 3px #FFD70030' : 'none',
-                                                                transition: 'all 0.2s'
+                                                                transition: 'all 0.2s',
+                                                                marginBottom: '4px'
                                                             }}
                                                         >
                                                             {t.label}

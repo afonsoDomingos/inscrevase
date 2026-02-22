@@ -108,14 +108,50 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
     );
 
     const theme = link.bioSettings?.theme || 'light';
-    const bgColor = theme === 'dark' ? '#0f172a' : theme === 'light' ? '#ffffff' : '#000';
-    const textColor = theme === 'light' ? '#0f172a' : '#fff';
+
+    // Theme logic refinement
+    let background = '#ffffff';
+    let textColor = '#0f172a';
+    let cardBg = 'rgba(255,255,255,0.8)';
+    let cardBorder = '1px solid rgba(0,0,0,0.05)';
+
+    if (theme === 'dark') {
+        background = '#0f172a';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.05)';
+        cardBorder = '1px solid rgba(255,255,255,0.1)';
+    } else if (theme === 'orange-white') {
+        background = 'linear-gradient(135deg, #ffffff 0%, #fff5e6 50%, #ff8c00 100%)';
+        textColor = '#000000';
+    } else if (theme === 'sunset') {
+        background = 'linear-gradient(135deg, #ff8c00 0%, #f72585 100%)';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.15)';
+    } else if (theme === 'ocean') {
+        background = 'linear-gradient(135deg, #4895ef 0%, #4cc9f0 100%)';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.15)';
+    } else if (theme === 'royal') {
+        background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #FFD700 100%)';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.08)';
+    } else if (theme === 'black') {
+        background = '#000000';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.05)';
+        cardBorder = '1px solid rgba(255,255,255,0.1)';
+    } else if (theme === 'aurora') {
+        background = 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.15)';
+    }
+
     const brandColor = link.brandingColor || '#FFD700';
 
     return (
         <div style={{
             minHeight: '100vh',
-            background: bgColor,
+            background: background,
             padding: '4rem 1rem',
             display: 'flex',
             flexDirection: 'column',
@@ -171,13 +207,13 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                                 justifyContent: 'space-between',
                                 padding: '1.2rem 1.6rem',
                                 borderRadius: '16px',
-                                background: theme === 'light' ? '#ffffff' : 'rgba(255,255,255,0.05)',
-                                border: theme === 'light' ? '1px solid #eee' : '1px solid rgba(255,255,255,0.1)',
+                                background: cardBg,
+                                border: cardBorder,
                                 textDecoration: 'none',
                                 color: textColor,
                                 fontWeight: 700,
                                 transition: 'transform 0.2s, box-shadow 0.2s',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                boxShadow: theme === 'light' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
                             }}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -227,7 +263,7 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                         }
                     }}
                     style={{
-                        background: theme === 'light' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
+                        background: textColor === '#ffffff' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                         border: 'none', padding: '12px 20px', borderRadius: '50px',
                         display: 'flex', alignItems: 'center', gap: '8px',
                         color: textColor, fontSize: '0.8rem', fontWeight: 700,

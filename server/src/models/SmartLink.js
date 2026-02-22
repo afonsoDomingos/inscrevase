@@ -31,7 +31,7 @@ const smartLinkSchema = new mongoose.Schema({
     bioSettings: {
         bioText: String,
         avatarUrl: String,
-        theme: { type: String, default: 'light' }, // dark, light, gold, glass
+        theme: { type: String, default: 'light' }, // dark, light, orange-white, sunset, ocean, royal
         layout: { type: String, default: 'compact' },
         socialLinks: {
             whatsapp: String,
