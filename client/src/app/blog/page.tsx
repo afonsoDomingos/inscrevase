@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Calendar, TrendingUp, Users, Lightbulb, Eye, ArrowRight } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Lightbulb, Eye, ArrowRight, Megaphone, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { blogService, BlogPost } from '@/lib/blogService';
 import { motion } from 'framer-motion';
@@ -15,6 +15,8 @@ const categoryIcons = {
     marketing: TrendingUp,
     mentoring: Users,
     engagement: Lightbulb,
+    event: Megaphone,
+    'case-study': FileText,
 };
 
 export default function BlogPage() {
