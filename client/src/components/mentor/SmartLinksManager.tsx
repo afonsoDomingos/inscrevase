@@ -53,7 +53,7 @@ export const SmartLinksManager = () => {
             setLoading(true);
             const data = await smartLinkService.getMyLinks();
             setLinks(data);
-        } catch (_error) {
+        } catch {
             toast.error('Erro ao carregar seus Smartlinks');
         } finally {
             setLoading(false);
@@ -96,7 +96,7 @@ export const SmartLinksManager = () => {
             await smartLinkService.deleteLink(id);
             toast.success('Link removido');
             setLinks(links.filter(l => l._id !== id));
-        } catch (_error) {
+        } catch {
             toast.error('Erro ao excluir link');
         }
     };
