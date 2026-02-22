@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -818,72 +818,98 @@ export default function AdManagement() {
                 }}
             >
                 {/* Decorative background glass elements */}
-                <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+                {/* Decorative background glass elements */}
+                <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', borderRadius: '50%' }} />
+                <div style={{ position: 'absolute', bottom: '-15%', left: '10%', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none', borderRadius: '50%' }} />
 
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div style={{
-                            width: '80px',
-                            height: '80px',
-                            borderRadius: '24px',
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            backdropFilter: 'blur(10px)',
+                            width: '72px',
+                            height: '72px',
+                            borderRadius: '20px',
+                            background: 'white',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            boxShadow: 'inset 0 0 20px rgba(255,215,0,0.1)'
+                            boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+                            border: '1px solid #f1f5f9'
                         }}>
-                            <Megaphone className="text-yellow-400" size={40} />
+                            <Megaphone className="text-yellow-500" size={36} />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-1px', fontFamily: 'var(--font-playfair)' }}>
+                            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-1.5px', fontFamily: 'var(--font-playfair)' }}>
                                 Meus <span style={{ color: '#D4AF37' }}>Anúncios</span>
                             </h2>
-                            <p style={{ color: '#64748b', margin: '8px 0 0', fontSize: '1.1rem', fontWeight: 500 }}>
-                                Gestão de publicidade premium para escalar seu alcance
-                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', margin: '6px 0 0', fontWeight: 500 }}>
+                                <Zap size={14} fill="#FFD700" color="#FFD700" /> Gestão de publicidade premium para escalar seu alcance
+                            </div>
                         </div>
                     </div>
                     <motion.button
-                        whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.02, boxShadow: '0 15px 30px rgba(255, 215, 0, 0.3)' }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => setShowCreateForm(true)}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.75rem',
-                            background: '#FFD700',
+                            background: 'var(--gold-gradient)',
                             color: '#000',
-                            padding: '1.2rem 2.5rem',
-                            borderRadius: '20px',
+                            padding: '1rem 2rem',
+                            borderRadius: '16px',
                             fontWeight: 900,
                             border: 'none',
                             cursor: 'pointer',
-                            fontSize: '1rem',
+                            fontSize: '0.95rem',
                             textTransform: 'uppercase',
-                            letterSpacing: '1px',
-                            boxShadow: '0 10px 25px rgba(255, 215, 0, 0.2)'
+                            letterSpacing: '0.5px',
+                            boxShadow: '0 8px 20px rgba(212, 175, 55, 0.2)'
                         }}
                     >
-                        <Plus size={24} /> Criar Novo Anúncio
+                        <Plus size={22} strokeWidth={3} /> Criar Novo Anúncio
                     </motion.button>
                 </div>
 
-                <div style={{ marginTop: '2.5rem', display: 'flex', gap: '2rem', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
-                    <div style={{ background: '#f8fafc', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid #e2e8f0', minWidth: '160px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Total de Campanhas</div>
-                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0f172a' }}>{ads.length}</div>
-                    </div>
-                    <div style={{ background: '#f0fdf4', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid #dcfce7', minWidth: '160px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Ativos Agora</div>
-                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#15803d' }}>{ads.filter(a => a.isActive && a.status === 'approved').length}</div>
-                    </div>
-                    <div style={{ background: '#eff6ff', padding: '1.2rem 2rem', borderRadius: '24px', border: '1px solid #dbeafe', minWidth: '160px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px' }}>Aguardando Moderação</div>
-                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1d4ed8' }}>{ads.filter(a => a.status === 'pending').length}</div>
-                    </div>
+                <div style={{ marginTop: '3rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
+                    <motion.div
+                        whileHover={{ y: -5 }}
+                        style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '1rem' }}
+                    >
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
+                            <Megaphone size={22} color="#64748b" />
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>Total de Campanhas</div>
+                            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a' }}>{ads.length}</div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        whileHover={{ y: -5 }}
+                        style={{ background: '#f0fdf4', padding: '1.5rem', borderRadius: '24px', border: '1px solid #dcfce7', display: 'flex', alignItems: 'center', gap: '1rem' }}
+                    >
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
+                            <Activity size={22} color="#16a34a" />
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>Ativos Agora</div>
+                            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#15803d' }}>{ads.filter(a => a.isActive && a.status === 'approved').length}</div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        whileHover={{ y: -5 }}
+                        style={{ background: '#eff6ff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #dbeafe', display: 'flex', alignItems: 'center', gap: '1rem' }}
+                    >
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
+                            <Clock size={22} color="#2563eb" />
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.65rem', color: '#2563eb', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>Aguardando Verificação</div>
+                            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1d4ed8' }}>{ads.filter(a => a.status === 'pending').length}</div>
+                        </div>
+                    </motion.div>
                 </div>
             </motion.div>
 
@@ -893,47 +919,61 @@ export default function AdManagement() {
                     animate={{ opacity: 1, y: 0 }}
                     style={{
                         background: '#fff',
-                        padding: '4rem 2rem',
-                        borderRadius: '24px',
-                        border: '2px dashed #eee',
+                        padding: '6rem 2rem',
+                        borderRadius: '32px',
+                        border: '2px dashed #f1f5f9',
                         textAlign: 'center',
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
                     }}
                 >
                     <div style={{
-                        width: '6rem',
-                        height: '6rem',
-                        background: '#f9f9f9',
-                        borderRadius: '50%',
+                        width: '120px',
+                        height: '120px',
+                        background: 'rgba(255, 215, 0, 0.05)',
+                        borderRadius: '40px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        marginBottom: '1.5rem'
+                        marginBottom: '2rem',
+                        position: 'relative'
                     }}>
-                        <Megaphone size={48} color="#ddd" />
+                        <Megaphone size={60} color="#D4AF37" strokeWidth={1.5} />
+                        <motion.div
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                            transition={{ repeat: Infinity, duration: 3 }}
+                            style={{ position: 'absolute', top: -10, right: -10, width: '30px', height: '30px', background: 'var(--gold-gradient)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontSize: '12px', fontWeight: 900 }}
+                        >
+                            <Plus size={16} />
+                        </motion.div>
                     </div>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.75rem', fontFamily: 'var(--font-playfair)' }}>Nenhum anúncio ainda</h3>
-                    <p style={{ color: '#888', maxWidth: '450px', margin: '0 auto 2rem', lineHeight: 1.6 }}>
-                        Comece a promover seus eventos, serviços ou produtos para milhares de potenciais clientes na nossa plataforma.
+                    <h3 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', color: '#0f172a' }}>Comece a Escalar Hoje</h3>
+                    <p style={{ color: '#64748b', maxWidth: '500px', margin: '0 auto 2.5rem', fontSize: '1.1rem', lineHeight: 1.6, fontWeight: 500 }}>
+                        Posicione sua marca na frente de milhares de potenciais clientes com nossa publicidade premium segmentada.
                     </p>
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setShowCreateForm(true)}
                         style={{
-                            background: 'var(--gold-gradient)',
-                            color: '#000',
-                            padding: '1rem 2.5rem',
-                            borderRadius: '12px',
+                            background: '#0f172a',
+                            color: '#fff',
+                            padding: '1.2rem 3rem',
+                            borderRadius: '16px',
                             fontWeight: 900,
                             border: 'none',
                             cursor: 'pointer',
                             fontSize: '1rem',
-                            boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)'
+                            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
                         }}
                     >
-                        Começar Agora
-                    </button>
+                        Criar Meu Primeiro Anúncio <Zap size={18} fill="#FFD700" color="#FFD700" />
+                    </motion.button>
                 </motion.div>
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2rem' }}>
@@ -984,9 +1024,14 @@ export default function AdManagement() {
                                         boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
                                         background: ad.status === 'approved' ? 'rgba(34, 197, 94, 0.9)' :
                                             ad.status === 'pending' ? 'rgba(59, 130, 246, 0.9)' :
-                                                ad.status === 'suspended' ? 'rgba(217, 119, 6, 0.9)' : 'rgba(239, 68, 68, 0.9)'
+                                                ad.status === 'suspended' ? 'rgba(217, 119, 6, 0.9)' : 'rgba(239, 68, 68, 0.9)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px'
                                     }}>
-                                        {ad.status === 'approved' ? '✓ Aprovado' : ad.status === 'pending' ? '⏱ Pendente' : ad.status === 'suspended' ? '⚠ Suspenso' : '✗ Rejeitado'}
+                                        {ad.status === 'approved' ? <><CheckCircle2 size={12} /> Aprovado</> :
+                                            ad.status === 'pending' ? <><Clock size={12} /> Pendente</> :
+                                                ad.status === 'suspended' ? <><AlertCircle size={12} /> Suspenso</> : <><XCircle size={12} /> Rejeitado</>}
                                     </div>
 
                                     {ad.status === 'approved' && (
@@ -994,9 +1039,14 @@ export default function AdManagement() {
                                             padding: '6px 14px', borderRadius: '12px', fontSize: '0.65rem', fontWeight: 900,
                                             textTransform: 'uppercase', color: '#000', backdropFilter: 'blur(10px)',
                                             background: ad.isActive ? 'rgba(255, 215, 0, 0.95)' : 'rgba(255, 255, 255, 0.8)',
-                                            boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+                                            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            border: '1px solid rgba(0,0,0,0.05)'
                                         }}>
-                                            {ad.isActive ? '● Ativo' : '○ Pausado'}
+                                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: ad.isActive ? '#000' : '#888' }} />
+                                            {ad.isActive ? 'Ativo' : 'Pausado'}
                                         </div>
                                     )}
                                 </div>
@@ -1019,24 +1069,24 @@ export default function AdManagement() {
                                 </div>
 
                                 {/* Stats Grid */}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563eb', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                            <Eye size={12} /> Views
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#64748b', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase' }}>
+                                            <Eye size={12} strokeWidth={2.5} /> Visualizações
                                         </div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e3a8a' }}>{ad.views || 0}</div>
+                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>{ad.views || 0}</div>
                                     </div>
-                                    <div style={{ background: '#fff9eb', padding: '1rem', borderRadius: '16px', border: '1px solid #fef3c7' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ca8a04', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                            <MousePointer2 size={12} /> Clicks
+                                    <div style={{ background: '#fffbeb', padding: '1rem', borderRadius: '16px', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ca8a04', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase' }}>
+                                            <MousePointer2 size={12} strokeWidth={2.5} /> Cliques
                                         </div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#854d0e' }}>{ad.clicks || 0}</div>
+                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#854d0e' }}>{ad.clicks || 0}</div>
                                     </div>
-                                    <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '16px', border: '1px solid #dcfce7' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#15803d', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                            <TrendingUp size={12} /> CTR
+                                    <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '16px', border: '1px solid #dcfce7', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#16a34a', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase' }}>
+                                            <TrendingUp size={12} strokeWidth={2.5} /> CTR
                                         </div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#14532d' }}>
+                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#14532d' }}>
                                             {ad.views && ad.views > 0 ? ((ad.clicks || 0) / ad.views * 100).toFixed(1) : '0.0'}%
                                         </div>
                                     </div>
@@ -1060,10 +1110,11 @@ export default function AdManagement() {
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 gap: '8px',
-                                                fontSize: '0.85rem'
+                                                fontSize: '0.85rem',
+                                                boxShadow: ad.isActive ? 'none' : '0 4px 12px rgba(212, 175, 55, 0.2)'
                                             }}
                                         >
-                                            {ad.isActive ? <><PowerOff size={18} /> Pausar</> : <><Power size={18} /> Reativar</>}
+                                            {ad.isActive ? <><PowerOff size={18} /> Pausar Campanha</> : <><Power size={18} /> Reativar Agora</>}
                                         </motion.button>
                                     )}
                                     <motion.button
