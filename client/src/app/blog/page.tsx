@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Calendar, TrendingUp, Users, Lightbulb, Eye, ArrowRight, Megaphone, FileText } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Lightbulb, Eye, ArrowRight, Megaphone, FileText, LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { blogService, BlogPost } from '@/lib/blogService';
 import { motion } from 'framer-motion';
@@ -10,7 +10,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AdBanner from '@/components/common/AdBanner';
 
-const categoryIcons: Record<string, any> = {
+const categoryIcons: Record<string, LucideIcon> = {
     guide: Calendar,
     marketing: TrendingUp,
     mentoring: Users,
