@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import {
     Instagram,
     Youtube,
@@ -246,12 +247,22 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                 <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => {
-                        if (navigator.share) {
-                            navigator.share({ title: link.title, url: window.location.href });
-                        } else {
-                            navigator.clipboard.writeText(window.location.href);
-                            alert('Link copiado!');
+                    onClick={async () => {
+                        const shareData = { title: link.title, url: window.location.href };
+                        try {
+                            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                                await navigator.share(shareData);
+                            } else {
+                                throw new Error('Share not supported');
+                            }
+                        } catch (err) {
+                            // Fallback to clipboard for any error (abort, busy, unsupported)
+                            try {
+                                await navigator.clipboard.writeText(window.location.href);
+                                toast.success('Link copiado para a área de transferência!');
+                            } catch (clipErr) {
+                                console.error('Clipboard failed', clipErr);
+                            }
                         }
                     }}
                     style={{
