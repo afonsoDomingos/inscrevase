@@ -42,19 +42,38 @@ export const SmartLinksManager = () => {
         links: [] as Array<{ title: string; url: string; icon?: string; color?: string }>,
         bioSettings: {
             bioText: '',
-            theme: 'light'
+            theme: 'aura-teal'
         }
     });
 
     const [newLinkItem, setNewLinkItem] = useState({ title: '', url: '' });
+    const [editingLinkIndex, setEditingLinkIndex] = useState<number | null>(null);
 
     const addLinkItem = () => {
         if (!newLinkItem.title || !newLinkItem.url) return;
-        setFormData({
-            ...formData,
-            links: [...formData.links, newLinkItem]
-        });
+
+        if (editingLinkIndex !== null) {
+            // Update existing link
+            const updatedLinks = [...formData.links];
+            updatedLinks[editingLinkIndex] = newLinkItem;
+            setFormData({
+                ...formData,
+                links: updatedLinks
+            });
+            setEditingLinkIndex(null);
+        } else {
+            // Add new link
+            setFormData({
+                ...formData,
+                links: [...formData.links, newLinkItem]
+            });
+        }
         setNewLinkItem({ title: '', url: '' });
+    };
+
+    const editLinkItem = (index: number) => {
+        setNewLinkItem(formData.links[index]);
+        setEditingLinkIndex(index);
     };
 
     const removeLinkItem = (index: number) => {
@@ -100,10 +119,12 @@ export const SmartLinksManager = () => {
             links: [],
             bioSettings: {
                 bioText: '',
-                theme: 'light'
+                theme: 'aura-teal'
             }
         });
         setLinkingId(null);
+        setEditingLinkIndex(null);
+        setNewLinkItem({ title: '', url: '' });
     };
 
     const handleCreateOrUpdate = async (e: React.FormEvent) => {
@@ -436,14 +457,35 @@ export const SmartLinksManager = () => {
                                                     value={newLinkItem.url} onChange={e => setNewLinkItem({ ...newLinkItem, url: e.target.value })}
                                                     style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
                                                 />
-                                                <button type="button" onClick={addLinkItem} style={{ background: '#FFD700', border: 'none', padding: '10px 15px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>+</button>
+                                                <button type="button" onClick={addLinkItem} style={{ background: '#FFD700', border: 'none', padding: '10px 15px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>
+                                                    {editingLinkIndex !== null ? 'Salvar' : '+'}
+                                                </button>
+                                                {editingLinkIndex !== null && (
+                                                    <button type="button" onClick={() => { setEditingLinkIndex(null); setNewLinkItem({ title: '', url: '' }); }} style={{ background: '#f1f5f9', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer' }} title="Cancelar">
+                                                        <X size={16} />
+                                                    </button>
+                                                )}
                                             </div>
 
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                 {formData.links.map((linkItem, idx) => (
-                                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', background: '#f8fafc', borderRadius: '12px' }}>
-                                                        <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{linkItem.title}</span>
-                                                        <button type="button" onClick={() => removeLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                                                    <div key={idx} style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        padding: '10px 15px',
+                                                        background: editingLinkIndex === idx ? '#fff7ed' : '#f8fafc',
+                                                        borderRadius: '12px',
+                                                        border: editingLinkIndex === idx ? '1px solid #ffedd5' : '1px solid transparent'
+                                                    }}>
+                                                        <div>
+                                                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{linkItem.title}</div>
+                                                            <div style={{ fontSize: '0.7rem', color: '#94a3b8', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{linkItem.url}</div>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                                            <button type="button" onClick={() => editLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '5px' }} title="Editar"><Settings2 size={16} /></button>
+                                                            <button type="button" onClick={() => removeLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '5px' }} title="Remover"><Trash2 size={16} /></button>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -462,14 +504,21 @@ export const SmartLinksManager = () => {
                                                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Tema da Página Bio</label>
                                                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                                     {[
-                                                        { value: 'light', label: '☀️ Claro', bg: '#ffffff', text: '#0f172a', border: '#e2e8f0' },
-                                                        { value: 'dark', label: '🌙 Escuro', bg: '#1e293b', text: '#ffffff', border: '#334155' },
-                                                        { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
-                                                        { value: 'orange-white', label: '🟠 Laranja', bg: 'linear-gradient(135deg, #fff 0%, #ff8c00 100%)', text: '#000', border: '#ff8c00' },
                                                         { value: 'aura-teal', label: '🌿 Teal', bg: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff', text: '#000', border: '#2dd4bf' },
                                                         { value: 'aura-candy', label: '🍬 Candy', bg: 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff', text: '#000', border: '#fbcfe8' },
                                                         { value: 'aura-sunset', label: '🌅 Peach', bg: 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#ffedd5' },
                                                         { value: 'aura-nordic', label: '❄️ Nordic', bg: 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
+                                                        { value: 'aura-lavender', label: '⚛️ Lavanda', bg: 'radial-gradient(at 0% 0%, #f5f3ff 0%, transparent 50%), radial-gradient(at 100% 100%, #ddd6fe 0%, transparent 50%), #fff', text: '#000', border: '#ddd6fe' },
+                                                        { value: 'aura-rose', label: '🌸 Rose', bg: 'radial-gradient(at 0% 0%, #fff1f2 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#fecdd3' },
+                                                        { value: 'aura-forest', label: '🌲 Forest', bg: 'radial-gradient(at 0% 0%, #f0fdf4 0%, transparent 50%), radial-gradient(at 100% 100%, #dcfce7 0%, transparent 50%), #fff', text: '#000', border: '#dcfce7' },
+                                                        { value: 'aura-sky', label: '☁️ Sky', bg: 'radial-gradient(at 0% 0%, #f0f9ff 0%, transparent 50%), radial-gradient(at 100% 100%, #e0f2fe 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
+                                                        { value: 'aura-sunset-deep', label: '🌇 Deep', bg: 'radial-gradient(at 0% 0%, #f7258540 0%, transparent 50%), radial-gradient(at 100% 100%, #ff8c0040 0%, transparent 50%), #fff', text: '#000', border: '#f72585' },
+                                                        { value: 'orange-white', label: '🟠 Laranja', bg: 'linear-gradient(135deg, #fff 0%, #ff8c00 100%)', text: '#000', border: '#ff8c00' },
+                                                        { value: 'light', label: '☀️ Claro', bg: '#ffffff', text: '#0f172a', border: '#e2e8f0' },
+                                                        { value: 'dark', label: '🌙 Escuro', bg: '#1e293b', text: '#ffffff', border: '#334155' },
+                                                        { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
+                                                        { value: 'aura-night', label: '🌃 Night', bg: 'radial-gradient(at 0% 0%, #1e1b4b 0%, transparent 50%), radial-gradient(at 100% 100%, #312e81 0%, transparent 50%), #0f172a', text: '#fff', border: '#1e1b4b' },
+                                                        { value: 'aura-gold', label: '✨ Gold', bg: 'radial-gradient(at 0% 0%, #fef3c7 0%, transparent 50%), radial-gradient(at 100% 100%, #fde68a 0%, transparent 50%), #fff', text: '#000', border: '#fde68a' },
                                                         { value: 'royal', label: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', text: '#fff', border: '#FFD700' },
                                                         { value: 'aurora', label: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', text: '#fff', border: '#4facfe' },
                                                     ].map(t => (

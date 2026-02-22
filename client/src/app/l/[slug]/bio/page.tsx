@@ -156,6 +156,35 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
         background = 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff';
         textColor = '#000000';
         cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-lavender') {
+        background = 'radial-gradient(at 0% 0%, #f5f3ff 0%, transparent 50%), radial-gradient(at 100% 100%, #ddd6fe 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-rose') {
+        background = 'radial-gradient(at 0% 0%, #fff1f2 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-forest') {
+        background = 'radial-gradient(at 0% 0%, #f0fdf4 0%, transparent 50%), radial-gradient(at 100% 100%, #dcfce7 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-sky') {
+        background = 'radial-gradient(at 0% 0%, #f0f9ff 0%, transparent 50%), radial-gradient(at 100% 100%, #e0f2fe 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-sunset-deep') {
+        background = 'radial-gradient(at 0% 0%, #f7258540 0%, transparent 50%), radial-gradient(at 100% 100%, #ff8c0040 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-night') {
+        background = 'radial-gradient(at 0% 0%, #1e1b4b 0%, transparent 50%), radial-gradient(at 100% 100%, #312e81 0%, transparent 50%), #0f172a';
+        textColor = '#ffffff';
+        cardBg = 'rgba(255,255,255,0.05)';
+        cardBorder = '1px solid rgba(255,255,255,0.1)';
+    } else if (theme === 'aura-gold') {
+        background = 'radial-gradient(at 0% 0%, #fef3c7 0%, transparent 50%), radial-gradient(at 100% 100%, #fde68a 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
     } else if (theme === 'aurora') {
         background = 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)';
         textColor = '#ffffff';
