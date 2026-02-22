@@ -607,8 +607,38 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     )}
                                 </motion.div>
 
-                                <motion.h1 variants={itemVariants} style={{ fontSize: 'clamp(2rem, 8vw, 3rem)', fontWeight: 900, marginTop: '0', marginBottom: '1rem', color: titleColor }}>{form.title}</motion.h1>
-                                <motion.p variants={itemVariants} style={{ color: secondaryTextColor, fontSize: '1rem', lineHeight: '1.7', marginBottom: '2rem', whiteSpace: 'pre-wrap' }}>{form.description}</motion.p>
+                                <motion.h1
+                                    variants={itemVariants}
+                                    style={{
+                                        fontSize: 'clamp(2.2rem, 8vw, 3.5rem)',
+                                        fontWeight: 900,
+                                        marginTop: '0',
+                                        marginBottom: '1.5rem',
+                                        color: isDark ? '#fff' : titleColor,
+                                        lineHeight: 1.1,
+                                        letterSpacing: '-1px'
+                                    }}
+                                >
+                                    {form.title}
+                                </motion.h1>
+
+                                <motion.div
+                                    variants={itemVariants}
+                                    style={{
+                                        color: isDark ? 'rgba(255,255,255,0.9)' : secondaryTextColor,
+                                        fontSize: '1.1rem',
+                                        lineHeight: '1.8',
+                                        marginBottom: '2.5rem'
+                                    }}
+                                >
+                                    <div className="markdown-content">
+                                        {form.description?.split('\n').map((line, i) => (
+                                            <p key={i} style={{ marginBottom: line.trim() === '' ? '1rem' : '0.5rem' }}>
+                                                {line}
+                                            </p>
+                                        )) || form.description}
+                                    </div>
+                                </motion.div>
 
                                 {form.whatsappConfig?.communityUrl && (
                                     <motion.a
