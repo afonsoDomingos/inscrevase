@@ -10,7 +10,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AdBanner from '@/components/common/AdBanner';
 
-const categoryIcons = {
+const categoryIcons: Record<string, any> = {
     guide: Calendar,
     marketing: TrendingUp,
     mentoring: Users,
