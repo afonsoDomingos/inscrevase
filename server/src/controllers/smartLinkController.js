@@ -8,11 +8,11 @@ const generateSlug = () => {
 
 exports.createSmartLink = async (req, res) => {
     try {
-        const { title, originalUrl, slug, category, facebookPixelId, googleAnalyticsId, expiresAt, brandingColor } = req.body;
+        const { title, type, originalUrl, links, bioSettings, slug, category, facebookPixelId, googleAnalyticsId, expiresAt, brandingColor } = req.body;
 
-        // Ensure originalUrl has protocol
+        // Ensure originalUrl has protocol if provided
         let finalUrl = originalUrl;
-        if (!/^https?:\/\//i.test(finalUrl)) {
+        if (finalUrl && !/^https?:\/\//i.test(finalUrl)) {
             finalUrl = 'https://' + finalUrl;
         }
 
@@ -27,7 +27,10 @@ exports.createSmartLink = async (req, res) => {
         const smartLink = new SmartLink({
             userId: req.user.id,
             title,
+            type: type || 'direct',
             originalUrl: finalUrl,
+            links: links || [],
+            bioSettings: bioSettings || {},
             slug: finalSlug,
             category,
             facebookPixelId,
@@ -82,6 +85,17 @@ exports.deleteSmartLink = async (req, res) => {
     }
 };
 
+exports.getLinkBySlug = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const link = await SmartLink.findOne({ slug }).select('-analytics -userId');
+        if (!link) return res.status(404).json({ message: 'Link não encontrado' });
+        res.json(link);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar link' });
+    }
+};
+
 // --- REDIRECTION LOGIC ---
 exports.handleRedirect = async (req, res) => {
     try {
@@ -110,7 +124,6 @@ exports.handleRedirect = async (req, res) => {
         };
 
         // Update total clicks and push to analytics array
-        // In a high traffic scenario, we'd use a buffer or a separate DB for this
         await SmartLink.updateOne(
             { _id: link._id },
             {
@@ -118,11 +131,17 @@ exports.handleRedirect = async (req, res) => {
                 $push: {
                     analytics: {
                         $each: [analyticsData],
-                        $slice: -100 // Keep only last 100 detailed logs to save space
+                        $slice: -100
                     }
                 }
             }
         );
+
+        // --- BIO PAGE MODE ---
+        if (link.type === 'bio') {
+            const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+            return res.redirect(`${frontendUrl}/l/${slug}/bio`);
+        }
 
         // If it has Pixel/tracking, we could show an interstitial page
         // But for speed, a direct redirect is better.

@@ -11,9 +11,36 @@ const smartLinkSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    type: {
+        type: String,
+        enum: ['direct', 'bio'],
+        default: 'direct'
+    },
     originalUrl: {
         type: String,
-        required: true
+        required: false // Optional if type is 'bio'
+    },
+    // For Multi-link (Type: bio)
+    links: [{
+        title: String,
+        url: String,
+        icon: String,
+        color: String,
+        clicks: { type: Number, default: 0 }
+    }],
+    bioSettings: {
+        bioText: String,
+        avatarUrl: String,
+        theme: { type: String, default: 'dark' }, // dark, light, gold, glass
+        layout: { type: String, default: 'compact' },
+        socialLinks: {
+            whatsapp: String,
+            instagram: String,
+            telegram: String,
+            youtube: String,
+            linkedin: String,
+            twitter: String
+        }
     },
     slug: {
         type: String,

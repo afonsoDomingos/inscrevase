@@ -5,7 +5,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 export interface SmartLinkModel {
     _id?: string;
     title: string;
-    originalUrl: string;
+    type?: 'direct' | 'bio';
+    originalUrl?: string;
     slug: string;
     status: 'active' | 'paused' | 'expired';
     category?: string;
@@ -14,9 +15,22 @@ export interface SmartLinkModel {
     googleAnalyticsId?: string;
     brandingColor?: string;
     createdAt?: string;
+    links?: Array<{ title: string; url: string; icon?: string; color?: string }>;
+    bioSettings?: {
+        bioText?: string;
+        avatarUrl?: string;
+        theme?: string;
+        socialLinks?: Record<string, string>;
+    };
 }
 
 export const smartLinkService = {
+    async getLinkBySlug(slug: string): Promise<SmartLinkModel> {
+        const res = await fetch(`${API_URL}/smartlinks/info/${slug}`);
+        if (!res.ok) throw new Error('Link não encontrado');
+        return res.json();
+    },
+
     async getMyLinks(): Promise<SmartLinkModel[]> {
         const token = Cookies.get('token');
         const res = await fetch(`${API_URL}/smartlinks/my`, {

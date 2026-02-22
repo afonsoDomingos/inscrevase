@@ -32,13 +32,38 @@ export const SmartLinksManager = () => {
     // Form State
     const [formData, setFormData] = useState({
         title: '',
+        type: 'direct' as 'direct' | 'bio',
         originalUrl: '',
         slug: '',
         facebookPixelId: '',
         googleAnalyticsId: '',
         brandingColor: '#FFD700',
-        category: 'marketing'
+        category: 'marketing',
+        links: [] as Array<{ title: string; url: string; icon?: string; color?: string }>,
+        bioSettings: {
+            bioText: '',
+            theme: 'dark'
+        }
     });
+
+    const [newLinkItem, setNewLinkItem] = useState({ title: '', url: '' });
+
+    const addLinkItem = () => {
+        if (!newLinkItem.title || !newLinkItem.url) return;
+        setFormData({
+            ...formData,
+            links: [...formData.links, newLinkItem]
+        });
+        setNewLinkItem({ title: '', url: '' });
+    };
+
+    const removeLinkItem = (index: number) => {
+        setFormData({
+            ...formData,
+            links: formData.links.filter((_, i) => i !== index)
+        });
+    };
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
@@ -60,34 +85,72 @@ export const SmartLinksManager = () => {
         }
     };
 
-    const handleCreate = async (e: React.FormEvent) => {
+    const [linkingId, setLinkingId] = useState<string | null>(null);
+
+    const resetForm = () => {
+        setFormData({
+            title: '',
+            type: 'direct',
+            originalUrl: '',
+            slug: '',
+            facebookPixelId: '',
+            googleAnalyticsId: '',
+            brandingColor: '#FFD700',
+            category: 'marketing',
+            links: [],
+            bioSettings: {
+                bioText: '',
+                theme: 'dark'
+            }
+        });
+        setLinkingId(null);
+    };
+
+    const handleCreateOrUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.title || !formData.originalUrl) {
+        if (!formData.title || (formData.type === 'direct' && !formData.originalUrl)) {
             toast.error('Por favor, preencha os campos obrigatórios');
             return;
         }
 
         try {
             setIsSubmitting(true);
-            await smartLinkService.createLink(formData);
-            toast.success('Smartlink criado com sucesso! 🚀');
+            if (linkingId) {
+                await smartLinkService.updateLink(linkingId, formData);
+                toast.success('Smartlink atualizado! ✨');
+            } else {
+                await smartLinkService.createLink(formData);
+                toast.success('Smartlink criado com sucesso! 🚀');
+            }
             setIsCreateModalOpen(false);
-            setFormData({
-                title: '',
-                originalUrl: '',
-                slug: '',
-                facebookPixelId: '',
-                googleAnalyticsId: '',
-                brandingColor: '#FFD700',
-                category: 'marketing'
-            });
+            resetForm();
             loadLinks();
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : 'Erro ao criar seu link';
+            const message = error instanceof Error ? error.message : 'Erro ao processar sua solicitação';
             toast.error(message);
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleEdit = (link: SmartLinkModel) => {
+        setFormData({
+            title: link.title,
+            type: link.type || 'direct',
+            originalUrl: link.originalUrl || '',
+            slug: link.slug,
+            facebookPixelId: link.facebookPixelId || '',
+            googleAnalyticsId: link.googleAnalyticsId || '',
+            brandingColor: link.brandingColor || '#FFD700',
+            category: link.category || 'marketing',
+            links: link.links || [],
+            bioSettings: {
+                bioText: link.bioSettings?.bioText || '',
+                theme: link.bioSettings?.theme || 'dark'
+            }
+        });
+        setLinkingId(link._id || null);
+        setIsCreateModalOpen(true);
     };
 
     const handleDelete = async (id: string) => {
@@ -153,7 +216,7 @@ export const SmartLinksManager = () => {
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => setIsCreateModalOpen(true)}
+                        onClick={() => { resetForm(); setIsCreateModalOpen(true); }}
                         style={{
                             background: '#0f172a', color: '#fff', border: 'none', padding: '12px 25px',
                             borderRadius: '50px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
@@ -255,6 +318,7 @@ export const SmartLinksManager = () => {
                             <div style={{ display: 'flex', gap: '8px' }}>
                                 <motion.button
                                     whileTap={{ scale: 0.9 }}
+                                    onClick={(e) => { e.stopPropagation(); handleEdit(link); }}
                                     style={{ padding: '10px', borderRadius: '12px', border: '1px solid #f1f5f9', background: '#fff', color: '#64748b', cursor: 'pointer' }}
                                     title="Editar"
                                 >
@@ -301,15 +365,30 @@ export const SmartLinksManager = () => {
                             style={{ width: '100%', maxWidth: '600px', background: '#fff', borderRadius: '32px', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', overflow: 'hidden' }}
                         >
                             <div style={{ padding: '2rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Novo Smartlink <Zap size={20} fill="#FFD700" color="#FFD700" style={{ display: 'inline', marginLeft: '5px' }} /></h3>
+                                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>{linkingId ? 'Editar Smartlink' : 'Novo Smartlink'} <Zap size={20} fill="#FFD700" color="#FFD700" style={{ display: 'inline', marginLeft: '5px' }} /></h3>
                                 <button onClick={() => setIsCreateModalOpen(false)} style={{ background: '#f8fafc', border: 'none', padding: '8px', borderRadius: '50%', cursor: 'pointer' }}><X size={20} /></button>
                             </div>
 
-                            <form onSubmit={handleCreate} style={{ padding: '2rem' }}>
+                            <form onSubmit={handleCreateOrUpdate} style={{ padding: '2rem', maxHeight: '70vh', overflowY: 'auto' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+
+                                    {/* Type Toggle */}
+                                    <div style={{ display: 'flex', gap: '10px', background: '#f8fafc', padding: '6px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, type: 'direct' })}
+                                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: formData.type === 'direct' ? '#fff' : 'transparent', fontWeight: 800, color: formData.type === 'direct' ? '#0f172a' : '#94a3b8', boxShadow: formData.type === 'direct' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer' }}
+                                        >Link Direto</button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, type: 'bio' })}
+                                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: formData.type === 'bio' ? '#fff' : 'transparent', fontWeight: 800, color: formData.type === 'bio' ? '#0f172a' : '#94a3b8', boxShadow: formData.type === 'bio' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer' }}
+                                        >Página Bio (Vários Links)</button>
+                                    </div>
+
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                         <div>
-                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Título do Link</label>
+                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Título</label>
                                             <input
                                                 type="text" required placeholder="Ex: Minha Mentoria VIP"
                                                 value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -330,17 +409,55 @@ export const SmartLinksManager = () => {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>URL de Destino</label>
-                                        <div style={{ position: 'relative' }}>
-                                            <Globe style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
-                                            <input
-                                                type="text" required placeholder="https://instagram.com/seu-perfil"
-                                                value={formData.originalUrl} onChange={e => setFormData({ ...formData, originalUrl: e.target.value })}
-                                                style={{ width: '100%', padding: '12px 16px 12px 40px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
-                                            />
+                                    {formData.type === 'direct' ? (
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>URL de Destino</label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Globe style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
+                                                <input
+                                                    type="text" required placeholder="https://instagram.com/seu-perfil"
+                                                    value={formData.originalUrl} onChange={e => setFormData({ ...formData, originalUrl: e.target.value })}
+                                                    style={{ width: '100%', padding: '12px 16px 12px 40px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div style={{ border: '1px solid #f1f5f9', padding: '1.5rem', borderRadius: '20px' }}>
+                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '1rem' }}>Gerenciar Links da Página Bio</label>
+
+                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
+                                                <input
+                                                    type="text" placeholder="Nome (Ex: WhatsApp)"
+                                                    value={newLinkItem.title} onChange={e => setNewLinkItem({ ...newLinkItem, title: e.target.value })}
+                                                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
+                                                />
+                                                <input
+                                                    type="text" placeholder="URL"
+                                                    value={newLinkItem.url} onChange={e => setNewLinkItem({ ...newLinkItem, url: e.target.value })}
+                                                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
+                                                />
+                                                <button type="button" onClick={addLinkItem} style={{ background: '#FFD700', border: 'none', padding: '10px 15px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>+</button>
+                                            </div>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                {formData.links.map((linkItem, idx) => (
+                                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', background: '#f8fafc', borderRadius: '12px' }}>
+                                                        <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{linkItem.title}</span>
+                                                        <button type="button" onClick={() => removeLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div style={{ marginTop: '1.5rem' }}>
+                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Texto da Biografia</label>
+                                                <textarea
+                                                    placeholder="Uma breve descrição sobre você..."
+                                                    value={formData.bioSettings.bioText} onChange={e => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, bioText: e.target.value } })}
+                                                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '80px' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div>
                                         <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Slug Personalizado (Opcional)</label>
@@ -394,7 +511,7 @@ export const SmartLinksManager = () => {
                                             className="btn-primary"
                                             style={{ padding: '0.8rem 2rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '10px' }}
                                         >
-                                            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <>Ativar Smartlink <ArrowRight size={18} /></>}
+                                            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <>{linkingId ? 'Salvar Alterações' : 'Ativar Smartlink'} <ArrowRight size={18} /></>}
                                         </button>
                                     </div>
                                 </div>
