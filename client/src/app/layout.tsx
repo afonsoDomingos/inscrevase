@@ -111,10 +111,10 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification-code',
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'verification_code_here',
     other: {
-      'msvalidate.01': 'bing-verification-code',
-      'facebook-domain-verification': 'facebook-verification-code',
+      'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || 'bing_verification_code',
+      'facebook-domain-verification': process.env.NEXT_PUBLIC_FACEBOOK_VERIFICATION || 'facebook_verification_code',
     },
   },
   icons: {

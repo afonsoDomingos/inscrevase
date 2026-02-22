@@ -7,7 +7,7 @@ import { UserData } from '@/lib/authService';
 import {
     Instagram, Linkedin, Facebook, Globe, MessageCircle,
     Award, Verified, Briefcase, ExternalLink, Users, UserPlus, UserMinus,
-    MapPin, Calendar, ChevronLeft, Loader2, Eye, X
+    MapPin, Calendar, ChevronLeft, Loader2, Eye, X, Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -38,6 +38,7 @@ export function ExpertProfileClient() {
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
     const isMobile = windowWidth < 992;
     const isSmallMobile = windowWidth < 480;
+    const [selectedService, setSelectedService] = useState<ServiceModel | null>(null);
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -565,30 +566,61 @@ export function ExpertProfileClient() {
                                                 </p>
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                                                <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', gap: '10px' }}>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    <div style={{
+                                                        width: '44px',
+                                                        height: '44px',
+                                                        borderRadius: '12px',
+                                                        background: '#f8f8f8',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        border: '1px solid #eee',
+                                                        color: '#666'
+                                                    }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedService(service);
+                                                        }}
+                                                    >
+                                                        <Info size={20} />
+                                                    </div>
+                                                    <div style={{
+                                                        width: '44px',
+                                                        height: '44px',
+                                                        borderRadius: '12px',
+                                                        background: 'var(--gold-gradient)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        boxShadow: '0 4px 12px rgba(255,215,0,0.3)'
+                                                    }}
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            try {
+                                                                await serviceService.incrementInquiry(service._id);
+                                                                const text = encodeURIComponent(t('mentors.serviceWhatsAppMessage', { name: mentor.name, title: service.title }));
+                                                                window.open(`https://wa.me/${mentor.whatsapp || ''}?text=${text}`, '_blank');
+                                                            } catch (e) {
+                                                                console.error(e);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <MessageCircle size={20} color="#000" />
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
                                                     {service.price && service.price > 0 ? (
                                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                            <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>{t('mentors.investment')}</span>
-                                                            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#111' }}>
+                                                            <span style={{ fontSize: '0.65rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>{t('mentors.investment')}</span>
+                                                            <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111' }}>
                                                                 {service.currency} {service.price.toLocaleString()}
                                                             </span>
                                                         </div>
                                                     ) : (
-                                                        <span style={{ fontWeight: 800, color: '#10b981' }}>{t('mentors.onQuery')}</span>
+                                                        <span style={{ fontWeight: 800, color: '#10b981', fontSize: '0.9rem' }}>{t('mentors.onQuery')}</span>
                                                     )}
-                                                </div>
-                                                <div style={{
-                                                    width: '44px',
-                                                    height: '44px',
-                                                    borderRadius: '12px',
-                                                    background: 'var(--gold-gradient)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    boxShadow: '0 4px 12px rgba(255,215,0,0.3)'
-                                                }}>
-                                                    <MessageCircle size={20} color="#000" />
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -738,6 +770,95 @@ export function ExpertProfileClient() {
                     {t('mentors.footer')}
                 </p>
             </div>
+            {/* Service Details Modal */}
+            <AnimatePresence>
+                {selectedService && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedService(null)}
+                        style={{
+                            position: 'fixed', inset: 0, zIndex: 10000,
+                            background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                width: '100%', maxWidth: '600px', background: '#fff',
+                                borderRadius: '32px', overflow: 'hidden', padding: '2.5rem',
+                                position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                            }}
+                        >
+                            <button
+                                onClick={() => setSelectedService(null)}
+                                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: '#f8f8f8', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <X size={18} />
+                            </button>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <span style={{
+                                    display: 'inline-block', padding: '6px 12px', background: 'rgba(255,215,0,0.1)',
+                                    borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, color: '#B8860B',
+                                    textTransform: 'uppercase', marginBottom: '1rem'
+                                }}>
+                                    {t(`dashboard.servicesManagement.categories.${selectedService.category}`)}
+                                </span>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#111', lineHeight: 1.2 }}>
+                                    {selectedService.title}
+                                </h2>
+                            </div>
+
+                            <div style={{ maxHeight: '40vh', overflowY: 'auto', marginBottom: '2.5rem', paddingRight: '10px' }}>
+                                <p style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#444', whiteSpace: 'pre-wrap' }}>
+                                    {selectedService.description}
+                                </p>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
+                                <div>
+                                    {selectedService.price && selectedService.price > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 700, textTransform: 'uppercase' }}>Investimento</span>
+                                            <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#111' }}>
+                                                {selectedService.currency} {selectedService.price.toLocaleString()}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#10b981' }}>{t('mentors.onQuery')}</span>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            await serviceService.incrementInquiry(selectedService._id);
+                                            const text = encodeURIComponent(t('mentors.serviceWhatsAppMessage', { name: mentor.name, title: selectedService.title }));
+                                            window.open(`https://wa.me/${mentor.whatsapp || ''}?text=${text}`, '_blank');
+                                        } catch (e) {
+                                            console.error(e);
+                                        }
+                                    }}
+                                    style={{
+                                        background: 'var(--gold-gradient)', color: '#000', padding: '1rem 2rem',
+                                        borderRadius: '16px', border: 'none', fontWeight: 800, fontSize: '1rem',
+                                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px',
+                                        boxShadow: '0 10px 20px rgba(255,215,0,0.2)'
+                                    }}
+                                >
+                                    <MessageCircle size={20} /> Solicitar Agora
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Image Lightbox */}
             <AnimatePresence>
                 {selectedImage && (

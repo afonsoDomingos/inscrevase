@@ -232,10 +232,12 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const primaryColor = form.theme?.primaryColor || '#FFD700';
     const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
     const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : (isLuxury ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/bio-organic.png")` : 'none');
-    const isDark = (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x828282) || (isLuxury && !form.theme?.backgroundColor);
-    const titleColor = form.theme?.titleColor || (isDark ? '#ffffff' : '#111111');
-    const textColor = isDark ? '#fff' : '#111';
-    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#333';
+    const isDark = (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x999999);
+
+    // Explicitly determine colors based on brightness to avoid white-on-white
+    const titleColor = isDark ? (form.theme?.titleColor || '#ffffff') : (form.theme?.titleColor === '#ffffff' || !form.theme?.titleColor ? '#000000' : form.theme.titleColor);
+    const textColor = isDark ? '#ffffff' : '#111111';
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#444444';
     const cardBg = isDark ? 'rgba(0, 0, 0, 0.65)' : '#fff';
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
     const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)');
@@ -614,7 +616,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         fontWeight: 900,
                                         marginTop: '0',
                                         marginBottom: '1.5rem',
-                                        color: isDark ? '#ffffff' : titleColor,
+                                        color: titleColor,
                                         lineHeight: 1.1,
                                         letterSpacing: '-1px'
                                     }}
