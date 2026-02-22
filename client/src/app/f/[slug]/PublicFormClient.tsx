@@ -232,10 +232,10 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const primaryColor = form.theme?.primaryColor || '#FFD700';
     const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
     const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : (isLuxury ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/bio-organic.png")` : 'none');
-    const titleColor = form.theme?.titleColor || (isLuxury ? '#fff' : '#111');
     const isDark = (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x828282) || (isLuxury && !form.theme?.backgroundColor);
+    const titleColor = form.theme?.titleColor || (isDark ? '#ffffff' : '#111111');
     const textColor = isDark ? '#fff' : '#111';
-    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#666';
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#333';
     const cardBg = isDark ? 'rgba(0, 0, 0, 0.65)' : '#fff';
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
     const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)');
@@ -614,7 +614,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         fontWeight: 900,
                                         marginTop: '0',
                                         marginBottom: '1.5rem',
-                                        color: isDark ? '#fff' : titleColor,
+                                        color: isDark ? '#ffffff' : titleColor,
                                         lineHeight: 1.1,
                                         letterSpacing: '-1px'
                                     }}

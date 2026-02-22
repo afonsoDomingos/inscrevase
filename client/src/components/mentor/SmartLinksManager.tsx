@@ -67,7 +67,7 @@ export const SmartLinksManager = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-    const REDIRECT_BASE = typeof window !== 'undefined' ? `${window.location.origin}/l` : '';
+
 
     useEffect(() => {
         loadLinks();
@@ -164,8 +164,9 @@ export const SmartLinksManager = () => {
         }
     };
 
-    const copyToClipboard = (slug: string, id: string) => {
-        const fullUrl = `${REDIRECT_BASE}/${slug}`;
+    const copyToClipboard = (slug: string, type: string, id: string) => {
+        const prefix = type === 'bio' ? 'bio' : 'l';
+        const fullUrl = `${window.location.origin}/${prefix}/${slug}`;
         navigator.clipboard.writeText(fullUrl);
         setCopyingId(id);
         toast.success('Link copiado!');
@@ -284,14 +285,14 @@ export const SmartLinksManager = () => {
                             {/* Link Display & Copy */}
                             <div style={{ background: '#f8fafc', padding: '10px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '15px' }}>
                                 <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>
-                                    inscrevase.com/l/<span style={{ color: '#0f172a' }}>{link.slug}</span>
+                                    inscrevase.com/{link.type === 'bio' ? 'bio' : 'l'}/<span style={{ color: '#0f172a' }}>{link.slug}</span>
                                 </div>
                                 <motion.button
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (link._id) copyToClipboard(link.slug, link._id);
+                                        if (link._id) copyToClipboard(link.slug, link.type || 'direct', link._id);
                                     }}
                                     style={{ border: 'none', background: copyingId === link._id ? '#22c55e' : '#fff', color: copyingId === link._id ? '#fff' : '#64748b', padding: '8px', borderRadius: '10px', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center' }}
                                 >

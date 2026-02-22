@@ -140,7 +140,7 @@ exports.handleRedirect = async (req, res) => {
         // --- BIO PAGE MODE ---
         if (link.type === 'bio') {
             const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
-            return res.redirect(`${frontendUrl}/l/${slug}/bio`);
+            return res.redirect(`${frontendUrl}/bio/${slug}`);
         }
 
         // If it has Pixel/tracking, we could show an interstitial page
