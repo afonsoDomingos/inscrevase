@@ -139,29 +139,7 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                 animate={{ opacity: 1, y: 0 }}
                 style={{ textAlign: 'center', marginBottom: '2.5rem', maxWidth: '450px', position: 'relative', zIndex: 1 }}
             >
-                {link.bioSettings?.avatarUrl ? (
-                    <motion.div
-                        initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-                        style={{ width: '110px', height: '110px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 1.5rem', border: `4px solid ${brandColor}`, boxShadow: `0 10px 30px ${brandColor}40` }}
-                    >
-                        <Image src={link.bioSettings.avatarUrl} alt={link.title} width={110} height={110} style={{ objectFit: 'cover' }} />
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-                        style={{
-                            width: '90px', height: '90px', borderRadius: '50%',
-                            background: `linear-gradient(135deg, ${brandColor}, #000)`,
-                            margin: '0 auto 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '2.5rem', fontWeight: 900, color: '#fff',
-                            boxShadow: `0 10px 40px ${brandColor}30`
-                        }}
-                    >
-                        {link.title.charAt(0).toUpperCase()}
-                    </motion.div>
-                )}
-
-                <h1 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.75rem', letterSpacing: '-0.5px', color: textColor }}>{link.title}</h1>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.75rem', letterSpacing: '-1px', color: textColor }}>{link.title}</h1>
                 {link.bioSettings?.bioText && (
                     <p style={{ opacity: 0.75, fontSize: '1rem', lineHeight: 1.6, fontWeight: 500, color: textColor }}>{link.bioSettings.bioText}</p>
                 )}

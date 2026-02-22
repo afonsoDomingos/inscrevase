@@ -11,12 +11,13 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     // Check if we are on a public form page (/f/slug) or hub page (/hub/id)
     const isPublicForm = pathname?.startsWith('/f/');
     const isHub = pathname?.startsWith('/hub/');
+    const isBioPage = pathname?.includes('/l/') && pathname?.endsWith('/bio');
 
     return (
         <>
             {children}
-            {!isPublicForm && <ScrollToTop />}
-            {!isPublicForm && !isHub && <AuraConcierge />}
+            {!isPublicForm && !isBioPage && <ScrollToTop />}
+            {!isPublicForm && !isHub && !isBioPage && <AuraConcierge />}
             <CookieConsent />
         </>
     );
