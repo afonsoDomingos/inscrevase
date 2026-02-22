@@ -202,13 +202,16 @@ function MentorDashboardContent() {
             // Redirect if not a mentor or admin
             if (userProfile.role === 'participant') {
                 const isSubscribing = searchParams.get('subscription') === 'success';
-                if (isSubscribing) {
-                    console.log("Waiting for role update...");
-                    // Don't redirect, let the polling effect handle it
+                const isAdPayment = searchParams.get('ad_payment') === 'success';
+
+                if (isSubscribing || isAdPayment) {
+                    console.log("Found active payment process, staying on current view or awaiting verification...");
+                    // If it's an ad payment, the verifyAdPayment effect will handle it below
+                    return;
+                } else {
+                    router.push('/dashboard/participant');
                     return;
                 }
-                router.push('/dashboard/participant');
-                return;
             }
 
             setStats(statsData);

@@ -230,6 +230,8 @@ exports.createAdCheckoutSession = async (req, res) => {
                     mediaType: adData.mediaType,
                     durationWeeks: adData.durationWeeks,
                     targetUrl: adData.targetUrl,
+                    priceTotal: adData.priceTotal,
+                    currency: adData.currency || 'USD',
                     paymentMethod: 'stripe'
                 })
             },
@@ -279,10 +281,9 @@ const completeOrder = async (session) => {
             const adData = JSON.parse(metadata.adData);
             const userId = metadata.userId;
 
-            // Create the AdRequest
             const adRequest = new AdRequest({
                 ...adData,
-                userId,
+                userId: new mongoose.Types.ObjectId(userId),
                 status: 'pending', // Still needs admin review of content
                 paymentStatus: 'paid',
                 stripePaymentIntentId: paymentIntent.id,

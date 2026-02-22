@@ -35,7 +35,8 @@ import {
     Plus,
     Newspaper,
     Video,
-    AlertTriangle
+    AlertTriangle,
+    Megaphone
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
@@ -47,13 +48,16 @@ import { useSocket } from '@/context/SocketContext';
 import { submissionService, SubmissionModel } from '@/lib/submissionService';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import { useCurrency } from '@/context/CurrencyContext';
+import AdManagement from '@/components/mentor/AdManagement';
+import { stripeService } from '@/lib/stripeService';
+import { useSearchParams } from 'next/navigation';
 
 import InternalPlansView from '@/components/common/InternalPlansView';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { adService } from '@/lib/adService';
 
-type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile';
+type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads';
 
 export default function ParticipantDashboard() {
     const { t } = useTranslate();
@@ -68,6 +72,7 @@ export default function ParticipantDashboard() {
         { id: 'Outros', label: t('categories.others') }
     ];
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [user, setUser] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<Tab>('tickets');
@@ -282,6 +287,35 @@ export default function ParticipantDashboard() {
         }
     }, [selectedCategory, searchQuery]);
 
+    // Handle ad payment success verification
+    useEffect(() => {
+        const verifyAdPayment = async () => {
+            const sessionId = searchParams.get('session_id');
+            const adPayment = searchParams.get('ad_payment');
+
+            if (adPayment === 'success' && sessionId) {
+                setLoading(true);
+                try {
+                    await stripeService.verifyPayment(sessionId);
+                    toast.success('Pagamento do anúncio confirmado! Analisaremos o seu conteúdo em breve.');
+                    setActiveTab('ads');
+                } catch (error) {
+                    console.error('Error verifying ad payment:', error);
+                    toast.error('Erro ao verificar o pagamento do seu anúncio.');
+                } finally {
+                    setLoading(false);
+                    // Clear search params to avoid re-verification on refresh
+                    router.replace('/dashboard/participant');
+                }
+            } else if (adPayment === 'success') {
+                toast.success('Pagamento do anúncio recebido!');
+                setActiveTab('ads');
+            }
+        };
+
+        verifyAdPayment();
+    }, [searchParams, router]);
+
     useEffect(() => {
         if (activeTab === 'explore') {
             fetchExploreEvents();
@@ -403,6 +437,7 @@ export default function ParticipantDashboard() {
                         { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
                         { id: 'certificates', label: t('dashboard.myCertificates'), icon: <Award size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
+                        { id: 'ads', label: 'Meus Anúncios', icon: <Megaphone size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
@@ -1129,6 +1164,17 @@ export default function ParticipantDashboard() {
                                     ))}
                                 </div>
                             )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'ads' && (
+                        <motion.div
+                            key="ads"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <AdManagement />
                         </motion.div>
                     )}
 
