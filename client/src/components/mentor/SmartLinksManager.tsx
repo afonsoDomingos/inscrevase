@@ -42,7 +42,7 @@ export const SmartLinksManager = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    const REDIRECT_BASE = API_URL.replace('/api', '/l');
+    const REDIRECT_BASE = typeof window !== 'undefined' ? `${window.location.origin}/l` : '';
 
     useEffect(() => {
         loadLinks();
