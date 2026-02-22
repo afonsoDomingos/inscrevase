@@ -267,7 +267,8 @@ const completeOrder = async (session) => {
 
         // 3. Extract metadata
         const metadata = expandedSession.metadata || {};
-        console.log('📦 Session Metadata:', metadata);
+        console.log('📦 [completeOrder] Processing Order. Metadata Type:', metadata.type);
+        console.log('📦 [completeOrder] Raw Metadata:', JSON.stringify(metadata));
 
         // 2. Check if transaction already exists to avoid duplicates
         const existingTx = await Transaction.findOne({ stripePaymentIntentId: paymentIntent.id });
@@ -286,35 +287,50 @@ const completeOrder = async (session) => {
         }
 
         if (metadata.type === 'ad_purchase') {
-            console.log('💎 [Stripe Webhook] Processing Ad Purchase...');
+            console.log('💎 [Stripe Webhook] Ad Purchase detected.');
 
             // Check if ad already created
+            console.log('🔍 Checking for existing AdRequest with PI:', paymentIntent.id);
             let adRequest = await AdRequest.findOne({ stripePaymentIntentId: paymentIntent.id });
 
             if (!adRequest) {
-                console.log('📝 Creating new AdRequest from metadata...');
-                const adData = JSON.parse(metadata.adData);
-                const userId = metadata.userId;
+                console.log('📝 Creating new AdRequest...');
+                try {
+                    const adData = JSON.parse(metadata.adData);
+                    const userId = metadata.userId;
 
-                adRequest = new AdRequest({
-                    ...adData,
-                    userId: new mongoose.Types.ObjectId(userId),
-                    status: 'pending',
-                    paymentStatus: 'paid',
-                    stripePaymentIntentId: paymentIntent.id,
-                    stripeSessionId: session.id,
-                    priceTotal: expandedSession.amount_total / 100,
-                    currency: expandedSession.currency.toUpperCase()
-                });
+                    if (!userId) {
+                        console.error('❌ FATAL: userId is missing in metadata!');
+                        throw new Error('UserId missing in metadata');
+                    }
 
-                await adRequest.save();
-                console.log('✅ AdRequest saved successfully:', adRequest._id);
+                    console.log('👤 Advertiser User ID:', userId);
+                    console.log('📊 Ad Data to Save:', JSON.stringify(adData));
+
+                    adRequest = new AdRequest({
+                        ...adData,
+                        userId: new mongoose.Types.ObjectId(userId),
+                        status: 'pending',
+                        paymentStatus: 'paid',
+                        stripePaymentIntentId: paymentIntent.id,
+                        stripeSessionId: session.id,
+                        priceTotal: expandedSession.amount_total / 100,
+                        currency: expandedSession.currency.toUpperCase()
+                    });
+
+                    await adRequest.save();
+                    console.log('✅ AdRequest saved successfully with ID:', adRequest._id);
+                } catch (parseError) {
+                    console.error('❌ Error parsing or saving AdRequest:', parseError);
+                    throw parseError;
+                }
             } else {
-                console.log('ℹ️ AdRequest already exists:', adRequest._id);
+                console.log('ℹ️ AdRequest already exists, skipping creation.');
             }
 
             // 📧 Notify Super Admins
             try {
+                console.log('📧 Notifying Admins about new Ad ID:', adRequest._id);
                 const superAdmins = await User.find({ role: 'SuperAdmin' });
                 const advertiser = await User.findById(userId);
 
@@ -355,25 +371,32 @@ const completeOrder = async (session) => {
             }
 
             // Create transaction for platform revenue (Admin view)
-            const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
-            const amount = expandedSession.amount_total / 100;
+            console.log('💰 Logging transaction for Ad Purchase...');
+            try {
+                const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                const amount = expandedSession.amount_total / 100;
 
-            const transaction = new Transaction({
-                type: 'ad_purchase',
-                user: userId,
-                amount: amount,
-                currency: expandedSession.currency.toUpperCase(),
-                baseAmount: amount * rate,
-                exchangeRate: rate,
-                platformFee: amount, // Full amount goes to platform
-                basePlatformFee: amount * rate,
-                status: 'completed',
-                paymentMethod: 'stripe',
-                stripePaymentIntentId: paymentIntent.id,
-                stripeSessionId: session.id,
-                metadata: { adRequestId: adRequest._id.toString() }
-            });
-            await transaction.save();
+                const transaction = new Transaction({
+                    type: 'ad_purchase',
+                    user: new mongoose.Types.ObjectId(metadata.userId),
+                    amount: amount,
+                    currency: expandedSession.currency.toUpperCase(),
+                    baseAmount: amount * rate,
+                    exchangeRate: rate,
+                    platformFee: amount, // Full amount goes to platform
+                    basePlatformFee: amount * rate,
+                    status: 'completed',
+                    paymentMethod: 'stripe',
+                    stripePaymentIntentId: paymentIntent.id,
+                    stripeSessionId: session.id,
+                    metadata: { adRequestId: adRequest._id.toString() }
+                });
+                await transaction.save();
+                console.log('✅ Transaction saved successfully for Ad:', adRequest._id);
+            } catch (txError) {
+                console.error('⚠️ [NON-FATAL] Error saving transaction for ad:', txError.message);
+                // We don't throw here so the ad still "works" even if accounting fails
+            }
 
             return adRequest;
         }
@@ -441,10 +464,13 @@ exports.verifyPayment = async (req, res) => {
 
         const result = await completeOrder(session);
 
+        // Check if result is an AdRequest OR has fields that look like one
+        const isAd = result && (result.constructor.modelName === 'AdRequest' || result.title);
+
         res.status(200).json({
             success: true,
-            submission: result?._id,
-            adId: result instanceof AdRequest ? result._id : null,
+            submission: !isAd ? result?._id : null,
+            adId: isAd ? result?._id : null,
             amount: session.amount_total / 100,
             currency: session.currency.toUpperCase()
         });
@@ -1171,7 +1197,6 @@ exports.getAdminFinancialSummary = async (req, res) => {
 /**
  * DYNAMIC PLANS & EXCHANGE RATE
  */
-const axios = require('axios');
 let cachedExchangeRate = 63.8; // Fallback rate
 let lastRateFetch = 0;
 const RATE_TTL = 1000 * 60 * 60 * 12; // 12 hours
