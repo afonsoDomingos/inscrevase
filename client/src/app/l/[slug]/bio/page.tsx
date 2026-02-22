@@ -106,8 +106,8 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
         </div>
     );
 
-    const theme = link.bioSettings?.theme || 'dark';
-    const bgColor = theme === 'dark' ? '#0f172a' : theme === 'light' ? '#f8fafc' : '#000';
+    const theme = link.bioSettings?.theme || 'light';
+    const bgColor = theme === 'dark' ? '#0f172a' : theme === 'light' ? '#ffffff' : '#000';
     const textColor = theme === 'light' ? '#0f172a' : '#fff';
     const brandColor = link.brandingColor || '#FFD700';
 

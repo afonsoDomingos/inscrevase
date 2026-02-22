@@ -42,7 +42,7 @@ export const SmartLinksManager = () => {
         links: [] as Array<{ title: string; url: string; icon?: string; color?: string }>,
         bioSettings: {
             bioText: '',
-            theme: 'dark'
+            theme: 'light'
         }
     });
 
@@ -100,7 +100,7 @@ export const SmartLinksManager = () => {
             links: [],
             bioSettings: {
                 bioText: '',
-                theme: 'dark'
+                theme: 'light'
             }
         });
         setLinkingId(null);
@@ -455,6 +455,34 @@ export const SmartLinksManager = () => {
                                                     value={formData.bioSettings.bioText} onChange={e => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, bioText: e.target.value } })}
                                                     style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '80px' }}
                                                 />
+                                            </div>
+
+                                            {/* Theme Selector */}
+                                            <div style={{ marginTop: '1.5rem' }}>
+                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Tema da Página Bio</label>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    {[
+                                                        { value: 'light', label: '☀️ Claro', bg: '#ffffff', text: '#0f172a', border: '#e2e8f0' },
+                                                        { value: 'dark', label: '🌙 Escuro', bg: '#0f172a', text: '#ffffff', border: '#334155' },
+                                                        { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
+                                                    ].map(t => (
+                                                        <button
+                                                            key={t.value}
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, theme: t.value } })}
+                                                            style={{
+                                                                flex: 1, padding: '10px 8px', borderRadius: '12px',
+                                                                background: t.bg, color: t.text,
+                                                                border: formData.bioSettings.theme === t.value ? `2px solid #FFD700` : `2px solid ${t.border}`,
+                                                                fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer',
+                                                                boxShadow: formData.bioSettings.theme === t.value ? '0 0 0 3px #FFD70030' : 'none',
+                                                                transition: 'all 0.2s'
+                                                            }}
+                                                        >
+                                                            {t.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
