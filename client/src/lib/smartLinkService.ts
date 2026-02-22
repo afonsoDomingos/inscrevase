@@ -8,7 +8,7 @@ export interface SmartLinkModel {
     type?: 'direct' | 'bio';
     originalUrl?: string;
     slug: string;
-    status: 'active' | 'paused' | 'expired';
+    status: 'active' | 'paused' | 'expired' | 'banned';
     category?: string;
     totalClicks?: number;
     facebookPixelId?: string;
@@ -78,5 +78,29 @@ export const smartLinkService = {
         });
         if (!res.ok) throw new Error('Erro ao excluir link');
         return res.json();
+    },
+
+    async getAllAdminLinks(search?: string, status?: string): Promise<SmartLinkModel[]> {
+        const token = Cookies.get('token');
+        const query = new URLSearchParams();
+        if (search) query.append('search', search);
+        if (status) query.append('status', status);
+
+        const res = await fetch(`${API_URL}/smartlinks/admin/all?${query}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Falha ao buscar links (Admin)');
+        return res.json();
+    },
+
+    async auditLink(id: string): Promise<{ success: boolean; message: string; newStatus: string }> {
+        const token = Cookies.get('token');
+        const res = await fetch(`${API_URL}/smartlinks/admin/audit/${id}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message || 'Erro na auditoria');
+        return result;
     }
 };

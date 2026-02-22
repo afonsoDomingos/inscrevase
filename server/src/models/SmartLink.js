@@ -51,7 +51,7 @@ const smartLinkSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'paused', 'expired'],
+        enum: ['active', 'paused', 'expired', 'banned'],
         default: 'active'
     },
     category: {

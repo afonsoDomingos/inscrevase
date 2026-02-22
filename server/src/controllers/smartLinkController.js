@@ -113,7 +113,13 @@ exports.getLinkBySlug = async (req, res) => {
     try {
         const { slug } = req.params;
         const link = await SmartLink.findOne({ slug }).select('-analytics -userId');
+
         if (!link) return res.status(404).json({ message: 'Link não encontrado' });
+
+        if (link.status === 'banned') {
+            return res.status(403).json({ message: 'Este link foi suspenso por violar nossos termos.', code: 'BANNED' });
+        }
+
         res.json(link);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar link' });
@@ -128,6 +134,10 @@ exports.handleRedirect = async (req, res) => {
 
         if (!link) {
             return res.status(404).send('Link não encontrado');
+        }
+
+        if (link.status === 'banned') {
+            return res.status(403).send('Este Smartlink foi suspenso por violar os termos de uso do Inscreva-se.');
         }
 
         if (link.status !== 'active') {
@@ -205,5 +215,51 @@ exports.handleRedirect = async (req, res) => {
     } catch (error) {
         console.error('Redirect Error:', error);
         res.status(500).send('Erro interno');
+    }
+};
+
+// --- ADMIN CONTROLLERS ---
+
+exports.getAllLinksForAdmin = async (req, res) => {
+    try {
+        const { search, status } = req.query;
+        const query = {};
+
+        if (status) query.status = status;
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { slug: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const links = await SmartLink.find(query)
+            .populate('userId', 'name email businessName')
+            .sort({ createdAt: -1 });
+
+        res.json(links);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar todos os links' });
+    }
+};
+
+exports.toggleBanSmartLink = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const link = await SmartLink.findById(id);
+
+        if (!link) return res.status(404).json({ message: 'Link não encontrado' });
+
+        // Toggle between banned and active
+        link.status = link.status === 'banned' ? 'active' : 'banned';
+        await link.save();
+
+        res.json({
+            success: true,
+            message: `Link ${link.status === 'banned' ? 'suspenso' : 'reativado'} com sucesso`,
+            newStatus: link.status
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao processar auditoria do link' });
     }
 };

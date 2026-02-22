@@ -23,7 +23,8 @@ import {
     Phone,
     MapPin,
     Link as LinkIcon,
-    Share2
+    Share2,
+    Zap
 } from 'lucide-react';
 
 // ──────────────────────────────────────────────────────────────
@@ -281,6 +282,51 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                         </a>
                     );
                 })}
+
+                {/* Strategic Viral Loop CTA */}
+                <motion.a
+                    href="/register"
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    style={{
+                        marginTop: '1.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '2rem 1.5rem',
+                        borderRadius: '24px',
+                        background: cardBg,
+                        border: cardBorder,
+                        textDecoration: 'none',
+                        color: textColor,
+                        textAlign: 'center',
+                        boxShadow: theme === 'light' ? '0 10px 40px -10px rgba(0,0,0,0.1)' : 'none',
+                        position: 'relative',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <div style={{
+                        width: '56px', height: '56px', borderRadius: '50%',
+                        background: `${brandColor}15`, display: 'flex',
+                        alignItems: 'center', justifyContent: 'center',
+                        color: brandColor, marginBottom: '4px'
+                    }}>
+                        <Zap size={28} fill={brandColor} />
+                    </div>
+                    <div>
+                        <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900 }}>Cria o teu SmartLink Grátis</h3>
+                        <p style={{ margin: '8px 0 0', opacity: 0.6, fontSize: '0.88rem', fontWeight: 500, lineHeight: 1.5, maxWidth: '350px' }}>
+                            Centraliza os teus links, redes sociais e conteúdos numa página premium em menos de 1 minuto.
+                        </p>
+                    </div>
+                    <div style={{
+                        marginTop: '10px', background: brandColor, color: '#000',
+                        padding: '10px 30px', borderRadius: '50px', fontWeight: 800,
+                        fontSize: '0.9rem', boxShadow: `0 8px 20px ${brandColor}40`
+                    }}>
+                        Começar Grátis
+                    </div>
+                </motion.a>
             </div>
 
             {/* Footer */}

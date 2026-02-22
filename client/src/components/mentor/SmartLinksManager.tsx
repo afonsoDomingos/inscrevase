@@ -23,7 +23,7 @@ import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
 import { toast } from 'sonner';
 import { authService, UserData } from '@/lib/authService';
 import PlanUpgradeModal from '@/components/PlanUpgradeModal';
-import { AlertTriangle, Crown, Sparkles } from 'lucide-react';
+import { AlertTriangle, Sparkles } from 'lucide-react';
 
 export const SmartLinksManager = () => {
     const [links, setLinks] = useState<SmartLinkModel[]>([]);
