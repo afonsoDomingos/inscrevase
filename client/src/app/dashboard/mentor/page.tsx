@@ -16,6 +16,7 @@ import ServicesManagement from '@/components/mentor/ServicesManagement';
 import FeedbackManagement from '@/components/mentor/FeedbackManagement';
 import Link from 'next/link';
 import AdManagement from '@/components/mentor/AdManagement';
+import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { adService } from '@/lib/adService';
@@ -80,7 +81,7 @@ import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks';
 
 import { Suspense } from 'react';
 
@@ -518,6 +519,7 @@ function MentorDashboardContent() {
                         { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
                         { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                         { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
+                        { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
@@ -1579,6 +1581,17 @@ function MentorDashboardContent() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <AdManagement />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'smartlinks' && (
+                        <motion.div
+                            key="smartlinks"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <SmartLinksManager />
                         </motion.div>
                     )}
 

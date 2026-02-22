@@ -166,6 +166,7 @@ const authLimiter = rateLimit({
 });
 // Webhook Route - Must be defined BEFORE express.json() to capture raw body
 const stripeController = require('./controllers/stripeController');
+const smartLinkController = require('./controllers/smartLinkController'); // Added for global redirects
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
 
 // Standard Middleware
@@ -194,6 +195,11 @@ app.use('/api/exchange-rates', require('./routes/exchangeRate'));
 app.use('/api/admin/communication', require('./routes/adminCommunicationRoutes'));
 app.use('/api/referrals', require('./routes/referralRoutes'));
 app.use('/api/feedback', require('./routes/feedbackRoutes'));
+app.use('/api/smartlinks', require('./routes/smartLinkRoutes'));
+
+// --- GLOBAL SMARTLINK REDIRECT ---
+// This allows clean links like inscreva-se.com/l/meu-evento
+app.get('/l/:slug', smartLinkController.handleRedirect);
 
 // Endpoint to get all online users
 app.get('/api/users/status/online', (req, res) => {

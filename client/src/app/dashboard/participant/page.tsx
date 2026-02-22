@@ -36,7 +36,8 @@ import {
     Newspaper,
     Video,
     AlertTriangle,
-    Megaphone
+    Megaphone,
+    Link as LinkIcon
 } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
@@ -49,6 +50,7 @@ import { submissionService, SubmissionModel } from '@/lib/submissionService';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import { useCurrency } from '@/context/CurrencyContext';
 import AdManagement from '@/components/mentor/AdManagement';
+import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { stripeService } from '@/lib/stripeService';
 import { useSearchParams } from 'next/navigation';
 
@@ -57,7 +59,7 @@ import ParticipantLessons from '@/components/participant/ParticipantLessons';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { adService } from '@/lib/adService';
 
-type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads';
+type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads' | 'smartlinks';
 
 function ParticipantDashboardContent() {
     const { t } = useTranslate();
@@ -442,6 +444,7 @@ function ParticipantDashboardContent() {
                         { id: 'certificates', label: t('dashboard.myCertificates'), icon: <Award size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'ads', label: 'Meus Anúncios', icon: <Megaphone size={20} /> },
+                        { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
@@ -1179,6 +1182,17 @@ function ParticipantDashboardContent() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <AdManagement />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'smartlinks' && (
+                        <motion.div
+                            key="smartlinks"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <SmartLinksManager />
                         </motion.div>
                     )}
 
