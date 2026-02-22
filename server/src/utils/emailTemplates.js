@@ -576,6 +576,63 @@ const generateAdStatusUpdateEmail = (name, adTitle, status, dashboardUrl) => {
     `;
 };
 
+const generateSignupIncentiveEmail = (participantName, eventTitle, signupUrl) => {
+    const firstName = participantName ? participantName.split(' ')[0] : 'Olá';
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #f0f0f0;">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 40px; text-align: center;">
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 60px; height: auto; margin-bottom: 16px;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin: 0; letter-spacing: 2px;">INSCREVA<span style="color: #D4AF37;">-SE</span></h1>
+                <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 13px;">A tua plataforma de eventos e conhecimento</p>
+            </div>
+
+            <div style="padding: 40px;">
+                <!-- Greeting -->
+                <p style="font-size: 18px; color: #0f172a; font-weight: 800; margin: 0 0 8px;">Olá, ${firstName}! 👋</p>
+                <p style="font-size: 15px; color: #64748b; line-height: 1.7; margin: 0 0 28px;">A tua inscrição no evento <strong style="color: #0f172a;">&ldquo;${eventTitle}&rdquo;</strong> foi recebida com sucesso. Estamos felizes em ter-te connosco!</p>
+
+                <!-- Highlight Box -->
+                <div style="background: linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%); border: 1px solid #FFD700; border-radius: 16px; padding: 28px; margin-bottom: 28px;">
+                    <p style="font-size: 14px; font-weight: 900; color: #B8860B; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px;">⚡ Não percas o controlo do teu evento</p>
+                    <p style="font-size: 15px; color: #333; line-height: 1.7; margin: 0;">Notamos que ainda não tens uma conta na plataforma. Com uma conta <strong>gratuita</strong> de Participante, podes:</p>
+                </div>
+
+                <!-- Benefits List -->
+                <div style="display: grid; margin-bottom: 32px;">
+                    ${[
+            ['📋', 'Acompanhar o estado da tua inscrição em tempo real'],
+            ['🎓', 'Aceder às aulas, materiais e conteúdos do evento'],
+            ['📜', 'Solicitar e descarregar o teu certificado de participação'],
+            ['💬', 'Comunicar diretamente com o organizador'],
+            ['🗓️', 'Ver todos os teus eventos num único painel organizado'],
+        ].map(([icon, text]) => `
+                        <div style="display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #f1f5f9;">
+                            <span style="font-size: 20px; flex-shrink: 0;">${icon}</span>
+                            <p style="margin: 0; font-size: 14px; color: #334155; line-height: 1.5;">${text}</p>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- CTA -->
+                <div style="text-align: center; margin-bottom: 32px;">
+                    <a href="${signupUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 8px 24px rgba(212,175,55,0.35); letter-spacing: 0.5px;">
+                        🚀 Criar a Minha Conta Gratuita
+                    </a>
+                    <p style="font-size: 12px; color: #94a3b8; margin-top: 12px;">Registo em menos de 1 minuto. Usa o mesmo e-mail desta inscrição.</p>
+                </div>
+
+                <p style="font-size: 13px; color: #94a3b8; text-align: center; line-height: 1.6; margin: 0;">Se já tens conta, basta iniciares sessão para seres automaticamente ligado à tua inscrição.</p>
+            </div>
+
+            <div style="padding: 0 40px 40px;">
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
@@ -590,6 +647,7 @@ module.exports = {
     generatePaymentRejectedEmail,
     generateAdminAdNotificationEmail,
     generateAdStatusUpdateEmail,
+    generateSignupIncentiveEmail,
     getSocialFooter,
     socialLinks
 };

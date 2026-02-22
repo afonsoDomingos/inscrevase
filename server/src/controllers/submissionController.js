@@ -13,7 +13,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
-const { generateBasicEmail, generatePendingApprovalEmail } = require('../utils/emailTemplates');
+const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
     console.log('[Submission] Starting submission process for form:', req.body.formId);
@@ -157,6 +157,53 @@ const submitForm = async (req, res) => {
         } catch (notifErr) {
             console.error('[Submission] Error sending notifications:', notifErr);
         }
+
+        // ── SIGNUP INCENTIVE EMAIL (Non-blocking) ────────────────────────────
+        // If the participant does NOT have a platform account, send an email
+        // encouraging them to create one as a Participant.
+        (async () => {
+            try {
+                // Only fire when the registrant is NOT a logged-in user
+                if (!req.user) {
+                    // Resolve the participant email from submission data
+                    const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+                    let participantEmail = null;
+                    for (const key of emailKeys) {
+                        if (data[key] && typeof data[key] === 'string') {
+                            participantEmail = data[key].toLowerCase().trim();
+                            break;
+                        }
+                    }
+                    if (!participantEmail) {
+                        const allValues = Object.values(data);
+                        const found = allValues.find(v => typeof v === 'string' && v.includes('@') && v.includes('.'));
+                        if (found) participantEmail = found.toLowerCase().trim();
+                    }
+
+                    if (participantEmail) {
+                        // Check if an account already exists for this email
+                        const existingUser = await User.findOne({ email: participantEmail }).select('_id').lean();
+                        if (!existingUser) {
+                            const signupUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/entrar?mode=register`;
+                            const incentiveHtml = generateSignupIncentiveEmail(
+                                participantName,
+                                form.title,
+                                signupUrl
+                            );
+                            await sendEmail(
+                                participantEmail,
+                                `💡 Cria a Tua Conta e Acompanha a Tua Inscrição em "${form.title}"`,
+                                incentiveHtml
+                            );
+                            console.log('[Submission] Signup incentive email sent to:', participantEmail);
+                        }
+                    }
+                }
+            } catch (incentiveErr) {
+                console.error('[Submission] Error sending signup incentive email:', incentiveErr);
+            }
+        })();
+        // ─────────────────────────────────────────────────────────────────────
 
         // AUTOMATIC WELCOME MESSAGE (Non-blocking)
         // Only if we have a user to reply to
