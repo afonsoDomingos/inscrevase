@@ -466,8 +466,10 @@ export const SmartLinksManager = () => {
                                                         { value: 'dark', label: '🌙 Escuro', bg: '#1e293b', text: '#ffffff', border: '#334155' },
                                                         { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
                                                         { value: 'orange-white', label: '🟠 Laranja', bg: 'linear-gradient(135deg, #fff 0%, #ff8c00 100%)', text: '#000', border: '#ff8c00' },
-                                                        { value: 'sunset', label: '🌇 Sunset', bg: 'linear-gradient(135deg, #ff8c00 0%, #f72585 100%)', text: '#fff', border: '#f72585' },
-                                                        { value: 'ocean', label: '🌊 Oceano', bg: 'linear-gradient(135deg, #4895ef 0%, #4cc9f0 100%)', text: '#fff', border: '#4cc9f0' },
+                                                        { value: 'aura-teal', label: '🌿 Teal', bg: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff', text: '#000', border: '#2dd4bf' },
+                                                        { value: 'aura-candy', label: '🍬 Candy', bg: 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff', text: '#000', border: '#fbcfe8' },
+                                                        { value: 'aura-sunset', label: '🌅 Peach', bg: 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#ffedd5' },
+                                                        { value: 'aura-nordic', label: '❄️ Nordic', bg: 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
                                                         { value: 'royal', label: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', text: '#fff', border: '#FFD700' },
                                                         { value: 'aurora', label: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', text: '#fff', border: '#4facfe' },
                                                     ].map(t => (

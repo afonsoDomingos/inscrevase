@@ -140,6 +140,22 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
         textColor = '#ffffff';
         cardBg = 'rgba(255,255,255,0.05)';
         cardBorder = '1px solid rgba(255,255,255,0.1)';
+    } else if (theme === 'aura-teal') {
+        background = 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-candy') {
+        background = 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-sunset') {
+        background = 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
+    } else if (theme === 'aura-nordic') {
+        background = 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff';
+        textColor = '#000000';
+        cardBg = 'rgba(255,255,255,0.4)';
     } else if (theme === 'aurora') {
         background = 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)';
         textColor = '#ffffff';
