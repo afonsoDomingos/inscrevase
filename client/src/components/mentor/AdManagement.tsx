@@ -976,7 +976,7 @@ export default function AdManagement() {
                     </motion.button>
                 </motion.div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                     {ads.map((ad, index) => (
                         <motion.div
                             key={ad._id}
@@ -1069,61 +1069,59 @@ export default function AdManagement() {
                                 </div>
 
                                 {/* Stats Grid */}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#64748b', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase' }}>
-                                            <Eye size={12} strokeWidth={2.5} /> Visualizações
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem' }}>
+                                    <div style={{ background: '#f8fafc', padding: '0.6rem 0.4rem', borderRadius: '14px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center', textAlign: 'center' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#64748b', fontWeight: 800, fontSize: '0.5rem', textTransform: 'uppercase' }}>
+                                            <Eye size={10} strokeWidth={2.5} /> Viz.
                                         </div>
-                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>{ad.views || 0}</div>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0f172a' }}>{ad.views || 0}</div>
                                     </div>
-                                    <div style={{ background: '#fffbeb', padding: '1rem', borderRadius: '16px', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ca8a04', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase' }}>
-                                            <MousePointer2 size={12} strokeWidth={2.5} /> Cliques
+                                    <div style={{ background: '#fffbeb', padding: '0.6rem 0.4rem', borderRadius: '14px', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center', textAlign: 'center' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#ca8a04', fontWeight: 800, fontSize: '0.5rem', textTransform: 'uppercase' }}>
+                                            <MousePointer2 size={10} strokeWidth={2.5} /> Cliques
                                         </div>
-                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#854d0e' }}>{ad.clicks || 0}</div>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#854d0e' }}>{ad.clicks || 0}</div>
                                     </div>
-                                    <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '16px', border: '1px solid #dcfce7', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#16a34a', fontWeight: 800, fontSize: '0.6rem', textTransform: 'uppercase' }}>
-                                            <TrendingUp size={12} strokeWidth={2.5} /> CTR
+                                    <div style={{ background: '#f0fdf4', padding: '0.6rem 0.4rem', borderRadius: '14px', border: '1px solid #dcfce7', display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center', textAlign: 'center' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#16a34a', fontWeight: 800, fontSize: '0.5rem', textTransform: 'uppercase' }}>
+                                            <TrendingUp size={10} strokeWidth={2.5} /> CTR
                                         </div>
-                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#14532d' }}>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#14532d' }}>
                                             {ad.views && ad.views > 0 ? ((ad.clicks || 0) / ad.views * 100).toFixed(1) : '0.0'}%
                                         </div>
                                     </div>
                                 </div>
 
                                 <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '8px' }}>
-                                    {ad.status === 'approved' && (
-                                        <motion.button
-                                            whileTap={{ scale: 0.95 }}
-                                            onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
-                                            style={{
-                                                flex: 2,
-                                                padding: '0.85rem',
-                                                borderRadius: '16px',
-                                                border: 'none',
-                                                background: ad.isActive ? '#0f172a' : 'var(--gold-gradient)',
-                                                color: ad.isActive ? '#fff' : '#000',
-                                                fontWeight: 800,
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '8px',
-                                                fontSize: '0.85rem',
-                                                boxShadow: ad.isActive ? 'none' : '0 4px 12px rgba(212, 175, 55, 0.2)'
-                                            }}
-                                        >
-                                            {ad.isActive ? <><PowerOff size={18} /> Pausar Campanha</> : <><Power size={18} /> Reativar Agora</>}
-                                        </motion.button>
-                                    )}
+                                    <motion.button
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => handleToggleStatus(ad._id!, ad.isActive)}
+                                        style={{
+                                            flex: 1,
+                                            padding: '0.75rem',
+                                            borderRadius: '14px',
+                                            border: 'none',
+                                            background: ad.isActive ? '#0f172a' : 'var(--gold-gradient)',
+                                            color: ad.isActive ? '#fff' : '#000',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px',
+                                            fontSize: '0.75rem',
+                                            boxShadow: ad.isActive ? 'none' : '0 4px 12px rgba(212, 175, 55, 0.2)'
+                                        }}
+                                    >
+                                        {ad.isActive ? <><PowerOff size={14} /> Pausar</> : <><Power size={14} /> Ativar</>}
+                                    </motion.button>
                                     <motion.button
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => ad._id && handleDeleteAd(ad._id)}
                                         style={{
-                                            width: '50px',
-                                            height: '50px',
-                                            borderRadius: '16px',
+                                            width: '42px',
+                                            height: '42px',
+                                            borderRadius: '14px',
                                             border: '1px solid #fee2e2',
                                             background: '#fff',
                                             color: '#ef4444',
@@ -1147,22 +1145,22 @@ export default function AdManagement() {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
-                                                width: '50px',
-                                                height: '50px',
-                                                borderRadius: '16px',
-                                                border: '1px solid #f1f5f9',
-                                                background: '#f8fafc',
-                                                color: '#64748b',
+                                                width: '42px',
+                                                height: '42px',
+                                                borderRadius: '14px',
+                                                border: '1px solid #e2e8f0',
+                                                background: '#fff',
+                                                color: '#475569',
+                                                cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center',
-                                                transition: 'all 0.2s'
+                                                justifyContent: 'center'
                                             }}
                                             onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
                                             onMouseOut={e => e.currentTarget.style.background = '#f8fafc'}
                                             title="Ver Link"
                                         >
-                                            <ExternalLink size={20} />
+                                            <ExternalLink size={18} />
                                         </motion.a>
                                     )}
                                 </div>
