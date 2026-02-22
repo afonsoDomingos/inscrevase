@@ -123,63 +123,32 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
             position: 'relative',
             overflow: 'hidden'
         }}>
-            {/* Dynamic Animated Background Glows */}
-            <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-                <motion.div
-                    animate={{
-                        x: [0, 40, -20, 0],
-                        y: [0, -30, 20, 0],
-                        scale: [1, 1.1, 0.9, 1]
-                    }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                    style={{
-                        position: 'absolute', top: '-10%', left: '-10%', width: '50%', height: '50%',
-                        background: `radial-gradient(circle, ${brandColor}15 0%, transparent 70%)`,
-                        filter: 'blur(60px)'
-                    }}
-                />
-                <motion.div
-                    animate={{
-                        x: [0, -40, 30, 0],
-                        y: [0, 40, -20, 0],
-                        scale: [1, 1.2, 0.8, 1]
-                    }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                    style={{
-                        position: 'absolute', bottom: '-10%', right: '-10%', width: '60%', height: '60%',
-                        background: `radial-gradient(circle, ${brandColor}12 0%, transparent 70%)`,
-                        filter: 'blur(80px)'
-                    }}
-                />
-            </div>
+
 
             {/* Profile Header */}
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
+            <div
                 style={{ textAlign: 'center', marginBottom: '2.5rem', maxWidth: '450px', position: 'relative', zIndex: 1 }}
             >
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.75rem', letterSpacing: '-1.5px', color: textColor, lineHeight: 1.1 }}>{link.title}</h1>
                 {link.bioSettings?.bioText && (
                     <p style={{ opacity: 0.6, fontSize: '1.05rem', lineHeight: 1.6, fontWeight: 500, color: textColor, maxWidth: '90%', margin: '0 auto' }}>{link.bioSettings.bioText}</p>
                 )}
-            </motion.div>
+            </div>
 
             {/* Social Icons Row */}
             {link.bioSettings?.socialLinks && Object.values(link.bioSettings.socialLinks).some(v => v) && (
                 <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '3rem', flexWrap: 'wrap', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
                     {Object.entries(link.bioSettings.socialLinks).map(([key, url]) => url ? (
-                        <motion.a
+                        <a
                             key={key}
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            whileHover={{ scale: 1.25, y: -3 }}
-                            style={{ color: textColor, opacity: 0.65, transition: 'color 0.2s, opacity 0.2s', display: 'flex' }}
+                            style={{ color: textColor, opacity: 0.65, display: 'flex' }}
                             title={key.charAt(0).toUpperCase() + key.slice(1)}
                         >
                             {SOCIAL_ICON_MAP[key] ?? <Globe size={22} />}
-                        </motion.a>
+                        </a>
                     ) : null)}
                 </div>
             )}
@@ -191,32 +160,24 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                     const accentColor = item.color || platform.color;
 
                     return (
-                        <motion.a
+                        <a
                             key={idx}
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.08 }}
-                            whileHover={{ scale: 1.025, borderColor: accentColor }}
-                            whileTap={{ scale: 0.97 }}
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
-                                padding: '1.1rem 1.6rem',
-                                borderRadius: '20px',
-                                background: theme === 'light' ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.03)',
-                                border: theme === 'light' ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.08)',
-                                backdropFilter: 'blur(20px)',
+                                padding: '1.2rem 1.6rem',
+                                borderRadius: '16px',
+                                background: theme === 'light' ? '#ffffff' : 'rgba(255,255,255,0.05)',
+                                border: theme === 'light' ? '1px solid #eee' : '1px solid rgba(255,255,255,0.1)',
                                 textDecoration: 'none',
                                 color: textColor,
                                 fontWeight: 700,
-                                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                                boxShadow: theme === 'light'
-                                    ? '0 10px 30px -10px rgba(0,0,0,0.08)'
-                                    : '0 10px 40px -15px rgba(0,0,0,0.3)'
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                             }}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -236,7 +197,7 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                                 </div>
                             </div>
                             <ArrowRight size={18} style={{ opacity: 0.35, flexShrink: 0 }} />
-                        </motion.a>
+                        </a>
                     );
                 })}
             </div>
@@ -276,12 +237,11 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                     <Share2 size={16} /> Partilhar Perfil
                 </motion.button>
 
-                <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 0.45 }}
-                    style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', color: textColor }}
+                <div
+                    style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', color: textColor, opacity: 0.45 }}
                 >
                     Powered by <span style={{ color: brandColor }}>Inscreva-se</span>
-                </motion.div>
+                </div>
             </div>
 
             <style jsx global>{`
