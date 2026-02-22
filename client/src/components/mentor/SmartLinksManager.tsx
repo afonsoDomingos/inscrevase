@@ -21,6 +21,9 @@ import {
 } from 'lucide-react';
 import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
 import { toast } from 'sonner';
+import { authService, UserData } from '@/lib/authService';
+import PlanUpgradeModal from '@/components/PlanUpgradeModal';
+import { AlertTriangle, Crown, Sparkles } from 'lucide-react';
 
 export const SmartLinksManager = () => {
     const [links, setLinks] = useState<SmartLinkModel[]>([]);
@@ -28,6 +31,14 @@ export const SmartLinksManager = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [copyingId, setCopyingId] = useState<string | null>(null);
+    const [user, setUser] = useState<UserData | null>(null);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+    const PLAN_LIMITS = {
+        free: 1,
+        pro: 10,
+        enterprise: Infinity
+    };
 
     // Form State
     const [formData, setFormData] = useState({
@@ -92,13 +103,24 @@ export const SmartLinksManager = () => {
         loadLinks();
     }, []);
 
+    // Refresh when modal closes (might have upgraded)
+    useEffect(() => {
+        if (!isUpgradeModalOpen) {
+            loadLinks();
+        }
+    }, [isUpgradeModalOpen]);
+
     const loadLinks = async () => {
         try {
             setLoading(true);
-            const data = await smartLinkService.getMyLinks();
-            setLinks(data);
+            const [linksData, userData] = await Promise.all([
+                smartLinkService.getMyLinks(),
+                authService.getProfile()
+            ]);
+            setLinks(linksData);
+            setUser(userData);
         } catch {
-            toast.error('Erro ao carregar seus Smartlinks');
+            toast.error('Erro ao carregar dados');
         } finally {
             setLoading(false);
         }
@@ -200,6 +222,15 @@ export const SmartLinksManager = () => {
 
     const totalClicks = links.reduce((acc, l) => acc + (l.totalClicks || 0), 0);
 
+    const handleNewLinkClick = () => {
+        if (user && !linkingId && links.length >= PLAN_LIMITS[user.plan || 'free']) {
+            setIsUpgradeModalOpen(true);
+        } else {
+            resetForm();
+            setIsCreateModalOpen(true);
+        }
+    };
+
     return (
         <div style={{ padding: '1rem' }}>
             {/* Header Stats & Search */}
@@ -237,7 +268,7 @@ export const SmartLinksManager = () => {
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => { resetForm(); setIsCreateModalOpen(true); }}
+                        onClick={handleNewLinkClick}
                         style={{
                             background: '#0f172a', color: '#fff', border: 'none', padding: '12px 25px',
                             borderRadius: '50px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
@@ -259,7 +290,7 @@ export const SmartLinksManager = () => {
                     </div>
                     <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>Ainda não tem Smartlinks?</h3>
                     <p style={{ color: '#64748b', marginBottom: '2rem' }}>Comece a rastrear seus acessos e melhorar suas campanhas agora mesmo.</p>
-                    <button onClick={() => setIsCreateModalOpen(true)} className="btn-primary" style={{ padding: '0.8rem 2.5rem', borderRadius: '50px' }}>Criar Meu Primeiro Smartlink</button>
+                    <button onClick={handleNewLinkClick} className="btn-primary" style={{ padding: '0.8rem 2.5rem', borderRadius: '50px' }}>Criar Meu Primeiro Smartlink</button>
                 </div>
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
@@ -385,227 +416,281 @@ export const SmartLinksManager = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
                             style={{ width: '100%', maxWidth: '600px', background: '#fff', borderRadius: '32px', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', overflow: 'hidden' }}
                         >
+                            {/* Header */}
                             <div style={{ padding: '2rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>{linkingId ? 'Editar Smartlink' : 'Novo Smartlink'} <Zap size={20} fill="#FFD700" color="#FFD700" style={{ display: 'inline', marginLeft: '5px' }} /></h3>
+                                <div>
+                                    <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>
+                                        {linkingId ? 'Editar Smartlink' : 'Novo Smartlink'} <Zap size={20} fill="#FFD700" color="#FFD700" style={{ display: 'inline', marginLeft: '5px' }} />
+                                    </h3>
+                                    {!linkingId && user && (
+                                        <p style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>
+                                            Plano: <span style={{ color: '#000', fontWeight: 800, textTransform: 'uppercase' }}>{user.plan || 'Free'}</span>
+                                            ({links.length} / {PLAN_LIMITS[user.plan || 'free'] === Infinity ? '∞' : PLAN_LIMITS[user.plan || 'free']} links)
+                                        </p>
+                                    )}
+                                </div>
                                 <button onClick={() => setIsCreateModalOpen(false)} style={{ background: '#f8fafc', border: 'none', padding: '8px', borderRadius: '50%', cursor: 'pointer' }}><X size={20} /></button>
                             </div>
 
-                            <form onSubmit={handleCreateOrUpdate} style={{ padding: '2rem', maxHeight: '70vh', overflowY: 'auto' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-
-                                    {/* Type Toggle */}
-                                    <div style={{ display: 'flex', gap: '10px', background: '#f8fafc', padding: '6px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, type: 'direct' })}
-                                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: formData.type === 'direct' ? '#fff' : 'transparent', fontWeight: 800, color: formData.type === 'direct' ? '#0f172a' : '#94a3b8', boxShadow: formData.type === 'direct' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer' }}
-                                        >Link Direto</button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, type: 'bio' })}
-                                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: formData.type === 'bio' ? '#fff' : 'transparent', fontWeight: 800, color: formData.type === 'bio' ? '#0f172a' : '#94a3b8', boxShadow: formData.type === 'bio' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer' }}
-                                        >Página Bio (Vários Links)</button>
+                            {/* Plan Limit Feedback */}
+                            {!linkingId && user && links.length >= PLAN_LIMITS[user.plan || 'free'] ? (
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #fffbeb 0%, #fff 100%)',
+                                    padding: '24px',
+                                    borderRadius: '20px',
+                                    border: '1px solid #fde68a',
+                                    textAlign: 'center',
+                                    marginBottom: '2rem'
+                                }}>
+                                    <div style={{ width: '60px', height: '60px', background: '#fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 15px' }}>
+                                        <AlertTriangle size={30} color="#d97706" />
                                     </div>
+                                    <h3 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '10px' }}>Limite de Links Atingido</h3>
+                                    <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.6, marginBottom: '20px' }}>
+                                        O seu plano atual permite criar até {PLAN_LIMITS[user.plan || 'free']} link(s).
+                                        Para criar mais e desbloquear estatísticas profissionais, faça o upgrade para o Pro.
+                                    </p>
+                                    <button
+                                        onClick={() => { setIsCreateModalOpen(false); setIsUpgradeModalOpen(true); }}
+                                        style={{
+                                            background: '#000',
+                                            color: '#fff',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            margin: '0 auto'
+                                        }}
+                                    >
+                                        Upgrade para Pro <Sparkles size={18} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleCreateOrUpdate} style={{ padding: '2rem', maxHeight: '70vh', overflowY: 'auto' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Título</label>
-                                            <input
-                                                type="text" required placeholder="Ex: Minha Mentoria VIP"
-                                                value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
-                                            />
+                                        {/* Type Toggle */}
+                                        <div style={{ display: 'flex', gap: '10px', background: '#f8fafc', padding: '6px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: 'direct' })}
+                                                style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: formData.type === 'direct' ? '#fff' : 'transparent', fontWeight: 800, color: formData.type === 'direct' ? '#0f172a' : '#94a3b8', boxShadow: formData.type === 'direct' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer' }}
+                                            >Link Direto</button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: 'bio' })}
+                                                style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: formData.type === 'bio' ? '#fff' : 'transparent', fontWeight: 800, color: formData.type === 'bio' ? '#0f172a' : '#94a3b8', boxShadow: formData.type === 'bio' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer' }}
+                                            >Página Bio (Vários Links)</button>
                                         </div>
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Categoria</label>
-                                            <select
-                                                value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
-                                            >
-                                                <option value="marketing">Marketing</option>
-                                                <option value="event">Evento</option>
-                                                <option value="direct">WhatsApp/Direct</option>
-                                                <option value="social">Redes Sociais</option>
-                                            </select>
-                                        </div>
-                                    </div>
 
-                                    {formData.type === 'direct' ? (
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>URL de Destino</label>
-                                            <div style={{ position: 'relative' }}>
-                                                <Globe style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Título</label>
                                                 <input
-                                                    type="text" required placeholder="https://instagram.com/seu-perfil"
-                                                    value={formData.originalUrl} onChange={e => setFormData({ ...formData, originalUrl: e.target.value })}
-                                                    style={{ width: '100%', padding: '12px 16px 12px 40px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
+                                                    type="text" required placeholder="Ex: Minha Mentoria VIP"
+                                                    value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
                                                 />
                                             </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Categoria</label>
+                                                <select
+                                                    value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
+                                                >
+                                                    <option value="marketing">Marketing</option>
+                                                    <option value="event">Evento</option>
+                                                    <option value="direct">WhatsApp/Direct</option>
+                                                    <option value="social">Redes Sociais</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    ) : (
-                                        <div style={{ border: '1px solid #f1f5f9', padding: '1.5rem', borderRadius: '20px' }}>
-                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '1rem' }}>Gerenciar Links da Página Bio</label>
 
-                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
-                                                <input
-                                                    type="text" placeholder="Nome (Ex: WhatsApp)"
-                                                    value={newLinkItem.title} onChange={e => setNewLinkItem({ ...newLinkItem, title: e.target.value })}
-                                                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
-                                                />
-                                                <input
-                                                    type="text" placeholder="URL"
-                                                    value={newLinkItem.url} onChange={e => setNewLinkItem({ ...newLinkItem, url: e.target.value })}
-                                                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
-                                                />
-                                                <button type="button" onClick={addLinkItem} style={{ background: '#FFD700', border: 'none', padding: '10px 15px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>
-                                                    {editingLinkIndex !== null ? 'Salvar' : '+'}
-                                                </button>
-                                                {editingLinkIndex !== null && (
-                                                    <button type="button" onClick={() => { setEditingLinkIndex(null); setNewLinkItem({ title: '', url: '' }); }} style={{ background: '#f1f5f9', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer' }} title="Cancelar">
-                                                        <X size={16} />
+                                        {formData.type === 'direct' ? (
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>URL de Destino</label>
+                                                <div style={{ position: 'relative' }}>
+                                                    <Globe style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
+                                                    <input
+                                                        type="text" required placeholder="https://instagram.com/seu-perfil"
+                                                        value={formData.originalUrl} onChange={e => setFormData({ ...formData, originalUrl: e.target.value })}
+                                                        style={{ width: '100%', padding: '12px 16px 12px 40px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div style={{ border: '1px solid #f1f5f9', padding: '1.5rem', borderRadius: '20px' }}>
+                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '1rem' }}>Gerenciar Links da Página Bio</label>
+
+                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
+                                                    <input
+                                                        type="text" placeholder="Nome (Ex: WhatsApp)"
+                                                        value={newLinkItem.title} onChange={e => setNewLinkItem({ ...newLinkItem, title: e.target.value })}
+                                                        style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
+                                                    />
+                                                    <input
+                                                        type="text" placeholder="URL"
+                                                        value={newLinkItem.url} onChange={e => setNewLinkItem({ ...newLinkItem, url: e.target.value })}
+                                                        style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}
+                                                    />
+                                                    <button type="button" onClick={addLinkItem} style={{ background: '#FFD700', border: 'none', padding: '10px 15px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>
+                                                        {editingLinkIndex !== null ? 'Salvar' : '+'}
                                                     </button>
-                                                )}
-                                            </div>
+                                                    {editingLinkIndex !== null && (
+                                                        <button type="button" onClick={() => { setEditingLinkIndex(null); setNewLinkItem({ title: '', url: '' }); }} style={{ background: '#f1f5f9', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer' }} title="Cancelar">
+                                                            <X size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
 
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                {formData.links.map((linkItem, idx) => (
-                                                    <div key={idx} style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'space-between',
-                                                        padding: '10px 15px',
-                                                        background: editingLinkIndex === idx ? '#fff7ed' : '#f8fafc',
-                                                        borderRadius: '12px',
-                                                        border: editingLinkIndex === idx ? '1px solid #ffedd5' : '1px solid transparent'
-                                                    }}>
-                                                        <div>
-                                                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{linkItem.title}</div>
-                                                            <div style={{ fontSize: '0.7rem', color: '#94a3b8', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{linkItem.url}</div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                    {formData.links.map((linkItem, idx) => (
+                                                        <div key={idx} style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            padding: '10px 15px',
+                                                            background: editingLinkIndex === idx ? '#fff7ed' : '#f8fafc',
+                                                            borderRadius: '12px',
+                                                            border: editingLinkIndex === idx ? '1px solid #ffedd5' : '1px solid transparent'
+                                                        }}>
+                                                            <div>
+                                                                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{linkItem.title}</div>
+                                                                <div style={{ fontSize: '0.7rem', color: '#94a3b8', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{linkItem.url}</div>
+                                                            </div>
+                                                            <div style={{ display: 'flex', gap: '5px' }}>
+                                                                <button type="button" onClick={() => editLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '5px' }} title="Editar"><Settings2 size={16} /></button>
+                                                                <button type="button" onClick={() => removeLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '5px' }} title="Remover"><Trash2 size={16} /></button>
+                                                            </div>
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <button type="button" onClick={() => editLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '5px' }} title="Editar"><Settings2 size={16} /></button>
-                                                            <button type="button" onClick={() => removeLinkItem(idx)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '5px' }} title="Remover"><Trash2 size={16} /></button>
-                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div style={{ marginTop: '1.5rem' }}>
+                                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Texto da Biografia</label>
+                                                    <textarea
+                                                        placeholder="Uma breve descrição sobre você..."
+                                                        value={formData.bioSettings.bioText} onChange={e => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, bioText: e.target.value } })}
+                                                        style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '80px' }}
+                                                    />
+                                                </div>
+
+                                                {/* Theme Selector */}
+                                                <div style={{ marginTop: '1.5rem' }}>
+                                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Tema da Página Bio</label>
+                                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                        {[
+                                                            { value: 'aura-teal', label: '🌿 Teal', bg: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff', text: '#000', border: '#2dd4bf' },
+                                                            { value: 'aura-candy', label: '🍬 Candy', bg: 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff', text: '#000', border: '#fbcfe8' },
+                                                            { value: 'aura-sunset', label: '🌅 Peach', bg: 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#ffedd5' },
+                                                            { value: 'aura-nordic', label: '❄️ Nordic', bg: 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
+                                                            { value: 'aura-lavender', label: '⚛️ Lavanda', bg: 'radial-gradient(at 0% 0%, #f5f3ff 0%, transparent 50%), radial-gradient(at 100% 100%, #ddd6fe 0%, transparent 50%), #fff', text: '#000', border: '#ddd6fe' },
+                                                            { value: 'aura-rose', label: '🌸 Rose', bg: 'radial-gradient(at 0% 0%, #fff1f2 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#fecdd3' },
+                                                            { value: 'aura-forest', label: '🌲 Forest', bg: 'radial-gradient(at 0% 0%, #f0fdf4 0%, transparent 50%), radial-gradient(at 100% 100%, #dcfce7 0%, transparent 50%), #fff', text: '#000', border: '#dcfce7' },
+                                                            { value: 'aura-sky', label: '☁️ Sky', bg: 'radial-gradient(at 0% 0%, #f0f9ff 0%, transparent 50%), radial-gradient(at 100% 100%, #e0f2fe 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
+                                                            { value: 'aura-sunset-deep', label: '🌇 Deep', bg: 'radial-gradient(at 0% 0%, #f7258540 0%, transparent 50%), radial-gradient(at 100% 100%, #ff8c0040 0%, transparent 50%), #fff', text: '#000', border: '#f72585' },
+                                                            { value: 'orange-white', label: '🟠 Laranja', bg: 'linear-gradient(135deg, #fff 0%, #ff8c00 100%)', text: '#000', border: '#ff8c00' },
+                                                            { value: 'light', label: '☀️ Claro', bg: '#ffffff', text: '#0f172a', border: '#e2e8f0' },
+                                                            { value: 'dark', label: '🌙 Escuro', bg: '#1e293b', text: '#ffffff', border: '#334155' },
+                                                            { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
+                                                            { value: 'aura-night', label: '🌃 Night', bg: 'radial-gradient(at 0% 0%, #1e1b4b 0%, transparent 50%), radial-gradient(at 100% 100%, #312e81 0%, transparent 50%), #0f172a', text: '#fff', border: '#1e1b4b' },
+                                                            { value: 'aura-gold', label: '✨ Gold', bg: 'radial-gradient(at 0% 0%, #fef3c7 0%, transparent 50%), radial-gradient(at 100% 100%, #fde68a 0%, transparent 50%), #fff', text: '#000', border: '#fde68a' },
+                                                            { value: 'royal', label: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', text: '#fff', border: '#FFD700' },
+                                                            { value: 'aurora', label: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', text: '#fff', border: '#4facfe' },
+                                                        ].map(t => (
+                                                            <button
+                                                                key={t.value}
+                                                                type="button"
+                                                                onClick={() => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, theme: t.value } })}
+                                                                style={{
+                                                                    flex: '1 0 calc(33.33% - 14px)', minWidth: '80px', padding: '12px 8px', borderRadius: '12px',
+                                                                    background: t.bg, color: t.text,
+                                                                    border: formData.bioSettings.theme === t.value ? `2px solid #FFD700` : `1px solid ${t.border}`,
+                                                                    fontWeight: 800, fontSize: '0.7rem', cursor: 'pointer',
+                                                                    boxShadow: formData.bioSettings.theme === t.value ? '0 0 0 3px #FFD70030' : 'none',
+                                                                    transition: 'all 0.2s',
+                                                                    marginBottom: '4px'
+                                                                }}
+                                                            >
+                                                                {t.label}
+                                                            </button>
+                                                        ))}
                                                     </div>
-                                                ))}
+                                                </div>
                                             </div>
+                                        )}
 
-                                            <div style={{ marginTop: '1.5rem' }}>
-                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Texto da Biografia</label>
-                                                <textarea
-                                                    placeholder="Uma breve descrição sobre você..."
-                                                    value={formData.bioSettings.bioText} onChange={e => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, bioText: e.target.value } })}
-                                                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '80px' }}
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Slug Personalizado (Opcional)</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                                                <span style={{ padding: '0 12px', fontSize: '0.85rem', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>inscrevase.com/l/</span>
+                                                <input
+                                                    type="text" placeholder="meu-link"
+                                                    value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })}
+                                                    style={{ flex: 1, padding: '12px', border: 'none', background: 'transparent', outline: 'none' }}
                                                 />
                                             </div>
+                                        </div>
 
-                                            {/* Theme Selector */}
-                                            <div style={{ marginTop: '1.5rem' }}>
-                                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Tema da Página Bio</label>
-                                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                    {[
-                                                        { value: 'aura-teal', label: '🌿 Teal', bg: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff', text: '#000', border: '#2dd4bf' },
-                                                        { value: 'aura-candy', label: '🍬 Candy', bg: 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff', text: '#000', border: '#fbcfe8' },
-                                                        { value: 'aura-sunset', label: '🌅 Peach', bg: 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#ffedd5' },
-                                                        { value: 'aura-nordic', label: '❄️ Nordic', bg: 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
-                                                        { value: 'aura-lavender', label: '⚛️ Lavanda', bg: 'radial-gradient(at 0% 0%, #f5f3ff 0%, transparent 50%), radial-gradient(at 100% 100%, #ddd6fe 0%, transparent 50%), #fff', text: '#000', border: '#ddd6fe' },
-                                                        { value: 'aura-rose', label: '🌸 Rose', bg: 'radial-gradient(at 0% 0%, #fff1f2 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', text: '#000', border: '#fecdd3' },
-                                                        { value: 'aura-forest', label: '🌲 Forest', bg: 'radial-gradient(at 0% 0%, #f0fdf4 0%, transparent 50%), radial-gradient(at 100% 100%, #dcfce7 0%, transparent 50%), #fff', text: '#000', border: '#dcfce7' },
-                                                        { value: 'aura-sky', label: '☁️ Sky', bg: 'radial-gradient(at 0% 0%, #f0f9ff 0%, transparent 50%), radial-gradient(at 100% 100%, #e0f2fe 0%, transparent 50%), #fff', text: '#000', border: '#e0f2fe' },
-                                                        { value: 'aura-sunset-deep', label: '🌇 Deep', bg: 'radial-gradient(at 0% 0%, #f7258540 0%, transparent 50%), radial-gradient(at 100% 100%, #ff8c0040 0%, transparent 50%), #fff', text: '#000', border: '#f72585' },
-                                                        { value: 'orange-white', label: '🟠 Laranja', bg: 'linear-gradient(135deg, #fff 0%, #ff8c00 100%)', text: '#000', border: '#ff8c00' },
-                                                        { value: 'light', label: '☀️ Claro', bg: '#ffffff', text: '#0f172a', border: '#e2e8f0' },
-                                                        { value: 'dark', label: '🌙 Escuro', bg: '#1e293b', text: '#ffffff', border: '#334155' },
-                                                        { value: 'black', label: '⚫ Preto', bg: '#000000', text: '#ffffff', border: '#1a1a1a' },
-                                                        { value: 'aura-night', label: '🌃 Night', bg: 'radial-gradient(at 0% 0%, #1e1b4b 0%, transparent 50%), radial-gradient(at 100% 100%, #312e81 0%, transparent 50%), #0f172a', text: '#fff', border: '#1e1b4b' },
-                                                        { value: 'aura-gold', label: '✨ Gold', bg: 'radial-gradient(at 0% 0%, #fef3c7 0%, transparent 50%), radial-gradient(at 100% 100%, #fde68a 0%, transparent 50%), #fff', text: '#000', border: '#fde68a' },
-                                                        { value: 'royal', label: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', text: '#fff', border: '#FFD700' },
-                                                        { value: 'aurora', label: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', text: '#fff', border: '#4facfe' },
-                                                    ].map(t => (
-                                                        <button
-                                                            key={t.value}
-                                                            type="button"
-                                                            onClick={() => setFormData({ ...formData, bioSettings: { ...formData.bioSettings, theme: t.value } })}
-                                                            style={{
-                                                                flex: '1 0 calc(33.33% - 14px)', minWidth: '80px', padding: '12px 8px', borderRadius: '12px',
-                                                                background: t.bg, color: t.text,
-                                                                border: formData.bioSettings.theme === t.value ? `2px solid #FFD700` : `1px solid ${t.border}`,
-                                                                fontWeight: 800, fontSize: '0.7rem', cursor: 'pointer',
-                                                                boxShadow: formData.bioSettings.theme === t.value ? '0 0 0 3px #FFD70030' : 'none',
-                                                                transition: 'all 0.2s',
-                                                                marginBottom: '4px'
-                                                            }}
-                                                        >
-                                                            {t.label}
-                                                        </button>
-                                                    ))}
+                                        <div style={{ background: '#f0f9ff', padding: '1.5rem', borderRadius: '20px', border: '1px solid #e0f2fe' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0369a1', marginBottom: '1rem' }}>
+                                                <Activity size={18} />
+                                                <span style={{ fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>Marketing & Rastreamento</span>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#64748b', marginBottom: '5px' }}>ID do Pixel Facebook</label>
+                                                    <input
+                                                        type="text" placeholder="123456789"
+                                                        value={formData.facebookPixelId} onChange={e => setFormData({ ...formData, facebookPixelId: e.target.value })}
+                                                        style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #bae6fd', outline: 'none' }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#64748b', marginBottom: '5px' }}>Google Analytics ID</label>
+                                                    <input
+                                                        type="text" placeholder="G-XXXXXXXX"
+                                                        value={formData.googleAnalyticsId} onChange={e => setFormData({ ...formData, googleAnalyticsId: e.target.value })}
+                                                        style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #bae6fd', outline: 'none' }}
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
 
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Slug Personalizado (Opcional)</label>
-                                        <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                                            <span style={{ padding: '0 12px', fontSize: '0.85rem', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>inscrevase.com/l/</span>
-                                            <input
-                                                type="text" placeholder="meu-link"
-                                                value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })}
-                                                style={{ flex: 1, padding: '12px', border: 'none', background: 'transparent', outline: 'none' }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div style={{ background: '#f0f9ff', padding: '1.5rem', borderRadius: '20px', border: '1px solid #e0f2fe' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0369a1', marginBottom: '1rem' }}>
-                                            <Activity size={18} />
-                                            <span style={{ fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>Marketing & Rastreamento</span>
-                                        </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#64748b', marginBottom: '5px' }}>ID do Pixel Facebook</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#64748b' }}>Cor da Marca:</label>
                                                 <input
-                                                    type="text" placeholder="123456789"
-                                                    value={formData.facebookPixelId} onChange={e => setFormData({ ...formData, facebookPixelId: e.target.value })}
-                                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #bae6fd', outline: 'none' }}
+                                                    type="color" value={formData.brandingColor}
+                                                    onChange={e => setFormData({ ...formData, brandingColor: e.target.value })}
+                                                    style={{ border: 'none', width: '30px', height: '30px', borderRadius: '6px', cursor: 'pointer', background: 'transparent' }}
                                                 />
                                             </div>
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#64748b', marginBottom: '5px' }}>Google Analytics ID</label>
-                                                <input
-                                                    type="text" placeholder="G-XXXXXXXX"
-                                                    value={formData.googleAnalyticsId} onChange={e => setFormData({ ...formData, googleAnalyticsId: e.target.value })}
-                                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #bae6fd', outline: 'none' }}
-                                                />
-                                            </div>
+
+                                            <button
+                                                disabled={isSubmitting}
+                                                className="btn-primary"
+                                                style={{ padding: '0.8rem 2rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                            >
+                                                {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <>{linkingId ? 'Salvar Alterações' : 'Ativar Smartlink'} <ArrowRight size={18} /></>}
+                                            </button>
                                         </div>
                                     </div>
-
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#64748b' }}>Cor da Marca:</label>
-                                            <input
-                                                type="color" value={formData.brandingColor}
-                                                onChange={e => setFormData({ ...formData, brandingColor: e.target.value })}
-                                                style={{ border: 'none', width: '30px', height: '30px', borderRadius: '6px', cursor: 'pointer', background: 'transparent' }}
-                                            />
-                                        </div>
-
-                                        <button
-                                            disabled={isSubmitting}
-                                            className="btn-primary"
-                                            style={{ padding: '0.8rem 2rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '10px' }}
-                                        >
-                                            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <>{linkingId ? 'Salvar Alterações' : 'Ativar Smartlink'} <ArrowRight size={18} /></>}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                                </form>
+                            )}
                         </motion.div>
                     </div>
                 )}
             </AnimatePresence>
 
+            <PlanUpgradeModal
+                isOpen={isUpgradeModalOpen}
+                onClose={() => setIsUpgradeModalOpen(false)}
+            />
             <style jsx>{`
                 .btn-primary {
                     background: #0f172a;

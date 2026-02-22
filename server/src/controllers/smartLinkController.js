@@ -1,4 +1,5 @@
 const SmartLink = require('../models/SmartLink');
+const User = require('../models/User');
 const crypto = require('crypto');
 
 // Helper to generate random slug if none provided
@@ -8,6 +9,29 @@ const generateSlug = () => {
 
 exports.createSmartLink = async (req, res) => {
     try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+
+        const linkCount = await SmartLink.countDocuments({ userId: req.user.id });
+
+        // Plan Limits Logic
+        const limits = {
+            free: 1,
+            pro: 10,
+            enterprise: Infinity
+        };
+
+        const userPlan = user.plan || 'free';
+        const limit = limits[userPlan] || 1;
+
+        if (linkCount >= limit) {
+            return res.status(403).json({
+                message: `Limite do plano atingido. O seu plano (${userPlan.toUpperCase()}) permite apenas ${limit} SmartLink(s).`,
+                code: 'LIMIT_REACHED',
+                currentLimit: limit
+            });
+        }
+
         const { title, type, originalUrl, links, bioSettings, slug, category, facebookPixelId, googleAnalyticsId, expiresAt, brandingColor } = req.body;
 
         // Ensure originalUrl has protocol if provided
