@@ -21,7 +21,7 @@ export default function BlogManagement() {
         title: '',
         excerpt: '',
         content: '',
-        category: 'guide' as 'guide' | 'marketing' | 'mentoring' | 'engagement',
+        category: 'guide' as 'guide' | 'marketing' | 'mentoring' | 'engagement' | 'event' | 'case-study',
         coverImage: '',
         author: {
             name: 'Equipe Inscreva.se',
@@ -604,6 +604,8 @@ export default function BlogManagement() {
                                                         <option value="marketing">Marketing</option>
                                                         <option value="mentoring">Mentoria</option>
                                                         <option value="engagement">Engajamento</option>
+                                                        <option value="event">Eventos</option>
+                                                        <option value="case-study">Casos de Estudo</option>
                                                     </select>
                                                 </div>
 
