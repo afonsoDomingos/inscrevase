@@ -26,7 +26,7 @@ import {
     QrCode
 } from 'lucide-react';
 import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export const SmartLinksManager = () => {
     const [links, setLinks] = useState<SmartLinkModel[]>([]);
