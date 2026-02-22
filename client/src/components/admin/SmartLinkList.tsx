@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
-import { Trash2, ExternalLink, ShieldAlert, ShieldCheck, Search, Link as LinkIcon, Eye, User, Mail } from 'lucide-react';
+import { Trash2, ExternalLink, ShieldAlert, ShieldCheck, Search, Link as LinkIcon, User, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TableScrollWrapper from '../common/TableScrollWrapper';
 import { toast } from 'sonner';
@@ -12,16 +12,12 @@ interface SmartLinkListProps {
 }
 
 export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
-    const [links, setLinks] = useState<any[]>([]);
+    const [links, setLinks] = useState<SmartLinkModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
 
-    useEffect(() => {
-        loadLinks();
-    }, [searchTerm, statusFilter]);
-
-    const loadLinks = async () => {
+    const loadLinks = useCallback(async () => {
         try {
             setLoading(true);
             const data = await smartLinkService.getAllAdminLinks(searchTerm, statusFilter);
@@ -32,15 +28,20 @@ export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchTerm, statusFilter]);
+
+    useEffect(() => {
+        loadLinks();
+    }, [loadLinks]);
 
     const handleAudit = async (id: string) => {
         try {
             const result = await smartLinkService.auditLink(id);
             toast.success(result.message);
             loadLinks();
-        } catch (err: any) {
-            toast.error(err.message || 'Erro na auditoria');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Erro na auditoria';
+            toast.error(errorMessage);
         }
     };
 
@@ -50,7 +51,7 @@ export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
             await smartLinkService.deleteLink(id);
             toast.success('Link excluído');
             loadLinks();
-        } catch (err) {
+        } catch {
             toast.error('Erro ao excluir link');
         }
     };
@@ -122,8 +123,12 @@ export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
                                             <User size={16} color="#666" />
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{link.userId?.name || '---'}</div>
-                                            <div style={{ fontSize: '0.75rem', color: '#888' }}>{link.userId?.email}</div>
+                                            <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                                                {link.userId && typeof link.userId === 'object' ? link.userId.name : '---'}
+                                            </div>
+                                            <div style={{ fontSize: '0.75rem', color: '#888' }}>
+                                                {link.userId && typeof link.userId === 'object' ? link.userId.email : ''}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -170,29 +175,37 @@ export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
                                             <ExternalLink size={18} />
                                         </a>
 
-                                        {onEmailMentor && link.userId && (
+                                        {(() => {
+                                            const mentor = link.userId && typeof link.userId === 'object' ? link.userId : null;
+                                            if (onEmailMentor && mentor) {
+                                                return (
+                                                    <button
+                                                        onClick={() => onEmailMentor(mentor._id, mentor.name)}
+                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                        title="Contactar Mentor"
+                                                    >
+                                                        <Mail size={18} />
+                                                    </button>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
+
+                                        {link._id && (
                                             <button
-                                                onClick={() => onEmailMentor(link.userId._id, link.userId.name)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
-                                                title="Contactar Mentor"
+                                                onClick={() => handleAudit(link._id!)}
+                                                style={{
+                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                    color: link.status === 'banned' ? '#38a169' : '#e53e3e'
+                                                }}
+                                                title={link.status === 'banned' ? 'Reativar' : 'Banir / Suspender'}
                                             >
-                                                <Mail size={18} />
+                                                {link.status === 'banned' ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
                                             </button>
                                         )}
 
                                         <button
-                                            onClick={() => handleAudit(link._id)}
-                                            style={{
-                                                background: 'none', border: 'none', cursor: 'pointer',
-                                                color: link.status === 'banned' ? '#38a169' : '#e53e3e'
-                                            }}
-                                            title={link.status === 'banned' ? 'Reativar' : 'Banir / Suspender'}
-                                        >
-                                            {link.status === 'banned' ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
-                                        </button>
-
-                                        <button
-                                            onClick={() => handleDelete(link._id)}
+                                            onClick={() => { if (link._id) handleDelete(link._id); }}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
                                             title="Excluir Definitivamente"
                                         >

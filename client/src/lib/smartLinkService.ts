@@ -15,6 +15,12 @@ export interface SmartLinkModel {
     googleAnalyticsId?: string;
     brandingColor?: string;
     createdAt?: string;
+    userId?: string | {
+        _id: string;
+        name: string;
+        email: string;
+        businessName?: string;
+    };
     links?: Array<{ title: string; url: string; icon?: string; color?: string }>;
     bioSettings?: {
         bioText?: string;
