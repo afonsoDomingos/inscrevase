@@ -298,6 +298,10 @@ function ParticipantDashboardContent() {
                 try {
                     await stripeService.verifyPayment(sessionId);
                     toast.success('Pagamento do anúncio confirmado! Analisaremos o seu conteúdo em breve.');
+                    // Refresh profile to ensure user data is fresh
+                    const updatedUser = await authService.getProfile();
+                    if (updatedUser) setUser(updatedUser);
+
                     setActiveTab('ads');
                 } catch (error) {
                     console.error('Error verifying ad payment:', error);
