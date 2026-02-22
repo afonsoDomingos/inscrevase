@@ -7,23 +7,17 @@ import {
     Plus,
     Copy,
     Trash2,
-    BarChart3,
-    MousePointer2,
     ExternalLink,
     Settings2,
     Zap,
     Check,
     Search,
-    Filter,
     ArrowRight,
     Globe,
     Facebook,
     Loader2,
     X,
-    Calendar,
-    ChevronDown,
-    Activity,
-    QrCode
+    Activity
 } from 'lucide-react';
 import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
 import { toast } from 'sonner';
@@ -59,7 +53,7 @@ export const SmartLinksManager = () => {
             setLoading(true);
             const data = await smartLinkService.getMyLinks();
             setLinks(data);
-        } catch (error) {
+        } catch (_error) {
             toast.error('Erro ao carregar seus Smartlinks');
         } finally {
             setLoading(false);
@@ -88,8 +82,9 @@ export const SmartLinksManager = () => {
                 category: 'marketing'
             });
             loadLinks();
-        } catch (error: any) {
-            toast.error(error.message || 'Erro ao criar seu link');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Erro ao criar seu link';
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }
@@ -101,7 +96,7 @@ export const SmartLinksManager = () => {
             await smartLinkService.deleteLink(id);
             toast.success('Link removido');
             setLinks(links.filter(l => l._id !== id));
-        } catch (error) {
+        } catch (_error) {
             toast.error('Erro ao excluir link');
         }
     };
@@ -231,7 +226,10 @@ export const SmartLinksManager = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
-                                    onClick={(e) => { e.stopPropagation(); link._id && copyToClipboard(link.slug, link._id); }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (link._id) copyToClipboard(link.slug, link._id);
+                                    }}
                                     style={{ border: 'none', background: copyingId === link._id ? '#22c55e' : '#fff', color: copyingId === link._id ? '#fff' : '#64748b', padding: '8px', borderRadius: '10px', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center' }}
                                 >
                                     {copyingId === link._id ? <Check size={16} /> : <Copy size={16} />}
@@ -264,7 +262,10 @@ export const SmartLinksManager = () => {
                                 </motion.button>
                                 <motion.button
                                     whileTap={{ scale: 0.9 }}
-                                    onClick={(e) => { e.stopPropagation(); link._id && handleDelete(link._id); }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (link._id) handleDelete(link._id);
+                                    }}
                                     style={{ padding: '10px', borderRadius: '12px', border: '1px solid #fee2e2', background: '#fff', color: '#ef4444', cursor: 'pointer' }}
                                     title="Excluir"
                                 >

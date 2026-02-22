@@ -69,7 +69,8 @@ import {
     Trophy,
     ExternalLink,
     Monitor,
-    Zap
+    Zap,
+    Link as LinkIcon
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
