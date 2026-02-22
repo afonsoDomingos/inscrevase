@@ -26,7 +26,7 @@ const BlogPostSchema = new Schema(
         category: {
             type: String,
             required: true,
-            enum: ['guide', 'marketing', 'mentoring', 'engagement'],
+            enum: ['guide', 'marketing', 'mentoring', 'engagement', 'event', 'case-study'],
         },
         coverImage: {
             type: String,
