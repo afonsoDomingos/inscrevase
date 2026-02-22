@@ -233,13 +233,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
     const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : (isLuxury ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/bio-organic.png")` : 'none');
     const titleColor = form.theme?.titleColor || (isLuxury ? '#fff' : '#111');
-    const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)');
-    const placeholderColor = form.theme?.inputPlaceholderColor || (isLuxury ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)');
-    const isDark = isLuxury || (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x888888);
+    const isDark = (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x828282) || (isLuxury && !form.theme?.backgroundColor);
     const textColor = isDark ? '#fff' : '#111';
-    const secondaryTextColor = isDark ? '#aaa' : '#666';
-    const cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#fff';
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#666';
+    const cardBg = isDark ? 'rgba(0, 0, 0, 0.65)' : '#fff';
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
+    const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)');
+    const placeholderColor = form.theme?.inputPlaceholderColor || (isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)');
 
     return (
         <main style={{
@@ -895,7 +895,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 <motion.div
                                     whileHover={{ y: -5, boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}
                                     transition={{ duration: 0.3 }}
-                                    style={{ background: cardBg, borderRadius: '30px', border: `1px solid ${borderColor}`, padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}
+                                    style={{ background: cardBg, borderRadius: '30px', border: `1px solid ${borderColor}`, padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', backdropFilter: isDark ? 'blur(20px)' : 'none' }}
                                 >
                                     {form.capacity && (form.submissionCount || 0) >= (form.capacity + (form.extraCapacity || 0)) && (
                                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', backdropFilter: 'blur(4px)' }}>
