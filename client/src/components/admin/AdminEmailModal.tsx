@@ -156,6 +156,12 @@ const TEMPLATES = [
         category: 'Suporte',
         subject: '🛠️ Atualização do Suporte Técnico',
         content: 'Olá! Identificamos o problema técnico que reportou no carregamento de ficheiros. A nossa equipa de engenharia já aplicou uma correção e tudo deve estar a funcionar normalmente agora. Pedimos desculpa pelo transtorno e agradecemos a sua paciência.'
+    },
+    {
+        id: 'signup_incentive_participant',
+        category: 'Conversão',
+        subject: '💡 Cria a Tua Conta e Acompanha a Tua Inscrição!',
+        content: 'Olá! A tua inscrição no evento foi recebida com sucesso. Notamos que ainda não tens uma conta na plataforma Inscreva-se. Com uma conta gratuita de Participante, podes acompanhar o estado da tua inscrição em tempo real, aceder às aulas e materiais do evento, solicitar e descarregar o teu certificado de participação, e comunicar diretamente com o organizador. Registo em menos de 1 minuto — usa o mesmo e-mail desta inscrição e serás automaticamente ligado ao teu evento!'
     }
 ];
 
