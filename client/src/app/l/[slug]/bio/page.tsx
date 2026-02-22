@@ -268,7 +268,7 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
                             } else {
                                 throw new Error('Share not supported');
                             }
-                        } catch (err) {
+                        } catch {
                             // Fallback to clipboard for any error (abort, busy, unsupported)
                             try {
                                 await navigator.clipboard.writeText(window.location.href);
