@@ -337,7 +337,7 @@ export const SmartLinksManager = () => {
                                     <Trash2 size={18} />
                                 </motion.button>
                                 <motion.a
-                                    href={`${REDIRECT_BASE}/${link.slug}`}
+                                    href={`${typeof window !== 'undefined' ? window.location.origin : ''}/${link.type === 'bio' ? 'bio' : 'l'}/${link.slug}`}
                                     target="_blank"
                                     whileTap={{ scale: 0.9 }}
                                     style={{ padding: '10px', borderRadius: '12px', border: '1px solid #f1f5f9', background: '#fff', color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
