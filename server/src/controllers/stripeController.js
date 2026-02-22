@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
 const Form = require('../models/Form');
@@ -9,9 +10,11 @@ const AdRequest = require('../models/AdRequest');
 const { PLANS } = require('../config/stripe');
 const GlobalSettings = require('../models/GlobalSettings');
 const sendEmail = require('../utils/emailService');
-generatePaymentFailedEmail,
+const {
+    generatePaymentFailedEmail,
     generatePaymentRejectedEmail,
-    generateAdminAdNotificationEmail
+    generateAdminAdNotificationEmail,
+    generateSubscriptionConfirmationEmail
 } = require('../utils/emailTemplates');
 
 
@@ -263,37 +266,52 @@ const completeOrder = async (session) => {
         }
 
         // 3. Extract metadata
-        const metadata = expandedSession.metadata;
+        const metadata = expandedSession.metadata || {};
+        console.log('📦 Session Metadata:', metadata);
 
         // 2. Check if transaction already exists to avoid duplicates
         const existingTx = await Transaction.findOne({ stripePaymentIntentId: paymentIntent.id });
         if (existingTx) {
             console.log('Order already processed for PaymentIntent:', paymentIntent.id);
             if (metadata && metadata.type === 'ad_purchase') {
-                return await AdRequest.findOne({ stripePaymentIntentId: paymentIntent.id });
+                const ad = await AdRequest.findOne({ stripePaymentIntentId: paymentIntent.id });
+                if (ad) {
+                    console.log('✅ Found existing AdRequest, returning it.');
+                    return ad;
+                }
+                console.log('⚠️ Transaction exists but AdRequest is missing. Proceeding to create AdRequest...');
+            } else {
+                return await Submission.findOne({ stripePaymentIntentId: paymentIntent.id });
             }
-            return await Submission.findOne({ stripePaymentIntentId: paymentIntent.id });
         }
 
-        // --- Handle Ad Purchase ---
         if (metadata.type === 'ad_purchase') {
             console.log('💎 [Stripe Webhook] Processing Ad Purchase...');
-            const adData = JSON.parse(metadata.adData);
-            const userId = metadata.userId;
 
-            const adRequest = new AdRequest({
-                ...adData,
-                userId: new mongoose.Types.ObjectId(userId),
-                status: 'pending', // Still needs admin review of content
-                paymentStatus: 'paid',
-                stripePaymentIntentId: paymentIntent.id,
-                stripeSessionId: session.id,
-                priceTotal: expandedSession.amount_total / 100,
-                currency: expandedSession.currency.toUpperCase()
-            });
+            // Check if ad already created
+            let adRequest = await AdRequest.findOne({ stripePaymentIntentId: paymentIntent.id });
 
-            await adRequest.save();
-            console.log('✅ [Stripe Webhook] AdRequest created:', adRequest._id);
+            if (!adRequest) {
+                console.log('📝 Creating new AdRequest from metadata...');
+                const adData = JSON.parse(metadata.adData);
+                const userId = metadata.userId;
+
+                adRequest = new AdRequest({
+                    ...adData,
+                    userId: new mongoose.Types.ObjectId(userId),
+                    status: 'pending',
+                    paymentStatus: 'paid',
+                    stripePaymentIntentId: paymentIntent.id,
+                    stripeSessionId: session.id,
+                    priceTotal: expandedSession.amount_total / 100,
+                    currency: expandedSession.currency.toUpperCase()
+                });
+
+                await adRequest.save();
+                console.log('✅ AdRequest saved successfully:', adRequest._id);
+            } else {
+                console.log('ℹ️ AdRequest already exists:', adRequest._id);
+            }
 
             // 📧 Notify Super Admins
             try {
@@ -421,11 +439,12 @@ exports.verifyPayment = async (req, res) => {
             return res.status(400).json({ message: 'Payment not completed' });
         }
 
-        const submission = await completeOrder(session);
+        const result = await completeOrder(session);
 
         res.status(200).json({
             success: true,
-            submission: submission?._id,
+            submission: result?._id,
+            adId: result instanceof AdRequest ? result._id : null,
             amount: session.amount_total / 100,
             currency: session.currency.toUpperCase()
         });
