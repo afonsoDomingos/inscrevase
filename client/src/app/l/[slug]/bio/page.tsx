@@ -50,8 +50,7 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
     const theme = link.bioSettings?.theme || 'dark';
     const bgColor = theme === 'dark' ? '#0f172a' : theme === 'light' ? '#f8fafc' : '#000';
     const textColor = theme === 'light' ? '#0f172a' : '#fff';
-    const cardBg = theme === 'light' ? '#fff' : 'rgba(255,255,255,0.05)';
-    const cardBorder = theme === 'light' ? '1px solid #e2e8f0' : '1px solid rgba(255,255,255,0.1)';
+
 
     const getSocialIcon = (key: string) => {
         switch (key) {
@@ -69,7 +68,6 @@ export default function SmartBioPage({ params }: { params: { slug: string } }) {
         <div style={{
             minHeight: '100vh',
             background: bgColor,
-            color: textColor,
             padding: '4rem 1rem',
             display: 'flex',
             flexDirection: 'column',

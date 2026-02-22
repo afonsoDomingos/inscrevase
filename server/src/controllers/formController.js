@@ -65,7 +65,7 @@ exports.createForm = async (req, res) => {
             materials,
             certificateConfig,
             partners: safePartners,
-            partnersPublic: safePartners, // Default to visible for new partners
+            partnersPublic: [], // New partners start as pending (must approve to show on hub)
             videoOrientation: videoOrientation || 'vertical',
             logo,
             active: active !== undefined ? active : true
@@ -325,10 +325,8 @@ exports.updateForm = async (req, res) => {
 
             form.partners = partners.filter(p => p && mongoose.Types.ObjectId.isValid(p));
 
-            // Auto-add new partners to public visibility too
-            if (newPartners.length > 0) {
-                form.partnersPublic = [...(form.partnersPublic || []), ...newPartners];
-            }
+            // Do NOT auto-add new partners to public visibility. 
+            // They must approve it themselves to avoid "stealing audience" without consent.
 
             // Remove partners that are no longer in the main partners list
             const partnerStrings = form.partners.map(p => p.toString());
