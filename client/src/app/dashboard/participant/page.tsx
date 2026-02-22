@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 
 import { authService, UserData } from '@/lib/authService';
 import { formService, FormModel } from '@/lib/formService';
@@ -59,7 +59,7 @@ import { adService } from '@/lib/adService';
 
 type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads';
 
-export default function ParticipantDashboard() {
+function ParticipantDashboardContent() {
     const { t } = useTranslate();
     const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const CATEGORIES = [
@@ -1416,5 +1416,17 @@ export default function ParticipantDashboard() {
                 }
             `}</style>
         </div>
+    );
+}
+
+export default function ParticipantDashboard() {
+    return (
+        <Suspense fallback={
+            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8f9fa' }}>
+                <Loader2 className="animate-spin" size={48} color="#FFD700" />
+            </div>
+        }>
+            <ParticipantDashboardContent />
+        </Suspense>
     );
 }
