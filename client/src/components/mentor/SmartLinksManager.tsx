@@ -165,8 +165,7 @@ export const SmartLinksManager = () => {
     };
 
     const copyToClipboard = (slug: string, type: string, id: string) => {
-        const prefix = type === 'bio' ? 'bio' : 'l';
-        const fullUrl = `${window.location.origin}/${prefix}/${slug}`;
+        const fullUrl = `${window.location.origin}/l/${slug}`;
         navigator.clipboard.writeText(fullUrl);
         setCopyingId(id);
         toast.success('Link copiado!');
@@ -285,7 +284,7 @@ export const SmartLinksManager = () => {
                             {/* Link Display & Copy */}
                             <div style={{ background: '#f8fafc', padding: '10px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '15px' }}>
                                 <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>
-                                    inscrevase.com/{link.type === 'bio' ? 'bio' : 'l'}/<span style={{ color: '#0f172a' }}>{link.slug}</span>
+                                    inscrevase.com/l/<span style={{ color: '#0f172a' }}>{link.slug}</span>
                                 </div>
                                 <motion.button
                                     whileHover={{ scale: 1.1 }}
@@ -337,7 +336,7 @@ export const SmartLinksManager = () => {
                                     <Trash2 size={18} />
                                 </motion.button>
                                 <motion.a
-                                    href={`${typeof window !== 'undefined' ? window.location.origin : ''}/${link.type === 'bio' ? 'bio' : 'l'}/${link.slug}`}
+                                    href={`${typeof window !== 'undefined' ? window.location.origin : ''}/l/${link.slug}`}
                                     target="_blank"
                                     whileTap={{ scale: 0.9 }}
                                     style={{ padding: '10px', borderRadius: '12px', border: '1px solid #f1f5f9', background: '#fff', color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
