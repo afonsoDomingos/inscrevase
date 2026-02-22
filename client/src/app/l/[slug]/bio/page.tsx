@@ -23,7 +23,6 @@ import {
     MapPin,
     Link as LinkIcon
 } from 'lucide-react';
-import Image from 'next/image';
 
 // ──────────────────────────────────────────────────────────────
 // Platform detection → official brand colours + Lucide icons
