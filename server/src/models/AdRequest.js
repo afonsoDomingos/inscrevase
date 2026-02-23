@@ -31,6 +31,9 @@ const adRequestSchema = new mongoose.Schema({
         enum: ['image', 'video'],
         default: 'image'
     },
+    productPrice: {
+        type: Number
+    },
     durationWeeks: {
         type: Number,
         required: true,

@@ -11,6 +11,7 @@ export interface AdRequestModel {
     mediaUrl: string;
     mediaUrls?: string[];
     mediaType: 'image' | 'video';
+    productPrice?: number;
     durationWeeks: number;
     priceTotal: number;
     currency?: string;

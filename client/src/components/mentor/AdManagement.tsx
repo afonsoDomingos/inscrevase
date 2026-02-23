@@ -22,7 +22,7 @@ export default function AdManagement() {
     const [editingAdId, setEditingAdId] = useState<string | null>(null);
     const [ctaType, setCtaType] = useState<'whatsapp' | 'link'>('link');
     const [whatsappNumber, setWhatsappNumber] = useState('');
-    const [whatsappMessage, setWhatsappMessage] = useState('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
+    const [whatsappMessage, setWhatsappMessage] = useState('Saudações, vi o seu anúncio no Inscreva-se e gostaria de obter mais informações.');
     const { formatPrice, convertAmount } = useCurrency();
 
     const PRICING_PER_WEEK = 5; // USD
@@ -39,7 +39,8 @@ export default function AdManagement() {
         currency: 'USD',
         paymentMethod: 'manual',
         status: 'pending',
-        targetUrl: ''
+        targetUrl: '',
+        productPrice: undefined
     });
 
     const [paymentProof, setPaymentProof] = useState<string | null>(null);
@@ -402,6 +403,19 @@ export default function AdManagement() {
                                                         style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f9f9f9', outline: 'none', resize: 'none', fontFamily: 'inherit' }}
                                                     />
                                                 </div>
+
+                                                {form.category === 'product' && (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                        <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Preço do Produto (Opcional)</label>
+                                                        <input
+                                                            type="number"
+                                                            value={form.productPrice || ''}
+                                                            onChange={(e) => setForm({ ...form, productPrice: e.target.value ? Number(e.target.value) : undefined })}
+                                                            placeholder="Ex: 1500"
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f9f9f9', outline: 'none', fontWeight: 600, fontSize: '0.95rem' }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 
@@ -934,6 +948,11 @@ export default function AdManagement() {
                                 <h4 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#000', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>
                                     {form.title || 'Título do seu anúncio premium'}
                                 </h4>
+                                {form.productPrice && (
+                                    <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#D4AF37', margin: '-0.5rem 0' }}>
+                                        {formatPrice(form.productPrice, 'MZN', 'MZN')}
+                                    </div>
+                                )}
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 700, color: '#666' }}>
                                         <Calendar size={14} color="#FFD700" /> Hoje
@@ -1026,13 +1045,14 @@ export default function AdManagement() {
                                 currency: 'USD',
                                 paymentMethod: 'manual',
                                 status: 'pending',
-                                targetUrl: ''
+                                targetUrl: '',
+                                productPrice: undefined
                             });
                             setEditingAdId(null);
                             setIsEditing(false);
                             setCtaType('link');
                             setWhatsappNumber('');
-                            setWhatsappMessage('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
+                            setWhatsappMessage('Saudações, vi o seu anúncio no Inscreva-se e gostaria de obter mais informações.');
                             setStep(1);
                             setShowCreateForm(true);
                         }}
@@ -1249,6 +1269,11 @@ export default function AdManagement() {
                                         </span>
                                     </div>
                                     <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px 0', lineHeight: 1.2 }}>{ad.title}</h3>
+                                    {ad.productPrice && (
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#D4AF37', marginBottom: '8px' }}>
+                                            {formatPrice(ad.productPrice, 'MZN', 'MZN')}
+                                        </div>
+                                    )}
                                     <p style={{ fontSize: '0.95rem', color: '#64748b', lineHeight: 1.6, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                         {ad.description}
                                     </p>
@@ -1339,12 +1364,12 @@ export default function AdManagement() {
                                                 if (textMatch) {
                                                     setWhatsappMessage(decodeURIComponent(textMatch[1]));
                                                 } else {
-                                                    setWhatsappMessage('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
+                                                    setWhatsappMessage('Saudações, vi o seu anúncio no Inscreva-se e gostaria de obter mais informações.');
                                                 }
                                             } else {
                                                 setCtaType('link');
                                                 setWhatsappNumber('');
-                                                setWhatsappMessage('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
+                                                setWhatsappMessage('Saudações, vi o seu anúncio no Inscreva-se e gostaria de obter mais informações.');
                                             }
 
                                             setStep(1);
