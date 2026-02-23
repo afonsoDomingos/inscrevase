@@ -557,7 +557,15 @@ export default function AnunciarPage() {
                                 border: '1px solid #f0f0f0',
                                 position: 'relative'
                             }}>
-                                <div style={{ position: 'relative', height: '400px', background: '#f0f0f0' }}>
+                                <div style={{
+                                    position: 'relative',
+                                    height: '400px',
+                                    background: form.mediaUrl ? '#f0f0f0' : 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    overflow: 'hidden'
+                                }}>
                                     {form.mediaUrl ? (
                                         form.mediaType === 'video' ? (
                                             <video src={form.mediaUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay muted loop />
@@ -565,8 +573,8 @@ export default function AnunciarPage() {
                                             <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
                                         )
                                     ) : (
-                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
-                                            <Megaphone size={48} />
+                                        <div style={{ position: 'relative', width: '50%', height: '50%', opacity: 0.1, filter: 'grayscale(1)' }}>
+                                            <Image src="/logo.png" alt="Logo" fill style={{ objectFit: 'contain' }} />
                                         </div>
                                     )}
                                     <div style={{

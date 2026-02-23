@@ -99,9 +99,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
     // Theme State
     const [theme, setTheme] = useState({
-        primaryColor: '#FFD700',
+        primaryColor: '#0d9488',
         style: 'luxury',
-        backgroundColor: '#050505',
+        backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
         fontFamily: 'Inter'
     });
 
@@ -291,9 +291,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             }
             if (form.theme) {
                 setTheme({
-                    primaryColor: form.theme.primaryColor || '#FFD700',
+                    primaryColor: form.theme.primaryColor || '#0d9488',
                     style: form.theme.style || 'luxury',
-                    backgroundColor: form.theme.backgroundColor || '#050505',
+                    backgroundColor: form.theme.backgroundColor || 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
                     fontFamily: form.theme.fontFamily || 'Inter'
                 });
             }
@@ -529,12 +529,12 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                             background: '#0a0a0a'
                         }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700' }}>
                             <Layout size={24} />
                             <span className="btn-text" style={{ fontWeight: 800, fontSize: '1.2rem' }}>{t('events.editEvent')}</span>
                         </div>
 
-                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                        <div style={{ display: 'grid', gap: '0.4rem' }}>
                             {[
                                 { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
                                 { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
@@ -554,19 +554,20 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '12px',
-                                        padding: '1rem',
+                                        padding: '0.6rem 1rem',
                                         borderRadius: '12px',
                                         border: 'none',
                                         background: step === s.id ? '#FFD70015' : 'transparent',
-                                        color: step === s.id ? '#FFD700' : '#666',
+                                        color: step === s.id ? '#FFD700' : '#888',
                                         fontWeight: 600,
                                         cursor: 'pointer',
                                         textAlign: 'left',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        fontSize: '0.85rem'
                                     }}
                                 >
                                     {s.icon}
-                                    <span className="btn-text">{s.label}</span>
+                                    <span className="btn-text" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</span>
                                 </button>
                             ))}
                         </div>
@@ -578,7 +579,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                         <div style={{
                             flex: 1,
                             overflowY: 'auto',
-                            padding: isMobile ? '1.5rem' : '3.5rem',
+                            padding: isMobile ? '1rem' : '2rem',
                             paddingBottom: '5rem',
                             minHeight: 0,
                             position: 'relative'
@@ -782,24 +783,25 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
                                                     {!showAiOptions ? (
                                                         <motion.button
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
                                                             type="button"
                                                             onClick={() => setShowAiOptions(true)}
                                                             disabled={aiLoading}
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
                                                             style={{
-                                                                background: 'linear-gradient(90deg, #FFF8E1 0%, #FFFFFF 100%)',
-                                                                border: '1px solid #FFD700',
+                                                                padding: '8px 16px',
                                                                 borderRadius: '20px',
-                                                                padding: '6px 12px',
-                                                                fontSize: '0.75rem',
+                                                                background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                                                                border: 'none',
+                                                                color: '#000',
                                                                 fontWeight: 800,
-                                                                color: '#b8860b',
+                                                                fontSize: '0.75rem',
                                                                 display: 'flex',
                                                                 alignItems: 'center',
                                                                 gap: '6px',
                                                                 cursor: 'pointer',
-                                                                boxShadow: '0 2px 5px rgba(255, 215, 0, 0.2)'
+                                                                boxShadow: '0 2px 5px rgba(255, 215, 0, 0.2)',
+                                                                whiteSpace: 'nowrap'
                                                             }}
                                                         >
                                                             <Sparkles size={14} className={aiLoading ? "animate-spin" : ""} />
@@ -1327,22 +1329,22 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                         style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
                                                                     />
                                                                 </div>
-                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.primaryColor.toUpperCase()}</span>
+                                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'monospace', color: '#444', wordBreak: 'break-all', lineHeight: '1.2' }}>{theme.primaryColor.toUpperCase()}</span>
                                                             </div>
                                                         </div>
 
                                                         <div>
                                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.backgroundColor')}</label>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', flexShrink: 0 }}>
                                                                     <input
                                                                         type="color"
-                                                                        value={theme.backgroundColor}
+                                                                        value={theme.backgroundColor.startsWith('#') ? theme.backgroundColor : '#ffffff'}
                                                                         onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
                                                                         style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
                                                                     />
                                                                 </div>
-                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.backgroundColor.toUpperCase()}</span>
+                                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'monospace', color: '#444', wordBreak: 'break-all', lineHeight: '1.2', flex: 1, minWidth: '100px' }}>{theme.backgroundColor.toUpperCase()}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1375,13 +1377,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                 <div style={{
                                                     background: theme.backgroundColor,
                                                     borderRadius: '30px',
-                                                    padding: '2.5rem 1.5rem',
+                                                    padding: '1.5rem 1rem',
                                                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
                                                     border: `1px solid ${theme.primaryColor}22`,
                                                     color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#1a1a1a',
                                                     position: 'relative',
                                                     overflow: 'hidden',
-                                                    minHeight: '400px',
+                                                    minHeight: '320px',
                                                     display: 'flex',
                                                     flexDirection: 'column',
                                                     alignItems: 'center',

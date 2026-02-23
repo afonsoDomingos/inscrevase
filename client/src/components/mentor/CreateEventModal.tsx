@@ -117,9 +117,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
     // Theme State
     const [theme, setTheme] = useState({
-        primaryColor: '#FFD700',
+        primaryColor: '#0d9488',
         style: 'luxury',
-        backgroundColor: '#050505',
+        backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
         fontFamily: 'Inter'
     });
 
@@ -907,7 +907,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         position: 'relative',
                         borderRight: isMobile ? 'none' : '1px solid #111'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '2.5rem', color: '#FFD700' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '1.5rem', color: '#FFD700' }}>
                             <Layout size={isMobile ? 18 : 24} />
                             <span style={{ fontWeight: 800, fontSize: isMobile ? '1rem' : '1.1rem' }}>{t('events.newTitle')}</span>
                         </div>
@@ -915,7 +915,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         <div style={{
                             display: 'flex',
                             flexDirection: isMobile ? 'row' : 'column',
-                            gap: isMobile ? '0.5rem' : '0.75rem',
+                            gap: isMobile ? '0.5rem' : '0.4rem',
                             overflowX: isMobile ? 'auto' : 'visible',
                             width: '100%',
                             paddingBottom: isMobile ? '10px' : '0',
@@ -938,7 +938,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: isMobile ? '0' : '12px',
-                                        padding: '0.85rem 1.25rem',
+                                        padding: '0.6rem 1rem',
                                         borderRadius: '14px',
                                         border: 'none',
                                         background: step === s.id ? '#FFD70015' : 'transparent',
@@ -2044,22 +2044,22 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                                         style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
                                                                     />
                                                                 </div>
-                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.primaryColor.toUpperCase()}</span>
+                                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'monospace', color: '#444', wordBreak: 'break-all', lineHeight: '1.2' }}>{theme.primaryColor.toUpperCase()}</span>
                                                             </div>
                                                         </div>
 
                                                         <div>
                                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.6rem', fontSize: '0.8rem', color: '#666' }}>{t('events.backgroundColor')}</label>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                                                <div style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', flexShrink: 0 }}>
                                                                     <input
                                                                         type="color"
-                                                                        value={theme.backgroundColor}
+                                                                        value={theme.backgroundColor.startsWith('#') ? theme.backgroundColor : '#ffffff'}
                                                                         onChange={(e) => setTheme({ ...theme, backgroundColor: e.target.value })}
                                                                         style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', padding: 0, margin: 0, border: 'none', cursor: 'pointer' }}
                                                                     />
                                                                 </div>
-                                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#444' }}>{theme.backgroundColor.toUpperCase()}</span>
+                                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'monospace', color: '#444', wordBreak: 'break-all', lineHeight: '1.2', flex: 1, minWidth: '100px' }}>{theme.backgroundColor.toUpperCase()}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2098,7 +2098,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                     color: (theme.backgroundColor === '#000000' || theme.backgroundColor === '#050505' || theme.backgroundColor === '#1a1a1a') ? '#fff' : '#1a1a1a',
                                                     position: 'relative',
                                                     overflow: 'hidden',
-                                                    minHeight: '400px',
+                                                    minHeight: '320px',
                                                     display: 'flex',
                                                     flexDirection: 'column',
                                                     alignItems: 'center',

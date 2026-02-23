@@ -301,21 +301,31 @@ export default function AdRequestList() {
                                 <div style={{ display: 'flex', flexDirection: 'inherit', width: '100%' }}>
                                     {/* Preview Container */}
                                     <div className="ad-card-preview">
-                                        {req.mediaUrl ? (
-                                            req.mediaType === 'video' ? (
-                                                <video
-                                                    src={req.mediaUrl}
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                    autoPlay muted loop
-                                                />
+                                        <div style={{
+                                            position: 'relative',
+                                            width: '100%',
+                                            height: '100%',
+                                            background: req.mediaUrl ? '#f8fafc' : 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            {req.mediaUrl ? (
+                                                req.mediaType === 'video' ? (
+                                                    <video
+                                                        src={req.mediaUrl}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        autoPlay muted loop
+                                                    />
+                                                ) : (
+                                                    <Image src={req.mediaUrl} alt={req.title} fill style={{ objectFit: 'cover' }} />
+                                                )
                                             ) : (
-                                                <Image src={req.mediaUrl} alt={req.title} fill style={{ objectFit: 'cover' }} />
-                                            )
-                                        ) : (
-                                            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
-                                                <ImageIcon size={48} />
-                                            </div>
-                                        )}
+                                                <div style={{ position: 'relative', width: '40%', height: '40%', opacity: 0.1, filter: 'grayscale(1)' }}>
+                                                    <Image src="/logo.png" alt="Logo" fill style={{ objectFit: 'contain' }} />
+                                                </div>
+                                            )}
+                                        </div>
 
                                         {/* Dynamic Status Badges */}
                                         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>

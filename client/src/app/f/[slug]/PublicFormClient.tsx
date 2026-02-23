@@ -59,6 +59,37 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const visitRecorded = useRef(false);
     const { trackViewContent, trackAddToCart, trackPurchase } = useMetaPixelEvents();
 
+    const [currentStep, setCurrentStep] = useState(0);
+    const FIELDS_PER_STEP = 4;
+    const isMultiStep = form && form.fields && form.fields.length > 5;
+    const numFieldSteps = form ? Math.ceil(form.fields.length / FIELDS_PER_STEP) : 1;
+    const hasPaymentStep = isMultiStep && form?.paymentConfig?.enabled;
+    const totalSteps = isMultiStep ? numFieldSteps + (hasPaymentStep ? 1 : 0) : 1;
+
+    const handleNextStep = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Basic validation for current step fields
+        const stepFields = form?.fields.slice(currentStep * FIELDS_PER_STEP, (currentStep + 1) * FIELDS_PER_STEP);
+        const missingRequired = stepFields?.some(f => f.required && !formData[f.label]);
+
+        if (missingRequired) {
+            toast.error('Por favor, preencha todos os campos obrigatórios para continuar.');
+            return;
+        }
+
+        if (currentStep < totalSteps - 1) {
+            setCurrentStep(prev => prev + 1);
+            // Scroll to form top if on mobile
+            if (window.innerWidth <= 768) {
+                const formEl = document.querySelector('.premium-card');
+                formEl?.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else {
+            handleSubmit(e);
+        }
+    };
+
     // Trigger Promo Popup on Success
     useEffect(() => {
         if (success) {
@@ -246,7 +277,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const cardBg = isDark ? 'rgba(0, 0, 0, 0.65)' : '#ffffff';
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
     const inputBg = form.theme?.inputBackgroundColor || (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)');
-    const placeholderColor = form.theme?.inputPlaceholderColor || (isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)');
+    const placeholderColor = form.theme?.inputPlaceholderColor || (isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.65)');
 
     return (
         <main style={{
@@ -499,33 +530,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 ) : (
                     <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: '20px', paddingRight: '20px' }}>
 
-                        {/* Company Logo - Strategic positioning top-left */}
-                        {form.logo && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                style={{
-                                    position: 'absolute',
-                                    top: '20px',
-                                    left: '20px',
-                                    zIndex: 20
-                                }}
-                            >
-                                <div style={{
-                                    padding: '8px 12px',
-                                    borderRadius: '12px',
-                                    transition: 'all 0.3s ease'
-                                }}>
-                                    <Image
-                                        src={form.logo}
-                                        alt="Company Logo"
-                                        width={120}
-                                        height={40}
-                                        style={{ objectFit: 'contain', height: 'auto', maxWidth: '130px' }}
-                                    />
-                                </div>
-                            </motion.div>
-                        )}
+                        {/* Logo removed from absolute positioning */}
 
                         <div className={`responsive-form-grid ${(form as any).videoUrl ? 'has-vsl' : 'no-vsl'} ${(form as any).videoOrientation === 'horizontal' ? 'horizontal-vsl' : ''}`}>
 
@@ -536,6 +541,22 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 animate="visible"
                                 style={{ display: 'flex', flexDirection: 'column' }}
                             >
+                                {/* Strategic Logo Placement */}
+                                {form.logo && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        style={{ marginBottom: '2rem' }}
+                                    >
+                                        <Image
+                                            src={form.logo}
+                                            alt="Logo"
+                                            width={140}
+                                            height={50}
+                                            style={{ objectFit: 'contain', height: 'auto' }}
+                                        />
+                                    </motion.div>
+                                )}
                                 {/* Cover Image */}
                                 {form.coverImage && (
                                     <motion.div
@@ -955,232 +976,269 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     )}
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: titleColor }}>{t('form.fillYourData')}</h3>
 
+                                    {isMultiStep && (
+                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '2.5rem' }}>
+                                            {Array.from({ length: totalSteps }).map((_, i) => (
+                                                <div key={i} style={{
+                                                    flex: 1,
+                                                    height: '6px',
+                                                    borderRadius: '10px',
+                                                    background: currentStep >= i ? primaryColor : `${primaryColor}20`,
+                                                    boxShadow: currentStep === i ? `0 0 10px ${primaryColor}40` : 'none',
+                                                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                                                }} />
+                                            ))}
+                                        </div>
+                                    )}
+
                                     <motion.form
-                                        onSubmit={handleSubmit}
+                                        onSubmit={isMultiStep ? handleNextStep : handleSubmit}
                                         variants={containerVariants}
                                         initial="hidden"
                                         animate="visible"
                                     >
-                                        {form.fields.map((field) => (
-                                            <motion.div variants={itemVariants} key={field.label} style={{ marginBottom: '1.5rem' }}>
-                                                {field.type !== 'checkbox' && (
-                                                    <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
-                                                        {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
-                                                    </label>
-                                                )}
-                                                {field.type === 'select' ? (
-                                                    <motion.select
-                                                        whileFocus={{ scale: 1.01 }}
-                                                        required={field.required}
-                                                        onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        className="premium-input"
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', cursor: 'pointer' }}
-                                                    >
-                                                        <option value="">{t('form.select')}</option>
-                                                        {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                    </motion.select>
-                                                ) : field.type === 'textarea' ? (
-                                                    <motion.textarea
-                                                        whileFocus={{ scale: 1.01 }}
-                                                        required={field.required}
-                                                        placeholder={field.label}
-                                                        rows={4}
-                                                        onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        className="premium-input"
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', resize: 'none' }}
-                                                    />
-                                                ) : field.type === 'checkbox' ? (
-                                                    <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '0.8rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: `1px solid ${borderColor}` }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            required={field.required}
-                                                            onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
-                                                            style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
-                                                        />
-                                                        <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
-                                                            {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
-                                                        </span>
-                                                    </label>
-                                                ) : (
-                                                    <motion.input
-                                                        whileFocus={{ scale: 1.01 }}
-                                                        type={field.type === 'phone' ? 'tel' : field.type}
-                                                        required={field.required}
-                                                        placeholder={field.label}
-                                                        onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                        className="premium-input"
-                                                        style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
-                                                    />
-                                                )}
-                                            </motion.div>
-                                        ))}
-
-                                        {form.paymentConfig?.enabled && (
-                                            <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: `1px solid ${borderColor}` }}>
-                                                <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>{t('form.paymentMethodHeader')}</h4>
-
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-                                                    {form.paymentConfig.stripeEnabled && (
-                                                        <motion.div
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={() => setPaymentMode('stripe')}
-                                                            className={`premium-card ${paymentMode === 'stripe' ? 'active' : ''}`}
-                                                            style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
-                                                        >
-                                                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'stripe' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
-                                                                <CreditCard size={20} color={paymentMode === 'stripe' ? (isDark ? '#000' : '#fff') : '#888'} />
-                                                            </div>
-                                                            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>{t('form.cardPayment')}</div>
-                                                            <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.instant')}</div>
-                                                        </motion.div>
-                                                    )}
-                                                    <motion.div
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                        onClick={() => setPaymentMode('manual')}
-                                                        className={`premium-card ${paymentMode === 'manual' ? 'active' : ''}`}
-                                                        style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
-                                                    >
-                                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'manual' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
-                                                            <Upload size={20} color={paymentMode === 'manual' ? (isDark ? '#000' : '#fff') : '#888'} />
-                                                        </div>
-                                                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'manual' ? primaryColor : titleColor }}>{t('form.manualPayment')}</div>
-                                                        <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.uploadProof')}</div>
+                                        <AnimatePresence mode="wait">
+                                            <motion.div
+                                                key={currentStep}
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -20 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                {/* STEP CONTENT: FIELDS */}
+                                                {currentStep < numFieldSteps && (isMultiStep ? form.fields.slice(currentStep * FIELDS_PER_STEP, (currentStep + 1) * FIELDS_PER_STEP) : form.fields).map((field) => (
+                                                    <motion.div variants={itemVariants} key={field.label} style={{ marginBottom: '1.5rem' }}>
+                                                        {field.type !== 'checkbox' && (
+                                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
+                                                                {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                            </label>
+                                                        )}
+                                                        {field.type === 'select' ? (
+                                                            <motion.select
+                                                                whileFocus={{ scale: 1.01 }}
+                                                                required={field.required}
+                                                                onChange={(e) => handleInputChange(field.label, e.target.value)}
+                                                                className="premium-input"
+                                                                style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', cursor: 'pointer' }}
+                                                            >
+                                                                <option value="">{t('form.select')}</option>
+                                                                {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                            </motion.select>
+                                                        ) : field.type === 'textarea' ? (
+                                                            <motion.textarea
+                                                                whileFocus={{ scale: 1.01 }}
+                                                                required={field.required}
+                                                                placeholder={field.label}
+                                                                rows={4}
+                                                                onChange={(e) => handleInputChange(field.label, e.target.value)}
+                                                                className="premium-input"
+                                                                style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', resize: 'none' }}
+                                                            />
+                                                        ) : field.type === 'checkbox' ? (
+                                                            <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '0.8rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: `1px solid ${borderColor}` }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    required={field.required}
+                                                                    onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
+                                                                    style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
+                                                                />
+                                                                <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
+                                                                    {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                                </span>
+                                                            </label>
+                                                        ) : (
+                                                            <motion.input
+                                                                whileFocus={{ scale: 1.01 }}
+                                                                type={field.type === 'phone' ? 'tel' : field.type}
+                                                                required={field.required}
+                                                                placeholder={field.label}
+                                                                onChange={(e) => handleInputChange(field.label, e.target.value)}
+                                                                className="premium-input"
+                                                                style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
+                                                            />
+                                                        )}
                                                     </motion.div>
-                                                </div>
+                                                ))}
 
-                                                <AnimatePresence mode="wait">
-                                                    {paymentMode === 'stripe' && (
-                                                        <motion.div key="stripe" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                            <StripeCheckout formId={form._id} formData={formData} eventTitle={form.title} price={form.paymentConfig.price || 0} currency={form.paymentConfig.currency || 'USD'} />
-                                                        </motion.div>
-                                                    )}
-                                                    {paymentMode === 'manual' && (
-                                                        <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                            {/* Manual Payment Details Card */}
-                                                            <div style={{
-                                                                background: isDark ? 'rgba(255,215,0,0.05)' : '#fff9e6',
-                                                                border: `1px solid ${primaryColor}40`,
-                                                                borderRadius: '16px',
-                                                                padding: '1.5rem',
-                                                                marginBottom: '1.5rem',
-                                                                fontSize: '0.9rem'
-                                                            }}>
-                                                                <h5 style={{ fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px', color: primaryColor }}>
-                                                                    <Info size={18} /> {t('form.paymentDetails')}
-                                                                </h5>
+                                                {/* STEP CONTENT: PAYMENT SECTION (IF LAST STEP OR SINGLE STEP) */}
+                                                {form.paymentConfig?.enabled && (!isMultiStep || currentStep === totalSteps - 1) && (
+                                                    <div style={{ marginTop: isMultiStep ? '0' : '2rem', paddingTop: isMultiStep ? '0' : '2rem', borderTop: isMultiStep ? 'none' : `1px solid ${borderColor}` }}>
+                                                        <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>{t('form.paymentMethodHeader')}</h4>
 
-                                                                <div style={{ display: 'grid', gap: '12px' }}>
-                                                                    {/* Legacy M-Pesa/eMola for backward compatibility */}
-                                                                    {form.paymentConfig?.mpesaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('M-Pesa')) && (
-                                                                        <div className="payment-row">
-                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> M-Pesa:</span>
-                                                                            <span style={{ fontWeight: 700 }}>{form.paymentConfig.mpesaNumber}</span>
-                                                                        </div>
-                                                                    )}
-                                                                    {form.paymentConfig?.emolaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('e-Mola')) && (
-                                                                        <div className="payment-row">
-                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> e-Mola:</span>
-                                                                            <span style={{ fontWeight: 700 }}>{form.paymentConfig.emolaNumber}</span>
-                                                                        </div>
-                                                                    )}
+                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                                                            {form.paymentConfig.stripeEnabled && (
+                                                                <motion.div
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
+                                                                    onClick={() => setPaymentMode('stripe')}
+                                                                    className={`premium-card ${paymentMode === 'stripe' ? 'active' : ''}`}
+                                                                    style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
+                                                                >
+                                                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'stripe' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
+                                                                        <CreditCard size={20} color={paymentMode === 'stripe' ? (isDark ? '#000' : '#fff') : '#888'} />
+                                                                    </div>
+                                                                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>{t('form.cardPayment')}</div>
+                                                                    <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.instant')}</div>
+                                                                </motion.div>
+                                                            )}
+                                                            <motion.div
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                                onClick={() => setPaymentMode('manual')}
+                                                                className={`premium-card ${paymentMode === 'manual' ? 'active' : ''}`}
+                                                                style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
+                                                            >
+                                                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'manual' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
+                                                                    <Upload size={20} color={paymentMode === 'manual' ? (isDark ? '#000' : '#fff') : '#888'} />
+                                                                </div>
+                                                                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'manual' ? primaryColor : titleColor }}>{t('form.manualPayment')}</div>
+                                                                <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.uploadProof')}</div>
+                                                            </motion.div>
+                                                        </div>
 
-                                                                    {/* Dynamic Custom Methods */}
-                                                                    {form.paymentConfig?.manualMethods?.map((method, idx) => (
-                                                                        <div key={idx} className="payment-row">
-                                                                            <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-                                                                                {method.label.toLowerCase().includes('mobile') || method.label.toLowerCase().includes('money') || method.label.toLowerCase().includes('phone') ? <Phone size={14} /> : <Coins size={14} />}
-                                                                                {method.label}:
-                                                                            </span>
-                                                                            <span style={{ fontWeight: 700 }}>{method.value}</span>
-                                                                        </div>
-                                                                    ))}
+                                                        <AnimatePresence mode="wait">
+                                                            {paymentMode === 'stripe' && (
+                                                                <motion.div key="stripe" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                                    <StripeCheckout formId={form._id} formData={formData} eventTitle={form.title} price={form.paymentConfig.price || 0} currency={form.paymentConfig.currency || 'USD'} />
+                                                                </motion.div>
+                                                            )}
+                                                            {paymentMode === 'manual' && (
+                                                                <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                                    {/* Manual Payment Details Card */}
+                                                                    <div style={{
+                                                                        background: isDark ? 'rgba(255,215,0,0.05)' : '#fff9e6',
+                                                                        border: `1px solid ${primaryColor}40`,
+                                                                        borderRadius: '16px',
+                                                                        padding: '1.2rem',
+                                                                        marginBottom: '1.5rem',
+                                                                        fontSize: '0.85rem'
+                                                                    }}>
+                                                                        <h5 style={{ fontWeight: 800, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px', color: primaryColor }}>
+                                                                            <Info size={16} /> {t('form.paymentDetails')}
+                                                                        </h5>
 
-                                                                    {form.paymentConfig?.bankAccount && (
-                                                                        <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '10px', marginTop: '5px', display: 'grid', gap: '8px' }}>
-                                                                            <div className="payment-row">
-                                                                                <span style={{ color: secondaryTextColor }}>Banco:</span>
-                                                                                <span style={{ fontWeight: 700, textAlign: 'right' }}>{form.paymentConfig.bankAccount}</span>
-                                                                            </div>
-                                                                            {form.paymentConfig.accountHolder && (
-                                                                                <div className="payment-row">
-                                                                                    <span style={{ color: secondaryTextColor }}>Titular:</span>
-                                                                                    <span style={{ fontWeight: 600, fontSize: '0.8rem', textAlign: 'right' }}>{form.paymentConfig.accountHolder}</span>
+                                                                        <div style={{ display: 'grid', gap: '10px' }}>
+                                                                            {/* Legacy M-Pesa/eMola for backward compatibility */}
+                                                                            {form.paymentConfig?.mpesaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('M-Pesa')) && (
+                                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                    <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> M-Pesa:</span>
+                                                                                    <span style={{ fontWeight: 700 }}>{form.paymentConfig.mpesaNumber}</span>
+                                                                                </div>
+                                                                            )}
+                                                                            {form.paymentConfig?.emolaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('e-Mola')) && (
+                                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                    <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> e-Mola:</span>
+                                                                                    <span style={{ fontWeight: 700 }}>{form.paymentConfig.emolaNumber}</span>
+                                                                                </div>
+                                                                            )}
+
+                                                                            {/* Dynamic Custom Methods */}
+                                                                            {form.paymentConfig?.manualMethods?.map((method, idx) => (
+                                                                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                    <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                                                                                        {method.label.toLowerCase().includes('mobile') || method.label.toLowerCase().includes('money') || method.label.toLowerCase().includes('phone') ? <Phone size={14} /> : <Coins size={14} />}
+                                                                                        {method.label}:
+                                                                                    </span>
+                                                                                    <span style={{ fontWeight: 700 }}>{method.value}</span>
+                                                                                </div>
+                                                                            ))}
+
+                                                                            {form.paymentConfig?.bankAccount && (
+                                                                                <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '8px', marginTop: '4px', display: 'grid', gap: '6px' }}>
+                                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                        <span style={{ color: secondaryTextColor }}>Banco:</span>
+                                                                                        <span style={{ fontWeight: 700 }}>{form.paymentConfig.bankAccount}</span>
+                                                                                    </div>
+                                                                                    {form.paymentConfig.accountHolder && (
+                                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                            <span style={{ color: secondaryTextColor }}>Titular:</span>
+                                                                                            <span style={{ fontWeight: 600, fontSize: '0.75rem' }}>{form.paymentConfig.accountHolder}</span>
+                                                                                        </div>
+                                                                                    )}
                                                                                 </div>
                                                                             )}
                                                                         </div>
-                                                                    )}
+                                                                    </div>
 
-                                                                    {form.paymentConfig?.instructions && (
-                                                                        <div style={{
-                                                                            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                                                            padding: '10px',
-                                                                            borderRadius: '8px',
-                                                                            marginTop: '5px',
-                                                                            fontSize: '0.8rem',
-                                                                            fontStyle: 'italic',
-                                                                            color: secondaryTextColor,
-                                                                            whiteSpace: 'pre-wrap'
-                                                                        }}>
-                                                                            {form.paymentConfig.instructions}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            </div>
+                                                                    <div style={{ marginBottom: '1.5rem' }}>
+                                                                        <label className="premium-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}` }}>
+                                                                            <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
+                                                                            {filePreview ? (
+                                                                                <div style={{ textAlign: 'center' }}>
+                                                                                    <div style={{ position: 'relative', width: '60px', height: '60px', margin: '0 auto 10px', borderRadius: '12px', overflow: 'hidden' }}>
+                                                                                        <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                                                    </div>
+                                                                                    <div style={{ fontSize: '0.8rem', color: primaryColor, fontWeight: 700 }}>{file?.name.substring(0, 15)}...</div>
+                                                                                </div>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Upload size={24} color={primaryColor} />
+                                                                                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: titleColor, marginTop: '8px' }}>{t('form.attachComprovative')}</span>
+                                                                                </>
+                                                                            )}
+                                                                        </label>
+                                                                    </div>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                )}
+                                            </motion.div>
+                                        </AnimatePresence>
 
-                                                            <div style={{ marginBottom: '1.5rem' }}>
-                                                                <label className="premium-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2.5rem', borderRadius: '24px', cursor: 'pointer', textAlign: 'center' }}>
-                                                                    <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
-                                                                    {filePreview ? (
-                                                                        <div style={{ textAlign: 'center' }}>
-                                                                            <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 15px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 8px 16px rgba(0,0,0,0.2)' }}>
-                                                                                <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
-                                                                            </div>
-                                                                            <div style={{ fontSize: '0.9rem', color: primaryColor, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                                                                <CheckCircle size={16} /> {file?.name.substring(0, 20)}...
-                                                                            </div>
-                                                                            <p style={{ fontSize: '0.75rem', color: secondaryTextColor, marginTop: '5px' }}>Clique para alterar o arquivo</p>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <>
-                                                                            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: `${primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px' }}>
-                                                                                <Upload size={28} color={primaryColor} />
-                                                                            </div>
-                                                                            <span style={{ fontSize: '1rem', fontWeight: 700, color: titleColor }}>{t('form.attachComprovative')}</span>
-                                                                            <p style={{ fontSize: '0.8rem', color: secondaryTextColor, marginTop: '8px' }}>{t('form.clickOrDrag')}</p>
-                                                                        </>
-                                                                    )}
-                                                                </label>
-                                                            </div>
-                                                            <motion.button
-                                                                whileHover={{ scale: 1.02 }}
-                                                                whileTap={{ scale: 0.98 }}
-                                                                type="submit"
-                                                                disabled={submitting}
-                                                                className="btn-primary premium-btn"
-                                                                style={{ width: '100%', padding: '1.4rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '20px', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '1rem', letterSpacing: '1px' }}
-                                                            >
-                                                                {submitting ? <Loader2 className="animate-spin" /> : t('form.finishRegistration').toUpperCase()}
-                                                            </motion.button>
-                                                        </motion.div>
+                                        {/* FORM NAVIGATION BUTTONS */}
+                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
+                                            {isMultiStep && currentStep > 0 && (
+                                                <button
+                                                    type="button"
+                                                    disabled={submitting}
+                                                    onClick={() => {
+                                                        setCurrentStep(prev => prev - 1);
+                                                        if (window.innerWidth <= 768) {
+                                                            document.querySelector('.premium-card')?.scrollIntoView({ behavior: 'smooth' });
+                                                        }
+                                                    }}
+                                                    style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', border: `1px solid ${borderColor}`, background: 'rgba(255,255,255,0.03)', color: titleColor, fontWeight: 700, cursor: 'pointer', transition: '0.3s' }}
+                                                >
+                                                    {t('common.prev') || 'Voltar'}
+                                                </button>
+                                            )}
+
+                                            {!(currentStep === totalSteps - 1 && paymentMode === 'stripe') && (
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    type="submit"
+                                                    disabled={submitting}
+                                                    className="btn-primary premium-btn"
+                                                    style={{
+                                                        flex: isMultiStep && currentStep > 0 ? 2 : 1,
+                                                        padding: '1.2rem',
+                                                        background: primaryColor,
+                                                        color: isDark ? '#000' : '#fff',
+                                                        borderRadius: '20px',
+                                                        fontWeight: 900,
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        fontSize: '1rem',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px'
+                                                    }}
+                                                >
+                                                    {submitting ? (
+                                                        <Loader2 className="animate-spin" />
+                                                    ) : (
+                                                        currentStep < totalSteps - 1 ? (
+                                                            <>Próximo Passo <ArrowRight size={18} /></>
+                                                        ) : (
+                                                            form.paymentConfig?.enabled ? t('form.finishRegistration').toUpperCase() : 'GARANTIR MINHA VAGA'
+                                                        )
                                                     )}
-                                                </AnimatePresence>
-                                            </div>
-                                        )}
-
-                                        {!form.paymentConfig?.enabled && (
-                                            <motion.button
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                type="submit"
-                                                disabled={submitting}
-                                                className="btn-primary premium-btn"
-                                                style={{ width: '100%', padding: '1.4rem', background: primaryColor, color: isDark ? '#000' : '#fff', borderRadius: '20px', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '1rem', letterSpacing: '1px' }}
-                                            >
-                                                {submitting ? <Loader2 className="animate-spin" /> : 'GARANTIR MINHA VAGA'}
-                                            </motion.button>
-                                        )}
+                                                </motion.button>
+                                            )}
+                                        </div>
                                     </motion.form>
                                 </motion.div>
                             </motion.div>
@@ -1202,6 +1260,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     </div>
                 )}
             </AnimatePresence>
+
             <AnimatePresence>
                 {selectedImage && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedImage(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -1309,60 +1368,58 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             </AnimatePresence>
 
             {/* Floating Discover Platform Button */}
-            {
-                !showPromo && (
-                    <motion.a
-                        href="/"
-                        target="_blank"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1.5, duration: 0.6 }}
-                        style={{
-                            position: 'fixed',
-                            bottom: '30px',
-                            right: '30px',
-                            zIndex: 100,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0',
-                            textDecoration: 'none',
-                            filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
-                        }}
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        <div style={{
-                            background: '#1a1a1a',
-                            color: '#fff',
-                            padding: '10px 20px', // Smaller padding
-                            borderRadius: '10px 4px 4px 10px',
-                            fontSize: '0.65rem', // Smaller text
-                            fontWeight: 800,
-                            letterSpacing: '1.2px',
-                            textTransform: 'uppercase',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            whiteSpace: 'nowrap'
-                        }}>
-                            {t('common.discoverPlatform')}
-                        </div>
-                        <div style={{
-                            background: '#FFD700',
-                            width: '42px', // Smaller icon part
-                            height: '42px',
-                            borderRadius: '4px 10px 10px 4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#000',
-                            marginLeft: '-1px',
-                            boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
-                        }}>
-                            <ArrowRight size={18} strokeWidth={2.5} />
-                        </div>
-                    </motion.a>
-                )
-            }
-        </main >
+            {!showPromo && (
+                <motion.a
+                    href="/"
+                    target="_blank"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5, duration: 0.6 }}
+                    style={{
+                        position: 'fixed',
+                        bottom: '30px',
+                        right: '30px',
+                        zIndex: 100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0',
+                        textDecoration: 'none',
+                        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
+                    }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    <div style={{
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        padding: '10px 20px',
+                        borderRadius: '10px 4px 4px 10px',
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
+                        letterSpacing: '1.2px',
+                        textTransform: 'uppercase',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        whiteSpace: 'nowrap'
+                    }}>
+                        {t('common.discoverPlatform')}
+                    </div>
+                    <div style={{
+                        background: '#FFD700',
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '4px 10px 10px 4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#000',
+                        marginLeft: '-1px',
+                        boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
+                    }}>
+                        <ArrowRight size={18} strokeWidth={2.5} />
+                    </div>
+                </motion.a>
+            )}
+        </main>
     );
 }
 

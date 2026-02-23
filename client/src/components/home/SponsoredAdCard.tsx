@@ -188,12 +188,27 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                         playsInline
                                     />
                                 ) : (
-                                    <Image
-                                        src={currentItem.mediaUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1000'}
-                                        alt={currentItem.title}
-                                        fill
-                                        style={{ objectFit: 'cover' }}
-                                    />
+                                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                        <Image
+                                            src={currentItem.mediaUrl || '/logo.png'}
+                                            alt={currentItem.title}
+                                            fill
+                                            style={{
+                                                objectFit: currentItem.mediaUrl ? 'cover' : 'contain',
+                                                padding: currentItem.mediaUrl ? 0 : '2rem',
+                                                opacity: currentItem.mediaUrl ? 1 : 0.15,
+                                                filter: currentItem.mediaUrl ? 'none' : 'grayscale(1)',
+                                            }}
+                                        />
+                                        {!currentItem.mediaUrl && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                inset: 0,
+                                                background: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
+                                                zIndex: -1
+                                            }} />
+                                        )}
+                                    </div>
                                 )}
                                 <div style={{
                                     position: 'absolute',

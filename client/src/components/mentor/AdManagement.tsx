@@ -734,7 +734,15 @@ export default function AdManagement() {
                             position: 'sticky',
                             top: '2rem'
                         }}>
-                            <div style={{ position: 'relative', aspectRatio: '4/5', background: '#f0f0f0' }}>
+                            <div style={{
+                                position: 'relative',
+                                aspectRatio: '4/5',
+                                background: form.mediaUrl ? '#f0f0f0' : 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
+                            }}>
                                 {form.mediaUrl ? (
                                     form.mediaType === 'video' ? (
                                         <video src={form.mediaUrl} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -742,8 +750,8 @@ export default function AdManagement() {
                                         <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
                                     )
                                 ) : (
-                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Megaphone size={64} color="#ddd" />
+                                    <div style={{ position: 'relative', width: '60%', height: '60%', opacity: 0.1, filter: 'grayscale(1)' }}>
+                                        <Image src="/logo.png" alt="Logo" fill style={{ objectFit: 'contain' }} />
                                     </div>
                                 )}
                                 <div style={{
