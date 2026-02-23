@@ -336,3 +336,18 @@ exports.getActiveAds = async (req, res) => {
         res.status(500).json({ message: 'Erro ao buscar anúncios ativos' });
     }
 };
+
+// Get single ad by ID
+exports.getAdById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ad = await AdRequest.findById(id).populate('userId', 'name profilePhoto');
+        if (!ad) {
+            return res.status(404).json({ message: 'Anúncio não encontrado' });
+        }
+        res.json(ad);
+    } catch (error) {
+        console.error('🔴 [AdController] Error fetching ad by id:', error);
+        res.status(500).json({ message: 'Erro ao buscar anúncio' });
+    }
+};

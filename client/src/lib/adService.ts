@@ -153,5 +153,11 @@ export const adService = {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Falha ao buscar anúncios ativos');
         return response.json();
+    },
+
+    async getAdById(id: string): Promise<AdRequestModel> {
+        const response = await fetch(`${API_URL}/ads/public/${id}`);
+        if (!response.ok) throw new Error('Falha ao buscar anúncio');
+        return response.json();
     }
 };

@@ -5,6 +5,7 @@ const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // Public routes
 router.get('/active', adController.getActiveAds);
+router.get('/public/:id', adController.getAdById);
 router.post('/:id/view', adController.trackAdImpression);
 router.post('/:id/click', adController.trackAdClick);
 

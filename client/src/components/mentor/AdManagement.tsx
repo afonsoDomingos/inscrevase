@@ -1425,8 +1425,9 @@ export default function AdManagement() {
                                         <motion.button
                                             whileTap={{ scale: 0.95 }}
                                             onClick={() => {
-                                                navigator.clipboard.writeText(ad.targetUrl || '');
-                                                toast.success('Link do anúncio copiado!');
+                                                const publicLink = `${window.location.origin}/anuncio/${ad._id}`;
+                                                navigator.clipboard.writeText(publicLink);
+                                                toast.success('Link do anúncio copiado para partilhar!');
                                             }}
                                             style={{
                                                 width: '42px',
