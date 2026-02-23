@@ -895,15 +895,14 @@ h6 {
 /* Edit Event Modal Responsive Styles */
 .edit-event-modal {
   position: relative;
-  width: 100%;
-  max-width: 900px;
+  width: 100vw;
+  height: 100vh;
   background: #fff;
-  border-radius: 30px;
+  border-radius: 0;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 280px 1fr;
-  height: 85vh;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  grid-template-columns: 300px 1fr;
+  box-shadow: none;
   transition: all 0.3s ease;
 }
 

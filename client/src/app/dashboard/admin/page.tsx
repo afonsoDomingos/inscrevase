@@ -1360,7 +1360,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'users' && (
-                            <motion.div key="users" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="users" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <ErrorBoundary>
                                     <UsersList
                                         onMessageUser={(user) => {
@@ -1379,7 +1379,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'forms' && (
-                            <motion.div key="forms" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="forms" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <FormList onEmailMentor={(mentorId, mentorName) => {
                                     setSelectedEmailRecipient({ id: mentorId, name: mentorName });
                                     setIsEmailModalOpen(true);
@@ -1390,7 +1390,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'submissions' && (
-                            <motion.div key="submissions" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="submissions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <SubmissionList />
                             </motion.div>
                         )
@@ -1398,7 +1398,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'support' && (
-                            <motion.div key="support" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="support" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <SupportTicketList />
                             </motion.div>
                         )
@@ -1406,7 +1406,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'finance' && user?.role === 'SuperAdmin' && (
-                            <motion.div key="finance" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="finance" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <AdminFinance />
                             </motion.div>
                         )
@@ -1414,7 +1414,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'newsletter' && (
-                            <motion.div key="newsletter" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="newsletter" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <NewsletterList />
                             </motion.div>
                         )
@@ -1422,7 +1422,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'blog' && (
-                            <motion.div key="blog" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="blog" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <BlogManager />
                             </motion.div>
                         )
@@ -1430,7 +1430,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'lessons' && (
-                            <motion.div key="lessons" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="lessons" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <LessonsManager />
                             </motion.div>
                         )
@@ -1438,7 +1438,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'ads' && user?.role === 'SuperAdmin' && (
-                            <motion.div key="ads" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="ads" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <AdRequestList />
                             </motion.div>
                         )
@@ -1446,7 +1446,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'smartlinks' && (
-                            <motion.div key="smartlinks" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="smartlinks" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <SmartLinkList onEmailMentor={(mentorId, mentorName) => {
                                     setSelectedEmailRecipient({ id: mentorId, name: mentorName });
                                     setIsEmailModalOpen(true);
@@ -1457,7 +1457,7 @@ export default function AdminDashboard() {
 
                     {
                         activeTab === 'referrals' && (
-                            <motion.div key="referrals" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ type: 'spring', damping: 20 }}>
+                            <motion.div key="referrals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <div className="luxury-card" style={{ background: '#fff', border: 'none' }}>
                                     <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-playfair)' }}>
                                         {t('referral.adminTitle')}
