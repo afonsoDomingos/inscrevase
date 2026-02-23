@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -18,6 +18,8 @@ export default function AdManagement() {
     const [uploading, setUploading] = useState(false);
     const [myEvents, setMyEvents] = useState<FormModel[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string>('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingAdId, setEditingAdId] = useState<string | null>(null);
     const { formatPrice, convertAmount } = useCurrency();
 
     const PRICING_PER_WEEK = 5; // USD
@@ -158,17 +160,23 @@ export default function AdManagement() {
     const handleSubmitAd = async () => {
         setIsSubmitting(true);
         try {
-            if (form.paymentMethod === 'stripe') {
-                const checkout = await adService.createAdCheckout(form);
-                if (checkout.url) {
-                    window.location.href = checkout.url;
-                    return;
+            if (isEditing && editingAdId) {
+                await adService.updateAdRequest(editingAdId, form);
+                toast.success('Anúncio atualizado com sucesso!');
+            } else {
+                if (form.paymentMethod === 'stripe') {
+                    const checkout = await adService.createAdCheckout(form);
+                    if (checkout.url) {
+                        window.location.href = checkout.url;
+                        return;
+                    }
                 }
+                await adService.submitAdRequest(form);
+                toast.success('Pedido de anúncio enviado com sucesso!');
             }
-
-            await adService.submitAdRequest(form);
-            toast.success('Pedido de anúncio enviado com sucesso!');
             setShowCreateForm(false);
+            setIsEditing(false);
+            setEditingAdId(null);
             setStep(1);
             loadAds();
         } catch (err: unknown) {
@@ -218,8 +226,8 @@ export default function AdManagement() {
                             <ArrowLeft size={24} />
                         </motion.button>
                         <div>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0 }}>Solicitar Novo Destaque</h2>
-                            <p style={{ color: '#64748b', margin: '4px 0 0', fontWeight: 500 }}>Siga os passos para colocar sua marca em evidência</p>
+                            <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', margin: 0 }}>{isEditing ? 'Editar Anúncio' : 'Solicitar Novo Destaque'}</h2>
+                            <p style={{ color: '#64748b', margin: '4px 0 0', fontWeight: 500 }}>{isEditing ? 'Atualize as informações do seu anúncio' : 'Siga os passos para colocar sua marca em evidência'}</p>
                         </div>
                     </div>
                 </div>
@@ -446,139 +454,143 @@ export default function AdManagement() {
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Moeda de Pagamento</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                                                {['USD', 'EUR'].map(curr => (
-                                                    <button
-                                                        key={curr}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setForm({ ...form, currency: curr });
-                                                            setShowOtherCurrencies(false);
-                                                        }}
-                                                        style={{
-                                                            padding: '0.75rem',
-                                                            borderRadius: '12px',
-                                                            border: (form.currency === curr && !showOtherCurrencies) ? '2px solid #FFD700' : '2px solid #eee',
-                                                            background: (form.currency === curr && !showOtherCurrencies) ? '#FFD700' : '#fff',
-                                                            color: (form.currency === curr && !showOtherCurrencies) ? '#000' : '#666',
-                                                            fontWeight: 800,
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            gap: '0.5rem'
-                                                        }}
-                                                    >
-                                                        {curr}
-                                                    </button>
-                                                ))}
-                                                <div style={{ position: 'relative' }}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowOtherCurrencies(!showOtherCurrencies)}
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '0.75rem',
-                                                            borderRadius: '12px',
-                                                            border: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '2px solid #eee' : '2px solid #FFD700',
-                                                            background: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '#fff' : '#FFD700',
-                                                            color: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '#666' : '#000',
-                                                            fontWeight: 800,
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            gap: '0.5rem'
-                                                        }}
-                                                    >
-                                                        {['USD', 'EUR'].includes(form.currency || '') ? 'Outras' : form.currency}
-                                                        <ChevronDown size={14} />
-                                                    </button>
+                                        {!isEditing && (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Moeda de Pagamento</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                                                    {['USD', 'EUR'].map(curr => (
+                                                        <button
+                                                            key={curr}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setForm({ ...form, currency: curr });
+                                                                setShowOtherCurrencies(false);
+                                                            }}
+                                                            style={{
+                                                                padding: '0.75rem',
+                                                                borderRadius: '12px',
+                                                                border: (form.currency === curr && !showOtherCurrencies) ? '2px solid #FFD700' : '2px solid #eee',
+                                                                background: (form.currency === curr && !showOtherCurrencies) ? '#FFD700' : '#fff',
+                                                                color: (form.currency === curr && !showOtherCurrencies) ? '#000' : '#666',
+                                                                fontWeight: 800,
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                gap: '0.5rem'
+                                                            }}
+                                                        >
+                                                            {curr}
+                                                        </button>
+                                                    ))}
+                                                    <div style={{ position: 'relative' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowOtherCurrencies(!showOtherCurrencies)}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '0.75rem',
+                                                                borderRadius: '12px',
+                                                                border: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '2px solid #eee' : '2px solid #FFD700',
+                                                                background: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '#fff' : '#FFD700',
+                                                                color: (['USD', 'EUR'].includes(form.currency || '') && !showOtherCurrencies) ? '#666' : '#000',
+                                                                fontWeight: 800,
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                gap: '0.5rem'
+                                                            }}
+                                                        >
+                                                            {['USD', 'EUR'].includes(form.currency || '') ? 'Outras' : form.currency}
+                                                            <ChevronDown size={14} />
+                                                        </button>
 
-                                                    {showOtherCurrencies && (
-                                                        <div style={{
-                                                            position: 'absolute',
-                                                            top: '100%',
-                                                            right: 0,
-                                                            left: 0,
-                                                            background: '#fff',
-                                                            border: '1px solid #eee',
-                                                            borderRadius: '12px',
-                                                            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-                                                            zIndex: 50,
-                                                            marginTop: '5px',
-                                                            padding: '4px'
-                                                        }}>
-                                                            {['MZN', 'AOA', 'CVE', 'XOF'].map(curr => (
-                                                                <button
-                                                                    key={curr}
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        setForm({ ...form, currency: curr });
-                                                                        setShowOtherCurrencies(false);
-                                                                    }}
-                                                                    style={{
-                                                                        width: '100%',
-                                                                        padding: '0.6rem 1rem',
-                                                                        border: 'none',
-                                                                        background: form.currency === curr ? 'rgba(255, 215, 0, 0.1)' : 'transparent',
-                                                                        borderRadius: '8px',
-                                                                        textAlign: 'left',
-                                                                        cursor: 'pointer',
-                                                                        fontSize: '0.85rem',
-                                                                        fontWeight: 700,
-                                                                        color: form.currency === curr ? '#B8860B' : '#666'
-                                                                    }}
-                                                                >
-                                                                    {curr}
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    )}
+                                                        {showOtherCurrencies && (
+                                                            <div style={{
+                                                                position: 'absolute',
+                                                                top: '100%',
+                                                                right: 0,
+                                                                left: 0,
+                                                                background: '#fff',
+                                                                border: '1px solid #eee',
+                                                                borderRadius: '12px',
+                                                                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                                                                zIndex: 50,
+                                                                marginTop: '5px',
+                                                                padding: '4px'
+                                                            }}>
+                                                                {['MZN', 'AOA', 'CVE', 'XOF'].map(curr => (
+                                                                    <button
+                                                                        key={curr}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setForm({ ...form, currency: curr });
+                                                                            setShowOtherCurrencies(false);
+                                                                        }}
+                                                                        style={{
+                                                                            width: '100%',
+                                                                            padding: '0.6rem 1rem',
+                                                                            border: 'none',
+                                                                            background: form.currency === curr ? 'rgba(255, 215, 0, 0.1)' : 'transparent',
+                                                                            borderRadius: '8px',
+                                                                            textAlign: 'left',
+                                                                            cursor: 'pointer',
+                                                                            fontSize: '0.85rem',
+                                                                            fontWeight: 700,
+                                                                            color: form.currency === curr ? '#B8860B' : '#666'
+                                                                        }}
+                                                                    >
+                                                                        {curr}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        )}
 
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                            <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Duração do Destaque</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-                                                {[1, 2, 3, 4].map(w => (
-                                                    <button
-                                                        key={w}
-                                                        onClick={() => setForm({ ...form, durationWeeks: w })}
-                                                        style={{
-                                                            padding: '0.75rem',
-                                                            borderRadius: '12px',
-                                                            border: form.durationWeeks === w ? '2px solid #FFD700' : '2px solid #eee',
-                                                            background: form.durationWeeks === w ? '#FFD700' : '#fff',
-                                                            color: form.durationWeeks === w ? '#000' : '#999',
-                                                            fontWeight: 800,
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s'
-                                                        }}
-                                                    >
-                                                        {w}W
-                                                    </button>
-                                                ))}
+                                        {!isEditing && (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Duração do Destaque</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                                                    {[1, 2, 3, 4].map(w => (
+                                                        <button
+                                                            key={w}
+                                                            onClick={() => setForm({ ...form, durationWeeks: w })}
+                                                            style={{
+                                                                padding: '0.75rem',
+                                                                borderRadius: '12px',
+                                                                border: form.durationWeeks === w ? '2px solid #FFD700' : '2px solid #eee',
+                                                                background: form.durationWeeks === w ? '#FFD700' : '#fff',
+                                                                color: form.durationWeeks === w ? '#000' : '#999',
+                                                                fontWeight: 800,
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s'
+                                                            }}
+                                                        >
+                                                            {w}W
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <div style={{
+                                                    padding: '1rem',
+                                                    background: '#FFF8E1',
+                                                    border: '1px solid #FFECB3',
+                                                    borderRadius: '12px',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    color: '#B8860B'
+                                                }}>
+                                                    <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Investimento Total</span>
+                                                    <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{formatPrice(form.priceTotal, form.currency, form.currency)}</span>
+                                                </div>
                                             </div>
-                                            <div style={{
-                                                padding: '1rem',
-                                                background: '#FFF8E1',
-                                                border: '1px solid #FFECB3',
-                                                borderRadius: '12px',
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                color: '#B8860B'
-                                            }}>
-                                                <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Investimento Total</span>
-                                                <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{formatPrice(form.priceTotal, form.currency, form.currency)}</span>
-                                            </div>
-                                        </div>
+                                        )}
 
                                         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                                             <button
@@ -587,8 +599,8 @@ export default function AdManagement() {
                                                 Voltar
                                             </button>
                                             <button
-                                                onClick={() => setStep(3)}
-                                                disabled={!form.mediaUrl}
+                                                onClick={isEditing ? handleSubmitAd : () => setStep(3)}
+                                                disabled={!form.mediaUrl || isSubmitting}
                                                 style={{
                                                     flex: 2,
                                                     padding: '1rem',
@@ -597,17 +609,17 @@ export default function AdManagement() {
                                                     borderRadius: '12px',
                                                     border: 'none',
                                                     fontWeight: 800,
-                                                    cursor: !form.mediaUrl ? 'not-allowed' : 'pointer',
-                                                    opacity: !form.mediaUrl ? 0.5 : 1
+                                                    cursor: (!form.mediaUrl || isSubmitting) ? 'not-allowed' : 'pointer',
+                                                    opacity: (!form.mediaUrl || isSubmitting) ? 0.5 : 1
                                                 }}
                                             >
-                                                Ir para Pagamento
+                                                {isEditing ? (isSubmitting ? 'Salvando...' : 'Salvar Alterações') : 'Ir para Pagamento'}
                                             </button>
                                         </div>
                                     </motion.div>
                                 )}
 
-                                {step === 3 && (
+                                {step === 3 && !isEditing && (
                                     <motion.div
                                         key="step3"
                                         initial={{ opacity: 0, x: -20 }}
@@ -857,7 +869,25 @@ export default function AdManagement() {
                     <motion.button
                         whileHover={{ scale: 1.02, boxShadow: '0 15px 30px rgba(255, 215, 0, 0.3)' }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => setShowCreateForm(true)}
+                        onClick={() => {
+                            setForm({
+                                title: '',
+                                description: '',
+                                category: 'event',
+                                mediaUrl: '',
+                                mediaType: 'image',
+                                durationWeeks: 1,
+                                priceTotal: PRICING_PER_WEEK,
+                                currency: 'USD',
+                                paymentMethod: 'manual',
+                                status: 'pending',
+                                targetUrl: ''
+                            });
+                            setEditingAdId(null);
+                            setIsEditing(false);
+                            setStep(1);
+                            setShowCreateForm(true);
+                        }}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -1144,6 +1174,34 @@ export default function AdManagement() {
                                         title="Excluir"
                                     >
                                         <Trash2 size={20} />
+                                    </motion.button>
+                                    <motion.button
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => {
+                                            setForm(ad);
+                                            setEditingAdId(ad._id!);
+                                            setIsEditing(true);
+                                            setStep(1);
+                                            setShowCreateForm(true);
+                                        }}
+                                        style={{
+                                            width: '42px',
+                                            height: '42px',
+                                            borderRadius: '14px',
+                                            border: '1px solid #e2e8f0',
+                                            background: '#fff',
+                                            color: '#3b82f6',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        onMouseOver={e => e.currentTarget.style.background = '#eff6ff'}
+                                        onMouseOut={e => e.currentTarget.style.background = '#fff'}
+                                        title="Editar"
+                                    >
+                                        <Edit2 size={20} />
                                     </motion.button>
 
                                     {ad.targetUrl && (
