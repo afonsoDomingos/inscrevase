@@ -62,9 +62,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const { trackViewContent, trackAddToCart, trackPurchase } = useMetaPixelEvents();
 
     const [currentStep, setCurrentStep] = useState(0);
-    const FIELDS_PER_STEP = 4;
+    const FIELDS_PER_STEP = 3;
     const [isVideoHidden, setIsVideoHidden] = useState(false);
-    const isMultiStep = form && form.fields && form.fields.length > 5;
+    const isMultiStep = form && form.fields && form.fields.length > 3;
     const numFieldSteps = form ? Math.ceil(form.fields.length / FIELDS_PER_STEP) : 1;
     const hasPaymentStep = isMultiStep && form?.paymentConfig?.enabled;
     const totalSteps = isMultiStep ? numFieldSteps + (hasPaymentStep ? 1 : 0) : 1;
