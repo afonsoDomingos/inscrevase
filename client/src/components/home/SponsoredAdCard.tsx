@@ -12,7 +12,9 @@ export interface SponsoredItem {
     title: string;
     description: string;
     mediaUrl?: string | null;
+    mediaUrls?: string[];
     mediaType: 'image' | 'video';
+    productPrice?: number;
     targetUrl: string;
     metadata: {
         date?: string | null;
@@ -30,6 +32,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [timeLeft, setTimeLeft] = useState(10);
     const [isVisible, setIsVisible] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const isClosed = false;
 
     const [isMobile, setIsMobile] = useState(false);
@@ -56,7 +59,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     }, [events.length]);
 
     useEffect(() => {
-        if (!isVisible || isClosed) return;
+        if (!isVisible || isClosed || isDetailsModalOpen) return;
 
         const timer = setInterval(() => {
             setTimeLeft((prev) => {
@@ -69,7 +72,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isVisible, isClosed, events.length, currentIndex, nextAd]);
+    }, [isVisible, isClosed, events.length, currentIndex, nextAd, isDetailsModalOpen]);
 
     // Impression tracking for AdRequest items
     useEffect(() => {
@@ -247,6 +250,20 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     {currentItem.title}
                                 </h3>
 
+                                {currentItem.productPrice && (
+                                    <div style={{
+                                        fontSize: '1.2rem',
+                                        fontWeight: 900,
+                                        color: '#D4AF37',
+                                        marginBottom: '0.4rem',
+                                        display: 'flex',
+                                        alignItems: 'baseline',
+                                        gap: '2px'
+                                    }}>
+                                        {new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' }).format(currentItem.productPrice)}
+                                    </div>
+                                )}
+
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '1rem' }}>
                                     {currentItem.metadata?.date && (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
@@ -267,44 +284,104 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     )}
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <Link
-                                        href={currentItem.targetUrl}
-                                        onClick={handleClickLink}
-                                        target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
-                                        style={{
-                                            flex: 1,
-                                            padding: '8px 0',
-                                            background: 'var(--gold-gradient)',
-                                            color: '#000',
-                                            borderRadius: '8px',
-                                            textAlign: 'center',
-                                            fontWeight: 700,
-                                            textDecoration: 'none',
-                                            fontSize: '0.8rem',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
-                                    >
-                                        Ver <ChevronRight size={14} style={{ marginLeft: '2px' }} />
-                                    </Link>
-                                    <button
-                                        onClick={nextAd}
-                                        style={{
-                                            padding: '0 12px',
-                                            background: '#f1f1f1',
-                                            color: '#666',
-                                            borderRadius: '8px',
-                                            border: 'none',
-                                            fontWeight: 600,
-                                            fontSize: '0.75rem',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Próximo
-                                    </button>
-                                </div>
+                                {currentItem.metadata?.category === 'product' ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={() => setIsDetailsModalOpen(true)}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: '8px 0',
+                                                    background: '#f8fafc',
+                                                    color: '#0f172a',
+                                                    borderRadius: '8px',
+                                                    textAlign: 'center',
+                                                    fontWeight: 700,
+                                                    border: '1px solid #e2e8f0',
+                                                    fontSize: '0.8rem',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Saber mais
+                                            </button>
+                                            <button
+                                                onClick={nextAd}
+                                                style={{
+                                                    padding: '0 12px',
+                                                    background: '#f1f1f1',
+                                                    color: '#666',
+                                                    borderRadius: '8px',
+                                                    border: 'none',
+                                                    fontWeight: 600,
+                                                    fontSize: '0.75rem',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Próximo
+                                            </button>
+                                        </div>
+                                        <Link
+                                            href={currentItem.targetUrl}
+                                            onClick={handleClickLink}
+                                            target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
+                                            style={{
+                                                width: '100%',
+                                                padding: '8px 0',
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                borderRadius: '8px',
+                                                textAlign: 'center',
+                                                fontWeight: 700,
+                                                textDecoration: 'none',
+                                                fontSize: '0.8rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            Contactar <ChevronRight size={14} style={{ marginLeft: '2px' }} />
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <Link
+                                            href={currentItem.targetUrl}
+                                            onClick={handleClickLink}
+                                            target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
+                                            style={{
+                                                flex: 1,
+                                                padding: '8px 0',
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                borderRadius: '8px',
+                                                textAlign: 'center',
+                                                fontWeight: 700,
+                                                textDecoration: 'none',
+                                                fontSize: '0.8rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            Ver <ChevronRight size={14} style={{ marginLeft: '2px' }} />
+                                        </Link>
+                                        <button
+                                            onClick={nextAd}
+                                            style={{
+                                                padding: '0 12px',
+                                                background: '#f1f1f1',
+                                                color: '#666',
+                                                borderRadius: '8px',
+                                                border: 'none',
+                                                fontWeight: 600,
+                                                fontSize: '0.75rem',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Próximo
+                                        </button>
+                                    </div>
+                                )}
 
                                 <div style={{ marginTop: '0.8rem', textAlign: 'center' }}>
                                     <Link
@@ -317,8 +394,161 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
                         </div>
                     </motion.div>
-                </>
-            )}
-        </AnimatePresence>
+                </motion.div>
+
+            {/* AD DETAILS MODAL */}
+            <AnimatePresence>
+                {isDetailsModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            zIndex: 10000,
+                            background: 'rgba(0,0,0,0.85)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '1rem',
+                            backdropFilter: 'blur(5px)'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ y: 50, opacity: 0, scale: 0.95 }}
+                            animate={{ y: 0, opacity: 1, scale: 1 }}
+                            exit={{ y: 50, opacity: 0, scale: 0.95 }}
+                            style={{
+                                width: '100%',
+                                maxWidth: '700px',
+                                maxHeight: '90vh',
+                                background: '#fff',
+                                borderRadius: '24px',
+                                overflow: 'hidden',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                position: 'relative',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                            }}
+                        >
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setIsDetailsModalOpen(false)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '16px',
+                                    right: '16px',
+                                    zIndex: 10,
+                                    background: 'rgba(255,255,255,0.9)',
+                                    color: '#000',
+                                    border: 'none',
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                }}
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div style={{ flex: 1, overflowY: 'auto' }}>
+                                {/* Gallery / Main Media */}
+                                <div style={{ position: 'relative', width: '100%', height: '350px', background: '#f8fafc' }}>
+                                    {currentItem.mediaType === 'video' ? (
+                                        <video
+                                            src={currentItem.mediaUrl || ""}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            controls
+                                            autoPlay
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={currentItem.mediaUrl || '/logo.png'}
+                                            alt={currentItem.title}
+                                            fill
+                                            style={{ objectFit: currentItem.mediaUrl ? 'contain' : 'contain' }}
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Other Images if available */}
+                                {currentItem.mediaUrls && currentItem.mediaUrls.length > 1 && (
+                                    <div style={{ display: 'flex', gap: '8px', padding: '1rem', overflowX: 'auto', borderBottom: '1px solid #e2e8f0' }}>
+                                        {currentItem.mediaUrls.map((url, idx) => (
+                                            <div key={idx} style={{ position: 'relative', minWidth: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                                                <Image src={url} alt={`Gallery ${idx}`} fill style={{ objectFit: 'cover' }} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div style={{ padding: '2rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                                        <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#0f172a', margin: 0, lineHeight: 1.2 }}>
+                                            {currentItem.title}
+                                        </h1>
+                                        {currentItem.productPrice && (
+                                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#D4AF37', whiteSpace: 'nowrap' }}>
+                                                {new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' }).format(currentItem.productPrice)}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-line', marginBottom: '2rem' }}>
+                                        {currentItem.description}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Action Bar */}
+                            <div style={{ padding: '1.5rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                <button
+                                    onClick={() => setIsDetailsModalOpen(false)}
+                                    style={{
+                                        padding: '0.8rem 1.5rem',
+                                        background: 'transparent',
+                                        border: '1px solid #cbd5e1',
+                                        borderRadius: '12px',
+                                        fontWeight: 700,
+                                        color: '#64748b',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Voltar
+                                </button>
+                                <Link
+                                    href={currentItem.targetUrl}
+                                    onClick={handleClickLink}
+                                    target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
+                                    style={{
+                                        padding: '0.8rem 2rem',
+                                        background: 'var(--gold-gradient)',
+                                        border: 'none',
+                                        borderRadius: '12px',
+                                        fontWeight: 800,
+                                        color: '#000',
+                                        textDecoration: 'none',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                                    }}
+                                >
+                                    Contactar <ChevronRight size={18} />
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
+    )
+}
+        </AnimatePresence >
     );
 }

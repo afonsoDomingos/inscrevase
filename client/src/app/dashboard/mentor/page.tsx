@@ -193,7 +193,9 @@ function MentorDashboardContent() {
                     title: ad.title,
                     description: ad.description,
                     mediaUrl: ad.mediaUrl,
+                    mediaUrls: ad.mediaUrls,
                     mediaType: ad.mediaType,
+                    productPrice: ad.productPrice,
                     targetUrl: ad.targetUrl,
                     metadata: { category: ad.category }
                 }))
