@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2 } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -20,6 +20,9 @@ export default function AdManagement() {
     const [selectedEventId, setSelectedEventId] = useState<string>('');
     const [isEditing, setIsEditing] = useState(false);
     const [editingAdId, setEditingAdId] = useState<string | null>(null);
+    const [ctaType, setCtaType] = useState<'whatsapp' | 'link'>('link');
+    const [whatsappNumber, setWhatsappNumber] = useState('');
+    const [whatsappMessage, setWhatsappMessage] = useState('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
     const { formatPrice, convertAmount } = useCurrency();
 
     const PRICING_PER_WEEK = 5; // USD
@@ -160,18 +163,24 @@ export default function AdManagement() {
     const handleSubmitAd = async () => {
         setIsSubmitting(true);
         try {
+            const formData = { ...form };
+            if (ctaType === 'whatsapp' && whatsappNumber) {
+                const cleanPhone = whatsappNumber.replace(/\D/g, '');
+                formData.targetUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`;
+            }
+
             if (isEditing && editingAdId) {
-                await adService.updateAdRequest(editingAdId, form);
+                await adService.updateAdRequest(editingAdId, formData);
                 toast.success('Anúncio atualizado com sucesso!');
             } else {
-                if (form.paymentMethod === 'stripe') {
-                    const checkout = await adService.createAdCheckout(form);
+                if (formData.paymentMethod === 'stripe') {
+                    const checkout = await adService.createAdCheckout(formData);
                     if (checkout.url) {
                         window.location.href = checkout.url;
                         return;
                     }
                 }
-                await adService.submitAdRequest(form);
+                await adService.submitAdRequest(formData);
                 toast.success('Pedido de anúncio enviado com sucesso!');
             }
             setShowCreateForm(false);
@@ -355,6 +364,62 @@ export default function AdManagement() {
                                                 </div>
                                             </div>
                                         )}
+
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Tipo de Link (Call to Action)</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                                                    <button
+                                                        onClick={() => setCtaType('link')}
+                                                        style={{ padding: '0.75rem', borderRadius: '12px', border: ctaType === 'link' ? '2px solid #FFD700' : '1px solid #ddd', background: ctaType === 'link' ? 'rgba(255, 215, 0, 0.05)' : '#fff', color: ctaType === 'link' ? '#000' : '#666', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                                                    >
+                                                        <ExternalLink size={18} /> Link Personalizado
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setCtaType('whatsapp')}
+                                                        style={{ padding: '0.75rem', borderRadius: '12px', border: ctaType === 'whatsapp' ? '2px solid #25D366' : '1px solid #ddd', background: ctaType === 'whatsapp' ? 'rgba(37, 211, 102, 0.05)' : '#fff', color: ctaType === 'whatsapp' ? '#128C7E' : '#666', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                                                    >
+                                                        <MessageCircle size={18} /> WhatsApp
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {ctaType === 'link' ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>URL de Destino</label>
+                                                    <input
+                                                        type="url"
+                                                        value={form.targetUrl || ''}
+                                                        onChange={(e) => setForm({ ...form, targetUrl: e.target.value })}
+                                                        placeholder="Ex: https://meusite.com/produto"
+                                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', background: '#f9f9f9', outline: 'none', fontWeight: 600, fontSize: '0.95rem' }}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1.5rem', background: 'rgba(37, 211, 102, 0.05)', borderRadius: '16px', border: '1px solid #a7f3d0' }}>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                        <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#128C7E', letterSpacing: '0.5px' }}>Número do WhatsApp</label>
+                                                        <input
+                                                            type="text"
+                                                            value={whatsappNumber}
+                                                            onChange={(e) => setWhatsappNumber(e.target.value)}
+                                                            placeholder="Ex: +258 84 000 0000"
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #a7f3d0', background: '#fff', outline: 'none', fontWeight: 600, fontSize: '0.95rem' }}
+                                                        />
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                        <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#128C7E', letterSpacing: '0.5px' }}>Mensagem Inicial Automática</label>
+                                                        <textarea
+                                                            value={whatsappMessage}
+                                                            onChange={(e) => setWhatsappMessage(e.target.value)}
+                                                            rows={2}
+                                                            placeholder="Olá, vi seu anúncio no Inscreva-se..."
+                                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #a7f3d0', background: '#fff', outline: 'none', resize: 'none', fontFamily: 'inherit' }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
 
                                         <button
                                             onClick={() => setStep(2)}
@@ -885,6 +950,9 @@ export default function AdManagement() {
                             });
                             setEditingAdId(null);
                             setIsEditing(false);
+                            setCtaType('link');
+                            setWhatsappNumber('');
+                            setWhatsappMessage('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
                             setStep(1);
                             setShowCreateForm(true);
                         }}
@@ -1181,6 +1249,24 @@ export default function AdManagement() {
                                             setForm(ad);
                                             setEditingAdId(ad._id!);
                                             setIsEditing(true);
+
+                                            // Handle CTA Type and WhatsApp parsing
+                                            if (ad.targetUrl && ad.targetUrl.includes('wa.me/')) {
+                                                setCtaType('whatsapp');
+                                                const match = ad.targetUrl.match(/wa\.me\/(\d+)/);
+                                                setWhatsappNumber(match ? match[1] : '');
+                                                const textMatch = ad.targetUrl.match(/text=([^&]+)/);
+                                                if (textMatch) {
+                                                    setWhatsappMessage(decodeURIComponent(textMatch[1]));
+                                                } else {
+                                                    setWhatsappMessage('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
+                                                }
+                                            } else {
+                                                setCtaType('link');
+                                                setWhatsappNumber('');
+                                                setWhatsappMessage('Olá, vi seu anúncio no Inscreva-se e decidi entrar em contato!');
+                                            }
+
                                             setStep(1);
                                             setShowCreateForm(true);
                                         }}
