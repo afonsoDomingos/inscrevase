@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Megaphone, CheckCircle, XCircle, Clock, ExternalLink,
-    Image as ImageIcon, CreditCard, Trash2, PowerOff,
+    CreditCard, Trash2, PowerOff,
     Eye, MousePointer2, AlertCircle, Calendar,
     User, Activity
 } from 'lucide-react';
