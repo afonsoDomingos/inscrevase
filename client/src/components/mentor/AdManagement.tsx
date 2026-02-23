@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2 } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2 } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -1228,6 +1228,34 @@ export default function AdManagement() {
                                         >
                                             <ExternalLink size={18} />
                                         </motion.a>
+                                    )}
+
+                                    {ad.targetUrl && (
+                                        <motion.button
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(ad.targetUrl || '');
+                                                toast.success('Link do anúncio copiado!');
+                                            }}
+                                            style={{
+                                                width: '42px',
+                                                height: '42px',
+                                                borderRadius: '14px',
+                                                border: '1px solid #e2e8f0',
+                                                background: '#fff',
+                                                color: '#10b981',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            onMouseOver={e => e.currentTarget.style.background = '#ecfdf5'}
+                                            onMouseOut={e => e.currentTarget.style.background = '#fff'}
+                                            title="Copiar Link para Partilhar"
+                                        >
+                                            <Share2 size={18} />
+                                        </motion.button>
                                     )}
                                 </div>
                             </div>
