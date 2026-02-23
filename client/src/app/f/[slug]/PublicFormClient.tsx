@@ -23,7 +23,9 @@ import {
     Coins,
     Star,
     Users,
-    X
+    X,
+    Minimize2,
+    Maximize2
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -61,6 +63,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
     const [currentStep, setCurrentStep] = useState(0);
     const FIELDS_PER_STEP = 4;
+    const [isVideoHidden, setIsVideoHidden] = useState(false);
     const isMultiStep = form && form.fields && form.fields.length > 5;
     const numFieldSteps = form ? Math.ceil(form.fields.length / FIELDS_PER_STEP) : 1;
     const hasPaymentStep = isMultiStep && form?.paymentConfig?.enabled;
@@ -532,7 +535,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                         {/* Logo removed from absolute positioning */}
 
-                        <div className={`responsive-form-grid ${(form as any).videoUrl ? 'has-vsl' : 'no-vsl'} ${(form as any).videoOrientation === 'horizontal' ? 'horizontal-vsl' : ''}`}>
+                        <div className={`responsive-form-grid ${((form as any).videoUrl && !isVideoHidden) ? 'has-vsl' : 'no-vsl'} ${(form as any).videoOrientation === 'horizontal' ? 'horizontal-vsl' : ''}`}>
 
                             {/* Column 1: Info + Banner */}
                             <motion.div
@@ -885,7 +888,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                             </motion.div>
 
                             {/* Column 2: VSL Video */}
-                            <div className="vsl-column" style={{ width: '100%' }}>
+                            <div className="vsl-column" style={{ width: '100%', display: isVideoHidden ? 'none' : 'block' }}>
                                 {(form as any).videoUrl ? (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -905,6 +908,34 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             maxWidth: (form as any).videoOrientation === 'horizontal' ? '100%' : '300px',
                                             margin: '0 auto'
                                         }}>
+                                            {/* Hide Video Button */}
+                                            <button
+                                                onClick={() => setIsVideoHidden(true)}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '12px',
+                                                    right: '12px',
+                                                    background: 'rgba(0,0,0,0.5)',
+                                                    backdropFilter: 'blur(10px)',
+                                                    border: 'none',
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: '#fff',
+                                                    cursor: 'pointer',
+                                                    zIndex: 10,
+                                                    transition: '0.2s'
+                                                }}
+                                                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.8)'}
+                                                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.5)'}
+                                                title="Recolher Vídeo"
+                                            >
+                                                <Minimize2 size={18} />
+                                            </button>
+
                                             {/* Top Gradient Overlay */}
                                             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: `linear-gradient(to bottom, ${primaryColor}30, transparent)`, zIndex: 2, pointerEvents: 'none' }} />
 
@@ -1419,6 +1450,43 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     </div>
                 </motion.a>
             )}
+
+            {/* Show video back button if hidden */}
+            <AnimatePresence>
+                {isVideoHidden && (form as any).videoUrl && (
+                    <motion.button
+                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, x: -20 }}
+                        onClick={() => setIsVideoHidden(false)}
+                        style={{
+                            position: 'fixed',
+                            bottom: '30px',
+                            left: '30px',
+                            zIndex: 100,
+                            background: primaryColor,
+                            color: isDark ? '#000' : '#fff',
+                            border: 'none',
+                            padding: '12px 20px',
+                            borderRadius: '14px',
+                            fontWeight: 800,
+                            fontSize: '0.8rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            boxShadow: `0 10px 25px ${primaryColor}40`,
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
+                        }}
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Maximize2 size={18} />
+                        Ver Vídeo (VSL)
+                    </motion.button>
+                )}
+            </AnimatePresence>
         </main>
     );
 }
