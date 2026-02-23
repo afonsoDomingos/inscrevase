@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { formService, FormModel } from '@/lib/formService';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import {
     CheckCircle,
     MessageCircle,
@@ -60,6 +60,12 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [paymentMode, setPaymentMode] = useState<'stripe' | 'manual' | null>(null);
     const visitRecorded = useRef(false);
     const { trackViewContent, trackAddToCart, trackPurchase } = useMetaPixelEvents();
+
+    // Scroll Animations
+    const { scrollY } = useScroll();
+    const titleOpacity = useTransform(scrollY, [0, 300], [1, 0.4]);
+    const titleScale = useTransform(scrollY, [0, 300], [1, 0.96]);
+    const titleY = useTransform(scrollY, [0, 300], [0, -10]);
 
     const [currentStep, setCurrentStep] = useState(0);
     const FIELDS_PER_STEP = 3;
@@ -436,6 +442,10 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     box-shadow: 0 0 0 4px ${primaryColor}20, 0 8px 20px rgba(0,0,0,0.1);
                     transform: translateY(-2px);
                 }
+                .premium-input::placeholder {
+                    color: ${isDark ? 'rgba(255,255,255,0.4)' : '#a0a0a0'} !important;
+                    opacity: 1;
+                }
                 .checkbox-container {
                     transition: all 0.2s ease;
                 }
@@ -549,14 +559,27 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     <motion.div
                                         initial={{ opacity: 0, y: -10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        style={{ marginBottom: '2rem' }}
+                                        style={{
+                                            marginBottom: '2rem',
+                                            width: '100px',
+                                            height: '100px',
+                                            borderRadius: '50%',
+                                            overflow: 'hidden',
+                                            border: `3px solid ${primaryColor}40`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            background: '#fff',
+                                            boxShadow: `0 10px 25px ${primaryColor}15`,
+                                            padding: '5px'
+                                        }}
                                     >
                                         <Image
                                             src={form.logo}
                                             alt="Logo"
-                                            width={140}
-                                            height={50}
-                                            style={{ objectFit: 'contain', height: 'auto' }}
+                                            width={90}
+                                            height={90}
+                                            style={{ objectFit: 'contain', width: '80%', height: '80%', borderRadius: '50%' }}
                                         />
                                     </motion.div>
                                 )}
@@ -651,7 +674,10 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         marginBottom: '1.5rem',
                                         color: titleColor,
                                         lineHeight: 1.1,
-                                        letterSpacing: '-1px'
+                                        letterSpacing: '-1px',
+                                        opacity: titleOpacity,
+                                        scale: titleScale,
+                                        y: titleY
                                     }}
                                 >
                                     {form.title}
