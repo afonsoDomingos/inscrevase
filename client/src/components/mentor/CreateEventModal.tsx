@@ -82,6 +82,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         toast.success(`Dados importados de "${event.title}"`);
     };
     const [isMobile, setIsMobile] = useState(false);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
     // Mobile Detection
     useEffect(() => {
@@ -864,7 +865,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
     return (
         <AnimatePresence>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -874,28 +875,30 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                 />
 
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     style={{
-                        position: 'relative',
-                        width: '100%',
-                        maxWidth: isMobile ? '100%' : '1000px',
-                        background: '#fff',
-                        borderRadius: isMobile ? '0' : '30px',
-                        overflow: 'hidden',
+                        height: '100vh',
+                        width: '100vw',
+                        maxWidth: '100%',
+                        borderRadius: 0,
                         display: 'grid',
-                        gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
-                        gridTemplateRows: isMobile ? 'auto 1fr auto' : '1fr', // Changed to include footer in grid track for mobile if needed, or keep auto 1fr
-                        height: isMobile ? '100dvh' : '90vh',
-                        maxHeight: isMobile ? '100dvh' : '900px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                        zIndex: 2002
+                        gridTemplateColumns: isMobile ? '1fr' : `${isSidebarVisible ? '300px' : '0px'} 1fr`,
+                        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr',
+                        background: '#fff',
+                        position: 'relative',
+                        overflow: 'hidden'
                     }}
                 >
                     {/* Sidebar / Top Nav */}
                     <div style={{
                         background: '#111',
+                        width: isSidebarVisible ? (isMobile ? '100%' : '300px') : '0',
+                        opacity: isSidebarVisible ? 1 : 0,
+                        overflow: 'hidden',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         padding: isMobile ? '1.5rem 1rem' : '2.5rem 1.5rem',
                         color: '#fff',
                         display: isMobile ? 'flex' : 'block',
@@ -973,6 +976,29 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                             zIndex: 20,
                             position: 'relative'
                         }}>
+                            <div style={{ position: 'absolute', top: isMobile ? '1.2rem' : '2rem', left: isMobile ? '1.2rem' : '2rem', zIndex: 30 }}>
+                                {!isMobile && (
+                                    <button
+                                        onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+                                        style={{
+                                            background: '#fff',
+                                            border: '1px solid #ddd',
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                            color: '#666'
+                                        }}
+                                    >
+                                        <Menu size={20} />
+                                    </button>
+                                )}
+                            </div>
+
                             <div style={{ position: 'absolute', top: isMobile ? '1.2rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
                                 <button
                                     onClick={() => setShowPreview(true)}
@@ -1954,8 +1980,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                             { id: 'royalGold', name: t('events.presets.royalGold'), bg: '#1a1a1a', primary: '#D4AF37', style: 'luxury' },
                                                             { id: 'modernWhite', name: t('events.presets.modernWhite'), bg: '#FFFFFF', primary: '#000000', style: 'minimalist' },
                                                             { id: 'oceanBlue', name: t('events.presets.oceanBlue'), bg: '#0f172a', primary: '#38bdf8', style: 'luxury' },
-                                                            { id: 'vibrantGreen', name: t('events.presets.vibrantGreen'), bg: '#064e3b', primary: '#4ade80', style: 'luxury' },
-                                                            { id: 'sunset', name: t('events.presets.sunset'), bg: '#450a0a', primary: '#f97316', style: 'luxury' }
+                                                            { id: 'aura-teal', name: '🌿 Teal Aura', bg: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff', primary: '#0d9488', style: 'luxury' },
+                                                            { id: 'aura-candy', name: '🍬 Candy', bg: 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff', primary: '#db2777', style: 'luxury' },
+                                                            { id: 'aura-sunset', name: '🌅 Peach', bg: 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', primary: '#e11d48', style: 'luxury' },
+                                                            { id: 'aura-nordic', name: '❄️ Nordic', bg: 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff', primary: '#0ea5e9', style: 'luxury' },
+                                                            { id: 'aura-rose', name: '🌸 Rose', bg: 'radial-gradient(at 0% 0%, #fff1f2 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', primary: '#f43f5e', style: 'luxury' },
+                                                            { id: 'aura-sky', name: '☁️ Sky', bg: 'radial-gradient(at 0% 0%, #f0f9ff 0%, transparent 50%), radial-gradient(at 100% 100%, #e0f2fe 0%, transparent 50%), #fff', primary: '#0ea5e9', style: 'luxury' },
+                                                            { id: 'aura-forest', name: '🌲 Forest', bg: 'radial-gradient(at 0% 0%, #f0fdf4 0%, transparent 50%), radial-gradient(at 100% 100%, #dcfce7 0%, transparent 50%), #fff', primary: '#16a34a', style: 'luxury' },
+                                                            { id: 'aura-night', name: '🌃 Night', bg: 'radial-gradient(at 0% 0%, #1e1b4b 0%, transparent 50%), radial-gradient(at 100% 100%, #312e81 0%, transparent 50%), #0f172a', primary: '#818cf8', style: 'luxury' },
+                                                            { id: 'royal', name: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', primary: '#FFD700', style: 'luxury' },
+                                                            { id: 'aurora', name: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', primary: '#000000', style: 'luxury' }
                                                         ].map((preset) => (
                                                             <motion.button
                                                                 key={preset.id}

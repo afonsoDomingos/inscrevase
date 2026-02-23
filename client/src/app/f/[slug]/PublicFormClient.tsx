@@ -231,17 +231,22 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';
     const primaryColor = form.theme?.primaryColor || '#FFD700';
     const bgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
-    const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : (isLuxury ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/bio-organic.png")` : 'none');
-    const isDark = (bgColor.startsWith('#') && parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x999999);
+    const isGradient = bgColor.includes('gradient') || bgColor.includes('radial');
+    const bgImage = form.theme?.backgroundImage ? `url(${form.theme.backgroundImage})` : (isGradient ? bgColor : (isLuxury ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/bio-organic.png")` : 'none'));
+    const isDark = (bgColor.startsWith('#') && !isGradient)
+        ? (parseInt(bgColor.slice(1).length === 3 ? bgColor.slice(1).split('').map(c => c + c).join('') : bgColor.slice(1), 16) < 0x999999)
+        : (bgColor.toLowerCase().includes('night') || bgColor.toLowerCase().includes('black') || bgColor.toLowerCase().includes('#0f172a') || bgColor.toLowerCase().includes('#050505') || bgColor.toLowerCase().includes('#1e293b') || bgColor.toLowerCase().includes('linear-gradient(135deg, #0f172a') || (isGradient && bgColor.includes('rgba(0,0,0')));
 
     // Explicitly determine colors based on brightness to avoid white-on-white
-    const titleColor = isDark ? (form.theme?.titleColor || '#ffffff') : (form.theme?.titleColor === '#ffffff' || !form.theme?.titleColor ? '#000000' : form.theme.titleColor);
+    const titleColor = isDark
+        ? (form.theme?.titleColor || '#ffffff')
+        : (form.theme?.titleColor && form.theme.titleColor.toLowerCase() !== '#ffffff' ? form.theme.titleColor : '#000000');
     const textColor = isDark ? '#ffffff' : '#111111';
-    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#444444';
-    const cardBg = isDark ? 'rgba(0, 0, 0, 0.65)' : '#fff';
-    const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#eee';
-    const inputBg = form.theme?.inputBackgroundColor || (isLuxury ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)');
-    const placeholderColor = form.theme?.inputPlaceholderColor || (isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)');
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)';
+    const cardBg = isDark ? 'rgba(0, 0, 0, 0.65)' : '#ffffff';
+    const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const inputBg = form.theme?.inputBackgroundColor || (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)');
+    const placeholderColor = form.theme?.inputPlaceholderColor || (isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)');
 
     return (
         <main style={{
@@ -259,7 +264,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     left: -50,
                     right: -50,
                     bottom: -50,
-                    backgroundImage: bgImage,
+                    background: bgImage,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     zIndex: 0,
@@ -380,6 +385,10 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 .premium-input {
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     border: 1px solid ${borderColor} !important;
+                }
+                .premium-input::placeholder {
+                    color: ${placeholderColor} !important;
+                    opacity: 1;
                 }
                 .premium-input:hover {
                     border-color: ${primaryColor}70 !important;

@@ -32,6 +32,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [aiLoading, setAiLoading] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -488,7 +489,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
     return (
         <AnimatePresence>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -498,21 +499,36 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                 />
 
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="edit-event-modal"
                     style={{
-                        height: isMobile ? '100vh' : '90vh',
-                        maxWidth: isMobile ? '100%' : '1100px',
-                        borderRadius: isMobile ? '0' : '30px',
+                        height: '100vh',
+                        width: '100vw',
+                        maxWidth: '100%',
+                        borderRadius: 0,
                         display: 'grid',
-                        gridTemplateColumns: isMobile ? '1fr' : '280px 1fr',
-                        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr'
+                        gridTemplateColumns: isMobile ? '1fr' : `${isSidebarVisible ? '300px' : '0px'} 1fr`,
+                        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr',
+                        background: '#fff',
+                        position: 'relative',
+                        overflow: 'hidden'
                     }}
                 >
                     {/* Sidebar */}
-                    <div className="edit-event-sidebar custom-scrollbar">
+                    <div
+                        className="edit-event-sidebar custom-scrollbar"
+                        style={{
+                            width: isSidebarVisible ? (isMobile ? '100%' : '300px') : '0',
+                            opacity: isSidebarVisible ? 1 : 0,
+                            overflow: 'hidden',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            borderRight: isSidebarVisible ? '1px solid #eee' : 'none',
+                            background: '#0a0a0a'
+                        }}
+                    >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem', color: '#FFD700' }}>
                             <Layout size={24} />
                             <span className="btn-text" style={{ fontWeight: 800, fontSize: '1.2rem' }}>{t('events.editEvent')}</span>
@@ -562,11 +578,34 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                         <div style={{
                             flex: 1,
                             overflowY: 'auto',
-                            padding: isMobile ? '1.5rem' : '3rem',
-                            paddingBottom: '2rem',
+                            padding: isMobile ? '1.5rem' : '3.5rem',
+                            paddingBottom: '5rem',
                             minHeight: 0,
                             position: 'relative'
                         }} className="custom-scrollbar">
+                            <div style={{ position: 'absolute', top: isMobile ? '1rem' : '2rem', left: isMobile ? '1rem' : '2rem', zIndex: 10 }}>
+                                {!isMobile && (
+                                    <button
+                                        onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+                                        style={{
+                                            background: '#fff',
+                                            border: '1px solid #ddd',
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                            color: '#666'
+                                        }}
+                                    >
+                                        <Menu size={20} />
+                                    </button>
+                                )}
+                            </div>
+
                             <div style={{ position: 'absolute', top: isMobile ? '1rem' : '2rem', right: isMobile ? '1rem' : '2rem', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 }}>
                                 <button
                                     onClick={() => setShowPreview(true)}
@@ -1224,8 +1263,16 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                             { id: 'royalGold', name: t('events.presets.royalGold'), bg: '#1a1a1a', primary: '#D4AF37', style: 'luxury' },
                                                             { id: 'modernWhite', name: t('events.presets.modernWhite'), bg: '#FFFFFF', primary: '#000000', style: 'minimalist' },
                                                             { id: 'oceanBlue', name: t('events.presets.oceanBlue'), bg: '#0f172a', primary: '#38bdf8', style: 'luxury' },
-                                                            { id: 'vibrantGreen', name: t('events.presets.vibrantGreen'), bg: '#064e3b', primary: '#4ade80', style: 'luxury' },
-                                                            { id: 'sunset', name: t('events.presets.sunset'), bg: '#450a0a', primary: '#f97316', style: 'luxury' }
+                                                            { id: 'aura-teal', name: '🌿 Teal Aura', bg: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff', primary: '#0d9488', style: 'luxury' },
+                                                            { id: 'aura-candy', name: '🍬 Candy', bg: 'radial-gradient(at 0% 0%, #fbcfe880 0%, transparent 50%), radial-gradient(at 100% 0%, #fef08a60 0%, transparent 50%), radial-gradient(at 50% 100%, #bfdbfe80 0%, transparent 50%), #fff', primary: '#db2777', style: 'luxury' },
+                                                            { id: 'aura-sunset', name: '🌅 Peach', bg: 'radial-gradient(at 0% 0%, #ffedd5 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', primary: '#e11d48', style: 'luxury' },
+                                                            { id: 'aura-nordic', name: '❄️ Nordic', bg: 'radial-gradient(at 0% 0%, #e0f2fe 0%, transparent 50%), radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%), radial-gradient(at 50% 100%, #fefce8 0%, transparent 50%), #fff', primary: '#0ea5e9', style: 'luxury' },
+                                                            { id: 'aura-rose', name: '🌸 Rose', bg: 'radial-gradient(at 0% 0%, #fff1f2 0%, transparent 50%), radial-gradient(at 100% 100%, #fecdd3 0%, transparent 50%), #fff', primary: '#f43f5e', style: 'luxury' },
+                                                            { id: 'aura-sky', name: '☁️ Sky', bg: 'radial-gradient(at 0% 0%, #f0f9ff 0%, transparent 50%), radial-gradient(at 100% 100%, #e0f2fe 0%, transparent 50%), #fff', primary: '#0ea5e9', style: 'luxury' },
+                                                            { id: 'aura-forest', name: '🌲 Forest', bg: 'radial-gradient(at 0% 0%, #f0fdf4 0%, transparent 50%), radial-gradient(at 100% 100%, #dcfce7 0%, transparent 50%), #fff', primary: '#16a34a', style: 'luxury' },
+                                                            { id: 'aura-night', name: '🌃 Night', bg: 'radial-gradient(at 0% 0%, #1e1b4b 0%, transparent 50%), radial-gradient(at 100% 100%, #312e81 0%, transparent 50%), #0f172a', primary: '#818cf8', style: 'luxury' },
+                                                            { id: 'royal', name: '👑 Royal', bg: 'linear-gradient(135deg, #0f172a 0%, #FFD700 100%)', primary: '#FFD700', style: 'luxury' },
+                                                            { id: 'aurora', name: '✨ Aurora', bg: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)', primary: '#000000', style: 'luxury' }
                                                         ].map((preset) => (
                                                             <motion.button
                                                                 key={preset.id}

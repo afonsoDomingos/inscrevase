@@ -132,8 +132,13 @@ interface SubmissionData {
             facebookPixelId?: string;
         };
         theme: {
-            primaryColor: string;
-            backgroundColor: string;
+            primaryColor?: string;
+            backgroundColor?: string;
+            style?: 'luxury' | 'minimalist';
+            backgroundImage?: string;
+            titleColor?: string;
+            inputBackgroundColor?: string;
+            inputPlaceholderColor?: string;
         };
     };
 }
@@ -373,35 +378,58 @@ function HubContent() {
     );
 
     const { form } = submission;
-    const primaryColor = form.theme?.primaryColor || '#E82127'; // Tesla Red if not defined
     const isApproved = submission.status === 'approved' || submission.paymentStatus === 'paid';
     const isCreatorOrAdmin = currentUser?.id === form.creator?._id || currentUser?._id === form.creator?._id || currentUser?.role === 'admin';
 
+    // Theme Variables Extraction
+    const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';
+    const primaryColor = form.theme?.primaryColor || form.hubButtonColor || '#E82127';
+    const rawBgColor = form.theme?.backgroundColor || (isLuxury ? '#050505' : '#FFFFFF');
+    const isGradient = rawBgColor.includes('gradient') || rawBgColor.includes('radial');
+
+    const isDark = (rawBgColor.startsWith('#') && !isGradient)
+        ? (parseInt(rawBgColor.slice(1).length === 3 ? rawBgColor.slice(1).split('').map(c => c + c).join('') : rawBgColor.slice(1), 16) < 0x999999)
+        : (rawBgColor.includes('night') || rawBgColor.includes('black') || rawBgColor.includes('#0f172a') || rawBgColor.includes('#050505') || rawBgColor.includes('#1e293b') || rawBgColor.includes('linear-gradient(135deg, #0f172a'));
+
+    const bgOverlay = isDark ? 'linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(5,5,5,0.95))' : 'linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(245,245,245,0.98))';
+
+    const bgImage = form.hubBackgroundImage
+        ? `${bgOverlay}, url('${form.hubBackgroundImage}')`
+        : (form.theme?.backgroundImage ? `${bgOverlay}, url("${form.theme.backgroundImage}")` : (isGradient ? rawBgColor : (isLuxury ? `${bgOverlay}, url("/bio-organic.png")` : rawBgColor)));
+
+    const textColor = isDark ? '#ffffff' : '#111111';
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#444444';
+    const cardBg = isDark ? 'rgba(20, 20, 20, 0.75)' : '#ffffff';
+    const cardBorder = isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)';
+    const navBg = isDark ? 'rgba(10, 10, 10, 0.85)' : 'rgba(255, 255, 255, 0.85)';
+    const navText = isDark ? '#ffffff' : '#171A20';
+    const navBorder = isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)';
+
     return (
-        <main style={{ minHeight: '100vh', background: `linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(5,5,5,0.95)), url('${form.hubBackgroundImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}')`, backgroundSize: 'cover', backgroundAttachment: 'fixed', color: '#fff', fontFamily: 'var(--font-inter), sans-serif', padding: '0', overflowX: 'hidden' }}>
+        <main style={{ minHeight: '100vh', background: bgImage, backgroundSize: 'cover', backgroundAttachment: 'fixed', color: textColor, fontFamily: 'var(--font-inter), sans-serif', padding: '0', overflowX: 'hidden' }}>
             {form.creator.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Top Navigation Bar - Glass White */}
-            <nav style={{ position: 'sticky', top: 0, background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', zIndex: 100, padding: '15px 24px', borderBottom: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+            <nav style={{ position: 'sticky', top: 0, background: navBg, backdropFilter: 'blur(12px)', zIndex: 100, padding: '15px 24px', borderBottom: navBorder, boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#171A20', transition: '0.2s' }}>
+                        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.9rem', color: navText, transition: '0.2s' }}>
                             <ArrowLeft size={18} /> {t('common.back')}
                         </button>
-                        <div style={{ width: '1px', height: '20px', background: 'rgba(0,0,0,0.1)' }} />
-                        <Link href="/" style={{ textDecoration: 'none', color: '#171A20', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }} />
+                        <Link href="/" style={{ textDecoration: 'none', color: navText, fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Home size={18} /> {t('common.backToHome') || 'Visitar Plataforma'}
                         </Link>
                     </div>
-                    <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#171A20' }}>
-                        {t('hub.passport')} <span style={{ fontWeight: 500, color: '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
+                    <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: navText }}>
+                        {t('hub.passport')} <span style={{ fontWeight: 500, color: isDark ? 'rgba(255,255,255,0.5)' : '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                         {currentUser ? (
                             <button
                                 onClick={() => router.push(currentUser.role === 'mentor' ? '/dashboard/mentor' : currentUser.role === 'participant' ? '/dashboard/participant' : '/dashboard/admin')}
                                 style={{
-                                    background: '#171A20',
-                                    color: '#fff',
+                                    background: isDark ? '#fff' : '#171A20',
+                                    color: isDark ? '#000' : '#fff',
                                     border: 'none',
                                     padding: '8px 16px',
                                     borderRadius: '100px',
@@ -581,7 +609,7 @@ function HubContent() {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            style={{ background: '#fff', borderRadius: '32px', overflow: 'hidden', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.04)', position: 'relative' }}
+                            style={{ background: cardBg, borderRadius: '32px', overflow: 'hidden', boxShadow: isDark ? '0 20px 40px -10px rgba(0,0,0,0.5)' : '0 20px 40px -10px rgba(0,0,0,0.08)', border: cardBorder, position: 'relative' }}
                         >
                             <div style={{ position: 'relative', width: '100%', height: '300px' }}>
                                 <Image
@@ -617,28 +645,28 @@ function HubContent() {
                         {/* Location & Links */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }}>
                             {form.location ? (
-                                <div style={{ background: '#fff', padding: '35px', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    <div style={{ background: '#f8f8f8', width: '50px', height: '50px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Navigation size={24} color="#333" />
+                                <div style={{ background: cardBg, color: textColor, padding: '35px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8', width: '50px', height: '50px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Navigation size={24} color={isDark ? '#fff' : '#333'} />
                                     </div>
                                     <div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '6px' }}>{t('mentors.location')}</div>
-                                        <div style={{ fontSize: '0.95rem', color: '#666', lineHeight: 1.6 }}>{form.location}</div>
+                                        <div style={{ fontSize: '0.95rem', color: secondaryTextColor, lineHeight: 1.6 }}>{form.location}</div>
                                     </div>
-                                    <button style={{ marginTop: 'auto', background: '#f4f4f4', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: '0.2s' }}>{t('hub.exploreRoute')}</button>
+                                    <button style={{ marginTop: 'auto', background: isDark ? 'rgba(255,255,255,0.1)' : '#f4f4f4', color: textColor, border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: '0.2s' }}>{t('hub.exploreRoute')}</button>
                                 </div>
                             ) : <div />}
 
                             {form.onlineLink ? (
-                                <div style={{ background: '#fff', padding: '35px', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    <div style={{ background: '#f8f8f8', width: '50px', height: '50px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Video size={24} color="#333" />
+                                <div style={{ background: cardBg, color: textColor, padding: '35px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8', width: '50px', height: '50px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Video size={24} color={isDark ? '#fff' : '#333'} />
                                     </div>
                                     <div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '6px' }}>{t('events.onlineLink')}</div>
-                                        <div style={{ fontSize: '0.95rem', color: '#666' }}>{t('hub.linkAvailableInCabin')}</div>
+                                        <div style={{ fontSize: '0.95rem', color: secondaryTextColor }}>{t('hub.linkAvailableInCabin')}</div>
                                     </div>
-                                    <a href={form.onlineLink} target="_blank" style={{ marginTop: 'auto', background: '#111', color: '#fff', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                                    <a href={form.onlineLink} target="_blank" style={{ marginTop: 'auto', background: isDark ? '#fff' : '#111', color: isDark ? '#000' : '#fff', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                                         {form.onlineLink.includes('meet.google') || form.onlineLink.includes('zoom.us') || form.onlineLink.includes('teams') ? t('events.joinRoom') : t('events.accessLink')}
                                     </a>
                                 </div>
@@ -646,7 +674,7 @@ function HubContent() {
                         </div>
 
                         {/* Mentor Section */}
-                        <div style={{ background: '#0a0a0a', padding: '45px', borderRadius: '32px', color: '#fff', display: 'flex', gap: '35px', alignItems: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.2)' }}>
+                        <div style={{ background: isDark ? 'rgba(10,10,10,0.8)' : '#0a0a0a', padding: '45px', borderRadius: '32px', color: '#fff', display: 'flex', gap: '35px', alignItems: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', border: cardBorder }}>
                             <div style={{ position: 'relative', width: '110px', height: '110px', flexShrink: 0 }}>
                                 <Image
                                     src={form.creator.profilePhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(form.creator.name) + '&size=200&background=171A20&color=FFD700&bold=true'}
@@ -766,11 +794,11 @@ function HubContent() {
                         {form.customFields && form.customFields.length > 0 && (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '25px' }}>
                                 {form.customFields.map((field, idx) => (
-                                    <div key={idx} style={{ background: '#fff', padding: '30px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#999', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                    <div key={idx} style={{ background: cardBg, color: textColor, padding: '30px', borderRadius: '24px', border: cardBorder, boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: secondaryTextColor, textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                             {field.label}
                                         </div>
-                                        <div style={{ fontSize: '1.15rem', fontWeight: 600, color: '#111', wordBreak: 'break-word', lineHeight: 1.4 }}>
+                                        <div style={{ fontSize: '1.15rem', fontWeight: 600, color: textColor, wordBreak: 'break-word', lineHeight: 1.4 }}>
                                             {field.value.startsWith('http') ? (
                                                 <a href={field.value} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     {field.value.length > 25 ? t('hub.accessExternalLink') : field.value} <LinkIcon size={16} />
@@ -784,7 +812,7 @@ function HubContent() {
 
                         {/* 4. Aulas do Evento (HUB Lessons) */}
                         {lessons.length > 0 && (
-                            <div style={{ background: '#fff', padding: '45px', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }}>
                                 {/* Progress Stats */}
                                 <div style={{
                                     background: 'linear-gradient(135deg, #0a0a0a 0%, #171A20 100%)',
@@ -821,7 +849,7 @@ function HubContent() {
                                     <div style={{ padding: '10px', background: `${primaryColor}15`, borderRadius: '12px' }}>
                                         <Video size={26} color={primaryColor} />
                                     </div>
-                                    <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: '#111' }}>{t('dashboard.lessons') || 'Aulas do Evento'}</h2>
+                                    <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: textColor }}>{t('dashboard.lessons') || 'Aulas do Evento'}</h2>
                                 </div>
                                 <div style={{
                                     display: 'flex',
@@ -850,10 +878,10 @@ function HubContent() {
                                                 style={{
                                                     minWidth: '300px',
                                                     maxWidth: '300px',
-                                                    background: '#fbfbfb',
+                                                    background: isDark ? 'rgba(255,255,255,0.03)' : '#fbfbfb',
                                                     borderRadius: '24px',
                                                     overflow: 'hidden',
-                                                    border: '1px solid #f0f0f0',
+                                                    border: cardBorder,
                                                     cursor: locked ? 'not-allowed' : 'pointer',
                                                     opacity: locked ? 0.6 : 1,
                                                     position: 'relative'
@@ -894,8 +922,8 @@ function HubContent() {
                                                             <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: '6px' }}>{t('hub.pendingStatus') || 'Não iniciada'}</div>
                                                         )}
                                                     </div>
-                                                    <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 700, color: '#111', lineHeight: 1.3 }}>{lesson.title}</h3>
-                                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{lesson.description}</p>
+                                                    <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 700, color: textColor, lineHeight: 1.3 }}>{lesson.title}</h3>
+                                                    <p style={{ margin: 0, fontSize: '0.85rem', color: secondaryTextColor, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{lesson.description}</p>
                                                 </div>
                                             </motion.div>
                                         );
@@ -928,9 +956,9 @@ function HubContent() {
                                                     allowFullScreen
                                                 />
                                             </div>
-                                            <div style={{ padding: '30px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ padding: '30px', background: cardBg, color: textColor, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div>
-                                                    <h2 style={{ margin: '0 0 10px 0', color: '#000' }}>{selectedLesson.title}</h2>
+                                                    <h2 style={{ margin: '0 0 10px 0', color: textColor }}>{selectedLesson.title}</h2>
                                                     <p style={{ margin: 0, color: '#666', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{selectedLesson.description}</p>
                                                 </div>
                                                 {!selectedLesson.progress?.completed && (
@@ -968,20 +996,20 @@ function HubContent() {
 
                         {/* 5. Agenda */}
                         {form.agenda && form.agenda.length > 0 && (
-                            <div style={{ background: '#fff', padding: '45px', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '35px' }}>
                                     <div style={{ padding: '10px', background: `${primaryColor}15`, borderRadius: '12px' }}>
                                         <Calendar size={26} color={primaryColor} />
                                     </div>
-                                    <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: '#111' }}>{t('events.agenda')}</h2>
+                                    <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: textColor }}>{t('events.agenda')}</h2>
                                 </div>
                                 <div style={{ position: 'relative', paddingLeft: '24px' }}>
-                                    <div style={{ position: 'absolute', left: '0', top: '15px', bottom: '15px', width: '2px', background: '#f0f0f0' }}></div>
+                                    <div style={{ position: 'absolute', left: '0', top: '15px', bottom: '15px', width: '2px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0' }}></div>
                                     {form.agenda.sort((a, b) => a.order - b.order).map((item, idx) => (
                                         <div key={idx} style={{ position: 'relative', paddingLeft: '35px', marginBottom: idx === (form.agenda!.length - 1) ? 0 : '40px' }}>
-                                            <div style={{ position: 'absolute', left: '-6px', top: '6px', width: '14px', height: '14px', borderRadius: '50%', background: primaryColor, border: '3px solid #fff', boxShadow: '0 0 0 2px #f0f0f0' }}></div>
+                                            <div style={{ position: 'absolute', left: '-6px', top: '6px', width: '14px', height: '14px', borderRadius: '50%', background: primaryColor, border: `3px solid ${cardBg}`, boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1)' : '0 0 0 2px #f0f0f0' }}></div>
                                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px', marginBottom: '6px' }}>
-                                                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#111' }}>{item.time}</div>
+                                                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: textColor }}>{item.time}</div>
                                                 <div style={{ fontSize: '0.85rem', color: '#888', fontWeight: 700, background: '#f4f4f4', padding: '2px 8px', borderRadius: '6px' }}>{item.duration}</div>
                                             </div>
                                             <div style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '6px', color: '#333' }}>{item.activity}</div>
@@ -994,16 +1022,16 @@ function HubContent() {
 
                         {/* 5. Materiais */}
                         {form.materials && form.materials.length > 0 && (
-                            <div style={{ background: '#fff', padding: '45px', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '35px' }}>
                                     <div style={{ padding: '10px', background: `${primaryColor}15`, borderRadius: '12px' }}>
                                         <BookOpen size={26} color={primaryColor} />
                                     </div>
-                                    <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: '#111' }}>{t('events.materials')}</h2>
+                                    <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: textColor }}>{t('events.materials')}</h2>
                                 </div>
                                 <div style={{ display: 'grid', gap: '18px' }}>
                                     {form.materials.sort((a, b) => a.order - b.order).map((material, idx) => (
-                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px', background: '#fbfbfb', borderRadius: '20px', border: '1px solid #f0f0f0', transition: '0.2s', cursor: 'pointer' /* hover effect handles by CSS globally usually */ }}>
+                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px', background: isDark ? 'rgba(255,255,255,0.03)' : '#fbfbfb', borderRadius: '20px', border: cardBorder, transition: '0.2s', cursor: 'pointer' /* hover effect handles by CSS globally usually */ }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                                 <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid #eee' }}>
                                                     {material.type === 'pdf' && <FileText size={22} color="#e53e3e" />}
@@ -1038,7 +1066,7 @@ function HubContent() {
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            style={{ background: '#fff', borderRadius: '32px', padding: '25px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.04)', textAlign: 'center' }}
+                            style={{ background: cardBg, color: textColor, borderRadius: '32px', padding: '25px', boxShadow: isDark ? '0 25px 50px -12px rgba(0,0,0,0.5)' : '0 25px 50px -12px rgba(0,0,0,0.08)', border: cardBorder, textAlign: 'center' }}
                         >
                             {/* Countdown Timer - Minimalista Premium */}
                             <div style={{ marginBottom: '30px', paddingBottom: '30px', borderBottom: '1px dashed #eee' }}>
@@ -1060,8 +1088,8 @@ function HubContent() {
                                     ))}
                                 </div>
                             </div>
-                            <div style={{ borderTop: '1px dashed #eee', paddingTop: '25px', marginBottom: '25px' }}>
-                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', marginBottom: '5px' }}>{t('hub.digitalTicket')}</div>
+                            <div style={{ borderTop: `1px dashed ${isDark ? 'rgba(255,255,255,0.1)' : '#eee'}`, paddingTop: '25px', marginBottom: '25px' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: secondaryTextColor, textTransform: 'uppercase', marginBottom: '5px' }}>{t('hub.digitalTicket')}</div>
                                 <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>ID: #{submission._id.slice(-8).toUpperCase()}</div>
                             </div>
 
@@ -1259,11 +1287,12 @@ function HubContent() {
                                 viewport={{ once: true }}
                                 style={{
                                     marginTop: '60px',
-                                    background: '#fff',
+                                    background: cardBg,
+                                    color: textColor,
                                     padding: '50px',
                                     borderRadius: '32px',
-                                    border: '1px solid rgba(0,0,0,0.04)',
-                                    boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
+                                    border: cardBorder,
+                                    boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.5)' : '0 20px 40px rgba(0,0,0,0.05)',
                                     textAlign: 'center'
                                 }}
                             >
@@ -1356,12 +1385,12 @@ function HubContent() {
                 </div>
 
                 {/* Footer Section */}
-                <footer style={{ marginTop: '100px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '40px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '20px' }}>{t('hub.footerCopyright')}</p>
+                <footer style={{ marginTop: '100px', borderTop: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)', paddingTop: '40px', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.8rem', color: secondaryTextColor, marginBottom: '20px' }}>{t('hub.footerCopyright')}</p>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
-                        <Link href="/suporte" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.support')}</Link>
-                        <Link href="/privacidade" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.privacy')}</Link>
-                        <Link href="/privacidade#termos" style={{ color: '#ccc', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.terms')}</Link>
+                        <Link href="/suporte" style={{ color: secondaryTextColor, fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.support')}</Link>
+                        <Link href="/privacidade" style={{ color: secondaryTextColor, fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.privacy')}</Link>
+                        <Link href="/privacidade#termos" style={{ color: secondaryTextColor, fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none' }}>{t('hub.terms')}</Link>
                     </div>
                 </footer>
 
