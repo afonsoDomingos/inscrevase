@@ -1283,6 +1283,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                 whileHover={{ y: -4 }}
                                                                 whileTap={{ scale: 0.98 }}
                                                                 onClick={() => setTheme({
+                                                                    ...theme,
                                                                     primaryColor: preset.primary,
                                                                     backgroundColor: preset.bg,
                                                                     style: preset.style as 'luxury' | 'minimalist',
