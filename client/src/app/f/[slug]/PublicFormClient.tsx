@@ -287,6 +287,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
     const inputBg = form.theme?.inputBackgroundColor || (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)');
     const placeholderColor = form.theme?.inputPlaceholderColor || (isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.65)');
+    const formPosition = form.theme?.formPosition || 'right';
 
     return (
         <main style={{
@@ -389,8 +390,19 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 .responsive-form-grid.no-vsl {
                     grid-template-columns: 1fr 420px;
                 }
+                .responsive-form-grid.form-left.has-vsl {
+                    grid-template-columns: 400px 280px 1fr;
+                }
+                .responsive-form-grid.form-left.no-vsl {
+                    grid-template-columns: 420px 1fr;
+                }
                 .responsive-form-grid.no-vsl .vsl-column {
                     display: none;
+                }
+                @media (min-width: 1201px) {
+                    .responsive-form-grid.form-left .info-column { order: 3; }
+                    .responsive-form-grid.form-left .vsl-column { order: 2; }
+                    .responsive-form-grid.form-left .form-column { order: 1; }
                 }
                 @media (max-width: 1200px) {
                     .responsive-form-grid.has-vsl,
@@ -545,10 +557,11 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                         {/* Logo removed from absolute positioning */}
 
-                        <div className={`responsive-form-grid ${((form as any).videoUrl && !isVideoHidden) ? 'has-vsl' : 'no-vsl'} ${(form as any).videoOrientation === 'horizontal' ? 'horizontal-vsl' : ''}`}>
+                        <div className={`responsive-form-grid ${((form as any).videoUrl && !isVideoHidden) ? 'has-vsl' : 'no-vsl'} ${(form as any).videoOrientation === 'horizontal' ? 'horizontal-vsl' : ''} form-${formPosition}`}>
 
                             {/* Column 1: Info + Banner */}
                             <motion.div
+                                className="info-column"
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
@@ -1007,6 +1020,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                             {/* Column 3: Form */}
                             <motion.div
+                                className="form-column"
                                 initial={{ x: 50, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ delay: 0.3, type: 'spring', damping: 20 }}

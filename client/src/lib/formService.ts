@@ -62,6 +62,7 @@ export interface FormModel {
         inputPlaceholderColor?: string;
         fontFamily: string;
         style: 'luxury' | 'minimalist';
+        formPosition?: 'left' | 'right';
     };
 
     paymentConfig?: {

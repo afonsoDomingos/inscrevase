@@ -3,8 +3,9 @@
 // Force refresh
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -97,12 +98,12 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         }
     };
 
-    // Theme State
     const [theme, setTheme] = useState({
         primaryColor: '#0d9488',
-        style: 'luxury',
+        style: 'luxury' as 'luxury' | 'minimalist',
         backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
+        formPosition: 'right' as 'left' | 'right'
     });
 
     // Aura AI State
@@ -294,7 +295,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                     primaryColor: form.theme.primaryColor || '#0d9488',
                     style: form.theme.style || 'luxury',
                     backgroundColor: form.theme.backgroundColor || 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
-                    fontFamily: form.theme.fontFamily || 'Inter'
+                    fontFamily: form.theme.fontFamily || 'Inter',
+                    formPosition: form.theme.formPosition || 'right'
                 });
             }
             setWelcomeMessage(form.welcomeMessage || '');
@@ -487,9 +489,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
     if (!isOpen) return null;
 
-    return (
+    const modalContent = (
         <AnimatePresence>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -1363,6 +1365,24 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                 style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.style === 'minimalist' ? '#111' : '#f4f4f4', color: theme.style === 'minimalist' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
                                                             >
                                                                 Simples (Minimalist)
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ marginTop: '1.5rem' }}>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem', fontSize: '0.8rem', color: '#666' }}>Alinhamento do Formulário (Página Pública)</label>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            <button
+                                                                onClick={() => setTheme({ ...theme, formPosition: 'left' })}
+                                                                style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.formPosition === 'left' ? '#111' : '#f4f4f4', color: theme.formPosition === 'left' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                                            >
+                                                                <AlignLeft size={16} /> À Esquerda
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setTheme({ ...theme, formPosition: 'right' })}
+                                                                style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', background: theme.formPosition === 'right' ? '#111' : '#f4f4f4', color: theme.formPosition === 'right' ? '#fff' : '#666', border: 'none', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                                            >
+                                                                <AlignRight size={16} /> À Direita (Padrão)
                                                             </button>
                                                         </div>
                                                     </div>
@@ -2351,4 +2371,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
             </div >
         </AnimatePresence >
     );
+
+    if (typeof window === 'undefined') return null;
+    return createPortal(modalContent, document.body);
 }
