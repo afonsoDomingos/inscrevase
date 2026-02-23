@@ -23,6 +23,9 @@ const adRequestSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    mediaUrls: [{
+        type: String
+    }],
     mediaType: {
         type: String,
         enum: ['image', 'video'],

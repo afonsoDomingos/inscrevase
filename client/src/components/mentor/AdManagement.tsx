@@ -32,6 +32,7 @@ export default function AdManagement() {
         description: '',
         category: 'event',
         mediaUrl: '',
+        mediaUrls: [],
         mediaType: 'image',
         durationWeeks: 1,
         priceTotal: PRICING_PER_WEEK,
@@ -123,22 +124,61 @@ export default function AdManagement() {
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
 
-        const isVideo = file.type.startsWith('video/');
+        const isVideo = files[0].type.startsWith('video/');
         const mediaType = isVideo ? 'video' : 'image';
 
-        setUploading(true);
-        try {
-            const url = await formService.uploadFile(file, 'ads');
-            setForm(prev => ({ ...prev, mediaUrl: url, mediaType }));
-            toast.success('Arquivo enviado com sucesso');
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message || 'Erro ao subir arquivo');
-        } finally {
-            setUploading(false);
+        if (form.category === 'product' && !isVideo) {
+            const currentCount = form.mediaUrls?.length || 0;
+            const remaining = 5 - currentCount;
+            const toProcess = files.slice(0, remaining);
+
+            if (toProcess.length === 0) {
+                toast.error('Limite máximo de 5 imagens atingido.');
+                return;
+            }
+
+            setUploading(true);
+            try {
+                const urls = await Promise.all(toProcess.map(f => formService.uploadFile(f, 'ads')));
+                setForm(prev => {
+                    const newUrls = [...(prev.mediaUrls || []), ...urls];
+                    return {
+                        ...prev,
+                        mediaUrls: newUrls,
+                        // Always keep the first one as main mediaUrl just for fallback/main display
+                        mediaUrl: newUrls[0] || '',
+                        mediaType
+                    };
+                });
+                toast.success(`${urls.length} imagem(ns) enviada(s)`);
+            } catch (err: unknown) {
+                const error = err as Error;
+                toast.error(error.message || 'Erro ao subir imagens');
+            } finally {
+                setUploading(false);
+            }
+        } else {
+            // Standard single file upload (or if video is selected even for product)
+            const file = files[0];
+            setUploading(true);
+            try {
+                const url = await formService.uploadFile(file, 'ads');
+                setForm(prev => ({
+                    ...prev,
+                    mediaUrl: url,
+                    mediaUrls: [url],
+                    mediaType
+                }));
+                toast.success('Arquivo enviado com sucesso');
+            } catch (err: unknown) {
+                const error = err as Error;
+                toast.error(error.message || 'Erro ao subir arquivo');
+            } finally {
+                setUploading(false);
+            }
         }
     };
 
@@ -456,54 +496,86 @@ export default function AdManagement() {
                                                 position: 'relative',
                                                 border: '2px dashed #ddd',
                                                 borderRadius: '24px',
-                                                padding: '2rem',
+                                                padding: form.mediaUrls && form.mediaUrls.length > 0 ? '1rem' : '2rem',
                                                 textAlign: 'center',
                                                 background: '#f9f9f9',
                                                 transition: 'all 0.2s',
-                                                cursor: 'pointer'
+
                                             }}
                                                 onMouseEnter={(e) => e.currentTarget.style.borderColor = '#FFD700'}
                                                 onMouseLeave={(e) => e.currentTarget.style.borderColor = '#ddd'}
                                             >
-                                                {form.mediaUrl ? (
-                                                    <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                                                        {form.mediaType === 'video' ? (
-                                                            <video src={form.mediaUrl} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                        ) : (
-                                                            <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                {form.mediaUrls && form.mediaUrls.length > 0 ? (
+                                                    <div style={{ display: 'grid', gridTemplateColumns: form.mediaUrls.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem' }}>
+                                                        {form.mediaUrls.map((url, idx) => (
+                                                            <div key={idx} style={{ position: 'relative', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                                                                {form.mediaType === 'video' ? (
+                                                                    <video src={url} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                ) : (
+                                                                    <Image src={url} alt={`Preview ${idx + 1}`} fill style={{ objectFit: 'cover' }} />
+                                                                )}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const newUrls = (form.mediaUrls || []).filter((_, i) => i !== idx);
+                                                                        setForm({
+                                                                            ...form,
+                                                                            mediaUrls: newUrls,
+                                                                            mediaUrl: newUrls[0] || ''
+                                                                        });
+                                                                    }}
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        top: '0.5rem',
+                                                                        right: '0.5rem',
+                                                                        background: 'rgba(0,0,0,0.6)',
+                                                                        backdropFilter: 'blur(4px)',
+                                                                        color: '#fff',
+                                                                        padding: '0.4rem',
+                                                                        borderRadius: '50%',
+                                                                        border: 'none',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        zIndex: 5
+                                                                    }}
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                        {form.category === 'product' && form.mediaType !== 'video' && form.mediaUrls.length < 5 && (
+                                                            <label style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,215,0,0.1)', border: '2px dashed #FFD700', borderRadius: '16px', aspectRatio: '16/9', color: '#B8860B', fontWeight: 700, fontSize: '0.85rem' }}>
+                                                                <Plus size={24} style={{ marginBottom: '0.5rem' }} />
+                                                                Adicionar
+                                                                <input
+                                                                    type="file"
+                                                                    onChange={handleFileUpload}
+                                                                    style={{ display: 'none' }}
+                                                                    accept="image/*"
+                                                                    multiple
+                                                                />
+                                                            </label>
                                                         )}
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); setForm({ ...form, mediaUrl: '' }); }}
-                                                            style={{
-                                                                position: 'absolute',
-                                                                top: '1rem',
-                                                                right: '1rem',
-                                                                background: 'rgba(0,0,0,0.6)',
-                                                                backdropFilter: 'blur(4px)',
-                                                                color: '#fff',
-                                                                padding: '0.5rem',
-                                                                borderRadius: '50%',
-                                                                border: 'none',
-                                                                cursor: 'pointer',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center'
-                                                            }}
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
                                                     </div>
                                                 ) : (
                                                     <div style={{ padding: '2rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                                         <Upload size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
                                                         <p style={{ fontWeight: 700, color: '#666', marginBottom: '0.25rem' }}>Upload de Imagem ou Vídeo</p>
-                                                        <p style={{ fontSize: '0.8rem', color: '#999' }}>Arraste aqui ou clique para selecionar</p>
-                                                        <input
-                                                            type="file"
-                                                            onChange={handleFileUpload}
-                                                            style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
-                                                            accept="image/*,video/*"
-                                                        />
+                                                        <p style={{ fontSize: '0.8rem', color: '#999' }}>
+                                                            {form.category === 'product' ? 'Arraste ou selecione até 5 imagens, ou 1 vídeo' : 'Arraste aqui ou clique para selecionar (1 Mídia)'}
+                                                        </p>
+                                                        <label style={{ position: 'absolute', inset: 0, cursor: 'pointer' }}>
+                                                            <input
+                                                                type="file"
+                                                                onChange={handleFileUpload}
+                                                                style={{ display: 'none' }}
+                                                                accept="image/*,video/*"
+                                                                multiple={form.category === 'product'}
+                                                            />
+                                                        </label>
                                                     </div>
                                                 )}
                                                 {uploading && (
@@ -820,12 +892,19 @@ export default function AdManagement() {
                                 justifyContent: 'center',
                                 overflow: 'hidden'
                             }}>
-                                {form.mediaUrl ? (
-                                    form.mediaType === 'video' ? (
-                                        <video src={form.mediaUrl} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    ) : (
-                                        <Image src={form.mediaUrl} alt="Preview" fill style={{ objectFit: 'cover' }} />
-                                    )
+                                {form.mediaUrls && form.mediaUrls.length > 0 ? (
+                                    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                                        {form.mediaType === 'video' ? (
+                                            <video src={form.mediaUrls[0]} autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <Image src={form.mediaUrls[0]} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                        )}
+                                        {form.mediaUrls.length > 1 && (
+                                            <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 800 }}>
+                                                1 / {form.mediaUrls.length}
+                                            </div>
+                                        )}
+                                    </div>
                                 ) : (
                                     <div style={{ position: 'relative', width: '60%', height: '60%', opacity: 0.1, filter: 'grayscale(1)' }}>
                                         <Image src="/logo.png" alt="Logo" fill style={{ objectFit: 'contain' }} />
@@ -940,6 +1019,7 @@ export default function AdManagement() {
                                 description: '',
                                 category: 'event',
                                 mediaUrl: '',
+                                mediaUrls: [],
                                 mediaType: 'image',
                                 durationWeeks: 1,
                                 priceTotal: PRICING_PER_WEEK,

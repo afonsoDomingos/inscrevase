@@ -9,6 +9,7 @@ export interface AdRequestModel {
     description: string;
     category: 'event' | 'service' | 'product';
     mediaUrl: string;
+    mediaUrls?: string[];
     mediaType: 'image' | 'video';
     durationWeeks: number;
     priceTotal: number;
