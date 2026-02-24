@@ -284,7 +284,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     )}
                                 </div>
 
-                                {currentItem.metadata?.category === 'product' ? (
+                                {currentItem.metadata?.category && typeof currentItem.metadata.category === 'string' && currentItem.metadata.category.toLowerCase().trim() === 'product' ? (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                         <div style={{ display: 'flex', gap: '8px' }}>
                                             <button
