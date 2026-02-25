@@ -46,7 +46,7 @@ export default function EarningsDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const { t } = useTranslate();
-    const { currency, formatPrice } = useCurrency();
+    const { currency, formatPrice, getPlanConfig } = useCurrency();
 
     useEffect(() => {
         const loadEarnings = async () => {
@@ -200,7 +200,13 @@ export default function EarningsDashboard() {
                         </div>
                         <div>
                             <div style={{ fontWeight: 800, color: '#FFD700', fontSize: '0.9rem' }}>{t('dashboard.finance.reduceFees')}</div>
-                            <div style={{ fontSize: '0.8rem', color: '#999' }}>{t('dashboard.finance.reduceFeesNotice')}</div>
+                            <div style={{ fontSize: '0.8rem', color: '#999' }}>
+                                {t('dashboard.finance.reduceFeesNotice', {
+                                    current: ((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0),
+                                    nextPlan: 'PRO',
+                                    nextRate: ((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0)
+                                })}
+                            </div>
                         </div>
                     </div>
                     <button

@@ -7,6 +7,8 @@ const LessonProgress = require('../models/LessonProgress');
 const Notification = require('../models/Notification');
 const NotificationService = require('../services/notificationService');
 const { PLANS } = require('../config/stripe');
+const { getDynamicPlanConfig } = require('../utils/planConfigs');
+const { getLatestRate } = require('../utils/currencyUtils');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
@@ -332,11 +334,13 @@ const updateStatus = async (req, res) => {
                 const mentor = await User.findById(submission.form.creator);
                 if (mentor) {
                     const mentorPlan = mentor.plan || 'free';
-                    const planConfig = PLANS[mentorPlan] || PLANS.free;
+                    const dynamicPlans = await getDynamicPlanConfig();
+                    const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
                     const amount = submission.form.paymentConfig.price || 0;
                     const platformFee = amount * planConfig.commissionRate;
 
                     const currency = submission.form.paymentConfig.currency || 'MZN';
+                    const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 
                     // Create manual transaction (Status: pending until mentor pays platform)
                     const transaction = new Transaction({
@@ -346,11 +350,12 @@ const updateStatus = async (req, res) => {
                         submission: submission._id,
                         amount: amount,
                         currency: currency,
-                        baseAmount: amount, // Internal accounting in MZN (assuming 1:1 if currency is MT/MZN)
+                        baseAmount: amount * rate,
+                        exchangeRate: rate,
                         platformFee: platformFee,
-                        basePlatformFee: platformFee,
+                        basePlatformFee: platformFee * rate,
                         mentorEarnings: amount, // For manual, mentor already has 100% of money
-                        baseMentorEarnings: amount,
+                        baseMentorEarnings: amount * rate,
                         status: 'pending', // Pending platform fee reconciliation
                         paymentMethod: 'manual'
                     });
@@ -769,19 +774,25 @@ const bulkUpdateSubmissions = async (req, res) => {
                         const mentor = await User.findById(sub.form.creator);
                         if (mentor) {
                             const mentorPlan = mentor.plan || 'free';
-                            const planConfig = PLANS[mentorPlan] || PLANS.free;
+                            const dynamicPlans = await getDynamicPlanConfig();
+                            const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
                             const amount = sub.form.paymentConfig.price || 0;
                             const platformFee = amount * planConfig.commissionRate;
                             const currency = sub.form.paymentConfig.currency || 'MZN';
+                            const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 
                             const transaction = new Transaction({
                                 user: sub.user || mentor._id,
                                 mentor: mentor._id,
                                 form: sub.form._id,
                                 submission: sub._id,
-                                amount, currency, baseAmount: amount,
-                                platformFee, basePlatformFee: platformFee,
-                                mentorEarnings: amount, baseMentorEarnings: amount,
+                                amount, currency,
+                                baseAmount: amount * rate,
+                                exchangeRate: rate,
+                                platformFee,
+                                basePlatformFee: platformFee * rate,
+                                mentorEarnings: amount,
+                                baseMentorEarnings: amount * rate,
                                 status: 'pending', paymentMethod: 'manual'
                             });
                             await transaction.save();

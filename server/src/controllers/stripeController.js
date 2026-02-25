@@ -8,6 +8,8 @@ const Submission = require('../models/Submission');
 const NotificationService = require('../services/notificationService');
 const AdRequest = require('../models/AdRequest');
 const { PLANS } = require('../config/stripe');
+const { getDynamicPlanConfig } = require('../utils/planConfigs');
+const { getLatestRate } = require('../utils/currencyUtils');
 const GlobalSettings = require('../models/GlobalSettings');
 const sendEmail = require('../utils/emailService');
 const {
@@ -157,7 +159,8 @@ exports.createCheckoutSession = async (req, res) => {
 
         // Calculate application fee based on mentor plan
         const mentorPlan = mentor.plan || 'free';
-        const planConfig = PLANS[mentorPlan] || PLANS.free;
+        const dynamicPlans = await getDynamicPlanConfig();
+        const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
         const applicationFeeAmount = Math.round(form.paymentConfig.price * 100 * planConfig.commissionRate);
 
         const session = await stripe.checkout.sessions.create({
@@ -607,8 +610,10 @@ exports.handleWebhook = async (req, res) => {
 
                 // Enviar e-mail de confirmação
                 if (user && user.email) {
+                    const dynamicPlans = await getDynamicPlanConfig();
+                    const planConfig = dynamicPlans[plan] || PLANS.pro;
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
-                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl);
+                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
                     sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
                 }
 
@@ -620,6 +625,7 @@ exports.handleWebhook = async (req, res) => {
 
                     const tx = new Transaction({
                         type: 'subscription',
+                        subscriptionPlan: plan ? String(plan).toLowerCase() : 'pro',
                         user: userId,
                         amount: amount,
                         currency: session.currency.toUpperCase(),
@@ -664,8 +670,10 @@ exports.handleWebhook = async (req, res) => {
 
                 // Enviar e-mail de confirmação
                 if (user && user.email) {
+                    const dynamicPlans = await getDynamicPlanConfig();
+                    const planConfig = dynamicPlans[plan] || PLANS.pro;
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
-                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl);
+                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
                     sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
                 }
 
@@ -676,6 +684,7 @@ exports.handleWebhook = async (req, res) => {
 
                     const tx = new Transaction({
                         type: 'subscription',
+                        subscriptionPlan: plan ? String(plan).toLowerCase() : 'pro',
                         user: userId,
                         amount: amount,
                         currency: invoice.currency.toUpperCase(),
@@ -834,12 +843,26 @@ exports.createSubscription = async (req, res) => {
             return res.status(403).json({ message: 'Por favor, confirme seu e-mail antes de assinar um plano.' });
         }
 
-        const planConfig = PLANS[plan];
+        const dynamicPlans = await getDynamicPlanConfig();
+        const planConfig = dynamicPlans[plan];
+
         if (!planConfig || plan === 'free') {
             return res.status(400).json({ message: 'Invalid plan selected' });
         }
 
-        const price = planConfig.prices[currency];
+        // Get price for selected currency
+        let price = planConfig.prices[currency];
+
+        // If price doesn't exist for currency, try to calculate from MZN or fallback
+        if (!price) {
+            const mznRate = await getLatestRate();
+            if (currency === 'USD' && planConfig.prices.MZN) {
+                // Calculate USD from MZN
+                price = Math.round((planConfig.prices.MZN / 100) / mznRate * 100);
+            } else {
+                price = planConfig.prices['USD'] || 0;
+            }
+        }
 
         const session = await stripe.checkout.sessions.create({
             mode: 'subscription',
@@ -987,10 +1010,10 @@ exports.confirmTransactionPayment = async (req, res) => {
 
         // If it's a subscription, upgrade the user
         if (transaction.type === 'subscription') {
-            const plan = transaction.metadata.get('plan') || 'pro';
+            const plan = transaction.subscriptionPlan || transaction.metadata.get('plan') || 'pro';
             const user = await User.findById(transaction.user._id);
             const updateData = {
-                plan: plan,
+                plan: plan.toLowerCase(),
                 canCreateEvents: true
             };
 
@@ -1003,8 +1026,10 @@ exports.confirmTransactionPayment = async (req, res) => {
 
             // Enviar e-mail de confirmação (Manual)
             if (user && user.email) {
+                const dynamicPlans = await getDynamicPlanConfig();
+                const planConfig = dynamicPlans[plan.toLowerCase()] || PLANS.pro;
                 const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
-                const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl);
+                const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
                 sendEmail(user.email, `Sua Assinatura foi Ativada: Plano ${plan.toUpperCase()}`, emailHtml);
             }
         }
@@ -1091,6 +1116,7 @@ exports.submitManualSubscription = async (req, res) => {
 
         const transactionData = {
             type: 'subscription',
+            subscriptionPlan: String(plan).toLowerCase(),
             user: userId,
             amount: numAmount,
             currency: currency.toUpperCase(),
@@ -1235,80 +1261,62 @@ exports.getAdminFinancialSummary = async (req, res) => {
 /**
  * DYNAMIC PLANS & EXCHANGE RATE
  */
-let cachedExchangeRate = 63.8; // Fallback rate
-let lastRateFetch = 0;
-const RATE_TTL = 1000 * 60 * 60 * 12; // 12 hours
+/**
+ * getLatestRate was moved to ../utils/currencyUtils.js
+ */
 
-async function getLatestRate() {
-    try {
-        // 1. Tentativo de buscar na base de dados (Persistência)
-        let settings = await GlobalSettings.findOne({ key: 'exchange_rate_usd_mzn' });
-        const now = Date.now();
-        const RATE_TTL = 1000 * 60 * 60 * 24; // 24 horas para atualização diária
-
-        // Se tivermos no DB e for recente, usamos
-        if (settings && (now - new Date(settings.lastUpdated).getTime() < RATE_TTL)) {
-            return settings.value;
-        }
-
-        // 2. Se não existir ou estiver expirado, busca na API
-        console.log('[CURRENCY] A atualizar taxa de câmbio diária via API...');
-        const response = await axios.get('https://open.er-api.com/v6/latest/USD');
-
-        if (response.data && response.data.rates && response.data.rates.MZN) {
-            const marketRate = response.data.rates.MZN;
-
-            // 3. Adicionar Margem de Segurança (Buffer de 1.5%)
-            // Protege contra flutuações intra-diárias e taxas de conversão bancária
-            const safetyMargin = 0.015;
-            const adjustedRate = marketRate * (1 - safetyMargin);
-
-            if (!settings) {
-                settings = new GlobalSettings({
-                    key: 'exchange_rate_usd_mzn',
-                    value: adjustedRate,
-                    lastUpdated: now
-                });
-            } else {
-                settings.value = adjustedRate;
-                settings.lastUpdated = now;
-            }
-
-            await settings.save();
-            cachedExchangeRate = adjustedRate;
-            lastRateFetch = now;
-            console.log(`[CURRENCY] Taxa atualizada: 1 USD = ${marketRate} MT (Ajustada para ${adjustedRate.toFixed(2)} MT com margem)`);
-            return adjustedRate;
-        }
-
-        return settings ? settings.value : cachedExchangeRate;
-    } catch (error) {
-        console.error('[CURRENCY] Falha ao sincronizar taxa:', error.message);
-        return cachedExchangeRate;
-    }
-};
+/**
+ * getDynamicPlanConfig was moved to ../utils/planConfigs.js
+ */
 
 exports.getPlans = async (req, res) => {
     try {
         const mznRate = await getLatestRate();
-        const basePlans = require('../config/stripe').PLANS;
+        const basePlans = await getDynamicPlanConfig();
 
         // Clone and adjust based on current rate
         const dynamicPlans = JSON.parse(JSON.stringify(basePlans));
 
-        // Let's assume MZN is the fixed base in Mozambique
-        // Pro: 175 MT -> Calculate USD
-        dynamicPlans.pro.prices.USD = Math.round((dynamicPlans.pro.prices.MZN / 100) / mznRate * 100);
-        // Enterprise: 1750 MT -> Calculate USD
-        dynamicPlans.enterprise.prices.USD = Math.round((dynamicPlans.enterprise.prices.MZN / 100) / mznRate * 100);
+        // Ensure we always have updated USD prices based on the MZN base if it exists
+        if (dynamicPlans.pro && dynamicPlans.pro.prices && dynamicPlans.pro.prices.MZN) {
+            dynamicPlans.pro.prices.USD = Math.round((dynamicPlans.pro.prices.MZN / 100) / mznRate * 100);
+        }
+
+        if (dynamicPlans.enterprise && dynamicPlans.enterprise.prices && dynamicPlans.enterprise.prices.MZN) {
+            dynamicPlans.enterprise.prices.USD = Math.round((dynamicPlans.enterprise.prices.MZN / 100) / mznRate * 100);
+        }
 
         res.status(200).json({
             success: true,
             plans: dynamicPlans,
-            rate: mznRate,
-            lastUpdate: lastRateFetch
+            rate: mznRate
         });
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updatePlans = async (req, res) => {
+    try {
+        const { plans } = req.body;
+        if (!plans) return res.status(400).json({ message: 'Planos são necessários' });
+
+        let settings = await GlobalSettings.findOne({ key: 'subscription_plans' });
+        if (!settings) {
+            settings = new GlobalSettings({
+                key: 'subscription_plans',
+                value: plans,
+                lastUpdated: Date.now()
+            });
+        } else {
+            settings.value = plans;
+            settings.lastUpdated = Date.now();
+        }
+
+        await settings.save();
+        res.status(200).json({ success: true, message: 'Configurações salvas com sucesso' });
+    } catch (error) {
+        console.error('Update plans error:', error);
         res.status(500).json({ message: error.message });
     }
 };

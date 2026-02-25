@@ -571,7 +571,7 @@
             "pendingFees": "Taxas da Plataforma Pendentes",
             "pendingFeesNotice": "Você possui {amount} USD em taxas de inscrições manuais a conciliar com a administração.",
             "reduceFees": "Reduza suas Taxas",
-            "reduceFeesNotice": "Sua comissão atual é de 15%. No plano PRO ela cai para 10%.",
+            "reduceFeesNotice": "Sua comissão atual é de {current}%. No plano {nextPlan} ela cai para {nextRate}%.",
             "viewPlans": "Ver Planos",
             "recentTransactions": "Transações Recentes",
             "noTransactions": "Nenhuma transação encontrada ainda.",
@@ -607,7 +607,8 @@
         "free": {
             "name": "Plano Free",
             "description": "Comece sua jornada sem custos.",
-            "fee": "• Taxa de 15% por inscrição",
+            "fee": "• TAXA 15% (Fixa)",
+            "fee_dynamic": "Taxa de {fee}% por inscrição",
             "f1": "• 25 Utilizações Normais + 5 Extras",
             "f2": "• Gestão de Conteúdo Base",
             "cta": "Começar Grátis"
@@ -616,7 +617,8 @@
             "badge": "Mais Popular",
             "name": "Plano Pro",
             "description": "Para profissionais em ascensão.",
-            "fee": "• Taxa reduzida de 10%",
+            "fee": "• TAXA 10% (Reduzida)",
+            "fee_dynamic": "Taxa reduzida de {fee}%",
             "f1": "• 50 Utilizações Normais + 10 Extras",
             "f2": "• Analytics Avançado",
             "cta": "Assinar Pro"
@@ -624,7 +626,8 @@
         "enterprise": {
             "name": "Enterprise",
             "description": "O topo da performance.",
-            "fee": "• TAXA 0% (Isenção Total)",
+            "fee": "TAXA 0% (Isenção Total)",
+            "fee_dynamic": "Taxa de {fee}% por inscrição",
             "f1": "• Utilização Totalmente Ilimitada",
             "f2": "• Customização Total",
             "cta": "Contactar Vendas"

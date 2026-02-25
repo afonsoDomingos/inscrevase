@@ -321,11 +321,12 @@ const generateSocialPointsEmail = (name, missionName, points, totalPoints, dashb
     `;
 };
 
-const generateSubscriptionConfirmationEmail = (name, planName, dashboardUrl) => {
+const generateSubscriptionConfirmationEmail = (name, planName, dashboardUrl, commissionRate = 0.10) => {
     const isEnterprise = planName.toLowerCase() === 'enterprise';
     const accentColor = isEnterprise ? "#000000" : "#D4AF37";
     const highlightColor = isEnterprise ? "#ffffff" : "#D4AF37";
     const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+    const rateText = (commissionRate * 100).toFixed(0);
 
     return `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
@@ -354,15 +355,27 @@ const generateSubscriptionConfirmationEmail = (name, planName, dashboardUrl) => 
                     <div style="display: grid; gap: 15px;">
                         <div style="background: #ffffff; padding: 15px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #f5f5f5;">
                             <span style="font-size: 20px; margin-right: 15px;">🚀</span>
-                            <span style="color: #444; font-size: 14px; font-weight: 600;">Taxas reduzidas em todas as suas vendas.</span>
+                            <span style="color: #444; font-size: 14px; font-weight: 600;">
+                                ${isEnterprise
+            ? "<strong>TAXA 0% (Isenção Total)</strong> nas suas vendas."
+            : `Taxa reduzida de <strong>${rateText}%</strong> em todas as inscrições.`}
+                            </span>
                         </div>
                         <div style="background: #ffffff; padding: 15px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #f5f5f5;">
-                            <span style="font-size: 20px; margin-right: 15px;">📊</span>
-                            <span style="color: #444; font-size: 14px; font-weight: 600;">Criação ilimitada de eventos e formulários.</span>
+                            <span style="font-size: 20px; margin-right: 15px;">${isEnterprise ? "💎" : "✨"}</span>
+                            <span style="color: #444; font-size: 14px; font-weight: 600;">
+                                ${isEnterprise
+            ? "Suporte VIP 24/7 e Gestor de Conta dedicado."
+            : "Destaque Premium no Showcase de Mentores."}
+                            </span>
                         </div>
                         <div style="background: #ffffff; padding: 15px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #f5f5f5;">
-                            <span style="font-size: 20px; margin-right: 15px;">🛠️</span>
-                            <span style="color: #444; font-size: 14px; font-weight: 600;">Ferramentas avançadas de gestão e automação.</span>
+                            <span style="font-size: 20px; margin-right: 15px;">⚙️</span>
+                            <span style="color: #444; font-size: 14px; font-weight: 600;">
+                                ${isEnterprise
+            ? "Customização Total de Branding e White-label."
+            : "Analytics detalhado e Relatórios Financeiros Avançados."}
+                            </span>
                         </div>
                     </div>
 

@@ -50,6 +50,9 @@ router.get('/admin/summary', authMiddleware, adminMiddleware, stripeController.g
 // Force refresh exchange rate
 router.post('/admin/refresh-rate', authMiddleware, adminMiddleware, stripeController.refreshExchangeRate);
 
+// Update plan configurations
+router.post('/admin/settings/plans', authMiddleware, adminMiddleware, stripeController.updatePlans);
+
 // Confirm manual fee payment
 router.patch('/admin/confirm-payment/:transactionId', authMiddleware, adminMiddleware, stripeController.confirmTransactionPayment);
 
