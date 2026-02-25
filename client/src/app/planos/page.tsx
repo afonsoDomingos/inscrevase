@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
-import { CheckCircle, Zap, ShieldCheck, Crown, Loader2 } from "lucide-react";
+import { CheckCircle, Zap, Crown, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
