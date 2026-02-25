@@ -107,11 +107,11 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     };
 
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <>
-                    {/* Floating Creative Card - Small & Top Right */}
+        <>
+            <AnimatePresence>
+                {isVisible && (
                     <motion.div
+                        key="sponsored-ad-card"
                         initial={{ opacity: 0, x: 50, scale: 0.9 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 50, scale: 0.9 }}
@@ -394,12 +394,13 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
                         </div>
                     </motion.div>
-                </motion.div>
+                )}
+            </AnimatePresence>
 
-            {/* AD DETAILS MODAL */}
             <AnimatePresence>
                 {isDetailsModalOpen && (
                     <motion.div
+                        key="ad-details-backdrop"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -416,6 +417,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                         }}
                     >
                         <motion.div
+                            key="ad-details-content"
                             initial={{ y: 50, opacity: 0, scale: 0.95 }}
                             animate={{ y: 0, opacity: 1, scale: 1 }}
                             exit={{ y: 50, opacity: 0, scale: 0.95 }}
@@ -471,7 +473,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             src={currentItem.mediaUrl || '/logo.png'}
                                             alt={currentItem.title}
                                             fill
-                                            style={{ objectFit: currentItem.mediaUrl ? 'contain' : 'contain' }}
+                                            style={{ objectFit: 'contain' }}
                                         />
                                     )}
                                 </div>
@@ -547,8 +549,5 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                 )}
             </AnimatePresence>
         </>
-    )
-}
-        </AnimatePresence >
     );
 }
