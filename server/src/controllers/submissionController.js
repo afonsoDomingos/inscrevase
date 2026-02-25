@@ -13,7 +13,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
-const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail } = require('../utils/emailTemplates');
+const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail, generateEventPaymentConfirmationEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
     console.log('[Submission] Starting submission process for form:', req.body.formId);
@@ -391,21 +391,35 @@ const updateStatus = async (req, res) => {
                     const signupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/entrar`;
                     const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
 
-                    let content = `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${submission.form.title}</strong>" foi aprovada com sucesso! Agora já tens acesso total ao Hub do Inscrito, onde poderás ver as aulas, descarregar materiais e (brevemente) obter o teu certificado.`;
+                    let emailHtml;
 
-                    // If participant doesn't have a linked account, add an incentive to create one
-                    if (!submission.user) {
-                        content += `<br><br>💡 **Dica Profissional:** Notamos que ainda não tens uma conta oficial no <strong>Inscreva-se</strong>. Sabias que ao criares uma conta gratuita (com o mesmo email desta inscrição), poderás gerir todos os teus eventos, cursos e certificados num único painel organizado? <a href="${signupUrl}">Clica aqui para criar a tua conta agora!</a>`;
+                    if (submission.form.paymentConfig?.enabled) {
+                        const amount = submission.form.paymentConfig.price || 0;
+                        const currency = submission.form.paymentConfig.currency || 'MZN';
+                        emailHtml = generateEventPaymentConfirmationEmail(
+                            participantName,
+                            submission.form.title,
+                            amount,
+                            currency,
+                            hubUrl
+                        );
+                    } else {
+                        let content = `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${submission.form.title}</strong>" foi aprovada com sucesso! Agora já tens acesso total ao Hub do Inscrito, onde poderás ver as aulas, descarregar materiais e (brevemente) obter o teu certificado.`;
+
+                        // If participant doesn't have a linked account, add an incentive to create one
+                        if (!submission.user) {
+                            content += `<br><br>💡 **Dica Profissional:** Notamos que ainda não tens uma conta oficial no <strong>Inscreva-se</strong>. Sabias que ao criares uma conta gratuita (com o mesmo email desta inscrição), poderás gerir todos os teus eventos, cursos e certificados num único painel organizado? <a href="${signupUrl}">Clica aqui para criar a tua conta agora!</a>`;
+                        }
+
+                        emailHtml = generateBasicEmail(
+                            '✅ Inscrição Confirmada!',
+                            participantName,
+                            content,
+                            'Aceder ao Hub do Inscrito',
+                            hubUrl,
+                            '#28a745'
+                        );
                     }
-
-                    const emailHtml = generateBasicEmail(
-                        '✅ Inscrição Confirmada!',
-                        participantName,
-                        content,
-                        'Aceder ao Hub do Inscrito',
-                        hubUrl,
-                        '#28a745'
-                    );
 
                     await sendEmail(participantEmail, `✅ Inscrição Confirmada: ${submission.form.title} - Inscreva-se`, emailHtml);
                     console.log('[Submission] Approval email sent to:', participantEmail);

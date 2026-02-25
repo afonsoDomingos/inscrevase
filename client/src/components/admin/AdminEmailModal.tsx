@@ -26,6 +26,30 @@ interface EmailLog {
 
 const TEMPLATES = [
     {
+        id: 'subscription_confirmed',
+        category: 'Pagamentos',
+        subject: '💎 Pagamento Confirmado: Bem-vindo ao Plano Premium!',
+        content: 'Olá! Temos o prazer de informar que o seu pagamento foi processado e a sua assinatura foi ativada com sucesso. A sua conta já foi elevada ao status de Elite, desbloqueando todas as funcionalidades avançadas, taxas reduzidas e ferramentas exclusivas de gestão da Inscreva-se. Estamos entusiasmados por fazer parte do seu crescimento. Explore o seu novo dashboard agora!'
+    },
+    {
+        id: 'event_payment_confirmed',
+        category: 'Pagamentos',
+        subject: '✅ Inscrição Confirmada: Pagamento Recebido!',
+        content: 'Olá! Confirmamos a receção do seu pagamento para o evento. A sua inscrição está agora validada e o acesso ao Hub do Inscrito já está disponível. Lá encontrará todos os materiais, aulas e informações necessárias para aproveitar ao máximo esta experiência. Bem-vindo ao evento!'
+    },
+    {
+        id: 'payment_received_proof',
+        category: 'Pagamentos',
+        subject: '📦 Comprovante Recebido: Em Processamento',
+        content: 'Olá! Recebemos o seu comprovante de pagamento. A nossa equipa financeira já está a validar a transação (prazo de até 24h úteis). Assim que for confirmado, receberá um novo email com o acesso libertado. Obrigado pela sua paciência!'
+    },
+    {
+        id: 'payment_rejected',
+        category: 'Pagamentos',
+        subject: '❌ Atualização: Problema na Validação do Pagamento',
+        content: 'Olá. Infelizmente não conseguimos validar o comprovante de pagamento enviado. Por favor, verifique se o valor está correto ou se a imagem está legível. Pode submeter um novo comprovante através do seu painel ou entrar em contacto com o nosso suporte para ajudar.'
+    },
+    {
         id: 'first_event_congrats',
         category: 'Sucesso',
         subject: '🚀 Parabéns pela criação do seu 1º Evento!',

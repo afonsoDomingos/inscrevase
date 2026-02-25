@@ -14,7 +14,8 @@ const {
     generatePaymentFailedEmail,
     generatePaymentRejectedEmail,
     generateAdminAdNotificationEmail,
-    generateSubscriptionConfirmationEmail
+    generateSubscriptionConfirmationEmail,
+    generatePaymentProofReceivedEmail
 } = require('../utils/emailTemplates');
 
 
@@ -1058,42 +1059,79 @@ exports.deleteTransaction = async (req, res) => {
 
 exports.submitManualSubscription = async (req, res) => {
     try {
+        console.log('--- START MANUAL SUBSCRIPTION SUBMISSION ---');
         const { plan, amount, proofUrl, currency = 'USD' } = req.body;
         const userId = req.user.id;
+
+        console.log(`User ${userId} submitting manual proof for plan: ${plan}, amount: ${amount} ${currency}`);
+
+        if (!plan || !amount || !proofUrl) {
+            console.error('❌ Missing required fields:', { plan, amount, proofUrl });
+            return res.status(400).json({ message: 'Todos os campos (plano, valor e comprovativo) são obrigatórios.' });
+        }
+
         const user = await User.findById(userId);
+        if (!user) {
+            console.error('❌ Utilizador não encontrado:', userId);
+            return res.status(404).json({ message: 'Utilizador não encontrado.' });
+        }
 
         if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
+            console.warn('⚠️ User email not verified:', user.email);
             return res.status(403).json({ message: 'Por favor, confirme seu e-mail antes de assinar um plano.' });
         }
 
         const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+        const numAmount = Number(amount);
 
-        const transaction = new Transaction({
+        if (isNaN(numAmount)) {
+            console.error('❌ Invalid amount:', amount);
+            return res.status(400).json({ message: 'O valor do pagamento é inválido.' });
+        }
+
+        const transactionData = {
             type: 'subscription',
             user: userId,
-            amount: Number(amount),
+            amount: numAmount,
             currency: currency.toUpperCase(),
-            baseAmount: Number(amount) * rate,
+            baseAmount: numAmount * rate,
             exchangeRate: rate,
-            platformFee: Number(amount),
-            basePlatformFee: Number(amount) * rate,
+            platformFee: numAmount,
+            basePlatformFee: numAmount * rate,
             status: 'pending',
             paymentMethod: 'manual',
             proofUrl,
-            metadata: { plan }
-        });
+            metadata: new Map([['plan', String(plan)]])
+        };
 
+        const transaction = new Transaction(transactionData);
         await transaction.save();
+        console.log('✅ Manual transaction saved:', transaction._id);
 
-        // Enviar e-mail de recepção de comprovante
-        if (user && user.email) {
-            const emailHtml = generatePaymentProofReceivedEmail(user.name, plan);
-            sendEmail(user.email, `Recebemos seu comprovante: Plano ${plan.toUpperCase()}`, emailHtml);
+        // Enviar e-mail de recepção de comprovante (Safe Email Sending)
+        try {
+            if (user && user.email) {
+                const planString = String(plan);
+                const emailHtml = generatePaymentProofReceivedEmail(user.name, planString);
+                // Não aguardamos o envio de e-mail para não atrasar a resposta ao utilizador,
+                // mas capturamos erros dentro do bloco try-catch.
+                sendEmail(user.email, `Recebemos seu comprovante: Plano ${planString.toUpperCase()}`, emailHtml)
+                    .then(sent => console.log('📧 Confirmation email sent status:', sent))
+                    .catch(e => console.error('E-mail error:', e));
+            }
+        } catch (emailErr) {
+            console.error('⚠️ [NON-FATAL] Error generating confirmation email:', emailErr.message);
+            // Non-fatal, we already saved the transaction
         }
 
-        res.status(201).json({ success: true, message: 'Solicitação de assinatura enviada com sucesso!' });
+        res.status(201).json({
+            success: true,
+            message: 'Solicitação de assinatura enviada com sucesso! A nossa equipa irá validar o comprovativo em breve.',
+            transactionId: transaction._id
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('❌ FATAL ERROR in submitManualSubscription:', error);
+        res.status(500).json({ message: 'Erro interno ao processar a solicitação: ' + error.message });
     }
 };
 
