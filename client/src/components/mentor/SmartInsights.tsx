@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
@@ -13,7 +13,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks';
 }
 
 interface SmartInsightsProps {
@@ -44,7 +44,45 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 });
             }
 
-            // 2. Recent Enrollment Boom
+            // 2. Global Business Insight
+            list.push({
+                id: 'global_money',
+                icon: <Globe className="text-blue-400" />,
+                title: 'O Mundo é o seu Palco',
+                text: 'Sabia que pode vender seus cursos para qualquer país? Use as nossas ferramentas de pagamento internacional e fature globalmente.',
+                color: '#60a5fa'
+            });
+
+            // 3. Profit Maximization
+            list.push({
+                id: 'profit_tips',
+                icon: <DollarSign className="text-green-500" />,
+                title: 'Escalabilidade Financeira',
+                text: 'Transforme o seu evento num produto digital perpétuo. Venda mesmo enquanto dorme utilizando os nossos funis inteligentes.',
+                color: '#4ade80'
+            });
+
+            // 4. Feature Adoption (Smart Links)
+            list.push({
+                id: 'smart_links_tip',
+                icon: <LinkIcon className="text-purple-400" />,
+                title: 'Rastreio de Precisão',
+                text: 'Use a ferramenta de Smart Links para descobrir qual rede social (Instagram, TikTok ou WhatsApp) traz mais dinheiro para o seu bolso.',
+                color: '#a78bfa',
+                action: 'smartlinks'
+            });
+
+            // 5. Growth Ad Nudge
+            list.push({
+                id: 'boost_now',
+                icon: <Zap className="text-orange-400" />,
+                title: 'Portal de Destaques',
+                text: 'Quer crescer 10x mais rápido? Coloque o seu evento no topo da nossa plataforma com o sistema de anúncios integrados.',
+                color: '#fb923c',
+                action: 'ads'
+            });
+
+            // 6. Recent Enrollment Boom
             if (stats && stats.submissions > 0) {
                 list.push({
                     id: 'recent_success',
@@ -55,7 +93,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 });
             }
 
-            // 3. No active events nudge
+            // 7. No active events nudge
             const activeEvents = forms?.filter(f => f.active).length || 0;
             if (activeEvents === 0) {
                 list.push({
@@ -84,7 +122,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 });
             }
 
-            // 4. Profile Completeness Nudge
+            // 8. Profile Completeness Nudge
             if (!user?.bio || !user?.profilePhoto) {
                 list.push({
                     id: 'complete_profile',
@@ -96,7 +134,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 });
             }
 
-            // 5. Verification Nudge
+            // 9. Verification Nudge
             if (!user?.isVerified) {
                 list.push({
                     id: 'get_verified',
@@ -108,7 +146,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 });
             }
 
-            // 6. Referral nudge
+            // 10. Referral nudge
             list.push({
                 id: 'referral_impact',
                 icon: <Share2 className="text-green-400" />,
@@ -118,7 +156,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 action: 'referral'
             });
 
-            // 7. Support
+            // 11. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
