@@ -16,6 +16,7 @@ interface Insight {
     text: string;
     color: string;
     action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social';
+    buttonText?: string;
 }
 
 interface SmartInsightsProps {
@@ -73,7 +74,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 title: t('dashboard.insights.smartLinksTip.title'),
                 text: t('dashboard.insights.smartLinksTip.text'),
                 color: '#a78bfa',
-                action: 'smartlinks'
+                action: 'smartlinks',
+                buttonText: t('dashboard.insights.buttons.smartlinks')
             });
 
             // 5. Growth Ad Nudge
@@ -83,7 +85,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 title: t('dashboard.insights.boostNow.title'),
                 text: t('dashboard.insights.boostNow.text'),
                 color: '#fb923c',
-                action: 'ads'
+                action: 'ads',
+                buttonText: t('dashboard.insights.buttons.ads')
             });
 
             // 6. Recent Enrollment Boom
@@ -106,7 +109,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                     title: t('dashboard.insights.noEvents.title'),
                     text: t('dashboard.insights.noEvents.text'),
                     color: '#FFD700',
-                    action: 'create'
+                    action: 'create',
+                    buttonText: t('dashboard.insights.buttons.create')
                 });
 
                 list.push({
@@ -125,7 +129,9 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                         count: activeEvents.toString(),
                         active_events_text: activeEvents === 1 ? t('dashboard.insights.keepGoing.singular') : t('dashboard.insights.keepGoing.plural')
                     }),
-                    color: '#f97316'
+                    color: '#f97316',
+                    action: 'create',
+                    buttonText: t('dashboard.insights.buttons.create')
                 });
             }
 
@@ -137,7 +143,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                     title: t('dashboard.insights.completeProfile.title'),
                     text: t('dashboard.insights.completeProfile.text'),
                     color: '#ec4899',
-                    action: 'settings'
+                    action: 'settings',
+                    buttonText: t('dashboard.insights.buttons.settings')
                 });
             }
 
@@ -149,7 +156,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                     title: t('dashboard.insights.getVerified.title'),
                     text: t('dashboard.insights.getVerified.text'),
                     color: '#818cf8',
-                    action: 'settings'
+                    action: 'settings',
+                    buttonText: t('dashboard.insights.buttons.verify')
                 });
             }
 
@@ -160,7 +168,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 title: t('dashboard.insights.socialFollow.title'),
                 text: t('dashboard.insights.socialFollow.text'),
                 color: '#f472b6',
-                action: 'social'
+                action: 'social',
+                buttonText: t('dashboard.insights.buttons.social')
             });
 
             // 11. Referral nudge
@@ -170,7 +179,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 title: t('dashboard.insights.referralImpact.title'),
                 text: t('dashboard.insights.referralImpact.text'),
                 color: '#22c55e',
-                action: 'referral'
+                action: 'referral',
+                buttonText: t('dashboard.insights.buttons.referral')
             });
 
             // 12. Support
@@ -192,7 +202,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
         if (insights.length > 1) {
             const timer = setInterval(() => {
                 setCurrentInsight(prev => (prev + 1) % insights.length);
-            }, 8000);
+            }, 10000);
             return () => clearInterval(timer);
         }
     }, [insights]);
@@ -227,67 +237,106 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
     };
 
     return (
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '2.5rem' }}>
             <AnimatePresence mode="wait">
                 <motion.div
                     key={insight.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.98, y: -10 }}
                     onClick={handleClick}
-                    className="luxury-card"
+                    className="luxury-card group"
                     style={{
-                        background: 'linear-gradient(90deg, #1a1a1a 0%, #222 100%)',
-                        padding: '1.25rem 2rem',
-                        borderRadius: '20px',
+                        background: 'linear-gradient(135deg, #121212 0%, #1e1e1e 100%)',
+                        padding: '1.5rem 2.5rem',
+                        borderRadius: '24px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        border: `1px solid ${insight.color}40`,
-                        boxShadow: `0 10px 30px ${insight.color}10`,
+                        border: `1px solid ${insight.color}30`,
+                        boxShadow: `0 15px 35px ${insight.color}08`,
                         position: 'relative',
                         overflow: 'hidden',
-                        cursor: insight.action ? 'pointer' : 'default'
+                        cursor: insight.action ? 'pointer' : 'default',
+                        transition: 'border-color 0.3s ease'
                     }}
                 >
-                    <div style={{ position: 'absolute', left: 0, top: 0, width: '4px', height: '100%', background: insight.color }} />
+                    <div style={{ position: 'absolute', left: 0, top: 0, width: '4px', height: '100%', background: insight.color, opacity: 0.8 }} />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
-                        <div style={{
-                            background: `${insight.color}20`,
-                            padding: '12px',
-                            borderRadius: '15px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: insight.color
-                        }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flex: 1 }}>
+                        <motion.div
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            style={{
+                                background: `${insight.color}15`,
+                                padding: '16px',
+                                borderRadius: '18px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: insight.color,
+                                border: `1px solid ${insight.color}25`
+                            }}
+                        >
                             {insight.icon}
-                        </div>
-                        <div>
-                            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 800, marginBottom: '0.2rem' }}>{insight.title}</h4>
-                            <p style={{ color: '#aaa', fontSize: '0.85rem', margin: 0 }}>{insight.text}</p>
+                        </motion.div>
+                        <div style={{ flex: 1 }}>
+                            <h4 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 900, marginBottom: '0.4rem', letterSpacing: '-0.3px' }}>
+                                {insight.title}
+                            </h4>
+                            <p style={{ color: '#999', fontSize: '0.9rem', margin: 0, lineHeight: 1.5, maxWidth: '90%' }}>
+                                {insight.text}
+                            </p>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        {insights.map((_, idx) => (
-                            <div
-                                key={idx}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                        {insight.buttonText && (
+                            <motion.button
+                                whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${insight.color}40` }}
+                                whileTap={{ scale: 0.95 }}
+                                style={{
+                                    background: insight.color,
+                                    color: '#000',
+                                    padding: '10px 22px',
+                                    borderRadius: '12px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 900,
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                }}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCurrentInsight(idx);
+                                    handleClick();
                                 }}
-                                style={{
-                                    width: idx === currentInsight ? '24px' : '8px',
-                                    height: '4px',
-                                    background: idx === currentInsight ? insight.color : '#333',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s'
-                                }}
-                            />
-                        ))}
+                            >
+                                {insight.buttonText}
+                                <Rocket size={14} />
+                            </motion.button>
+                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 10 }}>
+                            {insights.map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentInsight(idx);
+                                    }}
+                                    style={{
+                                        width: '6px',
+                                        height: idx === currentInsight ? '20px' : '6px',
+                                        background: idx === currentInsight ? insight.color : '#333',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                                    }}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </motion.div>
             </AnimatePresence>

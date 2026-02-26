@@ -661,6 +661,15 @@
             "socialFollow": {
                 "title": "Cresça com a Comunidade",
                 "text": "Siga as nossas redes sociais para dicas exclusivas de marketing e gestão de eventos. Clique para nos acompanhar!"
+            },
+            "buttons": {
+                "create": "Criar Agora",
+                "settings": "Configurar",
+                "verify": "Verificar",
+                "referral": "Convidar",
+                "ads": "Promover",
+                "smartlinks": "Rastrear",
+                "social": "Seguir"
             }
         }
     },
