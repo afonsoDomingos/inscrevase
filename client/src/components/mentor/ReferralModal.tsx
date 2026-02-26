@@ -13,9 +13,7 @@ import {
     Loader2,
     Mail,
     Linkedin,
-    Facebook,
-    Instagram,
-    Youtube
+    Facebook
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
@@ -312,7 +310,7 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                                                             await referralService.awardSocialPoints(social.name);
                                                             toast.success(`+5 pontos! 🎯`);
                                                             loadReferralData();
-                                                        } catch (err) { }
+                                                        } catch { }
                                                     }}
                                                     style={{ background: '#f8f9fa', border: '1px solid #eee', color: social.color, padding: '0.4rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 800, cursor: 'pointer' }}
                                                 >
