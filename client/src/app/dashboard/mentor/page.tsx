@@ -1669,7 +1669,7 @@ function MentorDashboardContent() {
                                     Acelerador de <span className="gold-text">Vendas</span>
                                 </h2>
                                 <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '600px' }}>
-                                    O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter o seu evento em um sucesso de vendas.
+                                    O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter os seus <strong>cursos, workshops, palestras ou serviços</strong> em um sucesso de vendas.
                                 </p>
                             </div>
 
