@@ -1,0 +1,201 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, TrendingUp, AlertCircle, Zap, Star, Layout, Link as LinkIcon, Users, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare } from 'lucide-react';
+import { useTranslate } from '@/context/LanguageContext';
+
+interface SmartInsightsProps {
+    user: any;
+    stats: any;
+    forms: any[];
+}
+
+export default function SmartInsights({ user, stats, forms }: SmartInsightsProps) {
+    const { t } = useTranslate();
+    const [currentInsight, setCurrentInsight] = useState(0);
+    const [insights, setInsights] = useState<any[]>([]);
+
+    useEffect(() => {
+        const generateInsights = () => {
+            const list = [];
+
+            // 1. Welcome Back / Long Absence
+            const lastLogin = user?.lastLoginAt ? new Date(user.lastLoginAt) : new Date();
+            const daysSinceLastLogin = Math.floor((new Date().getTime() - lastLogin.getTime()) / (1000 * 3600 * 24));
+
+            if (daysSinceLastLogin > 3) {
+                list.push({
+                    id: 'welcome_back',
+                    icon: <Sparkles className="text-yellow-500" />,
+                    title: `Bom ver você de volta, ${user.name.split(' ')[0]}!`,
+                    text: `Sentimos sua falta nos últimos ${daysSinceLastLogin} dias. Que tal conferir as novidades no seu portal?`,
+                    color: '#FFD700'
+                });
+            }
+
+            // 2. Recent Enrollment Boom
+            if (stats?.submissions > 0) {
+                list.push({
+                    id: 'recent_success',
+                    icon: <TrendingUp className="text-green-500" />,
+                    title: 'Seus eventos estão a crescer!',
+                    text: `Já alcançou ${stats.submissions} inscrições totais. Continue o excelente trabalho!`,
+                    color: '#4ade80'
+                });
+            }
+
+            // 3. No active events nudge
+            const activeEvents = forms?.filter(f => f.active).length || 0;
+            if (activeEvents === 0) {
+                list.push({
+                    id: 'no_events',
+                    icon: <Star className="text-yellow-400" />,
+                    title: 'O seu conhecimento vale ouro!',
+                    text: 'Não guarde o seu talento só para si. Crie agora o seu primeiro evento e comece a transformar vidas hoje mesmo.',
+                    color: '#FFD700',
+                    action: 'create'
+                });
+
+                list.push({
+                    id: 'event_idea',
+                    icon: <Layout className="text-blue-400" />,
+                    title: 'Ideia para Evento',
+                    text: 'Que tal um Workshop ao vivo ou uma Masterclass gratuita para construir a sua audiência?',
+                    color: '#60a5fa'
+                });
+            } else {
+                list.push({
+                    id: 'keep_going',
+                    icon: <Rocket className="text-orange-500" />,
+                    title: 'Rumo ao Topo!',
+                    text: `Tem ${activeEvents} ${activeEvents === 1 ? 'evento ativo' : 'eventos ativos'}. Que tal lançar uma nova edição ou um novo tema?`,
+                    color: '#f97316'
+                });
+            }
+
+            // 4. Profile Completeness Nudge
+            if (!user?.bio || !user?.profilePhoto) {
+                list.push({
+                    id: 'complete_profile',
+                    icon: <UserCircle className="text-pink-500" />,
+                    title: 'Aumente a sua Confiança',
+                    text: 'Perfis com foto e biografia detalhada convertem 3x mais. Complete o seu perfil agora!',
+                    color: '#ec4899',
+                    action: 'settings'
+                });
+            }
+
+            // 5. Verification Nudge
+            if (!user?.isVerified) {
+                list.push({
+                    id: 'get_verified',
+                    icon: <ShieldCheck className="text-indigo-400" />,
+                    title: 'Selo de Autoridade',
+                    text: 'Solicite a sua verificação de conta para passar mais credibilidade aos seus alunos.',
+                    color: '#818cf8',
+                    action: 'settings'
+                });
+            }
+
+            // 6. Referral nudge
+            list.push({
+                id: 'referral_impact',
+                icon: <Share2 className="text-green-400" />,
+                title: 'Ganhe com sua Rede',
+                text: 'Ao convidar outros mentores, você ganha Pontos de Impacto que podem ser trocados por benefícios.',
+                color: '#22c55e',
+                action: 'referral'
+            });
+
+            // 7. Support
+            list.push({
+                id: 'support_ready',
+                icon: <MessageSquare className="text-cyan-400" />,
+                title: 'Estamos aqui para si',
+                text: 'Dúvidas em como configurar o seu marketing? Fale com o nosso suporte premium a qualquer momento.',
+                color: '#22d3ee'
+            });
+
+            setInsights(list);
+        };
+
+        generateInsights();
+    }, [user, stats, forms]);
+
+    useEffect(() => {
+        if (insights.length > 1) {
+            const timer = setInterval(() => {
+                setCurrentInsight(prev => (prev + 1) % insights.length);
+            }, 8000);
+            return () => clearInterval(timer);
+        }
+    }, [insights]);
+
+    if (insights.length === 0) return null;
+
+    const insight = insights[currentInsight];
+
+    return (
+        <div style={{ marginBottom: '2rem' }}>
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={insight.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="luxury-card"
+                    style={{
+                        background: 'linear-gradient(90deg, #1a1a1a 0%, #222 100%)',
+                        padding: '1.25rem 2rem',
+                        borderRadius: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        border: `1px solid ${insight.color}40`,
+                        boxShadow: `0 10px 30px ${insight.color}10`,
+                        position: 'relative',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <div style={{ position: 'absolute', left: 0, top: 0, width: '4px', height: '100%', background: insight.color }} />
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div style={{
+                            background: `${insight.color}20`,
+                            padding: '12px',
+                            borderRadius: '15px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: insight.color
+                        }}>
+                            {insight.icon}
+                        </div>
+                        <div>
+                            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 800, marginBottom: '0.2rem' }}>{insight.title}</h4>
+                            <p style={{ color: '#aaa', fontSize: '0.85rem', margin: 0 }}>{insight.text}</p>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        {insights.map((_, idx) => (
+                            <div
+                                key={idx}
+                                onClick={() => setCurrentInsight(idx)}
+                                style={{
+                                    width: idx === currentInsight ? '24px' : '8px',
+                                    height: '4px',
+                                    background: idx === currentInsight ? insight.color : '#333',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            />
+                        ))}
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+        </div>
+    );
+}

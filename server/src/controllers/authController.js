@@ -173,7 +173,12 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.json({ token, user: { id: user._id, name: user.name, email, role: user.role, isEmailVerified: user.isEmailVerified } });
+
+        // Update last login
+        user.lastLoginAt = new Date();
+        await user.save();
+
+        res.json({ token, user: { id: user._id, name: user.name, email, role: user.role, isEmailVerified: user.isEmailVerified, lastLoginAt: user.lastLoginAt } });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }

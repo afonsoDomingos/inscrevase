@@ -16,6 +16,8 @@ import ServicesManagement from '@/components/mentor/ServicesManagement';
 import FeedbackManagement from '@/components/mentor/FeedbackManagement';
 import Link from 'next/link';
 import AdManagement from '@/components/mentor/AdManagement';
+import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
+import SmartInsights from '@/components/mentor/SmartInsights';
 import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -33,7 +35,6 @@ import MarketingRequestModal from '@/components/mentor/MarketingRequestModal';
 import { marketingService, MarketingRequest } from '@/lib/marketingService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
-import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -1207,6 +1208,9 @@ function MentorDashboardContent() {
                                     trend="+18%"
                                 />
                             </div>
+
+                            {/* Smart AI Insights */}
+                            <SmartInsights user={user} stats={stats} forms={forms} />
 
                             {/* Performance Analytics on Overview */}
                             <div style={{ marginBottom: '2rem' }}>
