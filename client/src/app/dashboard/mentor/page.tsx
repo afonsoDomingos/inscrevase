@@ -1697,29 +1697,54 @@ function MentorDashboardContent() {
                                         <p style={{ fontSize: '1.1rem', color: '#aaa', lineHeight: 1.6, marginBottom: '2.5rem' }}>
                                             Cansado de criar eventos incríveis que ninguém vê? A nossa equipa de especialistas assume o controlo do teu marketing para que tu te foques apenas no que fazes melhor: ensinar.
                                         </p>
-                                        <button
-                                            onClick={() => {
-                                                setSelectedMarketingService({ type: 'gestion_360', name: 'Programa de Aceleração 360º' });
-                                                setIsMarketingModalOpen(true);
-                                            }}
-                                            style={{
-                                                padding: '1.2rem 2.5rem',
-                                                background: 'var(--gold-gradient)',
-                                                color: '#000',
-                                                border: 'none',
-                                                borderRadius: '16px',
-                                                fontWeight: 900,
-                                                fontSize: '1.1rem',
-                                                cursor: 'pointer',
-                                                boxShadow: '0 20px 40px rgba(212,175,55,0.3)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '12px'
-                                            }}
-                                            className="hover:translate-y-[-5px] transition-all"
-                                        >
-                                            AUMENTAR MINHAS VENDAS AGORA <Zap size={20} />
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedMarketingService({ type: 'gestion_360', name: 'Programa de Aceleração 360º' });
+                                                    setIsMarketingModalOpen(true);
+                                                }}
+                                                style={{
+                                                    padding: '1.2rem 2rem',
+                                                    background: 'var(--gold-gradient)',
+                                                    color: '#000',
+                                                    border: 'none',
+                                                    borderRadius: '16px',
+                                                    fontWeight: 900,
+                                                    fontSize: '1rem',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 20px 40px rgba(212,175,55,0.3)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px'
+                                                }}
+                                                className="hover:translate-y-[-5px] transition-all"
+                                            >
+                                                CONTACTAR VENDAS <Zap size={20} />
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    const message = encodeURIComponent("Olá! Estou no dashboard e tenho dúvidas sobre como funciona o Programa de Aceleração 360º. Podem ajudar?");
+                                                    window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+                                                }}
+                                                style={{
+                                                    padding: '1.2rem 2rem',
+                                                    background: 'rgba(255,255,255,0.05)',
+                                                    color: '#fff',
+                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                    borderRadius: '16px',
+                                                    fontWeight: 800,
+                                                    fontSize: '0.9rem',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '10px'
+                                                }}
+                                                className="hover:bg-white/10 transition-all"
+                                            >
+                                                <Info size={18} /> COMO FUNCIONA?
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1848,14 +1873,17 @@ function MentorDashboardContent() {
                                 </div>
                             )}
 
-                            <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,215,0,0.02)', border: '1px dashed rgba(255,215,0,0.2)', borderRadius: '20px', textAlign: 'center' }}>
-                                <h4 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Ainda tem dúvidas?</h4>
-                                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>A nossa equipa de consultores está disponível para uma breve sessão de diagnóstico gratuita.</p>
+                            <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,215,0,0.02)', border: '1px dashed rgba(212,175,55,0.2)', borderRadius: '20px', textAlign: 'center' }}>
+                                <h4 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Ainda tens dúvidas de como funciona?</h4>
+                                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Nossa equipe está pronta para te explicar cada detalhe da nossa estratégia.</p>
                                 <button
-                                    onClick={() => setIsSupportOpen(true)}
-                                    style={{ padding: '0.8rem 2rem', background: 'var(--paper)', border: '1px solid #D4AF37', color: '#D4AF37', borderRadius: '12px', fontWeight: 900, cursor: 'pointer' }}
+                                    onClick={() => {
+                                        const message = encodeURIComponent("Olá! Tenho algumas dúvidas sobre o Acelerador de Vendas da Inscreva-se. Podem me explicar melhor?");
+                                        window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+                                    }}
+                                    style={{ padding: '0.8rem 2rem', background: 'var(--paper)', border: '1px solid #D4AF37', color: '#D4AF37', borderRadius: '12px', fontWeight: 900, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '10px' }}
                                 >
-                                    Agendar Sessão Grátis
+                                    FALAR COM O COMERCIAL <Share2 size={18} />
                                 </button>
                             </div>
                         </motion.div>
