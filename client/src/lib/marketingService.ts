@@ -11,6 +11,8 @@ export interface MarketingRequest {
     email: string;
     companyName?: string;
     details: string;
+    eventType: 'online' | 'presencial' | 'hibrido';
+    socialLinks: Record<string, string>;
     status: 'pending' | 'contacted' | 'in_progress' | 'completed' | 'cancelled';
     adminNotes?: string;
     createdAt: string;
@@ -25,6 +27,8 @@ export const marketingService = {
         email: string;
         companyName?: string;
         details: string;
+        eventType: 'online' | 'presencial' | 'hibrido';
+        socialLinks: Record<string, string>;
     }) {
         const token = authService.getToken();
         const response = await fetch(`${API_URL}/marketing`, {

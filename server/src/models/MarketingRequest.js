@@ -30,6 +30,20 @@ const marketingRequestSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    eventType: {
+        type: String,
+        enum: ['online', 'presencial', 'hibrido'],
+        required: true
+    },
+    socialChannels: {
+        type: [String],
+        default: []
+    },
+    socialLinks: {
+        type: Map,
+        of: String,
+        default: {}
+    },
     status: {
         type: String,
         enum: ['pending', 'contacted', 'in_progress', 'completed', 'cancelled'],

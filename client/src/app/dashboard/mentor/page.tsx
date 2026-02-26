@@ -1665,7 +1665,7 @@ function MentorDashboardContent() {
                     {activeTab === 'marketing' && (
                         <motion.div key="marketing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div style={{ marginBottom: '2.5rem' }}>
-                                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#fff', marginBottom: '0.5rem' }}>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', marginBottom: '0.5rem' }}>
                                     Acelerador de <span className="gold-text">Vendas</span>
                                 </h2>
                                 <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '600px' }}>
@@ -1743,6 +1743,11 @@ function MentorDashboardContent() {
                                                     title: "Gestão de Campanhas Meta Ads",
                                                     desc: "Configuramos e otimizamos o seu tráfego pago no Facebook e Instagram diariamente para garantir o menor custo por lead.",
                                                     icon: <Zap color="#D4AF37" />
+                                                },
+                                                {
+                                                    title: "Configuração de Pixel Inteligente",
+                                                    desc: "Instalamos e configuramos o Pixel do Meta e Google Ads de forma avançada para traquear conversões e otimizar a sua inteligência de vendas.",
+                                                    icon: <Monitor color="#D4AF37" />
                                                 }
                                             ].map((item, i) => (
                                                 <div key={i} style={{ display: 'flex', gap: '20px' }}>

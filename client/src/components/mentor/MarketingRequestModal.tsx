@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Info, Loader2 } from 'lucide-react';
+import { X, Send, Info, Loader2, Facebook, Instagram, Linkedin, Youtube, Music2, Monitor } from 'lucide-react';
 import { toast } from 'sonner';
 import { marketingService } from '@/lib/marketingService';
 
@@ -21,8 +21,19 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
         whatsapp: '',
         email: '',
         companyName: '',
-        details: ''
+        details: '',
+        eventType: 'online' as 'online' | 'presencial' | 'hibrido',
+        socialLinks: {} as Record<string, string>,
+        otherSocial: ''
     });
+
+    const socialPlatforms = [
+        { id: 'facebook', name: 'Facebook', icon: <Facebook size={16} /> },
+        { id: 'instagram', name: 'Instagram', icon: <Instagram size={16} /> },
+        { id: 'linkedin', name: 'LinkedIn', icon: <Linkedin size={16} /> },
+        { id: 'youtube', name: 'YouTube', icon: <Youtube size={16} /> },
+        { id: 'tiktok', name: 'TikTok', icon: <Music2 size={16} /> },
+    ];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,8 +45,14 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
 
         setLoading(true);
         try {
+            const finalSocialLinks = { ...formData.socialLinks };
+            if (formData.otherSocial) {
+                finalSocialLinks['other'] = formData.otherSocial;
+            }
+
             await marketingService.createRequest({
                 ...formData,
+                socialLinks: finalSocialLinks,
                 serviceType
             });
             toast.success('Pedido enviado com sucesso! Entraremos em contacto em breve.');
@@ -148,6 +165,73 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
 
                             <div className="form-group">
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem', color: '#888' }}>
+                                    Tipo de Evento *
+                                </label>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    {['online', 'presencial', 'hibrido'].map((type) => (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, eventType: type as any })}
+                                            style={{
+                                                flex: 1,
+                                                padding: '0.8rem',
+                                                borderRadius: '12px',
+                                                border: formData.eventType === type ? '2px solid #D4AF37' : '1px solid #eee',
+                                                background: formData.eventType === type ? 'rgba(212,175,55,0.05)' : '#f8f9fa',
+                                                color: formData.eventType === type ? '#D4AF37' : '#666',
+                                                fontWeight: 800,
+                                                textTransform: 'capitalize',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem', color: '#888' }}>
+                                    Canais de Comunicação & Links das Redes Sociais
+                                </label>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
+                                    {socialPlatforms.map((platform) => (
+                                        <div key={platform.id} style={{ width: '100%', marginBottom: '8px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#f8f9fa', padding: '10px', borderRadius: '12px', border: '1px solid #eee' }}>
+                                                <div style={{ color: '#D4AF37' }}>{platform.icon}</div>
+                                                <input
+                                                    type="url"
+                                                    placeholder={`Link do ${platform.name}`}
+                                                    value={formData.socialLinks[platform.id] || ''}
+                                                    onChange={(e) => {
+                                                        const newLinks = { ...formData.socialLinks };
+                                                        newLinks[platform.id] = e.target.value;
+                                                        setFormData({ ...formData, socialLinks: newLinks });
+                                                    }}
+                                                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.85rem', outline: 'none' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div style={{ width: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#f8f9fa', padding: '10px', borderRadius: '12px', border: '1px solid #eee' }}>
+                                            <div style={{ color: '#D4AF37' }}><Info size={16} /></div>
+                                            <input
+                                                type="text"
+                                                placeholder="Outra rede social (Ex: Pinterest, WhatsApp Link)"
+                                                value={formData.otherSocial}
+                                                onChange={(e) => setFormData({ ...formData, otherSocial: e.target.value })}
+                                                style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.85rem', outline: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem', color: '#888' }}>
                                     Detalhes do Evento ou Objectivos *
                                 </label>
                                 <textarea
@@ -158,6 +242,11 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
                                     rows={4}
                                     style={{ width: '100%', padding: '0.8rem 1rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '12px', fontSize: '0.9rem', resize: 'none' }}
                                 />
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#000', padding: '1rem', borderRadius: '12px', marginBottom: '0.5rem' }}>
+                                <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>Preço do Serviço:</span>
+                                <span style={{ color: '#FFD700', fontSize: '1.1rem', fontWeight: 900 }}>Sob Consulta</span>
                             </div>
 
                             <div style={{ background: 'rgba(212,175,55,0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(212,175,55,0.1)', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>

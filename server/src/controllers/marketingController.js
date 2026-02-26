@@ -3,7 +3,7 @@ const NotificationService = require('../services/notificationService');
 
 exports.createRequest = async (req, res) => {
     try {
-        const { serviceType, contactName, whatsapp, email, companyName, details } = req.body;
+        const { serviceType, contactName, whatsapp, email, companyName, details, eventType, socialChannels, socialLinks } = req.body;
 
         const newRequest = new MarketingRequest({
             userId: req.user.id,
@@ -12,7 +12,10 @@ exports.createRequest = async (req, res) => {
             whatsapp,
             email,
             companyName,
-            details
+            details,
+            eventType,
+            socialChannels,
+            socialLinks
         });
 
         await newRequest.save();
