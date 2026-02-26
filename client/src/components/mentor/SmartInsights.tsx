@@ -2,29 +2,39 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, AlertCircle, Zap, Star, Layout, Link as LinkIcon, Users, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare } from 'lucide-react';
+import { UserData } from '@/lib/authService';
+import { AdminStats } from '@/lib/dashboardService';
+import { FormModel } from '@/lib/formService';
+
+interface Insight {
+    id: string;
+    icon: JSX.Element;
+    title: string;
+    text: string;
+    color: string;
+    action?: 'create' | 'settings' | 'referral';
+}
 
 interface SmartInsightsProps {
-    user: any;
-    stats: any;
-    forms: any[];
+    user: UserData | null;
+    stats: AdminStats | null;
+    forms: FormModel[];
 }
 
 export default function SmartInsights({ user, stats, forms }: SmartInsightsProps) {
-    const { t } = useTranslate();
     const [currentInsight, setCurrentInsight] = useState(0);
-    const [insights, setInsights] = useState<any[]>([]);
+    const [insights, setInsights] = useState<Insight[]>([]);
 
     useEffect(() => {
         const generateInsights = () => {
-            const list = [];
+            const list: Insight[] = [];
 
             // 1. Welcome Back / Long Absence
             const lastLogin = user?.lastLoginAt ? new Date(user.lastLoginAt) : new Date();
             const daysSinceLastLogin = Math.floor((new Date().getTime() - lastLogin.getTime()) / (1000 * 3600 * 24));
 
-            if (daysSinceLastLogin > 3) {
+            if (daysSinceLastLogin > 3 && user?.name) {
                 list.push({
                     id: 'welcome_back',
                     icon: <Sparkles className="text-yellow-500" />,
@@ -35,7 +45,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             }
 
             // 2. Recent Enrollment Boom
-            if (stats?.submissions > 0) {
+            if (stats && stats.submissions > 0) {
                 list.push({
                     id: 'recent_success',
                     icon: <TrendingUp className="text-green-500" />,
