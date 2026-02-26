@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Instagram } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
 import { useTranslate } from '@/context/LanguageContext';
+import { useRouter } from 'next/navigation';
 
 interface Insight {
     id: string;
@@ -14,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social';
 }
 
 interface SmartInsightsProps {
@@ -25,6 +26,7 @@ interface SmartInsightsProps {
 
 export default function SmartInsights({ user, stats, forms }: SmartInsightsProps) {
     const { t } = useTranslate();
+    const router = useRouter();
     const [currentInsight, setCurrentInsight] = useState(0);
     const [insights, setInsights] = useState<Insight[]>([]);
 
@@ -151,7 +153,17 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 });
             }
 
-            // 10. Referral nudge
+            // 10. Social Media incentive
+            list.push({
+                id: 'social_follow',
+                icon: <Instagram className="text-pink-400" />,
+                title: t('dashboard.insights.socialFollow.title'),
+                text: t('dashboard.insights.socialFollow.text'),
+                color: '#f472b6',
+                action: 'social'
+            });
+
+            // 11. Referral nudge
             list.push({
                 id: 'referral_impact',
                 icon: <Share2 className="text-green-400" />,
@@ -161,7 +173,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 action: 'referral'
             });
 
-            // 11. Support
+            // 12. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
@@ -189,6 +201,31 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
 
     const insight = insights[currentInsight];
 
+    const handleClick = () => {
+        if (!insight.action) return;
+
+        switch (insight.action) {
+            case 'create':
+                router.push('/dashboard/mentor/create');
+                break;
+            case 'settings':
+                router.push('/dashboard/mentor/settings');
+                break;
+            case 'referral':
+                // Try to trigger a global event or something if available
+                break;
+            case 'smartlinks':
+                router.push('/dashboard/mentor/smart-links');
+                break;
+            case 'ads':
+                router.push('/dashboard/mentor/ads');
+                break;
+            case 'social':
+                window.open('https://instagram.com/inscrevase', '_blank');
+                break;
+        }
+    };
+
     return (
         <div style={{ marginBottom: '2rem' }}>
             <AnimatePresence mode="wait">
@@ -197,6 +234,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
+                    onClick={handleClick}
                     className="luxury-card"
                     style={{
                         background: 'linear-gradient(90deg, #1a1a1a 0%, #222 100%)',
@@ -208,12 +246,13 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                         border: `1px solid ${insight.color}40`,
                         boxShadow: `0 10px 30px ${insight.color}10`,
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        cursor: insight.action ? 'pointer' : 'default'
                     }}
                 >
                     <div style={{ position: 'absolute', left: 0, top: 0, width: '4px', height: '100%', background: insight.color }} />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
                         <div style={{
                             background: `${insight.color}20`,
                             padding: '12px',
@@ -235,7 +274,10 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                         {insights.map((_, idx) => (
                             <div
                                 key={idx}
-                                onClick={() => setCurrentInsight(idx)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrentInsight(idx);
+                                }}
                                 style={{
                                     width: idx === currentInsight ? '24px' : '8px',
                                     height: '4px',

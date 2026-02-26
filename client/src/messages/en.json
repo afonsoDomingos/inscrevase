@@ -641,6 +641,10 @@
             "supportReady": {
                 "title": "We are here for you",
                 "text": "Questions on how to set up your marketing? Talk to our premium support at any time."
+            },
+            "socialFollow": {
+                "title": "Grow with the Community",
+                "text": "Follow our social media for exclusive marketing and event management tips. Click to follow us!"
             }
         }
     },

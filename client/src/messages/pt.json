@@ -657,6 +657,10 @@
             "supportReady": {
                 "title": "Estamos aqui para si",
                 "text": "Dúvidas em como configurar o seu marketing? Fale com o nosso suporte premium a qualquer momento."
+            },
+            "socialFollow": {
+                "title": "Cresça com a Comunidade",
+                "text": "Siga as nossas redes sociais para dicas exclusivas de marketing e gestão de eventos. Clique para nos acompanhar!"
             }
         }
     },
