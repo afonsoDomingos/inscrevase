@@ -399,12 +399,12 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             href="/anunciar"
                                             style={{
                                                 display: 'inline-block',
-                                                fontSize: '0.75rem',
+                                                fontSize: '0.65rem',
                                                 fontWeight: 800,
                                                 color: '#fff',
                                                 background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
                                                 textDecoration: 'none',
-                                                padding: '6px 16px',
+                                                padding: '4px 12px',
                                                 borderRadius: '20px',
                                                 letterSpacing: '0.5px',
                                                 boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
@@ -420,7 +420,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.4)';
                                             }}
                                         >
-                                            🚀 Aumenta as tuas vendas!
+                                            Aumenta as tuas vendas!
                                         </Link>
                                     </motion.div>
                                 </div>
