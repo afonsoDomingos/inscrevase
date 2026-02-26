@@ -1685,7 +1685,7 @@ function MentorDashboardContent() {
                                             fill
                                             style={{ objectFit: 'cover' }}
                                         />
-                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #000 30%, transparent 100%)' }} />
+                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 80%)' }} />
                                     </div>
 
                                     <div style={{ position: 'relative', zIndex: 2, maxWidth: '600px' }}>
@@ -1789,18 +1789,13 @@ function MentorDashboardContent() {
                                         </div>
                                     </div>
 
-                                    <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', minHeight: '300px' }}>
-                                        <Image
-                                            src="/marketing/team.png"
-                                            alt="Nossa Equipa"
-                                            fill
-                                            style={{ objectFit: 'cover' }}
-                                        />
-                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }} />
-                                        <div style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px' }}>
-                                            <div style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,215,0,0.2)' }}>
-                                                <p style={{ margin: 0, color: '#FFD700', fontWeight: 800, fontSize: '0.85rem' }}>&quot;Nós cuidamos da estratégia técnica, você cuida do seu conhecimento.&quot;</p>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem' }}>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ background: 'rgba(212,175,55,0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                                                <Trophy size={40} color="#D4AF37" />
                                             </div>
+                                            <h4 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, marginBottom: '1rem' }}>Estratégia Validada</h4>
+                                            <p style={{ color: '#888', fontSize: '0.95rem', maxWidth: '300px' }}>&quot;Nós cuidamos da estratégia técnica, você foca no seu conhecimento.&quot;</p>
                                         </div>
                                     </div>
                                 </div>
