@@ -391,24 +391,38 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                 )}
 
                                 <div style={{ marginTop: '0.8rem', textAlign: 'center' }}>
-                                    <Link
-                                        href="/anunciar"
-                                        style={{
-                                            display: 'inline-block',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 800,
-                                            color: '#fff',
-                                            background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
-                                            textDecoration: 'none',
-                                            padding: '5px 12px',
-                                            borderRadius: '20px',
-                                            letterSpacing: '0.3px',
-                                            boxShadow: '0 2px 8px rgba(37,99,235,0.35)',
-                                            transition: 'opacity 0.2s'
-                                        }}
+                                    <motion.div
+                                        animate={{ scale: [1, 1.05, 1] }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                                     >
-                                        🚀 Aumenta as tuas vendas!
-                                    </Link>
+                                        <Link
+                                            href="/anunciar"
+                                            style={{
+                                                display: 'inline-block',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 800,
+                                                color: '#fff',
+                                                background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                                                textDecoration: 'none',
+                                                padding: '6px 16px',
+                                                borderRadius: '20px',
+                                                letterSpacing: '0.5px',
+                                                boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
+                                                transition: 'all 0.3s ease',
+                                                textTransform: 'uppercase'
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                e.currentTarget.style.boxShadow = '0 6px 15px rgba(37,99,235,0.5)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.4)';
+                                            }}
+                                        >
+                                            🚀 Aumenta as tuas vendas!
+                                        </Link>
+                                    </motion.div>
                                 </div>
                             </div>
                         </div>
