@@ -15,9 +15,10 @@ import LessonsManager from '@/components/admin/LessonsManager';
 import AdRequestList from '@/components/admin/AdRequestList';
 import SmartLinkList from '@/components/admin/SmartLinkList';
 import SystemSettings from '@/components/admin/SystemSettings';
+import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -39,7 +40,7 @@ import { formService } from '@/lib/formService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -330,9 +331,10 @@ export default function AdminDashboard() {
         { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={20} /> },
         { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
         { id: 'referrals', label: 'Referenciações', icon: <Trophy size={20} /> },
+        { id: 'marketing', label: 'Marketing & Vendas', icon: <Zap size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
         { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={20} /> },
-    ].filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings') || user?.role === 'SuperAdmin');
+    ].filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing') || user?.role === 'SuperAdmin');
 
     return (
         <div className="admin-container" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -1455,6 +1457,14 @@ export default function AdminDashboard() {
                                     setSelectedEmailRecipient({ id: mentorId, name: mentorName });
                                     setIsEmailModalOpen(true);
                                 }} />
+                            </motion.div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'marketing' && user?.role === 'SuperAdmin' && (
+                            <motion.div key="marketing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                <MarketingRequestList />
                             </motion.div>
                         )
                     }

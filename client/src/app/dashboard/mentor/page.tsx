@@ -29,6 +29,8 @@ import { stripeService } from '@/lib/stripeService';
 
 import NotificationCenter from '@/components/mentor/NotificationCenter';
 import { notificationService } from '@/lib/notificationService';
+import MarketingRequestModal from '@/components/mentor/MarketingRequestModal';
+import { marketingService, MarketingRequest } from '@/lib/marketingService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AnalyticsCharts from '@/components/mentor/AnalyticsCharts';
@@ -71,7 +73,8 @@ import {
     Monitor,
     Zap,
     Link as LinkIcon,
-    Share2
+    Share2,
+    Clock
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -119,6 +122,9 @@ function MentorDashboardContent() {
     const notificationDropdownRef = useRef<HTMLDivElement>(null);
     const bellButtonRef = useRef<HTMLButtonElement>(null);
     const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
+    const [isMarketingModalOpen, setIsMarketingModalOpen] = useState(false);
+    const [selectedMarketingService, setSelectedMarketingService] = useState<{ type: 'boost_social' | 'meta_ads' | 'gestion_360', name: string } | null>(null);
+    const [myMarketingRequests, setMyMarketingRequests] = useState<MarketingRequest[]>([]);
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -307,14 +313,16 @@ function MentorDashboardContent() {
 
     const refreshData = useCallback(async () => {
         try {
-            const [supportData, notificationData, statsData] = await Promise.all([
+            const [supportData, notificationData, statsData, marketingData] = await Promise.all([
                 supportService.getUnreadCount(),
                 notificationService.getUnreadCount(),
-                dashboardService.getMentorStats().catch(() => null)
+                dashboardService.getMentorStats().catch(() => null),
+                marketingService.getMyRequests().catch(() => [])
             ]);
             setUnreadCount(supportData.count);
             setUnreadNotifications(notificationData.count);
             if (statsData) setStats(statsData);
+            setMyMarketingRequests(marketingData);
 
             // Load referral ranking for overview
             const ranking = await referralService.getRanking().catch(() => []);
@@ -1657,116 +1665,192 @@ function MentorDashboardContent() {
                     {activeTab === 'marketing' && (
                         <motion.div key="marketing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div style={{ marginBottom: '2.5rem' }}>
-                                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: 'var(--foreground)', marginBottom: '0.5rem' }}>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#fff', marginBottom: '0.5rem' }}>
                                     Acelerador de <span className="gold-text">Vendas</span>
                                 </h2>
                                 <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '600px' }}>
-                                    Deixa o marketing connosco. Escolhe um pacote e a nossa equipa cuidará de toda a promoção para esgotares o teu evento.
+                                    O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter o seu evento em um sucesso de vendas.
                                 </p>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
-                                {/* Pacote 1: Visibilidade Social */}
-                                <div style={{ background: 'var(--paper)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,215,0,0.1)', position: 'relative', overflow: 'hidden' }}>
-                                    <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'rgba(212,175,55,0.1)', borderBottomLeftRadius: '24px', color: '#D4AF37' }}>
-                                        <Share2 size={24} />
+                            {/* High-Conversion Sales Page Section */}
+                            <div style={{ position: 'relative', borderRadius: '32px', overflow: 'hidden', background: '#0a0a0a', border: '1px solid rgba(255,215,0,0.1)', marginBottom: '4rem' }}>
+                                {/* Hero Banner */}
+                                <div style={{ position: 'relative', height: '450px', display: 'flex', alignItems: 'center', padding: isMobile ? '2rem' : '4rem' }}>
+                                    <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
+                                        <Image
+                                            src="/artifacts/marketing_performance_hero_1772137025895.png"
+                                            alt="Aceleração de Vendas"
+                                            fill
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #000 30%, transparent 100%)' }} />
                                     </div>
-                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Boost Social</h3>
-                                    <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                                        Ideal para quem quer começar a gerar tração rápida nos canais sociais e na nossa comunidade.
-                                    </p>
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                        {[
-                                            '3 Stories no Instagram Oficial',
-                                            'Destaque na Newsletter semanal',
-                                            'Destaque no Feed da Plataforma',
-                                            'Suporte Prioritário'
-                                        ].map((feat, i) => (
-                                            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: '#fff' }}>
-                                                <CheckCircle size={16} color="#4ade80" /> {feat}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <button
-                                        onClick={() => setIsSupportOpen(true)}
-                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #D4AF37', background: 'transparent', color: '#D4AF37', fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s' }}
-                                        onMouseOver={e => e.currentTarget.style.background = 'rgba(212,175,55,0.1)'}
-                                        onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                                    >
-                                        Saber Mais
-                                    </button>
+
+                                    <div style={{ position: 'relative', zIndex: 2, maxWidth: '600px' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', padding: '6px 16px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 900, marginBottom: '1.5rem', border: '1px solid rgba(212,175,55,0.3)' }}>
+                                            <Zap size={14} /> EXCLUSIVO PARA MENTORES
+                                        </div>
+                                        <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.5rem', fontWeight: 900, lineHeight: 1.1, color: '#fff', marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)' }}>
+                                            Pare de Perder Vendas por <span className="gold-text">Falta de Tração.</span>
+                                        </h1>
+                                        <p style={{ fontSize: '1.1rem', color: '#aaa', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+                                            Cansado de criar eventos incríveis que ninguém vê? A nossa equipa de especialistas assume o controlo do teu marketing para que tu te foques apenas no que fazes melhor: ensinar.
+                                        </p>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedMarketingService({ type: 'gestion_360', name: 'Programa de Aceleração 360º' });
+                                                setIsMarketingModalOpen(true);
+                                            }}
+                                            style={{
+                                                padding: '1.2rem 2.5rem',
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                border: 'none',
+                                                borderRadius: '16px',
+                                                fontWeight: 900,
+                                                fontSize: '1.1rem',
+                                                cursor: 'pointer',
+                                                boxShadow: '0 20px 40px rgba(212,175,55,0.3)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px'
+                                            }}
+                                            className="hover:translate-y-[-5px] transition-all"
+                                        >
+                                            AUMENTAR MINHAS VENDAS AGORA <Zap size={20} />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                {/* Pacote 2: Aceleração Meta */}
-                                <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '24px', padding: '2rem', border: '1px solid #2563eb', position: 'relative', overflow: 'hidden', transform: isMobile ? 'none' : 'scale(1.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-                                    <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'rgba(37,99,235,0.2)', borderBottomLeftRadius: '24px', color: '#3b82f6' }}>
-                                        <Zap size={24} />
+                                {/* Pain Points & Solutions */}
+                                <div style={{ padding: isMobile ? '2rem' : '4rem', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '4rem', background: 'rgba(255,255,255,0.02)' }}>
+                                    <div>
+                                        <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', marginBottom: '2rem' }}>O que resolvemos para si?</h3>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                            {[
+                                                {
+                                                    title: "Design de Criativos que Param o Scroll",
+                                                    desc: "Criamos imagens e vídeos profissionais para os seus anúncios que captam a atenção imediata do seu público-alvo.",
+                                                    icon: <Share2 color="#D4AF37" />
+                                                },
+                                                {
+                                                    title: "Copywriting de Alta Persuasão",
+                                                    desc: "Escrevemos os textos que vendem. Usamos gatilhos mentais estratégicos para transformar curiosos em inscritos pagos.",
+                                                    icon: <Trophy color="#D4AF37" />
+                                                },
+                                                {
+                                                    title: "Gestão de Campanhas Meta Ads",
+                                                    desc: "Configuramos e otimizamos o seu tráfego pago no Facebook e Instagram diariamente para garantir o menor custo por lead.",
+                                                    icon: <Zap color="#D4AF37" />
+                                                }
+                                            ].map((item, i) => (
+                                                <div key={i} style={{ display: 'flex', gap: '20px' }}>
+                                                    <div style={{ flexShrink: 0, width: '48px', height: '48px', background: 'rgba(212,175,55,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {item.icon}
+                                                    </div>
+                                                    <div>
+                                                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', marginBottom: '0.5rem' }}>{item.title}</h4>
+                                                        <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: 1.5 }}>{item.desc}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div style={{ background: '#2563eb', color: '#fff', fontSize: '0.65rem', fontWeight: 900, padding: '4px 12px', borderRadius: '20px', display: 'inline-block', marginBottom: '1rem', textTransform: 'uppercase' }}>MAIS POPULAR</div>
-                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Aceleração Meta Ads</h3>
-                                    <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                                        Tráfego pago profissional. Nós gerimos os teus anúncios no Facebook e Instagram para o público certo.
-                                    </p>
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                        {[
-                                            'Configuração de Campanha Meta Ads',
-                                            'Design de Criativos Inclusos',
-                                            'Segmentação por Público Alvo',
-                                            'Destaque Premium na Home (7 dias)',
-                                            'Relatório de Performance'
-                                        ].map((feat, i) => (
-                                            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: '#fff' }}>
-                                                <CheckCircle size={16} color="#3b82f6" /> {feat}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <button
-                                        onClick={() => setIsSupportOpen(true)}
-                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: 800, cursor: 'pointer', boxShadow: '0 10px 20px rgba(37,99,235,0.3)' }}
-                                    >
-                                        Contratar Agora
-                                    </button>
+
+                                    <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', minHeight: '300px' }}>
+                                        <Image
+                                            src="/artifacts/creative_team_working_1772137061089.png"
+                                            alt="Nossa Equipa"
+                                            fill
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }} />
+                                        <div style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px' }}>
+                                            <div style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,215,0,0.2)' }}>
+                                                <p style={{ margin: 0, color: '#FFD700', fontWeight: 800, fontSize: '0.85rem' }}>&quot;Nós cuidamos da estratégia técnica, você cuida do seu conhecimento.&quot;</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Pacote 3: Venda Total 360 */}
-                                <div style={{ background: 'var(--paper)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,215,0,0.1)', position: 'relative', overflow: 'hidden' }}>
-                                    <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'rgba(212,175,55,0.1)', borderBottomLeftRadius: '24px', color: '#D4AF37' }}>
-                                        <Trophy size={24} />
-                                    </div>
-                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Gestão 360º</h3>
-                                    <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                                        Parceria completa. Nós assumimos toda a jornada de venda, desde o copy até à conversão final.
-                                    </p>
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                {/* Results Focused Section */}
+                                <div style={{ padding: '3rem', textAlign: 'center', background: 'linear-gradient(180deg, transparent, rgba(37,99,235,0.05))', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '2rem' }}>O seu sucesso é mensurável</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
                                         {[
-                                            'Funil de Vendas Personalizado',
-                                            'Copywriting de Alta Conversão',
-                                            'Gestão Total de Tráfego Pago',
-                                            'Automação de E-mail Marketing',
-                                            'Suporte Comercial (Fecho de Vendas)'
-                                        ].map((feat, i) => (
-                                            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: '#fff' }}>
-                                                <CheckCircle size={16} color="#D4AF37" /> {feat}
-                                            </li>
+                                            { label: "Visibilidade", val: "10x Mais Alcance" },
+                                            { label: "Conversão", val: "ROI Focado" },
+                                            { label: "Suporte", val: "Acompanhamento 24/7" }
+                                        ].map((stat, i) => (
+                                            <div key={i} style={{ padding: '2rem', borderRadius: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{stat.label}</div>
+                                                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#D4AF37' }}>{stat.val}</div>
+                                            </div>
                                         ))}
-                                    </ul>
-                                    <button
-                                        onClick={() => setIsSupportOpen(true)}
-                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #D4AF37', background: 'transparent', color: '#D4AF37', fontWeight: 800, cursor: 'pointer' }}
-                                    >
-                                        Consultar Viabilidade
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
 
+                            {/* My Requests Section */}
+                            {myMarketingRequests.length > 0 && (
+                                <div style={{ marginTop: '0rem' }}>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#fff', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Clock size={24} color="#D4AF37" /> Meus Pedidos de Aceleração
+                                    </h3>
+                                    <div style={{ background: 'var(--paper)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                            <thead>
+                                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Serviço</th>
+                                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Data</th>
+                                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Status</th>
+                                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Nota Admin</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {myMarketingRequests.map((req) => (
+                                                    <tr key={req._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                                        <td style={{ padding: '1.2rem' }}>
+                                                            <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.9rem' }}>
+                                                                {req.serviceType === 'boost_social' ? 'Boost Social' : req.serviceType === 'meta_ads' ? 'Aceleração Meta Ads' : 'Programa de Aceleração 360º'}
+                                                            </div>
+                                                        </td>
+                                                        <td style={{ padding: '1.2rem', color: '#666', fontSize: '0.85rem' }}>
+                                                            {new Date(req.createdAt).toLocaleDateString()}
+                                                        </td>
+                                                        <td style={{ padding: '1.2rem' }}>
+                                                            <span style={{
+                                                                padding: '4px 12px',
+                                                                borderRadius: '20px',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: 800,
+                                                                background: req.status === 'pending' ? 'rgba(212,175,55,0.1)' : req.status === 'in_progress' ? 'rgba(37,99,235,0.1)' : req.status === 'completed' ? 'rgba(74,222,128,0.1)' : 'rgba(229,62,62,0.1)',
+                                                                color: req.status === 'pending' ? '#D4AF37' : req.status === 'in_progress' ? '#3b82f6' : req.status === 'completed' ? '#4ade80' : '#e53e3e',
+                                                                textTransform: 'capitalize'
+                                                            }}>
+                                                                {req.status === 'in_progress' ? 'Em Andamento' : req.status === 'completed' ? 'Concluído' : req.status === 'pending' ? 'Pendente' : req.status}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: '1.2rem', color: '#888', fontSize: '0.85rem' }}>
+                                                            {req.adminNotes || 'A aguardar análise...'}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
                             <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,215,0,0.02)', border: '1px dashed rgba(255,215,0,0.2)', borderRadius: '20px', textAlign: 'center' }}>
-                                <h4 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Precisas de algo personalizado?</h4>
-                                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Se o teu projeto exige uma estratégia específica, a nossa equipa de especialistas está pronta para ajudar.</p>
+                                <h4 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Ainda tem dúvidas?</h4>
+                                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>A nossa equipa de consultores está disponível para uma breve sessão de diagnóstico gratuita.</p>
                                 <button
                                     onClick={() => setIsSupportOpen(true)}
-                                    style={{ padding: '0.6rem 2rem', background: 'var(--paper)', border: '1px solid #333', color: '#fff', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
+                                    style={{ padding: '0.8rem 2rem', background: 'var(--paper)', border: '1px solid #D4AF37', color: '#D4AF37', borderRadius: '12px', fontWeight: 900, cursor: 'pointer' }}
                                 >
-                                    Falar com Especialista
+                                    Agendar Sessão Grátis
                                 </button>
                             </div>
                         </motion.div>
@@ -1801,27 +1885,23 @@ function MentorDashboardContent() {
                     }}
                 />
 
-                {
-                    themeModalData.form && (
-                        <EditEventThemeModal
-                            isOpen={themeModalData.isOpen}
-                            onClose={() => setThemeModalData({ isOpen: false, form: null })}
-                            form={themeModalData.form}
-                            onSuccess={loadDashboard}
-                        />
-                    )
-                }
+                {themeModalData.form && (
+                    <EditEventThemeModal
+                        isOpen={themeModalData.isOpen}
+                        onClose={() => setThemeModalData({ isOpen: false, form: null })}
+                        form={themeModalData.form}
+                        onSuccess={loadDashboard}
+                    />
+                )}
 
-                {
-                    editModalData.form && (
-                        <EditEventModal
-                            isOpen={editModalData.isOpen}
-                            onClose={() => setEditModalData({ isOpen: false, form: null })}
-                            form={editModalData.form}
-                            onSuccess={loadDashboard}
-                        />
-                    )
-                }
+                {editModalData.form && (
+                    <EditEventModal
+                        isOpen={editModalData.isOpen}
+                        onClose={() => setEditModalData({ isOpen: false, form: null })}
+                        form={editModalData.form}
+                        onSuccess={loadDashboard}
+                    />
+                )}
 
                 <ReferralModal
                     isOpen={isReferralModalOpen}
@@ -1894,6 +1974,15 @@ function MentorDashboardContent() {
                         }
                     }
                 `}</style>
+                {selectedMarketingService && (
+                    <MarketingRequestModal
+                        isOpen={isMarketingModalOpen}
+                        onClose={() => setIsMarketingModalOpen(false)}
+                        serviceType={selectedMarketingService.type}
+                        serviceName={selectedMarketingService.name}
+                        onSuccess={refreshData}
+                    />
+                )}
             </main >
         </div >
     );
