@@ -23,9 +23,11 @@ interface SmartInsightsProps {
     user: UserData | null;
     stats: AdminStats | null;
     forms: FormModel[];
+    onCreateEvent?: () => void;
+    onOpenSettings?: () => void;
 }
 
-export default function SmartInsights({ user, stats, forms }: SmartInsightsProps) {
+export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpenSettings }: SmartInsightsProps) {
     const { t } = useTranslate();
     const router = useRouter();
     const [currentInsight, setCurrentInsight] = useState(0);
@@ -216,10 +218,18 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
 
         switch (insight.action) {
             case 'create':
-                router.push('/dashboard/mentor/create');
+                if (onCreateEvent) {
+                    onCreateEvent();
+                } else {
+                    router.push('/dashboard/mentor/create');
+                }
                 break;
             case 'settings':
-                router.push('/dashboard/mentor/settings');
+                if (onOpenSettings) {
+                    onOpenSettings();
+                } else {
+                    router.push('/dashboard/mentor/settings');
+                }
                 break;
             case 'referral':
                 // Try to trigger a global event or something if available

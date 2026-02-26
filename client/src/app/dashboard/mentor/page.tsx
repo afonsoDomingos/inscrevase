@@ -1210,7 +1210,13 @@ function MentorDashboardContent() {
                             </div>
 
                             {/* Smart AI Insights */}
-                            <SmartInsights user={user} stats={stats} forms={forms} />
+                            <SmartInsights
+                                user={user}
+                                stats={stats}
+                                forms={forms}
+                                onCreateEvent={() => setIsEventModalOpen(true)}
+                                onOpenSettings={() => setIsProfileModalOpen(true)}
+                            />
 
                             {/* Performance Analytics on Overview */}
                             <div style={{ marginBottom: '2rem' }}>
