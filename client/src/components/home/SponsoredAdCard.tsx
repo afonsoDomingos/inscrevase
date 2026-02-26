@@ -92,14 +92,15 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         }
     }, [currentIndex, isVisible, events]);
 
+    // Reset selected image when ad changes or modal opens
+    // Must be BEFORE early returns to satisfy React Hooks rules
+    useEffect(() => {
+        setSelectedImageUrl(events[currentIndex]?.mediaUrl || null);
+    }, [currentIndex, isDetailsModalOpen, events]);
+
     if (!events || events.length === 0 || isClosed) return null;
 
     const currentItem = events[currentIndex];
-
-    // Reset selected image when ad changes or modal opens
-    useEffect(() => {
-        setSelectedImageUrl(currentItem?.mediaUrl || null);
-    }, [currentIndex, isDetailsModalOpen, currentItem?.mediaUrl]);
 
     const handleClickLink = async () => {
         if (currentItem._id && !currentItem.targetUrl.startsWith('/f/')) {
