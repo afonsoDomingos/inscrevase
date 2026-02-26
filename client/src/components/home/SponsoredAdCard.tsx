@@ -493,7 +493,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
 
                             <div style={{ flex: 1, overflowY: 'auto' }}>
                                 {/* Gallery / Main Media */}
-                                <div style={{ position: 'relative', width: '100%', height: '350px', background: '#0f172a', overflow: 'hidden' }}>
+                                <div style={{ position: 'relative', width: '100%', height: '350px', background: 'radial-gradient(at 0% 0%, rgba(45, 212, 191, 0.15) 0%, transparent 50%), #042f2e', overflow: 'hidden' }}>
                                     {currentItem.mediaType === 'video' ? (
                                         <video
                                             src={currentItem.mediaUrl || ""}
