@@ -393,9 +393,21 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                 <div style={{ marginTop: '0.8rem', textAlign: 'center' }}>
                                     <Link
                                         href="/anunciar"
-                                        style={{ fontSize: '0.65rem', color: '#999', textDecoration: 'none' }}
+                                        style={{
+                                            display: 'inline-block',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 800,
+                                            color: '#fff',
+                                            background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+                                            textDecoration: 'none',
+                                            padding: '5px 12px',
+                                            borderRadius: '20px',
+                                            letterSpacing: '0.3px',
+                                            boxShadow: '0 2px 8px rgba(37,99,235,0.35)',
+                                            transition: 'opacity 0.2s'
+                                        }}
                                     >
-                                        Anunciar aqui
+                                        🚀 Aumenta as tuas vendas!
                                     </Link>
                                 </div>
                             </div>
