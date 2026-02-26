@@ -910,25 +910,25 @@ function MentorDashboardContent() {
                                 marginBottom: '0.5rem',
                                 padding: '6px 14px',
                                 borderRadius: '20px',
-                                background: user.role === 'company' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' :
-                                    user.role === 'specialist' ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
-                                        user.role === 'mentor' ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' :
-                                            'var(--gold-gradient)',
-                                color: '#fff',
+                                background: '#1a1a1a', // Sóbrio e premium
+                                color: '#FFD700', // Destaque em ouro
                                 fontSize: '0.75rem',
-                                fontWeight: 700,
+                                fontWeight: 800,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.5px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                                border: '1px solid rgba(255, 215, 0, 0.3)',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
                             }}>
-                                {user.role === 'company' && <Briefcase size={14} />}
-                                {user.role === 'specialist' && <Award size={14} />}
-                                {user.role === 'mentor' && <UserIcon size={14} />}
-                                <span>
-                                    {user.role === 'company' ? 'Você é uma Empresa' :
-                                        user.role === 'specialist' ? 'Você é um Especialista' :
-                                            user.role === 'mentor' ? 'Você é um Mentor' :
-                                                'Administrador'}
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', borderRadius: '50%', padding: '4px', color: '#000' }}>
+                                    {user.role === 'company' && <Briefcase size={12} />}
+                                    {user.role === 'specialist' && <Award size={12} />}
+                                    {user.role === 'mentor' && <UserIcon size={12} />}
+                                </div>
+                                <span style={{ textShadow: '0 0 10px rgba(255,215,0,0.2)' }}>
+                                    {user.role === 'company' ? 'VOCÊ É UMA EMPRESA' :
+                                        user.role === 'specialist' ? 'VOCÊ É UM ESPECIALISTA' :
+                                            user.role === 'mentor' ? 'VOCÊ É UM MENTOR' :
+                                                'ADMINISTRADOR'}
                                 </span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1206,6 +1206,17 @@ function MentorDashboardContent() {
                                     value={formatPrice(stats?.revenue || 0, 'USD', currency)}
                                     trend="+18%"
                                 />
+                            </div>
+
+                            {/* Performance Analytics on Overview */}
+                            <div style={{ marginBottom: '2rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                                    <div style={{ width: '32px', height: '4px', background: 'var(--gold-gradient)', borderRadius: '2px' }} />
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        {t('dashboard.performanceAnalysis')}
+                                    </h3>
+                                </div>
+                                <AnalyticsCharts />
                             </div>
 
                             <div style={{
@@ -2032,31 +2043,60 @@ export default function MentorDashboard() {
 function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string | number, trend: string }) {
     return (
         <motion.div
-            whileHover={{ y: -5 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="luxury-card"
             style={{
-                background: '#fff',
-                padding: '1.5rem',
-                border: 'none',
-                borderRadius: '20px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(10px)',
+                padding: '2rem 1.5rem',
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                borderRadius: '24px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
             }}
         >
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'var(--gold-gradient)' }}></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-                <div style={{ background: `rgba(212,175,55,0.08)`, color: '#D4AF37', padding: '0.6rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {icon}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }}></div>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.02))',
+                        color: '#D4AF37',
+                        padding: '12px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 10px rgba(212,175,55,0.1)'
+                    }}>
+                        {icon}
+                    </div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        background: trend.startsWith('+') ? '#f0fdf4' : '#fef2f2',
+                        padding: '4px 10px',
+                        borderRadius: '30px',
+                        border: `1px solid ${trend.startsWith('+') ? '#dcfce7' : '#fee2e2'}`
+                    }}>
+                        <span style={{ fontSize: '0.7rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 900 }}>{trend}</span>
+                    </div>
                 </div>
-                <span style={{ color: '#666', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a' }}>{value}</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: trend.startsWith('+') ? '#f0fdf4' : '#fef2f2', padding: '4px 8px', borderRadius: '20px' }}>
-                    <span style={{ fontSize: '0.75rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 800 }}>{trend}</span>
-                </div>
+
+            <div>
+                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', letterSpacing: '-0.5px' }}>{value}</h2>
             </div>
+
+            {/* Subtle Sparkle/Light effect */}
+            <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%)', borderRadius: '50%' }} />
         </motion.div>
     );
 }
