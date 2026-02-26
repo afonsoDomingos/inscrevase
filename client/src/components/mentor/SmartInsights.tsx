@@ -25,9 +25,10 @@ interface SmartInsightsProps {
     forms: FormModel[];
     onCreateEvent?: () => void;
     onOpenSettings?: () => void;
+    onNavigate?: (tab: string) => void;
 }
 
-export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpenSettings }: SmartInsightsProps) {
+export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpenSettings, onNavigate }: SmartInsightsProps) {
     const { t } = useTranslate();
     const router = useRouter();
     const [currentInsight, setCurrentInsight] = useState(0);
@@ -254,13 +255,23 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 }
                 break;
             case 'referral':
-                // Try to trigger a global event or something if available
+                if (onNavigate) {
+                    onNavigate('marketing');
+                }
                 break;
             case 'smartlinks':
-                router.push('/dashboard/mentor/smart-links');
+                if (onNavigate) {
+                    onNavigate('smartlinks');
+                } else {
+                    router.push('/dashboard/mentor/smart-links');
+                }
                 break;
             case 'ads':
-                router.push('/dashboard/mentor/ads');
+                if (onNavigate) {
+                    onNavigate('ads');
+                } else {
+                    router.push('/dashboard/mentor/ads');
+                }
                 break;
             case 'social_linkedin':
                 window.open('https://www.linkedin.com/company/inscreva-se', '_blank');

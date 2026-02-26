@@ -1216,6 +1216,7 @@ function MentorDashboardContent() {
                                 forms={forms}
                                 onCreateEvent={() => setIsEventModalOpen(true)}
                                 onOpenSettings={() => setIsProfileModalOpen(true)}
+                                onNavigate={(tab) => setActiveTab(tab as Tab)}
                             />
 
                             {/* Performance Analytics on Overview */}
