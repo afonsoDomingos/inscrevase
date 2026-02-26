@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Instagram } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
@@ -15,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube';
     buttonText?: string;
 }
 
@@ -163,18 +163,40 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 });
             }
 
-            // 10. Social Media incentive
+            // 10. Social Media - LinkedIn
             list.push({
-                id: 'social_follow',
-                icon: <Instagram className="text-pink-400" />,
-                title: t('dashboard.insights.socialFollow.title'),
-                text: t('dashboard.insights.socialFollow.text'),
-                color: '#f472b6',
-                action: 'social',
+                id: 'social_linkedin',
+                icon: <Linkedin className="text-blue-500" />,
+                title: "Inscreva-se no LinkedIn",
+                text: "Conecte-se com a maior rede de mentores e profissionais de eventos da lusofonia.",
+                color: '#0077b5',
+                action: 'social_linkedin',
                 buttonText: t('dashboard.insights.buttons.social')
             });
 
-            // 11. Referral nudge
+            // 11. Social Media - Facebook
+            list.push({
+                id: 'social_facebook',
+                icon: <Facebook className="text-blue-600" />,
+                title: "Nossa Comunidade no Facebook",
+                text: "Acompanhe as novidades, eventos e dicas exclusivas na nossa página oficial.",
+                color: '#1877f2',
+                action: 'social_facebook',
+                buttonText: t('dashboard.insights.buttons.social')
+            });
+
+            // 12. Social Media - YouTube
+            list.push({
+                id: 'social_youtube',
+                icon: <Youtube className="text-red-600" />,
+                title: "Tutoriais no YouTube",
+                text: "Aprenda a dominar todas as ferramentas da plataforma com os nossos vídeos tutoriais.",
+                color: '#ff0000',
+                action: 'social_youtube',
+                buttonText: t('dashboard.insights.buttons.social')
+            });
+
+            // 13. Referral nudge
             list.push({
                 id: 'referral_impact',
                 icon: <Share2 className="text-green-400" />,
@@ -240,8 +262,14 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
             case 'ads':
                 router.push('/dashboard/mentor/ads');
                 break;
-            case 'social':
-                window.open('https://instagram.com/inscrevase', '_blank');
+            case 'social_linkedin':
+                window.open('https://www.linkedin.com/company/inscreva-se', '_blank');
+                break;
+            case 'social_facebook':
+                window.open('https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR', '_blank');
+                break;
+            case 'social_youtube':
+                window.open('https://www.youtube.com/@Inscreva-se-events', '_blank');
                 break;
         }
     };
