@@ -33,6 +33,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     const [timeLeft, setTimeLeft] = useState(10);
     const [isVisible, setIsVisible] = useState(false);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
     const isClosed = false;
 
     const [isMobile, setIsMobile] = useState(false);
@@ -94,6 +95,11 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
     if (!events || events.length === 0 || isClosed) return null;
 
     const currentItem = events[currentIndex];
+
+    // Reset selected image when ad changes or modal opens
+    useEffect(() => {
+        setSelectedImageUrl(currentItem?.mediaUrl || null);
+    }, [currentIndex, isDetailsModalOpen, currentItem?.mediaUrl]);
 
     const handleClickLink = async () => {
         if (currentItem._id && !currentItem.targetUrl.startsWith('/f/')) {
@@ -460,7 +466,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
 
                             <div style={{ flex: 1, overflowY: 'auto' }}>
                                 {/* Gallery / Main Media */}
-                                <div style={{ position: 'relative', width: '100%', height: '350px', background: '#f8fafc' }}>
+                                <div style={{ position: 'relative', width: '100%', height: '350px', background: '#0f172a', overflow: 'hidden' }}>
                                     {currentItem.mediaType === 'video' ? (
                                         <video
                                             src={currentItem.mediaUrl || ""}
@@ -469,23 +475,64 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             autoPlay
                                         />
                                     ) : (
-                                        <Image
-                                            src={currentItem.mediaUrl || '/logo.png'}
-                                            alt={currentItem.title}
-                                            fill
-                                            style={{ objectFit: 'contain' }}
-                                        />
+                                        <AnimatePresence mode="wait">
+                                            <motion.div
+                                                key={selectedImageUrl}
+                                                initial={{ opacity: 0, scale: 1.04 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.97 }}
+                                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                                style={{ position: 'absolute', inset: 0 }}
+                                            >
+                                                <Image
+                                                    src={selectedImageUrl || currentItem.mediaUrl || '/logo.png'}
+                                                    alt={currentItem.title}
+                                                    fill
+                                                    style={{ objectFit: 'contain' }}
+                                                />
+                                            </motion.div>
+                                        </AnimatePresence>
                                     )}
                                 </div>
 
-                                {/* Other Images if available */}
+                                {/* Thumbnails — clickable to change main image */}
                                 {currentItem.mediaUrls && currentItem.mediaUrls.length > 1 && (
-                                    <div style={{ display: 'flex', gap: '8px', padding: '1rem', overflowX: 'auto', borderBottom: '1px solid #e2e8f0' }}>
-                                        {currentItem.mediaUrls.map((url, idx) => (
-                                            <div key={idx} style={{ position: 'relative', minWidth: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                                                <Image src={url} alt={`Gallery ${idx}`} fill style={{ objectFit: 'cover' }} />
-                                            </div>
-                                        ))}
+                                    <div style={{ display: 'flex', gap: '8px', padding: '1rem', overflowX: 'auto', borderBottom: '1px solid #e2e8f0', scrollbarWidth: 'none' }}>
+                                        {currentItem.mediaUrls.map((url, idx) => {
+                                            const isSelected = (selectedImageUrl ?? currentItem.mediaUrl) === url;
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => setSelectedImageUrl(url)}
+                                                    style={{
+                                                        position: 'relative',
+                                                        minWidth: '80px',
+                                                        width: '80px',
+                                                        height: '80px',
+                                                        borderRadius: '10px',
+                                                        overflow: 'hidden',
+                                                        border: isSelected ? '2.5px solid #D4AF37' : '2.5px solid transparent',
+                                                        padding: 0,
+                                                        cursor: 'pointer',
+                                                        flexShrink: 0,
+                                                        boxShadow: isSelected ? '0 0 0 2px rgba(212,175,55,0.3)' : 'none',
+                                                        transition: 'border-color 0.2s, box-shadow 0.2s',
+                                                        transform: isSelected ? 'scale(1.06)' : 'scale(1)',
+                                                        background: '#f0f0f0'
+                                                    }}
+                                                >
+                                                    <Image src={url} alt={`Foto ${idx + 1}`} fill style={{ objectFit: 'cover' }} />
+                                                    {isSelected && (
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            inset: 0,
+                                                            background: 'rgba(212,175,55,0.15)',
+                                                            pointerEvents: 'none'
+                                                        }} />
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 )}
 
