@@ -255,7 +255,7 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
                                                             <button
                                                                 key={type}
                                                                 type="button"
-                                                                onClick={() => setFormData({ ...formData, eventType: type as any })}
+                                                                onClick={() => setFormData({ ...formData, eventType: type as 'online' | 'presencial' | 'hibrido' })}
                                                                 style={{
                                                                     flex: 1,
                                                                     padding: '0.8rem',
