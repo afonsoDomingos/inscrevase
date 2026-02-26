@@ -16,7 +16,7 @@ export interface ReferralHistory {
         email: string;
         createdAt: string;
         plan?: string;
-    };
+    } | null;
     pointsEarned: number;
     status: string;
     createdAt: string;

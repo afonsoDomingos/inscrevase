@@ -463,10 +463,10 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                                     <div>
                                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem' }}>Histórico Recente</h3>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                            {history.map((item) => (
+                                            {history.filter(item => item.referredUser != null).map((item) => (
                                                 <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: '#f8f9fa', borderRadius: '12px' }}>
                                                     <div>
-                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{item.referredUser.name}</div>
+                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{item.referredUser?.name ?? 'Utilizador removido'}</div>
                                                         <div style={{ fontSize: '0.75rem', color: '#888' }}>{new Date(item.createdAt).toLocaleDateString()}</div>
                                                     </div>
                                                     <div style={{ fontWeight: 800, color: '#16a34a', fontSize: '0.9rem' }}>
