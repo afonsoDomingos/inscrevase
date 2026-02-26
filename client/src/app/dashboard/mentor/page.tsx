@@ -1680,7 +1680,7 @@ function MentorDashboardContent() {
                                 <div style={{ position: 'relative', height: '450px', display: 'flex', alignItems: 'center', padding: isMobile ? '2rem' : '4rem' }}>
                                     <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
                                         <Image
-                                            src="/artifacts/marketing_performance_hero_1772137025895.png"
+                                            src="/marketing/hero.png"
                                             alt="Aceleração de Vendas"
                                             fill
                                             style={{ objectFit: 'cover' }}
@@ -1791,7 +1791,7 @@ function MentorDashboardContent() {
 
                                     <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', minHeight: '300px' }}>
                                         <Image
-                                            src="/artifacts/creative_team_working_1772137061089.png"
+                                            src="/marketing/team.png"
                                             alt="Nossa Equipa"
                                             fill
                                             style={{ objectFit: 'cover' }}
