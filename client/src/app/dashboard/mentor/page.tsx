@@ -70,7 +70,8 @@ import {
     ExternalLink,
     Monitor,
     Zap,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Share2
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -82,7 +83,7 @@ import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing';
 
 import { Suspense } from 'react';
 
@@ -525,6 +526,7 @@ function MentorDashboardContent() {
                         { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                         { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                         { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
+                        { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
@@ -1649,6 +1651,124 @@ function MentorDashboardContent() {
                     {activeTab === 'services' && (
                         <motion.div key="services" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <ServicesManagement />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'marketing' && (
+                        <motion.div key="marketing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <div style={{ marginBottom: '2.5rem' }}>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: 'var(--foreground)', marginBottom: '0.5rem' }}>
+                                    Acelerador de <span className="gold-text">Vendas</span>
+                                </h2>
+                                <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '600px' }}>
+                                    Deixa o marketing connosco. Escolhe um pacote e a nossa equipa cuidará de toda a promoção para esgotares o teu evento.
+                                </p>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                                {/* Pacote 1: Visibilidade Social */}
+                                <div style={{ background: 'var(--paper)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,215,0,0.1)', position: 'relative', overflow: 'hidden' }}>
+                                    <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'rgba(212,175,55,0.1)', borderBottomLeftRadius: '24px', color: '#D4AF37' }}>
+                                        <Share2 size={24} />
+                                    </div>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Boost Social</h3>
+                                    <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                        Ideal para quem quer começar a gerar tração rápida nos canais sociais e na nossa comunidade.
+                                    </p>
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                        {[
+                                            '3 Stories no Instagram Oficial',
+                                            'Destaque na Newsletter semanal',
+                                            'Destaque no Feed da Plataforma',
+                                            'Suporte Prioritário'
+                                        ].map((feat, i) => (
+                                            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: '#fff' }}>
+                                                <CheckCircle size={16} color="#4ade80" /> {feat}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <button
+                                        onClick={() => setIsSupportOpen(true)}
+                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #D4AF37', background: 'transparent', color: '#D4AF37', fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s' }}
+                                        onMouseOver={e => e.currentTarget.style.background = 'rgba(212,175,55,0.1)'}
+                                        onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        Saber Mais
+                                    </button>
+                                </div>
+
+                                {/* Pacote 2: Aceleração Meta */}
+                                <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '24px', padding: '2rem', border: '1px solid #2563eb', position: 'relative', overflow: 'hidden', transform: isMobile ? 'none' : 'scale(1.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                                    <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'rgba(37,99,235,0.2)', borderBottomLeftRadius: '24px', color: '#3b82f6' }}>
+                                        <Zap size={24} />
+                                    </div>
+                                    <div style={{ background: '#2563eb', color: '#fff', fontSize: '0.65rem', fontWeight: 900, padding: '4px 12px', borderRadius: '20px', display: 'inline-block', marginBottom: '1rem', textTransform: 'uppercase' }}>MAIS POPULAR</div>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Aceleração Meta Ads</h3>
+                                    <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                        Tráfego pago profissional. Nós gerimos os teus anúncios no Facebook e Instagram para o público certo.
+                                    </p>
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                        {[
+                                            'Configuração de Campanha Meta Ads',
+                                            'Design de Criativos Inclusos',
+                                            'Segmentação por Público Alvo',
+                                            'Destaque Premium na Home (7 dias)',
+                                            'Relatório de Performance'
+                                        ].map((feat, i) => (
+                                            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: '#fff' }}>
+                                                <CheckCircle size={16} color="#3b82f6" /> {feat}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <button
+                                        onClick={() => setIsSupportOpen(true)}
+                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: 800, cursor: 'pointer', boxShadow: '0 10px 20px rgba(37,99,235,0.3)' }}
+                                    >
+                                        Contratar Agora
+                                    </button>
+                                </div>
+
+                                {/* Pacote 3: Venda Total 360 */}
+                                <div style={{ background: 'var(--paper)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,215,0,0.1)', position: 'relative', overflow: 'hidden' }}>
+                                    <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', background: 'rgba(212,175,55,0.1)', borderBottomLeftRadius: '24px', color: '#D4AF37' }}>
+                                        <Trophy size={24} />
+                                    </div>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Gestão 360º</h3>
+                                    <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                        Parceria completa. Nós assumimos toda a jornada de venda, desde o copy até à conversão final.
+                                    </p>
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                        {[
+                                            'Funil de Vendas Personalizado',
+                                            'Copywriting de Alta Conversão',
+                                            'Gestão Total de Tráfego Pago',
+                                            'Automação de E-mail Marketing',
+                                            'Suporte Comercial (Fecho de Vendas)'
+                                        ].map((feat, i) => (
+                                            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: '#fff' }}>
+                                                <CheckCircle size={16} color="#D4AF37" /> {feat}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <button
+                                        onClick={() => setIsSupportOpen(true)}
+                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #D4AF37', background: 'transparent', color: '#D4AF37', fontWeight: 800, cursor: 'pointer' }}
+                                    >
+                                        Consultar Viabilidade
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style={{ marginTop: '3rem', padding: '2rem', background: 'rgba(255,215,0,0.02)', border: '1px dashed rgba(255,215,0,0.2)', borderRadius: '20px', textAlign: 'center' }}>
+                                <h4 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Precisas de algo personalizado?</h4>
+                                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Se o teu projeto exige uma estratégia específica, a nossa equipa de especialistas está pronta para ajudar.</p>
+                                <button
+                                    onClick={() => setIsSupportOpen(true)}
+                                    style={{ padding: '0.6rem 2rem', background: 'var(--paper)', border: '1px solid #333', color: '#fff', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                    Falar com Especialista
+                                </button>
+                            </div>
                         </motion.div>
                     )}
 
