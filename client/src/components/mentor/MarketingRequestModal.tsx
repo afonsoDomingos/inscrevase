@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Info, Loader2, Facebook, Instagram, Linkedin, Youtube, Music2, Monitor } from 'lucide-react';
+import { X, Send, Info, Loader2, Facebook, Instagram, Linkedin, Youtube, Music2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { marketingService } from '@/lib/marketingService';
 
@@ -172,7 +172,7 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
                                         <button
                                             key={type}
                                             type="button"
-                                            onClick={() => setFormData({ ...formData, eventType: type as any })}
+                                            onClick={() => setFormData({ ...formData, eventType: type as 'online' | 'presencial' | 'hibrido' })}
                                             style={{
                                                 flex: 1,
                                                 padding: '0.8rem',
