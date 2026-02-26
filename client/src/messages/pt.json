@@ -338,6 +338,12 @@
         "account": "conta",
         "restrictedAccess": "Acesso Restrito",
         "emailUnverified": "E-mail não verificado",
+        "rolesHeader": {
+            "company": "VOCÊ É UMA EMPRESA",
+            "specialist": "VOCÊ É UM ESPECIALISTA",
+            "mentor": "VOCÊ É UM MENTOR",
+            "admin": "ADMINISTRADOR"
+        },
         "notifications": "Notificações",
         "discoverPlatform": "DESCUBRA NOSSA PLATAFORMA",
         "adminDashboard": "Painel Administrativo",
@@ -596,6 +602,62 @@
             "upgradeSuccess": "Parabéns! 🎉",
             "upgradeSuccessMessage": "A tua subscrição foi ativada com sucesso. Agora és um parceiro {plan} e tens acesso total às ferramentas de Mentor.",
             "startExploring": "Começar a Explorar"
+        },
+        "insights": {
+            "welcomeBack": {
+                "title": "Bom ver você de volta, {name}!",
+                "text": "Sentimos sua falta nos últimos {days} dias. Que tal conferir as novidades no seu portal?"
+            },
+            "globalMoney": {
+                "title": "O Mundo é o seu Palco",
+                "text": "Sabia que pode vender seus cursos para qualquer país? Use as nossas ferramentas de pagamento internacional e fature globalmente."
+            },
+            "profitTips": {
+                "title": "Escalabilidade Financeira",
+                "text": "Transforme o seu evento num produto digital perpétuo. Venda mesmo enquanto dorme utilizando os nossos funis inteligentes."
+            },
+            "smartLinksTip": {
+                "title": "Rastreio de Precisão",
+                "text": "Use a ferramenta de Smart Links para descobrir qual rede social (Instagram, TikTok ou WhatsApp) traz mais dinheiro para o seu bolso."
+            },
+            "boostNow": {
+                "title": "Portal de Destaques",
+                "text": "Quer crescer 10x mais rápido? Coloque o seu evento no topo da nossa plataforma com o sistema de anúncios integrados."
+            },
+            "recentSuccess": {
+                "title": "Seus eventos estão a crescer!",
+                "text": "Já alcançou {count} inscrições totais. Continue o excelente trabalho!"
+            },
+            "noEvents": {
+                "title": "O seu conhecimento vale ouro!",
+                "text": "Não guarde o seu talento só para si. Crie agora o seu primeiro evento e comece a transformar vidas hoje mesmo."
+            },
+            "eventIdea": {
+                "title": "Ideia para Evento",
+                "text": "Que tal um Workshop ao vivo ou uma Masterclass gratuita para construir a sua audiência?"
+            },
+            "keepGoing": {
+                "title": "Rumo ao Topo!",
+                "text": "Tem {count} {active_events_text}. Que tal lançar uma nova edição ou um novo tema?",
+                "singular": "evento ativo",
+                "plural": "eventos ativos"
+            },
+            "completeProfile": {
+                "title": "Aumente a sua Confiança",
+                "text": "Perfis com foto e biografia detalhada convertem 3x mais. Complete o seu perfil agora!"
+            },
+            "getVerified": {
+                "title": "Selo de Autoridade",
+                "text": "Solicite a sua verificação de conta para passar mais credibilidade aos seus alunos."
+            },
+            "referralImpact": {
+                "title": "Ganhe com sua Rede",
+                "text": "Ao convidar outros mentores, você ganha Pontos de Impacto que podem ser trocados por benefícios."
+            },
+            "supportReady": {
+                "title": "Estamos aqui para si",
+                "text": "Dúvidas em como configurar o seu marketing? Fale com o nosso suporte premium a qualquer momento."
+            }
         }
     },
     "plans": {

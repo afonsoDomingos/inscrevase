@@ -926,10 +926,10 @@ function MentorDashboardContent() {
                                     {user.role === 'mentor' && <UserIcon size={12} />}
                                 </div>
                                 <span style={{ textShadow: '0 0 10px rgba(255,215,0,0.2)' }}>
-                                    {user.role === 'company' ? 'VOCÊ É UMA EMPRESA' :
-                                        user.role === 'specialist' ? 'VOCÊ É UM ESPECIALISTA' :
-                                            user.role === 'mentor' ? 'VOCÊ É UM MENTOR' :
-                                                'ADMINISTRADOR'}
+                                    {user.role === 'company' ? t('dashboard.rolesHeader.company') :
+                                        user.role === 'specialist' ? t('dashboard.rolesHeader.specialist') :
+                                            user.role === 'mentor' ? t('dashboard.rolesHeader.mentor') :
+                                                t('dashboard.rolesHeader.admin')}
                                 </span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

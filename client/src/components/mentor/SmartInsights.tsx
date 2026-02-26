@@ -6,6 +6,7 @@ import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Sh
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface Insight {
     id: string;
@@ -23,6 +24,7 @@ interface SmartInsightsProps {
 }
 
 export default function SmartInsights({ user, stats, forms }: SmartInsightsProps) {
+    const { t } = useTranslate();
     const [currentInsight, setCurrentInsight] = useState(0);
     const [insights, setInsights] = useState<Insight[]>([]);
 
@@ -38,8 +40,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 list.push({
                     id: 'welcome_back',
                     icon: <Sparkles className="text-yellow-500" />,
-                    title: `Bom ver você de volta, ${user.name.split(' ')[0]}!`,
-                    text: `Sentimos sua falta nos últimos ${daysSinceLastLogin} dias. Que tal conferir as novidades no seu portal?`,
+                    title: t('dashboard.insights.welcomeBack.title', { name: user.name.split(' ')[0] }),
+                    text: t('dashboard.insights.welcomeBack.text', { days: daysSinceLastLogin.toString() }),
                     color: '#FFD700'
                 });
             }
@@ -48,8 +50,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             list.push({
                 id: 'global_money',
                 icon: <Globe className="text-blue-400" />,
-                title: 'O Mundo é o seu Palco',
-                text: 'Sabia que pode vender seus cursos para qualquer país? Use as nossas ferramentas de pagamento internacional e fature globalmente.',
+                title: t('dashboard.insights.globalMoney.title'),
+                text: t('dashboard.insights.globalMoney.text'),
                 color: '#60a5fa'
             });
 
@@ -57,8 +59,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             list.push({
                 id: 'profit_tips',
                 icon: <DollarSign className="text-green-500" />,
-                title: 'Escalabilidade Financeira',
-                text: 'Transforme o seu evento num produto digital perpétuo. Venda mesmo enquanto dorme utilizando os nossos funis inteligentes.',
+                title: t('dashboard.insights.profitTips.title'),
+                text: t('dashboard.insights.profitTips.text'),
                 color: '#4ade80'
             });
 
@@ -66,8 +68,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             list.push({
                 id: 'smart_links_tip',
                 icon: <LinkIcon className="text-purple-400" />,
-                title: 'Rastreio de Precisão',
-                text: 'Use a ferramenta de Smart Links para descobrir qual rede social (Instagram, TikTok ou WhatsApp) traz mais dinheiro para o seu bolso.',
+                title: t('dashboard.insights.smartLinksTip.title'),
+                text: t('dashboard.insights.smartLinksTip.text'),
                 color: '#a78bfa',
                 action: 'smartlinks'
             });
@@ -76,8 +78,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             list.push({
                 id: 'boost_now',
                 icon: <Zap className="text-orange-400" />,
-                title: 'Portal de Destaques',
-                text: 'Quer crescer 10x mais rápido? Coloque o seu evento no topo da nossa plataforma com o sistema de anúncios integrados.',
+                title: t('dashboard.insights.boostNow.title'),
+                text: t('dashboard.insights.boostNow.text'),
                 color: '#fb923c',
                 action: 'ads'
             });
@@ -87,8 +89,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 list.push({
                     id: 'recent_success',
                     icon: <TrendingUp className="text-green-500" />,
-                    title: 'Seus eventos estão a crescer!',
-                    text: `Já alcançou ${stats.submissions} inscrições totais. Continue o excelente trabalho!`,
+                    title: t('dashboard.insights.recentSuccess.title'),
+                    text: t('dashboard.insights.recentSuccess.text', { count: stats.submissions.toString() }),
                     color: '#4ade80'
                 });
             }
@@ -99,8 +101,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 list.push({
                     id: 'no_events',
                     icon: <Star className="text-yellow-400" />,
-                    title: 'O seu conhecimento vale ouro!',
-                    text: 'Não guarde o seu talento só para si. Crie agora o seu primeiro evento e comece a transformar vidas hoje mesmo.',
+                    title: t('dashboard.insights.noEvents.title'),
+                    text: t('dashboard.insights.noEvents.text'),
                     color: '#FFD700',
                     action: 'create'
                 });
@@ -108,16 +110,19 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 list.push({
                     id: 'event_idea',
                     icon: <Layout className="text-blue-400" />,
-                    title: 'Ideia para Evento',
-                    text: 'Que tal um Workshop ao vivo ou uma Masterclass gratuita para construir a sua audiência?',
+                    title: t('dashboard.insights.eventIdea.title'),
+                    text: t('dashboard.insights.eventIdea.text'),
                     color: '#60a5fa'
                 });
             } else {
                 list.push({
                     id: 'keep_going',
                     icon: <Rocket className="text-orange-500" />,
-                    title: 'Rumo ao Topo!',
-                    text: `Tem ${activeEvents} ${activeEvents === 1 ? 'evento ativo' : 'eventos ativos'}. Que tal lançar uma nova edição ou um novo tema?`,
+                    title: t('dashboard.insights.keepGoing.title'),
+                    text: t('dashboard.insights.keepGoing.text', {
+                        count: activeEvents.toString(),
+                        active_events_text: activeEvents === 1 ? t('dashboard.insights.keepGoing.singular') : t('dashboard.insights.keepGoing.plural')
+                    }),
                     color: '#f97316'
                 });
             }
@@ -127,8 +132,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 list.push({
                     id: 'complete_profile',
                     icon: <UserCircle className="text-pink-500" />,
-                    title: 'Aumente a sua Confiança',
-                    text: 'Perfis com foto e biografia detalhada convertem 3x mais. Complete o seu perfil agora!',
+                    title: t('dashboard.insights.completeProfile.title'),
+                    text: t('dashboard.insights.completeProfile.text'),
                     color: '#ec4899',
                     action: 'settings'
                 });
@@ -139,8 +144,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
                 list.push({
                     id: 'get_verified',
                     icon: <ShieldCheck className="text-indigo-400" />,
-                    title: 'Selo de Autoridade',
-                    text: 'Solicite a sua verificação de conta para passar mais credibilidade aos seus alunos.',
+                    title: t('dashboard.insights.getVerified.title'),
+                    text: t('dashboard.insights.getVerified.text'),
                     color: '#818cf8',
                     action: 'settings'
                 });
@@ -150,8 +155,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             list.push({
                 id: 'referral_impact',
                 icon: <Share2 className="text-green-400" />,
-                title: 'Ganhe com sua Rede',
-                text: 'Ao convidar outros mentores, você ganha Pontos de Impacto que podem ser trocados por benefícios.',
+                title: t('dashboard.insights.referralImpact.title'),
+                text: t('dashboard.insights.referralImpact.text'),
                 color: '#22c55e',
                 action: 'referral'
             });
@@ -160,8 +165,8 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
-                title: 'Estamos aqui para si',
-                text: 'Dúvidas em como configurar o seu marketing? Fale com o nosso suporte premium a qualquer momento.',
+                title: t('dashboard.insights.supportReady.title'),
+                text: t('dashboard.insights.supportReady.text'),
                 color: '#22d3ee'
             });
 
@@ -169,7 +174,7 @@ export default function SmartInsights({ user, stats, forms }: SmartInsightsProps
         };
 
         generateInsights();
-    }, [user, stats, forms]);
+    }, [user, stats, forms, t]);
 
     useEffect(() => {
         if (insights.length > 1) {
