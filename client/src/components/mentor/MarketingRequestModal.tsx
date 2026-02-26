@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Info, Loader2, Facebook, Instagram, Linkedin, Youtube, Music2, ArrowRight, Share2 } from 'lucide-react';
+import { X, Loader2, Facebook, Instagram, Linkedin, Youtube, Music2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { marketingService } from '@/lib/marketingService';
 

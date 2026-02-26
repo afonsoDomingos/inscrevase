@@ -74,7 +74,8 @@ import {
     Zap,
     Link as LinkIcon,
     Share2,
-    Clock
+    Clock,
+    Info
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
