@@ -41,11 +41,19 @@ export const marketingService = {
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Erro ao enviar pedido');
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao enviar pedido');
+            }
+            throw new Error(`Erro no servidor (${response.status}). Por favor, tente novamente mais tarde.`);
         }
 
-        return response.json();
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        }
+        return { success: true };
     },
 
     async getMyRequests(): Promise<MarketingRequest[]> {
@@ -60,7 +68,11 @@ export const marketingService = {
             throw new Error('Erro ao carregar pedidos');
         }
 
-        return response.json();
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        }
+        return [];
     },
 
     async getAllRequests(): Promise<MarketingRequest[]> {
