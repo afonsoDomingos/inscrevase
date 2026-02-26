@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { publicService, PublicImpactStats } from '@/lib/publicService';
 import { MapPin, Award } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function ImpactSection() {
@@ -168,6 +169,64 @@ export default function ImpactSection() {
                     </motion.div>
 
                 </div>
+
+                {/* Impact CTA */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    style={{
+                        marginTop: '80px',
+                        textAlign: 'center',
+                        position: 'relative',
+                        zIndex: 2
+                    }}
+                >
+                    <h3 style={{
+                        fontSize: '2rem',
+                        fontWeight: 800,
+                        marginBottom: '30px',
+                        fontFamily: 'Playfair Display, serif',
+                        color: '#fff'
+                    }}>
+                        Pronto para deixar a sua <span className="gold-text">Marca no Mundo?</span>
+                    </h3>
+                    <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <Link href="/cadastro" style={{
+                            background: 'var(--gold-gradient)',
+                            color: '#000',
+                            padding: '16px 40px',
+                            borderRadius: '50px',
+                            fontWeight: 900,
+                            fontSize: '1.1rem',
+                            textDecoration: 'none',
+                            boxShadow: '0 10px 30px rgba(212,175,55,0.3)',
+                            transition: 'all 0.3s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                        }}
+                            className="hover-scale"
+                        >
+                            Quero Ser Mentor <Award size={20} />
+                        </Link>
+                        <Link href="/explorar" style={{
+                            background: 'rgba(255,255,255,0.05)',
+                            color: '#fff',
+                            padding: '16px 40px',
+                            borderRadius: '50px',
+                            fontWeight: 700,
+                            fontSize: '1.1rem',
+                            textDecoration: 'none',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            transition: 'all 0.3s ease'
+                        }}
+                            className="hover-opacity"
+                        >
+                            Explorar Eventos
+                        </Link>
+                    </div>
+                </motion.div>
             </div>
 
             <style jsx>{`
