@@ -16,6 +16,7 @@ interface PlanPrices {
 
 interface Plan {
     name: string;
+    commissionRate: number;
     prices: PlanPrices;
 }
 
@@ -25,6 +26,7 @@ interface CurrencyContextType {
     formatPrice: (amount: number, fromCurrency?: string, targetCurrency?: string) => string;
     convertAmount: (amount: number, fromCurrency?: string, targetCurrency?: string) => number;
     getPlanPrice: (planId: 'pro' | 'enterprise') => number;
+    getPlanConfig: (planId: string) => Plan | null;
     exchangeRate: number;
     loading: boolean;
 }
@@ -93,10 +95,15 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         Cookies.set('NEXT_CURRENCY', newCurrency, { expires: 365 });
     };
 
+    const getPlanConfig = (planId: string): Plan | null => {
+        if (!plans || !plans[planId]) return null;
+        return plans[planId];
+    };
+
     const getPlanPrice = (planId: 'pro' | 'enterprise'): number => {
         if (!plans || !plans[planId]) {
             // Fallbacks based on approximate exchange rates
-            const basePriceUSD = planId === 'pro' ? 4.99 : 47.99;
+            const basePriceUSD = planId === 'pro' ? 2.99 : 27.99;
 
             if (currency === 'USD') return basePriceUSD;
             if (currency === 'EUR') return basePriceUSD * 0.92;
@@ -133,8 +140,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         // Currency conversion logic (using real-time rates from API)
         if (from !== target) {
             // Convert from source to USD, then to target
-            const amountInUSD = amount / allRates[from];
-            displayAmount = amountInUSD * allRates[target];
+            const amountInUSD = amount / (allRates[from] || 1);
+            displayAmount = amountInUSD * (allRates[target] || 1);
         }
 
         // Format based on target currency
@@ -182,12 +189,12 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         if (from === target) return amount;
 
         // Convert from source to USD, then to target
-        const amountInUSD = amount / allRates[from];
-        return amountInUSD * allRates[target];
+        const amountInUSD = amount / (allRates[from] || 1);
+        return amountInUSD * (allRates[target] || 1);
     };
 
     return (
-        <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertAmount, getPlanPrice, exchangeRate, loading }}>
+        <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertAmount, getPlanPrice, getPlanConfig, exchangeRate, loading }}>
             {children}
         </CurrencyContext.Provider>
     );

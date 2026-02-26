@@ -7,13 +7,15 @@ const LessonProgress = require('../models/LessonProgress');
 const Notification = require('../models/Notification');
 const NotificationService = require('../services/notificationService');
 const { PLANS } = require('../config/stripe');
+const { getDynamicPlanConfig } = require('../utils/planConfigs');
+const { getLatestRate } = require('../utils/currencyUtils');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
-const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail } = require('../utils/emailTemplates');
+const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail, generateEventPaymentConfirmationEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
     console.log('[Submission] Starting submission process for form:', req.body.formId);
@@ -332,11 +334,13 @@ const updateStatus = async (req, res) => {
                 const mentor = await User.findById(submission.form.creator);
                 if (mentor) {
                     const mentorPlan = mentor.plan || 'free';
-                    const planConfig = PLANS[mentorPlan] || PLANS.free;
+                    const dynamicPlans = await getDynamicPlanConfig();
+                    const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
                     const amount = submission.form.paymentConfig.price || 0;
                     const platformFee = amount * planConfig.commissionRate;
 
                     const currency = submission.form.paymentConfig.currency || 'MZN';
+                    const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 
                     // Create manual transaction (Status: pending until mentor pays platform)
                     const transaction = new Transaction({
@@ -346,11 +350,12 @@ const updateStatus = async (req, res) => {
                         submission: submission._id,
                         amount: amount,
                         currency: currency,
-                        baseAmount: amount, // Internal accounting in MZN (assuming 1:1 if currency is MT/MZN)
+                        baseAmount: amount * rate,
+                        exchangeRate: rate,
                         platformFee: platformFee,
-                        basePlatformFee: platformFee,
+                        basePlatformFee: platformFee * rate,
                         mentorEarnings: amount, // For manual, mentor already has 100% of money
-                        baseMentorEarnings: amount,
+                        baseMentorEarnings: amount * rate,
                         status: 'pending', // Pending platform fee reconciliation
                         paymentMethod: 'manual'
                     });
@@ -391,21 +396,35 @@ const updateStatus = async (req, res) => {
                     const signupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/entrar`;
                     const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
 
-                    let content = `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${submission.form.title}</strong>" foi aprovada com sucesso! Agora já tens acesso total ao Hub do Inscrito, onde poderás ver as aulas, descarregar materiais e (brevemente) obter o teu certificado.`;
+                    let emailHtml;
 
-                    // If participant doesn't have a linked account, add an incentive to create one
-                    if (!submission.user) {
-                        content += `<br><br>💡 **Dica Profissional:** Notamos que ainda não tens uma conta oficial no <strong>Inscreva-se</strong>. Sabias que ao criares uma conta gratuita (com o mesmo email desta inscrição), poderás gerir todos os teus eventos, cursos e certificados num único painel organizado? <a href="${signupUrl}">Clica aqui para criar a tua conta agora!</a>`;
+                    if (submission.form.paymentConfig?.enabled) {
+                        const amount = submission.form.paymentConfig.price || 0;
+                        const currency = submission.form.paymentConfig.currency || 'MZN';
+                        emailHtml = generateEventPaymentConfirmationEmail(
+                            participantName,
+                            submission.form.title,
+                            amount,
+                            currency,
+                            hubUrl
+                        );
+                    } else {
+                        let content = `Olá ${participantName}! Temos ótimas notícias: a tua inscrição no evento "<strong>${submission.form.title}</strong>" foi aprovada com sucesso! Agora já tens acesso total ao Hub do Inscrito, onde poderás ver as aulas, descarregar materiais e (brevemente) obter o teu certificado.`;
+
+                        // If participant doesn't have a linked account, add an incentive to create one
+                        if (!submission.user) {
+                            content += `<br><br>💡 **Dica Profissional:** Notamos que ainda não tens uma conta oficial no <strong>Inscreva-se</strong>. Sabias que ao criares uma conta gratuita (com o mesmo email desta inscrição), poderás gerir todos os teus eventos, cursos e certificados num único painel organizado? <a href="${signupUrl}">Clica aqui para criar a tua conta agora!</a>`;
+                        }
+
+                        emailHtml = generateBasicEmail(
+                            '✅ Inscrição Confirmada!',
+                            participantName,
+                            content,
+                            'Aceder ao Hub do Inscrito',
+                            hubUrl,
+                            '#28a745'
+                        );
                     }
-
-                    const emailHtml = generateBasicEmail(
-                        '✅ Inscrição Confirmada!',
-                        participantName,
-                        content,
-                        'Aceder ao Hub do Inscrito',
-                        hubUrl,
-                        '#28a745'
-                    );
 
                     await sendEmail(participantEmail, `✅ Inscrição Confirmada: ${submission.form.title} - Inscreva-se`, emailHtml);
                     console.log('[Submission] Approval email sent to:', participantEmail);
@@ -755,19 +774,25 @@ const bulkUpdateSubmissions = async (req, res) => {
                         const mentor = await User.findById(sub.form.creator);
                         if (mentor) {
                             const mentorPlan = mentor.plan || 'free';
-                            const planConfig = PLANS[mentorPlan] || PLANS.free;
+                            const dynamicPlans = await getDynamicPlanConfig();
+                            const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
                             const amount = sub.form.paymentConfig.price || 0;
                             const platformFee = amount * planConfig.commissionRate;
                             const currency = sub.form.paymentConfig.currency || 'MZN';
+                            const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
 
                             const transaction = new Transaction({
                                 user: sub.user || mentor._id,
                                 mentor: mentor._id,
                                 form: sub.form._id,
                                 submission: sub._id,
-                                amount, currency, baseAmount: amount,
-                                platformFee, basePlatformFee: platformFee,
-                                mentorEarnings: amount, baseMentorEarnings: amount,
+                                amount, currency,
+                                baseAmount: amount * rate,
+                                exchangeRate: rate,
+                                platformFee,
+                                basePlatformFee: platformFee * rate,
+                                mentorEarnings: amount,
+                                baseMentorEarnings: amount * rate,
                                 status: 'pending', paymentMethod: 'manual'
                             });
                             await transaction.save();

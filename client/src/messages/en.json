@@ -557,7 +557,7 @@
             "pendingFees": "Pending Platform Fees",
             "pendingFeesNotice": "You have {amount} MT in manual registration fees to settle with the administration.",
             "reduceFees": "Reduce your Fees",
-            "reduceFeesNotice": "Your current commission is 15%. In the PRO plan it drops to 10%.",
+            "reduceFeesNotice": "Your current commission is {current}%. In the {nextPlan} plan it drops to {nextRate}%.",
             "viewPlans": "View Plans",
             "recentTransactions": "Recent Transactions",
             "noTransactions": "No transactions found yet.",
@@ -592,7 +592,8 @@
         "free": {
             "name": "Free Plan",
             "description": "Start your journey at no cost.",
-            "fee": "• 15% fee per registration",
+            "fee": "• 15% Fee (Fixed)",
+            "fee_dynamic": "{fee}% fee per registration",
             "f1": "• 25 Normal Slots + 5 Extras",
             "f2": "• Base Content Management",
             "cta": "Start Free"
@@ -601,7 +602,8 @@
             "badge": "Most Popular",
             "name": "Pro Plan",
             "description": "For rising professionals.",
-            "fee": "• Reduced 10% fee",
+            "fee": "• 10% Fee (Reduced)",
+            "fee_dynamic": "Reduced {fee}% fee",
             "f1": "• 50 Normal Slots + 10 Extras",
             "f2": "• Advanced Analytics",
             "cta": "Subscribe Pro"
@@ -610,6 +612,7 @@
             "name": "Enterprise",
             "description": "The peak of performance.",
             "fee": "• 0% FEE (Total Exemption)",
+            "fee_dynamic": "{fee}% fee per registration",
             "f1": "• Fully Unlimited Usage",
             "f2": "• Total Customization",
             "cta": "Contact Sales"

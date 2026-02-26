@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
-import { CheckCircle, Zap, ShieldCheck, Crown, Loader2 } from "lucide-react";
+import { CheckCircle, Zap, Crown, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
 export default function PlansPage() {
-    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
+    const { currency, setCurrency, formatPrice, getPlanPrice, getPlanConfig } = useCurrency();
     const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -199,7 +199,7 @@ export default function PlansPage() {
                             <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>Plano Free</h3>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '1rem' }}>Comece sua jornada sem custos.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Taxa de 15% por inscrição</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Taxa de {((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0)}% por inscrição</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Formulários Ilimitados</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={16} color="#FFD700" /> <span>Gestão de Conteúdo Base</span></div>
                             </div>
@@ -272,7 +272,7 @@ export default function PlansPage() {
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>Para profissionais em ascensão.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Taxa reduzida de 10%</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Taxa reduzida de {((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0)}%</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Destaque Premium no Showcase</span></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Zap size={16} color="#FFD700" /> <span>Analytics e Relatórios Avançados</span></div>
                             </div>
@@ -349,9 +349,9 @@ export default function PlansPage() {
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', fontSize: '1rem' }}>O topo da performance estratégica.</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '2rem', color: '#fff', fontSize: '0.9rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Crown size={18} color="#FFD700" /> <span style={{ fontWeight: 800, color: '#FFD700' }}>TAXA 0% (Isenção Total)</span></div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Suporte VIP 24/7 com Account Manager</span></div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} color="#FFD700" /> <span>Customização Total de Branding</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Crown size={16} color="#FFD700" /> <span>Taxa de {((getPlanConfig('enterprise')?.commissionRate || 0) * 100).toFixed(0)}% (Isenção Total)</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Crown size={16} color="#FFD700" /> <span>Personalização White-label</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Crown size={16} color="#FFD700" /> <span>Suporte VIP e Gestor Dedicado</span></div>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px', margin: '0 auto' }}>
                                 <button

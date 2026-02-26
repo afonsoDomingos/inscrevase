@@ -35,7 +35,7 @@ export default function AnuncioPage({ params }: { params: { id: string } }) {
         }
     }, [params.id, router]);
 
-    const handleContactClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const handleContactClick = async () => {
         if (ad?._id) {
             await adService.trackAdClick(ad._id).catch(console.error);
         }

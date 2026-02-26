@@ -84,6 +84,11 @@ const transactionSchema = new mongoose.Schema({
     metadata: {
         type: Map,
         of: String
+    },
+    subscriptionPlan: {
+        type: String,
+        enum: ['free', 'pro', 'enterprise'],
+        required: function () { return this.type === 'subscription'; }
     }
 }, { timestamps: true });
 

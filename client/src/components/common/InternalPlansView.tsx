@@ -11,7 +11,7 @@ import { useTranslate } from "@/context/LanguageContext";
 
 export default function InternalPlansView() {
     const { t } = useTranslate();
-    const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
+    const { currency, setCurrency, formatPrice, getPlanPrice, getPlanConfig } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
@@ -175,7 +175,10 @@ export default function InternalPlansView() {
                     </div>
                     <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.free.fee').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}>
+                            <CheckCircle size={16} color="#B8860B" />
+                            {t('plans.free.fee_dynamic', { fee: ((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0) })}
+                        </li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.unlimitedForms')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.participantManagement')}</li>
                     </ul>
@@ -198,7 +201,10 @@ export default function InternalPlansView() {
                         {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--text-foreground)' }}>{t('plans.perMonth')}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}><Zap size={18} color="#D4AF37" /> {t('dashboard.plans.f1').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}>
+                            <Zap size={18} color="#D4AF37" />
+                            {t('plans.pro.fee_dynamic', { fee: ((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0) })}
+                        </li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('dashboard.plans.f2').replace('• ', '')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('plans.pro.f1').replace('• ', '')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('plans.pro.f2').replace('• ', '')}</li>
@@ -233,7 +239,12 @@ export default function InternalPlansView() {
                         {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--paper)' }}>{t('plans.perMonth')}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 900, color: '#FFD700' }}><Crown size={16} /> {t('plans.enterprise.fee').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 900, color: '#FFD700' }}>
+                            <Crown size={16} />
+                            {((getPlanConfig('enterprise')?.commissionRate || 0) * 100) === 0
+                                ? t('plans.enterprise.fee')
+                                : t('plans.enterprise.fee_dynamic', { fee: ((getPlanConfig('enterprise')?.commissionRate || 0) * 100).toFixed(0) })}
+                        </li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><ShieldCheck size={16} /> {t('plans.enterprise.f1').replace('• ', '')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><ShieldCheck size={16} /> {t('plans.enterprise.f2').replace('• ', '')}</li>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} /> {t('plans.apiIntegration')}</li>
