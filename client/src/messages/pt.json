@@ -658,6 +658,10 @@
                 "title": "Estamos aqui para si",
                 "text": "Dúvidas em como configurar o seu marketing? Fale com o nosso suporte premium a qualquer momento."
             },
+            "upgradePlan": {
+                "title": "Desbloqueie o seu Potencial",
+                "text": "Tenha acesso a taxas reduzidas, suporte prioritário e ferramentas avançadas de marketing com os nossos planos premium."
+            },
             "socialFollow": {
                 "title": "Cresça com a Comunidade",
                 "text": "Siga as nossas redes sociais para dicas exclusivas de marketing e gestão de eventos. Clique para nos acompanhar!"
@@ -669,7 +673,8 @@
                 "referral": "Convidar",
                 "ads": "Promover",
                 "smartlinks": "Rastrear",
-                "social": "Seguir"
+                "social": "Seguir",
+                "plans": "Ver Planos"
             }
         }
     },

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
@@ -15,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans';
     buttonText?: string;
 }
 
@@ -223,7 +223,18 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 buttonText: t('dashboard.insights.buttons.referral')
             });
 
-            // 15. Support
+            // 15. Upgrade Plan Nudge
+            list.push({
+                id: 'upgrade_plan',
+                icon: <Crown className="text-yellow-400" />,
+                title: t('dashboard.insights.upgradePlan.title'),
+                text: t('dashboard.insights.upgradePlan.text'),
+                color: '#facc15',
+                action: 'plans',
+                buttonText: t('dashboard.insights.buttons.plans')
+            });
+
+            // 16. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
@@ -299,6 +310,13 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 break;
             case 'social_tiktok':
                 window.open('https://www.tiktok.com/@inscreva_se_events', '_blank');
+                break;
+            case 'plans':
+                if (onNavigate) {
+                    onNavigate('plans');
+                } else {
+                    router.push('/dashboard/mentor/plans');
+                }
                 break;
         }
     };
