@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -1884,7 +1884,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 {step === 2 && (
                                     <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                                            <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.formFields')}</h2>
+                                            <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
                                             <button
                                                 onClick={handleAddField}
                                                 style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
@@ -1893,68 +1893,161 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             </button>
                                         </div>
 
-                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                        <div style={{ display: 'grid', gap: '1.2rem' }}>
                                             {fields.map((field) => (
-                                                <div key={field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                                            {isMobile && <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666' }}>Nome do Campo</label>}
+                                                <div key={field.id} style={{ background: '#fff', padding: '1.5rem', borderRadius: '18px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                                    {/* Header: Label + Trash */}
+                                                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                                        <div style={{ flex: 1 }}>
                                                             <input
                                                                 type="text"
                                                                 value={field.label}
                                                                 onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
                                                                 placeholder={t('events.fieldLabel')}
-                                                                style={{ border: 'none', borderBottom: '1px solid #eee', padding: '8px', outline: 'none', fontSize: '0.9rem', width: '100%' }}
+                                                                style={{ border: 'none', borderBottom: '2px solid #f8f9fa', padding: '8px 0', outline: 'none', fontSize: '1.1rem', width: '100%', fontWeight: 700 }}
                                                             />
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                            <div style={{ flex: 1 }}>
-                                                                {isMobile && <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '4px', display: 'block' }}>Tipo</label>}
-                                                                <select
-                                                                    value={field.type}
-                                                                    onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
-                                                                    style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', outline: 'none', fontSize: '0.85rem', width: '100%', background: '#f8f9fa' }}
-                                                                >
-                                                                    <option value="text">{t('events.typeText')}</option>
-                                                                    <option value="email">{t('events.typeEmail')}</option>
-                                                                    <option value="number">{t('events.typeNumber')}</option>
-                                                                    <option value="phone">{t('events.typePhone')}</option>
-                                                                    <option value="select">{t('events.typeSelect')}</option>
-                                                                    <option value="checkbox">{t('events.typeCheckbox')}</option>
-                                                                    <option value="date">{t('events.typeDate')}</option>
-                                                                    <option value="file">{t('events.typeFile')}</option>
-                                                                    <option value="textarea">{t('events.typeTextarea')}</option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={field.required}
-                                                                        onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
-                                                                        style={{ width: '16px', height: '16px' }}
-                                                                    /> {isMobile ? 'Obrig.' : t('events.requiredField')}
-                                                                </label>
-                                                                <button
-                                                                    onClick={() => handleRemoveField(field.id)}
-                                                                    style={{ color: '#e53e3e', background: '#fee2e2', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                >
-                                                                    <Trash2 size={18} />
-                                                                </button>
-                                                            </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', color: field.required ? '#111' : '#ccc' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={field.required}
+                                                                    onChange={(e) => handleFieldChange(field.id, 'required', e.target.checked)}
+                                                                    style={{ width: '16px', height: '16px', accentColor: '#000' }}
+                                                                /> {t('events.requiredField')}
+                                                            </label>
+                                                            <button
+                                                                onClick={() => handleRemoveField(field.id)}
+                                                                style={{ color: '#ef4444', background: '#fef2f2', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '10px' }}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
                                                         </div>
                                                     </div>
 
-                                                    {/* Options input for Select type */}
+                                                    {/* Type Picker */}
+                                                    <div style={{ background: '#fafafa', padding: '12px', borderRadius: '12px', border: '1px solid #eee' }}>
+                                                        <p style={{ fontSize: '0.65rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>
+                                                            Tipo: {t(`events.type${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`)}
+                                                        </p>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))', gap: '8px' }}>
+                                                            {[
+                                                                { value: 'text', icon: FileText, label: t('events.typeText') },
+                                                                { value: 'email', icon: Mail, label: t('events.typeEmail') },
+                                                                { value: 'number', icon: Hash, label: t('events.typeNumber') },
+                                                                { value: 'phone', icon: Phone, label: t('events.typePhone') },
+                                                                { value: 'select', icon: Menu, label: t('events.typeSelect') },
+                                                                { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox') },
+                                                                { value: 'date', icon: Calendar, label: t('events.typeDate') },
+                                                                { value: 'file', icon: Upload, label: t('events.typeFile') },
+                                                                { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea') }
+                                                            ].map((type) => (
+                                                                <motion.button
+                                                                    key={type.value}
+                                                                    type="button"
+                                                                    whileHover={{ scale: 1.1 }}
+                                                                    whileTap={{ scale: 0.9 }}
+                                                                    onClick={() => handleFieldChange(field.id, 'type', type.value)}
+                                                                    style={{
+                                                                        height: '40px',
+                                                                        borderRadius: '10px',
+                                                                        border: 'none',
+                                                                        background: field.type === type.value ? '#111' : '#fff',
+                                                                        color: field.type === type.value ? '#FFD700' : '#64748b',
+                                                                        cursor: 'pointer',
+                                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                                    }}
+                                                                >
+                                                                    <type.icon size={18} />
+                                                                </motion.button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Options editor for Select type */}
                                                     {field.type === 'select' && (
-                                                        <input
-                                                            type="text"
-                                                            value={field.options?.join(', ') || ''}
-                                                            onChange={(e) => handleFieldChange(field.id, 'options', e.target.value.split(',').map(s => s.trim()))}
-                                                            placeholder={t('events.optionsPlaceholder')}
-                                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px dashed #ccc', fontSize: '0.85rem', background: '#f9f9f9' }}
-                                                        />
+                                                        <div style={{ background: '#fffbeb', padding: '1.2rem', borderRadius: '15px', border: '1px solid #fde68a', marginTop: '0.5rem' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                                                                <Layout size={16} style={{ color: '#d97706' }} />
+                                                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                                                    Opções do Menu
+                                                                </label>
+                                                            </div>
+
+                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
+                                                                {field.options && field.options.length > 0 ? (
+                                                                    field.options.map((opt, idx) => (
+                                                                        <motion.div
+                                                                            key={idx}
+                                                                            initial={{ scale: 0.8, opacity: 0 }}
+                                                                            animate={{ scale: 1, opacity: 1 }}
+                                                                            style={{
+                                                                                background: '#111',
+                                                                                color: '#FFD700',
+                                                                                padding: '6px 14px',
+                                                                                borderRadius: '100px',
+                                                                                fontSize: '0.8rem',
+                                                                                fontWeight: 700,
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: '8px',
+                                                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                                                            }}
+                                                                        >
+                                                                            {opt}
+                                                                            <X
+                                                                                size={14}
+                                                                                style={{ cursor: 'pointer', opacity: 0.7 }}
+                                                                                onClick={() => {
+                                                                                    const newOpts = field.options?.filter((_, i) => i !== idx);
+                                                                                    handleFieldChange(field.id, 'options', newOpts || []);
+                                                                                }}
+                                                                                onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                                                                                onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
+                                                                            />
+                                                                        </motion.div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic', background: '#f0f0f0', padding: '8px 16px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #ccc' }}>
+                                                                        Nenhuma opção adicionada ainda.
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div style={{ position: 'relative' }}>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Adicione uma opção (ex: Manhã) e aperte Enter..."
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault();
+                                                                            const val = e.currentTarget.value.trim();
+                                                                            if (val) {
+                                                                                const newOpts = [...(field.options || []), val];
+                                                                                handleFieldChange(field.id, 'options', newOpts);
+                                                                                e.currentTarget.value = '';
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        padding: '0.8rem 3rem 0.8rem 1rem',
+                                                                        borderRadius: '10px',
+                                                                        border: '1px solid #ddd',
+                                                                        fontSize: '0.85rem',
+                                                                        outline: 'none',
+                                                                        background: '#fff',
+                                                                        transition: 'border-color 0.2s'
+                                                                    }}
+                                                                    onFocus={(e) => e.currentTarget.style.borderColor = '#FFD700'}
+                                                                    onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
+                                                                />
+                                                                <Plus size={18} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#FFD700' }} />
+                                                            </div>
+                                                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <Sparkles size={12} /> Dica: Clique no <strong>"X"</strong> para remover uma opção criada.
+                                                            </p>
+                                                        </div>
                                                     )}
                                                 </div>
                                             ))}

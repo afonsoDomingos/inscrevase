@@ -1233,15 +1233,90 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         </button>
                                                     </div>
 
-                                                    {/* Options input for Select type */}
+                                                    {/* Options editor for Select type */}
                                                     {field.type === 'select' && (
-                                                        <input
-                                                            type="text"
-                                                            value={Array.isArray(field.options) ? field.options.join(', ') : ''}
-                                                            onChange={(e) => handleFieldChange(field._id || field.id, 'options', e.target.value.split(',').map((s: string) => s.trim()))}
-                                                            placeholder={t('events.optionsPlaceholder')}
-                                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px dashed #ccc', fontSize: '0.85rem', background: '#f9f9f9' }}
-                                                        />
+                                                        <div style={{ marginTop: '0.5rem', background: '#fafafa', padding: '1.2rem', borderRadius: '12px', border: '1px solid #eee' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                                                                <Layout size={16} className="gold-text" />
+                                                                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#333', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                                                    Opções do Menu
+                                                                </label>
+                                                            </div>
+
+                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
+                                                                {field.options && field.options.length > 0 ? (
+                                                                    field.options.map((opt: string, idx: number) => (
+                                                                        <motion.div
+                                                                            key={idx}
+                                                                            initial={{ scale: 0.8, opacity: 0 }}
+                                                                            animate={{ scale: 1, opacity: 1 }}
+                                                                            style={{
+                                                                                background: '#111',
+                                                                                color: '#FFD700',
+                                                                                padding: '6px 14px',
+                                                                                borderRadius: '100px',
+                                                                                fontSize: '0.8rem',
+                                                                                fontWeight: 700,
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: '8px',
+                                                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                                                            }}
+                                                                        >
+                                                                            {opt}
+                                                                            <X
+                                                                                size={14}
+                                                                                style={{ cursor: 'pointer', opacity: 0.7 }}
+                                                                                onClick={() => {
+                                                                                    const newOpts = field.options?.filter((_: any, i: number) => i !== idx);
+                                                                                    handleFieldChange(field._id || field.id, 'options', newOpts || []);
+                                                                                }}
+                                                                                onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                                                                                onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
+                                                                            />
+                                                                        </motion.div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic', background: '#f0f0f0', padding: '8px 16px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #ccc' }}>
+                                                                        Nenhuma opção adicionada ainda.
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div style={{ position: 'relative' }}>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Adicione uma opção e aperte Enter..."
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault();
+                                                                            const val = e.currentTarget.value.trim();
+                                                                            if (val) {
+                                                                                const newOpts = [...(field.options || []), val];
+                                                                                handleFieldChange(field._id || field.id, 'options', newOpts);
+                                                                                e.currentTarget.value = '';
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        padding: '0.8rem 3rem 0.8rem 1rem',
+                                                                        borderRadius: '10px',
+                                                                        border: '1px solid #ddd',
+                                                                        fontSize: '0.85rem',
+                                                                        outline: 'none',
+                                                                        background: '#fff',
+                                                                        transition: 'border-color 0.2s'
+                                                                    }}
+                                                                    onFocus={(e) => e.currentTarget.style.borderColor = '#FFD700'}
+                                                                    onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
+                                                                />
+                                                                <Plus size={18} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#FFD700' }} />
+                                                            </div>
+                                                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <Sparkles size={12} /> Dica: Clique no <strong>"X"</strong> para remover uma opção criada.
+                                                            </p>
+                                                        </div>
                                                     )}
                                                 </div>
                                             ))}
