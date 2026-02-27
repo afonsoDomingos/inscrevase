@@ -304,7 +304,7 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
     };
 
     return (
-        <div style={{ marginBottom: '2.5rem' }}>
+        <div style={{ marginBottom: '2rem' }}>
             <AnimatePresence mode="wait">
                 <motion.div
                     key={insight.id}
@@ -315,7 +315,7 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                     className="luxury-card group"
                     style={{
                         background: 'linear-gradient(135deg, #121212 0%, #1e1e1e 100%)',
-                        padding: '1.5rem 2.5rem',
+                        padding: '1rem 2.5rem',
                         borderRadius: '24px',
                         display: 'flex',
                         alignItems: 'center',
@@ -330,13 +330,13 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 >
                     <div style={{ position: 'absolute', left: 0, top: 0, width: '4px', height: '100%', background: insight.color, opacity: 0.8 }} />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
                         <motion.div
                             whileHover={{ scale: 1.1, rotate: 5 }}
                             style={{
                                 background: `${insight.color}15`,
-                                padding: '16px',
-                                borderRadius: '18px',
+                                padding: '12px',
+                                borderRadius: '14px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -347,7 +347,7 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                             {insight.icon}
                         </motion.div>
                         <div style={{ flex: 1 }}>
-                            <h4 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 900, marginBottom: '0.4rem', letterSpacing: '-0.3px' }}>
+                            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 900, marginBottom: '0.2rem', letterSpacing: '-0.3px' }}>
                                 {insight.title}
                             </h4>
                             <p style={{ color: '#999', fontSize: '0.9rem', margin: 0, lineHeight: 1.5, maxWidth: '90%' }}>
@@ -364,9 +364,9 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                                 style={{
                                     background: insight.color,
                                     color: '#000',
-                                    padding: '10px 22px',
-                                    borderRadius: '12px',
-                                    fontSize: '0.85rem',
+                                    padding: '8px 20px',
+                                    borderRadius: '10px',
+                                    fontSize: '0.8rem',
                                     fontWeight: 900,
                                     border: 'none',
                                     cursor: 'pointer',
