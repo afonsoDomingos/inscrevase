@@ -25,9 +25,7 @@ import {
     Users,
     X,
     Minimize2,
-    Maximize2,
-    Circle,
-    Square
+    Maximize2
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
