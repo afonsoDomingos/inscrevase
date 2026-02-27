@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -148,6 +148,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     ]);
 
     // Visibility & Preview
+    const [editingTypeFieldId, setEditingTypeFieldId] = useState<string | null>(null);
     const [isPublic, setIsPublic] = useState(true);
     const [showPreview, setShowPreview] = useState(false);
 
@@ -1966,60 +1967,117 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         </div>
                                                     </div>
 
-                                                    {/* Type Picker with Labels */}
-                                                    <div style={{ background: '#fafafa', padding: '15px', borderRadius: '15px', border: '1px solid #eee' }}>
-                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                                                            {t('events.fieldType')}: <span style={{ color: '#111' }}>{t(`events.type${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`)}</span>
-                                                        </p>
-                                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '10px' }}>
-                                                            {[
-                                                                { value: 'text', icon: FileText, label: t('events.typeText'), desc: 'Texto curto' },
-                                                                { value: 'email', icon: Mail, label: t('events.typeEmail'), desc: 'E-mail válido' },
-                                                                { value: 'number', icon: Hash, label: t('events.typeNumber'), desc: 'Apenas números' },
-                                                                { value: 'phone', icon: Phone, label: t('events.typePhone'), desc: 'Telefone/WhatsApp' },
-                                                                { value: 'select', icon: Menu, label: t('events.typeSelect'), desc: 'Lista de opções' },
-                                                                { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox'), desc: 'Sim ou Não' },
-                                                                { value: 'date', icon: Calendar, label: t('events.typeDate'), desc: 'Data do calendário' },
-                                                                { value: 'file', icon: Upload, label: t('events.typeFile'), desc: 'Anexo de arquivo' },
-                                                                { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea'), desc: 'Texto longo (parágrafo)' }
-                                                            ].map((type) => (
-                                                                <button
-                                                                    key={type.value}
-                                                                    type="button"
-                                                                    onClick={() => handleFieldChange(field.id, 'type', type.value)}
-                                                                    style={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        gap: '12px',
-                                                                        padding: '10px',
-                                                                        borderRadius: '12px',
-                                                                        border: '2px solid',
-                                                                        borderColor: field.type === type.value ? '#111' : '#eee',
-                                                                        background: field.type === type.value ? '#111' : '#fff',
-                                                                        color: field.type === type.value ? '#FFD700' : '#64748b',
-                                                                        cursor: 'pointer',
-                                                                        textAlign: 'left',
-                                                                        transition: 'all 0.2s'
-                                                                    }}
-                                                                >
-                                                                    <div style={{
-                                                                        background: field.type === type.value ? 'rgba(255, 215, 0, 0.1)' : '#f8f9fa',
-                                                                        padding: '8px',
-                                                                        borderRadius: '8px',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center'
-                                                                    }}>
-                                                                        <type.icon size={18} />
-                                                                    </div>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: field.type === type.value ? '#FFD700' : '#111' }}>{type.label}</span>
-                                                                        <span style={{ fontSize: '0.65rem', opacity: 0.8, color: field.type === type.value ? '#fff' : '#64748b' }}>{type.desc}</span>
-                                                                    </div>
-                                                                </button>
-                                                            ))}
+                                                    {/* Type Selector Toggle */}
+                                                    <div
+                                                        onClick={() => setEditingTypeFieldId(editingTypeFieldId === field.id ? null : field.id)}
+                                                        style={{
+                                                            background: editingTypeFieldId === field.id ? '#111' : '#f8f9fa',
+                                                            padding: '12px 18px',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid',
+                                                            borderColor: editingTypeFieldId === field.id ? '#111' : '#eee',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <div style={{ background: editingTypeFieldId === field.id ? 'rgba(255, 215, 0, 0.1)' : '#fff', padding: '8px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                                {(() => {
+                                                                    const types = [
+                                                                        { value: 'text', icon: FileText },
+                                                                        { value: 'email', icon: Mail },
+                                                                        { value: 'number', icon: Hash },
+                                                                        { value: 'phone', icon: Phone },
+                                                                        { value: 'select', icon: Menu },
+                                                                        { value: 'checkbox', icon: CheckSquare },
+                                                                        { value: 'date', icon: Calendar },
+                                                                        { value: 'file', icon: Upload },
+                                                                        { value: 'textarea', icon: AlignLeft }
+                                                                    ];
+                                                                    const current = types.find(t => t.value === field.type) || types[0];
+                                                                    return <current.icon size={18} style={{ color: editingTypeFieldId === field.id ? '#FFD700' : '#111' }} />;
+                                                                })()}
+                                                            </div>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.65rem', fontWeight: 800, color: editingTypeFieldId === field.id ? '#888' : '#94a3b8', textTransform: 'uppercase', margin: 0, letterSpacing: '0.5px' }}>
+                                                                    Modificar Tipo
+                                                                </p>
+                                                                <p style={{ fontSize: '0.9rem', fontWeight: 700, color: editingTypeFieldId === field.id ? '#FFD700' : '#111', margin: 0 }}>
+                                                                    {t(`events.type${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`)}
+                                                                </p>
+                                                            </div>
                                                         </div>
+                                                        {editingTypeFieldId === field.id ? <ChevronUp size={20} style={{ color: '#FFD700' }} /> : <ChevronDown size={20} style={{ color: '#64748b' }} />}
                                                     </div>
+
+                                                    {/* Expandable Type Picker */}
+                                                    <AnimatePresence>
+                                                        {editingTypeFieldId === field.id && (
+                                                            <motion.div
+                                                                initial={{ height: 0, opacity: 0 }}
+                                                                animate={{ height: 'auto', opacity: 1 }}
+                                                                exit={{ height: 0, opacity: 0 }}
+                                                                style={{ overflow: 'hidden' }}
+                                                            >
+                                                                <div style={{ background: '#fafafa', padding: '15px', borderRadius: '15px', border: '1px solid #eee', marginTop: '10px' }}>
+                                                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '10px' }}>
+                                                                        {[
+                                                                            { value: 'text', icon: FileText, label: t('events.typeText'), desc: 'Texto curto' },
+                                                                            { value: 'email', icon: Mail, label: t('events.typeEmail'), desc: 'E-mail válido' },
+                                                                            { value: 'number', icon: Hash, label: t('events.typeNumber'), desc: 'Apenas números' },
+                                                                            { value: 'phone', icon: Phone, label: t('events.typePhone'), desc: 'Telefone/WhatsApp' },
+                                                                            { value: 'select', icon: Menu, label: t('events.typeSelect'), desc: 'Lista de opções' },
+                                                                            { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox'), desc: 'Sim ou Não' },
+                                                                            { value: 'date', icon: Calendar, label: t('events.typeDate'), desc: 'Data do calendário' },
+                                                                            { value: 'file', icon: Upload, label: t('events.typeFile'), desc: 'Anexo de arquivo' },
+                                                                            { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea'), desc: 'Texto longo (parágrafo)' }
+                                                                        ].map((type) => (
+                                                                            <button
+                                                                                key={type.value}
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    handleFieldChange(field.id, 'type', type.value);
+                                                                                    setEditingTypeFieldId(null);
+                                                                                }}
+                                                                                style={{
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    gap: '12px',
+                                                                                    padding: '10px',
+                                                                                    borderRadius: '12px',
+                                                                                    border: '2px solid',
+                                                                                    borderColor: field.type === type.value ? '#111' : '#eee',
+                                                                                    background: field.type === type.value ? '#111' : '#fff',
+                                                                                    color: field.type === type.value ? '#FFD700' : '#64748b',
+                                                                                    cursor: 'pointer',
+                                                                                    textAlign: 'left',
+                                                                                    transition: 'all 0.2s'
+                                                                                }}
+                                                                            >
+                                                                                <div style={{
+                                                                                    background: field.type === type.value ? 'rgba(255, 215, 0, 0.1)' : '#f8f9fa',
+                                                                                    padding: '8px',
+                                                                                    borderRadius: '8px',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center'
+                                                                                }}>
+                                                                                    <type.icon size={18} />
+                                                                                </div>
+                                                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                                                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: field.type === type.value ? '#FFD700' : '#111' }}>{type.label}</span>
+                                                                                    <span style={{ fontSize: '0.65rem', opacity: 0.8, color: field.type === type.value ? '#fff' : '#64748b' }}>{type.desc}</span>
+                                                                                </div>
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
 
                                                     {/* Row 3: Special Configs (Select only) */}
                                                     {field.type === 'select' && (

@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -146,6 +146,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [fields, setFields] = useState<any[]>([]);
+    const [editingTypeFieldId, setEditingTypeFieldId] = useState<string | null>(null);
 
     const [whatsappConfig, setWhatsappConfig] = useState({
         phoneNumber: '',
@@ -1213,66 +1214,183 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
                                 {step === 2 && (
                                     <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                            <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
                                             <button
                                                 onClick={handleAddField}
                                                 style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
                                             >
-                                                <Plus size={16} /> {t('events.addField')}
+                                                <Plus size={16} /> {isMobile ? '' : t('events.addField')}
                                             </button>
                                         </div>
 
-                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                        <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd', marginBottom: '2rem', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                            <div style={{ background: '#0ea5e9', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <Sparkles size={18} />
+                                            </div>
+                                            <p style={{ fontSize: '0.85rem', color: '#0369a1', lineHeight: '1.4', margin: 0 }}>
+                                                <strong>Ajuste seu formulário:</strong> Edite os campos que os alunos preencherão ao se inscrever.
+                                            </p>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gap: '1.2rem' }}>
                                             {fields.map((field) => (
-                                                <div key={field._id || field.id} style={{ background: '#fff', padding: '1.2rem', borderRadius: '15px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 100px 40px', gap: '1rem', alignItems: 'center' }}>
-                                                        <input
-                                                            type="text"
-                                                            value={field.label}
-                                                            onChange={(e) => handleFieldChange(field._id || field.id, 'label', e.target.value)}
-                                                            placeholder={t('events.fieldLabel')}
-                                                            style={{ border: 'none', borderBottom: '1px solid #eee', padding: '5px', outline: 'none', fontSize: '0.9rem' }}
-                                                        />
-                                                        <select
-                                                            value={field.type}
-                                                            onChange={(e) => handleFieldChange(field._id || field.id, 'type', e.target.value)}
-                                                            style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #eee', outline: 'none', fontSize: '0.8rem' }}
-                                                        >
-                                                            <option value="text">{t('events.typeText')}</option>
-                                                            <option value="email">{t('events.typeEmail')}</option>
-                                                            <option value="number">{t('events.typeNumber')}</option>
-                                                            <option value="phone">{t('events.typePhone')}</option>
-                                                            <option value="select">{t('events.typeSelect')}</option>
-                                                            <option value="checkbox">{t('events.typeCheckbox')}</option>
-                                                            <option value="date">{t('events.typeDate')}</option>
-                                                            <option value="file">{t('events.typeFile')}</option>
-                                                            <option value="textarea">Área de Texto (Grande)</option>
-                                                        </select>
-                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                <div key={field._id || field.id} style={{ background: '#fff', padding: '1.5rem', borderRadius: '18px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                                    {/* Header: Label + Trash */}
+                                                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                                        <div style={{ flex: 1 }}>
                                                             <input
-                                                                type="checkbox"
-                                                                checked={field.required}
-                                                                onChange={(e) => handleFieldChange(field._id || field.id, 'required', e.target.checked)}
-                                                            /> {t('events.requiredField')}
-                                                        </label>
-                                                        <button
-                                                            onClick={() => handleRemoveField(field._id || field.id)}
-                                                            style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
+                                                                type="text"
+                                                                value={field.label}
+                                                                onChange={(e) => handleFieldChange(field._id || field.id, 'label', e.target.value)}
+                                                                placeholder={t('events.fieldLabel')}
+                                                                style={{ border: 'none', borderBottom: '2px solid #f8f9fa', padding: '8px 0', outline: 'none', fontSize: '1.1rem', width: '100%', fontWeight: 700 }}
+                                                            />
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', color: field.required ? '#111' : '#ccc' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={field.required}
+                                                                    onChange={(e) => handleFieldChange(field._id || field.id, 'required', e.target.checked)}
+                                                                    style={{ width: '16px', height: '16px', accentColor: '#000' }}
+                                                                /> {t('events.requiredField')}
+                                                            </label>
+                                                            <button
+                                                                onClick={() => handleRemoveField(field._id || field.id)}
+                                                                style={{ color: '#ef4444', background: '#fef2f2', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '10px' }}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
                                                     </div>
 
-                                                    {/* Options editor for Select type */}
-                                                    {field.type === 'select' && (
-                                                        <div style={{ marginTop: '0.5rem', background: '#fafafa', padding: '1.2rem', borderRadius: '12px', border: '1px solid #eee' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                                                                <Layout size={16} className="gold-text" />
-                                                                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#333', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                                                    Opções do Menu
-                                                                </label>
+                                                    {/* Type Selector Toggle */}
+                                                    <div
+                                                        onClick={() => setEditingTypeFieldId(editingTypeFieldId === (field._id || field.id) ? null : (field._id || field.id))}
+                                                        style={{
+                                                            background: editingTypeFieldId === (field._id || field.id) ? '#111' : '#f8f9fa',
+                                                            padding: '12px 18px',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid',
+                                                            borderColor: editingTypeFieldId === (field._id || field.id) ? '#111' : '#eee',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <div style={{ background: editingTypeFieldId === (field._id || field.id) ? 'rgba(255, 215, 0, 0.1)' : '#fff', padding: '8px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                                {(() => {
+                                                                    const types = [
+                                                                        { value: 'text', icon: FileText },
+                                                                        { value: 'email', icon: Mail },
+                                                                        { value: 'number', icon: Hash },
+                                                                        { value: 'phone', icon: Phone },
+                                                                        { value: 'select', icon: Menu },
+                                                                        { value: 'checkbox', icon: CheckSquare },
+                                                                        { value: 'date', icon: Calendar },
+                                                                        { value: 'file', icon: Upload },
+                                                                        { value: 'textarea', icon: AlignLeft }
+                                                                    ];
+                                                                    const current = types.find(t => t.value === field.type) || types[0];
+                                                                    return <current.icon size={18} style={{ color: editingTypeFieldId === (field._id || field.id) ? '#FFD700' : '#111' }} />;
+                                                                })()}
                                                             </div>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.65rem', fontWeight: 800, color: editingTypeFieldId === (field._id || field.id) ? '#888' : '#94a3b8', textTransform: 'uppercase', margin: 0, letterSpacing: '0.5px' }}>
+                                                                    Modificar Tipo
+                                                                </p>
+                                                                <p style={{ fontSize: '0.9rem', fontWeight: 700, color: editingTypeFieldId === (field._id || field.id) ? '#FFD700' : '#111', margin: 0 }}>
+                                                                    {t(`events.type${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        {editingTypeFieldId === (field._id || field.id) ? <ChevronUp size={20} style={{ color: '#FFD700' }} /> : <ChevronDown size={20} style={{ color: '#64748b' }} />}
+                                                    </div>
+
+                                                    {/* Expandable Type Picker */}
+                                                    <AnimatePresence>
+                                                        {editingTypeFieldId === (field._id || field.id) && (
+                                                            <motion.div
+                                                                initial={{ height: 0, opacity: 0 }}
+                                                                animate={{ height: 'auto', opacity: 1 }}
+                                                                exit={{ height: 0, opacity: 0 }}
+                                                                style={{ overflow: 'hidden' }}
+                                                            >
+                                                                <div style={{ background: '#fafafa', padding: '15px', borderRadius: '15px', border: '1px solid #eee', marginTop: '10px' }}>
+                                                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '10px' }}>
+                                                                        {[
+                                                                            { value: 'text', icon: FileText, label: t('events.typeText'), desc: 'Texto curto' },
+                                                                            { value: 'email', icon: Mail, label: t('events.typeEmail'), desc: 'E-mail válido' },
+                                                                            { value: 'number', icon: Hash, label: t('events.typeNumber'), desc: 'Apenas números' },
+                                                                            { value: 'phone', icon: Phone, label: t('events.typePhone'), desc: 'Telefone/WhatsApp' },
+                                                                            { value: 'select', icon: Menu, label: t('events.typeSelect'), desc: 'Lista de opções' },
+                                                                            { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox'), desc: 'Sim ou Não' },
+                                                                            { value: 'date', icon: Calendar, label: t('events.typeDate'), desc: 'Data do calendário' },
+                                                                            { value: 'file', icon: Upload, label: t('events.typeFile'), desc: 'Anexo de arquivo' },
+                                                                            { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea'), desc: 'Texto longo (parágrafo)' }
+                                                                        ].map((type) => (
+                                                                            <button
+                                                                                key={type.value}
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    handleFieldChange(field._id || field.id, 'type', type.value);
+                                                                                    setEditingTypeFieldId(null);
+                                                                                }}
+                                                                                style={{
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    gap: '12px',
+                                                                                    padding: '10px',
+                                                                                    borderRadius: '12px',
+                                                                                    border: '2px solid',
+                                                                                    borderColor: field.type === type.value ? '#111' : '#eee',
+                                                                                    background: field.type === type.value ? '#111' : '#fff',
+                                                                                    color: field.type === type.value ? '#FFD700' : '#64748b',
+                                                                                    cursor: 'pointer',
+                                                                                    textAlign: 'left',
+                                                                                    transition: 'all 0.2s'
+                                                                                }}
+                                                                            >
+                                                                                <div style={{
+                                                                                    background: field.type === type.value ? 'rgba(255, 215, 0, 0.1)' : '#f8f9fa',
+                                                                                    padding: '8px',
+                                                                                    borderRadius: '8px',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center'
+                                                                                }}>
+                                                                                    <type.icon size={18} />
+                                                                                </div>
+                                                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                                                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: field.type === type.value ? '#FFD700' : '#111' }}>{type.label}</span>
+                                                                                    <span style={{ fontSize: '0.65rem', opacity: 0.8, color: field.type === type.value ? '#fff' : '#64748b' }}>{type.desc}</span>
+                                                                                </div>
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+
+                                                    {/* Row 3: Special Configs (Select only) */}
+                                                    {field.type === 'select' && (
+                                                        <div style={{ background: '#fffbeb', padding: '1.2rem', borderRadius: '15px', border: '1px solid #fde68a', marginTop: '0.5rem' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+                                                                <div style={{ background: '#d97706', color: '#fff', width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    <Layout size={14} />
+                                                                </div>
+                                                                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#92400e', margin: 0 }}>
+                                                                    Opções de Escolha
+                                                                </h4>
+                                                            </div>
+                                                            <p style={{ fontSize: '0.75rem', color: '#b45309', marginBottom: '1rem', opacity: 0.9 }}>
+                                                                Crie as alternativas que seu aluno poderá selecionar no menu suspenso.
+                                                            </p>
 
                                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
                                                                 {field.options && field.options.length > 0 ? (
@@ -1302,14 +1420,12 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                                     const newOpts = field.options?.filter((_: any, i: number) => i !== idx);
                                                                                     handleFieldChange(field._id || field.id, 'options', newOpts || []);
                                                                                 }}
-                                                                                onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
-                                                                                onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
                                                                             />
                                                                         </motion.div>
                                                                     ))
                                                                 ) : (
-                                                                    <div style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic', background: '#f0f0f0', padding: '8px 16px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #ccc' }}>
-                                                                        Nenhuma opção adicionada ainda.
+                                                                    <div style={{ fontSize: '0.8rem', color: '#b45309', fontStyle: 'italic', background: 'rgba(217, 119, 6, 0.05)', padding: '12px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #fcd34d' }}>
+                                                                        Ainda não há opções. Adicione a primeira abaixo!
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -1317,7 +1433,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                             <div style={{ position: 'relative' }}>
                                                                 <input
                                                                     type="text"
-                                                                    placeholder="Adicione uma opção e aperte Enter..."
+                                                                    placeholder="Ex: Opção A (aperte Enter)"
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === 'Enter') {
                                                                             e.preventDefault();
@@ -1331,21 +1447,17 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                     }}
                                                                     style={{
                                                                         width: '100%',
-                                                                        padding: '0.8rem 3rem 0.8rem 1rem',
+                                                                        padding: '0.8rem 1rem',
                                                                         borderRadius: '10px',
-                                                                        border: '1px solid #ddd',
+                                                                        border: '1px solid #fcd34d',
                                                                         fontSize: '0.85rem',
                                                                         outline: 'none',
-                                                                        background: '#fff',
-                                                                        transition: 'border-color 0.2s'
+                                                                        background: '#fff'
                                                                     }}
-                                                                    onFocus={(e) => e.currentTarget.style.borderColor = '#FFD700'}
-                                                                    onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
                                                                 />
-                                                                <Plus size={18} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#FFD700' }} />
                                                             </div>
-                                                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                <Sparkles size={12} /> Dica: Clique no <strong>"X"</strong> para remover uma opção criada.
+                                                            <p style={{ fontSize: '0.7rem', color: '#b45309', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
+                                                                💡 Escreva o texto e pressione a tecla <strong>Enter</strong> para salvar.
                                                             </p>
                                                         </div>
                                                     )}
