@@ -25,7 +25,9 @@ import {
     Users,
     X,
     Minimize2,
-    Maximize2
+    Maximize2,
+    Circle,
+    Square
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -1105,18 +1107,63 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 className="premium-input"
                                                                 style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', resize: 'none' }}
                                                             />
+                                                        ) : field.type === 'radio' ? (
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                                {(field.options || []).map((opt) => (
+                                                                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: formData[field.label] === opt ? `${primaryColor}15` : 'rgba(255,255,255,0.02)', borderRadius: '16px', border: `1px solid ${formData[field.label] === opt ? primaryColor : borderColor}`, transition: '0.2s' }}>
+                                                                        <input
+                                                                            type="radio"
+                                                                            name={field.label}
+                                                                            value={opt}
+                                                                            checked={formData[field.label] === opt}
+                                                                            onChange={(e) => handleInputChange(field.label, e.target.value)}
+                                                                            style={{ width: '20px', height: '20px', accentColor: primaryColor }}
+                                                                        />
+                                                                        <span style={{ fontSize: '1rem', color: formData[field.label] === opt ? titleColor : textColor, fontWeight: 600 }}>{opt}</span>
+                                                                    </label>
+                                                                ))}
+                                                            </div>
                                                         ) : field.type === 'checkbox' ? (
-                                                            <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '0.8rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: `1px solid ${borderColor}` }}>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    required={field.required}
-                                                                    onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
-                                                                    style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
-                                                                />
-                                                                <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
-                                                                    {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
-                                                                </span>
-                                                            </label>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                                {field.options && field.options.length > 0 ? (
+                                                                    field.options.map((opt) => {
+                                                                        const currentValues = formData[field.label] ? formData[field.label].split(', ') : [];
+                                                                        const isChecked = currentValues.includes(opt);
+                                                                        return (
+                                                                            <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: isChecked ? `${primaryColor}15` : 'rgba(255,255,255,0.02)', borderRadius: '16px', border: `1px solid ${isChecked ? primaryColor : borderColor}`, transition: '0.2s' }}>
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    value={opt}
+                                                                                    checked={isChecked}
+                                                                                    onChange={(e) => {
+                                                                                        let newValues;
+                                                                                        if (e.target.checked) {
+                                                                                            newValues = [...currentValues, opt];
+                                                                                        } else {
+                                                                                            newValues = currentValues.filter(v => v !== opt);
+                                                                                        }
+                                                                                        handleInputChange(field.label, newValues.join(', '));
+                                                                                    }}
+                                                                                    style={{ width: '20px', height: '20px', accentColor: primaryColor }}
+                                                                                />
+                                                                                <span style={{ fontSize: '1rem', color: isChecked ? titleColor : textColor, fontWeight: 600 }}>{opt}</span>
+                                                                            </label>
+                                                                        );
+                                                                    })
+                                                                ) : (
+                                                                    <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '1.2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: `1px solid ${borderColor}` }}>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            required={field.required}
+                                                                            onChange={(e) => handleInputChange(field.label, e.target.checked ? 'Sim' : 'Não')}
+                                                                            style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
+                                                                        />
+                                                                        <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
+                                                                            {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                                        </span>
+                                                                    </label>
+                                                                )}
+                                                            </div>
                                                         ) : (
                                                             <motion.input
                                                                 whileFocus={{ scale: 1.01 }}

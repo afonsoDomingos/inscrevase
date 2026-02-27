@@ -4,7 +4,7 @@ const FormFieldSchema = new mongoose.Schema({
     label: { type: String, required: true },
     type: {
         type: String,
-        enum: ['text', 'email', 'phone', 'tel', 'number', 'select', 'checkbox', 'date', 'file', 'textarea', 'url'],
+        enum: ['text', 'email', 'phone', 'tel', 'number', 'select', 'checkbox', 'date', 'file', 'textarea', 'url', 'radio'],
         required: true
     },
     placeholder: { type: String },

@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -1327,8 +1327,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                                             { value: 'email', icon: Mail, label: t('events.typeEmail'), desc: 'E-mail válido' },
                                                                             { value: 'number', icon: Hash, label: t('events.typeNumber'), desc: 'Apenas números' },
                                                                             { value: 'phone', icon: Phone, label: t('events.typePhone'), desc: 'Telefone/WhatsApp' },
-                                                                            { value: 'select', icon: Menu, label: t('events.typeSelect'), desc: 'Lista de opções' },
-                                                                            { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox'), desc: 'Sim ou Não' },
+                                                                            { value: 'select', icon: Menu, label: t('events.typeSelect'), desc: 'Lista suspensa (Drop)' },
+                                                                            { value: 'radio', icon: Circle, label: 'Escolha Única (Radio)', desc: 'Visualização em lista' },
+                                                                            { value: 'checkbox', icon: CheckSquare, label: 'Múltipla Escolha', desc: 'Caixas de seleção' },
                                                                             { value: 'date', icon: Calendar, label: t('events.typeDate'), desc: 'Data do calendário' },
                                                                             { value: 'file', icon: Upload, label: t('events.typeFile'), desc: 'Anexo de arquivo' },
                                                                             { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea'), desc: 'Texto longo (parágrafo)' }
@@ -1377,88 +1378,98 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                         )}
                                                     </AnimatePresence>
 
-                                                    {/* Row 3: Special Configs (Select only) */}
-                                                    {field.type === 'select' && (
+                                                    {/* Row 3: Special Configs (Select, Radio, Checkbox) */}
+                                                    {['select', 'radio', 'checkbox'].includes(field.type) && (
                                                         <div style={{ background: '#fffbeb', padding: '1.2rem', borderRadius: '15px', border: '1px solid #fde68a', marginTop: '0.5rem' }}>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
                                                                 <div style={{ background: '#d97706', color: '#fff', width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                     <Layout size={14} />
                                                                 </div>
                                                                 <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#92400e', margin: 0 }}>
-                                                                    Opções de Escolha
+                                                                    {field.type === 'select' ? 'Opções do Dropdown' : field.type === 'radio' ? 'Opções de Escolha Única' : 'Opções de Múltipla Escolha'}
                                                                 </h4>
                                                             </div>
                                                             <p style={{ fontSize: '0.75rem', color: '#b45309', marginBottom: '1rem', opacity: 0.9 }}>
-                                                                Crie as alternativas que seu aluno poderá selecionar no menu suspenso.
+                                                                Configure as alternativas que aparecerão para o seu usuário.
                                                             </p>
 
-                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
-                                                                {field.options && field.options.length > 0 ? (
-                                                                    field.options.map((opt: string, idx: number) => (
-                                                                        <motion.div
-                                                                            key={idx}
-                                                                            initial={{ scale: 0.8, opacity: 0 }}
-                                                                            animate={{ scale: 1, opacity: 1 }}
-                                                                            style={{
-                                                                                background: '#111',
-                                                                                color: '#FFD700',
-                                                                                padding: '6px 14px',
-                                                                                borderRadius: '100px',
-                                                                                fontSize: '0.8rem',
-                                                                                fontWeight: 700,
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                gap: '8px',
-                                                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-                                                                            }}
-                                                                        >
-                                                                            {opt}
-                                                                            <X
-                                                                                size={14}
-                                                                                style={{ cursor: 'pointer', opacity: 0.7 }}
-                                                                                onClick={() => {
-                                                                                    const newOpts = field.options?.filter((_: any, i: number) => i !== idx);
-                                                                                    handleFieldChange(field._id || field.id, 'options', newOpts || []);
-                                                                                }}
-                                                                            />
-                                                                        </motion.div>
-                                                                    ))
-                                                                ) : (
-                                                                    <div style={{ fontSize: '0.8rem', color: '#b45309', fontStyle: 'italic', background: 'rgba(217, 119, 6, 0.05)', padding: '12px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #fcd34d' }}>
-                                                                        Ainda não há opções. Adicione a primeira abaixo!
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            <div style={{ position: 'relative' }}>
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="Ex: Opção A (aperte Enter)"
-                                                                    onKeyDown={(e) => {
-                                                                        if (e.key === 'Enter') {
-                                                                            e.preventDefault();
-                                                                            const val = e.currentTarget.value.trim();
-                                                                            if (val) {
-                                                                                const newOpts = [...(field.options || []), val];
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' }}>
+                                                                {(field.options || []).map((opt: string, idx: number) => (
+                                                                    <motion.div
+                                                                        key={idx}
+                                                                        initial={{ opacity: 0, x: -10 }}
+                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                        style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                                                                    >
+                                                                        {field.type === 'checkbox' ? (
+                                                                            <Square size={18} color="#d97706" style={{ opacity: 0.5, flexShrink: 0 }} />
+                                                                        ) : (
+                                                                            <Circle size={18} color="#d97706" style={{ opacity: 0.5, flexShrink: 0 }} />
+                                                                        )}
+                                                                        <input
+                                                                            type="text"
+                                                                            value={opt}
+                                                                            onChange={(e) => {
+                                                                                const newOpts = [...(field.options || [])];
+                                                                                newOpts[idx] = e.target.value;
                                                                                 handleFieldChange(field._id || field.id, 'options', newOpts);
-                                                                                e.currentTarget.value = '';
-                                                                            }
-                                                                        }
-                                                                    }}
-                                                                    style={{
-                                                                        width: '100%',
-                                                                        padding: '0.8rem 1rem',
-                                                                        borderRadius: '10px',
-                                                                        border: '1px solid #fcd34d',
-                                                                        fontSize: '0.85rem',
-                                                                        outline: 'none',
-                                                                        background: '#fff'
-                                                                    }}
-                                                                />
+                                                                            }}
+                                                                            placeholder={`Opção ${idx + 1}`}
+                                                                            style={{
+                                                                                flex: 1,
+                                                                                padding: '8px 12px',
+                                                                                background: 'transparent',
+                                                                                border: 'none',
+                                                                                borderBottom: '1px solid #fcd34d',
+                                                                                fontSize: '0.85rem',
+                                                                                color: '#92400e',
+                                                                                outline: 'none',
+                                                                                fontWeight: 600
+                                                                            }}
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const newOpts = (field.options || []).filter((_: any, i: number) => i !== idx);
+                                                                                handleFieldChange(field._id || field.id, 'options', newOpts);
+                                                                            }}
+                                                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                                                                        >
+                                                                            <X size={14} />
+                                                                        </button>
+                                                                    </motion.div>
+                                                                ))}
+
+                                                                {/* Google Forms Style "Add Option" field */}
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
+                                                                    {field.type === 'checkbox' ? (
+                                                                        <Square size={18} color="#d97706" style={{ opacity: 0.3, flexShrink: 0 }} />
+                                                                    ) : (
+                                                                        <Circle size={18} color="#d97706" style={{ opacity: 0.3, flexShrink: 0 }} />
+                                                                    )}
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            const newOpts = [...(field.options || []), `Opção ${(field.options?.length || 0) + 1}`];
+                                                                            handleFieldChange(field._id || field.id, 'options', newOpts);
+                                                                        }}
+                                                                        style={{
+                                                                            background: 'none',
+                                                                            border: 'none',
+                                                                            color: '#d97706',
+                                                                            fontSize: '0.85rem',
+                                                                            fontWeight: 700,
+                                                                            cursor: 'pointer',
+                                                                            padding: '8px 0',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            gap: '5px'
+                                                                        }}
+                                                                    >
+                                                                        <Plus size={14} /> Adicionar Opção
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            <p style={{ fontSize: '0.7rem', color: '#b45309', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
-                                                                💡 Escreva o texto e pressione a tecla <strong>Enter</strong> para salvar.
-                                                            </p>
                                                         </div>
                                                     )}
                                                 </div>

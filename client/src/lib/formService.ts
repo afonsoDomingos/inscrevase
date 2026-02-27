@@ -28,7 +28,7 @@ export interface FormModel {
     fields: {
         id: string;
         label: string;
-        type: 'text' | 'email' | 'number' | 'tel' | 'phone' | 'file' | 'select' | 'checkbox' | 'date' | 'textarea' | 'url';
+        type: 'text' | 'email' | 'number' | 'tel' | 'phone' | 'file' | 'select' | 'checkbox' | 'date' | 'textarea' | 'url' | 'radio';
         required: boolean;
         options?: string[];
     }[];
