@@ -322,7 +322,7 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
     };
 
     return (
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
             <AnimatePresence mode="wait">
                 <motion.div
                     key={insight.id}
@@ -333,13 +333,13 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                     className="luxury-card group"
                     style={{
                         background: 'linear-gradient(135deg, #121212 0%, #1e1e1e 100%)',
-                        padding: '1rem 2.5rem',
-                        borderRadius: '24px',
+                        padding: '0.75rem 2rem',
+                        borderRadius: '20px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         border: `1px solid ${insight.color}30`,
-                        boxShadow: `0 15px 35px ${insight.color}08`,
+                        boxShadow: `0 10px 25px ${insight.color}05`,
                         position: 'relative',
                         overflow: 'hidden',
                         cursor: insight.action ? 'pointer' : 'default',
@@ -348,13 +348,13 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 >
                     <div style={{ position: 'absolute', left: 0, top: 0, width: '4px', height: '100%', background: insight.color, opacity: 0.8 }} />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
                         <motion.div
                             whileHover={{ scale: 1.1, rotate: 5 }}
                             style={{
                                 background: `${insight.color}15`,
-                                padding: '12px',
-                                borderRadius: '14px',
+                                padding: '10px',
+                                borderRadius: '12px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -365,16 +365,16 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                             {insight.icon}
                         </motion.div>
                         <div style={{ flex: 1 }}>
-                            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 900, marginBottom: '0.2rem', letterSpacing: '-0.3px' }}>
+                            <h4 style={{ color: '#fff', fontSize: '0.95rem', fontWeight: 900, marginBottom: '0.1rem', letterSpacing: '-0.3px' }}>
                                 {insight.title}
                             </h4>
-                            <p style={{ color: '#999', fontSize: '0.9rem', margin: 0, lineHeight: 1.5, maxWidth: '90%' }}>
+                            <p style={{ color: '#999', fontSize: '0.85rem', margin: 0, lineHeight: 1.5, maxWidth: '95%' }}>
                                 {insight.text}
                             </p>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         {insight.buttonText && (
                             <motion.button
                                 whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${insight.color}40` }}
@@ -403,7 +403,7 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                             </motion.button>
                         )}
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 10 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 10 }}>
                             {insights.map((_, idx) => (
                                 <div
                                     key={idx}
@@ -412,8 +412,8 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                                         setCurrentInsight(idx);
                                     }}
                                     style={{
-                                        width: '6px',
-                                        height: idx === currentInsight ? '20px' : '6px',
+                                        width: '4px',
+                                        height: idx === currentInsight ? '14px' : '4px',
                                         background: idx === currentInsight ? insight.color : '#333',
                                         borderRadius: '4px',
                                         cursor: 'pointer',
