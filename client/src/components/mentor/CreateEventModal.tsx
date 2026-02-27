@@ -1883,7 +1883,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
                                 {step === 2 && (
                                     <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                             <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
                                             <button
                                                 onClick={handleAddField}
@@ -1891,6 +1891,15 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                             >
                                                 <Plus size={16} /> {isMobile ? '' : t('events.addField')}
                                             </button>
+                                        </div>
+
+                                        <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd', marginBottom: '2rem', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                            <div style={{ background: '#0ea5e9', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <Sparkles size={18} />
+                                            </div>
+                                            <p style={{ fontSize: '0.85rem', color: '#0369a1', lineHeight: '1.4', margin: 0 }}>
+                                                <strong>Personalize seu formulário:</strong> Estes são os campos que os alunos preencherão ao se inscrever. Adicione e configure conforme sua necessidade.
+                                            </p>
                                         </div>
 
                                         <div style={{ display: 'grid', gap: '1.2rem' }}>
@@ -1964,15 +1973,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         </div>
                                                     </div>
 
-                                                    {/* Options editor for Select type */}
+                                                    {/* Row 3: Special Configs (Select only) */}
                                                     {field.type === 'select' && (
                                                         <div style={{ background: '#fffbeb', padding: '1.2rem', borderRadius: '15px', border: '1px solid #fde68a', marginTop: '0.5rem' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                                                                <Layout size={16} style={{ color: '#d97706' }} />
-                                                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                                                    Opções do Menu
-                                                                </label>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+                                                                <div style={{ background: '#d97706', color: '#fff', width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    <Layout size={14} />
+                                                                </div>
+                                                                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#92400e', margin: 0 }}>
+                                                                    Opções de Escolha
+                                                                </h4>
                                                             </div>
+                                                            <p style={{ fontSize: '0.75rem', color: '#b45309', marginBottom: '1rem', opacity: 0.9 }}>
+                                                                Crie as alternativas que seu aluno poderá selecionar no menu suspenso.
+                                                            </p>
 
                                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
                                                                 {field.options && field.options.length > 0 ? (
@@ -2002,14 +2016,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                                                     const newOpts = field.options?.filter((_, i) => i !== idx);
                                                                                     handleFieldChange(field.id, 'options', newOpts || []);
                                                                                 }}
-                                                                                onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
-                                                                                onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
                                                                             />
                                                                         </motion.div>
                                                                     ))
                                                                 ) : (
-                                                                    <div style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic', background: '#f0f0f0', padding: '8px 16px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #ccc' }}>
-                                                                        Nenhuma opção adicionada ainda.
+                                                                    <div style={{ fontSize: '0.8rem', color: '#b45309', fontStyle: 'italic', background: 'rgba(217, 119, 6, 0.05)', padding: '12px', borderRadius: '8px', width: '100%', textAlign: 'center', border: '1px dashed #fcd34d' }}>
+                                                                        Ainda não há opções. Adicione a primeira abaixo!
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -2017,7 +2029,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                             <div style={{ position: 'relative' }}>
                                                                 <input
                                                                     type="text"
-                                                                    placeholder="Adicione uma opção (ex: Manhã) e aperte Enter..."
+                                                                    placeholder="Ex: Opção A (aperte Enter)"
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === 'Enter') {
                                                                             e.preventDefault();
@@ -2031,21 +2043,17 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                                     }}
                                                                     style={{
                                                                         width: '100%',
-                                                                        padding: '0.8rem 3rem 0.8rem 1rem',
+                                                                        padding: '0.8rem 1rem',
                                                                         borderRadius: '10px',
-                                                                        border: '1px solid #ddd',
+                                                                        border: '1px solid #fcd34d',
                                                                         fontSize: '0.85rem',
                                                                         outline: 'none',
-                                                                        background: '#fff',
-                                                                        transition: 'border-color 0.2s'
+                                                                        background: '#fff'
                                                                     }}
-                                                                    onFocus={(e) => e.currentTarget.style.borderColor = '#FFD700'}
-                                                                    onBlur={(e) => e.currentTarget.style.borderColor = '#ddd'}
                                                                 />
-                                                                <Plus size={18} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#FFD700' }} />
                                                             </div>
-                                                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                <Sparkles size={12} /> Dica: Clique no <strong>"X"</strong> para remover uma opção criada.
+                                                            <p style={{ fontSize: '0.7rem', color: '#b45309', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
+                                                                💡 Escreva o texto e pressione a tecla <strong>Enter</strong> para salvar.
                                                             </p>
                                                         </div>
                                                     )}
