@@ -650,6 +650,10 @@
                 "title": "Experts Network",
                 "text": "Meet other mentors and companies in our elite network. Exchange experiences and grow together."
             },
+            "readBlog": {
+                "title": "Learn from Experts",
+                "text": "Explore our blog to discover the best marketing and event management strategies."
+            },
             "socialFollow": {
                 "title": "Grow with the Community",
                 "text": "Follow our social media for exclusive marketing and event management tips. Click to follow us!"
@@ -663,7 +667,8 @@
                 "smartlinks": "Track",
                 "social": "Follow",
                 "plans": "View Plans",
-                "experts": "View Experts"
+                "experts": "View Experts",
+                "blog": "Read Blog"
             }
         }
     },

@@ -666,6 +666,10 @@
                 "title": "Rede de Especialistas",
                 "text": "Conheça outros mentores e empresas da nossa rede de elite. Troque experiências e cresça em conjunto."
             },
+            "readBlog": {
+                "title": "Aprenda com Especialistas",
+                "text": "Explore o nosso blog para descobrir as melhores estratégias de marketing e gestão de eventos."
+            },
             "socialFollow": {
                 "title": "Cresça com a Comunidade",
                 "text": "Siga as nossas redes sociais para dicas exclusivas de marketing e gestão de eventos. Clique para nos acompanhar!"
@@ -679,7 +683,8 @@
                 "smartlinks": "Rastrear",
                 "social": "Seguir",
                 "plans": "Ver Planos",
-                "experts": "Ver Especialistas"
+                "experts": "Ver Especialistas",
+                "blog": "Ler Blog"
             }
         }
     },

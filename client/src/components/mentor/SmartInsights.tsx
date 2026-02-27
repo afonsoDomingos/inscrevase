@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown, Users } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown, Users, BookOpen } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
@@ -15,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans' | 'experts';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans' | 'experts' | 'blog';
     buttonText?: string;
 }
 
@@ -245,7 +245,18 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 buttonText: t('dashboard.insights.buttons.experts')
             });
 
-            // 17. Support
+            // 17. Blog Nudge
+            list.push({
+                id: 'read_blog',
+                icon: <BookOpen className="text-orange-400" />,
+                title: t('dashboard.insights.readBlog.title'),
+                text: t('dashboard.insights.readBlog.text'),
+                color: '#fb923c',
+                action: 'blog',
+                buttonText: t('dashboard.insights.buttons.blog')
+            });
+
+            // 18. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
@@ -331,6 +342,13 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 break;
             case 'experts':
                 router.push('/experts');
+                break;
+            case 'blog':
+                if (onNavigate) {
+                    onNavigate('blog');
+                } else {
+                    router.push('/dashboard/mentor/blog');
+                }
                 break;
         }
     };
