@@ -662,6 +662,10 @@
                 "title": "Desbloqueie o seu Potencial",
                 "text": "Tenha acesso a taxas reduzidas, suporte prioritário e ferramentas avançadas de marketing com os nossos planos premium."
             },
+            "seeExperts": {
+                "title": "Rede de Especialistas",
+                "text": "Conheça outros mentores e empresas da nossa rede de elite. Troque experiências e cresça em conjunto."
+            },
             "socialFollow": {
                 "title": "Cresça com a Comunidade",
                 "text": "Siga as nossas redes sociais para dicas exclusivas de marketing e gestão de eventos. Clique para nos acompanhar!"
@@ -674,7 +678,8 @@
                 "ads": "Promover",
                 "smartlinks": "Rastrear",
                 "social": "Seguir",
-                "plans": "Ver Planos"
+                "plans": "Ver Planos",
+                "experts": "Ver Especialistas"
             }
         }
     },

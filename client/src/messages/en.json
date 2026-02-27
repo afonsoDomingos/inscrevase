@@ -646,6 +646,10 @@
                 "title": "Unlock Your Potential",
                 "text": "Get access to reduced fees, priority support, and advanced marketing tools with our premium plans."
             },
+            "seeExperts": {
+                "title": "Experts Network",
+                "text": "Meet other mentors and companies in our elite network. Exchange experiences and grow together."
+            },
             "socialFollow": {
                 "title": "Grow with the Community",
                 "text": "Follow our social media for exclusive marketing and event management tips. Click to follow us!"
@@ -658,7 +662,8 @@
                 "ads": "Promote",
                 "smartlinks": "Track",
                 "social": "Follow",
-                "plans": "View Plans"
+                "plans": "View Plans",
+                "experts": "View Experts"
             }
         }
     },

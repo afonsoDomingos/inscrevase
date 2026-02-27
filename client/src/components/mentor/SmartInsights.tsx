@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown, Users } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
@@ -15,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans' | 'experts';
     buttonText?: string;
 }
 
@@ -234,7 +234,18 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 buttonText: t('dashboard.insights.buttons.plans')
             });
 
-            // 16. Support
+            // 16. See Experts Nudge
+            list.push({
+                id: 'see_experts',
+                icon: <Users className="text-indigo-400" />,
+                title: t('dashboard.insights.seeExperts.title'),
+                text: t('dashboard.insights.seeExperts.text'),
+                color: '#818cf8',
+                action: 'experts',
+                buttonText: t('dashboard.insights.buttons.experts')
+            });
+
+            // 17. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
@@ -317,6 +328,9 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 } else {
                     router.push('/dashboard/mentor/plans');
                 }
+                break;
+            case 'experts':
+                router.push('/experts');
                 break;
         }
     };
