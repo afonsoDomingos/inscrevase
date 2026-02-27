@@ -1934,41 +1934,57 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         </div>
                                                     </div>
 
-                                                    {/* Type Picker */}
-                                                    <div style={{ background: '#fafafa', padding: '12px', borderRadius: '12px', border: '1px solid #eee' }}>
-                                                        <p style={{ fontSize: '0.65rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>
-                                                            Tipo: {t(`events.type${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`)}
+                                                    {/* Type Picker with Labels */}
+                                                    <div style={{ background: '#fafafa', padding: '15px', borderRadius: '15px', border: '1px solid #eee' }}>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
+                                                            {t('events.fieldType')}: <span style={{ color: '#111' }}>{t(`events.type${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`)}</span>
                                                         </p>
-                                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))', gap: '8px' }}>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '10px' }}>
                                                             {[
-                                                                { value: 'text', icon: FileText, label: t('events.typeText') },
-                                                                { value: 'email', icon: Mail, label: t('events.typeEmail') },
-                                                                { value: 'number', icon: Hash, label: t('events.typeNumber') },
-                                                                { value: 'phone', icon: Phone, label: t('events.typePhone') },
-                                                                { value: 'select', icon: Menu, label: t('events.typeSelect') },
-                                                                { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox') },
-                                                                { value: 'date', icon: Calendar, label: t('events.typeDate') },
-                                                                { value: 'file', icon: Upload, label: t('events.typeFile') },
-                                                                { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea') }
+                                                                { value: 'text', icon: FileText, label: t('events.typeText'), desc: 'Texto curto' },
+                                                                { value: 'email', icon: Mail, label: t('events.typeEmail'), desc: 'E-mail válido' },
+                                                                { value: 'number', icon: Hash, label: t('events.typeNumber'), desc: 'Apenas números' },
+                                                                { value: 'phone', icon: Phone, label: t('events.typePhone'), desc: 'Telefone/WhatsApp' },
+                                                                { value: 'select', icon: Menu, label: t('events.typeSelect'), desc: 'Lista de opções' },
+                                                                { value: 'checkbox', icon: CheckSquare, label: t('events.typeCheckbox'), desc: 'Sim ou Não' },
+                                                                { value: 'date', icon: Calendar, label: t('events.typeDate'), desc: 'Data do calendário' },
+                                                                { value: 'file', icon: Upload, label: t('events.typeFile'), desc: 'Anexo de arquivo' },
+                                                                { value: 'textarea', icon: AlignLeft, label: t('events.typeTextarea'), desc: 'Texto longo (parágrafo)' }
                                                             ].map((type) => (
-                                                                <motion.button
+                                                                <button
                                                                     key={type.value}
                                                                     type="button"
-                                                                    whileHover={{ scale: 1.1 }}
-                                                                    whileTap={{ scale: 0.9 }}
                                                                     onClick={() => handleFieldChange(field.id, 'type', type.value)}
                                                                     style={{
-                                                                        height: '40px',
-                                                                        borderRadius: '10px',
-                                                                        border: 'none',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '12px',
+                                                                        padding: '10px',
+                                                                        borderRadius: '12px',
+                                                                        border: '2px solid',
+                                                                        borderColor: field.type === type.value ? '#111' : '#eee',
                                                                         background: field.type === type.value ? '#111' : '#fff',
                                                                         color: field.type === type.value ? '#FFD700' : '#64748b',
                                                                         cursor: 'pointer',
-                                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                                        textAlign: 'left',
+                                                                        transition: 'all 0.2s'
                                                                     }}
                                                                 >
-                                                                    <type.icon size={18} />
-                                                                </motion.button>
+                                                                    <div style={{
+                                                                        background: field.type === type.value ? 'rgba(255, 215, 0, 0.1)' : '#f8f9fa',
+                                                                        padding: '8px',
+                                                                        borderRadius: '8px',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center'
+                                                                    }}>
+                                                                        <type.icon size={18} />
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: field.type === type.value ? '#FFD700' : '#111' }}>{type.label}</span>
+                                                                        <span style={{ fontSize: '0.65rem', opacity: 0.8, color: field.type === type.value ? '#fff' : '#64748b' }}>{type.desc}</span>
+                                                                    </div>
+                                                                </button>
                                                             ))}
                                                         </div>
                                                     </div>
