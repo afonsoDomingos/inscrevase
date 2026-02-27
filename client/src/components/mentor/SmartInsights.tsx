@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';
@@ -15,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok';
     buttonText?: string;
 }
 
@@ -197,7 +197,22 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 buttonText: t('dashboard.insights.buttons.social')
             });
 
-            // 13. Referral nudge
+            // 13. Social Media - TikTok
+            list.push({
+                id: 'social_tiktok',
+                icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                    </svg>
+                ),
+                title: "Vibra com o TikTok",
+                text: "Dicas rápidas e bastidores da plataforma. Segue-nos para não perderes nada!",
+                color: '#000000',
+                action: 'social_tiktok',
+                buttonText: t('dashboard.insights.buttons.social')
+            });
+
+            // 14. Referral nudge
             list.push({
                 id: 'referral_impact',
                 icon: <Share2 className="text-green-400" />,
@@ -208,7 +223,7 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 buttonText: t('dashboard.insights.buttons.referral')
             });
 
-            // 12. Support
+            // 15. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
@@ -281,6 +296,9 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 break;
             case 'social_youtube':
                 window.open('https://www.youtube.com/@Inscreva-se-events', '_blank');
+                break;
+            case 'social_tiktok':
+                window.open('https://www.tiktok.com/@inscreva_se_events', '_blank');
                 break;
         }
     };
