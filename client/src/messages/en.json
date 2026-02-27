@@ -186,7 +186,8 @@
             "uploadError": "Error uploading file",
             "uploadSuccess": "Upload completed successfully!"
         },
-        "palop": "Africa (PALOP)"
+        "palop": "Africa (PALOP)",
+        "dataIsPower": "Data is Power"
     },
     "nav": {
         "home": "Home",

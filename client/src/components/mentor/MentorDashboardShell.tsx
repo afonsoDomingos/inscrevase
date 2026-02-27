@@ -393,7 +393,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
-                padding: isMobile ? '1.5rem' : '2.5rem',
+                padding: isMobile ? '1rem' : '2.5rem',
                 paddingTop: isMobile ? '5rem' : '2.5rem',
                 minHeight: '100vh',
                 maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
@@ -459,7 +459,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.5rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
+                    <div style={{ display: 'flex', gap: isMobile ? '0.35rem' : '0.5rem', width: isMobile ? '100.5%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
                         <Link
                             href="/"
                             style={{
@@ -474,15 +474,15 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                 fontWeight: 700,
                                 textDecoration: 'none',
                                 transition: 'all 0.3s',
-                                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                fontSize: isMobile ? '0.75rem' : '0.9rem',
                                 whiteSpace: 'nowrap',
-                                height: '40px'
+                                height: isMobile ? '36px' : '40px'
                             }}
                         >
                             <ArrowRight size={16} /> {!isMobile && t('nav.home')}
                         </Link>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <button
@@ -512,8 +512,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        width: '40px',
-                                        height: '40px',
+                                        width: isMobile ? '36px' : '40px',
+                                        height: isMobile ? '36px' : '40px',
                                         background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
                                         border: '1px solid #FFD700',
                                         borderRadius: '12px',
@@ -575,8 +575,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    width: '40px',
-                                    height: '40px',
+                                    width: isMobile ? '36px' : '40px',
+                                    height: isMobile ? '36px' : '40px',
                                     background: 'var(--paper)',
                                     border: '1px solid #333',
                                     borderRadius: '12px',

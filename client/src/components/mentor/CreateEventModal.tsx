@@ -932,7 +932,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         opacity: isSidebarVisible ? 1 : 0,
                         overflow: 'hidden',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        padding: isMobile ? '1.5rem 1rem' : '2.5rem 1.5rem',
+                        padding: isMobile ? 'calc(2rem + env(safe-area-inset-top)) 1.5rem 1.2rem' : '2.5rem 1.5rem',
                         color: '#fff',
                         display: isMobile ? 'flex' : 'block',
                         flexDirection: isMobile ? 'column' : 'initial',
@@ -940,9 +940,29 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         position: 'relative',
                         borderRight: isMobile ? 'none' : '1px solid #111'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '0.5rem' : '1.5rem', color: '#FFD700' }}>
-                            <Layout size={isMobile ? 18 : 24} />
-                            <span style={{ fontWeight: 800, fontSize: isMobile ? '1rem' : '1.1rem' }}>{t('events.newTitle')}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '1rem' : '1.5rem', width: '100%', color: '#FFD700' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <Layout size={isMobile ? 18 : 24} />
+                                <span style={{ fontWeight: 800, fontSize: isMobile ? '1rem' : '1.1rem' }}>{t('events.newTitle')}</span>
+                            </div>
+
+                            {/* Mobile specific top actions to save space and avoid obstruction */}
+                            {isMobile && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <button
+                                        onClick={() => setShowPreview(true)}
+                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        <Eye size={18} />
+                                    </button>
+                                    <button
+                                        onClick={onClose}
+                                        style={{ background: 'rgba(255,255,255,0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div style={{
@@ -1004,12 +1024,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                     }}>
                         {/* Header Area (Sticky) */}
                         <div style={{
-                            padding: isMobile ? '1.5rem 1.5rem 0.5rem' : '2rem 3.5rem 1rem',
+                            padding: isMobile ? '3rem 1.5rem 0.5rem' : '2rem 3.5rem 1rem',
                             background: '#fcfcfc',
                             zIndex: 20,
                             position: 'relative'
                         }}>
-                            <div style={{ position: 'absolute', top: isMobile ? '1.2rem' : '2rem', left: isMobile ? '1.2rem' : '2rem', zIndex: 30 }}>
+                            <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', left: isMobile ? '1.2rem' : '2rem', zIndex: 30 }}>
                                 {!isMobile && (
                                     <button
                                         onClick={() => setIsSidebarVisible(!isSidebarVisible)}
@@ -1032,35 +1052,37 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 )}
                             </div>
 
-                            <div style={{ position: 'absolute', top: isMobile ? '1.2rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
-                                <button
-                                    onClick={() => setShowPreview(true)}
-                                    title="Pré-visualizar Evento"
-                                    style={{
-                                        background: '#fff',
-                                        border: '1px solid #ddd',
-                                        padding: '0.4rem 0.8rem',
-                                        borderRadius: '20px',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 600,
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                        color: '#333'
-                                    }}
-                                >
-                                    <Eye size={16} />
-                                    {!isMobile && "Pré-visualizar"}
-                                </button>
-                                <button
-                                    onClick={onClose}
-                                    style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
+                            {!isMobile && (
+                                <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
+                                    <button
+                                        onClick={() => setShowPreview(true)}
+                                        title="Pré-visualizar Evento"
+                                        style={{
+                                            background: '#fff',
+                                            border: '1px solid #ddd',
+                                            padding: '0.4rem 0.8rem',
+                                            borderRadius: '20px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                            color: '#333'
+                                        }}
+                                    >
+                                        <Eye size={16} />
+                                        {!isMobile && "Pré-visualizar"}
+                                    </button>
+                                    <button
+                                        onClick={onClose}
+                                        style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Progress Indicator (Sticky) */}
                             <div style={{ marginBottom: '1rem', maxWidth: '90%' }}>
@@ -1114,7 +1136,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                         {/* Scrollable Area */}
                         <div style={{
                             flex: 1,
-                            padding: isMobile ? '1rem 1rem 8rem' : '1rem 2rem 5rem', // Reduced side padding for mobile
+                            padding: isMobile ? '2rem 1rem 8rem' : '1rem 2rem 5rem', // Increased top padding for mobile
                             overflowY: 'auto',
                             overflowX: 'hidden', // prevent horizontal scroll
                             minHeight: 0,

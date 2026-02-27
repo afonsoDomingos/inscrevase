@@ -97,8 +97,8 @@ export default function SuportePage() {
         {
             icon: <Mail size={24} />,
             title: 'Email',
-            value: 'info@inscreva-se.com',
-            link: 'mailto:info@inscreva-se.com',
+            value: 'karinganastudio23@gmail.com',
+            link: 'mailto:karinganastudio23@gmail.com',
             description: 'Resposta em até 24 horas'
         },
         {

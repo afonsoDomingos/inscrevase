@@ -12,8 +12,13 @@ export default function InternalBlogView() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
         const fetchPosts = async () => {
             try {
                 const data = await blogService.getPublishedPosts();
@@ -25,6 +30,8 @@ export default function InternalBlogView() {
             }
         };
         fetchPosts();
+
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     if (loading) {
@@ -117,8 +124,13 @@ export default function InternalBlogView() {
                         exit={{ opacity: 0, y: -20 }}
                         style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-                            gap: '2.5rem'
+                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(400px, 1fr))',
+                            gap: isMobile ? '1.5rem' : '2.5rem',
+                            justifyContent: 'center',
+                            alignItems: 'start',
+                            maxWidth: isMobile ? '450px' : 'none',
+                            margin: '0 auto',
+                            padding: isMobile ? '0 1rem' : '0'
                         }}
                     >
                         {posts.map((post, idx) => (
@@ -139,15 +151,15 @@ export default function InternalBlogView() {
                                     border: '1px solid var(--border)'
                                 }}
                             >
-                                <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
+                                <div style={{ position: 'relative', height: isMobile ? '180px' : '220px', overflow: 'hidden' }}>
                                     <Image src={post.coverImage} fill style={{ objectFit: 'cover' }} alt={post.title} />
                                     <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(255,255,255,0.9)', color: '#000', padding: '5px 12px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase' }}>
                                         {post.category}
                                     </div>
                                 </div>
-                                <div style={{ padding: '2.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <h3 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>{post.title}</h3>
-                                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1.05rem', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{post.excerpt}</p>
+                                <div style={{ padding: isMobile ? '1.5rem' : '2.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.6rem', fontWeight: 800, marginBottom: '0.8rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>{post.title}</h3>
+                                    <p style={{ color: 'var(--text-muted)', marginBottom: isMobile ? '1.5rem' : '2rem', fontSize: isMobile ? '0.9rem' : '1.05rem', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{post.excerpt}</p>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#eee', overflow: 'hidden', border: '1px solid var(--primary)' }}>

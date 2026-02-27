@@ -77,7 +77,7 @@ export default function BlogManager() {
         } catch (error: unknown) {
             console.error(error);
             const axiosError = error as { response?: { data?: { message?: string } } };
-            const message = axiosError.response?.data?.message || 'Erro ao enviar imagem';
+            const message = axiosError.response?.data?.message || (error instanceof Error ? error.message : 'Erro ao enviar imagem');
             toast.error(message);
             setPreviewUrl(null);
         } finally {

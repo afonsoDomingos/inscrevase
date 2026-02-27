@@ -745,7 +745,7 @@ function MentorDashboardContent() {
                 marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
-                padding: isMobile ? '1.5rem' : '2.5rem',
+                padding: isMobile ? '1rem' : '2.5rem',
                 paddingTop: isMobile ? '5rem' : '2.5rem',
                 minHeight: '100vh',
                 maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
@@ -992,7 +992,7 @@ function MentorDashboardContent() {
                         )
                     }
 
-                    <div style={{ display: 'flex', gap: '0.5rem', width: isMobile ? '100%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
+                    <div style={{ display: 'flex', gap: isMobile ? '0.35rem' : '0.5rem', width: isMobile ? '100.5%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
                         <Link
                             href="/"
                             style={{
@@ -1007,9 +1007,9 @@ function MentorDashboardContent() {
                                 fontWeight: 700,
                                 textDecoration: 'none',
                                 transition: 'all 0.3s',
-                                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                fontSize: isMobile ? '0.75rem' : '0.9rem',
                                 whiteSpace: 'nowrap',
-                                height: '40px'
+                                height: isMobile ? '36px' : '40px'
                             }}
                             onMouseOver={(e) => e.currentTarget.style.background = 'var(--paper-hover)'}
                             onMouseOut={(e) => e.currentTarget.style.background = 'var(--paper)'}
@@ -1033,9 +1033,9 @@ function MentorDashboardContent() {
                                     cursor: 'pointer',
                                     boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
                                     transition: 'all 0.3s',
-                                    fontSize: isMobile ? '0.8rem' : '0.9rem',
+                                    fontSize: isMobile ? '0.75rem' : '0.9rem',
                                     whiteSpace: 'nowrap',
-                                    height: '40px'
+                                    height: isMobile ? '36px' : '40px'
                                 }}
                                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
@@ -1060,7 +1060,7 @@ function MentorDashboardContent() {
                                 <Lock size={16} /> {user.isEmailVerified ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
                             </div>
                         )}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <button
@@ -1090,8 +1090,8 @@ function MentorDashboardContent() {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        width: '40px',
-                                        height: '40px',
+                                        width: isMobile ? '36px' : '40px',
+                                        height: isMobile ? '36px' : '40px',
                                         background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
                                         border: '1px solid #FFD700',
                                         borderRadius: '12px',
@@ -1153,8 +1153,8 @@ function MentorDashboardContent() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    width: '40px',
-                                    height: '40px',
+                                    width: isMobile ? '36px' : '40px',
+                                    height: isMobile ? '36px' : '40px',
                                     background: '#fff',
                                     border: '1px solid #fed7d7',
                                     borderRadius: '12px',
