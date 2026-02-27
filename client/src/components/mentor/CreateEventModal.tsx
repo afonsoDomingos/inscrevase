@@ -522,13 +522,45 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     const handleFieldChange = (id: string, key: keyof Field, value: string | boolean | string[]) => {
         setFields(fields.map(f => {
             if (f.id !== id) return f;
+
+            // Intelligent label update when type changes
+            if (key === 'type') {
+                const newType = value as string;
+                const currentLabel = f.label.trim();
+
+                const defaultLabels = [
+                    '',
+                    t('events.defaultFieldName'),
+                    t('events.defaultFieldEmail'),
+                    t('events.typeText'),
+                    t('events.typeEmail'),
+                    t('events.typeNumber'),
+                    t('events.typePhone'),
+                    t('events.typeSelect'),
+                    t('events.typeCheckbox'),
+                    t('events.typeDate'),
+                    t('events.typeFile'),
+                    t('events.typeTextarea')
+                ];
+
+                const shouldUpdateLabel = !currentLabel || defaultLabels.some(lbl => lbl === currentLabel);
+
+                return {
+                    ...f,
+                    type: newType,
+                    label: shouldUpdateLabel
+                        ? t(`events.type${newType.charAt(0).toUpperCase() + newType.slice(1)}`)
+                        : f.label
+                };
+            }
+
             if (key === 'required') {
                 return { ...f, required: value as boolean };
             }
             if (key === 'options') {
                 return { ...f, options: value as string[] };
             }
-            // For other string fields
+            // For other fields like 'label'
             return { ...f, [key]: value as string };
         }));
     };

@@ -324,6 +324,37 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         setFields(fields.map(f => {
             const fieldId = (f as any)._id || f.id;
             if (fieldId !== id) return f;
+
+            if (key === 'type') {
+                const newType = value as string;
+                const currentLabel = f.label.trim();
+
+                const defaultLabels = [
+                    '',
+                    t('events.defaultFieldName'),
+                    t('events.defaultFieldEmail'),
+                    t('events.typeText'),
+                    t('events.typeEmail'),
+                    t('events.typeNumber'),
+                    t('events.typePhone'),
+                    t('events.typeSelect'),
+                    t('events.typeCheckbox'),
+                    t('events.typeDate'),
+                    t('events.typeFile'),
+                    t('events.typeTextarea')
+                ];
+
+                const shouldUpdateLabel = !currentLabel || defaultLabels.some(lbl => lbl === currentLabel);
+
+                return {
+                    ...f,
+                    type: newType,
+                    label: shouldUpdateLabel
+                        ? t(`events.type${newType.charAt(0).toUpperCase() + newType.slice(1)}`)
+                        : f.label
+                };
+            }
+
             if (key === 'required') {
                 return { ...f, required: value as boolean };
             }
