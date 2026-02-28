@@ -17,6 +17,8 @@ const SubmissionSchema = new mongoose.Schema({
     },
     stripePaymentIntentId: { type: String },
     stripeSessionId: { type: String },
+    paypalOrderId: { type: String },
+    paypalCaptureId: { type: String },
     aiAnalysis: {
         transactionId: String,
         amount: Number,

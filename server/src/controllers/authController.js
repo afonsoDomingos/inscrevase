@@ -195,7 +195,7 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const { name, businessName, bio, profilePhoto, whatsapp, socialLinks, country, facebookPixelId } = req.body;
+        const { name, businessName, bio, profilePhoto, whatsapp, socialLinks, country, facebookPixelId, paypalEmail } = req.body;
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -207,6 +207,7 @@ const updateProfile = async (req, res) => {
         if (whatsapp) user.whatsapp = whatsapp;
         if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks };
         if (facebookPixelId !== undefined) user.facebookPixelId = facebookPixelId;
+        if (paypalEmail !== undefined) user.paypalEmail = paypalEmail;
 
         await user.save();
         res.json({ message: 'Profile updated successfully', user });
@@ -248,7 +249,7 @@ const getUsers = async (req, res) => {
 
 const updateByAdmin = async (req, res) => {
     try {
-        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic, canCreateEvents, badges, isVerified, verificationStatus, isEmailVerified } = req.body;
+        const { name, email, role, status, plan, businessName, bio, profilePhoto, whatsapp, socialLinks, country, password, isPublic, canCreateEvents, badges, isVerified, verificationStatus, isEmailVerified, paypalEmail } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -288,6 +289,7 @@ const updateByAdmin = async (req, res) => {
         if (isVerified !== undefined) user.isVerified = isVerified;
         if (verificationStatus) user.verificationStatus = verificationStatus;
         if (isEmailVerified !== undefined) user.isEmailVerified = isEmailVerified;
+        if (paypalEmail !== undefined) user.paypalEmail = paypalEmail;
 
         // Update password if provided
         if (password && password.trim() !== '') {

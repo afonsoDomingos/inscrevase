@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
     stripeAccountId: { type: String },
     stripeOnboardingComplete: { type: Boolean, default: false },
+    paypalEmail: { type: String, sparse: true }, // Added for PayPal payments
     isPublic: { type: Boolean, default: false }, // Admins choose who appears publicly
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

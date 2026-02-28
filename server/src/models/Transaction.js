@@ -73,9 +73,19 @@ const transactionSchema = new mongoose.Schema({
     subscriptionId: {
         type: String
     },
+    paypalOrderId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    paypalCaptureId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
     paymentMethod: {
         type: String,
-        enum: ['stripe', 'manual'],
+        enum: ['stripe', 'manual', 'paypal'],
         default: 'manual'
     },
     proofUrl: {

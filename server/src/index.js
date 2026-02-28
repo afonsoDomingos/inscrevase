@@ -182,6 +182,7 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/stripe', require('./routes/stripeRoutes'));
+app.use('/api/paypal', require('./routes/paypalRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/blog', require('./routes/blog'));
