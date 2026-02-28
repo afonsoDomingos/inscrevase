@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/context/LanguageContext";
-import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
 import { adService } from "@/lib/adService";
@@ -37,7 +36,6 @@ const galleryImages = [
 
 export default function Home() {
   const { t } = useTranslate();
-  const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
   const { handleMouseMove } = useSpotlight();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
