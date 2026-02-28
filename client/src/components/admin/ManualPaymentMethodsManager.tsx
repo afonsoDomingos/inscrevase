@@ -250,7 +250,7 @@ export default function ManualPaymentMethodsManager() {
                         <div style={{ textAlign: 'center', padding: '48px', background: '#f9fafb', borderRadius: '18px', border: '2px dashed #e5e7eb' }}>
                             <Globe size={40} color="#d1d5db" style={{ margin: '0 auto 12px' }} />
                             <p style={{ color: '#9ca3af', fontWeight: 600 }}>Nenhum método configurado ainda.</p>
-                            <p style={{ color: '#d1d5db', fontSize: '0.85rem', marginTop: '4px' }}>Clique em "Adicionar Método" para começar.</p>
+                            <p style={{ color: '#d1d5db', fontSize: '0.85rem', marginTop: '4px' }}>Clique em &quot;Adicionar Método&quot; para começar.</p>
                         </div>
                     )}
                 </div>
