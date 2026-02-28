@@ -10,12 +10,20 @@ let lastRateFetch = 0;
  */
 async function getLatestRate() {
     try {
-        // 1. Database check
-        let settings = await GlobalSettings.findOne({ key: 'exchange_rate_usd_mzn' });
         const now = Date.now();
         const RATE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
+        // 0. Super fast in-memory check (skips DB entirely)
+        if (lastRateFetch > 0 && (now - lastRateFetch < RATE_TTL)) {
+            return cachedExchangeRate;
+        }
+
+        // 1. Database check
+        let settings = await GlobalSettings.findOne({ key: 'exchange_rate_usd_mzn' });
+
         if (settings && (now - new Date(settings.lastUpdated).getTime() < RATE_TTL)) {
+            cachedExchangeRate = settings.value;
+            lastRateFetch = new Date(settings.lastUpdated).getTime();
             return settings.value;
         }
 

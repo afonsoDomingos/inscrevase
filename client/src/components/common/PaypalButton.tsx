@@ -35,6 +35,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
     }
 
     const createOrder = async () => {
+        const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
         try {
             const token = Cookies.get('token');
             const endpoint = type === 'subscription'
@@ -56,10 +57,13 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
 
             const order = await response.json();
             if (!order.id) throw new Error("Could not create PayPal order");
+
+            toast.dismiss(loadingToast);
             return order.id;
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao iniciar PayPal");
+            toast.dismiss(loadingToast);
+            toast.error("Erro ao iniciar PayPal, verifique a ligação.");
             throw err;
         }
     };
