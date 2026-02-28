@@ -117,7 +117,7 @@ export default function BlogPage() {
                         <p style={{ color: '#64748b' }}>Volte em breve para novos conteúdos exclusivos.</p>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '50px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
                         {posts.map((post, index) => {
                             const Icon = categoryIcons[post.category];
                             return (

@@ -182,7 +182,7 @@ export default function AdminFinance() {
     })) || [];
 
     const pieData = summary?.paymentMethods ? Object.entries(summary.paymentMethods).map(([name, value]: [string, number]) => ({
-        name: name === 'stripe' ? 'Stripe (Cartão)' : 'Manual (Transferência)',
+        name: name === 'stripe' ? 'Stripe (Cartão)' : (name === 'paypal' ? 'PayPal' : 'Manual (Transferência)'),
         value
     })) : [];
 
@@ -415,9 +415,9 @@ export default function AdminFinance() {
                                             fontSize: '0.7rem',
                                             fontWeight: 800,
                                             textTransform: 'uppercase',
-                                            color: tx.paymentMethod === 'stripe' ? '#6366f1' : '#f59e0b'
+                                            color: tx.paymentMethod === 'stripe' ? '#6366f1' : (tx.paymentMethod === 'paypal' ? '#003087' : '#f59e0b')
                                         }}>
-                                            {tx.paymentMethod}
+                                            {tx.paymentMethod?.toUpperCase()}
                                         </span>
                                     </td>
                                     <td style={{ padding: '1.2rem', fontWeight: 700 }}>

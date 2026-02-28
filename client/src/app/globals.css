@@ -635,8 +635,8 @@ h6 {
 .admin-mobile-toggle {
   display: none;
   position: fixed;
-  top: 15px;
-  left: 15px;
+  top: 25px;
+  left: 20px;
   z-index: 1100;
   background: #1a1a1a;
   color: #1452AD;
@@ -698,7 +698,7 @@ h6 {
     width: 100%;
     padding: 1.25rem;
     /* Padding mais confortável */
-    padding-top: 5rem;
+    padding-top: 7rem;
     overflow-x: hidden;
     /* Evita scroll horizontal indesejado na página */
   }

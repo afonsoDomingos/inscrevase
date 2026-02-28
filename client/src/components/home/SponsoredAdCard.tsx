@@ -129,10 +129,12 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                         }}
                         style={{
                             position: 'fixed',
-                            top: isMobile ? '80px' : '100px', // Below navbar
-                            right: '20px',
-                            bottom: 'auto',
-                            width: '260px', // Very small fixed width as requested
+                            top: isMobile ? 'auto' : '100px', // In mobile, show at bottom center
+                            bottom: isMobile ? '25px' : 'auto',
+                            left: isMobile ? '50%' : 'auto',
+                            right: isMobile ? '20px' : 'auto',
+                            transform: isMobile ? 'translateX(-50%)' : 'none',
+                            width: isMobile ? '220px' : '260px',
                             zIndex: 9999,
                         }}
                     >
@@ -187,7 +189,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
 
                             {/* Multimedia Section */}
-                            <div style={{ position: 'relative', height: '140px', width: '100%', background: '#f0f0f0' }}>
+                            <div style={{ position: 'relative', height: isMobile ? '110px' : '140px', width: '100%', background: '#f0f0f0' }}>
                                 {currentItem.mediaType === 'video' ? (
                                     <video
                                         src={currentItem.mediaUrl || ""}

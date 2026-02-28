@@ -31,6 +31,7 @@ import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
+import PaypalButton from '@/components/common/PaypalButton';
 import { toast } from 'sonner';
 import MetaPixel from '@/components/MetaPixel';
 import { useMetaPixelEvents } from '@/hooks/useMetaPixelEvents';
@@ -57,7 +58,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [paymentMode, setPaymentMode] = useState<'stripe' | 'manual' | null>(null);
+    const [paymentMode, setPaymentMode] = useState<'stripe' | 'manual' | 'paypal' | null>(null);
     const visitRecorded = useRef(false);
     const { trackViewContent, trackAddToCart, trackPurchase } = useMetaPixelEvents();
 
@@ -208,7 +209,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 toast.error('Por favor, anexe o comprovativo de pagamento para continuar.');
                 return;
             }
-            if (paymentMode === 'stripe') return;
+            if (paymentMode === 'stripe' || paymentMode === 'paypal') return;
         }
 
         setSubmitting(true);
@@ -1181,7 +1182,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     <div style={{ marginTop: isMultiStep ? '0' : '2rem', paddingTop: isMultiStep ? '0' : '2rem', borderTop: isMultiStep ? 'none' : `1px solid ${borderColor}` }}>
                                                         <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>{t('form.paymentMethodHeader')}</h4>
 
-                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                                                             {form.paymentConfig.stripeEnabled && (
                                                                 <motion.div
                                                                     whileHover={{ scale: 1.05 }}
@@ -1193,8 +1194,24 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                     <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'stripe' ? primaryColor : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
                                                                         <CreditCard size={20} color={paymentMode === 'stripe' ? (isDark ? '#000' : '#fff') : '#888'} />
                                                                     </div>
-                                                                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>{t('form.cardPayment')}</div>
-                                                                    <div style={{ fontSize: '0.75rem', color: secondaryTextColor }}>{t('form.instant')}</div>
+                                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: paymentMode === 'stripe' ? primaryColor : titleColor }}>{t('form.cardPayment')}</div>
+                                                                    <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>{t('form.instant')}</div>
+                                                                </motion.div>
+                                                            )}
+
+                                                            {form.creator.paypalEmail && (
+                                                                <motion.div
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
+                                                                    onClick={() => setPaymentMode('paypal')}
+                                                                    className={`premium-card ${paymentMode === 'paypal' ? 'active' : ''}`}
+                                                                    style={{ padding: '1.5rem', borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${borderColor}`, cursor: 'pointer', textAlign: 'center' }}
+                                                                >
+                                                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: paymentMode === 'paypal' ? '#0070ba' : 'rgba(128,128,128,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', transition: '0.3s' }}>
+                                                                        <Globe size={20} color={paymentMode === 'paypal' ? '#fff' : '#888'} />
+                                                                    </div>
+                                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: paymentMode === 'paypal' ? '#0070ba' : titleColor }}>PayPal</div>
+                                                                    <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>{t('form.instant')}</div>
                                                                 </motion.div>
                                                             )}
                                                             <motion.div
@@ -1216,6 +1233,26 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             {paymentMode === 'stripe' && (
                                                                 <motion.div key="stripe" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                                                     <StripeCheckout formId={form._id} formData={formData} eventTitle={form.title} price={form.paymentConfig.price || 0} currency={form.paymentConfig.currency || 'USD'} />
+                                                                </motion.div>
+                                                            )}
+                                                            {paymentMode === 'paypal' && (
+                                                                <motion.div key="paypal" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center' }}>
+                                                                    <PaypalButton
+                                                                        type="event_registration"
+                                                                        formId={form._id}
+                                                                        submissionData={formData}
+                                                                        currency={form.paymentConfig.currency || 'USD'}
+                                                                        onSuccess={(details) => {
+                                                                            if (details.submissionId) {
+                                                                                router.push(`/hub/${details.submissionId}`);
+                                                                            } else {
+                                                                                setSuccess(true);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '10px' }}>
+                                                                        {t('form.paypalSecureHint') || 'Transação segura processada pelo PayPal.'}
+                                                                    </p>
                                                                 </motion.div>
                                                             )}
                                                             {paymentMode === 'manual' && (
@@ -1320,7 +1357,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 </button>
                                             )}
 
-                                            {!(currentStep === totalSteps - 1 && paymentMode === 'stripe') && (
+                                            {!(currentStep === totalSteps - 1 && (paymentMode === 'stripe' || paymentMode === 'paypal')) && (
                                                 <motion.button
                                                     whileHover={{ scale: 1.02 }}
                                                     whileTap={{ scale: 0.98 }}

@@ -24,6 +24,7 @@ export interface FormModel {
         facebookPixelId?: string;
         isVerified?: boolean;
         role?: 'admin' | 'mentor' | 'SuperAdmin' | 'participant' | 'company' | 'specialist';
+        paypalEmail?: string;
     };
     fields: {
         id: string;

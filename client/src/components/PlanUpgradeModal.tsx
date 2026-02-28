@@ -8,6 +8,8 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
+import PaypalButton from './common/PaypalButton';
+import { useRouter } from 'next/navigation';
 
 export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);
@@ -142,12 +144,28 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                             style={{ maxWidth: '500px', margin: '0 auto', background: '#f8f9fa', padding: '30px', borderRadius: '24px', border: '1px dashed #ddd' }}>
 
                             <div style={{ marginBottom: '25px', textAlign: 'center' }}>
-                                <p style={{ fontSize: '0.9rem', color: '#555', marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: t('plans.manualUpgrade.paymentInstructions', { amount: String(manualPlan.amount), currency }) }}>
+                                <div style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #eee' }}>
+                                    <p style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '15px', color: '#000' }}>
+                                        ⚡ PAGAMENTO AUTOMÁTICO (INSTANTÂNEO)
+                                    </p>
+                                    <PaypalButton
+                                        type="subscription"
+                                        planId={manualPlan.id}
+                                        currency={currency}
+                                        onSuccess={() => {
+                                            onClose();
+                                            window.location.reload();
+                                        }}
+                                    />
+                                </div>
+
+                                <p style={{ fontSize: '0.9rem', color: '#555', marginBottom: '15px', fontWeight: 600 }}>
+                                    OU TRANSFERÊNCIA MANUAL (VALIDAÇÃO EM 24H)
                                 </p>
                                 <div style={{ background: '#fff', padding: '15px', borderRadius: '16px', textAlign: 'left', fontSize: '0.85rem' }}>
                                     <div style={{ marginBottom: '8px' }}>🇲🇿 <b>M-Pesa:</b> 856079576 (Afonso Domingos)</div>
                                     <div style={{ marginBottom: '8px' }}>🇲🇿 <b>e-Mola:</b> 879642412 (Afonso Domingos)</div>
-                                    <div style={{ marginBottom: '8px' }}>🌍 <b>PayPal:</b> karinganastudio23@gmail.com</div>
+                                    <div style={{ marginBottom: '8px' }}>🌍 <b>PayPal (Manual):</b> karinganastudio23@gmail.com</div>
                                     <div>🏦 <b>NIB:</b> 000100000074301049557</div>
                                 </div>
                             </div>

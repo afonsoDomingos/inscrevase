@@ -35,6 +35,7 @@ export interface UserData {
     verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
     facebookPixelId?: string;
     lastLoginAt?: string;
+    paypalEmail?: string;
 }
 
 export interface RegisterData {

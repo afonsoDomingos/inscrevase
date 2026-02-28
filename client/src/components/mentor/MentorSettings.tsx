@@ -32,7 +32,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
             linkedin: '',
             facebook: '',
             website: ''
-        }
+        },
+        paypalEmail: ''
     });
 
     useEffect(() => {
@@ -48,7 +49,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                     linkedin: user.socialLinks?.linkedin || '',
                     facebook: user.socialLinks?.facebook || '',
                     website: user.socialLinks?.website || ''
-                }
+                },
+                paypalEmail: user.paypalEmail || ''
             });
         }
     }, [user]);
@@ -92,7 +94,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 bio: formData.bio,
                 whatsapp: formData.whatsapp,
                 profilePhoto: formData.profilePhoto,
-                socialLinks: formData.socialLinks
+                socialLinks: formData.socialLinks,
+                paypalEmail: formData.paypalEmail
             });
             onUpdate();
             toast.success(t('dashboard.settings.updateSuccess'));
@@ -261,6 +264,17 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                                     placeholder="Ex: JS Consultoria"
                                 />
                             </div>
+                        </div>
+
+                        <div className="input-group" style={{ marginTop: '1rem' }}>
+                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>E-mail do PayPal (para receber pagamentos)</label>
+                            <input
+                                type="email" name="paypalEmail"
+                                value={formData.paypalEmail} onChange={handleInputChange}
+                                className="input-luxury" style={{ padding: '0.7rem' }}
+                                placeholder="vendas@exemplo.com"
+                            />
+                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>Este e-mail será usado para direcionar os pagamentos dos seus inscritos via PayPal.</p>
                         </div>
 
                         <div className="input-group" style={{ marginTop: '1rem' }}>

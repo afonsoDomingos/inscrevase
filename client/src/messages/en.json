@@ -730,7 +730,7 @@
             "uploadError": "Error sending proof",
             "uploadSuccess": "Proof sent! Our team will analyze and activate your account soon.",
             "payWithCard": "Pay with Card",
-            "mpesaTransfer": "M-Pesa / E-Mola / Transfer"
+            "mpesaTransfer": "PayPal / M-Pesa / E-Mola / Transfer"
         }
     },
     "blog": {

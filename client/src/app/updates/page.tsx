@@ -125,7 +125,7 @@ export default function UpdatesPage() {
         <div style={{ background: '#f8f9fa', minHeight: '100vh', paddingBottom: '5rem' }}>
             <Navbar />
 
-            <main style={{ maxWidth: '900px', margin: '0 auto', padding: '120px 20px 20px' }}>
+            <main style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '160px 20px 20px' : '120px 20px 20px' }}>
                 <div style={{ marginBottom: '4rem', textAlign: 'center' }}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
