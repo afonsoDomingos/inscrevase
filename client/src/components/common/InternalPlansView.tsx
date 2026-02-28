@@ -8,7 +8,7 @@ import { authService, UserData } from "@/lib/authService";
 import { toast } from "sonner";
 import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 import { useTranslate } from "@/context/LanguageContext";
-import PaypalButton from "./common/PaypalButton";
+import PaypalButton from "./PaypalButton";
 
 export default function InternalPlansView() {
     const { t } = useTranslate();
