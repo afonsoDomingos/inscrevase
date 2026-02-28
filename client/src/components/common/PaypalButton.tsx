@@ -4,6 +4,13 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
 import Cookies from 'js-cookie';
 
+interface PaypalSuccessDetails {
+    success: boolean;
+    submissionId?: string;
+    type?: 'subscription' | 'event_registration';
+    plan?: string;
+}
+
 interface PaypalButtonProps {
     type: 'subscription' | 'event_registration';
     planId?: string;
@@ -11,7 +18,7 @@ interface PaypalButtonProps {
     submissionData?: Record<string, unknown>;
     currency: string;
     amount?: number;
-    onSuccess: (data: unknown) => void;
+    onSuccess: (data: PaypalSuccessDetails) => void;
 }
 
 export default function PaypalButton({ type, planId, formId, submissionData, currency, onSuccess }: PaypalButtonProps) {
@@ -65,7 +72,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
                 }),
             });
 
-            const details = await response.json();
+            const details = (await response.json()) as PaypalSuccessDetails;
             if (details.success) {
                 toast.success("Pagamento confirmado via PayPal!");
                 onSuccess(details);
