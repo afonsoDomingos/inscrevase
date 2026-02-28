@@ -261,8 +261,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                                             <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
                                                 <rect width="45" height="28" rx="4" fill="#fff" />
-                                                <path d="M16.5 19.5L18.5 7.5H21.5L19.5 19.5H16.5ZM26.5 7.5L24.5 19.5H21.5L23.5 7.5H26.5ZM29.5 7.5H33.5L34.5 13.5L35.5 7.5H39.5L37.5 19.5H34.5L33.5 13.5L32.5 19.5H29.5L27.5 7.5Z" fill="#1A1F71" />
-                                                <path d="M12.5 7.5L8.5 16.5L7.5 8.5H4.5L7.5 19.5H11.5L15.5 7.5H12.5Z" fill="#1A1F71" />
+                                                <path d="M16.8 19.5l1.6-12h2.6l-1.6 12h-2.6zm-3.6-12h-2.7c-.6 0-1 .2-1.3.9L5 19.5h2.7l.6-1.8h3.4l.3 1.8h2.5l-1.8-12zm-1.5 7.2l.8-2.6.4 2.6h-1.2zm16-4.2c0-2-1.1-3-2.6-3-1.7 0-3.4 1.1-3.4 2.8 0 1.3.9 2 1.6 2.4.7.4 1 .7 1 1.2 0 .8-.8 1.2-1.6 1.2-.9 0-1.6-.3-2.2-.6l-.3 2c.6.3 1.4.6 2.4.6 1.9 0 3.6-1.1 3.6-2.9 0-1-.6-1.7-1.6-2.3-.7-.4-1.1-.7-1.1-1.1 0-.4.4-.8 1.2-.8.7 0 1.3.2 1.7.4l.4-1.9zm6.9 9h2.5l-1.6-12h-2c-.5 0-.9.3-1.1.9l-3.8 11.1h2.7l.5-1.7h3.3l.4 1.7zm-2.1-4h1.7l-.7-4.2h-.1L32.5 15.5z" fill="#1A1F71" />
                                             </svg>
                                             <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
                                                 <rect width="45" height="28" rx="4" fill="#fff" />
@@ -278,10 +277,10 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'pro' && (
                             <>
-                                <div style={{ background: '#fff', padding: '1px', borderRadius: '10px', border: '1px solid #FFC43933', minHeight: '40px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ background: '#FFC439', borderRadius: '10px', minHeight: '44px', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
-                                        <span style={{ color: '#003087', fontSize: '0.8rem', fontWeight: 700 }}>Pagar com PayPal</span>
+                                        <span style={{ color: '#003087', fontSize: '0.86rem', fontWeight: 800, fontStyle: 'italic' }}>PayPal</span>
                                     </div>
                                     <div style={{ position: 'relative', zIndex: 2 }}>
                                         <PaypalButton
@@ -365,8 +364,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                                             <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
                                                 <rect width="45" height="28" rx="4" fill="#fff" />
-                                                <path d="M16.5 19.5L18.5 7.5H21.5L19.5 19.5H16.5ZM26.5 7.5L24.5 19.5H21.5L23.5 7.5H26.5ZM29.5 7.5H33.5L34.5 13.5L35.5 7.5H39.5L37.5 19.5H34.5L33.5 13.5L32.5 19.5H29.5L27.5 7.5Z" fill="#1A1F71" />
-                                                <path d="M12.5 7.5L8.5 16.5L7.5 8.5H4.5L7.5 19.5H11.5L15.5 7.5H12.5Z" fill="#1A1F71" />
+                                                <path d="M16.8 19.5l1.6-12h2.6l-1.6 12h-2.6zm-3.6-12h-2.7c-.6 0-1 .2-1.3.9L5 19.5h2.7l.6-1.8h3.4l.3 1.8h2.5l-1.8-12zm-1.5 7.2l.8-2.6.4 2.6h-1.2zm16-4.2c0-2-1.1-3-2.6-3-1.7 0-3.4 1.1-3.4 2.8 0 1.3.9 2 1.6 2.4.7.4 1 .7 1 1.2 0 .8-.8 1.2-1.6 1.2-.9 0-1.6-.3-2.2-.6l-.3 2c.6.3 1.4.6 2.4.6 1.9 0 3.6-1.1 3.6-2.9 0-1-.6-1.7-1.6-2.3-.7-.4-1.1-.7-1.1-1.1 0-.4.4-.8 1.2-.8.7 0 1.3.2 1.7.4l.4-1.9zm6.9 9h2.5l-1.6-12h-2c-.5 0-.9.3-1.1.9l-3.8 11.1h2.7l.5-1.7h3.3l.4 1.7zm-2.1-4h1.7l-.7-4.2h-.1L32.5 15.5z" fill="#1A1F71" />
                                             </svg>
                                             <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
                                                 <rect width="45" height="28" rx="4" fill="#fff" />
@@ -382,10 +380,10 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'enterprise' && (
                             <>
-                                <div style={{ background: '#fff', padding: '1px', borderRadius: '10px', border: '1px solid #FFC43933', minHeight: '40px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ background: '#FFC439', borderRadius: '10px', minHeight: '44px', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
-                                        <span style={{ color: '#003087', fontSize: '0.8rem', fontWeight: 700 }}>Pagar com PayPal</span>
+                                        <span style={{ color: '#003087', fontSize: '0.86rem', fontWeight: 800, fontStyle: 'italic' }}>PayPal</span>
                                     </div>
                                     <div style={{ position: 'relative', zIndex: 2 }}>
                                         <PaypalButton

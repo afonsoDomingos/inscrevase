@@ -94,7 +94,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
     return (
         <PayPalScriptProvider options={initialOptions}>
             <PayPalButtons
-                style={{ layout: "vertical", shape: "pill", height: 45 }}
+                style={{ layout: "vertical", shape: "rect", height: 45 }}
                 createOrder={createOrder}
                 onApprove={onApprove}
             />
