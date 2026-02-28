@@ -4,7 +4,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
 import Cookies from 'js-cookie';
 
-interface PaypalSuccessDetails {
+export interface PaypalSuccessDetails {
     success: boolean;
     submissionId?: string;
     type?: 'subscription' | 'event_registration';

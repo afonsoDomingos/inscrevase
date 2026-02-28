@@ -746,7 +746,8 @@
             "uploadError": "Erro ao enviar comprovativo",
             "uploadSuccess": "Comprovativo enviado! Nossa equipe analisará e ativará sua conta em breve.",
             "payWithCard": "Pagar com Cartão",
-            "mpesaTransfer": "PayPal / M-Pesa / E-Mola / Transferência"
+            "payWithPaypal": "Pagar com PayPal",
+            "mpesaTransfer": "Transferência Manual"
         }
     },
     "blog": {

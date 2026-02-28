@@ -8,7 +8,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
-import PaypalButton from './common/PaypalButton';
+import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
 export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(null);
@@ -210,7 +210,7 @@ interface PlanCardProps {
     features: string[];
     onSelect: () => void;
     onManual: () => void;
-    onPaypalSuccess: (data: any) => void;
+    onPaypalSuccess: (data: PaypalSuccessDetails) => void;
     loading: boolean;
     currency: string;
     t: (key: string) => string;
@@ -236,16 +236,19 @@ function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, 
                 ))}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <button
                     onClick={onSelect}
                     disabled={loading}
-                    style={{ width: '100%', padding: '1rem', background: color, color: color === '#000' ? '#fff' : '#000', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: `0 8px 20px ${color}33`, marginBottom: '5px' }}
+                    style={{ width: '100%', padding: '1rem', background: color, color: color === '#000' ? '#fff' : '#000', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: `0 8px 20px ${color}33` }}
                 >
                     {loading ? <Loader2 size={18} className="animate-spin" /> : <><CreditCard size={18} /> {t('plans.manualUpgrade.payWithCard')}</>}
                 </button>
 
-                <div style={{ marginBottom: '5px' }}>
+                <div style={{ background: '#f8f9fa', padding: '12px', borderRadius: '16px', border: '1px solid #eee' }}>
+                    <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#003087', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {t('plans.manualUpgrade.payWithPaypal')}
+                    </p>
                     <PaypalButton
                         type="subscription"
                         planId={id}
@@ -256,9 +259,9 @@ function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, 
 
                 <button
                     onClick={onManual}
-                    style={{ width: '100%', padding: '0.9rem', background: '#f8f9fa', color: '#666', borderRadius: '16px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.9rem', background: 'none', color: '#666', borderRadius: '16px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem' }}
                 >
-                    {t('plans.manualUpgrade.mpesaTransfer').split(' / ').slice(1).join(' / ')}
+                    {t('plans.manualUpgrade.mpesaTransfer')}
                 </button>
             </div>
         </div>
