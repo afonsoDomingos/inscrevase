@@ -54,7 +54,7 @@ import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { stripeService } from '@/lib/stripeService';
 import { useSearchParams } from 'next/navigation';
 
-import InternalPlansView from '@/components/common/InternalPlansView';
+import PlansSection from '@/components/common/PlansSection';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { adService } from '@/lib/adService';
@@ -1381,7 +1381,7 @@ function ParticipantDashboardContent() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                         >
-                            <InternalPlansView />
+                            <PlansSection />
                         </motion.div>
                     )}
                 </AnimatePresence>

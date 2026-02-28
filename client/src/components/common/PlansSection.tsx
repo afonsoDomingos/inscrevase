@@ -10,12 +10,13 @@ import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 import { useTranslate } from "@/context/LanguageContext";
 import PaypalButton from "./PaypalButton";
 
-export default function InternalPlansView() {
+export default function PlansSection({ showTitle = true }: { showTitle?: boolean }) {
     const { t } = useTranslate();
     const { currency, setCurrency, formatPrice, getPlanPrice, getPlanConfig } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [selectedManualPlan, setSelectedManualPlan] = useState<{ id: string, amount: number } | null>(null);
     const [pendingSub, setPendingSub] = useState<{ pending: boolean; plan: string | null } | null>(null);
 
     useEffect(() => {
@@ -39,6 +40,11 @@ export default function InternalPlansView() {
     }, []);
 
     const handleSubscribe = async (plan: string) => {
+        if (!user) {
+            window.location.href = `/cadastro?plan=${plan.toLowerCase()}`;
+            return;
+        }
+
         setLoadingPlan(plan);
         try {
             const token = authService.getToken();
@@ -70,102 +76,104 @@ export default function InternalPlansView() {
 
     return (
         <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '4rem' }}>
-            <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none', marginBottom: '3rem', textAlign: 'center', padding: '3rem' }}>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
-                    {t('plans.chooseIdeal')} <span className="gold-text">{t('common.growth')}</span>
-                </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
-                    {t('plans.selectSubtitle')}
-                </p>
+            {showTitle && (
+                <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none', marginBottom: '3rem', textAlign: 'center', padding: '3rem' }}>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
+                        {t('plans.chooseIdeal')} <span className="gold-text">{t('common.growth')}</span>
+                    </h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
+                        {t('plans.selectSubtitle')}
+                    </p>
 
-                {pendingSub?.pending && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        style={{
-                            background: 'rgba(212, 175, 55, 0.1)',
-                            border: '1px solid #D4AF37',
-                            padding: '1.5rem',
-                            borderRadius: '16px',
-                            maxWidth: '600px',
-                            margin: '0 auto 2rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '15px'
-                        }}
-                    >
-                        <div style={{ background: '#D4AF37', color: '#000', padding: '10px', borderRadius: '50%', display: 'flex' }}>
-                            <Clock size={20} />
-                        </div>
-                        <div style={{ textAlign: 'left' }}>
-                            <div style={{ fontWeight: 800, color: '#D4AF37', fontSize: '0.9rem', marginBottom: '4px' }}>{t('plans.pendingStatus')}</div>
-                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
-                                {t('plans.receivedProof')} <b>{pendingSub.plan?.toUpperCase()}</b>. {t('plans.validationMessage')}
-                            </p>
-                        </div>
-                    </motion.div>
-                )}
+                    {pendingSub?.pending && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            style={{
+                                background: 'rgba(212, 175, 55, 0.1)',
+                                border: '1px solid #D4AF37',
+                                padding: '1.5rem',
+                                borderRadius: '16px',
+                                maxWidth: '600px',
+                                margin: '0 auto 2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '15px'
+                            }}
+                        >
+                            <div style={{ background: '#D4AF37', color: '#000', padding: '10px', borderRadius: '50%', display: 'flex' }}>
+                                <Clock size={20} />
+                            </div>
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontWeight: 800, color: '#D4AF37', fontSize: '0.9rem', marginBottom: '4px' }}>{t('plans.pendingStatus')}</div>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+                                    {t('plans.receivedProof')} <b>{pendingSub.plan?.toUpperCase()}</b>. {t('plans.validationMessage')}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <button
-                        onClick={() => setCurrency('USD')}
-                        style={{
-                            padding: '8px 25px',
-                            borderRadius: '50px',
-                            border: currency === 'USD' ? '2px solid var(--primary)' : '1px solid var(--border)',
-                            background: currency === 'USD' ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
-                            color: currency === 'USD' ? 'var(--primary)' : 'var(--text-muted)',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            fontSize: '0.85rem'
-                        }}
-                    >
-                        USD
-                    </button>
-                    <button
-                        onClick={() => setCurrency('EUR')}
-                        style={{
-                            padding: '8px 25px',
-                            borderRadius: '50px',
-                            border: currency === 'EUR' ? '2px solid var(--primary)' : '1px solid var(--border)',
-                            background: currency === 'EUR' ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
-                            color: currency === 'EUR' ? 'var(--primary)' : 'var(--text-muted)',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            fontSize: '0.85rem'
-                        }}
-                    >
-                        EUR
-                    </button>
-                    <select
-                        value={['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? currency : ''}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            const PALOP = ['MZN', 'AOA', 'CVE', 'XOF'];
-                            if (value && PALOP.includes(value)) {
-                                setCurrency(value as Currency);
-                            }
-                        }}
-                        style={{
-                            padding: '8px 25px',
-                            borderRadius: '50px',
-                            border: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '2px solid var(--primary)' : '1px solid var(--border)',
-                            background: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
-                            color: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'var(--primary)' : 'var(--text-muted)',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            fontSize: '0.85rem',
-                            outline: 'none'
-                        }}
-                    >
-                        <option value="" disabled>{t('common.palop') || 'África (PALOP)'}</option>
-                        <option value="MZN">🇲🇿 Metical (MZ)</option>
-                        <option value="AOA">🇦🇴 Kwanza (AO)</option>
-                        <option value="CVE">🇨🇻 Escudo (CV)</option>
-                        <option value="XOF">🇬🇼 Franco CFA (GW)</option>
-                    </select>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        <button
+                            onClick={() => setCurrency('USD')}
+                            style={{
+                                padding: '8px 25px',
+                                borderRadius: '50px',
+                                border: currency === 'USD' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                background: currency === 'USD' ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                                color: currency === 'USD' ? 'var(--primary)' : 'var(--text-muted)',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                fontSize: '0.85rem'
+                            }}
+                        >
+                            USD
+                        </button>
+                        <button
+                            onClick={() => setCurrency('EUR')}
+                            style={{
+                                padding: '8px 25px',
+                                borderRadius: '50px',
+                                border: currency === 'EUR' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                background: currency === 'EUR' ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                                color: currency === 'EUR' ? 'var(--primary)' : 'var(--text-muted)',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                fontSize: '0.85rem'
+                            }}
+                        >
+                            EUR
+                        </button>
+                        <select
+                            value={['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? currency : ''}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                const PALOP = ['MZN', 'AOA', 'CVE', 'XOF'];
+                                if (value && PALOP.includes(value)) {
+                                    setCurrency(value as Currency);
+                                }
+                            }}
+                            style={{
+                                padding: '8px 25px',
+                                borderRadius: '50px',
+                                border: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                background: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                                color: ['MZN', 'AOA', 'CVE', 'XOF'].includes(currency) ? 'var(--primary)' : 'var(--text-muted)',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                fontSize: '0.85rem',
+                                outline: 'none'
+                            }}
+                        >
+                            <option value="" disabled>{t('common.palop') || 'África (PALOP)'}</option>
+                            <option value="MZN">🇲🇿 Metical (MZ)</option>
+                            <option value="AOA">🇦🇴 Kwanza (AO)</option>
+                            <option value="CVE">🇨🇻 Escudo (CV)</option>
+                            <option value="XOF">🇬🇼 Franco CFA (GW)</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
+            )}
 
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
                 {/* Free Plan */}
@@ -268,11 +276,24 @@ export default function InternalPlansView() {
                                         type="subscription"
                                         planId="pro"
                                         currency={currency}
-                                        onSuccess={() => window.location.reload()}
+                                        onSuccess={() => {
+                                            if (!user) {
+                                                window.location.href = "/cadastro?plan=pro&success=true";
+                                            } else {
+                                                window.location.reload();
+                                            }
+                                        }}
                                     />
                                 </div>
                                 <button
-                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    onClick={() => {
+                                        if (!user) {
+                                            window.location.href = "/cadastro?plan=pro&method=manual";
+                                        } else {
+                                            setSelectedManualPlan({ id: 'pro', amount: getPlanPrice('pro') });
+                                            setIsUpgradeModalOpen(true);
+                                        }
+                                    }}
                                     style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
                                 >
                                     {t('plans.alternativePayment')}
@@ -346,11 +367,24 @@ export default function InternalPlansView() {
                                         type="subscription"
                                         planId="enterprise"
                                         currency={currency}
-                                        onSuccess={() => window.location.reload()}
+                                        onSuccess={() => {
+                                            if (!user) {
+                                                window.location.href = "/cadastro?plan=enterprise&success=true";
+                                            } else {
+                                                window.location.reload();
+                                            }
+                                        }}
                                     />
                                 </div>
                                 <button
-                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    onClick={() => {
+                                        if (!user) {
+                                            window.location.href = "/cadastro?plan=enterprise&method=manual";
+                                        } else {
+                                            setSelectedManualPlan({ id: 'enterprise', amount: getPlanPrice('enterprise') });
+                                            setIsUpgradeModalOpen(true);
+                                        }
+                                    }}
                                     style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
                                 >
                                     {t('plans.alternativePayment')}
@@ -367,7 +401,14 @@ export default function InternalPlansView() {
                     {t('plans.footerInfo')}
                 </p>
             </div>
-            <PlanUpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
+            <PlanUpgradeModal
+                isOpen={isUpgradeModalOpen}
+                onClose={() => {
+                    setIsUpgradeModalOpen(false);
+                    setSelectedManualPlan(null);
+                }}
+                initialManualPlan={selectedManualPlan}
+            />
         </div>
     );
 }

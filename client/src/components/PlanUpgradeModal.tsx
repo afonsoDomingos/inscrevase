@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, Crown, Sparkles, Loader2, Upload } from 'lucide-react';
 import Cookies from 'js-cookie';
@@ -9,12 +9,21 @@ import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
 import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
-export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }: {
+    isOpen: boolean,
+    onClose: () => void,
+    initialManualPlan?: { id: string, amount: number } | null
+}) {
     const [loading, setLoading] = useState<string | null>(null);
-    const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(null);
+    const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(initialManualPlan || null);
     const [uploading, setUploading] = useState(false);
     const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const { t } = useTranslate();
+
+    // Update manualPlan if initialManualPlan changes
+    useEffect(() => {
+        if (initialManualPlan) setManualPlan(initialManualPlan);
+    }, [initialManualPlan]);
 
     const proPrice = getPlanPrice('pro');
     const enterprisePrice = getPlanPrice('enterprise');

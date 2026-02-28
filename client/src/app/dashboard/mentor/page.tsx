@@ -83,7 +83,7 @@ import StripeConnect from '../../../components/StripeConnect';
 import EarningsDashboard from '../../../components/EarningsDashboard';
 import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
-import InternalPlansView from '@/components/common/InternalPlansView';
+import PlansSection from '@/components/common/PlansSection';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
@@ -1675,7 +1675,7 @@ function MentorDashboardContent() {
 
                     {activeTab === 'plans' && (
                         <motion.div key="plans" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <InternalPlansView />
+                            <PlansSection />
                         </motion.div>
                     )}
 
