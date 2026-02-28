@@ -61,6 +61,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
 
             toast.dismiss(loadingToast);
             return order.id;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             console.error('\n❌ Frontend PayPal Create Error:', err);
             toast.dismiss(loadingToast);
@@ -95,6 +96,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
             } else {
                 throw new Error("Capture failed. Backend explicitly returned success: false");
             }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             console.error('\n❌ Frontend PayPal Capture Error:', err);
             toast.error(`Erro ao confirmar pagamento: ${err.message || 'Falha no PayPal'}`);
