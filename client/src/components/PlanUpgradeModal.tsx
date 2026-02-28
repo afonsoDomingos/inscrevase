@@ -116,7 +116,12 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                                 features={[t('dashboard.plans.f1'), t('dashboard.plans.f2'), t('dashboard.plans.f3')]}
                                 onSelect={() => handleUpgradeStripe('pro')}
                                 onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
+                                onPaypalSuccess={() => {
+                                    onClose();
+                                    window.location.reload();
+                                }}
                                 loading={loading === 'pro'}
+                                currency={currency}
                                 t={t}
                             />
                             <PlanCard
@@ -129,7 +134,12 @@ export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean,
                                 features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
                                 onSelect={() => handleUpgradeStripe('enterprise')}
                                 onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
+                                onPaypalSuccess={() => {
+                                    onClose();
+                                    window.location.reload();
+                                }}
                                 loading={loading === 'enterprise'}
+                                currency={currency}
                                 t={t}
                             />
                         </motion.div>
@@ -200,11 +210,13 @@ interface PlanCardProps {
     features: string[];
     onSelect: () => void;
     onManual: () => void;
+    onPaypalSuccess: (data: any) => void;
     loading: boolean;
+    currency: string;
     t: (key: string) => string;
 }
 
-function PlanCard({ name, price, color, icon, features, onSelect, onManual, loading, t }: PlanCardProps) {
+function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, onPaypalSuccess, loading, currency, t }: PlanCardProps) {
     return (
         <div style={{ border: `2px solid ${color}15`, background: name === 'Enterprise' ? '#fafafa' : '#fff', padding: '35px', borderRadius: '32px', textAlign: 'center', transition: 'transform 0.3s ease', boxShadow: '0 10px 20px rgba(0,0,0,0.02)' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
             <div style={{ background: `${color}10`, color: color, padding: '15px', borderRadius: '24px', width: 'fit-content', margin: '0 auto 20px' }}>
@@ -228,15 +240,25 @@ function PlanCard({ name, price, color, icon, features, onSelect, onManual, load
                 <button
                     onClick={onSelect}
                     disabled={loading}
-                    style={{ width: '100%', padding: '1.1rem', background: color, color: color === '#000' ? '#fff' : '#000', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: `0 8px 20px ${color}33` }}
+                    style={{ width: '100%', padding: '1rem', background: color, color: color === '#000' ? '#fff' : '#000', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: `0 8px 20px ${color}33`, marginBottom: '5px' }}
                 >
                     {loading ? <Loader2 size={18} className="animate-spin" /> : <><CreditCard size={18} /> {t('plans.manualUpgrade.payWithCard')}</>}
                 </button>
+
+                <div style={{ marginBottom: '5px' }}>
+                    <PaypalButton
+                        type="subscription"
+                        planId={id}
+                        currency={currency}
+                        onSuccess={onPaypalSuccess}
+                    />
+                </div>
+
                 <button
                     onClick={onManual}
-                    style={{ width: '100%', padding: '0.9rem', background: 'none', color: '#666', borderRadius: '16px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.9rem', background: '#f8f9fa', color: '#666', borderRadius: '16px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem' }}
                 >
-                    {t('plans.manualUpgrade.mpesaTransfer')}
+                    {t('plans.manualUpgrade.mpesaTransfer').split(' / ').slice(1).join(' / ')}
                 </button>
             </div>
         </div>
