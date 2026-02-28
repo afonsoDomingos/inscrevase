@@ -22,11 +22,15 @@ interface PaypalButtonProps {
 }
 
 export default function PaypalButton({ type, planId, formId, submissionData, currency, onSuccess }: PaypalButtonProps) {
-    const initialOptions = {
-        clientId: "AS1xD4Kyd47LhMoxG0rDQesHp5HfV_8Gf4mmAwAAuT8Nez8o91-s3s5XIn9rLn-0U0p3sgD2_r3ilGF6",
-        currency: ['USD', 'EUR', 'BRL', 'GBP'].includes(currency) ? currency : 'USD', // Fallback to USD for script loading if currency is PALOP
-        intent: "capture",
+    const initialOptions: any = {
+        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
+        currency: ['USD', 'EUR', 'BRL', 'GBP'].includes(currency) ? currency : 'USD',
+        intent: type === 'subscription' ? "subscription" : "capture",
     };
+
+    if (type === 'subscription') {
+        initialOptions.vault = true;
+    }
 
     const createOrder = async () => {
         try {
