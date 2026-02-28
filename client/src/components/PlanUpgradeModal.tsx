@@ -236,19 +236,30 @@ function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, 
                 ))}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <button
                     onClick={onSelect}
                     disabled={loading}
-                    style={{ width: '100%', padding: '1rem', background: color, color: color === '#000' ? '#fff' : '#000', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: `0 8px 20px ${color}33` }}
+                    style={{ width: '100%', padding: '0.8rem', background: '#635BFF', color: '#fff', borderRadius: '12px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', boxShadow: '0 4px 12px rgba(99, 91, 255, 0.2)', transition: 'all 0.2s' }}
+                    onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                 >
-                    {loading ? <Loader2 size={18} className="animate-spin" /> : <><CreditCard size={18} /> {t('plans.manualUpgrade.payWithCard')}</>}
+                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontSize: '0.95rem' }}>{t('plans.manualUpgrade.payWithCard')}</span>
+                            <div style={{ background: '#fff', padding: '4px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
+                                <svg width="35" height="15" viewBox="0 0 40 17" fill="#635BFF">
+                                    <path d="M39.06 8.35c0-3.08-2.2-4.32-4.52-4.32-2.82 0-4.8 1.85-4.8 4.73 0 3.76 2.62 4.67 5.23 4.67 1.17 0 2.1-.23 2.76-.56V11.1c-.69.34-1.58.55-2.58.55-1.78 0-3.32-.42-3.32-2.54h7.93c.06-.35.3-.77.3-1.26zm-7.14-1c0-1.4 1-2 2.33-2 1.14 0 2 0.5 2 2h-4.33zM25.7 4.19c-1.34 0-2.22 0.53-2.73 1.1V4.32h-2.15v11.72h2.24V11.7c0-1.78 1.3-2.67 2.61-2.67.5 0 .93.08 1.18.17l.32-2.17c-.36-.08-1-.13-1.47-.13zM18.8 11.45l-1.92-7.13h-2.53l3.25 9.77-1.3 3.42 2.4 0 4.1-10.43-2.5 0-1.5 4.37zM11.66 4.12c-.93 0-1.6 0.44-2 0.96V4.32H7.5v11.72h2.24V9.6c0-2 1.6-2.61 2.92-2.61.5 0 0.93.08 1.18.17l.32-2.17c-.36-.08-.94-.13-1.5-.13zM4.1 2.37c-.6 0-1.05.15-1.36.32l.2 1.88c.34-.14.73-.24 1.17-.24.78 0 1.1.28 1.1.86v1.17H4.07c-1.6 0-2.63.74-2.63 1.94 0 1.25.98 1.8 2.08 1.8.84 0 1.5-.32 1.95-.76l.16 0.6h2V6.62C7.63 4.1 5.92 2.37 4.1 2.37zm1.6 5.25c0 .66-.67 1.05-1.3 1.05-.56 0-.82-.24-.82-.67 0-.39.42-.64 1.07-.64h1.05z" />
+                                </svg>
+                            </div>
+                        </div>
+                    )}
                 </button>
 
-                <div style={{ background: '#f8f9fa', padding: '12px', borderRadius: '16px', border: '1px solid #eee' }}>
-                    <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#003087', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        {t('plans.manualUpgrade.payWithPaypal')}
-                    </p>
+                <div style={{ background: '#FFC43915', padding: '10px', borderRadius: '12px', border: '1px solid #FFC43933' }}>
+                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#003087' }}>{t('plans.manualUpgrade.payWithPaypal')}</span>
+                    </div>
                     <PaypalButton
                         type="subscription"
                         planId={id}
@@ -259,7 +270,7 @@ function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, 
 
                 <button
                     onClick={onManual}
-                    style={{ width: '100%', padding: '0.9rem', background: 'none', color: '#666', borderRadius: '16px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.9rem', background: '#f8f9fa', color: '#666', borderRadius: '12px', fontWeight: 700, border: '1px solid #eee', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
                     {t('plans.manualUpgrade.mpesaTransfer')}
                 </button>
