@@ -585,6 +585,9 @@
             "f4": "0% FEE (Total Exemption)",
             "f5": "Branding Customization",
             "f6": "VIP Account Manager",
+            "unlimitedForms": "Unlimited Forms",
+            "participantManagement": "Participant Management",
+            "apiIntegration": "API Integration",
             "upgradeSuccess": "Congratulations! 🎉",
             "upgradeSuccessMessage": "Your subscription has been successfully activated. You are now a {plan} partner and have full access to Mentor tools.",
             "startExploring": "Start Exploring"
