@@ -94,7 +94,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         }
     }, []);
 
-    const handleAiGenerate = async () => {
+    const handleAiGenerate = async (isRegeneration = false) => {
         if (!title.trim()) {
             toast.error(t('ai.promptOrient'));
             return;
@@ -102,10 +102,15 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
 
         setAiLoading(true);
         try {
-            const promptTemplate = t('ai.descriptionPrompt');
+            const promptKey = isRegeneration ? 'ai.descriptionRegeneratePrompt' : 'ai.descriptionPrompt';
+            const promptTemplate = t(promptKey);
             const prompt = promptTemplate.replace('{title}', title);
             const data = await aiService.chat(prompt, t('locale') || 'pt');
-            setDescription(data.reply);
+
+            // Clean markdown bold if still present (fallback)
+            const cleanDescription = data.reply.replace(/\*\*(.*?)\*\*/g, '$1');
+            setDescription(cleanDescription);
+
             toast.success(t('ai.toastSuccess'));
         } catch (err: unknown) {
             const error = err as Error;
@@ -1570,7 +1575,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                         whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
                                                         type="button"
-                                                        onClick={handleAiGenerate}
+                                                        onClick={() => handleAiGenerate(!!description)}
                                                         disabled={aiLoading}
                                                         style={{
                                                             background: 'rgba(255,215,0,0.1)',
@@ -1586,8 +1591,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                                             cursor: 'pointer'
                                                         }}
                                                     >
-                                                        {aiLoading ? <Loader2 className="animate-spin" size={12} /> : <Wand2 size={12} />}
-                                                        {t('ai.buttonDescribe')}
+                                                        {aiLoading ? <Loader2 className="animate-spin" size={12} /> : (description ? <Sparkles size={12} /> : <Wand2 size={12} />)}
+                                                        {description ? t('ai.buttonRegenerate') : t('ai.buttonDescribe')}
                                                     </motion.button>
                                                 </div>
                                                 <textarea

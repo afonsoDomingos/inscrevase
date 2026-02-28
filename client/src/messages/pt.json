@@ -1257,7 +1257,9 @@
         "promptOrient": "Por favor, digite um título ou assunto para a Aura se orientar.",
         "generating": "Gerando...",
         "copySuccess": "Conteúdo copiado!",
-        "descriptionPrompt": "Crie uma descrição sofisticada, luxuosa e persuasiva para um evento chamado \"{title}\". Foque nos benefícios exclusivos para os participantes e use um tom de elite."
+        "buttonRegenerate": "GERAR OUTRA OPÇÃO",
+        "descriptionPrompt": "Crie uma descrição sofisticada, luxuosa e persuasiva para um evento chamado \"{title}\". Foque nos benefícios exclusivos para os participantes e use um tom de elite. NÃO use formatação markdown (como **negrito**, # etc). Use apenas texto simples e parágrafos.",
+        "descriptionRegeneratePrompt": "Crie uma alternativa criativa e diferente da anterior para a descrição do evento \"{title}\". Mantenha o tom de luxo e elite. NÃO use markdown."
     },
     "hub": {
         "remainingTime": "Tempo Restante",

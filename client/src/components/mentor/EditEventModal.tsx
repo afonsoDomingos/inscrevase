@@ -78,7 +78,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleAiGenerate = async () => {
+    const handleAiGenerate = async (isRegeneration = false) => {
         if (!title.trim()) {
             toast.error(t('ai.promptOrient'));
             return;
@@ -86,9 +86,15 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
 
         setAiLoading(true);
         try {
-            const prompt = `Crie uma descrição sofisticada, luxuosa e persuasiva para um evento chamado "${title}". Foque nos benefícios exclusivos para os participantes e use um tom de elite.`;
+            const promptKey = isRegeneration ? 'ai.descriptionRegeneratePrompt' : 'ai.descriptionPrompt';
+            const promptTemplate = t(promptKey);
+            const prompt = promptTemplate.replace('{title}', title);
             const data = await aiService.chat(prompt, locale);
-            setDescription(data.reply);
+
+            // Clean markdown bold if still present (fallback)
+            const cleanDescription = data.reply.replace(/\*\*(.*?)\*\*/g, '$1');
+            setDescription(cleanDescription);
+
             toast.success(t('ai.toastSuccess'));
         } catch (err: unknown) {
             const error = err as Error;
@@ -112,9 +118,12 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
         if (!title.trim()) { toast.error(t('ai.promptOrient')); return; }
         setAiLoading(true);
         try {
-            const prompt = `Crie uma descrição para um evento chamado "${title}" com um tom ${tone}. Aja como um copywriter expert, focando em conversão e exclusividade.`;
+            const prompt = `Crie uma descrição para um evento chamado "${title}" com um tom ${tone}. Aja como um copywriter expert, focando em conversão e exclusividade. NÃO use markdown (como **negrito**, # etc).`;
             const data = await aiService.chat(prompt, locale);
-            setDescription(data.reply);
+
+            // Clean markdown bold if still present (fallback)
+            const cleanDescription = data.reply.replace(/\*\*(.*?)\*\*/g, '$1').replace(/### (.*?)\n/g, '$1\n').replace(/## (.*?)\n/g, '$1\n');
+            setDescription(cleanDescription);
             toast.success(t('ai.toastSuccess'));
             setShowAiOptions(false);
         } catch (err: unknown) {
@@ -839,7 +848,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                             }}
                                                         >
                                                             <Sparkles size={14} className={aiLoading ? "animate-spin" : ""} />
-                                                            {aiLoading ? "Criando Mágica..." : "Aura AI: Assistente"}
+                                                            {aiLoading ? "Criando Mágica..." : (description ? t('ai.buttonRegenerate') : "Aura AI: Assistente")}
                                                         </motion.button>
                                                     ) : (
                                                         <motion.div
@@ -848,16 +857,16 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                                             style={{ display: 'flex', gap: '5px', alignItems: 'center', background: '#FFF8E1', padding: '4px', borderRadius: '20px', border: '1px solid #FFD700' }}
                                                         >
                                                             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#B8860B', marginLeft: '8px', marginRight: '4px' }}>Tom:</span>
-                                                            {['Profissional', 'Inspirador', 'Exclusivo'].map(tone => (
+                                                            {['Profissional', 'Inspirador', 'Exclusivo', 'Outra'].map(tone => (
                                                                 <button
                                                                     key={tone}
                                                                     type="button"
-                                                                    onClick={() => handleAiGenerateWithTone(tone)}
+                                                                    onClick={() => tone === 'Outra' ? handleAiGenerate(true) : handleAiGenerateWithTone(tone)}
                                                                     disabled={aiLoading}
                                                                     className="hover:scale-105 transition-transform"
                                                                     style={{ fontSize: '0.7rem', padding: '4px 10px', borderRadius: '12px', border: 'none', background: '#fff', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.1)', color: '#333', fontWeight: 500 }}
                                                                 >
-                                                                    {tone}
+                                                                    {tone === 'Outra' ? 'Gerar Outra' : tone}
                                                                 </button>
                                                             ))}
                                                             <button type="button" onClick={() => setShowAiOptions(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', marginLeft: '5px', display: 'flex' }}><X size={14} color="#b8860b" /></button>

@@ -1200,7 +1200,9 @@
         "promptOrient": "Please enter a title or subject for Aura's guidance.",
         "generating": "Generating...",
         "copySuccess": "Content copied!",
-        "descriptionPrompt": "Create a sophisticated, luxurious, and persuasive description for an event called \"{title}\". Focus on exclusive benefits for participants and use an elite tone."
+        "buttonRegenerate": "GENERATE ANOTHER OPTION",
+        "descriptionPrompt": "Create a sophisticated, luxurious, and persuasive description for an event called \"{title}\". Focus on exclusive benefits for participants and use an elite tone. DO NOT use markdown formatting (like **bold**, # etc). Use only plain text and paragraphs.",
+        "descriptionRegeneratePrompt": "Create a creative and different alternative to the previous description for the event \"{title}\". Maintain the luxury and elite tone. DO NOT use markdown."
     },
     "hub": {
         "remainingTime": "Remaining Time",
