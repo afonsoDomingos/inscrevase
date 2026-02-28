@@ -178,18 +178,18 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
                 {/* Free Plan */}
                 <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
-                    flex: '1 1 280px', maxWidth: '350px', display: 'flex', flexDirection: 'column',
+                    flex: '1 1 280px', maxWidth: '340px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '1px solid rgba(255,255,255,0.1)', padding: '2rem 1.5rem', borderRadius: '24px', color: '#fff', position: 'relative', overflow: 'hidden'
+                    border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem 1.2rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden'
                 }}>
-                    <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.3rem', fontFamily: 'var(--font-playfair)' }}>Free</h3>
-                        <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>{t('plans.free.description')}</p>
+                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '0.2rem', fontFamily: 'var(--font-playfair)' }}>Free</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.8rem' }}>{t('plans.free.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '1.5rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
+                    <div style={{ marginBottom: '1rem', fontSize: '2.2rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
                             <div style={{ padding: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={16} color="#fff" /></div>
                             {t('plans.free.fee_dynamic', { fee: ((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0) })}
@@ -206,7 +206,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                     <button
                         disabled={true}
-                        style={{ width: '100%', padding: '0.7rem', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '0.9rem' }}
+                        style={{ width: '100%', padding: '0.6rem', borderRadius: '10px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '0.85rem' }}
                     >
                         {user?.plan === 'free' ? t('plans.currentPlan') : t('plans.standardPlan')}
                     </button>
@@ -214,23 +214,23 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                 {/* Pro Plan */}
                 <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
-                    flex: '1 1 280px', maxWidth: '350px', display: 'flex', flexDirection: 'column',
+                    flex: '1 1 280px', maxWidth: '340px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '2px solid #D4AF37', padding: '2.5rem 1.5rem 1.5rem', borderRadius: '24px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 15px 30px rgba(0,0,0,0.3)'
+                    border: '2px solid #D4AF37', padding: '1.8rem 1.2rem 1.2rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 12px 25px rgba(0,0,0,0.3)'
                 }}>
-                    <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#D4AF37', color: '#000', padding: '4px 12px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 900 }}>{t('common.recommended')}</div>
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#D4AF37', color: '#000', padding: '3px 10px', borderRadius: '50px', fontSize: '0.65rem', fontWeight: 900 }}>{t('common.recommended')}</div>
 
-                    <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.3rem', color: '#D4AF37', fontFamily: 'var(--font-playfair)' }}>Pro</h3>
-                        <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>{t('plans.pro.description')}</p>
+                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.2rem', color: '#D4AF37', fontFamily: 'var(--font-playfair)' }}>Pro</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.8rem' }}>{t('plans.pro.description')}</p>
                     </div>
 
-                    <div style={{ marginBottom: '1.5rem', fontSize: '2.8rem', fontWeight: 900, textAlign: 'center', color: '#D4AF37' }}>
-                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '0.9rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
+                    <div style={{ marginBottom: '1rem', fontSize: '2.4rem', fontWeight: 900, textAlign: 'center', color: '#D4AF37' }}>
+                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '0.8rem', fontWeight: 500, opacity: 0.7 }}>/mês</span>
                     </div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 700 }}>
                             <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.2)', borderRadius: '50%' }}><Zap size={18} color="#D4AF37" /></div>
                             {t('plans.pro.fee_dynamic', { fee: ((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0) })}
@@ -278,19 +278,25 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'pro' && (
                             <>
-                                <div style={{ background: '#fff', padding: '1px', borderRadius: '12px', border: '1px solid #FFC43933', minHeight: '45px', overflow: 'hidden' }}>
-                                    <PaypalButton
-                                        type="subscription"
-                                        planId="pro"
-                                        currency={currency}
-                                        onSuccess={() => {
-                                            if (!user) {
-                                                window.location.href = "/cadastro?plan=pro&success=true";
-                                            } else {
-                                                window.location.reload();
-                                            }
-                                        }}
-                                    />
+                                <div style={{ background: '#fff', padding: '1px', borderRadius: '10px', border: '1px solid #FFC43933', minHeight: '40px', overflow: 'hidden', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
+                                        <span style={{ color: '#003087', fontSize: '0.8rem', fontWeight: 700 }}>Pagar com PayPal</span>
+                                    </div>
+                                    <div style={{ position: 'relative', zIndex: 2 }}>
+                                        <PaypalButton
+                                            type="subscription"
+                                            planId="pro"
+                                            currency={currency}
+                                            onSuccess={() => {
+                                                if (!user) {
+                                                    window.location.href = "/cadastro?plan=pro&success=true";
+                                                } else {
+                                                    window.location.reload();
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -301,7 +307,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             setIsUpgradeModalOpen(true);
                                         }
                                     }}
-                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }}
+                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.75rem' }}
                                 >
                                     {t('plans.alternativePayment')}
                                 </button>
@@ -312,21 +318,21 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                 {/* Enterprise Plan */}
                 <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
-                    flex: '1 1 280px', maxWidth: '350px', display: 'flex', flexDirection: 'column',
+                    flex: '1 1 280px', maxWidth: '340px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '1px solid rgba(255,255,255,0.2)', padding: '2.5rem 1.5rem 1.5rem', borderRadius: '24px', color: '#fff', position: 'relative', overflow: 'hidden'
+                    border: '1px solid rgba(255,255,255,0.2)', padding: '1.8rem 1.2rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden'
                 }}>
-                    <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.3rem', color: '#fff', fontFamily: 'var(--font-playfair)' }}>Enterprise</h3>
-                        <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>{t('plans.enterprise.description')}</p>
+                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.2rem', color: '#fff', fontFamily: 'var(--font-playfair)' }}>Enterprise</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.8rem' }}>{t('plans.enterprise.description')}</p>
                     </div>
 
-                    <div style={{ marginBottom: '1.5rem', fontSize: '2.8rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
-                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '0.9rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
+                    <div style={{ marginBottom: '1rem', fontSize: '2.4rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
+                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '0.8rem', fontWeight: 500, opacity: 0.7 }}>/mês</span>
                     </div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 900, color: '#FFD700' }}>
                             <div style={{ padding: '5px', background: 'rgba(255,215,0,0.2)', borderRadius: '50%' }}><Crown size={18} /></div>
                             {((getPlanConfig('enterprise')?.commissionRate || 0) * 100) === 0
@@ -376,19 +382,25 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'enterprise' && (
                             <>
-                                <div style={{ background: '#fff', padding: '1px', borderRadius: '12px', border: '1px solid #FFC43933', minHeight: '45px', overflow: 'hidden' }}>
-                                    <PaypalButton
-                                        type="subscription"
-                                        planId="enterprise"
-                                        currency={currency}
-                                        onSuccess={() => {
-                                            if (!user) {
-                                                window.location.href = "/cadastro?plan=enterprise&success=true";
-                                            } else {
-                                                window.location.reload();
-                                            }
-                                        }}
-                                    />
+                                <div style={{ background: '#fff', padding: '1px', borderRadius: '10px', border: '1px solid #FFC43933', minHeight: '40px', overflow: 'hidden', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
+                                        <span style={{ color: '#003087', fontSize: '0.8rem', fontWeight: 700 }}>Pagar com PayPal</span>
+                                    </div>
+                                    <div style={{ position: 'relative', zIndex: 2 }}>
+                                        <PaypalButton
+                                            type="subscription"
+                                            planId="enterprise"
+                                            currency={currency}
+                                            onSuccess={() => {
+                                                if (!user) {
+                                                    window.location.href = "/cadastro?plan=enterprise&success=true";
+                                                } else {
+                                                    window.location.reload();
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -399,7 +411,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             setIsUpgradeModalOpen(true);
                                         }
                                     }}
-                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }}
+                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.75rem' }}
                                 >
                                     {t('plans.alternativePayment')}
                                 </button>
