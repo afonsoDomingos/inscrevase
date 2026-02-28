@@ -8,6 +8,7 @@ import { authService, UserData } from "@/lib/authService";
 import { toast } from "sonner";
 import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 import { useTranslate } from "@/context/LanguageContext";
+import PaypalButton from "./common/PaypalButton";
 
 export default function InternalPlansView() {
     const { t } = useTranslate();
@@ -166,108 +167,195 @@ export default function InternalPlansView() {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
                 {/* Free Plan */}
-                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', background: 'var(--paper)', border: '1px solid var(--border)', padding: '2rem' }}>
+                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
+                    flex: '1 1 300px', maxWidth: '380px', display: 'flex', flexDirection: 'column',
+                    background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop")',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    border: '1px solid rgba(255,255,255,0.1)', padding: '3rem 2rem', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden'
+                }}>
                     <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Free</h3>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('plans.free.description')}</p>
+                        <h3 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem', fontFamily: 'var(--font-playfair)' }}>Free</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>{t('plans.free.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}>
-                            <CheckCircle size={16} color="#B8860B" />
+                    <div style={{ marginBottom: '2rem', fontSize: '3rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
+
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
+                            <div style={{ padding: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={16} color="#fff" /></div>
                             {t('plans.free.fee_dynamic', { fee: ((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0) })}
                         </li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.unlimitedForms')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} color="#B8860B" /> {t('plans.participantManagement')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
+                            <div style={{ padding: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={16} color="#fff" /></div>
+                            {t('plans.unlimitedForms')}
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
+                            <div style={{ padding: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={16} color="#fff" /></div>
+                            {t('plans.participantManagement')}
+                        </li>
                     </ul>
+
                     <button
-                        disabled={user?.plan === 'free'}
-                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--muted)', color: 'var(--text-muted)', border: 'none', fontWeight: 700, fontSize: '0.9rem' }}
+                        disabled={true}
+                        style={{ width: '100%', padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '1rem' }}
                     >
                         {user?.plan === 'free' ? t('plans.currentPlan') : t('plans.standardPlan')}
                     </button>
                 </motion.div>
 
                 {/* Pro Plan */}
-                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', border: '2px solid var(--primary)', background: 'var(--paper)', position: 'relative', transform: 'scale(1.05)', zIndex: 2, padding: '2.5rem 2rem' }}>
-                    <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: '#000', padding: '6px 16px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 900, boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)' }}>{t('common.recommended')}</div>
+                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
+                    flex: '1 1 300px', maxWidth: '380px', display: 'flex', flexDirection: 'column',
+                    background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop")',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    border: '2px solid #D4AF37', padding: '3.5rem 2rem 3rem', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+                }}>
+                    <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#D4AF37', color: '#000', padding: '6px 16px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 900, boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)' }}>{t('common.recommended')}</div>
+
                     <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--primary)' }}>Pro</h3>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('plans.pro.description')}</p>
+                        <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', color: '#D4AF37', fontFamily: 'var(--font-playfair)' }}>Pro</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>{t('plans.pro.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '3rem', fontWeight: 900, textAlign: 'center', color: 'var(--primary)' }}>
-                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--text-foreground)' }}>{t('plans.perMonth')}</span>
+
+                    <div style={{ marginBottom: '2.5rem', fontSize: '3.2rem', fontWeight: 900, textAlign: 'center', color: '#D4AF37' }}>
+                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1.1rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
                     </div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 700 }}>
-                            <Zap size={18} color="#D4AF37" />
+
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 700 }}>
+                            <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.2)', borderRadius: '50%' }}><Zap size={18} color="#D4AF37" /></div>
                             {t('plans.pro.fee_dynamic', { fee: ((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0) })}
                         </li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('dashboard.plans.f2').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('plans.pro.f1').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem' }}><CheckCircle size={18} color="#D4AF37" /> {t('plans.pro.f2').replace('• ', '')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                            <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '50%' }}><CheckCircle size={18} color="#D4AF37" /></div>
+                            {t('dashboard.plans.f2').replace('• ', '')}
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                            <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '50%' }}><CheckCircle size={18} color="#D4AF37" /></div>
+                            {t('plans.pro.f1').replace('• ', '')}
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                            <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '50%' }}><CheckCircle size={18} color="#D4AF37" /></div>
+                            {t('plans.pro.f2').replace('• ', '')}
+                        </li>
                     </ul>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
                             onClick={() => handleSubscribe('pro')}
                             disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
-                            className="btn-primary"
-                            style={{ width: '100%', borderRadius: '8px', padding: '1rem', fontSize: '1rem' }}
+                            style={{ width: '100%', padding: '0.8rem', background: '#635BFF', color: '#fff', borderRadius: '12px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                         >
-                            {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'pro' ? t('plans.currentPlan') : t('plans.pro.cta'))}
+                            {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (
+                                user?.plan === 'pro' ? t('plans.currentPlan') : (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span>{t('plans.payWithCard')}</span>
+                                        <div style={{ background: '#fff', padding: '3px 6px', borderRadius: '3px', display: 'flex' }}>
+                                            <svg width="30" height="12" viewBox="0 0 40 17" fill="#635BFF">
+                                                <path d="M39.06 8.35c0-3.08-2.2-4.32-4.52-4.32-2.82 0-4.8 1.85-4.8 4.73 0 3.76 2.62 4.67 5.23 4.67 1.17 0 2.1-.23 2.76-.56V11.1c-.69.34-1.58.55-2.58.55-1.78 0-3.32-.42-3.32-2.54h7.93c.06-.35.3-.77.3-1.26zm-7.14-1c0-1.4 1-2 2.33-2 1.14 0 2 0.5 2 2h-4.33zM25.7 4.19c-1.34 0-2.22 0.53-2.73 1.1V4.32h-2.15v11.72h2.24V11.7c0-1.78 1.3-2.67 2.61-2.67.5 0 .93.08 1.18.17l.32-2.17c-.36-.08-1-.13-1.47-.13zM18.8 11.45l-1.92-7.13h-2.53l3.25 9.77-1.3 3.42 2.4 0 4.1-10.43-2.5 0-1.5 4.37zM11.66 4.12c-.93 0-1.6 0.44-2 0.96V4.32H7.5v11.72h2.24V9.6c0-2 1.6-2.61 2.92-2.61.5 0 0.93.08 1.18.17l.32-2.17c-.36-.08-.94-.13-1.5-.13zM4.1 2.37c-.6 0-1.05.15-1.36.32l.2 1.88c.34-.14.73-.24 1.17-.24.78 0 1.1.28 1.1.86v1.17H4.07c-1.6 0-2.63.74-2.63 1.94 0 1.25.98 1.8 2.08 1.8.84 0 1.5-.32 1.95-.76l.16 0.6h2V6.62C7.63 4.1 5.92 2.37 4.1 2.37zm1.6 5.25c0 .66-.67 1.05-1.3 1.05-.56 0-.82-.24-.82-.67 0-.39.42-.64 1.07-.64h1.05z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                )
+                            )}
                         </button>
+
                         {user?.plan !== 'pro' && (
-                            <button
-                                onClick={() => setIsUpgradeModalOpen(true)}
-                                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
-                            >
-                                {t('plans.alternativePayment')}
-                            </button>
+                            <>
+                                <div style={{ background: '#FFC43915', padding: '8px', borderRadius: '12px', border: '1px solid #FFC43933' }}>
+                                    <PaypalButton
+                                        type="subscription"
+                                        planId="pro"
+                                        currency={currency}
+                                        onSuccess={() => window.location.reload()}
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                    {t('plans.alternativePayment')}
+                                </button>
+                            </>
                         )}
                     </div>
                 </motion.div>
 
                 {/* Enterprise Plan */}
-                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{ flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', background: 'var(--secondary)', color: 'var(--paper)', border: 'none', padding: '2rem' }}>
+                <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
+                    flex: '1 1 300px', maxWidth: '380px', display: 'flex', flexDirection: 'column',
+                    background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop")',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    border: '1px solid rgba(255,255,255,0.2)', padding: '3.5rem 2rem 3rem', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden'
+                }}>
                     <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--paper)' }}>Enterprise</h3>
-                        <p style={{ opacity: 0.7, fontSize: '0.9rem' }}>{t('plans.enterprise.description')}</p>
+                        <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', color: '#fff', fontFamily: 'var(--font-playfair)' }}>Enterprise</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>{t('plans.enterprise.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
-                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.6, color: 'var(--paper)' }}>{t('plans.perMonth')}</span>
+
+                    <div style={{ marginBottom: '2.5rem', fontSize: '3.2rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
+                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '1.1rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
                     </div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', fontWeight: 900, color: '#FFD700' }}>
-                            <Crown size={16} />
+
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 900, color: '#FFD700' }}>
+                            <div style={{ padding: '5px', background: 'rgba(255,215,0,0.2)', borderRadius: '50%' }}><Crown size={18} /></div>
                             {((getPlanConfig('enterprise')?.commissionRate || 0) * 100) === 0
                                 ? t('plans.enterprise.fee')
                                 : t('plans.enterprise.fee_dynamic', { fee: ((getPlanConfig('enterprise')?.commissionRate || 0) * 100).toFixed(0) })}
                         </li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><ShieldCheck size={16} /> {t('plans.enterprise.f1').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><ShieldCheck size={16} /> {t('plans.enterprise.f2').replace('• ', '')}</li>
-                        <li style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}><CheckCircle size={16} /> {t('plans.apiIntegration')}</li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                            <div style={{ padding: '5px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><ShieldCheck size={18} /></div>
+                            {t('plans.enterprise.f1').replace('• ', '')}
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                            <div style={{ padding: '5px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><ShieldCheck size={18} /></div>
+                            {t('plans.enterprise.f2').replace('• ', '')}
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                            <div style={{ padding: '5px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={18} /></div>
+                            {t('plans.apiIntegration')}
+                        </li>
                     </ul>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
                             onClick={() => handleSubscribe('enterprise')}
                             disabled={loadingPlan === 'enterprise' || user?.plan === 'enterprise'}
-                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--paper)', color: 'var(--secondary)', border: 'none', fontWeight: 900, cursor: 'pointer', fontSize: '0.9rem' }}
+                            style={{ width: '100%', padding: '0.8rem', background: '#fff', color: '#000', borderRadius: '12px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                         >
-                            {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (user?.plan === 'enterprise' ? t('plans.currentPlan') : t('plans.enterprise.cta'))}
+                            {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (
+                                user?.plan === 'enterprise' ? t('plans.currentPlan') : (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span>{t('plans.payWithCard')}</span>
+                                        <div style={{ background: '#635BFF', padding: '3px 6px', borderRadius: '3px', display: 'flex' }}>
+                                            <svg width="30" height="12" viewBox="0 0 40 17" fill="#fff">
+                                                <path d="M39.06 8.35c0-3.08-2.2-4.32-4.52-4.32-2.82 0-4.8 1.85-4.8 4.73 0 3.76 2.62 4.67 5.23 4.67 1.17 0 2.1-.23 2.76-.56V11.1c-.69.34-1.58.55-2.58.55-1.78 0-3.32-.42-3.32-2.54h7.93c.06-.35.3-.77.3-1.26zm-7.14-1c0-1.4 1-2 2.33-2 1.14 0 2 0.5 2 2h-4.33zM25.7 4.19c-1.34 0-2.22 0.53-2.73 1.1V4.32h-2.15v11.72h2.24V11.7c0-1.78 1.3-2.67 2.61-2.67.5 0 .93.08 1.18.17l.32-2.17c-.36-.08-1-.13-1.47-.13zM18.8 11.45l-1.92-7.13h-2.53l3.25 9.77-1.3 3.42 2.4 0 4.1-10.43-2.5 0-1.5 4.37zM11.66 4.12c-.93 0-1.6 0.44-2 0.96V4.32H7.5v11.72h2.24V9.6c0-2 1.6-2.61 2.92-2.61.5 0 0.93.08 1.18.17l.32-2.17c-.36-.08-.94-.13-1.5-.13zM4.1 2.37c-.6 0-1.05.15-1.36.32l.2 1.88c.34-.14.73-.24 1.17-.24.78 0 1.1.28 1.1.86v1.17H4.07c-1.6 0-2.63.74-2.63 1.94 0 1.25.98 1.8 2.08 1.8.84 0 1.5-.32 1.95-.76l.16 0.6h2V6.62C7.63 4.1 5.92 2.37 4.1 2.37zm1.6 5.25c0 .66-.67 1.05-1.3 1.05-.56 0-.82-.24-.82-.67 0-.39.42-.64 1.07-.64h1.05z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                )
+                            )}
                         </button>
+
                         {user?.plan !== 'enterprise' && (
-                            <button
-                                onClick={() => setIsUpgradeModalOpen(true)}
-                                style={{
-                                    width: '100%', padding: '0.8rem', borderRadius: '8px',
-                                    background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-                                    color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem'
-                                }}
-                            >
-                                {t('plans.alternativePayment')}
-                            </button>
+                            <>
+                                <div style={{ background: '#FFC43915', padding: '8px', borderRadius: '12px', border: '1px solid #FFC43933' }}>
+                                    <PaypalButton
+                                        type="subscription"
+                                        planId="enterprise"
+                                        currency={currency}
+                                        onSuccess={() => window.location.reload()}
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                    {t('plans.alternativePayment')}
+                                </button>
+                            </>
                         )}
                     </div>
                 </motion.div>
