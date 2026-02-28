@@ -26,13 +26,9 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
     const initialOptions: any = {
         clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
         currency: ['USD', 'EUR', 'BRL', 'GBP'].includes(currency) ? currency : 'USD',
-        intent: type === 'subscription' ? "subscription" : "capture",
+        intent: "capture",
         "disable-funding": "card,credit",
     };
-
-    if (type === 'subscription') {
-        initialOptions.vault = true;
-    }
 
     const createOrder = async () => {
         const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
