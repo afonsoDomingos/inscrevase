@@ -30,7 +30,7 @@ export interface TransactionModel {
     mentorEarnings?: number;
     baseMentorEarnings?: number;
     status: 'pending' | 'completed' | 'failed' | 'rejected';
-    paymentMethod: 'stripe' | 'manual';
+    paymentMethod: 'stripe' | 'manual' | 'paypal';
     proofUrl?: string;
     createdAt: string;
     metadata?: Record<string, string>;
