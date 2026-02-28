@@ -22,6 +22,7 @@ interface PaypalButtonProps {
 }
 
 export default function PaypalButton({ type, planId, formId, submissionData, currency, onSuccess }: PaypalButtonProps) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const initialOptions: any = {
         clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
         currency: ['USD', 'EUR', 'BRL', 'GBP'].includes(currency) ? currency : 'USD',
