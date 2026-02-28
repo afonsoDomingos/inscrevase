@@ -44,6 +44,7 @@ export default function AdminFinance() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
     const [isRefreshingRate, setIsRefreshingRate] = useState(false);
 
@@ -71,8 +72,9 @@ export default function AdminFinance() {
         try {
             setLoading(true);
             const status = statusFilter === 'all' ? undefined : statusFilter;
+            const method = paymentMethodFilter === 'all' ? undefined : paymentMethodFilter;
             const [txData, summaryData] = await Promise.all([
-                financeService.getAdminTransactions(status),
+                financeService.getAdminTransactions(status, method),
                 financeService.getAdminSummary()
             ]);
             setTransactions(txData);
@@ -83,7 +85,7 @@ export default function AdminFinance() {
         } finally {
             setLoading(false);
         }
-    }, [statusFilter]);
+    }, [statusFilter, paymentMethodFilter]);
 
     useEffect(() => {
         loadData();
@@ -356,28 +358,59 @@ export default function AdminFinance() {
                     />
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.8rem' }}>
-                    {['all', 'pending', 'completed', 'rejected'].map(status => (
-                        <button
-                            key={status}
-                            onClick={() => {
-                                setStatusFilter(status);
-                                setCurrentPage(1); // Reset page on filter change
-                            }}
-                            style={{
-                                padding: '0.6rem 1.2rem',
-                                borderRadius: '10px',
-                                border: '1px solid #eee',
-                                background: statusFilter === status ? '#000' : '#fff',
-                                color: statusFilter === status ? '#FFD700' : '#666',
-                                cursor: 'pointer',
-                                fontWeight: 700,
-                                textTransform: 'capitalize'
-                            }}
-                        >
-                            {status === 'all' ? 'Ver Todos' : status === 'pending' ? 'Pendentes' : status === 'rejected' ? 'Rejeitados' : 'Conciliados'}
-                        </button>
-                    ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', alignItems: 'flex-start', width: '100%', maxWidth: '100%' }}>
+                    <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                        {['all', 'pending', 'completed', 'rejected'].map(status => (
+                            <button
+                                key={status}
+                                onClick={() => {
+                                    setStatusFilter(status);
+                                    setCurrentPage(1); // Reset page on filter change
+                                }}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '10px',
+                                    border: '1px solid #eee',
+                                    background: statusFilter === status ? '#000' : '#f8f9fa',
+                                    color: statusFilter === status ? '#FFD700' : '#666',
+                                    cursor: 'pointer',
+                                    fontWeight: 700,
+                                    fontSize: '0.8rem',
+                                    textTransform: 'capitalize'
+                                }}
+                            >
+                                {status === 'all' ? 'Todos os Status' : status === 'pending' ? 'Pendentes' : status === 'rejected' ? 'Rejeitados' : 'Conciliados'}
+                            </button>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                        {[
+                            { id: 'all', label: 'Todos Métodos' },
+                            { id: 'stripe', label: 'Stripe' },
+                            { id: 'paypal', label: 'PayPal' },
+                            { id: 'manual', label: 'Manual' }
+                        ].map(method => (
+                            <button
+                                key={method.id}
+                                onClick={() => {
+                                    setPaymentMethodFilter(method.id);
+                                    setCurrentPage(1);
+                                }}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '10px',
+                                    border: '1px solid #eee',
+                                    background: paymentMethodFilter === method.id ? '#003087' : '#f8f9fa',
+                                    color: paymentMethodFilter === method.id ? '#fff' : '#666',
+                                    cursor: 'pointer',
+                                    fontWeight: 700,
+                                    fontSize: '0.8rem'
+                                }}
+                            >
+                                {method.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
