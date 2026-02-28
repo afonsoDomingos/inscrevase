@@ -9,8 +9,6 @@ import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
 import PaypalButton from './common/PaypalButton';
-import { useRouter } from 'next/navigation';
-
 export default function PlanUpgradeModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(null);

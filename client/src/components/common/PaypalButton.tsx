@@ -8,10 +8,10 @@ interface PaypalButtonProps {
     type: 'subscription' | 'event_registration';
     planId?: string;
     formId?: string;
-    submissionData?: any;
+    submissionData?: Record<string, unknown>;
     currency: string;
     amount?: number;
-    onSuccess: (data: any) => void;
+    onSuccess: (data: unknown) => void;
 }
 
 export default function PaypalButton({ type, planId, formId, submissionData, currency, onSuccess }: PaypalButtonProps) {
@@ -51,7 +51,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
         }
     };
 
-    const onApprove = async (data: any) => {
+    const onApprove = async (data: { orderID: string }) => {
         try {
             const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/paypal/orders/capture`, {
