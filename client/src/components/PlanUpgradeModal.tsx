@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, CreditCard, AlertCircle } from 'lucide-react';
+import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, CreditCard, AlertCircle, Copy } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
@@ -259,8 +259,19 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                                         <p style={{ fontSize: '0.78rem', color: '#6b7280' }}>{method.countryLabel}</p>
                                                     </div>
                                                 </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <p style={{ fontWeight: 700, fontSize: '0.88rem', color: '#111', fontFamily: 'monospace' }}>{method.details}</p>
+                                                <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', fontFamily: 'monospace', margin: 0, letterSpacing: '0.5px' }}>{method.details}</p>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            navigator.clipboard.writeText(method.details);
+                                                            toast.success('Copiado para a área de transferência!');
+                                                        }}
+                                                        style={{ background: '#f3f4f6', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', transition: 'all 0.2s' }}
+                                                        title="Copiar"
+                                                    >
+                                                        <Copy size={14} />
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}
