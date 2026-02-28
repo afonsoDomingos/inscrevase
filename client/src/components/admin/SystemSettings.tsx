@@ -77,7 +77,7 @@ export default function SystemSettings() {
         setSaving(true);
         try {
             const token = Cookies.get('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/settings/plans`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/admin/settings/plans`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
