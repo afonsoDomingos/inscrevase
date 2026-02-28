@@ -259,15 +259,8 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                 user?.plan === 'pro' ? t('plans.currentPlan') : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
-                                                <rect width="45" height="28" rx="4" fill="#fff" />
-                                                <path d="M16.8 19.5l1.6-12h2.6l-1.6 12h-2.6zm-3.6-12h-2.7c-.6 0-1 .2-1.3.9L5 19.5h2.7l.6-1.8h3.4l.3 1.8h2.5l-1.8-12zm-1.5 7.2l.8-2.6.4 2.6h-1.2zm16-4.2c0-2-1.1-3-2.6-3-1.7 0-3.4 1.1-3.4 2.8 0 1.3.9 2 1.6 2.4.7.4 1 .7 1 1.2 0 .8-.8 1.2-1.6 1.2-.9 0-1.6-.3-2.2-.6l-.3 2c.6.3 1.4.6 2.4.6 1.9 0 3.6-1.1 3.6-2.9 0-1-.6-1.7-1.6-2.3-.7-.4-1.1-.7-1.1-1.1 0-.4.4-.8 1.2-.8.7 0 1.3.2 1.7.4l.4-1.9zm6.9 9h2.5l-1.6-12h-2c-.5 0-.9.3-1.1.9l-3.8 11.1h2.7l.5-1.7h3.3l.4 1.7zm-2.1-4h1.7l-.7-4.2h-.1L32.5 15.5z" fill="#1A1F71" />
-                                            </svg>
-                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
-                                                <rect width="45" height="28" rx="4" fill="#fff" />
-                                                <circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.8" />
-                                                <circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.8" />
-                                            </svg>
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style={{ width: '28px', height: 'auto', marginRight: '4px', filter: 'drop-shadow(0px 0px 1px rgba(255,255,255,0.8))' }} />
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Mastercard-logo.svg" alt="Mastercard" style={{ width: '20px', height: 'auto' }} />
                                         </div>
                                         <span style={{ fontSize: '0.85rem' }}>{t('plans.payWithCard')}</span>
                                     </div>
@@ -362,15 +355,8 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                 user?.plan === 'enterprise' ? t('plans.currentPlan') : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
-                                                <rect width="45" height="28" rx="4" fill="#fff" />
-                                                <path d="M16.8 19.5l1.6-12h2.6l-1.6 12h-2.6zm-3.6-12h-2.7c-.6 0-1 .2-1.3.9L5 19.5h2.7l.6-1.8h3.4l.3 1.8h2.5l-1.8-12zm-1.5 7.2l.8-2.6.4 2.6h-1.2zm16-4.2c0-2-1.1-3-2.6-3-1.7 0-3.4 1.1-3.4 2.8 0 1.3.9 2 1.6 2.4.7.4 1 .7 1 1.2 0 .8-.8 1.2-1.6 1.2-.9 0-1.6-.3-2.2-.6l-.3 2c.6.3 1.4.6 2.4.6 1.9 0 3.6-1.1 3.6-2.9 0-1-.6-1.7-1.6-2.3-.7-.4-1.1-.7-1.1-1.1 0-.4.4-.8 1.2-.8.7 0 1.3.2 1.7.4l.4-1.9zm6.9 9h2.5l-1.6-12h-2c-.5 0-.9.3-1.1.9l-3.8 11.1h2.7l.5-1.7h3.3l.4 1.7zm-2.1-4h1.7l-.7-4.2h-.1L32.5 15.5z" fill="#1A1F71" />
-                                            </svg>
-                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
-                                                <rect width="45" height="28" rx="4" fill="#fff" />
-                                                <circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.8" />
-                                                <circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.8" />
-                                            </svg>
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style={{ width: '28px', height: 'auto', marginRight: '4px', filter: 'drop-shadow(0px 0px 1px rgba(255,255,255,0.8))' }} />
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Mastercard-logo.svg" alt="Mastercard" style={{ width: '20px', height: 'auto' }} />
                                         </div>
                                         <span style={{ fontSize: '0.85rem' }}>{t('plans.payWithCard')}</span>
                                     </div>
