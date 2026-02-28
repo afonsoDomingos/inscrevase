@@ -178,18 +178,18 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
                 {/* Free Plan */}
                 <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
-                    flex: '1 1 300px', maxWidth: '380px', display: 'flex', flexDirection: 'column',
+                    flex: '1 1 280px', maxWidth: '350px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '1px solid rgba(255,255,255,0.1)', padding: '3rem 2rem', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden'
+                    border: '1px solid rgba(255,255,255,0.1)', padding: '2rem 1.5rem', borderRadius: '24px', color: '#fff', position: 'relative', overflow: 'hidden'
                 }}>
-                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem', fontFamily: 'var(--font-playfair)' }}>Free</h3>
-                        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>{t('plans.free.description')}</p>
+                    <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.3rem', fontFamily: 'var(--font-playfair)' }}>Free</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>{t('plans.free.description')}</p>
                     </div>
-                    <div style={{ marginBottom: '2rem', fontSize: '3rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
+                    <div style={{ marginBottom: '1.5rem', fontSize: '2.5rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
                             <div style={{ padding: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={16} color="#fff" /></div>
                             {t('plans.free.fee_dynamic', { fee: ((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0) })}
@@ -206,7 +206,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                     <button
                         disabled={true}
-                        style={{ width: '100%', padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '1rem' }}
+                        style={{ width: '100%', padding: '0.7rem', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '0.9rem' }}
                     >
                         {user?.plan === 'free' ? t('plans.currentPlan') : t('plans.standardPlan')}
                     </button>
@@ -214,23 +214,23 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                 {/* Pro Plan */}
                 <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
-                    flex: '1 1 300px', maxWidth: '380px', display: 'flex', flexDirection: 'column',
+                    flex: '1 1 280px', maxWidth: '350px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '2px solid #D4AF37', padding: '3.5rem 2rem 3rem', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+                    border: '2px solid #D4AF37', padding: '2.5rem 1.5rem 1.5rem', borderRadius: '24px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 15px 30px rgba(0,0,0,0.3)'
                 }}>
-                    <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#D4AF37', color: '#000', padding: '6px 16px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 900, boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)' }}>{t('common.recommended')}</div>
+                    <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#D4AF37', color: '#000', padding: '4px 12px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 900 }}>{t('common.recommended')}</div>
 
-                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', color: '#D4AF37', fontFamily: 'var(--font-playfair)' }}>Pro</h3>
-                        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>{t('plans.pro.description')}</p>
+                    <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.3rem', color: '#D4AF37', fontFamily: 'var(--font-playfair)' }}>Pro</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>{t('plans.pro.description')}</p>
                     </div>
 
-                    <div style={{ marginBottom: '2.5rem', fontSize: '3.2rem', fontWeight: 900, textAlign: 'center', color: '#D4AF37' }}>
-                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '1.1rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
+                    <div style={{ marginBottom: '1.5rem', fontSize: '2.8rem', fontWeight: 900, textAlign: 'center', color: '#D4AF37' }}>
+                        {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '0.9rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
                     </div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 700 }}>
                             <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.2)', borderRadius: '50%' }}><Zap size={18} color="#D4AF37" /></div>
                             {t('plans.pro.fee_dynamic', { fee: ((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0) })}
@@ -253,17 +253,24 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         <button
                             onClick={() => handleSubscribe('pro')}
                             disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
-                            style={{ width: '100%', padding: '0.8rem', background: '#635BFF', color: '#fff', borderRadius: '12px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            style={{ width: '100%', padding: '0.7rem', background: '#635BFF', color: '#fff', borderRadius: '10px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                         >
                             {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (
                                 user?.plan === 'pro' ? t('plans.currentPlan') : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span>{t('plans.payWithCard')}</span>
-                                        <div style={{ background: '#fff', padding: '3px 6px', borderRadius: '3px', display: 'flex' }}>
-                                            <svg width="30" height="12" viewBox="0 0 40 17" fill="#635BFF">
-                                                <path d="M39.06 8.35c0-3.08-2.2-4.32-4.52-4.32-2.82 0-4.8 1.85-4.8 4.73 0 3.76 2.62 4.67 5.23 4.67 1.17 0 2.1-.23 2.76-.56V11.1c-.69.34-1.58.55-2.58.55-1.78 0-3.32-.42-3.32-2.54h7.93c.06-.35.3-.77.3-1.26zm-7.14-1c0-1.4 1-2 2.33-2 1.14 0 2 0.5 2 2h-4.33zM25.7 4.19c-1.34 0-2.22 0.53-2.73 1.1V4.32h-2.15v11.72h2.24V11.7c0-1.78 1.3-2.67 2.61-2.67.5 0 .93.08 1.18.17l.32-2.17c-.36-.08-1-.13-1.47-.13zM18.8 11.45l-1.92-7.13h-2.53l3.25 9.77-1.3 3.42 2.4 0 4.1-10.43-2.5 0-1.5 4.37zM11.66 4.12c-.93 0-1.6 0.44-2 0.96V4.32H7.5v11.72h2.24V9.6c0-2 1.6-2.61 2.92-2.61.5 0 0.93.08 1.18.17l.32-2.17c-.36-.08-.94-.13-1.5-.13zM4.1 2.37c-.6 0-1.05.15-1.36.32l.2 1.88c.34-.14.73-.24 1.17-.24.78 0 1.1.28 1.1.86v1.17H4.07c-1.6 0-2.63.74-2.63 1.94 0 1.25.98 1.8 2.08 1.8.84 0 1.5-.32 1.95-.76l.16 0.6h2V6.62C7.63 4.1 5.92 2.37 4.1 2.37zm1.6 5.25c0 .66-.67 1.05-1.3 1.05-.56 0-.82-.24-.82-.67 0-.39.42-.64 1.07-.64h1.05z" />
+                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
+                                                <rect width="45" height="28" rx="4" fill="#fff" />
+                                                <path d="M16.5 19.5L18.5 7.5H21.5L19.5 19.5H16.5ZM26.5 7.5L24.5 19.5H21.5L23.5 7.5H26.5ZM29.5 7.5H33.5L34.5 13.5L35.5 7.5H39.5L37.5 19.5H34.5L33.5 13.5L32.5 19.5H29.5L27.5 7.5Z" fill="#1A1F71" />
+                                                <path d="M12.5 7.5L8.5 16.5L7.5 8.5H4.5L7.5 19.5H11.5L15.5 7.5H12.5Z" fill="#1A1F71" />
+                                            </svg>
+                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
+                                                <rect width="45" height="28" rx="4" fill="#fff" />
+                                                <circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.8" />
+                                                <circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.8" />
                                             </svg>
                                         </div>
+                                        <span style={{ fontSize: '0.85rem' }}>{t('plans.payWithCard')}</span>
                                     </div>
                                 )
                             )}
@@ -271,7 +278,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'pro' && (
                             <>
-                                <div style={{ background: '#FFC43915', padding: '8px', borderRadius: '12px', border: '1px solid #FFC43933' }}>
+                                <div style={{ background: '#fff', padding: '1px', borderRadius: '12px', border: '1px solid #FFC43933', minHeight: '45px', overflow: 'hidden' }}>
                                     <PaypalButton
                                         type="subscription"
                                         planId="pro"
@@ -294,7 +301,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             setIsUpgradeModalOpen(true);
                                         }
                                     }}
-                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
+                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }}
                                 >
                                     {t('plans.alternativePayment')}
                                 </button>
@@ -305,21 +312,21 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                 {/* Enterprise Plan */}
                 <motion.div whileHover={{ y: -10 }} className="luxury-card" style={{
-                    flex: '1 1 300px', maxWidth: '380px', display: 'flex', flexDirection: 'column',
+                    flex: '1 1 280px', maxWidth: '350px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '1px solid rgba(255,255,255,0.2)', padding: '3.5rem 2rem 3rem', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden'
+                    border: '1px solid rgba(255,255,255,0.2)', padding: '2.5rem 1.5rem 1.5rem', borderRadius: '24px', color: '#fff', position: 'relative', overflow: 'hidden'
                 }}>
-                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', color: '#fff', fontFamily: 'var(--font-playfair)' }}>Enterprise</h3>
-                        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>{t('plans.enterprise.description')}</p>
+                    <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.3rem', color: '#fff', fontFamily: 'var(--font-playfair)' }}>Enterprise</h3>
+                        <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>{t('plans.enterprise.description')}</p>
                     </div>
 
-                    <div style={{ marginBottom: '2.5rem', fontSize: '3.2rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
-                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '1.1rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
+                    <div style={{ marginBottom: '1.5rem', fontSize: '2.8rem', fontWeight: 900, textAlign: 'center', color: '#FFD700' }}>
+                        {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '0.9rem', fontWeight: 500, opacity: 0.7 }}>{t('plans.perMonth')}</span>
                     </div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 900, color: '#FFD700' }}>
                             <div style={{ padding: '5px', background: 'rgba(255,215,0,0.2)', borderRadius: '50%' }}><Crown size={18} /></div>
                             {((getPlanConfig('enterprise')?.commissionRate || 0) * 100) === 0
@@ -344,17 +351,24 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         <button
                             onClick={() => handleSubscribe('enterprise')}
                             disabled={loadingPlan === 'enterprise' || user?.plan === 'enterprise'}
-                            style={{ width: '100%', padding: '0.8rem', background: '#fff', color: '#000', borderRadius: '12px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            style={{ width: '100%', padding: '0.7rem', background: '#fff', color: '#000', borderRadius: '10px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                         >
                             {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (
                                 user?.plan === 'enterprise' ? t('plans.currentPlan') : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span>{t('plans.payWithCard')}</span>
-                                        <div style={{ background: '#635BFF', padding: '3px 6px', borderRadius: '3px', display: 'flex' }}>
-                                            <svg width="30" height="12" viewBox="0 0 40 17" fill="#fff">
-                                                <path d="M39.06 8.35c0-3.08-2.2-4.32-4.52-4.32-2.82 0-4.8 1.85-4.8 4.73 0 3.76 2.62 4.67 5.23 4.67 1.17 0 2.1-.23 2.76-.56V11.1c-.69.34-1.58.55-2.58.55-1.78 0-3.32-.42-3.32-2.54h7.93c.06-.35.3-.77.3-1.26zm-7.14-1c0-1.4 1-2 2.33-2 1.14 0 2 0.5 2 2h-4.33zM25.7 4.19c-1.34 0-2.22 0.53-2.73 1.1V4.32h-2.15v11.72h2.24V11.7c0-1.78 1.3-2.67 2.61-2.67.5 0 .93.08 1.18.17l.32-2.17c-.36-.08-1-.13-1.47-.13zM18.8 11.45l-1.92-7.13h-2.53l3.25 9.77-1.3 3.42 2.4 0 4.1-10.43-2.5 0-1.5 4.37zM11.66 4.12c-.93 0-1.6 0.44-2 0.96V4.32H7.5v11.72h2.24V9.6c0-2 1.6-2.61 2.92-2.61.5 0 0.93.08 1.18.17l.32-2.17c-.36-.08-.94-.13-1.5-.13zM4.1 2.37c-.6 0-1.05.15-1.36.32l.2 1.88c.34-.14.73-.24 1.17-.24.78 0 1.1.28 1.1.86v1.17H4.07c-1.6 0-2.63.74-2.63 1.94 0 1.25.98 1.8 2.08 1.8.84 0 1.5-.32 1.95-.76l.16 0.6h2V6.62C7.63 4.1 5.92 2.37 4.1 2.37zm1.6 5.25c0 .66-.67 1.05-1.3 1.05-.56 0-.82-.24-.82-.67 0-.39.42-.64 1.07-.64h1.05z" />
+                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
+                                                <rect width="45" height="28" rx="4" fill="#fff" />
+                                                <path d="M16.5 19.5L18.5 7.5H21.5L19.5 19.5H16.5ZM26.5 7.5L24.5 19.5H21.5L23.5 7.5H26.5ZM29.5 7.5H33.5L34.5 13.5L35.5 7.5H39.5L37.5 19.5H34.5L33.5 13.5L32.5 19.5H29.5L27.5 7.5Z" fill="#1A1F71" />
+                                                <path d="M12.5 7.5L8.5 16.5L7.5 8.5H4.5L7.5 19.5H11.5L15.5 7.5H12.5Z" fill="#1A1F71" />
+                                            </svg>
+                                            <svg width="20" height="13" viewBox="0 0 45 28" fill="none">
+                                                <rect width="45" height="28" rx="4" fill="#fff" />
+                                                <circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.8" />
+                                                <circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.8" />
                                             </svg>
                                         </div>
+                                        <span style={{ fontSize: '0.85rem' }}>{t('plans.payWithCard')}</span>
                                     </div>
                                 )
                             )}
@@ -362,7 +376,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'enterprise' && (
                             <>
-                                <div style={{ background: '#FFC43915', padding: '8px', borderRadius: '12px', border: '1px solid #FFC43933' }}>
+                                <div style={{ background: '#fff', padding: '1px', borderRadius: '12px', border: '1px solid #FFC43933', minHeight: '45px', overflow: 'hidden' }}>
                                     <PaypalButton
                                         type="subscription"
                                         planId="enterprise"
@@ -385,7 +399,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             setIsUpgradeModalOpen(true);
                                         }
                                     }}
-                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
+                                    style={{ width: '100%', padding: '0.7rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }}
                                 >
                                     {t('plans.alternativePayment')}
                                 </button>
