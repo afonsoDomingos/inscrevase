@@ -51,15 +51,20 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
                 body: JSON.stringify(body),
             });
 
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(`Server Error: ${response.status} - ${errorData}`);
+            }
+
             const order = await response.json();
-            if (!order.id) throw new Error("Could not create PayPal order");
+            if (!order.id) throw new Error("Could not create PayPal order. Empty ID returned.");
 
             toast.dismiss(loadingToast);
             return order.id;
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            console.error('\n❌ Frontend PayPal Create Error:', err);
             toast.dismiss(loadingToast);
-            toast.error("Erro ao iniciar PayPal, verifique a ligação.");
+            toast.error(`Erro ao iniciar PayPal: ${err.message || 'Verifique a ligação'}`);
             throw err;
         }
     };
@@ -78,16 +83,21 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
                 }),
             });
 
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(`Server Error: ${response.status} - ${errorData}`);
+            }
+
             const details = (await response.json()) as PaypalSuccessDetails;
             if (details.success) {
                 toast.success("Pagamento confirmado via PayPal!");
                 onSuccess(details);
             } else {
-                throw new Error("Capture failed");
+                throw new Error("Capture failed. Backend explicitly returned success: false");
             }
-        } catch (err) {
-            console.error(err);
-            toast.error("Erro ao confirmar pagamento no PayPal");
+        } catch (err: any) {
+            console.error('\n❌ Frontend PayPal Capture Error:', err);
+            toast.error(`Erro ao confirmar pagamento: ${err.message || 'Falha no PayPal'}`);
         }
     };
 

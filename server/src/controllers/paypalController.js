@@ -54,8 +54,11 @@ exports.createSubscriptionOrder = async (req, res) => {
         const { result } = await ordersController.ordersCreate(body);
         res.status(200).json(result);
     } catch (error) {
-        console.error('PayPal Create Subscription Order Error:', error);
-        res.status(500).json({ message: error.message });
+        console.error('\n❌ PayPal Create Subscription Order Error:', error.statusCode || error.message || error);
+        if (error.response) {
+            console.error('API Response Payload:', error.response?.body || error.response);
+        }
+        res.status(500).json({ message: error.message, details: error.response?.body || "SDK Error" });
     }
 };
 
@@ -127,8 +130,11 @@ exports.createEventOrder = async (req, res) => {
         const { result } = await ordersController.ordersCreate(body);
         res.status(200).json(result);
     } catch (error) {
-        console.error('PayPal Create Event Order Error:', error);
-        res.status(500).json({ message: error.message });
+        console.error('\n❌ PayPal Create Event Order Error:', error.statusCode || error.message || error);
+        if (error.response) {
+            console.error('API Response Payload:', error.response?.body || error.response);
+        }
+        res.status(500).json({ message: error.message, details: error.response?.body || "SDK Error" });
     }
 };
 
@@ -234,7 +240,10 @@ exports.captureOrder = async (req, res) => {
 
         res.status(200).json({ success: true, result });
     } catch (error) {
-        console.error('PayPal Capture Order Error:', error);
-        res.status(500).json({ message: error.message });
+        console.error('\n❌ PayPal Capture Order Error:', error.statusCode || error.message || error);
+        if (error.response) {
+            console.error('API Response Payload:', error.response?.body || error.response);
+        }
+        res.status(500).json({ message: error.message, details: error.response?.body || "SDK Error" });
     }
 };
