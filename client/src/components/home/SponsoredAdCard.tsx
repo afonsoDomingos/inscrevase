@@ -129,12 +129,9 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                         }}
                         style={{
                             position: 'fixed',
-                            top: isMobile ? 'auto' : '100px', // In mobile, show at bottom center
-                            bottom: isMobile ? '25px' : 'auto',
-                            left: isMobile ? '50%' : 'auto',
-                            right: isMobile ? '20px' : 'auto',
-                            transform: isMobile ? 'translateX(-50%)' : 'none',
-                            width: isMobile ? '220px' : '260px',
+                            top: isMobile ? '15px' : '25px',
+                            right: isMobile ? '15px' : '25px',
+                            width: isMobile ? '180px' : '280px',
                             zIndex: 9999,
                         }}
                     >
@@ -189,7 +186,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
 
                             {/* Multimedia Section */}
-                            <div style={{ position: 'relative', height: isMobile ? '110px' : '140px', width: '100%', background: '#f0f0f0' }}>
+                            <div style={{ position: 'relative', height: isMobile ? '90px' : '140px', width: '100%', background: '#f0f0f0' }}>
                                 {currentItem.mediaType === 'video' ? (
                                     <video
                                         src={currentItem.mediaUrl || ""}
@@ -244,12 +241,12 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                             </div>
 
                             {/* Info Section */}
-                            <div style={{ padding: '1rem' }}>
+                            <div style={{ padding: isMobile ? '0.6rem' : '1rem' }}>
                                 <h3 style={{
-                                    fontSize: '0.95rem',
+                                    fontSize: isMobile ? '0.75rem' : '0.95rem',
                                     fontWeight: 700,
                                     color: '#111',
-                                    marginBottom: '0.5rem',
+                                    marginBottom: isMobile ? '0.3rem' : '0.5rem',
                                     lineHeight: 1.3,
                                     display: '-webkit-box',
                                     WebkitLineClamp: 2,
@@ -261,10 +258,10 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
 
                                 {currentItem.productPrice && (
                                     <div style={{
-                                        fontSize: '1.2rem',
+                                        fontSize: isMobile ? '0.9rem' : '1.2rem',
                                         fontWeight: 900,
                                         color: '#D4AF37',
-                                        marginBottom: '0.4rem',
+                                        marginBottom: isMobile ? '0.2rem' : '0.4rem',
                                         display: 'flex',
                                         alignItems: 'baseline',
                                         gap: '2px'
@@ -273,7 +270,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                     </div>
                                 )}
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '1rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: isMobile ? '0.5rem' : '1rem' }}>
                                     {currentItem.metadata?.date && (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.75rem' }}>
                                             <Calendar size={12} className="gold-text" />
@@ -300,7 +297,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                                 onClick={() => setIsDetailsModalOpen(true)}
                                                 style={{
                                                     flex: 1,
-                                                    padding: '8px 0',
+                                                    padding: isMobile ? '4px 0' : '8px 0',
                                                     background: '#f8fafc',
                                                     color: '#0f172a',
                                                     borderRadius: '8px',
@@ -335,7 +332,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
                                             style={{
                                                 width: '100%',
-                                                padding: '8px 0',
+                                                padding: isMobile ? '6px 0' : '8px 0',
                                                 background: 'var(--gold-gradient)',
                                                 color: '#000',
                                                 borderRadius: '8px',
@@ -359,7 +356,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             target={currentItem.targetUrl.startsWith('http') ? '_blank' : '_self'}
                                             style={{
                                                 flex: 1,
-                                                padding: '8px 0',
+                                                padding: isMobile ? '6px 0' : '8px 0',
                                                 background: 'var(--gold-gradient)',
                                                 color: '#000',
                                                 borderRadius: '8px',
@@ -406,7 +403,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                                 color: '#fff',
                                                 background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
                                                 textDecoration: 'none',
-                                                padding: '4px 12px',
+                                                padding: isMobile ? '2px 8px' : '4px 12px',
                                                 borderRadius: '20px',
                                                 letterSpacing: '0.5px',
                                                 boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
