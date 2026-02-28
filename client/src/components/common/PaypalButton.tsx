@@ -27,6 +27,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
         clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
         currency: ['USD', 'EUR', 'BRL', 'GBP'].includes(currency) ? currency : 'USD',
         intent: type === 'subscription' ? "subscription" : "capture",
+        "disable-funding": "card,credit",
     };
 
     if (type === 'subscription') {
