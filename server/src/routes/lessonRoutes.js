@@ -113,6 +113,30 @@ router.get('/', protect, async (req, res) => {
     }
 });
 
+// @route   GET /api/lessons/platform/tutorials
+// @desc    Get tutorials created by platform admins
+// @access  Private
+router.get('/platform/tutorials', protect, async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const admins = await User.find({ role: { $in: ['admin', 'SuperAdmin'] } }).select('_id');
+        const adminIds = admins.map(a => a._id);
+
+        const tutorials = await Lesson.find({
+            isPublished: true,
+            createdBy: { $in: adminIds }
+        })
+            .populate('createdBy', 'name role profilePhoto')
+            .sort({ order: 1, createdAt: -1 })
+            .limit(6);
+
+        res.json(tutorials);
+    } catch (error) {
+        console.error('Error fetching platform tutorials:', error);
+        res.status(500).json({ message: 'Erro ao buscar tutoriais da plataforma' });
+    }
+});
+
 // @route   GET /api/lessons/:id
 // @desc    Get single lesson and increment views
 // @access  Private

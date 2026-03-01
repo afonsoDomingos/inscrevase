@@ -37,6 +37,7 @@ import MetaPixel from '@/components/MetaPixel';
 import { useMetaPixelEvents } from '@/hooks/useMetaPixelEvents';
 import AdBanner from '@/components/common/AdBanner';
 import { useCurrency } from '@/context/CurrencyContext';
+import EventNotFound from './not-found';
 
 // Update Props
 interface PublicFormProps {
@@ -260,13 +261,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     }
 
     if (!form) {
-        return (
-            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#fff' }}>
-                <h1 style={{ fontSize: '3rem', fontWeight: 800 }}>404</h1>
-                <p style={{ color: '#888' }}>{t('form.notFound')}</p>
-                <a href="/" className="btn-primary" style={{ marginTop: '2rem', padding: '0.8rem 2rem' }}>{t('form.backToHome')}</a>
-            </div>
-        );
+        return <EventNotFound />;
     }
 
     const isLuxury = !form.theme?.style || form.theme?.style === 'luxury';

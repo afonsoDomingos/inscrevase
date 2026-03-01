@@ -28,6 +28,14 @@ export const lessonService = {
         return response.data;
     },
 
+    getPlatformTutorials: async () => {
+        const token = Cookies.get('token');
+        const response = await axios.get(`${API_URL}/lessons/platform/tutorials`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
     getLessonsBySubmission: async (submissionId: string) => {
         const response = await axios.get(`${API_URL}/lessons/hub/${submissionId}`);
         return response.data;

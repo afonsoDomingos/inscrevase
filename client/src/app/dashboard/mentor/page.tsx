@@ -5,6 +5,7 @@ import { authService, UserData } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
+import { lessonService, Lesson } from '@/lib/lessonService';
 import { toast } from 'sonner';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
@@ -127,6 +128,7 @@ function MentorDashboardContent() {
     const [isMarketingModalOpen, setIsMarketingModalOpen] = useState(false);
     const [selectedMarketingService, setSelectedMarketingService] = useState<{ type: 'boost_social' | 'meta_ads' | 'gestion_360', name: string } | null>(null);
     const [myMarketingRequests, setMyMarketingRequests] = useState<MarketingRequest[]>([]);
+    const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -340,6 +342,10 @@ function MentorDashboardContent() {
             // Load referral ranking for overview
             const ranking = await referralService.getRanking().catch(() => []);
             setReferralRanking(ranking);
+
+            // Load platform tutorials
+            const tutorials = await lessonService.getPlatformTutorials().catch(() => []);
+            setPlatformTutorials(tutorials);
         } catch (error) {
             console.error('Error refreshing data:', error);
         }
@@ -1514,6 +1520,59 @@ function MentorDashboardContent() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Platform Tutorials Section */}
+                            {platformTutorials.length > 0 && (
+                                <div style={{ marginTop: '2rem' }}>
+                                    <div style={{
+                                        background: 'var(--paper)',
+                                        borderRadius: '24px',
+                                        padding: '2rem',
+                                        border: '1px solid rgba(255, 215, 0, 0.1)'
+                                    }}>
+                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <Video size={20} color="#FFD700" /> Tutoriais da Plataforma
+                                        </h3>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                            {platformTutorials.map(tutorial => (
+                                                <div key={tutorial._id} style={{
+                                                    background: 'rgba(0,0,0,0.02)',
+                                                    borderRadius: '16px',
+                                                    overflow: 'hidden',
+                                                    border: '1px solid rgba(0,0,0,0.05)',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    transition: 'all 0.3s'
+                                                }}>
+                                                    {tutorial.thumbnailUrl ? (
+                                                        <div style={{ width: '100%', height: '160px', position: 'relative' }}>
+                                                            <Image src={tutorial.thumbnailUrl} alt={tutorial.title} fill style={{ objectFit: 'cover' }} unoptimized />
+                                                            <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                                                {Math.floor(tutorial.duration / 60)}:{(tutorial.duration % 60).toString().padStart(2, '0')}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ width: '100%', height: '160px', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <Video size={40} color="#FFD700" opacity={0.5} />
+                                                        </div>
+                                                    )}
+                                                    <div style={{ padding: '1.2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                        <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tutorial.title}</h4>
+                                                        {tutorial.description && <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tutorial.description}</p>}
+                                                        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                            <button onClick={() => window.open(`/dashboard/mentor?tab=lessons`, '_blank')} style={{ background: 'var(--gold-gradient)', border: 'none', color: '#000', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                Assistir <ArrowRight size={14} />
+                                                            </button>
+                                                            <span style={{ fontSize: '0.75rem', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}><Eye size={14} /> {tutorial.views}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
