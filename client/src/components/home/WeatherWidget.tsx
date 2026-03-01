@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Cloud, Sun, CloudRain, CloudLightning, Thermometer, Clock, MapPin, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Cloud, Sun, CloudRain, CloudLightning, Clock, MapPin, Loader2 } from 'lucide-react';
 
 interface WeatherData {
     temp: number;

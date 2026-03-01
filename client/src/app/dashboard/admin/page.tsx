@@ -39,6 +39,7 @@ import { adService } from '@/lib/adService';
 import { formService } from '@/lib/formService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import ThemeToggle from '@/components/common/ThemeToggle';
+import Image from 'next/image';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing';
 
@@ -839,10 +840,13 @@ export default function AdminDashboard() {
                                                             {superAdminAnalytics.recentLogins.map((login, idx) => (
                                                                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
                                                                     <div style={{ position: 'relative', width: '40px', height: '40px' }}>
-                                                                        <img
+                                                                        <Image
                                                                             src={login.profilePhoto || 'https://ui-avatars.com/api/?name=' + login.name}
-                                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                                            width={40}
+                                                                            height={40}
+                                                                            style={{ borderRadius: '50%', objectFit: 'cover' }}
                                                                             alt={login.name}
+                                                                            unoptimized
                                                                         />
                                                                     </div>
                                                                     <div style={{ flex: 1 }}>
@@ -878,10 +882,13 @@ export default function AdminDashboard() {
                                                             {superAdminAnalytics.activeUsers.map((active, idx) => (
                                                                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
                                                                     <div style={{ position: 'relative', width: '40px', height: '40px' }}>
-                                                                        <img
+                                                                        <Image
                                                                             src={active.profilePhoto || 'https://ui-avatars.com/api/?name=' + active.name}
-                                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                                            width={40}
+                                                                            height={40}
+                                                                            style={{ borderRadius: '50%', objectFit: 'cover' }}
                                                                             alt={active.name}
+                                                                            unoptimized
                                                                         />
                                                                     </div>
                                                                     <div style={{ flex: 1 }}>

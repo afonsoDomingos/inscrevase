@@ -75,9 +75,9 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
     };
 
     return (
-        <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '4rem' }}>
+        <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '2rem' }}>
             {showTitle && (
-                <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none', marginBottom: '3rem', textAlign: 'center', padding: '3rem' }}>
+                <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none', marginBottom: '2rem', textAlign: 'center', padding: '2rem' }}>
                     <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
                         {t('plans.chooseIdeal')} <span className="gold-text">{t('common.growth')}</span>
                     </h2>
@@ -181,7 +181,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     flex: '1 1 280px', maxWidth: '340px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem 1.2rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden'
+                    border: '1px solid rgba(255,255,255,0.1)', padding: '1.2rem 1rem 1rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden'
                 }}>
                     <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
                         <h3 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '0.2rem', fontFamily: 'var(--font-playfair)' }}>Free</h3>
@@ -189,7 +189,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     </div>
                     <div style={{ marginBottom: '1rem', fontSize: '2.2rem', fontWeight: 900, textAlign: 'center' }}>{t('common.free')}</div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
                             <div style={{ padding: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }}><CheckCircle size={16} color="#fff" /></div>
                             {t('plans.free.fee_dynamic', { fee: ((getPlanConfig('free')?.commissionRate || 0.15) * 100).toFixed(0) })}
@@ -217,7 +217,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     flex: '1 1 280px', maxWidth: '340px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '2px solid #D4AF37', padding: '1.8rem 1.2rem 1.2rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 12px 25px rgba(0,0,0,0.3)'
+                    border: '2px solid #D4AF37', padding: '1.4rem 1rem 1rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden', boxShadow: '0 12px 25px rgba(0,0,0,0.3)'
                 }}>
                     <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#D4AF37', color: '#000', padding: '3px 10px', borderRadius: '50px', fontSize: '0.65rem', fontWeight: 900 }}>{t('common.recommended')}</div>
 
@@ -230,7 +230,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         {formatPrice(getPlanPrice('pro'), currency, currency)}<span style={{ fontSize: '0.8rem', fontWeight: 500, opacity: 0.7 }}>/mês</span>
                     </div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 700 }}>
                             <div style={{ padding: '5px', background: 'rgba(212, 175, 55, 0.2)', borderRadius: '50%' }}><Zap size={18} color="#D4AF37" /></div>
                             {t('plans.pro.fee_dynamic', { fee: ((getPlanConfig('pro')?.commissionRate || 0.10) * 100).toFixed(0) })}
@@ -309,7 +309,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     flex: '1 1 280px', maxWidth: '340px', display: 'flex', flexDirection: 'column',
                     background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop")',
                     backgroundSize: 'cover', backgroundPosition: 'center',
-                    border: '1px solid rgba(255,255,255,0.2)', padding: '1.8rem 1.2rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden'
+                    border: '1px solid rgba(255,255,255,0.2)', padding: '1.4rem 1rem 1rem', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden'
                 }}>
                     <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
                         <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.2rem', color: '#fff', fontFamily: 'var(--font-playfair)' }}>Enterprise</h3>
@@ -320,7 +320,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         {formatPrice(getPlanPrice('enterprise'), currency, currency)}<span style={{ fontSize: '0.8rem', fontWeight: 500, opacity: 0.7 }}>/mês</span>
                     </div>
 
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem', fontWeight: 900, color: '#FFD700' }}>
                             <div style={{ padding: '5px', background: 'rgba(255,215,0,0.2)', borderRadius: '50%' }}><Crown size={18} /></div>
                             {((getPlanConfig('enterprise')?.commissionRate || 0) * 100) === 0
