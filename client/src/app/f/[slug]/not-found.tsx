@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Home, CalendarX, ArrowLeft, Search, Bell, ExternalLink } from 'lucide-react';
+import { Home, CalendarX, Search, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function EventNotFound() {
