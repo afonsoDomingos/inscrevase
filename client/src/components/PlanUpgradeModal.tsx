@@ -9,6 +9,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
 import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
+import Image from 'next/image';
 
 interface ManualPaymentMethod {
     id: string;
@@ -247,33 +248,54 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                     </div>
                                 ) : filteredMethods.length > 0 ? (
                                     <div style={{ background: '#fafafa', borderRadius: '16px', border: '1px solid #e5e7eb', overflow: 'hidden', marginBottom: '20px' }}>
-                                        {filteredMethods.map((method, i) => (
-                                            <div key={method.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#fff', borderBottom: i < filteredMethods.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
-                                                        {method.icon}
+                                        {filteredMethods.map((method, i) => {
+                                            const logoMap: Record<string, string> = {
+                                                'mpesa': '/payments/mpesa.png',
+                                                'm-pesa': '/payments/mpesa.png',
+                                                'emola': '/payments/emola.png',
+                                                'e-mola': '/payments/emola.png',
+                                                'unitel': '/payments/Unitel-Money.jpeg',
+                                                'visa': '/payments/visa.jpg',
+                                                'mastercard': '/payments/mastercard.png',
+                                                'paypal': '/payments/paypal.png',
+                                                'stripe': '/payments/stripe.png',
+                                            };
+                                            const logo = Object.entries(logoMap).find(([key]) =>
+                                                method.label.toLowerCase().includes(key)
+                                            )?.[1] ?? null;
+
+                                            return (
+                                                <div key={method.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#fff', borderBottom: i < filteredMethods.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', overflow: 'hidden', border: '1px solid #eee' }}>
+                                                            {logo
+                                                                ? <Image src={logo} alt={method.label} width={42} height={42} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
+                                                                : method.icon
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <p style={{ fontWeight: 800, fontSize: '0.88rem', color: '#111', marginBottom: '2px' }}>{method.label}</p>
+                                                            <p style={{ fontSize: '0.78rem', color: '#6b7280' }}>{method.countryLabel}</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <p style={{ fontWeight: 800, fontSize: '0.88rem', color: '#111', marginBottom: '2px' }}>{method.label}</p>
-                                                        <p style={{ fontSize: '0.78rem', color: '#6b7280' }}>{method.countryLabel}</p>
+                                                    <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', fontFamily: 'monospace', margin: 0, letterSpacing: '0.5px' }}>{method.details}</p>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                navigator.clipboard.writeText(method.details);
+                                                                toast.success('Copiado para a área de transferência!');
+                                                            }}
+                                                            style={{ background: '#f3f4f6', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', transition: 'all 0.2s' }}
+                                                            title="Copiar"
+                                                        >
+                                                            <Copy size={14} />
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', fontFamily: 'monospace', margin: 0, letterSpacing: '0.5px' }}>{method.details}</p>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            navigator.clipboard.writeText(method.details);
-                                                            toast.success('Copiado para a área de transferência!');
-                                                        }}
-                                                        style={{ background: '#f3f4f6', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', transition: 'all 0.2s' }}
-                                                        title="Copiar"
-                                                    >
-                                                        <Copy size={14} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
+
                                     </div>
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fef9c3', border: '1px solid #fde047', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px' }}>

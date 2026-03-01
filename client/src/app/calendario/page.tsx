@@ -8,10 +8,7 @@ import {
     Calendar as CalendarIcon,
     Clock,
     MapPin,
-    ExternalLink,
     Loader2,
-    Search,
-    Filter,
     ArrowRight,
     SearchX
 } from 'lucide-react';
@@ -23,12 +20,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function EventCalendarPage() {
-    const { t, locale } = useTranslate();
+    const { locale } = useTranslate();
     const [events, setEvents] = useState<FormModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [searchTerm, setSearchTerm] = useState('');
+
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -66,7 +63,7 @@ export default function EventCalendarPage() {
         return days;
     }, [currentDate]);
 
-    const getEventsForDate = (date: Date) => {
+    const getEventsForDate = useMemo(() => (date: Date) => {
         return events.filter(event => {
             if (!event.eventDate) return false;
             const eventD = new Date(event.eventDate);
@@ -74,7 +71,8 @@ export default function EventCalendarPage() {
                 eventD.getMonth() === date.getMonth() &&
                 eventD.getFullYear() === date.getFullYear();
         });
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [events]);
 
     const nextMonth = () => {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
@@ -96,13 +94,10 @@ export default function EventCalendarPage() {
     const selectedEvents = useMemo(() => {
         if (!selectedDate) return [];
         return getEventsForDate(selectedDate);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate, events]);
 
-    // Search filter for all events list (optional mobile view)
-    const filteredEvents = events.filter(e =>
-        e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => new Date(a.eventDate || '').getTime() - new Date(b.eventDate || '').getTime());
+    // Search filter for all events list (optional mobile view) - Removed as unused for now
 
     return (
         <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column' }}>

@@ -31,6 +31,25 @@ interface UpdateItem {
 
 const updates: UpdateItem[] = [
     {
+        id: 'update-5',
+        date: '01 Mar 2026',
+        version: 'v2.6.0',
+        title: { pt: 'Experiência Global & Calendário Exclusivo', en: 'Global Experience & Exclusive Calendar' },
+        type: 'new',
+        description: {
+            pt: 'Expandimos as fronteiras da plataforma com novas ferramentas de visualização e suporte monetário internacional.',
+            en: 'We expanded the platform boundaries with new visualization tools and international monetary support.'
+        },
+        features: [
+            { pt: 'Novo Calendário de Eventos interativo (/calendario)', en: 'New interactive Event Calendar (/calendario)' },
+            { pt: 'Suporte à moeda ZAR (Rand Sul-Africano) no Câmbio', en: 'ZAR (South African Rand) support in Currency Widget' },
+            { pt: 'Widget de Meteorologia aprimorado (Precipitação e Províncias)', en: 'Enhanced Weather Widget (Precipitation and Provinces)' },
+            { pt: 'Redesign premium de botões patrocinados (Gold Style)', en: 'Premium redesign for sponsored buttons (Gold Style)' },
+            { pt: 'Sistema de conversão rápida de valores integrada', en: 'Integrated quick value conversion system' }
+        ],
+        icon: <Rocket className="text-orange-500" />
+    },
+    {
         id: 'update-4',
         date: '14 Fev 2026',
         version: 'v2.5.0',
@@ -351,6 +370,7 @@ export default function UpdatesPage() {
             </footer>
 
             <style jsx>{`
+                .text-orange-500 { color: #f97316; }
                 .text-amber-500 { color: #f59e0b; }
                 .text-blue-500 { color: #3b82f6; }
                 .text-green-500 { color: #10b981; }

@@ -965,7 +965,10 @@ export default function Home() {
                       { name: 'M-Pesa', color: '#e61c27', logo: '/payments/mpesa.png' },
                       { name: 'E-Mola', color: '#ff6600', logo: '/payments/emola.png' },
                       { name: 'PayPal', color: '#003087', logo: '/payments/paypal.png' },
-                      { name: 'Stripe', color: '#635bff', logo: '/payments/stripe.png' }
+                      { name: 'Stripe', color: '#635bff', logo: '/payments/stripe.png' },
+                      { name: 'Visa', color: '#1a1f71', logo: '/payments/visa.jpg' },
+                      { name: 'MasterCard', color: '#eb001b', logo: '/payments/mastercard.png' },
+                      { name: 'Unitel Money', color: '#ef7d00', logo: '/payments/Unitel-Money.jpeg' }
                     ].map((method, idx) => (
                       <div key={`${setIdx}-${idx}`} className="payment-card" style={{
                         display: 'flex',

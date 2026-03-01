@@ -197,7 +197,7 @@ export default function CurrencyWidget() {
                             </div>
 
                             {/* Rates List */}
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {relevantCurrencies.map((rel) => (
                                     <motion.div
                                         key={rel.code}
@@ -231,17 +231,17 @@ export default function CurrencyWidget() {
                             </div>
 
                             {/* Footer CTA */}
-                            <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
+                            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
                                 <div style={{
-                                    padding: '1.25rem',
+                                    padding: '1rem',
                                     background: 'rgba(255, 215, 0, 0.1)',
                                     borderRadius: '20px',
                                     border: '1px solid rgba(255, 215, 0, 0.2)',
                                     textAlign: 'center'
                                 }}>
-                                    <Globe size={28} color="#FFD700" style={{ marginBottom: '10px', margin: '0 auto 10px' }} />
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '0.9rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
-                                    <p style={{ fontSize: '0.7rem', opacity: 0.7, margin: '0 0 12px 0' }}>{t('home.widgets.currency.convertDesc')}</p>
+                                    <Globe size={24} color="#FFD700" style={{ marginBottom: '8px', margin: '0 auto 8px' }} />
+                                    <h4 style={{ margin: '0 0 4px 0', fontSize: '0.85rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
+                                    <p style={{ fontSize: '0.65rem', opacity: 0.7, margin: '0 0 10px 0' }}>{t('home.widgets.currency.convertDesc')}</p>
                                     <button
                                         onClick={() => window.location.href = '/dashboard/mentor?tab=earnings'}
                                         style={{

@@ -221,7 +221,7 @@ export default function WeatherWidget() {
                                 background: 'linear-gradient(135deg, rgba(30,30,30,0.95), rgba(0,0,0,0.98))',
                                 borderRadius: '32px',
                                 border: '1px solid rgba(255,215,0,0.3)',
-                                padding: '2rem',
+                                padding: '1.5rem',
                                 color: '#fff',
                                 position: 'relative',
                                 boxShadow: '0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(212,175,55,0.1)'
@@ -234,7 +234,7 @@ export default function WeatherWidget() {
                                 <X size={20} />
                             </button>
 
-                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                            <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px', color: '#fff' }}>
                                     <MapPin size={18} className="text-yellow-500" />
                                     <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#fff' }}>{data.city}</h2>
@@ -250,7 +250,7 @@ export default function WeatherWidget() {
                                 <p style={{ opacity: 0.5, fontSize: '0.8rem' }}>{data.timezone}</p>
                             </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                                 <div style={{ textAlign: 'left' }}>
                                     <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>{data.temp}°</div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.7, marginTop: '8px' }}>
@@ -266,22 +266,22 @@ export default function WeatherWidget() {
                                 </motion.div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '1rem' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <Wind size={20} className="text-yellow-500" />
                                     <div>
                                         <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.wind')}</div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.windSpeed} km/h</div>
                                     </div>
                                 </div>
-                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <Droplets size={20} className="text-blue-400" />
                                     <div>
                                         <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.humidity')}</div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.humidity}%</div>
                                     </div>
                                 </div>
-                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px', gridColumn: 'span 2' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '10px', gridColumn: 'span 2' }}>
                                     <Umbrella size={20} className="text-purple-400" />
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.precipitation')}</div>
@@ -300,7 +300,7 @@ export default function WeatherWidget() {
                                 onClick={() => window.location.href = '/calendario'}
                                 style={{
                                     width: '100%',
-                                    padding: '1rem',
+                                    padding: '0.8rem',
                                     background: 'rgba(255, 255, 255, 0.05)',
                                     border: '1px solid rgba(255, 215, 0, 0.3)',
                                     borderRadius: '16px',
