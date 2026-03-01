@@ -574,7 +574,7 @@ const getSuperAdminAnalytics = async (req, res) => {
     try {
         // Last 10 logins
         const recentLogins = await User.find()
-            .select('name email lastLoginAt profilePhoto role')
+            .select('name email lastLoginAt loginCount profilePhoto role')
             .sort({ lastLoginAt: -1 })
             .limit(10);
 

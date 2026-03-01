@@ -310,6 +310,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Visibilidade</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Online</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Acessos</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>Ações</th>
                         </tr>
                     </thead>
@@ -429,6 +430,11 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                     ) : (
                                         <span style={{ color: '#cbd5e0', fontSize: '0.8rem', fontWeight: 500 }}>OFF</span>
                                     )}
+                                </td>
+                                <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(212, 175, 55, 0.05)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.1)' }}>
+                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#B8860B' }}>{user.loginCount || 0}</span>
+                                    </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>

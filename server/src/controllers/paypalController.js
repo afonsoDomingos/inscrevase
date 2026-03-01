@@ -55,7 +55,7 @@ exports.createSubscriptionOrder = async (req, res) => {
         };
 
         console.log('🚀 Creating PayPal Subscription Order:', JSON.stringify(body, null, 2));
-        const { result } = await ordersController.ordersCreate({ body });
+        const { result } = await ordersController.createOrder({ body });
         res.status(200).json(result);
     } catch (error) {
         console.error('\n❌ PayPal Create Subscription Order Error:', error.statusCode || error.message || error);
@@ -129,7 +129,7 @@ exports.createEventOrder = async (req, res) => {
         };
 
         console.log('🚀 Creating PayPal Event Order:', JSON.stringify(body, null, 2));
-        const { result } = await ordersController.ordersCreate({ body });
+        const { result } = await ordersController.createOrder({ body });
         res.status(200).json(result);
     } catch (error) {
         console.error('\n❌ PayPal Create Event Order Error:', error.statusCode || error.message || error);
@@ -146,7 +146,7 @@ exports.createEventOrder = async (req, res) => {
 exports.captureOrder = async (req, res) => {
     try {
         const { orderID } = req.body;
-        const { result } = await ordersController.ordersCapture({ id: orderID });
+        const { result } = await ordersController.captureOrder({ id: orderID });
 
         if (result.status !== 'COMPLETED') {
             return res.status(400).json({ message: 'Payment not completed', status: result.status });

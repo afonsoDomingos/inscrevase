@@ -126,7 +126,8 @@ export default function AdminDashboard() {
         traffic: false,
         users: false,
         performance: false,
-        activity: false
+        activity: false,
+        superAdmin: true
     });
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
@@ -144,6 +145,7 @@ export default function AdminDashboard() {
             email: string;
             profilePhoto?: string;
             lastLoginAt: string;
+            loginCount: number;
             role: string;
         }[];
         activeUsers: {
@@ -785,70 +787,119 @@ export default function AdminDashboard() {
 
                             {/* Super Admin Performance - Recent Logins & Most Active */}
                             {user?.role === 'SuperAdmin' && superAdminAnalytics && (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
-                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
-                                            <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '10px', borderRadius: '12px' }}>
-                                                <Clock size={22} className="gold-text" />
+                                <div className="accordion-section" style={{ marginBottom: '2.5rem' }}>
+                                    <button
+                                        onClick={() => toggleSection('superAdmin')}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1.2rem 1.8rem',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            background: '#fff',
+                                            border: '1px solid #e0e0e0',
+                                            borderRadius: '18px',
+                                            color: '#1a1a1a',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                                            transition: 'all 0.3s ease',
+                                            marginBottom: expandedSections.superAdmin ? '1.5rem' : '0'
+                                        }}
+                                        className="hover:shadow-md"
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1rem' }}>
+                                            <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '8px', borderRadius: '10px' }}>
+                                                <ShieldAlert size={20} className="gold-text" />
                                             </div>
-                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Últimos 10 Acessos</h3>
+                                            Performance & Atividade Global (Super Admin)
                                         </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                            {superAdminAnalytics.recentLogins.map((login, idx) => (
-                                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
-                                                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
-                                                        <img
-                                                            src={login.profilePhoto || 'https://ui-avatars.com/api/?name=' + login.name}
-                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                                                            alt={login.name}
-                                                        />
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{login.name}</div>
-                                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>{login.email}</div>
-                                                    </div>
-                                                    <div style={{ textAlign: 'right' }}>
-                                                        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#B8860B' }}>
-                                                            {new Date(login.lastLoginAt).toLocaleDateString()}
-                                                        </div>
-                                                        <div style={{ fontSize: '0.7rem', color: '#888' }}>
-                                                            {new Date(login.lastLoginAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
+                                        <motion.div animate={{ rotate: expandedSections.superAdmin ? 180 : 0 }}>
+                                            <ChevronDown size={22} />
+                                        </motion.div>
+                                    </button>
 
-                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
-                                            <div style={{ background: 'rgba(56, 161, 105, 0.1)', padding: '10px', borderRadius: '12px' }}>
-                                                <Zap size={22} style={{ color: '#38a169' }} />
-                                            </div>
-                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Usuários Mais Ativos</h3>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                            {superAdminAnalytics.activeUsers.map((active, idx) => (
-                                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
-                                                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
-                                                        <img
-                                                            src={active.profilePhoto || 'https://ui-avatars.com/api/?name=' + active.name}
-                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                                                            alt={active.name}
-                                                        />
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{active.name}</div>
-                                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>{active.email}</div>
-                                                    </div>
-                                                    <div style={{ textAlign: 'center', minWidth: '60px', background: 'var(--gold-gradient)', padding: '4px 8px', borderRadius: '10px' }}>
-                                                        <div style={{ fontSize: '0.8rem', fontWeight: 900, color: '#000' }}>{active.loginCount || 0}</div>
-                                                        <div style={{ fontSize: '0.6rem', fontWeight: 700, color: '#000', textTransform: 'uppercase' }}>Acessos</div>
-                                                    </div>
+                                    <AnimatePresence>
+                                        {expandedSections.superAdmin && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                style={{ overflow: 'hidden' }}
+                                            >
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
+                                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                                                            <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                                                                <Clock size={22} className="gold-text" />
+                                                            </div>
+                                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Últimos 10 Acessos</h3>
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                            {superAdminAnalytics.recentLogins.map((login, idx) => (
+                                                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
+                                                                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
+                                                                        <img
+                                                                            src={login.profilePhoto || 'https://ui-avatars.com/api/?name=' + login.name}
+                                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                                            alt={login.name}
+                                                                        />
+                                                                    </div>
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{login.name}</div>
+                                                                        <div style={{ fontSize: '0.75rem', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                            {login.email}
+                                                                            <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(212, 175, 55, 0.1)', color: '#B8860B', borderRadius: '4px', fontWeight: 800 }}>
+                                                                                {login.loginCount || 0} acessos
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{ textAlign: 'right' }}>
+                                                                        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#B8860B' }}>
+                                                                            {new Date(login.lastLoginAt).toLocaleDateString()}
+                                                                        </div>
+                                                                        <div style={{ fontSize: '0.7rem', color: '#888' }}>
+                                                                            {new Date(login.lastLoginAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+
+                                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                                                            <div style={{ background: 'rgba(56, 161, 105, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                                                                <Zap size={22} style={{ color: '#38a169' }} />
+                                                            </div>
+                                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Usuários Mais Ativos</h3>
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                            {superAdminAnalytics.activeUsers.map((active, idx) => (
+                                                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
+                                                                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
+                                                                        <img
+                                                                            src={active.profilePhoto || 'https://ui-avatars.com/api/?name=' + active.name}
+                                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                                            alt={active.name}
+                                                                        />
+                                                                    </div>
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{active.name}</div>
+                                                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>{active.email}</div>
+                                                                    </div>
+                                                                    <div style={{ textAlign: 'center', minWidth: '60px', background: 'var(--gold-gradient)', padding: '4px 8px', borderRadius: '10px' }}>
+                                                                        <div style={{ fontSize: '0.8rem', fontWeight: 900, color: '#000' }}>{active.loginCount || 0}</div>
+                                                                        <div style={{ fontSize: '0.6rem', fontWeight: 700, color: '#000', textTransform: 'uppercase' }}>Acessos</div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             )}
 
