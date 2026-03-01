@@ -297,7 +297,7 @@ export default function WeatherWidget() {
                             <motion.button
                                 whileHover={{ scale: 1.02, background: '#FFD700', color: '#000' }}
                                 whileTap={{ scale: 0.98 }}
-                                onClick={() => window.location.href = '/explore'}
+                                onClick={() => window.location.href = '/calendario'}
                                 style={{
                                     width: '100%',
                                     padding: '1rem',

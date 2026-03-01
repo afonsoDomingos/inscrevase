@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -72,6 +72,9 @@ export default function Navbar() {
         <div className="nav-center-links">
           <Link href="/experts" className="nav-item">
             {t('nav.mentors')}
+          </Link>
+          <Link href="/calendario" className="nav-item">
+            {t('nav.calendar')}
           </Link>
           <Link href="/sobre-nos" className="nav-item">
             {t('nav.about')}
@@ -144,6 +147,12 @@ export default function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
               <Users size={24} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.mentors')}</span>
+            </div>
+          </Link>
+          <Link href="/calendario" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
+              <CalendarIcon size={24} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.calendar')}</span>
             </div>
           </Link>
           <Link href="/sobre-nos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
