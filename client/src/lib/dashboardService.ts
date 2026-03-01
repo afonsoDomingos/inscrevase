@@ -118,6 +118,7 @@ export const dashboardService = {
             name: string;
             email: string;
             lastLoginAt: string;
+            loginCount: number;
             profilePhoto?: string;
             role: string;
         }[],
