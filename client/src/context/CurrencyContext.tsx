@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
-export type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF';
+export type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF' | 'ZAR';
 
 interface PlanPrices {
     MZN: number;
@@ -12,6 +12,7 @@ interface PlanPrices {
     AOA?: number;
     CVE?: number;
     XOF?: number;
+    ZAR?: number;
 }
 
 interface Plan {
@@ -44,12 +45,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         MZN: 63.8,
         AOA: 850,
         CVE: 100,
-        XOF: 600
+        XOF: 600,
+        ZAR: 19.5
     });
 
     useEffect(() => {
         const savedCurrency = Cookies.get('NEXT_CURRENCY') as Currency;
-        if (savedCurrency && ['MZN', 'USD', 'EUR', 'AOA', 'CVE', 'XOF'].includes(savedCurrency)) {
+        if (savedCurrency && ['MZN', 'USD', 'EUR', 'AOA', 'CVE', 'XOF', 'ZAR'].includes(savedCurrency)) {
             setCurrencyState(savedCurrency);
         }
 
@@ -111,6 +113,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
             if (currency === 'AOA') return basePriceUSD * 850;
             if (currency === 'CVE') return basePriceUSD * 100;
             if (currency === 'XOF') return basePriceUSD * 600;
+            if (currency === 'ZAR') return basePriceUSD * 19.5;
             return basePriceUSD;
         }
         const plan = plans[planId];
@@ -131,6 +134,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
             if (up === 'AOA' || up === 'KWANZA') return 'AOA';
             if (up === 'CVE' || up === 'ESCUDO') return 'CVE';
             if (up === 'XOF' || up === 'CFA' || up === 'FCFA') return 'XOF';
+            if (up === 'ZAR' || up === 'RAND') return 'ZAR';
             return 'MZN';
         };
 
@@ -151,7 +155,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
             EUR: { locale: 'pt-PT', currency: 'EUR' },
             AOA: { locale: 'pt-AO', currency: 'AOA' },
             CVE: { locale: 'pt-CV', currency: 'CVE' },
-            XOF: { locale: 'fr-GN', currency: 'XOF' }
+            XOF: { locale: 'fr-GN', currency: 'XOF' },
+            ZAR: { locale: 'en-ZA', currency: 'ZAR' }
         };
 
         const config = formatOptions[target];
@@ -180,6 +185,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
             if (up === 'AOA' || up === 'KWANZA') return 'AOA';
             if (up === 'CVE' || up === 'ESCUDO') return 'CVE';
             if (up === 'XOF' || up === 'CFA' || up === 'FCFA') return 'XOF';
+            if (up === 'ZAR' || up === 'RAND') return 'ZAR';
             return 'MZN';
         };
 

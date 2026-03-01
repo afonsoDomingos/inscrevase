@@ -42,6 +42,7 @@ export default function CurrencyWidget() {
         { code: 'MZN', name: 'Metical', flag: '🇲🇿' },
         { code: 'AOA', name: 'Kwanza', flag: '🇦🇴' },
         { code: 'EUR', name: 'Euro', flag: '🇪🇺' },
+        { code: 'ZAR', name: 'Rand', flag: '🇿🇦' },
         { code: 'CVE', name: 'Escudo', flag: '🇨🇻' },
         { code: 'XOF', name: 'Franco CFA', flag: '🇬🇼' },
     ];

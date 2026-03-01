@@ -397,29 +397,32 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                         <Link
                                             href="/anunciar"
                                             style={{
-                                                display: 'inline-block',
-                                                fontSize: '0.65rem',
-                                                fontWeight: 800,
-                                                color: '#fff',
-                                                background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                fontSize: '0.7rem',
+                                                fontWeight: 900,
+                                                color: '#000',
+                                                background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
                                                 textDecoration: 'none',
-                                                padding: isMobile ? '2px 8px' : '4px 12px',
-                                                borderRadius: '20px',
+                                                padding: isMobile ? '6px 12px' : '8px 16px',
+                                                borderRadius: '50px',
                                                 letterSpacing: '0.5px',
-                                                boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
-                                                transition: 'all 0.3s ease',
-                                                textTransform: 'uppercase'
+                                                boxShadow: '0 8px 20px rgba(184, 134, 11, 0.3)',
+                                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                                textTransform: 'uppercase',
+                                                border: '1px solid rgba(255, 255, 255, 0.2)'
                                             }}
                                             onMouseOver={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                                e.currentTarget.style.boxShadow = '0 6px 15px rgba(37,99,235,0.5)';
+                                                e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
+                                                e.currentTarget.style.boxShadow = '0 12px 25px rgba(184, 134, 11, 0.5)';
                                             }}
                                             onMouseOut={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(0)';
-                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.4)';
+                                                e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(184, 134, 11, 0.3)';
                                             }}
                                         >
-                                            Aumenta as tuas vendas!
+                                            <Zap size={12} fill="#000" /> Aumenta as tuas vendas!
                                         </Link>
                                     </motion.div>
                                 </div>
