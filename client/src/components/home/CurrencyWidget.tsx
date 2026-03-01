@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRightLeft, TrendingUp, X, Globe, DollarSign, Clock, RefreshCw, Calculator } from 'lucide-react';
+import { ArrowRightLeft, TrendingUp, X, Globe, Clock, RefreshCw, Calculator } from 'lucide-react';
 import { useCurrency, Currency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 
