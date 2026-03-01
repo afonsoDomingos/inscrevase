@@ -1366,12 +1366,31 @@ export default function AdminDashboard() {
                                                 Top Países
                                             </h3>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                {(trafficStats?.topCountries || []).slice(0, 5).map((item, idx) => (
-                                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0', borderBottom: '1px solid #f0f0f0' }}>
-                                                        <span style={{ fontWeight: 600, color: '#333' }}>{item.country}</span>
-                                                        <span style={{ fontWeight: 800, color: '#D4AF37' }}>{item.count}</span>
-                                                    </div>
-                                                ))}
+                                                {(trafficStats?.topCountries || []).slice(0, 5).map((item, idx) => {
+                                                    const countryMap: Record<string, { name: string, flag: string }> = {
+                                                        'MZ': { name: 'Moçambique', flag: '🇲🇿' },
+                                                        'US': { name: 'Estados Unidos', flag: '🇺🇸' },
+                                                        'AO': { name: 'Angola', flag: '🇦🇴' },
+                                                        'FR': { name: 'França', flag: '🇫🇷' },
+                                                        'GW': { name: 'Guiné-Bissau', flag: '🇬🇼' },
+                                                        'PT': { name: 'Portugal', flag: '🇵🇹' },
+                                                        'BR': { name: 'Brasil', flag: '🇧🇷' },
+                                                        'CV': { name: 'Cabo Verde', flag: '🇨🇻' },
+                                                        'ZA': { name: 'África do Sul', flag: '🇿🇦' },
+                                                        'ST': { name: 'São Tomé', flag: '🇸🇹' }
+                                                    };
+                                                    const countryData = countryMap[item.country.toUpperCase()] || { name: item.country, flag: '🌍' };
+
+                                                    return (
+                                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0', borderBottom: '1px solid #f0f0f0' }}>
+                                                            <span style={{ fontWeight: 600, color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                <span style={{ fontSize: '1.2rem' }}>{countryData.flag}</span>
+                                                                {countryData.name}
+                                                            </span>
+                                                            <span style={{ fontWeight: 800, color: '#D4AF37' }}>{item.count}</span>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
 
