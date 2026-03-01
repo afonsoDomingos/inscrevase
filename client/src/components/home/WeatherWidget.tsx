@@ -14,6 +14,7 @@ interface WeatherData {
     windSpeed: number;
     humidity: number;
     precipitation: number;
+    precipitationProbability: number;
 }
 
 export default function WeatherWidget() {
@@ -37,8 +38,12 @@ export default function WeatherWidget() {
                 const { latitude, longitude, city, timezone } = locData;
 
                 // 2. Get weather data with more details
-                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=auto`);
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability&timezone=auto`);
                 const weatherData = await weatherRes.json();
+
+                // Get current hour's precipitation probability
+                const currentHour = new Date().getHours();
+                const prob = weatherData.hourly?.precipitation_probability?.[currentHour] || 0;
 
                 setData({
                     temp: Math.round(weatherData.current.temperature_2m),
@@ -48,7 +53,8 @@ export default function WeatherWidget() {
                     timezone: timezone,
                     windSpeed: weatherData.current.wind_speed_10m,
                     humidity: weatherData.current.relative_humidity_2m,
-                    precipitation: weatherData.current.precipitation
+                    precipitation: weatherData.current.precipitation,
+                    precipitationProbability: prob
                 });
             } catch (error) {
                 console.error('Error fetching weather:', error);
@@ -279,7 +285,7 @@ export default function WeatherWidget() {
                                     <Umbrella size={20} className="text-purple-400" />
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.precipitation')}</div>
-                                        <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.precipitation} mm</div>
+                                        <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.precipitation} mm ({data.precipitationProbability}%)</div>
                                     </div>
                                     <div style={{ fontSize: '0.85rem', fontWeight: 700, background: 'rgba(212,175,55,0.1)', color: '#FFD700', padding: '4px 12px', borderRadius: '50px' }}>
                                         {currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: data.timezone })}
