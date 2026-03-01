@@ -94,6 +94,7 @@
                 "marketTitle": "Mercado Global",
                 "lastUpdate": "Última atualização",
                 "base": "BASE",
+                "enterAmount": "Digite um valor (USD)",
                 "tax": "TAXA DO DIA",
                 "convertNow": "Converter Agora",
                 "convertDesc": "Calcule conversões rápidas para o seu plano.",

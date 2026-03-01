@@ -90,6 +90,7 @@
                 "marketTitle": "Global Market",
                 "lastUpdate": "Last update",
                 "base": "BASE",
+                "enterAmount": "Enter amount (USD)",
                 "tax": "DAILY RATE",
                 "convertNow": "Convert Now",
                 "convertDesc": "Calculate quick conversions for your plan.",
