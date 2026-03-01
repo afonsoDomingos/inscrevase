@@ -212,15 +212,15 @@ export default function Home() {
           justifyContent: 'center',
           padding: '120px 1.5rem 60px'
         }}>
-          <div style={{ position: 'absolute', top: '30px', right: '80px', zIndex: 50 }} className="hidden-mobile">
-            <WeatherWidget />
-          </div>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             style={{ textAlign: 'center' }}
           >
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+              <WeatherWidget />
+            </div>
             <span style={{
               color: '#FFD700',
               textTransform: 'uppercase',

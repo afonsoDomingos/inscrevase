@@ -110,8 +110,8 @@ export default function WeatherWidget() {
                 style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '6px 14px',
+                    gap: '6px',
+                    padding: '4px 12px',
                     background: 'rgba(0, 0, 0, 0.5)',
                     backdropFilter: 'blur(20px)',
                     borderRadius: '100px',
