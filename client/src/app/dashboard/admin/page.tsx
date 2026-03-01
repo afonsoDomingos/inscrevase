@@ -859,7 +859,7 @@ export default function AdminDashboard() {
                                                                             {new Date(login.lastLoginAt).toLocaleDateString()}
                                                                         </div>
                                                                         <div style={{ fontSize: '0.7rem', color: '#888' }}>
-                                                                            {new Date(login.lastLoginAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                            {new Date(login.lastLoginAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                                                                         </div>
                                                                     </div>
                                                                 </div>

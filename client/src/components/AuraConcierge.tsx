@@ -249,7 +249,7 @@ export default function AuraConcierge() {
                                         )}
                                     </div>
                                     <div style={{ fontSize: '0.65rem', color: '#999', marginTop: '4px', textAlign: msg.sender === 'user' ? 'right' : 'left' }}>
-                                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                                     </div>
                                 </div>
                             ))}

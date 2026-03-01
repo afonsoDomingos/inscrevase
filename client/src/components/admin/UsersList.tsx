@@ -384,7 +384,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                         {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
                                     </div>
                                     <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>
-                                        {user.createdAt ? new Date(user.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                        {user.createdAt ? new Date(user.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : ''}
                                     </div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
