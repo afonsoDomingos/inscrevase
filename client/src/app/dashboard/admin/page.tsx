@@ -139,16 +139,20 @@ export default function AdminDashboard() {
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     interface SuperAdminAnalytics {
         recentLogins: {
+            _id: string;
             name: string;
             email: string;
             profilePhoto?: string;
             lastLoginAt: string;
+            role: string;
         }[];
         activeUsers: {
+            _id: string;
             name: string;
             email: string;
             profilePhoto?: string;
-            activityCount: number;
+            loginCount: number;
+            role: string;
         }[];
     }
     const [superAdminAnalytics, setSuperAdminAnalytics] = useState<SuperAdminAnalytics | null>(null);
@@ -792,11 +796,13 @@ export default function AdminDashboard() {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                             {superAdminAnalytics.recentLogins.map((login, idx) => (
                                                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
-                                                    <img
-                                                        src={login.profilePhoto || 'https://ui-avatars.com/api/?name=' + login.name}
-                                                        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                                                        alt={login.name}
-                                                    />
+                                                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
+                                                        <img
+                                                            src={login.profilePhoto || 'https://ui-avatars.com/api/?name=' + login.name}
+                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                            alt={login.name}
+                                                        />
+                                                    </div>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{login.name}</div>
                                                         <div style={{ fontSize: '0.75rem', color: '#666' }}>{login.email}</div>
@@ -824,11 +830,13 @@ export default function AdminDashboard() {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                             {superAdminAnalytics.activeUsers.map((active, idx) => (
                                                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.8rem', background: 'rgba(0,0,0,0.02)', borderRadius: '14px' }}>
-                                                    <img
-                                                        src={active.profilePhoto || 'https://ui-avatars.com/api/?name=' + active.name}
-                                                        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                                                        alt={active.name}
-                                                    />
+                                                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
+                                                        <img
+                                                            src={active.profilePhoto || 'https://ui-avatars.com/api/?name=' + active.name}
+                                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                            alt={active.name}
+                                                        />
+                                                    </div>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{active.name}</div>
                                                         <div style={{ fontSize: '0.75rem', color: '#666' }}>{active.email}</div>
