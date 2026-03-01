@@ -24,6 +24,7 @@ import SectorsSection from "@/components/home/SectorsSection";
 import CommunicationHubSection from "@/components/home/CommunicationHubSection";
 import PlansSection from "@/components/common/PlansSection";
 import WeatherWidget from "@/components/home/WeatherWidget";
+import CurrencyWidget from "@/components/home/CurrencyWidget";
 
 
 const galleryImages = [
@@ -125,6 +126,7 @@ export default function Home() {
   return (
     <main style={{ backgroundColor: '#fff', overflow: 'hidden' }}>
       <Navbar />
+      <CurrencyWidget />
 
       {/* Hero Section with Video Background */}
       <section className="hero" style={{
