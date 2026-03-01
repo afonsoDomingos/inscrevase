@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cloud, Sun, CloudRain, CloudLightning, Clock, MapPin, Loader2, Wind, Droplets, Umbrella, X, Thermometer } from 'lucide-react';
+import { Cloud, Sun, CloudRain, CloudLightning, Clock, MapPin, Loader2, Wind, Droplets, Umbrella, X, Thermometer, Calendar } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 interface WeatherData {
@@ -235,9 +235,9 @@ export default function WeatherWidget() {
                             </button>
 
                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px', color: '#FFD700' }}>
-                                    <MapPin size={18} />
-                                    <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>{data.city}</h2>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px', color: '#fff' }}>
+                                    <MapPin size={18} className="text-yellow-500" />
+                                    <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#fff' }}>{data.city}</h2>
                                 </div>
                                 <p style={{ opacity: 0.8, fontSize: '0.95rem', fontWeight: 600, color: '#FFD700', marginBottom: '4px', textTransform: 'capitalize' }}>
                                     {currentTime.toLocaleDateString(locale === 'pt' ? 'pt-PT' : 'en-US', {
@@ -266,7 +266,7 @@ export default function WeatherWidget() {
                                 </motion.div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <Wind size={20} className="text-yellow-500" />
                                     <div>
@@ -292,6 +292,32 @@ export default function WeatherWidget() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Calendar Button */}
+                            <motion.button
+                                whileHover={{ scale: 1.02, background: '#FFD700', color: '#000' }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => window.location.href = '/explore'}
+                                style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    border: '1px solid rgba(255, 215, 0, 0.3)',
+                                    borderRadius: '16px',
+                                    color: '#FFD700',
+                                    fontWeight: 800,
+                                    fontSize: '0.9rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <Calendar size={20} />
+                                {t('home.widgets.weather.viewCalendar')}
+                            </motion.button>
                         </motion.div>
                     </div>
                 )}

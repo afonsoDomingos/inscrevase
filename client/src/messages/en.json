@@ -83,7 +83,9 @@
                 "humidity": "Humidity",
                 "precipitation": "Precipitation",
                 "localTime": "LOCAL TIME",
-                "date": "Date"
+                "date": "Date",
+                "viewCalendar": "View Event Calendar",
+                "province": "Province"
             },
             "currency": {
                 "title": "Daily Exchange",

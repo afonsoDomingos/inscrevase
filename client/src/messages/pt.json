@@ -87,7 +87,9 @@
                 "humidity": "Humidade",
                 "precipitation": "Precipitação",
                 "localTime": "HORA LOCAL",
-                "date": "Data"
+                "date": "Data",
+                "viewCalendar": "Ver Calendário de Eventos",
+                "province": "Província"
             },
             "currency": {
                 "title": "Câmbio do Dia",
