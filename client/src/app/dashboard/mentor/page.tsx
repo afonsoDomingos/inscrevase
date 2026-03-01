@@ -299,6 +299,17 @@ function MentorDashboardContent() {
         }
     }, [searchParams, router, t]);
 
+    // Handle initial tab from query parameters
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab) {
+            const validTabs: Tab[] = ['overview', 'forms', 'submissions', 'reports', 'settings', 'earnings', 'blog', 'plans', 'services', 'ads', 'feedback', 'smartlinks', 'marketing'];
+            if (validTabs.includes(tab as Tab)) {
+                setActiveTab(tab as Tab);
+            }
+        }
+    }, [searchParams]);
+
     // Close notification panel on outside click
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {

@@ -242,7 +242,7 @@ export default function CurrencyWidget() {
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '0.9rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
                                     <p style={{ fontSize: '0.7rem', opacity: 0.7, margin: '0 0 12px 0' }}>{t('home.widgets.currency.convertDesc')}</p>
                                     <button
-                                        onClick={() => window.location.href = '/dashboard/mentor/finance'}
+                                        onClick={() => window.location.href = '/dashboard/mentor?tab=earnings'}
                                         style={{
                                             width: '100%',
                                             padding: '8px',
