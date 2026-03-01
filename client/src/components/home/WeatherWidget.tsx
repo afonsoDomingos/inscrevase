@@ -159,8 +159,8 @@ export default function WeatherWidget() {
 
                 <div style={{ width: '1px', height: '25px', background: 'rgba(255,255,255,0.1)' }} />
 
-                {/* Time */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* Time & Click Hint */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
                     <Clock size={12} className="text-yellow-500" />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.5px' }}>
@@ -171,6 +171,22 @@ export default function WeatherWidget() {
                                 timeZone: data.timezone
                             })}
                         </span>
+                    </div>
+
+                    {/* Pulsing Hint Dot */}
+                    <div style={{ marginLeft: '4px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+                        <motion.div
+                            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                            transition={{ repeat: Infinity, duration: 2 }}
+                            style={{
+                                position: 'absolute',
+                                width: '6px',
+                                height: '6px',
+                                background: '#FFD700',
+                                borderRadius: '50%',
+                            }}
+                        />
+                        <div style={{ width: '6px', height: '6px', background: '#FFD700', borderRadius: '50%', zIndex: 1 }} />
                     </div>
                 </div>
             </motion.div>
