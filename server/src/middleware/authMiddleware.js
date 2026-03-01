@@ -20,6 +20,13 @@ const adminMiddleware = (req, res, next) => {
     next();
 };
 
+const superAdminMiddleware = (req, res, next) => {
+    if (req.user.role !== 'SuperAdmin') {
+        return res.status(403).json({ message: 'Acesso negado, apenas SuperAdmin.' });
+    }
+    next();
+};
+
 const optionalAuthMiddleware = (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) return next();
@@ -36,7 +43,9 @@ const optionalAuthMiddleware = (req, res, next) => {
 module.exports = {
     authMiddleware,
     adminMiddleware,
+    superAdminMiddleware,
     optionalAuthMiddleware,
     protect: authMiddleware,
-    adminOnly: adminMiddleware
+    adminOnly: adminMiddleware,
+    superAdminOnly: superAdminMiddleware
 };

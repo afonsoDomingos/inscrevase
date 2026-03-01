@@ -50,6 +50,7 @@ const UserSchema = new mongoose.Schema({
     receivedFirstSubmissionNudge: { type: Boolean, default: false },
     lastReactivationNudgeAt: { type: Date },
     lastLoginAt: { type: Date, default: Date.now },
+    loginCount: { type: Number, default: 0 },
     completedMissions: [{ type: String }], // Track social follows, etc.
     createdAt: { type: Date, default: Date.now }
 });

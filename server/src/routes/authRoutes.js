@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const passport = require('../config/passport');
-const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus } = require('../controllers/authController');
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus, getSuperAdminAnalytics } = require('../controllers/authController');
+const { authMiddleware, adminMiddleware, superAdminMiddleware } = require('../middleware/authMiddleware');
 
 router.post('/register', register);
 router.post('/login', login);
@@ -70,5 +70,6 @@ router.get('/linkedin/callback',
 router.get('/users', authMiddleware, adminMiddleware, getUsers);
 router.put('/users/:id', authMiddleware, adminMiddleware, updateByAdmin);
 router.delete('/users/:id', authMiddleware, adminMiddleware, deleteByAdmin);
+router.get('/super-admin/analytics', authMiddleware, superAdminMiddleware, getSuperAdminAnalytics);
 
 module.exports = router;

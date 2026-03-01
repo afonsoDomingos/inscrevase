@@ -137,6 +137,10 @@ export default function AdminDashboard() {
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
+    const [superAdminAnalytics, setSuperAdminAnalytics] = useState<{
+        recentLogins: any[];
+        activeUsers: any[];
+    } | null>(null);
 
     const handleMigrateUsers = async () => {
         if (!confirm('Você tem certeza que deseja marcar TODOS os usuários como verificados? Esta ação é irreversível.')) {
@@ -239,6 +243,11 @@ export default function AdminDashboard() {
                     console.error("Top mentors or ads error", e);
                 }
 
+                if (currentUser.role === 'SuperAdmin') {
+                    const superData = await dashboardService.getSuperAdminAnalytics();
+                    setSuperAdminAnalytics(superData);
+                }
+
                 console.log('✅ [Admin Dashboard] Dashboard loaded successfully');
             } catch (err) {
                 console.error("🔴 [Admin Dashboard] Error loading dashboard:", err);
@@ -260,6 +269,9 @@ export default function AdminDashboard() {
             if (document.visibilityState === 'visible') {
                 dashboardService.getAdminStats().then(setStats).catch(err => console.error("Stats polling error", err));
                 dashboardService.getTrafficStats().then(setTrafficStats).catch(err => console.error("Traffic polling error", err));
+                if (user?.role === 'SuperAdmin') {
+                    dashboardService.getSuperAdminAnalytics().then(setSuperAdminAnalytics).catch(err => console.error("Super Admin Analytics polling error", err));
+                }
                 loadUnreadCount();
             }
         }, 15000);

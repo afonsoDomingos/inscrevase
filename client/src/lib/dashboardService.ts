@@ -110,5 +110,31 @@ export const dashboardService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar top mentores');
         return response.json();
+    },
+
+    async getSuperAdminAnalytics(): Promise<{
+        recentLogins: {
+            _id: string;
+            name: string;
+            email: string;
+            lastLoginAt: string;
+            profilePhoto?: string;
+            role: string;
+        }[],
+        activeUsers: {
+            _id: string;
+            name: string;
+            email: string;
+            loginCount: number;
+            profilePhoto?: string;
+            role: string;
+        }[]
+    }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/super-admin/analytics`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar analytics do SuperAdmin');
+        return response.json();
     }
 };

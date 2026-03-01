@@ -32,10 +32,13 @@ exports.createSubscriptionOrder = async (req, res) => {
         const dynamicPlans = await getDynamicPlanConfig();
         const planConfig = dynamicPlans[plan] || dynamicPlans.pro || PLANS.pro;
 
+        // Plan prices are in cents in PLANS config (e.g. 299 for $2.99)
+        const rawPriceDecimal = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+
         // PayPal uses USD for most international transactions if MZN is not supported by Sandbox directly
         const finalCurrency = currency === 'MZN' ? 'USD' : currency;
         const rate = (currency === 'MZN' && finalCurrency === 'USD') ? await getLatestRate() : 1;
-        const amount = (planConfig.price / rate).toFixed(2);
+        const amountValue = (rawPriceDecimal / rate).toFixed(2);
 
         const body = {
             intent: 'CAPTURE',
@@ -43,7 +46,7 @@ exports.createSubscriptionOrder = async (req, res) => {
                 {
                     amount: {
                         currencyCode: finalCurrency,
-                        value: amount,
+                        value: amountValue,
                     },
                     description: `Plano ${plan.toUpperCase()} - Inscreva-se`,
                     customId: JSON.stringify({ userId, plan, type: 'subscription' })
@@ -51,7 +54,8 @@ exports.createSubscriptionOrder = async (req, res) => {
             ],
         };
 
-        const { result } = await ordersController.createOrder({ body });
+        console.log('🚀 Creating PayPal Subscription Order:', JSON.stringify(body, null, 2));
+        const { result } = await ordersController.ordersCreate({ body });
         res.status(200).json(result);
     } catch (error) {
         console.error('\n❌ PayPal Create Subscription Order Error:', error.statusCode || error.message || error);
@@ -74,9 +78,6 @@ exports.createEventOrder = async (req, res) => {
 
         const mentor = form.creator;
         if (!mentor.paypalEmail) {
-            // Se o mentor não tiver PayPal configurado, não podemos usar Platform Fees automáticos
-            // Mas no PayPal Partner podemos usar o e-mail dele como Payee
-            // Fallback para o admin (plataforma) se necessário? Melhor não para evitar confusão de quem recebe
             return res.status(400).json({ message: 'Este mentor ainda não configurou o PayPal para receber pagamentos.' });
         }
 
@@ -127,7 +128,8 @@ exports.createEventOrder = async (req, res) => {
             ],
         };
 
-        const { result } = await ordersController.createOrder({ body });
+        console.log('🚀 Creating PayPal Event Order:', JSON.stringify(body, null, 2));
+        const { result } = await ordersController.ordersCreate({ body });
         res.status(200).json(result);
     } catch (error) {
         console.error('\n❌ PayPal Create Event Order Error:', error.statusCode || error.message || error);
@@ -144,7 +146,7 @@ exports.createEventOrder = async (req, res) => {
 exports.captureOrder = async (req, res) => {
     try {
         const { orderID } = req.body;
-        const { result } = await ordersController.captureOrder({ id: orderID });
+        const { result } = await ordersController.ordersCapture({ id: orderID });
 
         if (result.status !== 'COMPLETED') {
             return res.status(400).json({ message: 'Payment not completed', status: result.status });

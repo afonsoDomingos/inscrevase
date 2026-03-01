@@ -176,6 +176,7 @@ const login = async (req, res) => {
 
         // Update last login
         user.lastLoginAt = new Date();
+        user.loginCount = (user.loginCount || 0) + 1;
         await user.save();
 
         res.json({ token, user: { id: user._id, name: user.name, email, role: user.role, isEmailVerified: user.isEmailVerified, lastLoginAt: user.lastLoginAt } });
@@ -567,4 +568,27 @@ const migrationStatus = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus };
+const getSuperAdminAnalytics = async (req, res) => {
+    try {
+        // Last 10 logins
+        const recentLogins = await User.find()
+            .select('name email lastLoginAt profilePhoto role')
+            .sort({ lastLoginAt: -1 })
+            .limit(10);
+
+        // Most active users (by login count)
+        const activeUsers = await User.find()
+            .select('name email loginCount profilePhoto role')
+            .sort({ loginCount: -1 })
+            .limit(10);
+
+        res.json({
+            recentLogins,
+            activeUsers
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus, getSuperAdminAnalytics };

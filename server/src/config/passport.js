@@ -114,7 +114,13 @@ if (googleClientId && googleClientSecret) {
         async (req, accessToken, refreshToken, profile, done) => {
             try {
                 let user = await User.findOne({ googleId: profile.id });
-                if (user) return done(null, user);
+                if (user) {
+                    if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
+                    user.lastLoginAt = new Date();
+                    user.loginCount = (user.loginCount || 0) + 1;
+                    await user.save();
+                    return done(null, user);
+                }
 
                 const email = profile.emails[0].value;
                 user = await User.findOne({ email });
@@ -136,8 +142,8 @@ if (googleClientId && googleClientSecret) {
                     user.googleId = profile.id;
                     user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
-                    // Update role if user already exists? Usually not, but for first-time social linking it might be okay.
-                    // For now, let's keep the existing role if they have one.
+                    user.lastLoginAt = new Date();
+                    user.loginCount = (user.loginCount || 0) + 1;
                     await user.save();
                     return done(null, user);
                 }
@@ -151,7 +157,9 @@ if (googleClientId && googleClientSecret) {
                     password: '',
                     isEmailVerified: true,
                     country: await detectCountry(req, profile),
-                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    lastLoginAt: new Date(),
+                    loginCount: 1
                 });
 
                 // Apply Referral Logic if applicable
@@ -242,7 +250,13 @@ if (linkedinClientId && linkedinClientSecret) {
                 }
 
                 let user = await User.findOne({ linkedinId: linkedinId });
-                if (user) return done(null, user);
+                if (user) {
+                    // Update last login
+                    user.lastLoginAt = new Date();
+                    user.loginCount = (user.loginCount || 0) + 1;
+                    await user.save();
+                    return done(null, user);
+                }
 
                 user = await User.findOne({ email });
 
@@ -263,6 +277,9 @@ if (linkedinClientId && linkedinClientSecret) {
                     user.linkedinId = linkedinId;
                     user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = photo;
+                    // Update last login
+                    user.lastLoginAt = new Date();
+                    user.loginCount = (user.loginCount || 0) + 1;
                     await user.save();
                     return done(null, user);
                 }
@@ -276,7 +293,9 @@ if (linkedinClientId && linkedinClientSecret) {
                     password: '',
                     isEmailVerified: true,
                     country: await detectCountry(req, data),
-                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    lastLoginAt: new Date(),
+                    loginCount: 1
                 });
 
                 // Apply Referral Logic if applicable
