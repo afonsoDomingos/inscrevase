@@ -212,7 +212,7 @@ export default function Home() {
           justifyContent: 'center',
           padding: '120px 1.5rem 60px'
         }}>
-          <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 50 }} className="hidden-mobile">
+          <div style={{ position: 'absolute', top: '30px', right: '80px', zIndex: 50 }} className="hidden-mobile">
             <WeatherWidget />
           </div>
           <motion.div

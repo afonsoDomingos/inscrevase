@@ -99,14 +99,14 @@ export default function WeatherWidget() {
             style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                padding: '12px 24px',
+                gap: '8px',
+                padding: '6px 14px',
                 background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
                 borderRadius: '100px',
                 border: '1px solid rgba(255, 215, 0, 0.2)',
                 color: '#fff',
-                boxShadow: '0 15px 35px rgba(0,0,0,0.3)',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
                 zIndex: 100,
                 cursor: 'default',
                 transition: 'all 0.3s ease',
@@ -114,45 +114,45 @@ export default function WeatherWidget() {
             }}
         >
             {/* City & Location */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{
                     background: 'rgba(212, 175, 55, 0.2)',
-                    padding: '6px',
+                    padding: '4px',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}>
-                    <MapPin size={16} className="text-yellow-500" />
+                    <MapPin size={12} className="text-yellow-500" />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#FFD700' }}>{data.city}</span>
-                    <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>{data.timezone.split('/')[0]}</span>
+                    <span style={{ fontWeight: 800, fontSize: '0.7rem', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#FFD700' }}>{data.city}</span>
+                    <span style={{ fontSize: '0.55rem', opacity: 0.6 }}>{data.timezone.split('/')[0]}</span>
                 </div>
             </div>
 
-            <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ width: '1px', height: '25px', background: 'rgba(255,255,255,0.1)' }} />
 
             {/* Weather */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <motion.div
                     animate={{ y: [0, -2, 0] }}
                     transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                 >
                     {getWeatherIcon(data.condition)}
                 </motion.div>
-                <span style={{ fontWeight: 900, fontSize: '1.1rem', background: 'linear-gradient(to bottom, #fff, #ccc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <span style={{ fontWeight: 900, fontSize: '0.9rem', background: 'linear-gradient(to bottom, #fff, #ccc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     {data.temp}°C
                 </span>
             </div>
 
-            <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ width: '1px', height: '25px', background: 'rgba(255,255,255,0.1)' }} />
 
             {/* Time */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Clock size={16} className="text-yellow-500" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Clock size={12} className="text-yellow-500" />
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <span style={{ fontWeight: 800, fontSize: '1rem', fontFamily: 'var(--font-inter)', letterSpacing: '1px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.85rem', fontFamily: 'var(--font-inter)', letterSpacing: '1px' }}>
                         {currentTime.toLocaleTimeString('pt-BR', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -160,7 +160,7 @@ export default function WeatherWidget() {
                             timeZone: data.timezone
                         })}
                     </span>
-                    <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 700 }}>LOCAL TIME</span>
+                    <span style={{ fontSize: '0.55rem', opacity: 0.6, fontWeight: 700 }}>LOCAL TIME</span>
                 </div>
             </div>
         </motion.div>
