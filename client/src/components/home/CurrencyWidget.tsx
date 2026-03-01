@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRightLeft, TrendingUp, X, Globe, DollarSign, Euro, Coins, Clock, RefreshCw } from 'lucide-react';
+import { ArrowRightLeft, TrendingUp, X, Globe, DollarSign, Clock, RefreshCw } from 'lucide-react';
 import { useCurrency, Currency } from '@/context/CurrencyContext';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function CurrencyWidget() {
     const [isOpen, setIsOpen] = useState(false);
-    const { currency, formatPrice, convertAmount } = useCurrency();
+    const { loading: currencyLoading } = useCurrency();
+    const { t } = useTranslate();
     const [lastUpdate, setLastUpdate] = useState<string>('');
     const [rates, setRates] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(false);
@@ -42,6 +44,8 @@ export default function CurrencyWidget() {
         { code: 'CVE', name: 'Escudo', flag: '🇨🇻' },
         { code: 'XOF', name: 'Franco CFA', flag: '🇬🇼' },
     ];
+
+    if (currencyLoading) return null;
 
     return (
         <>
@@ -78,7 +82,7 @@ export default function CurrencyWidget() {
                     letterSpacing: '2px',
                     textTransform: 'uppercase'
                 }}>
-                    Câmbio do Dia
+                    {t('home.widgets.currency.title')}
                 </span>
             </motion.div>
 
@@ -124,11 +128,11 @@ export default function CurrencyWidget() {
                         >
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ background: 'var(--gold-gradient)', padding: '8px', borderRadius: '12px' }}>
+                                    <div style={{ background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', padding: '8px', borderRadius: '12px' }}>
                                         <TrendingUp size={20} color="#000" />
                                     </div>
-                                    <h2 style={{ fontSize: '1.2rem', fontWeight: 900, margin: 0, background: 'var(--gold-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                                        Mercado Global
+                                    <h2 style={{ fontSize: '1.2rem', fontWeight: 900, margin: 0, background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                        {t('home.widgets.currency.marketTitle')}
                                     </h2>
                                 </div>
                                 <X
@@ -150,7 +154,7 @@ export default function CurrencyWidget() {
                             }}>
                                 <Clock size={16} className="text-yellow-500" />
                                 <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
-                                    Última atualização: <span style={{ fontWeight: 700, color: '#FFD700' }}>{lastUpdate}</span>
+                                    {t('home.widgets.currency.lastUpdate')}: <span style={{ fontWeight: 700, color: '#FFD700' }}>{lastUpdate}</span>
                                 </div>
                                 {loading && <RefreshCw size={14} className="animate-spin ml-auto" />}
                             </div>
@@ -158,7 +162,7 @@ export default function CurrencyWidget() {
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem', opacity: 0.7 }}>
                                     <DollarSign size={16} />
-                                    <span style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '1px' }}>BASE: 1.00 USD</span>
+                                    <span style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '1px' }}>{t('home.widgets.currency.base')}: 1.00 USD</span>
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -188,7 +192,7 @@ export default function CurrencyWidget() {
                                                 <div style={{ fontWeight: 900, fontSize: '1rem', color: '#FFD700' }}>
                                                     {rates[rel.code] ? rates[rel.code].toFixed(2) : '---'}
                                                 </div>
-                                                <div style={{ fontSize: '0.6rem', opacity: 0.4, fontWeight: 700 }}>TAXA DO DIA</div>
+                                                <div style={{ fontSize: '0.6rem', opacity: 0.4, fontWeight: 700 }}>{t('home.widgets.currency.tax')}</div>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -204,8 +208,8 @@ export default function CurrencyWidget() {
                                     textAlign: 'center'
                                 }}>
                                     <Globe size={32} color="#FFD700" style={{ marginBottom: '12px', margin: '0 auto 12px' }} />
-                                    <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', fontWeight: 800 }}>Converter Agora</h4>
-                                    <p style={{ fontSize: '0.75rem', opacity: 0.7, margin: '0 0 15px 0' }}>Calcule conversões rápidas para o seu plano.</p>
+                                    <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
+                                    <p style={{ fontSize: '0.75rem', opacity: 0.7, margin: '0 0 15px 0' }}>{t('home.widgets.currency.convertDesc')}</p>
                                     <button
                                         onClick={() => window.location.href = '/dashboard/mentor/finance'}
                                         style={{
@@ -220,7 +224,7 @@ export default function CurrencyWidget() {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        VER FINANÇAS
+                                        {t('home.widgets.currency.viewFinance')}
                                     </button>
                                 </div>
                             </div>

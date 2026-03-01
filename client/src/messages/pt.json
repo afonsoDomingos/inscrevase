@@ -78,6 +78,27 @@
                     "description": "Equipa pronta para auxiliar em qualquer momento."
                 }
             }
+        },
+        "widgets": {
+            "weather": {
+                "loading": "Carregando...",
+                "feelsLike": "Sensação",
+                "wind": "Vento",
+                "humidity": "Humidade",
+                "precipitation": "Precipitação",
+                "localTime": "HORA LOCAL",
+                "date": "Data"
+            },
+            "currency": {
+                "title": "Câmbio do Dia",
+                "marketTitle": "Mercado Global",
+                "lastUpdate": "Última atualização",
+                "base": "BASE",
+                "tax": "TAXA DO DIA",
+                "convertNow": "Converter Agora",
+                "convertDesc": "Calcule conversões rápidas para o seu plano.",
+                "viewFinance": "VER FINANÇAS"
+            }
         }
     },
     "common": {

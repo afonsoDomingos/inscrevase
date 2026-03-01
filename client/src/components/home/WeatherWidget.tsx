@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cloud, Sun, CloudRain, CloudLightning, Clock, MapPin, Loader2, Wind, Droplets, Umbrella, X, Thermometer } from 'lucide-react';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface WeatherData {
     temp: number;
@@ -16,6 +17,7 @@ interface WeatherData {
 }
 
 export default function WeatherWidget() {
+    const { t, locale } = useTranslate();
     const [data, setData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -93,7 +95,7 @@ export default function WeatherWidget() {
                 fontSize: '0.8rem'
             }}>
                 <Loader2 size={14} className="animate-spin" />
-                <span>Carregando...</span>
+                <span>{t('home.widgets.weather.loading')}</span>
             </div>
         );
     }
@@ -231,7 +233,15 @@ export default function WeatherWidget() {
                                     <MapPin size={18} />
                                     <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>{data.city}</h2>
                                 </div>
-                                <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>{data.timezone}</p>
+                                <p style={{ opacity: 0.8, fontSize: '0.95rem', fontWeight: 600, color: '#FFD700', marginBottom: '4px', textTransform: 'capitalize' }}>
+                                    {currentTime.toLocaleDateString(locale === 'pt' ? 'pt-PT' : 'en-US', {
+                                        weekday: 'long',
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    })}
+                                </p>
+                                <p style={{ opacity: 0.5, fontSize: '0.8rem' }}>{data.timezone}</p>
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
@@ -239,7 +249,7 @@ export default function WeatherWidget() {
                                     <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>{data.temp}°</div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.7, marginTop: '8px' }}>
                                         <Thermometer size={14} />
-                                        <span>Sensação: {data.feelsLike}°C</span>
+                                        <span>{t('home.widgets.weather.feelsLike')}: {data.feelsLike}°C</span>
                                     </div>
                                 </div>
                                 <motion.div
@@ -254,21 +264,21 @@ export default function WeatherWidget() {
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <Wind size={20} className="text-yellow-500" />
                                     <div>
-                                        <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>Vento</div>
+                                        <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.wind')}</div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.windSpeed} km/h</div>
                                     </div>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <Droplets size={20} className="text-blue-400" />
                                     <div>
-                                        <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>Humidade</div>
+                                        <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.humidity')}</div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.humidity}%</div>
                                     </div>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '12px', gridColumn: 'span 2' }}>
                                     <Umbrella size={20} className="text-purple-400" />
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>Precipitação</div>
+                                        <div style={{ fontSize: '0.7rem', opacity: 0.6, textTransform: 'uppercase' }}>{t('home.widgets.weather.precipitation')}</div>
                                         <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.precipitation} mm</div>
                                     </div>
                                     <div style={{ fontSize: '0.85rem', fontWeight: 700, background: 'rgba(212,175,55,0.1)', color: '#FFD700', padding: '4px 12px', borderRadius: '50px' }}>

@@ -74,6 +74,27 @@
                     "description": "Team ready to assist at any moment."
                 }
             }
+        },
+        "widgets": {
+            "weather": {
+                "loading": "Loading...",
+                "feelsLike": "Feels like",
+                "wind": "Wind",
+                "humidity": "Humidity",
+                "precipitation": "Precipitation",
+                "localTime": "LOCAL TIME",
+                "date": "Date"
+            },
+            "currency": {
+                "title": "Daily Exchange",
+                "marketTitle": "Global Market",
+                "lastUpdate": "Last update",
+                "base": "BASE",
+                "tax": "DAILY RATE",
+                "convertNow": "Convert Now",
+                "convertDesc": "Calculate quick conversions for your plan.",
+                "viewFinance": "VIEW FINANCES"
+            }
         }
     },
     "common": {
