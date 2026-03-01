@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, CreditCard, AlertCircle, Copy } from 'lucide-react';
+import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
