@@ -23,6 +23,7 @@ import { publicService, PublicImpactStats } from "@/lib/publicService";
 import SectorsSection from "@/components/home/SectorsSection";
 import CommunicationHubSection from "@/components/home/CommunicationHubSection";
 import PlansSection from "@/components/common/PlansSection";
+import WeatherWidget from "@/components/home/WeatherWidget";
 
 
 const galleryImages = [
@@ -211,6 +212,9 @@ export default function Home() {
           justifyContent: 'center',
           padding: '120px 1.5rem 60px'
         }}>
+          <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 50 }} className="hidden-mobile">
+            <WeatherWidget />
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
