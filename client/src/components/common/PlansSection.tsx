@@ -253,16 +253,13 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         <button
                             onClick={() => handleSubscribe('pro')}
                             disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
-                            style={{ width: '100%', padding: '0.7rem', background: '#635BFF', color: '#fff', borderRadius: '10px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            style={{ width: '100%', height: '45px', background: '#635BFF', color: '#fff', borderRadius: '10px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: 0 }}
                         >
                             {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (
                                 user?.plan === 'pro' ? t('plans.currentPlan') : (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                            <svg width="34" height="11" viewBox="0 0 24 8" fill="#fff" style={{ marginRight: '4px' }}><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
-                                            <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
-                                        </div>
-                                        <span style={{ fontSize: '0.85rem' }}>{t('plans.payWithCard')}</span>
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                        <svg width="42" height="13" viewBox="0 0 24 8" fill="#fff"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
+                                        <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
                                     </div>
                                 )
                             )}
@@ -270,10 +267,9 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'pro' && (
                             <>
-                                <div style={{ background: '#FFC439', borderRadius: '10px', minHeight: '44px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ background: '#FFC439', borderRadius: '10px', height: '45px', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
-                                        <span style={{ color: '#003087', fontSize: '0.86rem', fontWeight: 800, fontStyle: 'italic' }}>PayPal</span>
                                     </div>
                                     <div style={{ position: 'relative', zIndex: 2 }}>
                                         <PaypalButton
@@ -299,7 +295,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             setIsUpgradeModalOpen(true);
                                         }
                                     }}
-                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.75rem' }}
+                                    style={{ width: '100%', height: '42px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
                                     {t('plans.alternativePayment')}
                                 </button>
@@ -349,16 +345,13 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         <button
                             onClick={() => handleSubscribe('enterprise')}
                             disabled={loadingPlan === 'enterprise' || user?.plan === 'enterprise'}
-                            style={{ width: '100%', padding: '0.7rem', background: '#fff', color: '#000', borderRadius: '10px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            style={{ width: '100%', height: '45px', background: '#fff', color: '#000', borderRadius: '10px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: 0 }}
                         >
                             {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (
                                 user?.plan === 'enterprise' ? t('plans.currentPlan') : (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                            <svg width="34" height="11" viewBox="0 0 24 8" fill="#111" style={{ marginRight: '4px' }}><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
-                                            <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
-                                        </div>
-                                        <span style={{ fontSize: '0.85rem' }}>{t('plans.payWithCard')}</span>
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                        <svg width="42" height="13" viewBox="0 0 24 8" fill="#111"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
+                                        <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
                                     </div>
                                 )
                             )}
@@ -366,10 +359,9 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                         {user?.plan !== 'enterprise' && (
                             <>
-                                <div style={{ background: '#FFC439', borderRadius: '10px', minHeight: '44px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ background: '#FFC439', borderRadius: '10px', height: '45px', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
-                                        <span style={{ color: '#003087', fontSize: '0.86rem', fontWeight: 800, fontStyle: 'italic' }}>PayPal</span>
                                     </div>
                                     <div style={{ position: 'relative', zIndex: 2 }}>
                                         <PaypalButton
@@ -395,7 +387,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             setIsUpgradeModalOpen(true);
                                         }
                                     }}
-                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.75rem' }}
+                                    style={{ width: '100%', height: '42px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
                                     {t('plans.alternativePayment')}
                                 </button>
