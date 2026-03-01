@@ -30,7 +30,9 @@ const register = async (req, res) => {
             canCreateEvents,
             emailToken,
             isEmailVerified: false,
-            referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+            referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+            lastLoginAt: new Date(),
+            loginCount: 1
         });
 
         // Initial registration save
