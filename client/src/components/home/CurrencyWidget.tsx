@@ -123,10 +123,11 @@ export default function CurrencyWidget() {
                                 color: '#fff',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                boxShadow: '20px 0 50px rgba(0,0,0,0.5)'
+                                boxShadow: '20px 0 50px rgba(0,0,0,0.5)',
+                                overflowY: 'auto'
                             }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexShrink: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <div style={{ background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', padding: '8px', borderRadius: '12px' }}>
                                         <TrendingUp size={20} color="#000" />
@@ -147,7 +148,7 @@ export default function CurrencyWidget() {
                                 border: '1px solid rgba(255, 215, 0, 0.1)',
                                 padding: '15px',
                                 borderRadius: '20px',
-                                marginBottom: '2rem',
+                                marginBottom: '1.2rem',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '12px'
@@ -159,13 +160,13 @@ export default function CurrencyWidget() {
                                 {loading && <RefreshCw size={14} className="animate-spin ml-auto" />}
                             </div>
 
-                            <div style={{ marginBottom: '1.5rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem', opacity: 0.7 }}>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.8rem', opacity: 0.7 }}>
                                     <DollarSign size={16} />
                                     <span style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '1px' }}>{t('home.widgets.currency.base')}: 1.00 USD</span>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     {relevantCurrencies.map((rel) => (
                                         <motion.div
                                             key={rel.code}
@@ -199,7 +200,7 @@ export default function CurrencyWidget() {
                                 </div>
                             </div>
 
-                            <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+                            <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
                                 <div style={{
                                     padding: '1.5rem',
                                     background: 'rgba(255, 215, 0, 0.1)',
