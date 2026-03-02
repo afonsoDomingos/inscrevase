@@ -180,7 +180,7 @@ if (googleClientId && googleClientSecret) {
 
                 // Send Welcome Email for Social Login (No verification needed)
                 try {
-                    const welcomeHtml = generateWelcomeEmail(profile.displayName);
+                    const welcomeHtml = generateWelcomeEmail(profile.displayName, null, role);
                     await sendEmail(email, 'Bem-vindo ao Inscreva-se! 💎', welcomeHtml);
                 } catch (emailErr) {
                     console.error("Error sending social welcome email:", emailErr);
@@ -316,7 +316,7 @@ if (linkedinClientId && linkedinClientSecret) {
 
                 // Send Welcome Email for Social Login (No verification needed)
                 try {
-                    const welcomeHtml = generateWelcomeEmail(name);
+                    const welcomeHtml = generateWelcomeEmail(name, null, role);
                     await sendEmail(email, 'Bem-vindo ao Inscreva-se! 💎', welcomeHtml);
                 } catch (emailErr) {
                     console.error("Error sending social welcome email (LinkedIn):", emailErr);

@@ -94,7 +94,7 @@ const register = async (req, res) => {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
 
-        const welcomeHtml = generateWelcomeEmail(name, verificationLink);
+        const welcomeHtml = generateWelcomeEmail(name, verificationLink, userRole);
         await sendEmail(email, 'Confirme seu endereço de e-mail - Inscreva-se', welcomeHtml);
 
         // Link existing submissions for this email to the new user account
@@ -490,7 +490,7 @@ const resendVerificationEmail = async (req, res) => {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const verificationLink = `${frontendUrl}/confirmar-email?token=${emailToken}`;
 
-        const emailHtml = generateWelcomeEmail(user.name, verificationLink);
+        const emailHtml = generateWelcomeEmail(user.name, verificationLink, user.role);
 
         await sendEmail(user.email, 'Confirme seu endereço de e-mail - Inscreva-se', emailHtml);
         res.json({ message: 'E-mail de verificação enviado com sucesso!' });

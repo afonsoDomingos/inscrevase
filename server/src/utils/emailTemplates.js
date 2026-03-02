@@ -39,18 +39,88 @@ const getSocialFooter = () => {
     `;
 };
 
-const generateWelcomeEmail = (name, verificationLink = null) => {
+
+const generateWelcomeEmail = (name, verificationLink = null, role = 'mentor') => {
     const isSocial = !verificationLink;
     const dashboardUrl = 'https://inscreva-se.com/dashboard';
-    const accentColor = "#D4AF37";
+
+    // Role-specific configuration
+    const roleConfig = {
+        participant: {
+            accentColor: '#3b82f6',        // Blue — learning & participation
+            badge: '🎓 PARTICIPANTE',
+            headline: 'A sua jornada de aprendizado começa agora',
+            intro: `É um prazer recebê-lo na <strong>Inscreva-se</strong>! A nossa plataforma foi criada para conectar pessoas ao melhor conteúdo educativo e de desenvolvimento profissional da lusofonia.`,
+            features: [
+                ['📚', 'Acesso ao Hub do Inscrito', 'Aulas, materiais e certificados num só lugar.'],
+                ['📜', 'Certificados de Participação', 'Descarregue automaticamente após cada evento.'],
+                ['🗓️', 'Agenda Integrada', 'Todos os seus cursos e eventos organizados no seu painel.'],
+                ['💬', 'Suporte Direto', 'Comunique com os mentores diretamente pela plataforma.'],
+            ],
+            ctaLabel: isSocial ? 'Explorar Eventos' : 'Confirmar O Meu E-mail',
+            confirmNote: 'Para ativar a sua conta e aceder a todos os eventos e materiais, confirme o seu e-mail:',
+            socialNote: 'A sua conta está ativa e pronta. Explore os eventos disponíveis e inscreva-se agora!',
+        },
+        mentor: {
+            accentColor: '#D4AF37',        // Gold — prestige & creation
+            badge: '🧠 MENTOR',
+            headline: 'Transforme o seu conhecimento em impacto global',
+            intro: `É um privilégio tê-lo connosco. A <strong>Inscreva-se</strong> é a plataforma definitiva para quem procura transformar conhecimento em escala através de um ecossistema premium e automatizado.`,
+            features: [
+                ['💎', 'Crie Eventos de Elite', 'Do webinar ao presencial em minutos.'],
+                ['💰', 'Fature sem Barreiras', 'Pagamentos globais e locais integrados.'],
+                ['⚡', 'IA Avançada', 'Otimizamos as suas conversões e gestão.'],
+                ['📊', 'Analytics em Tempo Real', 'Acompanhe os seus inscritos e receita ao vivo.'],
+            ],
+            ctaLabel: isSocial ? 'Aceder ao Meu Painel' : 'Confirmar O Meu E-mail',
+            confirmNote: 'Para ativar o seu acesso completo e desbloquear todas as ferramentas de gestão, confirme o seu e-mail:',
+            socialNote: 'A sua conta está ativa e pronta para o próximo nível. O seu acesso via rede social foi configurado com sucesso.',
+        },
+        specialist: {
+            accentColor: '#8b5cf6',        // Purple — expertise & collaboration
+            badge: '⭐ ESPECIALISTA',
+            headline: 'A sua expertise merece o palco certo',
+            intro: `Bem-vindo à <strong>Inscreva-se</strong>! Como Especialista, a plataforma conecta a sua expertise técnica a mentores e empresas que precisam de colaboradores de alto nível.`,
+            features: [
+                ['⭐', 'Selo de Especialista Verificado', 'Seja encontrado por mentores e empresas de elite.'],
+                ['🤝', 'Ferramentas de Co-organização', 'Colabore em eventos e partilhe a gestão.'],
+                ['🌐', 'Rede de Conexões', 'Aceda à rede exclusiva de mentores e organizações.'],
+                ['📈', 'Destaque no Showcase', 'Visibilidade premium no ecossistema da plataforma.'],
+            ],
+            ctaLabel: isSocial ? 'Ver o Meu Perfil' : 'Confirmar O Meu E-mail',
+            confirmNote: 'Para ativar o seu perfil de Especialista e começar a receber convites, confirme o seu e-mail:',
+            socialNote: 'O seu perfil de Especialista está ativo. Complete-o para aumentar a sua visibilidade na plataforma.',
+        },
+        company: {
+            accentColor: '#0ea5e9',        // Sky blue — corporate & scale
+            badge: '🏢 EMPRESA',
+            headline: 'Escale os seus eventos corporativos com tecnologia',
+            intro: `Bem-vindo à <strong>Inscreva-se</strong>! A plataforma ideal para empresas que querem profissionalizar a gestão dos seus eventos internos, treinamentos e conferências com total controlo e visibilidade.`,
+            features: [
+                ['🏢', 'Perfil Institucional Personalizado', 'Apresente a marca da sua empresa com excelência.'],
+                ['👥', 'Gestão de Múltiplos Eventos', 'Organize treinamentos corporativos em escala.'],
+                ['📊', 'Relatórios Consolidados', 'Dados completos por evento, equipa e período.'],
+                ['🤝', 'Rede de Especialistas', 'Encontre palestrantes e instrutores verificados.'],
+            ],
+            ctaLabel: isSocial ? 'Aceder ao Painel Corporativo' : 'Confirmar O Meu E-mail',
+            confirmNote: 'Para ativar o painel corporativo e começar a gerir os seus eventos, confirme o e-mail da empresa:',
+            socialNote: 'O perfil da sua empresa está ativo. Configure os seus dados corporativos e comece a criar eventos.',
+        },
+    };
+
+    const config = roleConfig[role] || roleConfig.mentor;
+    const { accentColor, badge, headline, intro, features, ctaLabel, confirmNote, socialNote } = config;
 
     return `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
-            <!-- VIP Header -->
+            <!-- Role-aware Header -->
             <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
                 <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
-                <h1 style="color: #ffffff; font-size: 26px; font-weight: 900; margin-top: 20px; letter-spacing: 3px; text-transform: uppercase; position: relative; z-index: 1;">Bem-vindo ao <span style="color: ${accentColor};">Inscreva-se</span></h1>
+                <div style="display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 100px; padding: 6px 18px; margin-top: 16px; position: relative; z-index: 1;">
+                    <span style="color: #fff; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">${badge}</span>
+                </div>
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 14px; letter-spacing: 1px; position: relative; z-index: 1; line-height: 1.3;">${headline}</h1>
             </div>
 
             <div style="padding: 45px;">
@@ -58,46 +128,33 @@ const generateWelcomeEmail = (name, verificationLink = null) => {
                     <p style="font-size: 20px; color: #111; margin-top: 0; font-weight: 800;">Olá, ${name}! 👋</p>
                     
                     <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 25px;">
-                        É um privilégio tê-lo connosco. A <strong>Inscreva-se</strong> é a plataforma definitiva para quem procura transformar conhecimento em escala através de um ecossistema premium e automatizado.
+                        ${intro}
                     </p>
 
                     <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #f5f5f5;">
-                        <p style="margin: 0 0 15px 0; color: #111; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">O seu poder na plataforma:</p>
+                        <p style="margin: 0 0 15px 0; color: #111; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">O que pode fazer agora:</p>
                         <ul style="padding: 0; margin: 0; list-style: none;">
-                            <li style="margin-bottom: 12px; color: #555; font-size: 14px; display: flex; align-items: flex-start;">
-                                <span style="color: ${accentColor}; margin-right: 12px; font-weight: bold;">💎</span> 
-                                <span><strong>Crie Eventos de Elite:</strong> Do webinar ao presencial em minutos.</span>
-                            </li>
-                            <li style="margin-bottom: 12px; color: #555; font-size: 14px; display: flex; align-items: flex-start;">
-                                <span style="color: ${accentColor}; margin-right: 12px; font-weight: bold;">💰</span> 
-                                <span><strong>Fature sem Barreiras:</strong> Pagamentos globais e locais integrados.</span>
-                            </li>
-                            <li style="margin-bottom: 0; color: #555; font-size: 14px; display: flex; align-items: flex-start;">
-                                <span style="color: ${accentColor}; margin-right: 12px; font-weight: bold;">⚡</span> 
-                                <span><strong>IA Avançada:</strong> Otimizamos as suas conversões e gestão.</span>
-                            </li>
+                            ${features.map(([icon, title, desc], i) => `
+                            <li style="margin-bottom: ${i < features.length - 1 ? '14px' : '0'}; color: #555; font-size: 14px; display: flex; align-items: flex-start;">
+                                <span style="color: ${accentColor}; margin-right: 12px; font-weight: bold; font-size: 18px; flex-shrink: 0;">${icon}</span>
+                                <span><strong>${title}:</strong> ${desc}</span>
+                            </li>`).join('')}
                         </ul>
                     </div>
 
-                    ${isSocial ? `
-                        <p style="font-size: 15px; color: #666; line-height: 1.7;">
-                            A sua conta está ativa e pronta para o próximo nível. O seu acesso via rede social foi configurado com sucesso.
-                        </p>
-                    ` : `
-                        <p style="font-size: 15px; color: #666; line-height: 1.7;">
-                            Para ativar o seu acesso completo e desbloquear todas as ferramentas de gestão, confirme o seu e-mail no botão abaixo:
-                        </p>
-                    `}
+                    <p style="font-size: 15px; color: #666; line-height: 1.7;">
+                        ${isSocial ? socialNote : confirmNote}
+                    </p>
                     
                     <div style="text-align: center; margin: 40px 0 10px;">
-                        <a href="${verificationLink || dashboardUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
-                            ${isSocial ? 'Aceder ao Meu Painel' : 'Confirmar O Meu E-mail'}
+                        <a href="${verificationLink || dashboardUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 1px;">
+                            ${ctaLabel}
                         </a>
                     </div>
                     
                     ${!isSocial ? `
                     <p style="font-size: 13px; color: #aaa; text-align: center; margin-top: 30px; line-height: 1.6;">
-                        Se o botão não responder, utilize o link abaixo directamante:<br>
+                        Se o botão não responder, utilize o link abaixo directamente:<br>
                         <a href="${verificationLink}" style="color: ${accentColor}; text-decoration: none; word-break: break-all;">${verificationLink}</a>
                     </p>
                     ` : ''}
