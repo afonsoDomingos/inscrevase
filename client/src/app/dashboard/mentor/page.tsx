@@ -1551,9 +1551,6 @@ function MentorDashboardContent() {
                                                     {tutorial.thumbnailUrl ? (
                                                         <div style={{ width: '100%', height: '160px', position: 'relative' }}>
                                                             <Image src={tutorial.thumbnailUrl} alt={tutorial.title} fill style={{ objectFit: 'cover' }} unoptimized />
-                                                            <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                                                                {Math.floor(tutorial.duration / 60)}:{(tutorial.duration % 60).toString().padStart(2, '0')}
-                                                            </div>
                                                         </div>
                                                     ) : (
                                                         <div style={{ width: '100%', height: '160px', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
