@@ -160,6 +160,40 @@ const generateWelcomeEmail = (name, verificationLink = null, role = 'mentor') =>
                     ` : ''}
                 </div>
                 
+                <!-- Social CTA Block -->
+                <div style="margin-top: 30px; background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); border-radius: 20px; padding: 30px 25px; text-align: center; border: 1px solid #2a2a2a;">
+                    <p style="margin: 0 0 6px 0; font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Siga-nos nas redes sociais</p>
+                    <p style="margin: 0 0 20px 0; font-size: 17px; color: #ffffff; font-weight: 800; line-height: 1.4;">
+                        Dicas exclusivas e novidades <span style="color: ${accentColor};">todos os dias</span> &#128293;
+                    </p>
+                    <div style="margin-bottom: 22px;">
+                        <a href="https://www.instagram.com/inscreva_se_events" style="display: inline-block; margin: 0 5px; background: #833ab4; border-radius: 50%; width: 44px; height: 44px; line-height: 44px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" style="width: 22px; height: 22px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.youtube}" style="display: inline-block; margin: 0 5px; background: #ff0000; border-radius: 50%; width: 44px; height: 44px; line-height: 44px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" style="width: 22px; height: 22px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.linkedin}" style="display: inline-block; margin: 0 5px; background: #0077b5; border-radius: 50%; width: 44px; height: 44px; line-height: 44px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 22px; height: 22px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.tiktok}" style="display: inline-block; margin: 0 5px; background: #111; border-radius: 50%; width: 44px; height: 44px; line-height: 44px; text-align: center; text-decoration: none; border: 1px solid #333;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok" style="width: 22px; height: 22px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.facebook}" style="display: inline-block; margin: 0 5px; background: #1877f2; border-radius: 50%; width: 44px; height: 44px; line-height: 44px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" style="width: 22px; height: 22px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.whatsapp}" style="display: inline-block; margin: 0 5px; background: #25d366; border-radius: 50%; width: 44px; height: 44px; line-height: 44px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" style="width: 22px; height: 22px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                    </div>
+                    <a href="${socialLinks.community}" style="display: inline-block; background: #25d366; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 100px; font-weight: 900; font-size: 13px; letter-spacing: 0.5px; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);">
+                        &#128172; Entrar na Comunidade VIP
+                    </a>
+                    <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.5;">
+                        Networking, conte&#250;do exclusivo e suporte &mdash; gratuito para todos os membros.
+                    </p>
+                </div>
+
                 ${getSocialFooter()}
             </div>
         </div>
