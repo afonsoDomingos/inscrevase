@@ -14,6 +14,7 @@ export default function CurrencyWidget() {
     const [rates, setRates] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(false);
     const [amount, setAmount] = useState<number>(1);
+    const [isMobile, setIsMobile] = useState(false);
 
     const fetchRates = async () => {
         setLoading(true);
@@ -38,6 +39,13 @@ export default function CurrencyWidget() {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const relevantCurrencies: { code: Currency, name: string, flag: string }[] = [
         { code: 'MZN', name: 'Metical', flag: '🇲🇿' },
         { code: 'AOA', name: 'Kwanza', flag: '🇦🇴' },
@@ -45,6 +53,7 @@ export default function CurrencyWidget() {
         { code: 'ZAR', name: 'Rand', flag: '🇿🇦' },
         { code: 'CVE', name: 'Escudo', flag: '🇨🇻' },
         { code: 'XOF', name: 'Franco CFA', flag: '🇬🇼' },
+        { code: 'XAF', name: 'Franco CFA (BEAC)', flag: '🇨🇲' },
     ];
 
     if (currencyLoading) return null;
@@ -64,7 +73,7 @@ export default function CurrencyWidget() {
                     transform: 'translateY(-50%)',
                     zIndex: 999,
                     background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
-                    padding: '12px 8px',
+                    padding: isMobile ? '10px 6px' : '12px 8px',
                     borderRadius: '0 15px 15px 0',
                     cursor: 'pointer',
                     boxShadow: '4px 0 15px rgba(0,0,0,0.2)',
@@ -76,11 +85,11 @@ export default function CurrencyWidget() {
                     textOrientation: 'mixed'
                 }}
             >
-                <ArrowRightLeft size={18} color="#000" style={{ transform: 'rotate(90deg)', marginBottom: '5px' }} />
+                <ArrowRightLeft size={isMobile ? 16 : 18} color="#000" style={{ transform: 'rotate(90deg)', marginBottom: '5px' }} />
                 <span style={{
                     color: '#000',
                     fontWeight: 900,
-                    fontSize: '0.75rem',
+                    fontSize: isMobile ? '0.65rem' : '0.75rem',
                     letterSpacing: '2px',
                     textTransform: 'uppercase'
                 }}>
@@ -116,57 +125,61 @@ export default function CurrencyWidget() {
                                 top: 0,
                                 bottom: 0,
                                 width: '100%',
-                                maxWidth: '320px',
-                                background: 'linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%)',
+                                maxWidth: isMobile ? '100%' : '320px',
+                                height: '100dvh', // use dynamic viewport height to avoid browser chrome issues
+                                background: 'linear-gradient(180deg, rgba(20, 20, 20, 0.98) 0%, rgba(10, 10, 10, 1) 100%)',
                                 backdropFilter: 'blur(20px)',
-                                borderRight: '1px solid rgba(255, 215, 0, 0.3)',
+                                borderRight: isMobile ? 'none' : '1px solid rgba(255, 215, 0, 0.3)',
                                 zIndex: 1001,
-                                padding: '1.5rem 1.25rem',
+                                padding: isMobile ? '0.75rem 1rem' : '1.5rem 1.25rem',
                                 color: '#fff',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 boxShadow: '20px 0 50px rgba(0,0,0,0.5)',
-                                overflowY: 'auto'
+                                overflow: 'hidden',
+                                boxSizing: 'border-box',
                             }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexShrink: 0 }}>
+                            {/* Header */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '0.4rem' : '1.25rem', flexShrink: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', padding: '8px', borderRadius: '12px' }}>
-                                        <TrendingUp size={20} color="#000" />
+                                    <div style={{ background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', padding: isMobile ? '5px' : '8px', borderRadius: '12px' }}>
+                                        <TrendingUp size={isMobile ? 16 : 20} color="#000" />
                                     </div>
-                                    <h2 style={{ fontSize: '1.1rem', fontWeight: 900, margin: 0, background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                    <h2 style={{ fontSize: isMobile ? '0.95rem' : '1.1rem', fontWeight: 900, margin: 0, background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                         {t('home.widgets.currency.marketTitle')}
                                     </h2>
                                 </div>
                                 <X
-                                    size={24}
-                                    style={{ cursor: 'pointer', opacity: 0.6 }}
+                                    size={isMobile ? 24 : 28}
+                                    style={{ cursor: 'pointer', opacity: 0.8, background: 'rgba(255,255,255,0.1)', borderRadius: '50%', padding: '4px', flexShrink: 0 }}
                                     onClick={() => setIsOpen(false)}
                                 />
                             </div>
 
+                            {/* Last update bar */}
                             <div style={{
                                 background: 'rgba(255, 215, 0, 0.05)',
                                 border: '1px solid rgba(255, 215, 0, 0.1)',
-                                padding: '12px',
-                                borderRadius: '16px',
-                                marginBottom: '1rem',
+                                padding: isMobile ? '5px 10px' : '12px',
+                                borderRadius: '12px',
+                                marginBottom: isMobile ? '0.4rem' : '1rem',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
+                                gap: '8px',
                                 flexShrink: 0
                             }}>
-                                <Clock size={14} className="text-yellow-500" />
-                                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                                <Clock size={13} className="text-yellow-500" />
+                                <div style={{ fontSize: isMobile ? '0.6rem' : '0.75rem', opacity: 0.8 }}>
                                     {t('home.widgets.currency.lastUpdate')}: <span style={{ fontWeight: 700, color: '#FFD700' }}>{lastUpdate}</span>
                                 </div>
-                                {loading && <RefreshCw size={12} className="animate-spin ml-auto" />}
+                                {loading && <RefreshCw size={11} className="animate-spin ml-auto" />}
                             </div>
 
                             {/* Calculator Input */}
-                            <div style={{ marginBottom: '1.25rem', flexShrink: 0 }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '0.7rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>
-                                    <Calculator size={14} className="text-yellow-500" />
+                            <div style={{ marginBottom: isMobile ? '0.4rem' : '1.25rem', flexShrink: 0 }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px', fontSize: '0.6rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>
+                                    <Calculator size={12} className="text-yellow-500" />
                                     {t('home.widgets.currency.enterAmount')}
                                 </label>
                                 <div style={{ position: 'relative' }}>
@@ -180,25 +193,33 @@ export default function CurrencyWidget() {
                                             background: 'rgba(255, 255, 255, 0.05)',
                                             border: '1px solid rgba(255, 215, 0, 0.2)',
                                             borderRadius: '12px',
-                                            padding: '12px 40px 12px 16px',
+                                            padding: isMobile ? '7px 40px 7px 14px' : '12px 40px 12px 16px',
                                             color: '#fff',
-                                            fontSize: '1rem',
+                                            fontSize: isMobile ? '1rem' : '1.1rem',
                                             fontWeight: 700,
                                             outline: 'none',
-                                            transition: 'border-color 0.3s ease'
+                                            transition: 'border-color 0.3s ease',
+                                            boxSizing: 'border-box',
                                         }}
                                         onFocus={(e) => e.target.style.borderColor = '#FFD700'}
                                         onBlur={(e) => e.target.style.borderColor = 'rgba(255, 215, 0, 0.2)'}
                                     />
-                                    <div style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontWeight: 800, color: '#FFD700', fontSize: '0.8rem' }}>
+                                    <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', fontWeight: 800, color: '#FFD700', fontSize: '0.75rem' }}>
                                         USD
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Rates List */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {relevantCurrencies.map((rel) => (
+                            {/* Rates List — flex: 1 + overflow: hidden so it fills remaining space without scrolling */}
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: isMobile ? '3px' : '8px',
+                                flex: 1,
+                                overflow: 'hidden',
+                                minHeight: 0,
+                            }}>
+                                {relevantCurrencies.slice(0, isMobile ? 5 : 7).map((rel) => (
                                     <motion.div
                                         key={rel.code}
                                         whileHover={{ x: 5, background: 'rgba(255, 255, 255, 0.05)' }}
@@ -206,54 +227,61 @@ export default function CurrencyWidget() {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
-                                            padding: '10px 14px',
+                                            padding: isMobile ? '7px 10px' : '10px 14px',
                                             background: 'rgba(255, 255, 255, 0.02)',
-                                            borderRadius: '14px',
+                                            borderRadius: '12px',
                                             border: '1px solid rgba(255, 255, 255, 0.05)',
-                                            transition: 'all 0.3s ease'
+                                            transition: 'all 0.3s ease',
+                                            flexShrink: 0,
                                         }}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '1.2rem' }}>{rel.flag}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ fontSize: isMobile ? '1rem' : '1.2rem' }}>{rel.flag}</span>
                                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{rel.code}</span>
-                                                <span style={{ fontSize: '0.6rem', opacity: 0.5 }}>{rel.name}</span>
+                                                <span style={{ fontWeight: 800, fontSize: isMobile ? '0.78rem' : '0.85rem' }}>{rel.code}</span>
+                                                <span style={{ fontSize: isMobile ? '0.5rem' : '0.6rem', opacity: 0.5 }}>{rel.name}</span>
                                             </div>
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
-                                            <div style={{ fontWeight: 900, fontSize: '0.95rem', color: '#FFD700' }}>
+                                            <div style={{ fontWeight: 900, fontSize: isMobile ? '0.85rem' : '0.95rem', color: '#FFD700' }}>
                                                 {rates[rel.code] ? (rates[rel.code] * amount).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '---'}
                                             </div>
-                                            <div style={{ fontSize: '0.55rem', opacity: 0.4, fontWeight: 700 }}>{rel.code} TOTAL</div>
+                                            <div style={{ fontSize: '0.5rem', opacity: 0.4, fontWeight: 700 }}>{rel.code} TOTAL</div>
                                         </div>
                                     </motion.div>
                                 ))}
                             </div>
 
                             {/* Footer CTA */}
-                            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
+                            <div style={{
+                                paddingTop: isMobile ? '0.4rem' : '1rem',
+                                borderTop: '1px solid rgba(255,255,255,0.05)',
+                                flexShrink: 0,
+                                marginTop: isMobile ? '0.4rem' : '0',
+                            }}>
                                 <div style={{
-                                    padding: '1rem',
+                                    padding: isMobile ? '0.6rem 0.75rem' : '1rem',
                                     background: 'rgba(255, 215, 0, 0.1)',
-                                    borderRadius: '20px',
+                                    borderRadius: '16px',
                                     border: '1px solid rgba(255, 215, 0, 0.2)',
                                     textAlign: 'center'
                                 }}>
-                                    <Globe size={24} color="#FFD700" style={{ marginBottom: '8px', margin: '0 auto 8px' }} />
-                                    <h4 style={{ margin: '0 0 4px 0', fontSize: '0.85rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
-                                    <p style={{ fontSize: '0.65rem', opacity: 0.7, margin: '0 0 10px 0' }}>{t('home.widgets.currency.convertDesc')}</p>
+                                    <Globe size={isMobile ? 16 : 24} color="#FFD700" style={{ marginBottom: isMobile ? '2px' : '8px', margin: '0 auto 2px', display: 'block' }} />
+                                    <h4 style={{ margin: isMobile ? '2px 0' : '0 0 4px 0', fontSize: isMobile ? '0.7rem' : '0.85rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
+                                    {!isMobile && <p style={{ fontSize: '0.65rem', opacity: 0.7, margin: '0 0 10px 0' }}>{t('home.widgets.currency.convertDesc')}</p>}
                                     <button
                                         onClick={() => window.location.href = '/dashboard/mentor?tab=earnings'}
                                         style={{
                                             width: '100%',
-                                            padding: '8px',
+                                            padding: isMobile ? '7px' : '10px',
                                             borderRadius: '50px',
                                             background: '#FFD700',
                                             color: '#000',
                                             border: 'none',
                                             fontWeight: 900,
-                                            fontSize: '0.75rem',
-                                            cursor: 'pointer'
+                                            fontSize: isMobile ? '0.7rem' : '0.8rem',
+                                            cursor: 'pointer',
+                                            marginTop: isMobile ? '4px' : '0',
                                         }}
                                     >
                                         {t('home.widgets.currency.viewFinance')}

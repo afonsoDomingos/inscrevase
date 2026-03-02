@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
-export type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF' | 'ZAR';
+export type Currency = 'MZN' | 'USD' | 'EUR' | 'AOA' | 'CVE' | 'XOF' | 'XAF' | 'ZAR';
 
 interface PlanPrices {
     MZN: number;
@@ -12,6 +12,7 @@ interface PlanPrices {
     AOA?: number;
     CVE?: number;
     XOF?: number;
+    XAF?: number;
     ZAR?: number;
 }
 
@@ -46,6 +47,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         AOA: 850,
         CVE: 100,
         XOF: 600,
+        XAF: 600,
         ZAR: 19.5
     });
 
@@ -156,6 +158,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
             AOA: { locale: 'pt-AO', currency: 'AOA' },
             CVE: { locale: 'pt-CV', currency: 'CVE' },
             XOF: { locale: 'fr-GN', currency: 'XOF' },
+            XAF: { locale: 'fr-CM', currency: 'XAF' },
             ZAR: { locale: 'en-ZA', currency: 'ZAR' }
         };
 
