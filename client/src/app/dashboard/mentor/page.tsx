@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
-import Cookies from 'js-cookie';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
