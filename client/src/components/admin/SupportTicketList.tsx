@@ -6,8 +6,10 @@ import { supportService, Ticket } from '@/lib/supportService';
 import { toast } from 'sonner';
 import { MessageSquare, Clock, CheckCircle, XCircle, User } from 'lucide-react';
 import SupportModal from '../mentor/SupportModal';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function SupportTicketList() {
+    const { t } = useTranslate();
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -33,7 +35,7 @@ export default function SupportTicketList() {
             setTickets(data);
         } catch (error) {
             console.error(error);
-            toast.error('Erro ao carregar tickets');
+            toast.error(t('support.toasts.errorLoading'));
         } finally {
             setLoading(false);
         }
@@ -63,9 +65,9 @@ export default function SupportTicketList() {
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'open': return 'Aberto';
-            case 'answered': return 'Respondido';
-            case 'closed': return 'Fechado';
+            case 'open': return t('support.stats.open');
+            case 'answered': return t('support.stats.answered');
+            case 'closed': return t('support.stats.closed');
             default: return status;
         }
     };
@@ -82,7 +84,7 @@ export default function SupportTicketList() {
     return (
         <div style={{ padding: isMobile ? '1rem' : '2rem' }}>
             <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '1rem' }}>
-                <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700 }}>Central de Suporte</h1>
+                <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700 }}>{t('support.adminSupportMessages')}</h1>
 
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                     {(['all', 'open', 'answered', 'closed', 'feedback'] as const).map(status => (
@@ -100,18 +102,18 @@ export default function SupportTicketList() {
                                 fontSize: isMobile ? '0.75rem' : '0.9rem'
                             }}
                         >
-                            {status === 'all' ? 'Todos' : status === 'feedback' ? 'Feedbacks' : getStatusLabel(status)}
+                            {status === 'all' ? t('categories.all') : status === 'feedback' ? t('support.feedbacks') : getStatusLabel(status)}
                         </button>
                     ))}
                 </div>
             </div>
 
             {loading ? (
-                <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>Carregando...</div>
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>{t('common.loading')}</div>
             ) : filteredTickets.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>
                     <MessageSquare size={48} style={{ opacity: 0.3, margin: '0 auto 1rem' }} />
-                    <p>Nenhum ticket encontrado</p>
+                    <p>{t('support.noMessages')}</p>
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: '1rem' }}>
@@ -164,8 +166,8 @@ export default function SupportTicketList() {
                             </p>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#999' }}>
-                                <span>{ticket.messages.length} mensagem{ticket.messages.length !== 1 ? 's' : ''}</span>
-                                <span>{new Date(ticket.createdAt).toLocaleDateString('pt-BR')} às {new Date(ticket.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+                                <span>{ticket.messages.length} {ticket.messages.length === 1 ? t('support.messageLabel').replace(':', '') : t('support.messages')}</span>
+                                <span>{new Date(ticket.createdAt).toLocaleDateString()} {t('common.atTime')} {new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                         </div>
                     ))}

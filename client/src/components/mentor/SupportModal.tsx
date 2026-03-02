@@ -245,11 +245,11 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                             </div>
                             <div>
                                 <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 700, fontFamily: 'var(--font-playfair)' }}>
-                                    {mode === 'admin' ? t('support.adminTitle') : (mode === 'mentor' ? 'Mensagens' : t('support.title'))}
+                                    {mode === 'admin' ? t('support.adminTitle') : (mode === 'mentor' ? t('support.messages') : t('support.title'))}
                                 </h3>
                                 {!isMobile && (
                                     <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                        {mode === 'admin' ? t('support.adminSubtitle') : (mode === 'mentor' ? 'Gerencie as conversas com seus alunos' : t('support.userSubtitle'))}
+                                        {mode === 'admin' ? t('support.adminSubtitle') : (mode === 'mentor' ? t('support.mentorSubtitle') : t('support.userSubtitle'))}
                                     </p>
                                 )}
                             </div>
@@ -307,7 +307,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                     <>
                                                         {/* If I am the mentor */}
                                                         {ticket.mentor?._id === userId && ticket.user && (
-                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Participante: {ticket.user.name}</div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>{t('support.participant')}: {ticket.user.name}</div>
                                                         )}
                                                         {/* If I am the creator and talking to a mentor */}
                                                         {ticket.user?._id === userId && ticket.mentor && (
@@ -315,7 +315,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                         )}
                                                         {/* If I am the creator and talking to Admin */}
                                                         {ticket.user?._id === userId && !ticket.mentor && (
-                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>Suporte Técnico (Admin)</div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '4px' }}>{t('support.platformSupport')} (Admin)</div>
                                                         )}
                                                     </>
                                                 )}
@@ -352,7 +352,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                             {mode === 'user' && !targetMentorId && (
                                                 <div>
                                                     <label style={{ display: 'block', fontWeight: 700, marginBottom: '1rem', fontSize: '1.05rem', color: '#111' }}>
-                                                        Para quem você quer enviar?
+                                                        {t('support.whoToSubmit')}
                                                     </label>
 
                                                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
@@ -394,15 +394,15 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                                 </div>
                                                                 <div>
                                                                     <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#111', marginBottom: '2px' }}>
-                                                                        Suporte da Plataforma
+                                                                        {t('support.platformSupport')}
                                                                     </div>
                                                                     <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 500 }}>
-                                                                        Equipe Inscreva.se
+                                                                        {t('support.platformTeam')}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: '1.5' }}>
-                                                                💡 Problemas técnicos, pagamentos, bugs ou dúvidas sobre a plataforma
+                                                                {t('support.platformSupportDesc')}
                                                             </div>
                                                         </motion.button>
 
@@ -453,15 +453,15 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                                     </div>
                                                                     <div>
                                                                         <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#111', marginBottom: '2px' }}>
-                                                                            Meus Mentores
+                                                                            {t('support.myMentors')}
                                                                         </div>
                                                                         <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 500 }}>
-                                                                            {availableMentors.length} {availableMentors.length === 1 ? 'mentor disponível' : 'mentores disponíveis'}
+                                                                            {t('support.mentorsAvailable', { count: availableMentors.length })}
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: '1.5' }}>
-                                                                    📚 Dúvidas sobre aulas, conteúdo, eventos ou certificados
+                                                                    {t('support.mentorSupportDesc')}
                                                                 </div>
                                                             </motion.button>
                                                         )}
@@ -478,7 +478,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                         >
                                                             <div style={{ marginTop: '1rem', padding: '1rem', background: '#fef3c7', borderRadius: '12px', border: '2px solid #fde68a' }}>
                                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.75rem', fontSize: '0.9rem', color: '#92400e' }}>
-                                                                    👨‍🏫 Selecione o mentor:
+                                                                    {t('support.selectMentor')}
                                                                 </label>
                                                                 <select
                                                                     value={selectedRecipient}
@@ -540,12 +540,12 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                         </div>
                                                         <div style={{ flex: 1 }}>
                                                             <div style={{ fontSize: '0.75rem', color: '#047857', fontWeight: 600, marginBottom: '2px' }}>
-                                                                📨 Seu ticket será enviado para:
+                                                                {t('support.ticketSentTo')}
                                                             </div>
                                                             <div style={{ fontSize: '0.9rem', color: '#065f46', fontWeight: 700 }}>
                                                                 {selectedRecipient === 'platform'
-                                                                    ? 'Equipe de Suporte Inscreva.se'
-                                                                    : availableMentors.find(m => m._id === selectedRecipient)?.businessName || availableMentors.find(m => m._id === selectedRecipient)?.name || 'Mentor'}
+                                                                    ? t('support.platformTeam')
+                                                                    : availableMentors.find(m => m._id === selectedRecipient)?.businessName || availableMentors.find(m => m._id === selectedRecipient)?.name || t('support.mentor')}
                                                             </div>
                                                         </div>
                                                     </motion.div>
@@ -637,7 +637,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                     opacity: loading ? 0.7 : 1
                                                 }}
                                             >
-                                                {loading ? <Loader2 className="animate-spin" /> : <> Enviar Mensagem <Send size={18} /></>}
+                                                {loading ? <Loader2 className="animate-spin" /> : <> {t('support.sendMessage')} <Send size={18} /></>}
                                             </button>
                                         </div>
                                     </div>
@@ -654,7 +654,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                 {/* Mentor View: Showing Participant Name */}
                                                 {mode === 'mentor' && selectedTicket.user && (
                                                     <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '0.75rem' : '0.9rem' }}>
-                                                        <UserIcon size={14} /> {isMobile ? '' : 'Participante:'} <span style={{ fontWeight: 400 }}>{selectedTicket.user.name ?? 'Usuário'}</span>
+                                                        <UserIcon size={14} /> {isMobile ? '' : `${t('support.participant')}:`} <span style={{ fontWeight: 400 }}>{selectedTicket.user.name ?? 'Usuário'}</span>
                                                     </span>
                                                 )}
 
@@ -662,9 +662,9 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                 {mode === 'user' && (
                                                     <span style={{ color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '0.75rem' : '0.9rem' }}>
                                                         {selectedTicket.mentor ? (
-                                                            <><UserIcon size={14} /> {isMobile ? '' : 'Mentor:'} <span style={{ fontWeight: 400 }}>{selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span></>
+                                                            <><UserIcon size={14} /> {isMobile ? '' : `${t('support.mentor')}:`} <span style={{ fontWeight: 400 }}>{selectedTicket.mentor.businessName || selectedTicket.mentor.name}</span></>
                                                         ) : (
-                                                            <><LifeBuoy size={14} /> {isMobile ? '' : 'Suporte:'} <span style={{ fontWeight: 400 }}>Equipe Inscreva.se</span></>
+                                                            <><LifeBuoy size={14} /> {isMobile ? '' : `${t('support.supportTeam')}:`} <span style={{ fontWeight: 400 }}>{t('support.platformTeam')}</span></>
                                                         )}
                                                     </span>
                                                 )}
@@ -785,7 +785,7 @@ export default function SupportModal({ isOpen, onClose, mode = 'user', initialTi
                                                     value={reply}
                                                     onChange={(e) => setReply(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && handleReply()}
-                                                    placeholder={isMobile ? "Escreva..." : t('support.typeYourReply')}
+                                                    placeholder={isMobile ? t('support.write') : t('support.typeYourReply')}
                                                     style={{ flex: 1, padding: isMobile ? '0.8rem' : '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: isMobile ? '0.9rem' : '1rem' }}
                                                 />
                                                 <button

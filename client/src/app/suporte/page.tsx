@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     Phone,
@@ -14,9 +14,10 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function SuportePage() {
+    const { t } = useTranslate();
     const router = useRouter();
     const [formData, setFormData] = useState({
         name: '',
@@ -39,13 +40,9 @@ export default function SuportePage() {
         e.preventDefault();
         setSending(true);
 
-        console.log('[Support Form] Submitting to:', `${process.env.NEXT_PUBLIC_API_URL}/support/contact`);
-        console.log('[Support Form] Data:', formData);
-
         try {
-            // Add timeout
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/contact`, {
                 method: 'POST',
@@ -58,17 +55,14 @@ export default function SuportePage() {
 
             clearTimeout(timeoutId);
 
-            console.log('[Support Form] Response status:', response.status);
-
             const data = await response.json();
-            console.log('[Support Form] Response data:', data);
 
             if (!response.ok) {
-                throw new Error(data.message || 'Erro ao enviar mensagem');
+                throw new Error(data.message || t('supportPage.errorMessage'));
             }
 
             setSent(true);
-            toast.success(data.message || 'Mensagem enviada com sucesso!');
+            toast.success(data.message || t('supportPage.successMessage'));
             setFormData({ name: '', email: '', subject: '', message: '' });
 
             setTimeout(() => setSent(false), 3000);
@@ -77,9 +71,9 @@ export default function SuportePage() {
             const err = error as Error;
 
             if (err.name === 'AbortError') {
-                toast.error('Tempo esgotado. Verifique sua conexão e tente novamente.');
+                toast.error(t('supportPage.timeoutError'));
             } else {
-                toast.error(err.message || 'Erro ao enviar mensagem. Tente novamente.');
+                toast.error(err.message || t('supportPage.errorMessage'));
             }
         } finally {
             setSending(false);
@@ -89,24 +83,24 @@ export default function SuportePage() {
     const contactMethods = [
         {
             icon: <Phone size={24} />,
-            title: 'Telefone / WhatsApp',
+            title: t('supportPage.phoneWhatsApp'),
             value: '+258 85 607 9576',
             link: 'https://wa.me/258856079576',
-            description: 'Disponível 24/7 para suporte urgente'
+            description: t('supportPage.whatsappUrgentDesc')
         },
         {
             icon: <Mail size={24} />,
-            title: 'Email',
+            title: t('supportPage.email'),
             value: 'karinganastudio23@gmail.com',
             link: 'mailto:karinganastudio23@gmail.com',
-            description: 'Resposta em até 24 horas'
+            description: t('supportPage.emailDesc')
         },
         {
             icon: <MessageCircle size={24} />,
-            title: 'WhatsApp Direto',
-            value: 'Chat Instantâneo',
+            title: t('supportPage.directWhatsApp'),
+            value: t('supportPage.instantChat'),
             link: 'https://wa.me/258856079576?text=Olá!%20Preciso%20de%20ajuda%20com%20a%20plataforma%20Inscreva-se',
-            description: 'Suporte em tempo real'
+            description: t('supportPage.realtimeSupportDesc')
         }
     ];
 
@@ -138,10 +132,10 @@ export default function SuportePage() {
                             color: '#171A20'
                         }}
                     >
-                        <ChevronLeft size={isMobile ? 20 : 18} /> {isMobile ? 'Voltar' : 'Voltar'}
+                        <ChevronLeft size={isMobile ? 20 : 18} /> {t('supportPage.back')}
                     </button>
                     <div style={{ fontWeight: 800, letterSpacing: isMobile ? '1px' : '2px', textTransform: 'uppercase', fontSize: isMobile ? '0.8rem' : '0.9rem', flex: 1, textAlign: 'center' }}>
-                        SUPORTE
+                        {t('supportPage.title')}
                     </div>
                     <div style={{ width: isMobile ? '60px' : '80px' }}></div>
                 </div>
@@ -164,10 +158,10 @@ export default function SuportePage() {
                         WebkitTextFillColor: 'transparent',
                         lineHeight: 1.1
                     }}>
-                        Como podemos ajudar?
+                        {t('supportPage.heroTitle')}
                     </h1>
                     <p style={{ fontSize: isMobile ? '1rem' : '1.2rem', color: '#5C5E62', maxWidth: '600px', margin: '0 auto', lineHeight: 1.5 }}>
-                        Nossa equipe está pronta para responder suas dúvidas e fornecer o suporte necessário.
+                        {t('supportPage.heroSubtitle')}
                     </p>
                 </motion.div>
 
@@ -181,7 +175,7 @@ export default function SuportePage() {
                 }} className="support-grid">
                     {/* Contact Methods */}
                     <div style={{ width: '100%', maxWidth: isMobile ? '500px' : 'none' }}>
-                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: isMobile ? '20px' : '30px' }}>Canais de Contato</h2>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: isMobile ? '20px' : '30px' }}>{t('supportPage.contactChannels')}</h2>
                         <div style={{ display: 'grid', gap: '20px' }}>
                             {contactMethods.map((method, index) => (
                                 <motion.a
@@ -241,12 +235,12 @@ export default function SuportePage() {
                         <div style={{ marginTop: '30px', padding: isMobile ? '20px' : '25px', background: '#171A20', borderRadius: '20px', color: '#fff' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
                                 <Clock size={20} />
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Horário de Atendimento</h3>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{t('supportPage.businessHours')}</h3>
                             </div>
                             <p style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.6 }}>
-                                Segunda a Sexta: 8h - 18h<br />
-                                Sábado: 9h - 13h<br />
-                                WhatsApp: 24/7
+                                {t('supportPage.mondayFriday')}<br />
+                                {t('supportPage.saturday')}<br />
+                                {t('supportPage.whatsapp247')}
                             </p>
                         </div>
                     </div>
@@ -265,22 +259,22 @@ export default function SuportePage() {
                             maxWidth: isMobile ? '500px' : 'none'
                         }}
                     >
-                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: '10px' }}>Envie uma Mensagem</h2>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 700, marginBottom: '10px' }}>{t('supportPage.sendMessageTitle')}</h2>
                         <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '30px' }}>
-                            Preencha o formulário abaixo e entraremos em contato em breve.
+                            {t('supportPage.sendMessageSubtitle')}
                         </p>
 
                         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '0.9rem' }}>
-                                    Nome Completo
+                                    {t('supportPage.fullName')}
                                 </label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Seu nome"
+                                    placeholder={t('supportPage.namePlaceholder')}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
@@ -297,14 +291,14 @@ export default function SuportePage() {
 
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '0.9rem' }}>
-                                    Email
+                                    {t('supportPage.email')}
                                 </label>
                                 <input
                                     type="email"
                                     required
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="seu@email.com"
+                                    placeholder={t('supportPage.emailPlaceholder')}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
@@ -321,14 +315,14 @@ export default function SuportePage() {
 
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '0.9rem' }}>
-                                    Assunto
+                                    {t('supportPage.subject')}
                                 </label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.subject}
                                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                    placeholder="Como podemos ajudar?"
+                                    placeholder={t('supportPage.subjectHelpPlaceholder')}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
@@ -345,13 +339,13 @@ export default function SuportePage() {
 
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '0.9rem' }}>
-                                    Mensagem
+                                    {t('supportPage.message')}
                                 </label>
                                 <textarea
                                     required
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                    placeholder="Descreva sua dúvida ou problema..."
+                                    placeholder={t('supportPage.messagePlaceholder')}
                                     rows={5}
                                     style={{
                                         width: '100%',
@@ -393,17 +387,17 @@ export default function SuportePage() {
                                 {sending ? (
                                     <>
                                         <Loader2 size={20} className="animate-spin" />
-                                        Enviando...
+                                        {t('supportPage.sending')}
                                     </>
                                 ) : sent ? (
                                     <>
                                         <CheckCircle size={20} />
-                                        Enviado!
+                                        {t('supportPage.sent')}
                                     </>
                                 ) : (
                                     <>
                                         <Send size={20} />
-                                        Enviar Mensagem
+                                        {t('supportPage.sendButton')}
                                     </>
                                 )}
                             </motion.button>
@@ -419,25 +413,25 @@ export default function SuportePage() {
                     style={{ marginTop: isMobile ? '40px' : '60px' }}
                 >
                     <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700, textAlign: 'center', marginBottom: isMobile ? '20px' : '40px' }}>
-                        Perguntas Frequentes
+                        {t('supportPage.faqTitle')}
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                         {[
                             {
-                                q: 'Como criar um evento?',
-                                a: 'Acesse o dashboard de mentor e clique em "Criar Novo Evento". Preencha as informações e personalize o design.'
+                                q: t('supportPage.faq1Q'),
+                                a: t('supportPage.faq1A')
                             },
                             {
-                                q: 'Como recebo os pagamentos?',
-                                a: 'Configure suas informações de pagamento (NIB, MPesa, eMola) nas configurações do evento.'
+                                q: t('supportPage.faq2Q'),
+                                a: t('supportPage.faq2A')
                             },
                             {
-                                q: 'Posso personalizar o design?',
-                                a: 'Sim! Cada evento pode ter cores, fontes e estilos personalizados para refletir sua marca.'
+                                q: t('supportPage.faq3Q'),
+                                a: t('supportPage.faq3A')
                             },
                             {
-                                q: 'Como gerencio inscrições?',
-                                a: 'No dashboard de mentor, você pode aprovar, rejeitar e visualizar todas as inscrições em tempo real.'
+                                q: t('supportPage.faq4Q'),
+                                a: t('supportPage.faq4A')
                             }
                         ].map((faq, index) => (
                             <div key={index} style={{ background: '#fff', padding: isMobile ? '20px' : '25px', borderRadius: '16px', border: '1px solid #eee' }}>

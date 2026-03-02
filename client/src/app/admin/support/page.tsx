@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface SupportMessage {
     _id: string;
@@ -39,6 +40,7 @@ interface Stats {
 }
 
 export default function SupportDashboard() {
+    const { t } = useTranslate();
     const router = useRouter();
     const [messages, setMessages] = useState<SupportMessage[]>([]);
     const [stats, setStats] = useState<Stats>({ total: 0, pending: 0, resolved: 0, closed: 0 });
@@ -63,13 +65,13 @@ export default function SupportDashboard() {
                 }
             });
 
-            if (!res.ok) throw new Error('Erro ao buscar mensagens');
+            if (!res.ok) throw new Error(t('support.toasts.errorLoading'));
 
             const data = await res.json();
             setMessages(data.messages);
             setStats(data.stats);
         } catch (error) {
-            toast.error('Erro ao carregar mensagens');
+            toast.error(t('support.toasts.errorLoading'));
             console.error(error);
         } finally {
             setLoading(false);
@@ -82,7 +84,7 @@ export default function SupportDashboard() {
 
     const handleSendResponse = async () => {
         if (!selectedMessage || !response.trim()) {
-            toast.error('Digite uma resposta');
+            toast.error(t('support.toasts.enterResponse'));
             return;
         }
 
@@ -105,14 +107,14 @@ export default function SupportDashboard() {
                 }
             );
 
-            if (!res.ok) throw new Error('Erro ao enviar resposta');
+            if (!res.ok) throw new Error(t('support.toasts.errorSending'));
 
-            toast.success('Resposta enviada com sucesso!');
+            toast.success(t('support.toasts.responseSuccess'));
             setResponse('');
             setSelectedMessage(null);
             fetchMessages();
         } catch (error) {
-            toast.error('Erro ao enviar resposta');
+            toast.error(t('support.toasts.errorSending'));
             console.error(error);
         } finally {
             setSending(false);
@@ -135,18 +137,18 @@ export default function SupportDashboard() {
                 }
             );
 
-            if (!res.ok) throw new Error('Erro ao atualizar status');
+            if (!res.ok) throw new Error(t('support.toasts.errorUpdating'));
 
-            toast.success('Status atualizado!');
+            toast.success(t('support.toasts.statusUpdated'));
             fetchMessages();
         } catch (error) {
-            toast.error('Erro ao atualizar status');
+            toast.error(t('support.toasts.errorUpdating'));
             console.error(error);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Tem certeza que deseja deletar esta mensagem?')) return;
+        if (!confirm(t('support.toasts.deleteConfirm'))) return;
 
         try {
             const token = localStorage.getItem('token');
@@ -161,13 +163,13 @@ export default function SupportDashboard() {
                 }
             );
 
-            if (!res.ok) throw new Error('Erro ao deletar mensagem');
+            if (!res.ok) throw new Error(t('support.toasts.errorDeleting'));
 
-            toast.success('Mensagem deletada!');
+            toast.success(t('support.toasts.deleteSuccess'));
             setSelectedMessage(null);
             fetchMessages();
         } catch (error) {
-            toast.error('Erro ao deletar mensagem');
+            toast.error(t('support.toasts.errorDeleting'));
             console.error(error);
         }
     };
@@ -216,17 +218,17 @@ export default function SupportDashboard() {
                         <ArrowLeft size={20} />
                     </button>
                     <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: 0 }}>
-                        Mensagens de Suporte
+                        {t('support.adminSupportMessages')}
                     </h1>
                 </div>
 
                 {/* Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                     {[
-                        { label: 'Total', value: stats.total, color: '#3b82f6', icon: <MessageSquare /> },
-                        { label: 'Pendentes', value: stats.pending, color: '#f59e0b', icon: <Clock /> },
-                        { label: 'Resolvidas', value: stats.resolved, color: '#10b981', icon: <CheckCircle /> },
-                        { label: 'Fechadas', value: stats.closed, color: '#6b7280', icon: <XCircle /> }
+                        { label: t('support.stats.total'), value: stats.total, color: '#3b82f6', icon: <MessageSquare /> },
+                        { label: t('support.stats.pending'), value: stats.pending, color: '#f59e0b', icon: <Clock /> },
+                        { label: t('support.stats.resolved'), value: stats.resolved, color: '#10b981', icon: <CheckCircle /> },
+                        { label: t('support.stats.closed'), value: stats.closed, color: '#6b7280', icon: <XCircle /> }
                     ].map((stat, index) => (
                         <motion.div
                             key={index}
@@ -266,7 +268,7 @@ export default function SupportDashboard() {
                         <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
                         <input
                             type="text"
-                            placeholder="Buscar por nome, email ou assunto..."
+                            placeholder={t('support.searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{
@@ -293,7 +295,7 @@ export default function SupportDashboard() {
                                 textTransform: 'capitalize'
                             }}
                         >
-                            {f === 'all' ? 'Todas' : f === 'pending' ? 'Pendentes' : f === 'resolved' ? 'Resolvidas' : 'Fechadas'}
+                            {f === 'all' ? t('categories.all') : f === 'pending' ? t('support.stats.pending') : f === 'resolved' ? t('support.stats.resolved') : t('support.stats.closed')}
                         </button>
                     ))}
                 </div>
@@ -305,11 +307,11 @@ export default function SupportDashboard() {
                 <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
                     {loading ? (
                         <div style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>
-                            Carregando...
+                            {t('common.loading')}
                         </div>
                     ) : filteredMessages.length === 0 ? (
                         <div style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>
-                            Nenhuma mensagem encontrada
+                            {t('support.noMessages')}
                         </div>
                     ) : (
                         <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
@@ -348,7 +350,7 @@ export default function SupportDashboard() {
                                             fontWeight: 600
                                         }}>
                                             {getStatusIcon(msg.status)}
-                                            {msg.status === 'pending' ? 'Pendente' : msg.status === 'resolved' ? 'Resolvida' : 'Fechada'}
+                                            {msg.status === 'pending' ? t('support.stats.pending') : msg.status === 'resolved' ? t('support.stats.resolved') : t('support.stats.closed')}
                                         </div>
                                     </div>
                                     <div style={{ fontWeight: 600, marginBottom: '4px', fontSize: '0.9rem' }}>{msg.subject}</div>
@@ -416,14 +418,14 @@ export default function SupportDashboard() {
                                 </div>
 
                                 <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
-                                    <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '8px' }}>Mensagem:</div>
+                                    <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '8px' }}>{t('support.messageLabel')}</div>
                                     <div style={{ lineHeight: 1.6 }}>{selectedMessage.message}</div>
                                 </div>
 
                                 {selectedMessage.response && (
                                     <div style={{ background: '#ecfdf5', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #10b981', marginBottom: '16px' }}>
                                         <div style={{ fontSize: '0.875rem', color: '#059669', marginBottom: '8px', fontWeight: 600 }}>
-                                            Resposta Enviada:
+                                            {t('support.responseSent')}
                                         </div>
                                         <div style={{ lineHeight: 1.6 }}>{selectedMessage.response}</div>
                                         {selectedMessage.respondedAt && (
@@ -452,7 +454,7 @@ export default function SupportDashboard() {
                                                 opacity: selectedMessage.status === status ? 1 : 0.7
                                             }}
                                         >
-                                            {status === 'pending' ? 'Pendente' : status === 'resolved' ? 'Resolvida' : 'Fechada'}
+                                            {status === 'pending' ? t('support.stats.pending') : status === 'resolved' ? t('support.stats.resolved') : t('support.stats.closed')}
                                         </button>
                                     ))}
                                 </div>
@@ -461,12 +463,12 @@ export default function SupportDashboard() {
                             {/* Response Form */}
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>
-                                    Enviar Resposta por Email:
+                                    {t('support.sendResponseEmail')}
                                 </label>
                                 <textarea
                                     value={response}
                                     onChange={(e) => setResponse(e.target.value)}
-                                    placeholder="Digite sua resposta..."
+                                    placeholder={t('support.typeResponsePlaceholder')}
                                     rows={6}
                                     style={{
                                         width: '100%',
@@ -498,7 +500,7 @@ export default function SupportDashboard() {
                                     }}
                                 >
                                     <Send size={18} />
-                                    {sending ? 'Enviando...' : 'Enviar Resposta'}
+                                    {sending ? t('supportPage.sending') : t('support.sendResponseButton')}
                                 </button>
                             </div>
                         </motion.div>
