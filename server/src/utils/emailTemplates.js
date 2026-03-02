@@ -882,6 +882,372 @@ const generateSignupIncentiveEmail = (participantName, eventTitle, signupUrl) =>
 };
 
 
+
+// ─── FEATURE / INTEGRATION ANNOUNCEMENT (broadcast to all users) ────────────
+const generateFeatureAnnouncementEmail = (
+    userName,
+    featureName,
+    featureDescription,
+    benefits = [],
+    ctaUrl = 'https://inscreva-se.com/dashboard',
+    ctaLabel = 'Explorar Agora',
+    isIntegration = false
+) => {
+    const accentColor = '#D4AF37';
+    const badgeText = isIntegration ? '🔗 NOVA INTEGRAÇÃO' : '🚀 NOVA FUNCIONALIDADE';
+    const badgeBg = isIntegration ? '#0ea5e9' : '#7c3aed';
+
+    const defaultBenefits = benefits.length > 0 ? benefits : [
+        ['⚡', 'Produtividade ao Máximo', 'Poupe tempo e automatize mais processos na plataforma.'],
+        ['🎯', 'Precisão Aumentada', 'Tome melhores decisões com dados mais completos e precisos.'],
+        ['🔒', 'Segurança de Topo', 'Todas as novidades seguem os nossos padrões de segurança premium.'],
+    ];
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #0a0a0a 0%, #1e1e2e 60%, #0a0a0a 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <!-- Dot pattern overlay -->
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.07; background-image: radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0); background-size: 20px 20px;"></div>
+                <!-- Glow circle -->
+                <div style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 200px; height: 200px; background: radial-gradient(circle, ${badgeBg}55 0%, transparent 70%);"></div>
+
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 70px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1; margin-bottom: 20px;">
+
+                <!-- Badge -->
+                <div style="display: inline-block; background: ${badgeBg}; border-radius: 100px; padding: 7px 20px; margin-bottom: 18px; position: relative; z-index: 1; box-shadow: 0 4px 15px ${badgeBg}66;">
+                    <span style="color: #ffffff; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">${badgeText}</span>
+                </div>
+
+                <h1 style="color: #ffffff; font-size: 26px; font-weight: 900; margin: 0 0 10px; line-height: 1.25; position: relative; z-index: 1;">
+                    ${featureName}
+                </h1>
+                <p style="color: #888; font-size: 14px; margin: 0; position: relative; z-index: 1;">Disponível agora para todos os utilizadores</p>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 45px;">
+
+                <!-- Greeting -->
+                <div style="background: #fcfcfc; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor}; padding: 30px; margin-bottom: 30px;">
+                    <p style="font-size: 20px; color: #111; margin: 0 0 15px; font-weight: 800;">Olá, ${userName}! 👋</p>
+                    <p style="font-size: 15px; color: #555; line-height: 1.8; margin: 0;">
+                        ${featureDescription}
+                    </p>
+                </div>
+
+                <!-- Benefits list -->
+                ${defaultBenefits.length > 0 ? `
+                <div style="background: #fff; border: 1px solid #f0f0f0; border-radius: 20px; padding: 28px; margin-bottom: 30px;">
+                    <p style="margin: 0 0 18px; color: #111; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">O que vai ganhar com isto:</p>
+                    ${defaultBenefits.map(([icon, title, desc], i) => `
+                    <div style="display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; ${i < defaultBenefits.length - 1 ? 'border-bottom: 1px solid #f8f8f8;' : ''}">
+                        <span style="font-size: 22px; flex-shrink: 0; line-height: 1;">${icon}</span>
+                        <div>
+                            <p style="margin: 0 0 3px; font-size: 14px; font-weight: 800; color: #111;">${title}</p>
+                            <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.6;">${desc}</p>
+                        </div>
+                    </div>`).join('')}
+                </div>
+                ` : ''}
+
+                ${isIntegration ? `
+                <!-- Integration Badge -->
+                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: 16px; padding: 22px; margin-bottom: 30px; text-align: center;">
+                    <p style="margin: 0 0 6px; font-size: 11px; font-weight: 900; color: #0ea5e9; text-transform: uppercase; letter-spacing: 2px;">🔗 Integração Nativa</p>
+                    <p style="margin: 0; font-size: 13px; color: #0369a1; line-height: 1.6;">Esta integração está disponível nativamente na plataforma. Não é necessário instalar nenhuma extensão ou ferramenta de terceiros.</p>
+                </div>
+                ` : ''}
+
+                <!-- CTA -->
+                <div style="text-align: center; margin: 10px 0 30px;">
+                    <a href="${ctaUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 50px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 10px 30px rgba(212,175,55,0.35); text-transform: uppercase; letter-spacing: 1px;">
+                        ${ctaLabel} →
+                    </a>
+                    <p style="font-size: 12px; color: #bbb; margin-top: 14px;">Totalmente disponível no seu painel. Sem passos adicionais.</p>
+                </div>
+
+                <!-- Social CTA Block -->
+                <div style="background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); border-radius: 20px; padding: 28px 25px; text-align: center; border: 1px solid #2a2a2a;">
+                    <p style="margin: 0 0 6px; font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Fique sempre a par</p>
+                    <p style="margin: 0 0 18px; font-size: 15px; color: #fff; font-weight: 800; line-height: 1.4;">
+                        Siga-nos para nunca perder uma <span style="color: ${accentColor};">novidade</span> 🔥
+                    </p>
+                    <div style="margin-bottom: 18px;">
+                        <a href="https://www.instagram.com/inscreva_se_events" style="display: inline-block; margin: 0 5px; background: #833ab4; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.youtube}" style="display: inline-block; margin: 0 5px; background: #ff0000; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.linkedin}" style="display: inline-block; margin: 0 5px; background: #0077b5; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.tiktok}" style="display: inline-block; margin: 0 5px; background: #111; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none; border: 1px solid #333;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.whatsapp}" style="display: inline-block; margin: 0 5px; background: #25d366; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                    </div>
+                    <a href="${socialLinks.community}" style="display: inline-block; background: #25d366; color: #fff; padding: 12px 26px; text-decoration: none; border-radius: 100px; font-weight: 900; font-size: 12px; box-shadow: 0 4px 15px rgba(37,211,102,0.35);">
+                        💬 Comunidade VIP WhatsApp
+                    </a>
+                </div>
+
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+
+// ─── MAINTENANCE / SCHEDULED DOWNTIME NOTICE ─────────────────────────────────
+const generateMaintenanceNoticeEmail = (
+    userName,
+    maintenanceDate,
+    maintenanceTime,
+    estimatedDuration,
+    affectedFeatures = [],
+    statusPageUrl = 'https://inscreva-se.com'
+) => {
+    const accentColor = '#f59e0b'; // Amber — warning without alarm
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.08); border: 1px solid #f0f0f0;">
+
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #1c1a10 0%, #2d2706 100%); padding: 45px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.06; background-image: radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0); background-size: 20px 20px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 65px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1; margin-bottom: 18px;">
+                <div style="display: inline-block; background: ${accentColor}22; border: 1px solid ${accentColor}55; border-radius: 100px; padding: 6px 18px; margin-bottom: 16px; position: relative; z-index: 1;">
+                    <span style="color: ${accentColor}; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">🔧 MANUTENÇÃO PROGRAMADA</span>
+                </div>
+                <h1 style="color: #ffffff; font-size: 23px; font-weight: 900; margin: 0; line-height: 1.3; position: relative; z-index: 1;">Interrupção temporária agendada</h1>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 45px;">
+                <div style="background: #fcfcfc; border-radius: 18px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor}; padding: 28px; margin-bottom: 28px;">
+                    <p style="font-size: 19px; color: #111; margin: 0 0 12px; font-weight: 800;">Olá, ${userName}! 👋</p>
+                    <p style="font-size: 15px; color: #555; line-height: 1.8; margin: 0;">
+                        Realizaremos uma manutenção programada para melhoria da plataforma. Durante esse período, alguns serviços poderão estar temporariamente indisponíveis. Pedimos desculpa pela inconveniência.
+                    </p>
+                </div>
+
+                <!-- Date/Time Box -->
+                <div style="display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 130px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 22px; text-align: center;">
+                        <p style="margin: 0 0 6px; font-size: 11px; font-weight: 900; color: ${accentColor}; text-transform: uppercase; letter-spacing: 1px;">📅 Data</p>
+                        <p style="margin: 0; font-size: 18px; font-weight: 900; color: #111;">${maintenanceDate}</p>
+                    </div>
+                    <div style="flex: 1; min-width: 130px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 22px; text-align: center;">
+                        <p style="margin: 0 0 6px; font-size: 11px; font-weight: 900; color: ${accentColor}; text-transform: uppercase; letter-spacing: 1px;">🕐 Hora</p>
+                        <p style="margin: 0; font-size: 18px; font-weight: 900; color: #111;">${maintenanceTime}</p>
+                    </div>
+                    <div style="flex: 1; min-width: 130px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 22px; text-align: center;">
+                        <p style="margin: 0 0 6px; font-size: 11px; font-weight: 900; color: ${accentColor}; text-transform: uppercase; letter-spacing: 1px;">⏱️ Duração</p>
+                        <p style="margin: 0; font-size: 18px; font-weight: 900; color: #111;">${estimatedDuration}</p>
+                    </div>
+                </div>
+
+                ${affectedFeatures.length > 0 ? `
+                <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 16px; padding: 22px; margin-bottom: 28px;">
+                    <p style="margin: 0 0 14px; font-size: 13px; font-weight: 900; color: #c2410c; text-transform: uppercase; letter-spacing: 1px;">⚠️ Áreas afetadas</p>
+                    ${affectedFeatures.map(f => `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #fed7aa22;">
+                        <span style="color: ${accentColor}; font-size: 16px; flex-shrink: 0;">•</span>
+                        <p style="margin: 0; font-size: 14px; color: #7c3100;">${f}</p>
+                    </div>`).join('')}
+                </div>
+                ` : ''}
+
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a href="${statusPageUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #b45309 100%); color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 8px 20px rgba(245,158,11,0.3); text-transform: uppercase; letter-spacing: 1px;">
+                        🔍 Ver Estado do Sistema
+                    </a>
+                </div>
+
+                <p style="font-size: 13px; color: #999; text-align: center; line-height: 1.7; font-style: italic;">
+                    Obrigado pela sua compreensão. Estamos a trabalhar para tornar o Inscreva-se ainda melhor para si.
+                </p>
+
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+// ─── PROMOTIONAL CAMPAIGN (discount / offer / upgrade) ───────────────────────
+const generatePromotionalCampaignEmail = (
+    userName,
+    campaignTitle,
+    campaignDescription,
+    discountCode = null,
+    discountValue = null,
+    ctaUrl = 'https://inscreva-se.com/planos',
+    ctaLabel = 'Aproveitar Agora',
+    expiryDate = null
+) => {
+    const accentColor = '#D4AF37';
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+
+            <!-- Animated Header Strip -->
+            <div style="background: linear-gradient(90deg, #D4AF37, #f5d769, #D4AF37, #b8860b); background-size: 300% 100%; padding: 8px; text-align: center;">
+                <p style="margin: 0; font-size: 12px; font-weight: 900; color: #000; text-transform: uppercase; letter-spacing: 3px;">✨ Oferta Especial para Si ✨</p>
+            </div>
+
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #000000 0%, #1a1100 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.08; background-image: radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0); background-size: 22px 22px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 65px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1; margin-bottom: 18px;">
+                ${discountValue ? `
+                <div style="position: relative; z-index: 1; margin-bottom: 16px;">
+                    <div style="display: inline-block; background: ${accentColor}; border-radius: 50%; width: 90px; height: 90px; line-height: 90px; box-shadow: 0 0 40px ${accentColor}88;">
+                        <span style="color: #000; font-size: 22px; font-weight: 900; display: block; line-height: 90px;">${discountValue}</span>
+                    </div>
+                </div>
+                ` : ''}
+                <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin: 0; line-height: 1.3; position: relative; z-index: 1;">${campaignTitle}</h1>
+                ${expiryDate ? `<p style="color: #888; font-size: 13px; margin: 10px 0 0; position: relative; z-index: 1;">⏰ Válido até ${expiryDate}</p>` : ''}
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 45px;">
+                <div style="background: #fcfcfc; border-radius: 18px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor}; padding: 28px; margin-bottom: 28px;">
+                    <p style="font-size: 19px; color: #111; margin: 0 0 12px; font-weight: 800;">Olá, ${userName}! 🎉</p>
+                    <p style="font-size: 15px; color: #555; line-height: 1.8; margin: 0;">${campaignDescription}</p>
+                </div>
+
+                ${discountCode ? `
+                <!-- Discount Code Box -->
+                <div style="background: linear-gradient(135deg, #fffdf0 0%, #fff9d6 100%); border: 2px dashed ${accentColor}; border-radius: 18px; padding: 28px; margin-bottom: 28px; text-align: center;">
+                    <p style="margin: 0 0 10px; font-size: 12px; font-weight: 900; color: #888; text-transform: uppercase; letter-spacing: 2px;">🎁 O seu código exclusivo</p>
+                    <p style="margin: 0 0 10px; font-size: 32px; font-weight: 900; color: #000; letter-spacing: 6px; font-family: 'Courier New', monospace;">${discountCode}</p>
+                    <p style="margin: 0; font-size: 12px; color: #aaa;">Copie o código e aplique no checkout</p>
+                </div>
+                ` : ''}
+
+                <!-- CTA -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a href="${ctaUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 22px 55px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 16px; display: inline-block; box-shadow: 0 12px 35px rgba(212,175,55,0.4); text-transform: uppercase; letter-spacing: 1px;">
+                        ${ctaLabel} →
+                    </a>
+                    ${expiryDate ? `<p style="font-size: 12px; color: #e74c3c; margin-top: 14px; font-weight: 700;">⏰ Expira em ${expiryDate}. Não perca!</p>` : ''}
+                </div>
+
+                <!-- Social CTA -->
+                <div style="background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); border-radius: 20px; padding: 28px 25px; text-align: center; border: 1px solid #2a2a2a;">
+                    <p style="margin: 0 0 6px; font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Partilhe com amigos</p>
+                    <p style="margin: 0 0 18px; font-size: 15px; color: #fff; font-weight: 800; line-height: 1.4;">
+                        Partilhe a novidade — os seus amigos vão <span style="color: ${accentColor};">agradecer</span> 🙌
+                    </p>
+                    <a href="${socialLinks.community}" style="display: inline-block; background: #25d366; color: #fff; padding: 12px 26px; text-decoration: none; border-radius: 100px; font-weight: 900; font-size: 12px; box-shadow: 0 4px 15px rgba(37,211,102,0.35);">
+                        💬 Partilhar na Comunidade VIP
+                    </a>
+                </div>
+
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+// ─── PLATFORM MILESTONE CELEBRATION (shared with all users) ──────────────────
+const generateMilestoneEmail = (
+    userName,
+    milestoneTitle,
+    milestoneDescription,
+    milestoneNumber,
+    milestoneUnit,
+    ctaUrl = 'https://inscreva-se.com/dashboard',
+    ctaLabel = 'Celebrar Connosco'
+) => {
+    const accentColor = '#D4AF37';
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #000 0%, #1a1200 60%, #0a0800 100%); padding: 55px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.08; background-image: radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0); background-size: 18px 18px;"></div>
+                <!-- Glow -->
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; background: radial-gradient(circle, ${accentColor}22 0%, transparent 70%);"></div>
+
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 65px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1; margin-bottom: 22px;">
+
+                <!-- Big Number -->
+                <div style="position: relative; z-index: 1; margin-bottom: 12px;">
+                    <span style="font-size: 72px; font-weight: 900; color: ${accentColor}; line-height: 1; display: block;">${milestoneNumber}</span>
+                    <span style="font-size: 18px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 3px;">${milestoneUnit}</span>
+                </div>
+
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin: 12px 0 0; line-height: 1.3; position: relative; z-index: 1;">${milestoneTitle}</h1>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 45px;">
+                <div style="background: #fcfcfc; border-radius: 18px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor}; padding: 28px; margin-bottom: 28px;">
+                    <p style="font-size: 19px; color: #111; margin: 0 0 12px; font-weight: 800;">Olá, ${userName}! 🎊</p>
+                    <p style="font-size: 15px; color: #555; line-height: 1.8; margin: 0;">${milestoneDescription}</p>
+                </div>
+
+                <!-- Thank You Card -->
+                <div style="background: linear-gradient(135deg, #fffdf0, #fff8d0); border: 1px solid ${accentColor}44; border-radius: 18px; padding: 28px; margin-bottom: 28px; text-align: center;">
+                    <p style="margin: 0 0 8px; font-size: 28px;">🏆</p>
+                    <p style="margin: 0 0 8px; font-size: 16px; font-weight: 900; color: #111;">Obrigado por fazer parte disto.</p>
+                    <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.7;">Cada utilizador como você é a razão pela qual continuamos a inovar. Este marco é tão seu quanto nosso.</p>
+                </div>
+
+                <!-- CTA -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a href="${ctaUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 50px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 10px 30px rgba(212,175,55,0.35); text-transform: uppercase; letter-spacing: 1px;">
+                        ${ctaLabel} 🎉
+                    </a>
+                </div>
+
+                <!-- Social Share -->
+                <div style="background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); border-radius: 20px; padding: 28px 25px; text-align: center; border: 1px solid #2a2a2a;">
+                    <p style="margin: 0 0 6px; font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Partilhe este momento</p>
+                    <p style="margin: 0 0 18px; font-size: 15px; color: #fff; font-weight: 800; line-height: 1.4;">
+                        Ajude-nos a <span style="color: ${accentColor};">espalhar a notícia</span> pelas redes 🌍
+                    </p>
+                    <div style="margin-bottom: 18px;">
+                        <a href="https://www.instagram.com/inscreva_se_events" style="display: inline-block; margin: 0 5px; background: #833ab4; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.facebook}" style="display: inline-block; margin: 0 5px; background: #1877f2; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.linkedin}" style="display: inline-block; margin: 0 5px; background: #0077b5; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                        <a href="${socialLinks.whatsapp}" style="display: inline-block; margin: 0 5px; background: #25d366; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" style="width: 20px; height: 20px; vertical-align: middle; filter: brightness(0) invert(1);">
+                        </a>
+                    </div>
+                    <a href="${socialLinks.community}" style="display: inline-block; background: #25d366; color: #fff; padding: 12px 26px; text-decoration: none; border-radius: 100px; font-weight: 900; font-size: 12px; box-shadow: 0 4px 15px rgba(37,211,102,0.35);">
+                        💬 Comunidade VIP WhatsApp
+                    </a>
+                </div>
+
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
@@ -898,6 +1264,10 @@ module.exports = {
     generateAdminAdNotificationEmail,
     generateAdStatusUpdateEmail,
     generateSignupIncentiveEmail,
+    generateFeatureAnnouncementEmail,
+    generateMaintenanceNoticeEmail,
+    generatePromotionalCampaignEmail,
+    generateMilestoneEmail,
     getSocialFooter,
     socialLinks
 };

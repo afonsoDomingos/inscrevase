@@ -13,6 +13,7 @@ export const adminCommunicationService = {
         subject: string;
         content: string;
         isAllMentors?: boolean;
+        isAllUsers?: boolean;
     }) => {
         const response = await fetch(`${API_URL}/admin/communication/send-email`, {
             method: 'POST',

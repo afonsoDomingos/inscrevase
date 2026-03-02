@@ -186,6 +186,36 @@ const TEMPLATES = [
         category: 'Conversão',
         subject: '💡 Cria a Tua Conta e Acompanha a Tua Inscrição!',
         content: 'Olá! A tua inscrição no evento foi recebida com sucesso. Notamos que ainda não tens uma conta na plataforma Inscreva-se. Com uma conta gratuita de Participante, podes acompanhar o estado da tua inscrição em tempo real, aceder às aulas e materiais do evento, solicitar e descarregar o teu certificado de participação, e comunicar diretamente com o organizador. Registo em menos de 1 minuto — usa o mesmo e-mail desta inscrição e serás automaticamente ligado ao teu evento!'
+    },
+    {
+        id: 'new_feature_announcement',
+        category: 'Broadcast',
+        subject: '🚀 Nova Funcionalidade: [Nome da Funcionalidade]',
+        content: 'Olá! Temos uma novidade incrível para partilhar consigo. Acabámos de lançar [Nome da Funcionalidade] — uma nova ferramenta que vai transformar a forma como gere os seus eventos e maximiza os seus resultados. Esta funcionalidade permite-lhe [descreva o benefício principal]. Já está disponível no seu painel, sem necessidade de configuração adicional. Explore agora e diga-nos o que acha!'
+    },
+    {
+        id: 'new_integration_announcement',
+        category: 'Broadcast',
+        subject: '🔗 Nova Integração Disponível: [Nome da Integração]',
+        content: 'Olá! A Inscreva-se acaba de integrar nativamente com [Nome da Integração]. Isto significa que agora pode [benefício principal da integração] diretamente a partir do seu painel, sem precisar de ferramentas de terceiros ou configurações técnicas complexas. A integração está ativa para todos os utilizadores a partir de hoje. Para começar, aceda ao seu painel e explore a nova opção disponível. Estamos sempre a trabalhar para trazer as melhores ferramentas para o seu sucesso!'
+    },
+    {
+        id: 'maintenance_notice',
+        category: 'Broadcast',
+        subject: '🔧 Aviso de Manutenção Programada — [Data]',
+        content: 'Olá! Informamos que a plataforma Inscreva-se passará por uma manutenção programada no dia [Data] às [Hora], com duração estimada de [Duração]. Durante este período, [liste os serviços afetados] poderão estar temporariamente indisponíveis. Esta manutenção é necessária para melhorar a performance e estabilidade da plataforma. Pedimos desculpa pela inconveniência e agradecemos a sua compreensão. Caso tenha urgências, contacte o nosso suporte antes da janela de manutenção.'
+    },
+    {
+        id: 'promotional_campaign',
+        category: 'Broadcast',
+        subject: '✨ Oferta Especial: [Título da Campanha] — Válido até [Data]',
+        content: 'Olá! Temos uma oferta exclusiva para si. [Descreva a promoção ou o desconto disponível]. Para aproveitar, utilize o código [CÓDIGO] no checkout — ou aceda diretamente ao link abaixo. Esta oferta é válida apenas até [Data de Expiração], por isso não deixe escapar esta oportunidade única. Foi desenvolvida especialmente para utilizadores como você, que já fazem parte da nossa comunidade de elite. Aproveite agora!'
+    },
+    {
+        id: 'platform_milestone',
+        category: 'Broadcast',
+        subject: '🏆 Celebramos Juntos: [Número] [Unidade] na Inscreva-se!',
+        content: 'Olá! Temos uma notícia fantástica para celebrar com toda a nossa comunidade. A Inscreva-se acabou de atingir [Número] [Unidade] — e isto só foi possível graças a utilizadores incríveis como você. Este marco representa o impacto coletivo que estamos a criar juntos. Como forma de celebração, [mencione benefício ou surpresa, se houver]. Obrigado por fazer parte desta jornada. O melhor ainda está por vir!'
     }
 ];
 
@@ -201,6 +231,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
 
     // Bulk logic states
     const [isAllMentors, setIsAllMentors] = useState(!recipientId);
+    const [isAllUsers, setIsAllUsers] = useState(false);
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -279,17 +310,18 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
         setLoading(true);
 
         try {
-            if (!recipientId && !isAllMentors && selectedMentorIds.length === 0) {
-                toast.error('Selecione pelo menos um mentor.');
+            if (!recipientId && !isAllMentors && !isAllUsers && selectedMentorIds.length === 0) {
+                toast.error('Selecione pelo menos um mentor ou grupo.');
                 setLoading(false);
                 return;
             }
 
             await adminCommunicationService.sendEmail({
-                recipientIds: recipientId ? [recipientId] : (isAllMentors ? undefined : selectedMentorIds),
+                recipientIds: recipientId ? [recipientId] : (isAllMentors || isAllUsers ? undefined : selectedMentorIds),
                 subject,
                 content,
-                isAllMentors: !recipientId && isAllMentors
+                isAllMentors: !recipientId && isAllMentors,
+                isAllUsers: !recipientId && isAllUsers
             });
 
             toast.success('Emails enviados com sucesso!');
@@ -427,34 +459,46 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                 {!recipientId ? (
                                     <div style={{ marginBottom: '2rem' }}>
                                         <label style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#999', letterSpacing: '1px', display: 'block', marginBottom: '1rem' }}>Destinatários</label>
-                                        <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap' }}>
                                             <button
                                                 type="button"
-                                                onClick={() => setIsAllMentors(true)}
+                                                onClick={() => { setIsAllMentors(true); setIsAllUsers(false); }}
                                                 style={{
-                                                    flex: 1, padding: '12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 700,
+                                                    flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
                                                     background: isAllMentors ? '#000' : '#f5f5f5',
                                                     color: isAllMentors ? '#FFD700' : '#666',
-                                                    border: 'none', cursor: 'pointer'
+                                                    border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
                                                 }}
                                             >
-                                                Todos
+                                                Mentores
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => setIsAllMentors(false)}
+                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(true); }}
                                                 style={{
-                                                    flex: 1, padding: '12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 700,
-                                                    background: !isAllMentors ? '#000' : '#f5f5f5',
-                                                    color: !isAllMentors ? '#FFD700' : '#666',
-                                                    border: 'none', cursor: 'pointer'
+                                                    flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
+                                                    background: isAllUsers ? '#000' : '#f5f5f5',
+                                                    color: isAllUsers ? '#FFD700' : '#666',
+                                                    border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                Todos (Geral)
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(false); }}
+                                                style={{
+                                                    flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
+                                                    background: (!isAllMentors && !isAllUsers) ? '#000' : '#f5f5f5',
+                                                    color: (!isAllMentors && !isAllUsers) ? '#FFD700' : '#666',
+                                                    border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
                                                 }}
                                             >
                                                 Escolher
                                             </button>
                                         </div>
 
-                                        {!isAllMentors && (
+                                        {!isAllMentors && !isAllUsers && (
                                             <div style={{ display: 'grid', gap: '10px' }}>
                                                 <div style={{ position: 'relative' }}>
                                                     <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#aaa' }} />
