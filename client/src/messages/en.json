@@ -228,6 +228,27 @@
         "updates": "Updates",
         "feedback": "Feedback"
     },
+    "calendar": {
+        "badge": "EXCLUSIVITY & PLANNING",
+        "title": "Experience ",
+        "highlight": "Calendar",
+        "description": "Don't miss any important moments. Explore the full schedule of courses, workshops, and exclusive events in our network.",
+        "today": "TODAY",
+        "weekdays": {
+            "sun": "Sun",
+            "mon": "Mon",
+            "tue": "Tue",
+            "wed": "Wed",
+            "thu": "Thu",
+            "fri": "Fri",
+            "sat": "Sat"
+        },
+        "selectDay": "Select a day",
+        "scheduledEvents": "Scheduled Events",
+        "noEvents": "No events have been scheduled for this day yet.",
+        "mentorCTA": "Are you a mentor and want to see your event here?",
+        "createEvent": "Create Event"
+    },
     "auth": {
         "signIn": "Sign In",
         "login": "Login",
@@ -774,6 +795,93 @@
         "readTime": "min read",
         "views": "views",
         "readMore": "Read More"
+    },
+    "about": {
+        "hero": {
+            "badge": "Leading Event Management Platform",
+            "title": "About",
+            "highlight": "Inscreva-se",
+            "description": "Complete platform to create and manage events or courses, designed for Mentors, Specialists, and Companies.",
+            "subDescription": "We are the platform that is revolutionizing how events are created, managed, and experienced throughout the Lusophone community."
+        },
+        "stats": {
+            "events": "Events Created",
+            "participants": "Participants",
+            "mentors": "Active Mentors",
+            "countries": "Countries"
+        },
+        "mission": {
+            "title": "Our Mission",
+            "subtitle": "Democratize the creation of quality events",
+            "p1": "Inscreva-se was born from observing a real need: event organizers in Angola, Mozambique, and other Lusophone countries needed a simple, powerful tool adapted to their local realities.",
+            "p2": "Our mission is to empower mentors, speakers, trainers, and organizers to create memorable experiences without technological or bureaucratic barriers."
+        },
+        "vision": {
+            "title": "Our Vision",
+            "description": "To be the reference platform for event management throughout the Lusophone community, connecting millions of people through transformative experiences and making event organization accessible to all."
+        },
+        "values": {
+            "title": "Our Values",
+            "description": "The principles that guide every decision and functionality of the platform.",
+            "items": {
+                "passion": {
+                    "title": "Passion for Events",
+                    "description": "We believe every event has the power to transform lives and create meaningful connections."
+                },
+                "focus": {
+                    "title": "Customer Focus",
+                    "description": "We develop every feature thinking about the real needs of event organizers."
+                },
+                "innovation": {
+                    "title": "Continuous Innovation",
+                    "description": "We are always improving the platform with new technologies and features."
+                },
+                "global": {
+                    "title": "Global Reach",
+                    "description": "We connect organizers and participants in Angola, Mozambique, Portugal, and Brazil."
+                }
+            }
+        },
+        "offer": {
+            "title": "What We Offer",
+            "description": "A complete platform for the entire life cycle of your event.",
+            "features": {
+                "f1": "Custom registration form creation",
+                "f2": "Ticket sales with multiple payment methods",
+                "f3": "Complete participant and check-in management",
+                "f4": "Unique QR Codes for ticket verification",
+                "f5": "Dashboard with real-time analytics",
+                "f6": "Integration with Multicaixa Express and M-Pesa",
+                "f7": "Automatic certificates for participants",
+                "f8": "Dedicated 24/7 support via WhatsApp"
+            }
+        },
+        "team": {
+            "title": "Our Team",
+            "description": "Dedicated professionals creating the best experience for you.",
+            "groups": {
+                "dev": {
+                    "name": "Development Team",
+                    "role": "Technology & Innovation",
+                    "description": "Engineers dedicated to creating the best event management experience."
+                },
+                "support": {
+                    "name": "Support Team",
+                    "role": "Customer Service",
+                    "description": "Available 24/7 to help organizers and participants."
+                },
+                "marketing": {
+                    "name": "Marketing Team",
+                    "role": "Growth & Partnerships",
+                    "description": "Working to expand the platform's reach across the Lusophony."
+                }
+            }
+        },
+        "cta": {
+            "title": "Ready to create your next event?",
+            "description": "Join thousands of organizers who already trust Inscreva-se.",
+            "button": "Start for Free"
+        }
     },
     "support": {
         "title": "Support & Help",

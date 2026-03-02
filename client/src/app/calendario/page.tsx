@@ -20,7 +20,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function EventCalendarPage() {
-    const { locale } = useTranslate();
+    const { t, locale } = useTranslate();
     const [events, setEvents] = useState<FormModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -111,15 +111,15 @@ export default function EventCalendarPage() {
                         animate={{ opacity: 1, y: 0 }}
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', padding: '6px 16px', borderRadius: '50px', color: '#D4AF37', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '1.5rem' }}
                     >
-                        <CalendarIcon size={14} /> EXCLUSIVIDADE & PLANEAMENTO
+                        <CalendarIcon size={14} /> {t('calendar.badge')}
                     </motion.div>
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', letterSpacing: '-1px', marginBottom: '1rem' }}
+                        style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', letterSpacing: '-1px', marginBottom: '1rem', color: '#fff' }}
                     >
-                        Calendário de <span className="gold-text">Experiências</span>
+                        {t('calendar.title')}<span className="gold-text">{t('calendar.highlight')}</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -127,7 +127,7 @@ export default function EventCalendarPage() {
                         transition={{ delay: 0.2 }}
                         style={{ color: '#888', maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.6 }}
                     >
-                        Não perca nenhum momento importante. Explore a agenda completa de cursos, workshops e eventos exclusivos da nossa rede.
+                        {t('calendar.description')}
                     </motion.p>
                 </div>
 
@@ -140,7 +140,7 @@ export default function EventCalendarPage() {
                     >
                         {/* Month Navigation */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
-                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', textTransform: 'capitalize' }}>
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', textTransform: 'capitalize', color: '#fff' }}>
                                 {currentDate.toLocaleDateString(locale === 'pt' ? 'pt-PT' : 'en-US', { month: 'long', year: 'numeric' })}
                             </h2>
                             <div style={{ display: 'flex', gap: '10px' }}>
@@ -148,7 +148,7 @@ export default function EventCalendarPage() {
                                     <ChevronLeft size={20} />
                                 </button>
                                 <button onClick={() => setCurrentDate(new Date())} style={{ padding: '0 1.5rem', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}>
-                                    HOJE
+                                    {t('calendar.today')}
                                 </button>
                                 <button onClick={nextMonth} style={{ width: '44px', height: '44px', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#FFD700'}>
                                     <ChevronRight size={20} />
@@ -159,7 +159,15 @@ export default function EventCalendarPage() {
                         {/* Calendar Grid */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px' }}>
                             {/* Weekdays Labels */}
-                            {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
+                            {[
+                                t('calendar.weekdays.sun'),
+                                t('calendar.weekdays.mon'),
+                                t('calendar.weekdays.tue'),
+                                t('calendar.weekdays.wed'),
+                                t('calendar.weekdays.thu'),
+                                t('calendar.weekdays.fri'),
+                                t('calendar.weekdays.sat')
+                            ].map(day => (
                                 <div key={day} style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{day}</div>
                             ))}
 
@@ -233,8 +241,8 @@ export default function EventCalendarPage() {
                         style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '1000px' }}
                     >
                         <div style={{ background: 'var(--gold-gradient)', padding: '1.5rem', borderRadius: '24px', color: '#000' }}>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '0.5rem' }}>{selectedDate ? formatDate(selectedDate) : 'Selecione um dia'}</h3>
-                            <p style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.8 }}>{selectedEvents.length} Eventos Programados</p>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '0.5rem' }}>{selectedDate ? formatDate(selectedDate) : t('calendar.selectDay')}</h3>
+                            <p style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.8 }}>{selectedEvents.length} {t('calendar.scheduledEvents')}</p>
                         </div>
 
                         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '10px' }} className="no-scrollbar">
@@ -250,7 +258,7 @@ export default function EventCalendarPage() {
                                         <div style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                                             <SearchX size={24} style={{ opacity: 0.3 }} />
                                         </div>
-                                        <p style={{ color: '#666', fontSize: '0.9rem', fontWeight: 600 }}>Ninguém marcou eventos para este dia ainda.</p>
+                                        <p style={{ color: '#666', fontSize: '0.9rem', fontWeight: 600 }}>{t('calendar.noEvents')}</p>
                                     </motion.div>
                                 ) : (
                                     selectedEvents.map((event, idx) => (
@@ -305,13 +313,13 @@ export default function EventCalendarPage() {
 
                         {/* CTA for Mentors */}
                         <div style={{ marginTop: 'auto', padding: '1.5rem', background: '#000', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '24px', textAlign: 'center' }}>
-                            <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '1rem' }}>É um mentor e quer ver o seu evento aqui?</p>
+                            <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '1rem' }}>{t('calendar.mentorCTA')}</p>
                             <Link
                                 href="/dashboard/mentor"
                                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', background: 'rgba(212,175,55,0.1)', color: '#D4AF37', borderRadius: '14px', fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none', transition: 'all 0.3s' }}
                                 onMouseOver={e => e.currentTarget.style.background = '#FFD700' + '22'}
                             >
-                                Criar Evento <ArrowRight size={16} />
+                                {t('calendar.createEvent')} <ArrowRight size={16} />
                             </Link>
                         </div>
                     </motion.div>

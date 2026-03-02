@@ -241,6 +241,27 @@
         "updates": "Atualizações",
         "feedback": "Feedback"
     },
+    "calendar": {
+        "badge": "EXCLUSIVIDADE & PLANEAMENTO",
+        "title": "Calendário de ",
+        "highlight": "Experiências",
+        "description": "Não perca nenhum momento importante. Explore a agenda completa de cursos, workshops e eventos exclusivos da nossa rede.",
+        "today": "HOJE",
+        "weekdays": {
+            "sun": "Dom",
+            "mon": "Seg",
+            "tue": "Ter",
+            "wed": "Qua",
+            "thu": "Qui",
+            "fri": "Sex",
+            "sat": "Sáb"
+        },
+        "selectDay": "Selecione um dia",
+        "scheduledEvents": "Eventos Programados",
+        "noEvents": "Ninguém marcou eventos para este dia ainda.",
+        "mentorCTA": "É um mentor e quer ver o seu evento aqui?",
+        "createEvent": "Criar Evento"
+    },
     "auth": {
         "signIn": "Entrar",
         "login": "Entrar",
@@ -790,6 +811,93 @@
         "readTime": "min de leitura",
         "views": "visualizações",
         "readMore": "Ler Mais"
+    },
+    "about": {
+        "hero": {
+            "badge": "Plataforma Líder em Gestão de Eventos",
+            "title": "Sobre o",
+            "highlight": "Inscreva-se",
+            "description": "Plataforma completa para criar e gerenciar eventos ou cursos, pensada para Mentores, Especialistas e Empresas.",
+            "subDescription": "Somos a plataforma que está a revolucionar a forma como eventos são criados, geridos e vivenciados em toda a comunidade lusófona."
+        },
+        "stats": {
+            "events": "Eventos Criados",
+            "participants": "Participantes",
+            "mentors": "Mentores Ativos",
+            "countries": "Países"
+        },
+        "mission": {
+            "title": "Nossa Missão",
+            "subtitle": "Democratizar a criação de eventos de qualidade",
+            "p1": "O Inscreva-se nasceu da observação de uma necessidade real: organizadores de eventos em Angola, Moçambique e outros países lusófonos precisavam de uma ferramenta simples, poderosa e adaptada às suas realidades locais.",
+            "p2": "Nossa missão é capacitar mentores, palestrantes, formadores e organizadores a criar experiências memoráveis sem barreiras tecnológicas ou burocráticas."
+        },
+        "vision": {
+            "title": "Nossa Visão",
+            "description": "Ser a plataforma de referência para gestão de eventos em toda a comunidade lusófona, conectando milhões de pessoas através de experiências transformadoras e tornando a organização de eventos acessível a todos."
+        },
+        "values": {
+            "title": "Nossos Valores",
+            "description": "Os princípios que guiam cada decisão e funcionalidade da plataforma.",
+            "items": {
+                "passion": {
+                    "title": "Paixão por Eventos",
+                    "description": "Acreditamos que cada evento tem o poder de transformar vidas e criar conexões significativas."
+                },
+                "focus": {
+                    "title": "Foco no Cliente",
+                    "description": "Desenvolvemos cada funcionalidade pensando nas necessidades reais dos organizadores de eventos."
+                },
+                "innovation": {
+                    "title": "Inovação Contínua",
+                    "description": "Estamos sempre a melhorar a plataforma com novas tecnologias e funcionalidades."
+                },
+                "global": {
+                    "title": "Alcance Global",
+                    "description": "Conectamos organizadores e participantes em Angola, Moçambique, Portugal e Brasil."
+                }
+            }
+        },
+        "offer": {
+            "title": "O que Oferecemos",
+            "description": "Uma plataforma completa para todo o ciclo de vida do seu evento.",
+            "features": {
+                "f1": "Criação de formulários de inscrição personalizados",
+                "f2": "Venda de bilhetes com múltiplos métodos de pagamento",
+                "f3": "Gestão completa de participantes e check-in",
+                "f4": "QR Codes únicos para verificação de bilhetes",
+                "f5": "Dashboard com analytics em tempo real",
+                "f6": "Integração com Multicaixa Express e M-Pesa",
+                "f7": "Certificados automáticos para participantes",
+                "f8": "Suporte dedicado 24/7 via WhatsApp"
+            }
+        },
+        "team": {
+            "title": "Nossa Equipa",
+            "description": "Profissionais dedicados a criar a melhor experiência para você.",
+            "groups": {
+                "dev": {
+                    "name": "Equipa de Desenvolvimento",
+                    "role": "Tecnologia & Inovação",
+                    "description": "Engenheiros dedicados a criar a melhor experiência de gestão de eventos."
+                },
+                "support": {
+                    "name": "Equipa de Suporte",
+                    "role": "Atendimento ao Cliente",
+                    "description": "Disponíveis 24/7 para ajudar organizadores e participantes."
+                },
+                "marketing": {
+                    "name": "Equipa de Marketing",
+                    "role": "Crescimento & Parcerias",
+                    "description": "Trabalhando para expandir o alcance da plataforma em toda a lusofonia."
+                }
+            }
+        },
+        "cta": {
+            "title": "Pronto para criar o seu próximo evento?",
+            "description": "Junte-se a milhares de organizadores que já confiam no Inscreva-se.",
+            "button": "Começar Gratuitamente"
+        }
     },
     "support": {
         "title": "Suporte & Ajuda",

@@ -7,8 +7,10 @@ import Footer from '@/components/Footer';
 import { Users, Target, Rocket, Heart, Globe, Award, CheckCircle, Zap } from 'lucide-react';
 import { publicService, PublicImpactStats } from '@/lib/publicService';
 import Typewriter from '@/components/common/Typewriter';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function SobreNos() {
+    const { t } = useTranslate();
     const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
     useEffect(() => {
@@ -20,30 +22,30 @@ export default function SobreNos() {
     const values = [
         {
             icon: <Heart size={28} />,
-            title: "Paixão por Eventos",
-            description: "Acreditamos que cada evento tem o poder de transformar vidas e criar conexões significativas."
+            title: t('about.values.items.passion.title'),
+            description: t('about.values.items.passion.description')
         },
         {
             icon: <Users size={28} />,
-            title: "Foco no Cliente",
-            description: "Desenvolvemos cada funcionalidade pensando nas necessidades reais dos organizadores de eventos."
+            title: t('about.values.items.focus.title'),
+            description: t('about.values.items.focus.description')
         },
         {
             icon: <Zap size={28} />,
-            title: "Inovação Contínua",
-            description: "Estamos sempre a melhorar a plataforma com novas tecnologias e funcionalidades."
+            title: t('about.values.items.innovation.title'),
+            description: t('about.values.items.innovation.description')
         },
         {
             icon: <Globe size={28} />,
-            title: "Alcance Global",
-            description: "Conectamos organizadores e participantes em Angola, Moçambique, Portugal e Brasil."
+            title: t('about.values.items.global.title'),
+            description: t('about.values.items.global.description')
         }
     ];
 
     const stats = [
         {
             number: impactStats?.globalStats.totalEvents ? `${impactStats.globalStats.totalEvents}+` : '0k+',
-            label: "Eventos Criados"
+            label: t('about.stats.events')
         },
         {
             number: impactStats?.globalStats.totalSubmissions ?
@@ -51,33 +53,33 @@ export default function SobreNos() {
                     `${(impactStats.globalStats.totalSubmissions / 1000).toFixed(1)}k+` :
                     `${impactStats.globalStats.totalSubmissions}+`) :
                 '3k+',
-            label: "Participantes"
+            label: t('about.stats.participants')
         },
         {
             number: impactStats?.globalStats.totalMentors ? `${impactStats.globalStats.totalMentors}+` : '45+',
-            label: "Mentores Ativos"
+            label: t('about.stats.mentors')
         },
         {
             number: impactStats?.globalStats.totalCountries?.toString() || '4',
-            label: "Países"
+            label: t('about.stats.countries')
         }
     ];
 
     const team = [
         {
-            name: "Equipa de Desenvolvimento",
-            role: "Tecnologia & Inovação",
-            description: "Engenheiros dedicados a criar a melhor experiência de gestão de eventos."
+            name: t('about.team.groups.dev.name'),
+            role: t('about.team.groups.dev.role'),
+            description: t('about.team.groups.dev.description')
         },
         {
-            name: "Equipa de Suporte",
-            role: "Atendimento ao Cliente",
-            description: "Disponíveis 24/7 para ajudar organizadores e participantes."
+            name: t('about.team.groups.support.name'),
+            role: t('about.team.groups.support.role'),
+            description: t('about.team.groups.support.description')
         },
         {
-            name: "Equipa de Marketing",
-            role: "Crescimento & Parcerias",
-            description: "Trabalhando para expandir o alcance da plataforma em toda a lusofonia."
+            name: t('about.team.groups.marketing.name'),
+            role: t('about.team.groups.marketing.role'),
+            description: t('about.team.groups.marketing.description')
         }
     ];
 
@@ -123,7 +125,7 @@ export default function SobreNos() {
                         color: '#FFE55C'
                     }}>
                         <Award size={16} />
-                        Plataforma Líder em Gestão de Eventos
+                        {t('about.hero.badge')}
                     </div>
 
                     <h1 style={{
@@ -135,11 +137,11 @@ export default function SobreNos() {
                         color: '#ffffff',
                         textShadow: '0 4px 20px rgba(0,0,0,0.3)'
                     }}>
-                        Sobre o <span style={{
+                        {t('about.hero.title')} <span style={{
                             background: 'linear-gradient(135deg, #FFD700, #FFE55C)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
-                        }}>Inscreva-se</span>
+                        }}>{t('about.hero.highlight')}</span>
                     </h1>
 
                     <div style={{
@@ -152,12 +154,11 @@ export default function SobreNos() {
                         minHeight: '4.5rem'
                     }}>
                         <Typewriter
-                            text="Plataforma completa para criar e gerenciar eventos ou cursos, pensada para Mentores, Especialistas e Empresas."
+                            text={t('about.hero.description')}
                             duration={3}
                         />
                         <div style={{ fontSize: '0.85em', opacity: 0.8, marginTop: '10px' }}>
-                            Somos a plataforma que está a revolucionar a forma como eventos são criados,
-                            geridos e vivenciados em toda a comunidade lusófona.
+                            {t('about.hero.subDescription')}
                         </div>
                     </div>
                 </motion.div>
@@ -233,7 +234,7 @@ export default function SobreNos() {
                             letterSpacing: '2px'
                         }}>
                             <Target size={20} />
-                            Nossa Missão
+                            {t('about.mission.title')}
                         </div>
                         <h2 style={{
                             fontSize: 'clamp(2rem, 4vw, 3rem)',
@@ -242,7 +243,7 @@ export default function SobreNos() {
                             marginBottom: '25px',
                             lineHeight: 1.2
                         }}>
-                            Democratizar a criação de eventos de qualidade
+                            {t('about.mission.subtitle')}
                         </h2>
                         <p style={{
                             fontSize: '1.1rem',
@@ -250,17 +251,14 @@ export default function SobreNos() {
                             lineHeight: 1.8,
                             marginBottom: '20px'
                         }}>
-                            O Inscreva-se nasceu da observação de uma necessidade real: organizadores de eventos
-                            em Angola, Moçambique e outros países lusófonos precisavam de uma ferramenta simples,
-                            poderosa e adaptada às suas realidades locais.
+                            {t('about.mission.p1')}
                         </p>
                         <p style={{
                             fontSize: '1.1rem',
                             color: '#555',
                             lineHeight: 1.8
                         }}>
-                            Nossa missão é capacitar mentores, palestrantes, formadores e organizadores
-                            a criar experiências memoráveis sem barreiras tecnológicas ou burocráticas.
+                            {t('about.mission.p2')}
                         </p>
                     </motion.div>
 
@@ -278,12 +276,10 @@ export default function SobreNos() {
                     >
                         <Rocket size={50} style={{ marginBottom: '25px', opacity: 0.9 }} />
                         <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '20px' }}>
-                            Nossa Visão
+                            {t('about.vision.title')}
                         </h3>
                         <p style={{ fontSize: '1.1rem', lineHeight: 1.8, opacity: 0.9 }}>
-                            Ser a plataforma de referência para gestão de eventos em toda a comunidade
-                            lusófona, conectando milhões de pessoas através de experiências transformadoras
-                            e tornando a organização de eventos acessível a todos.
+                            {t('about.vision.description')}
                         </p>
                         <div style={{
                             marginTop: '30px',
@@ -322,10 +318,10 @@ export default function SobreNos() {
                             color: '#0a0a0a',
                             marginBottom: '15px'
                         }}>
-                            Nossos Valores
+                            {t('about.values.title')}
                         </h2>
                         <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
-                            Os princípios que guiam cada decisão e funcionalidade da plataforma.
+                            {t('about.values.description')}
                         </p>
                     </motion.div>
 
@@ -393,10 +389,10 @@ export default function SobreNos() {
                         color: '#0a0a0a',
                         marginBottom: '15px'
                     }}>
-                        O que Oferecemos
+                        {t('about.offer.title')}
                     </h2>
                     <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
-                        Uma plataforma completa para todo o ciclo de vida do seu evento.
+                        {t('about.offer.description')}
                     </p>
                 </motion.div>
 
@@ -406,14 +402,14 @@ export default function SobreNos() {
                     gap: '20px'
                 }}>
                     {[
-                        "Criação de formulários de inscrição personalizados",
-                        "Venda de bilhetes com múltiplos métodos de pagamento",
-                        "Gestão completa de participantes e check-in",
-                        "QR Codes únicos para verificação de bilhetes",
-                        "Dashboard com analytics em tempo real",
-                        "Integração com Multicaixa Express e M-Pesa",
-                        "Certificados automáticos para participantes",
-                        "Suporte dedicado 24/7 via WhatsApp"
+                        t('about.offer.features.f1'),
+                        t('about.offer.features.f2'),
+                        t('about.offer.features.f3'),
+                        t('about.offer.features.f4'),
+                        t('about.offer.features.f5'),
+                        t('about.offer.features.f6'),
+                        t('about.offer.features.f7'),
+                        t('about.offer.features.f8')
                     ].map((feature, index) => (
                         <motion.div
                             key={index}
@@ -452,10 +448,10 @@ export default function SobreNos() {
                             fontWeight: 800,
                             marginBottom: '15px'
                         }}>
-                            Nossa Equipa
+                            {t('about.team.title')}
                         </h2>
                         <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)', maxWidth: '600px', margin: '0 auto' }}>
-                            Profissionais dedicados a criar a melhor experiência para você.
+                            {t('about.team.description')}
                         </p>
                     </motion.div>
 
@@ -529,14 +525,14 @@ export default function SobreNos() {
                         fontWeight: 800,
                         marginBottom: '20px'
                     }}>
-                        Pronto para criar o seu próximo evento?
+                        {t('about.cta.title')}
                     </h2>
                     <p style={{
                         fontSize: '1.1rem',
                         opacity: 0.9,
                         marginBottom: '30px'
                     }}>
-                        Junte-se a milhares de organizadores que já confiam no Inscreva-se.
+                        {t('about.cta.description')}
                     </p>
                     <a
                         href="/cadastro"
@@ -552,7 +548,7 @@ export default function SobreNos() {
                             transition: 'transform 0.3s'
                         }}
                     >
-                        Começar Gratuitamente
+                        {t('about.cta.button')}
                     </a>
                 </motion.div>
             </section>
