@@ -103,9 +103,9 @@ export default function EventCalendarPage() {
         <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column' }}>
             <Navbar />
 
-            <main style={{ flex: 1, padding: '100px 20px 60px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+            <main className="main-content" style={{ flex: 1, padding: '100px 20px 60px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
                 {/* Header Section */}
-                <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
+                <div className="calendar-header" style={{ marginBottom: '3rem', textAlign: 'center' }}>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -117,6 +117,7 @@ export default function EventCalendarPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
+                        className="page-title"
                         style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', letterSpacing: '-1px', marginBottom: '1rem', color: '#fff' }}
                     >
                         {t('calendar.title')}<span className="gold-text">{t('calendar.highlight')}</span>
@@ -125,6 +126,7 @@ export default function EventCalendarPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
+                        className="page-description"
                         style={{ color: '#888', maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.6 }}
                     >
                         {t('calendar.description')}
@@ -136,28 +138,29 @@ export default function EventCalendarPage() {
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '32px', padding: '2.5rem', backdropFilter: 'blur(20px)', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}
+                        className="calendar-container"
+                        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '32px', padding: '2.5rem', backdropFilter: 'blur(20px)', boxShadow: '0 25px 50px rgba(0,0,0,0.3)', overflow: 'hidden' }}
                     >
                         {/* Month Navigation */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+                        <div className="month-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
                             <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', textTransform: 'capitalize', color: '#fff' }}>
                                 {currentDate.toLocaleDateString(locale === 'pt' ? 'pt-PT' : 'en-US', { month: 'long', year: 'numeric' })}
                             </h2>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <button onClick={prevMonth} style={{ width: '44px', height: '44px', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#FFD700'}>
+                            <div style={{ display: 'flex', gap: '10px' }} className="nav-buttons">
+                                <button onClick={prevMonth} className="nav-btn">
                                     <ChevronLeft size={20} />
                                 </button>
-                                <button onClick={() => setCurrentDate(new Date())} style={{ padding: '0 1.5rem', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}>
+                                <button onClick={() => setCurrentDate(new Date())} className="today-btn">
                                     {t('calendar.today')}
                                 </button>
-                                <button onClick={nextMonth} style={{ width: '44px', height: '44px', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#FFD700'}>
+                                <button onClick={nextMonth} className="nav-btn">
                                     <ChevronRight size={20} />
                                 </button>
                             </div>
                         </div>
 
                         {/* Calendar Grid */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px' }}>
+                        <div className="days-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px' }}>
                             {/* Weekdays Labels */}
                             {[
                                 t('calendar.weekdays.sun'),
@@ -168,7 +171,7 @@ export default function EventCalendarPage() {
                                 t('calendar.weekdays.fri'),
                                 t('calendar.weekdays.sat')
                             ].map(day => (
-                                <div key={day} style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{day}</div>
+                                <div key={day} className="weekday-label" style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{day}</div>
                             ))}
 
                             {loading ? (
@@ -188,6 +191,7 @@ export default function EventCalendarPage() {
                                             key={day.getTime()}
                                             whileHover={{ y: -4, background: 'rgba(255,255,255,0.08)' }}
                                             onClick={() => setSelectedDate(day)}
+                                            className={`day-cell ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
                                             style={{
                                                 aspectRatio: '1',
                                                 background: isSelected ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
@@ -211,7 +215,7 @@ export default function EventCalendarPage() {
                                             </span>
 
                                             {dayEvents.length > 0 && (
-                                                <div style={{
+                                                <div className="event-dots" style={{
                                                     position: 'absolute',
                                                     bottom: '12px',
                                                     display: 'flex',
@@ -238,6 +242,7 @@ export default function EventCalendarPage() {
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
+                        className="sidebar-container"
                         style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '1000px' }}
                     >
                         <div style={{ background: 'var(--gold-gradient)', padding: '1.5rem', borderRadius: '24px', color: '#000' }}>
@@ -245,6 +250,7 @@ export default function EventCalendarPage() {
                             <p style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.8 }}>{selectedEvents.length} {t('calendar.scheduledEvents')}</p>
                         </div>
 
+                        {/* Event List */}
                         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '10px' }} className="no-scrollbar">
                             <AnimatePresence mode="wait">
                                 {selectedEvents.length === 0 ? (
@@ -253,6 +259,7 @@ export default function EventCalendarPage() {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
+                                        className="empty-state"
                                         style={{ textAlign: 'center', padding: '3rem 1.5rem', background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: '24px' }}
                                     >
                                         <div style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
@@ -268,6 +275,7 @@ export default function EventCalendarPage() {
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: idx * 0.1 }}
                                             whileHover={{ x: 5 }}
+                                            className="event-item"
                                             style={{
                                                 background: 'rgba(255,255,255,0.03)',
                                                 border: '1px solid rgba(212,175,55,0.2)',
@@ -312,7 +320,7 @@ export default function EventCalendarPage() {
                         </div>
 
                         {/* CTA for Mentors */}
-                        <div style={{ marginTop: 'auto', padding: '1.5rem', background: '#000', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '24px', textAlign: 'center' }}>
+                        <div className="mentor-cta" style={{ marginTop: 'auto', padding: '1.5rem', background: '#000', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '24px', textAlign: 'center' }}>
                             <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '1rem' }}>{t('calendar.mentorCTA')}</p>
                             <Link
                                 href="/dashboard/mentor"
@@ -341,9 +349,121 @@ export default function EventCalendarPage() {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                 }
+                
+                .nav-btn {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 15px;
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    color: #fff;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s;
+                }
+                .nav-btn:hover {
+                    border-color: #FFD700;
+                }
+                .today-btn {
+                    padding: 0 1.5rem;
+                    border-radius: 15px;
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    color: #fff;
+                    fontWeight: 700;
+                    fontSize: 0.85rem;
+                    cursor: pointer;
+                }
+
                 @media (max-width: 1024px) {
                     .calendar-grid {
                         grid-template-columns: 1fr !important;
+                    }
+                    .sidebar-container {
+                        maxHeight: none !important;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .main-content {
+                        padding: 80px 12px 40px !important;
+                    }
+                    .calendar-header {
+                        margin-bottom: 1.5rem !important;
+                    }
+                    .page-title {
+                        font-size: 2.2rem !important;
+                        margin-bottom: 0.5rem !important;
+                    }
+                    .page-description {
+                        font-size: 0.95rem !important;
+                        line-height: 1.4 !important;
+                    }
+                    .calendar-container {
+                        padding: 1rem !important;
+                        border-radius: 24px !important;
+                        margin-bottom: 1.5rem !important;
+                    }
+                    .month-nav {
+                        margin-bottom: 1.5rem !important;
+                        flex-direction: column;
+                        gap: 1rem;
+                        align-items: flex-start !important;
+                    }
+                    .month-nav h2 {
+                        font-size: 1.4rem !important;
+                    }
+                    .nav-buttons {
+                        width: 100%;
+                        justify-content: space-between;
+                    }
+                    .nav-btn, .today-btn {
+                        height: 38px !important;
+                    }
+                    .nav-btn {
+                        width: 38px !important;
+                    }
+                    .days-grid {
+                        gap: 6px !important;
+                    }
+                    .day-cell {
+                        border-radius: 12px !important;
+                    }
+                    .day-cell span {
+                        font-size: 0.9rem !important;
+                    }
+                    .event-dots {
+                        bottom: 6px !important;
+                        gap: 2px !important;
+                    }
+                    .event-dots div {
+                        width: 3px !important;
+                        height: 3px !important;
+                    }
+                    .weekday-label {
+                        font-size: 0.6rem !important;
+                        letter-spacing: 0px !important;
+                    }
+                    .sidebar-container {
+                        gap: 1rem !important;
+                    }
+                    .event-item {
+                        padding: 1rem !important;
+                        border-radius: 20px !important;
+                    }
+                }
+
+                @media (max-width: 380px) {
+                    .days-grid {
+                        gap: 4px !important;
+                    }
+                    .day-cell {
+                        border-radius: 8px !important;
+                    }
+                    .page-title {
+                        font-size: 1.8rem !important;
                     }
                 }
             `}</style>
