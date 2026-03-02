@@ -9,6 +9,8 @@ import { lessonService, Lesson } from '@/lib/lessonService';
 import { toast } from 'sonner';
 import CreateEventModal from '@/components/mentor/CreateEventModal';
 import ProfileModal from '@/components/mentor/ProfileModal';
+import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
+import Cookies from 'js-cookie';
 import SubmissionManagement from '@/components/mentor/SubmissionManagement';
 import MentorSettings from '@/components/mentor/MentorSettings';
 import EditEventModal from '@/components/mentor/EditEventModal';
@@ -77,7 +79,8 @@ import {
     Link as LinkIcon,
     Share2,
     Clock,
-    Info
+    Info,
+    Play
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -129,6 +132,7 @@ function MentorDashboardContent() {
     const [selectedMarketingService, setSelectedMarketingService] = useState<{ type: 'boost_social' | 'meta_ads' | 'gestion_360', name: string } | null>(null);
     const [myMarketingRequests, setMyMarketingRequests] = useState<MarketingRequest[]>([]);
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
+    const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
 
     const handleResendVerification = async () => {
         setIsResending(true);
@@ -1561,8 +1565,25 @@ function MentorDashboardContent() {
                                                         <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tutorial.title}</h4>
                                                         {tutorial.description && <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tutorial.description}</p>}
                                                         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                            <button onClick={() => window.open(`/dashboard/mentor?tab=lessons`, '_blank')} style={{ background: 'var(--gold-gradient)', border: 'none', color: '#000', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                Assistir <ArrowRight size={14} />
+                                                            <button
+                                                                onClick={() => setSelectedTutorial(tutorial)}
+                                                                style={{
+                                                                    background: 'var(--gold-gradient)',
+                                                                    border: 'none',
+                                                                    color: '#000',
+                                                                    padding: '8px 16px',
+                                                                    borderRadius: '8px',
+                                                                    fontSize: '0.875rem',
+                                                                    fontWeight: 800,
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '8px',
+                                                                    boxShadow: '0 4px 15px rgba(212,175,55,0.2)'
+                                                                }}
+                                                                className="hover:scale-105 transition-transform"
+                                                            >
+                                                                <Play size={16} fill="#000" /> {t('common.watch')}
                                                             </button>
                                                             <span style={{ fontSize: '0.75rem', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}><Eye size={14} /> {tutorial.views}</span>
                                                         </div>
@@ -2061,6 +2082,21 @@ function MentorDashboardContent() {
                                 </button>
                             </motion.div>
                         </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {selectedTutorial && (
+                        <LessonPlayerModal
+                            lesson={selectedTutorial}
+                            onClose={() => setSelectedTutorial(null)}
+                            onComplete={() => {
+                                // Optionally refresh data or mark locally
+                                setPlatformTutorials(prev => prev.map(t =>
+                                    t._id === selectedTutorial._id ? { ...t, isCompleted: true } : t
+                                ));
+                            }}
+                        />
                     )}
                 </AnimatePresence>
 
