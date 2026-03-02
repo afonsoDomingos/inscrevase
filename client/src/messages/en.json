@@ -245,6 +245,9 @@
         },
         "selectDay": "Select a day",
         "scheduledEvents": "Scheduled Events",
+        "noEventsScheduled": "No events scheduled",
+        "oneEventScheduled": "Scheduled event",
+        "manyEventsScheduled": "Scheduled events",
         "noEvents": "No events have been scheduled for this day yet.",
         "mentorCTA": "Are you a mentor and want to see your event here?",
         "createEvent": "Create Event"

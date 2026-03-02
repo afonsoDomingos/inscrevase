@@ -247,7 +247,11 @@ export default function EventCalendarPage() {
                     >
                         <div style={{ background: 'var(--gold-gradient)', padding: '1.5rem', borderRadius: '24px', color: '#000' }}>
                             <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '0.5rem' }}>{selectedDate ? formatDate(selectedDate) : t('calendar.selectDay')}</h3>
-                            <p style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.8 }}>{selectedEvents.length} {t('calendar.scheduledEvents')}</p>
+                            <p style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.8 }}>
+                                {selectedEvents.length === 0
+                                    ? t('calendar.noEventsScheduled')
+                                    : `${selectedEvents.length} ${selectedEvents.length === 1 ? t('calendar.oneEventScheduled') : t('calendar.manyEventsScheduled')}`}
+                            </p>
                         </div>
 
                         {/* Event List */}

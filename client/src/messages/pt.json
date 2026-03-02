@@ -257,7 +257,10 @@
             "sat": "Sáb"
         },
         "selectDay": "Selecione um dia",
-        "scheduledEvents": "Eventos Programados",
+        "scheduledEvents": "Eventos Agendados",
+        "noEventsScheduled": "Nenhum evento agendado",
+        "oneEventScheduled": "Evento agendado",
+        "manyEventsScheduled": "Eventos agendados",
         "noEvents": "Ninguém marcou eventos para este dia ainda.",
         "mentorCTA": "É um mentor e quer ver o seu evento aqui?",
         "createEvent": "Criar Evento"

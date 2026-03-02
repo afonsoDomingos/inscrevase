@@ -195,6 +195,24 @@ export default function RootLayout({
             crossOrigin="anonymous"
           ></script>
         )}
+        {/* Script para prevenir o Flash (piscar) de tema branco ao carregar */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var savedTheme = localStorage.getItem('theme');
+                  var theme = savedTheme;
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  document.documentElement.setAttribute('data-theme', theme);
+                  if (theme === 'dark') document.body.classList.add('dark');
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
         {/* Schema.org - Organization */}

@@ -9,10 +9,20 @@ export default function LoadingScreen() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        // Prevent showing loading screen every time they return to the app or switch pages
+        const hasSeenLoading = sessionStorage.getItem('hasSeenLoading');
+        if (hasSeenLoading) {
+            setIsLoading(false);
+            return;
+        }
+
         // Priority 1: Window load event
         const handleLoad = () => {
             // Small delay for smooth transition even if load is instant
-            setTimeout(() => setIsLoading(false), 800);
+            setTimeout(() => {
+                setIsLoading(false);
+                sessionStorage.setItem('hasSeenLoading', 'true');
+            }, 800);
         };
 
         if (document.readyState === "complete") {
