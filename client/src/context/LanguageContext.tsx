@@ -25,6 +25,31 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         const savedLocale = Cookies.get('NEXT_LOCALE') as Locale;
         if (savedLocale && (savedLocale === 'pt' || savedLocale === 'en')) {
             setLocaleState(savedLocale);
+        } else {
+            // Auto-detect based on geolocation
+            const detectLocation = async () => {
+                try {
+                    const res = await fetch('https://ipapi.co/json/');
+                    const data = await res.json();
+                    const country = data.country_code;
+
+                    if (country === 'NG') {
+                        setLocale('en');
+                    } else if (['MZ', 'AO', 'PT', 'BR', 'GW', 'ST', 'CV'].includes(country)) {
+                        // PALOP + PT/BR
+                        setLocale('pt');
+                    } else {
+                        // Optional: fallback to browser language
+                        const browserLang = navigator.language.split('-')[0];
+                        if (browserLang === 'en' || browserLang === 'pt') {
+                            setLocale(browserLang as Locale);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error detecting location:', error);
+                }
+            };
+            detectLocation();
         }
     }, []);
 
