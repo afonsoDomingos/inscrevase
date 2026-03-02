@@ -33,10 +33,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
                     const data = await res.json();
                     const country = data.country_code;
 
-                    if (country === 'NG') {
+                    const englishSpeakingCountries = [
+                        'NG', 'US', 'GB', 'CA', 'AU', 'ZA', 'IE', 'NZ', 'IN', 'GH', 'KE', 'UG', 'RW', 'BW', 'NA', 'ZW', 'ZM', 'MW', 'LS', 'SZ', 'LR', 'SL', 'GM'
+                    ];
+                    const portugueseSpeakingCountries = ['MZ', 'AO', 'PT', 'BR', 'GW', 'ST', 'CV', 'TL', 'GQ'];
+
+                    if (englishSpeakingCountries.includes(country)) {
                         setLocale('en');
-                    } else if (['MZ', 'AO', 'PT', 'BR', 'GW', 'ST', 'CV'].includes(country)) {
-                        // PALOP + PT/BR
+                    } else if (portugueseSpeakingCountries.includes(country)) {
                         setLocale('pt');
                     } else {
                         // Optional: fallback to browser language
