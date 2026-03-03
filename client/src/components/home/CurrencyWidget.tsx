@@ -267,8 +267,8 @@ export default function CurrencyWidget() {
                                     textAlign: 'center'
                                 }}>
                                     <Globe size={isMobile ? 16 : 24} color="#FFD700" style={{ marginBottom: isMobile ? '2px' : '8px', margin: '0 auto 2px', display: 'block' }} />
-                                    <h4 style={{ margin: isMobile ? '2px 0' : '0 0 4px 0', fontSize: isMobile ? '0.7rem' : '0.85rem', fontWeight: 800 }}>{t('home.widgets.currency.convertNow')}</h4>
-                                    {!isMobile && <p style={{ fontSize: '0.65rem', opacity: 0.7, margin: '0 0 10px 0' }}>{t('home.widgets.currency.convertDesc')}</p>}
+                                    <h4 style={{ margin: isMobile ? '2px 0' : '0 0 4px 0', fontSize: isMobile ? '0.7rem' : '0.85rem', fontWeight: 800, color: '#fff' }}>{t('home.widgets.currency.convertNow')}</h4>
+                                    {!isMobile && <p style={{ fontSize: '0.65rem', opacity: 0.8, margin: '0 0 10px 0', color: '#fff' }}>{t('home.widgets.currency.convertDesc')}</p>}
                                     <button
                                         onClick={() => window.location.href = '/dashboard/mentor?tab=earnings'}
                                         style={{
