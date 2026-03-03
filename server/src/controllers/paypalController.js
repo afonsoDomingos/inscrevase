@@ -6,6 +6,11 @@ const Submission = require('../models/Submission');
 const { getDynamicPlanConfig } = require('../utils/planConfigs');
 const { PLANS } = require('../config/stripe');
 const { getLatestRate } = require('../utils/currencyUtils');
+const sendEmail = require('../utils/emailService');
+const {
+    generateSubscriptionConfirmationEmail,
+    generateEventPaymentConfirmationEmail
+} = require('../utils/emailTemplates');
 
 // Initializers removed (using paypalService)
 
@@ -28,124 +33,76 @@ exports.createSubscriptionOrder = async (req, res) => {
 
         // PayPal uses USD for most international transactions if MZN is not supported by Sandbox directly
         const finalCurrency = currency === 'MZN' ? 'USD' : currency;
-        const rate = (currency === 'MZN' && finalCurrency === 'USD') ? await getLatestRate() : 1;
-        const amountValue = (rawPriceDecimal / rate).toFixed(2);
 
-        const body = {
+        const orderData = {
             intent: 'CAPTURE',
-            purchase_units: [
-                {
-                    amount: {
-                        currency_code: finalCurrency,
-                        value: amountValue,
-                    },
-                    description: `Plano ${plan.toUpperCase()} - Inscreva-se`,
-                    custom_id: JSON.stringify({ userId, plan, type: 'subscription' })
+            purchase_units: [{
+                amount: {
+                    currency_code: finalCurrency,
+                    value: rawPriceDecimal.toFixed(2)
                 },
-            ],
+                description: `Upgrade para plano ${plan.toUpperCase()}`,
+                custom_id: JSON.stringify({ userId, plan, type: 'subscription' })
+            }]
         };
 
-        console.log('🚀 Creating PayPal Subscription Order:', JSON.stringify(body, null, 2));
-        const result = await paypalService.createOrder(body);
-        res.status(200).json(result);
+        const order = await paypalService.createOrder(orderData);
+        res.status(200).json(order);
     } catch (error) {
-        console.error('\n❌ PayPal Create Subscription Order Error:', error.response?.data || error.message);
-        res.status(500).json({
-            message: error.message,
-            details: error.response?.data || "Axios/Service Error"
-        });
+        console.error('❌ PayPal Create Subscription Order Error:', error);
+        res.status(500).json({ message: error.message });
     }
 };
 
 /**
- * CREATE ORDER FOR EVENT REGISTRATION (WITH PLATFORM FEE)
+ * CREATE ORDER FOR EVENT REGISTRATION
  */
 exports.createEventOrder = async (req, res) => {
     try {
-        const { formId, submissionData } = req.body;
+        const { formId, submissionData, currency } = req.body;
 
         const form = await Form.findById(formId).populate('creator');
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         const mentor = form.creator;
-        if (!mentor.paypalEmail) {
-            return res.status(400).json({ message: 'Este mentor ainda não configurou o PayPal para receber pagamentos.' });
-        }
+        const totalAmount = form.paymentConfig.price;
 
-        const mentorPlan = mentor.plan || 'free';
-        const dynamicPlans = await getDynamicPlanConfig();
-        const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
+        const finalCurrency = currency === 'MZN' ? 'USD' : (currency || 'USD');
 
-        const price = form.paymentConfig.price;
-        const commissionRate = planConfig.commissionRate;
-        const platformFee = (price * commissionRate).toFixed(2);
-
-        const currency = form.paymentConfig.currency === 'MT' ? 'USD' : form.paymentConfig.currency;
-        const rate = (form.paymentConfig.currency === 'MT') ? await getLatestRate() : 1;
-
-        const totalAmount = (price / rate).toFixed(2);
-        const feeAmount = (platformFee / rate).toFixed(2);
-
-        const body = {
+        const orderData = {
             intent: 'CAPTURE',
-            purchase_units: [
-                {
-                    amount: {
-                        currency_code: currency,
-                        value: totalAmount,
-                    },
-                    payee: {
-                        email_address: mentor.paypalEmail,
-                    },
-                    payment_instruction: {
-                        disbursement_mode: 'INSTANT',
-                        platform_fees: [
-                            {
-                                amount: {
-                                    currency_code: currency,
-                                    value: feeAmount,
-                                },
-                            },
-                        ],
-                    },
-                    description: `Inscrição: ${form.title}`,
-                    custom_id: JSON.stringify({
-                        formId,
-                        submissionData,
-                        type: 'event_registration',
-                        mentorId: mentor._id.toString()
-                    })
+            purchase_units: [{
+                amount: {
+                    currency_code: finalCurrency,
+                    value: totalAmount.toFixed(2)
                 },
-            ],
+                description: `Inscrição: ${form.title}`,
+                custom_id: JSON.stringify({
+                    formId,
+                    submissionData,
+                    mentorId: mentor._id,
+                    type: 'event_registration'
+                })
+            }]
         };
 
-        console.log('🚀 Creating PayPal Event Order:', JSON.stringify(body, null, 2));
-        const result = await paypalService.createOrder(body);
-        res.status(200).json(result);
+        const order = await paypalService.createOrder(orderData);
+        res.status(200).json(order);
     } catch (error) {
-        console.error('\n❌ PayPal Create Event Order Error:', error.response?.data || error.message);
-        res.status(500).json({
-            message: error.message,
-            details: error.response?.data || "Axios/Service Error"
-        });
+        console.error('❌ PayPal Create Event Order Error:', error);
+        res.status(500).json({ message: error.message });
     }
 };
 
 /**
- * CAPTURE AND COMPLETE ORDER
+ * CAPTURE ORDER
  */
 exports.captureOrder = async (req, res) => {
     try {
         const { orderID } = req.body;
-        console.log('🧐 Capturing PayPal Order:', orderID);
+        console.log(`\n--- 💳 CAPTURING PAYPAL ORDER: ${orderID} ---`);
+
         const result = await paypalService.captureOrder(orderID);
-
-        // LOG FULL RESULT FOR DEEP DEBUGGING IN RENDER
-        console.log('📦 PayPal Capture Response:', JSON.stringify(result, null, 2));
-
-        if (result.status !== 'COMPLETED') {
-            return res.status(400).json({ message: 'Payment not completed', status: result.status });
-        }
 
         const purchaseUnit = result.purchase_units && result.purchase_units[0];
         if (!purchaseUnit) {
@@ -165,6 +122,18 @@ exports.captureOrder = async (req, res) => {
         if (!rawCustomId) {
             console.error('❌ custom_id is missing in PayPal response. Result keys:', Object.keys(result));
             throw new Error("Missing custom_id in PayPal response");
+        }
+
+        // 🛡️ [ANTI-DUPLICATE] Check if this capture ID was already processed
+        const existingTx = await Transaction.findOne({ paypalCaptureId: capture.id });
+        if (existingTx) {
+            console.log('ℹ️ PayPal Capture already processed:', capture.id);
+            return res.status(200).json({
+                success: true,
+                message: 'Já processado',
+                type: existingTx.type,
+                plan: existingTx.subscriptionPlan
+            });
         }
 
         let customData;
@@ -212,6 +181,20 @@ exports.captureOrder = async (req, res) => {
             });
             await tx.save();
 
+            // 📧 Send confirmation email (Subscription)
+            if (user && user.email) {
+                try {
+                    const dynamicPlans = await getDynamicPlanConfig();
+                    const planConfig = dynamicPlans[plan] || PLANS.pro;
+                    const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
+                    sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml)
+                        .catch(e => console.error('E-mail error (PayPal Subscription):', e));
+                } catch (emailErr) {
+                    console.error('⚠️ [NON-FATAL] Error generating PayPal sub email:', emailErr.message);
+                }
+            }
+
             return res.status(200).json({ success: true, type: 'subscription', plan });
         }
 
@@ -251,11 +234,33 @@ exports.captureOrder = async (req, res) => {
                 mentorEarnings: mentorEarnings,
                 baseMentorEarnings: mentorEarnings * rate,
                 status: 'completed',
-                paymentMethod: 'paypal',
                 paypalOrderId: orderID,
-                paypalCaptureId: capture.id
+                paypalCaptureId: capture.id,
+                paymentMethod: 'paypal'
             });
             await transaction.save();
+
+            // 📧 Send confirmation email (Event Registration)
+            try {
+                const form = await Form.findById(formId);
+                const userEmail = submissionData.Email || submissionData.email || submissionData['E-mail'];
+                const userName = submissionData.Nome || submissionData.Name || submissionData.name || 'Participante';
+
+                if (userEmail && form) {
+                    const hubUrl = `${process.env.CLIENT_URL}/hub/${form.slug}`;
+                    const emailHtml = generateEventPaymentConfirmationEmail(
+                        userName,
+                        form.title,
+                        amount,
+                        capture.amount.currency_code,
+                        hubUrl
+                    );
+                    sendEmail(userEmail, `Inscrição Confirmada: ${form.title}`, emailHtml)
+                        .catch(e => console.error('E-mail error (PayPal Event):', e));
+                }
+            } catch (emailErr) {
+                console.error('⚠️ [NON-FATAL] Error sending PayPal event email:', emailErr.message);
+            }
 
             return res.status(200).json({ success: true, type: 'event_registration', submissionId: submission._id });
         }
@@ -278,9 +283,6 @@ exports.handleWebhook = async (req, res) => {
         const event = req.body;
         console.log('📩 PayPal Webhook Received:', event.event_type);
 
-        // Verification (Optional but recommended - requires extra SDK call or manual HMAC)
-        // For now, we process common events
-
         switch (event.event_type) {
             case 'PAYMENT.CAPTURE.COMPLETED':
                 console.log('💰 Payment Captured Event');
@@ -295,9 +297,9 @@ exports.handleWebhook = async (req, res) => {
                 console.log('ℹ️ Unhandled event type:', event.event_type);
         }
 
-        res.status(200).json({ received: true });
+        res.status(200).send('Webhook Received');
     } catch (error) {
-        console.error('❌ PayPal Webhook Error:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Webhook Error:', error);
+        res.status(500).send('Internal Server Error');
     }
 };
