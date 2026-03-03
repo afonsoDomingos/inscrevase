@@ -279,7 +279,7 @@ function MentorDashboardContent() {
                 formService.getMyForms().catch(() => [])
             ]).then(([statsData, formsData]) => {
                 setStats(statsData);
-                setForms(formsData as any);
+                setForms(formsData as unknown as FormModel[]);
                 setLoading(false);
             });
             return;
@@ -317,7 +317,7 @@ function MentorDashboardContent() {
                             formService.getMyForms().catch(() => [])
                         ]);
                         setStats(statsData);
-                        setForms(formsData as any);
+                        setForms(formsData as unknown as FormModel[]);
                     }
                 } catch (e) {
                     console.error("Polling error", e);

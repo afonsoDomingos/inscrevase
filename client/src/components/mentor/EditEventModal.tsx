@@ -47,17 +47,20 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
                 margin: '2.5rem auto'
             }}
         >
-            <div style={{
-                width: '100px',
-                height: '100px',
-                background: 'linear-gradient(135deg, #FFD70015 0%, #FFD70005 100%)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '2rem',
-                border: '1px solid #FFD70033'
-            }}>
+            <div
+                onClick={onUpgrade}
+                style={{
+                    width: '100px',
+                    height: '100px',
+                    background: 'linear-gradient(135deg, #FFD70015 0%, #FFD70005 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '2rem',
+                    border: '1px solid #FFD70033',
+                    cursor: 'pointer'
+                }}>
                 <Lock size={48} color="#FFD700" />
             </div>
             <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '1rem', color: '#111' }}>{title}</h3>
@@ -650,7 +653,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                 return (
                                     <button
                                         key={s.id}
-                                        onClick={() => setStep(s.id)}
+                                        onClick={() => {
+                                            if (isLocked) {
+                                                if (onUpgradeClick) onUpgradeClick();
+                                            } else {
+                                                setStep(s.id);
+                                            }
+                                        }}
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',

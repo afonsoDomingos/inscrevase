@@ -61,7 +61,7 @@ function SuccessContent() {
         };
 
         verifyPayment();
-    }, [sessionId]);
+    }, [sessionId, directSubmissionId]);
 
     if (status === 'loading') {
         return (

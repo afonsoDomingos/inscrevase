@@ -76,7 +76,7 @@ export default function SupportDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [filter]);
+    }, [filter, t]);
 
     useEffect(() => {
         fetchMessages();

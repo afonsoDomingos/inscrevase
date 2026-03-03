@@ -50,17 +50,20 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
                 margin: '2rem auto'
             }}
         >
-            <div style={{
-                width: '100px',
-                height: '100px',
-                background: 'linear-gradient(135deg, #FFD70015 0%, #FFD70005 100%)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '2rem',
-                border: '1px solid #FFD70033'
-            }}>
+            <div
+                onClick={onUpgrade}
+                style={{
+                    width: '100px',
+                    height: '100px',
+                    background: 'linear-gradient(135deg, #FFD70015 0%, #FFD70005 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '2rem',
+                    border: '1px solid #FFD70033',
+                    cursor: 'pointer'
+                }}>
                 <Lock size={48} color="#FFD700" />
             </div>
             <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '1rem', color: '#111' }}>{title}</h3>
@@ -1048,7 +1051,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 return (
                                     <button
                                         key={s.id}
-                                        onClick={() => setStep(s.id)}
+                                        onClick={() => {
+                                            if (isLocked) {
+                                                if (onUpgradeClick) onUpgradeClick();
+                                            } else {
+                                                setStep(s.id);
+                                            }
+                                        }}
                                         title={s.label}
                                         style={{
                                             display: 'flex',
