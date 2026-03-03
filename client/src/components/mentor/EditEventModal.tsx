@@ -645,8 +645,8 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                 { id: 3, label: t('events.steps.design'), icon: <Palette size={18} /> },
                                 { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} />, premium: true },
                                 { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
-                                { id: 6, label: 'Marketing AI', icon: <Megaphone size={18} />, premium: true },
-                                { id: 7, label: 'Hub Personalizado', icon: <Sparkles size={18} />, premium: true },
+                                { id: 6, label: 'Marketing AI', icon: <Megaphone size={18} /> },
+                                { id: 7, label: 'Hub Personalizado', icon: <Sparkles size={18} /> },
                                 { id: 8, label: 'Certificados', icon: <Award size={18} />, premium: true },
                                 { id: 9, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
                                 { id: 10, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
@@ -2096,101 +2096,94 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Deixe a Aura criar o post perfeito para divulgar seu evento.</p>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            {userPlan === 'free' && !isAdmin ? (
-                                                <FeaturePaywall
-                                                    title="Marketing com IA"
-                                                    description="Deixe a nossa inteligência artificial criar textos persuasivos e posts para as suas redes sociais automaticamente."
-                                                    onUpgrade={onUpgradeClick || (() => { })}
-                                                />
-                                            ) : (
-                                                <>
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Escolha a Plataforma</label>
-                                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                                            {['instagram', 'linkedin', 'whatsapp'].map(p => (
-                                                                <button
-                                                                    key={p}
-                                                                    type="button"
-                                                                    onClick={() => setMarketingPlatform(p)}
-                                                                    style={{
-                                                                        padding: '10px 20px',
-                                                                        borderRadius: '12px',
-                                                                        border: '1px solid',
-                                                                        borderColor: marketingPlatform === p ? '#FFD700' : '#ddd',
-                                                                        background: marketingPlatform === p ? '#FFD700' : '#fff',
-                                                                        color: marketingPlatform === p ? '#000' : '#666',
-                                                                        fontWeight: 700,
-                                                                        textTransform: 'capitalize',
-                                                                        cursor: 'pointer',
-                                                                        transition: 'all 0.2s',
-                                                                        flex: 1
-                                                                    }}
-                                                                >
-                                                                    {p}
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleMarketingGenerate}
-                                                        disabled={marketingLoading}
-                                                        style={{
-                                                            background: 'linear-gradient(135deg, #000 0%, #333 100%)',
-                                                            color: '#FFD700',
-                                                            border: 'none',
-                                                            padding: '1rem',
-                                                            borderRadius: '15px',
-                                                            fontWeight: 800,
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            gap: '10px',
-                                                            boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                                                        }}
-                                                    >
-                                                        {marketingLoading ? <Loader2 className="animate-spin" /> : <Wand2 size={20} />}
-                                                        GERAR POST COM AURA
-                                                    </button>
-
-                                                    {marketingContent && (
-                                                        <div style={{ position: 'relative' }}>
-                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Resultado Gerado</label>
-                                                            <textarea
-                                                                value={marketingContent}
-                                                                onChange={(e) => setMarketingContent(e.target.value)}
-                                                                rows={10}
-                                                                style={{ width: '100%', padding: '1.5rem', borderRadius: '20px', border: '1px solid #ddd', outline: 'none', resize: 'none', background: '#f8f9fa', lineHeight: '1.6' }}
-                                                            />
+                                            <>
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Escolha a Plataforma</label>
+                                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                                        {['instagram', 'linkedin', 'whatsapp'].map(p => (
                                                             <button
-                                                                onClick={copyToClipboard}
+                                                                key={p}
+                                                                type="button"
+                                                                onClick={() => setMarketingPlatform(p)}
                                                                 style={{
-                                                                    position: 'absolute',
-                                                                    top: '35px',
-                                                                    right: '10px',
-                                                                    background: copied ? '#48bb78' : '#fff',
-                                                                    border: '1px solid #ddd',
-                                                                    borderRadius: '8px',
-                                                                    padding: '8px',
+                                                                    padding: '10px 20px',
+                                                                    borderRadius: '12px',
+                                                                    border: '1px solid',
+                                                                    borderColor: marketingPlatform === p ? '#FFD700' : '#ddd',
+                                                                    background: marketingPlatform === p ? '#FFD700' : '#fff',
+                                                                    color: marketingPlatform === p ? '#000' : '#666',
+                                                                    fontWeight: 700,
+                                                                    textTransform: 'capitalize',
                                                                     cursor: 'pointer',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    gap: '5px',
-                                                                    fontSize: '0.8rem',
-                                                                    fontWeight: 600,
-                                                                    color: copied ? '#fff' : '#333',
-                                                                    transition: 'all 0.2s'
+                                                                    transition: 'all 0.2s',
+                                                                    flex: 1
                                                                 }}
                                                             >
-                                                                {copied ? <Check size={16} /> : <Copy size={16} />}
-                                                                {copied ? 'Copiado!' : 'Copiar'}
+                                                                {p}
                                                             </button>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={handleMarketingGenerate}
+                                                    disabled={marketingLoading}
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #000 0%, #333 100%)',
+                                                        color: '#FFD700',
+                                                        border: 'none',
+                                                        padding: '1rem',
+                                                        borderRadius: '15px',
+                                                        fontWeight: 800,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '10px',
+                                                        boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                                                    }}
+                                                >
+                                                    {marketingLoading ? <Loader2 className="animate-spin" /> : <Wand2 size={20} />}
+                                                    GERAR POST COM AURA
+                                                </button>
+
+                                                {marketingContent && (
+                                                    <div style={{ position: 'relative' }}>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Resultado Gerado</label>
+                                                        <textarea
+                                                            value={marketingContent}
+                                                            onChange={(e) => setMarketingContent(e.target.value)}
+                                                            rows={10}
+                                                            style={{ width: '100%', padding: '1.5rem', borderRadius: '20px', border: '1px solid #ddd', outline: 'none', resize: 'none', background: '#f8f9fa', lineHeight: '1.6' }}
+                                                        />
+                                                        <button
+                                                            onClick={copyToClipboard}
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '35px',
+                                                                right: '10px',
+                                                                background: copied ? '#48bb78' : '#fff',
+                                                                border: '1px solid #ddd',
+                                                                borderRadius: '8px',
+                                                                padding: '8px',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '5px',
+                                                                fontSize: '0.8rem',
+                                                                fontWeight: 600,
+                                                                color: copied ? '#fff' : '#333',
+                                                                transition: 'all 0.2s'
+                                                            }}
+                                                        >
+                                                            {copied ? <Check size={16} /> : <Copy size={16} />}
+                                                            {copied ? 'Copiado!' : 'Copiar'}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </>
+
                                         </div>
                                     </motion.div>
                                 )}
@@ -2200,223 +2193,216 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Personalização do Hub</h2>
 
                                         <div style={{ display: 'grid', gap: '2rem' }}>
-                                            {userPlan === 'free' && !isAdmin ? (
-                                                <FeaturePaywall
-                                                    title="Hub Personalizado"
-                                                    description="Crie uma experiência única para os seus participantes com vídeos de boas-vindas, agenda detalhada e materiais exclusivos."
-                                                    onUpgrade={onUpgradeClick || (() => { })}
-                                                />
-                                            ) : (
-                                                <>
-                                                    {/* Imagem de Fundo do Hub */}
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                            🖼️ Imagem de Fundo do Hub
-                                                        </label>
-                                                        <div style={{
-                                                            width: '100%',
-                                                            height: '150px',
-                                                            background: hubBackgroundImage ? `url(${hubBackgroundImage}) center / cover` : '#eee',
-                                                            borderRadius: '20px',
-                                                            border: '2px dashed #ccc',
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            cursor: 'pointer',
-                                                            position: 'relative',
-                                                            overflow: 'hidden'
-                                                        }}>
-                                                            <input type="file" onChange={handleHubBackgroundUpload} accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
-                                                            {uploadingHubBackground ? <Loader2 className="animate-spin" size={32} color="#111" /> : (
-                                                                !hubBackgroundImage && (
-                                                                    <>
-                                                                        <ImageIcon size={32} color="#aaa" />
-                                                                        <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>Clique para carregar imagem</span>
-                                                                    </>
-                                                                )
-                                                            )}
-                                                            {hubBackgroundImage && (
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); setHubBackgroundImage(''); }}
-                                                                    style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                >
-                                                                    <X size={16} />
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                            Substitui o fundo padrão do Hub. Recomendado: 1920x1080px (Escuro).
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Configuração do Botão Transmissão */}
-                                                    <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                                                            <div>
-                                                                <label style={{ display: 'block', fontWeight: 700, fontSize: '1rem' }}>
-                                                                    🔴 Botão "Assistir Transmissão"
-                                                                </label>
-                                                                <span style={{ fontSize: '0.8rem', color: '#666' }}>Personalize o botão de chamada para ação do Hub</span>
-                                                            </div>
-                                                            <div
-                                                                onClick={() => setShowHubButton(!showHubButton)}
-                                                                style={{
-                                                                    width: '50px',
-                                                                    height: '26px',
-                                                                    background: showHubButton ? '#111' : '#ccc',
-                                                                    borderRadius: '100px',
-                                                                    cursor: 'pointer',
-                                                                    position: 'relative',
-                                                                    transition: '0.3s'
-                                                                }}
+                                            <>
+                                                {/* Imagem de Fundo do Hub */}
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                        🖼️ Imagem de Fundo do Hub
+                                                    </label>
+                                                    <div style={{
+                                                        width: '100%',
+                                                        height: '150px',
+                                                        background: hubBackgroundImage ? `url(${hubBackgroundImage}) center / cover` : '#eee',
+                                                        borderRadius: '20px',
+                                                        border: '2px dashed #ccc',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        position: 'relative',
+                                                        overflow: 'hidden'
+                                                    }}>
+                                                        <input type="file" onChange={handleHubBackgroundUpload} accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                        {uploadingHubBackground ? <Loader2 className="animate-spin" size={32} color="#111" /> : (
+                                                            !hubBackgroundImage && (
+                                                                <>
+                                                                    <ImageIcon size={32} color="#aaa" />
+                                                                    <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>Clique para carregar imagem</span>
+                                                                </>
+                                                            )
+                                                        )}
+                                                        {hubBackgroundImage && (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); setHubBackgroundImage(''); }}
+                                                                style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                             >
-                                                                <div style={{
-                                                                    width: '20px',
-                                                                    height: '20px',
-                                                                    background: '#fff',
-                                                                    borderRadius: '50%',
-                                                                    position: 'absolute',
-                                                                    top: '3px',
-                                                                    left: showHubButton ? '27px' : '3px',
-                                                                    transition: '0.3s'
-                                                                }} />
-                                                            </div>
-                                                        </div>
-
-                                                        {showHubButton && (
-                                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ overflow: 'hidden' }}>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
-                                                                    <div style={{ flex: 1 }}>
-                                                                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '5px' }}>Cor do Botão</label>
-                                                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                                                            <input
-                                                                                type="color"
-                                                                                value={hubButtonColor}
-                                                                                onChange={(e) => setHubButtonColor(e.target.value)}
-                                                                                style={{ width: '40px', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-                                                                            />
-                                                                            <input
-                                                                                type="text"
-                                                                                value={hubButtonColor}
-                                                                                onChange={(e) => setHubButtonColor(e.target.value)}
-                                                                                style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div style={{
-                                                                        width: '120px',
-                                                                        height: '60px',
-                                                                        background: hubButtonColor,
-                                                                        borderRadius: '12px',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                        color: '#000',
-                                                                        fontWeight: 700,
-                                                                        fontSize: '0.7rem',
-                                                                        textTransform: 'uppercase',
-                                                                        textAlign: 'center',
-                                                                        padding: '5px',
-                                                                        boxShadow: `0 4px 12px ${hubButtonColor}40`
-                                                                    }}>
-                                                                        Preview
-                                                                    </div>
-                                                                </div>
-                                                            </motion.div>
+                                                                <X size={16} />
+                                                            </button>
                                                         )}
                                                     </div>
+                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                        Substitui o fundo padrão do Hub. Recomendado: 1920x1080px (Escuro).
+                                                    </p>
+                                                </div>
 
-                                                    {/* Mensagem de Boas-Vindas */}
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                            💬 Mensagem de Boas-Vindas
-                                                        </label>
-
-                                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
-                                                                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                            >
-                                                                {t('events.welcomeTemplates.formal')}
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
-                                                                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                            >
-                                                                {t('events.welcomeTemplates.excited')}
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
-                                                                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                            >
-                                                                {t('events.welcomeTemplates.brief')}
-                                                            </button>
+                                                {/* Configuração do Botão Transmissão */}
+                                                <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                                        <div>
+                                                            <label style={{ display: 'block', fontWeight: 700, fontSize: '1rem' }}>
+                                                                🔴 Botão "Assistir Transmissão"
+                                                            </label>
+                                                            <span style={{ fontSize: '0.8rem', color: '#666' }}>Personalize o botão de chamada para ação do Hub</span>
                                                         </div>
-                                                        <textarea
-                                                            value={welcomeMessage}
-                                                            onChange={(e) => setWelcomeMessage(e.target.value)}
-                                                            rows={3}
-                                                            placeholder="Escreva uma mensagem especial para seus participantes..."
+                                                        <div
+                                                            onClick={() => setShowHubButton(!showHubButton)}
                                                             style={{
-                                                                width: '100%',
-                                                                padding: '1rem',
-                                                                borderRadius: '12px',
-                                                                border: '1px solid #ddd',
-                                                                outline: 'none',
-                                                                resize: 'none'
+                                                                width: '50px',
+                                                                height: '26px',
+                                                                background: showHubButton ? '#111' : '#ccc',
+                                                                borderRadius: '100px',
+                                                                cursor: 'pointer',
+                                                                position: 'relative',
+                                                                transition: '0.3s'
                                                             }}
-                                                        />
-                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                            Aparecerá em destaque no Hub com gradiente roxo
-                                                        </p>
+                                                        >
+                                                            <div style={{
+                                                                width: '20px',
+                                                                height: '20px',
+                                                                background: '#fff',
+                                                                borderRadius: '50%',
+                                                                position: 'absolute',
+                                                                top: '3px',
+                                                                left: showHubButton ? '27px' : '3px',
+                                                                transition: '0.3s'
+                                                            }} />
+                                                        </div>
                                                     </div>
 
-                                                    {/* Vídeo de Boas-Vindas */}
-                                                    <div>
-                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                            🎥 Vídeo de Boas-Vindas
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            value={welcomeVideo}
-                                                            onChange={(e) => setWelcomeVideo(e.target.value)}
-                                                            placeholder="https://youtube.com/watch?v=..."
-                                                            style={{
-                                                                width: '100%',
-                                                                padding: '1rem',
-                                                                borderRadius: '12px',
-                                                                border: '1px solid #ddd',
-                                                                outline: 'none'
-                                                            }}
-                                                        />
-                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                            Cole o link do YouTube, Vimeo ou qualquer vídeo embeddable
-                                                        </p>
+                                                    {showHubButton && (
+                                                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ overflow: 'hidden' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
+                                                                <div style={{ flex: 1 }}>
+                                                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '5px' }}>Cor do Botão</label>
+                                                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={hubButtonColor}
+                                                                            onChange={(e) => setHubButtonColor(e.target.value)}
+                                                                            style={{ width: '40px', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                                                                        />
+                                                                        <input
+                                                                            type="text"
+                                                                            value={hubButtonColor}
+                                                                            onChange={(e) => setHubButtonColor(e.target.value)}
+                                                                            style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div style={{
+                                                                    width: '120px',
+                                                                    height: '60px',
+                                                                    background: hubButtonColor,
+                                                                    borderRadius: '12px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    color: '#000',
+                                                                    fontWeight: 700,
+                                                                    fontSize: '0.7rem',
+                                                                    textTransform: 'uppercase',
+                                                                    textAlign: 'center',
+                                                                    padding: '5px',
+                                                                    boxShadow: `0 4px 12px ${hubButtonColor}40`
+                                                                }}>
+                                                                    Preview
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </div>
+
+                                                {/* Mensagem de Boas-Vindas */}
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                        💬 Mensagem de Boas-Vindas
+                                                    </label>
+
+                                                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
+                                                            style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                        >
+                                                            {t('events.welcomeTemplates.formal')}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
+                                                            style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                        >
+                                                            {t('events.welcomeTemplates.excited')}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
+                                                            style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                        >
+                                                            {t('events.welcomeTemplates.brief')}
+                                                        </button>
                                                     </div>
-
-                                                    {/* Campos Customizados */}
-                                                    <CustomFieldsEditor
-                                                        fields={customFields}
-                                                        onChange={setCustomFields}
+                                                    <textarea
+                                                        value={welcomeMessage}
+                                                        onChange={(e) => setWelcomeMessage(e.target.value)}
+                                                        rows={3}
+                                                        placeholder="Escreva uma mensagem especial para seus participantes..."
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '1rem',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid #ddd',
+                                                            outline: 'none',
+                                                            resize: 'none'
+                                                        }}
                                                     />
+                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                        Aparecerá em destaque no Hub com gradiente roxo
+                                                    </p>
+                                                </div>
 
-                                                    {/* Agenda */}
-                                                    <AgendaEditor
-                                                        agenda={agenda}
-                                                        onChange={setAgenda}
+                                                {/* Vídeo de Boas-Vindas */}
+                                                <div>
+                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                        🎥 Vídeo de Boas-Vindas
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={welcomeVideo}
+                                                        onChange={(e) => setWelcomeVideo(e.target.value)}
+                                                        placeholder="https://youtube.com/watch?v=..."
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '1rem',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid #ddd',
+                                                            outline: 'none'
+                                                        }}
                                                     />
+                                                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                        Cole o link do YouTube, Vimeo ou qualquer vídeo embeddable
+                                                    </p>
+                                                </div>
 
-                                                    {/* Materiais */}
-                                                    <MaterialsEditor
-                                                        materials={materials}
-                                                        onChange={setMaterials}
-                                                    />
-                                                </>
-                                            )}
+                                                {/* Campos Customizados */}
+                                                <CustomFieldsEditor
+                                                    fields={customFields}
+                                                    onChange={setCustomFields}
+                                                />
+
+                                                {/* Agenda */}
+                                                <AgendaEditor
+                                                    agenda={agenda}
+                                                    onChange={setAgenda}
+                                                />
+
+                                                {/* Materiais */}
+                                                <MaterialsEditor
+                                                    materials={materials}
+                                                    onChange={setMaterials}
+                                                />
+                                            </>
+
                                         </div>
                                     </motion.div>
                                 )}
