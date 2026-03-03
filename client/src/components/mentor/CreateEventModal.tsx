@@ -20,6 +20,7 @@ interface CreateEventModalProps {
     onClose: () => void;
     onSuccess: () => void;
     userPlan?: string;
+    userRole?: string;
     onUpgradeClick?: () => void;
 }
 
@@ -88,9 +89,10 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
     );
 }
 
-export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan = 'free', onUpgradeClick }: CreateEventModalProps) {
+export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan = 'free', userRole = 'mentor', onUpgradeClick }: CreateEventModalProps) {
     const { t } = useTranslate();
     const [step, setStep] = useState(1);
+    const isAdmin = userRole === 'admin' || userRole === 'superadmin';
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [previousEvents, setPreviousEvents] = useState<FormModel[]>([]);
@@ -1047,7 +1049,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 { id: 6, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
                                 { id: 7, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
                             ].map((s) => {
-                                const isLocked = s.premium && (userPlan === 'free' || !userPlan);
+                                const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
                                     <button
                                         key={s.id}
@@ -2499,7 +2501,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.paymentConfig')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            {userPlan === 'free' ? (
+                                            {userPlan === 'free' && !isAdmin ? (
                                                 <div
                                                     onClick={onUpgradeClick}
                                                     style={{ cursor: 'pointer' }}
@@ -2890,7 +2892,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
 
-                                        {userPlan === 'free' ? (
+                                        {userPlan === 'free' && !isAdmin ? (
                                             <FeaturePaywall
                                                 title="Hub de Aulas e Materiais"
                                                 description="Disponibiliza gravações, materiais de apoio e certificados automaticamente para os teus participantes numa área exclusiva."
@@ -3003,7 +3005,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>Parceiros & Publicação</h2>
 
-                                        {userPlan === 'free' ? (
+                                        {userPlan === 'free' && !isAdmin ? (
                                             <FeaturePaywall
                                                 title="Co-organização e Parceiros"
                                                 description="Trabalha em equipa com outros mentores, divide comissões e adiciona patrocinadores oficiais ao teu evento."

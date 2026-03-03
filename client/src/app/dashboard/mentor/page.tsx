@@ -2035,6 +2035,7 @@ function MentorDashboardContent() {
                     onClose={() => setIsEventModalOpen(false)}
                     onSuccess={loadDashboard}
                     userPlan={user?.plan || 'free'}
+                    userRole={user?.role}
                     onUpgradeClick={() => {
                         setIsEventModalOpen(false);
                         setIsUpgradeModalOpen(true);
@@ -2068,6 +2069,7 @@ function MentorDashboardContent() {
                         form={editModalData.form}
                         onSuccess={loadDashboard}
                         userPlan={user?.plan || 'free'}
+                        userRole={user?.role}
                         onUpgradeClick={() => {
                             setEditModalData({ isOpen: false, form: null });
                             setIsUpgradeModalOpen(true);

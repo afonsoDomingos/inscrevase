@@ -368,6 +368,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                         setSelectedForm(null);
                     }}
                     form={selectedForm}
+                    userRole={currentUser?.role || 'admin'}
                     onSuccess={() => {
                         loadForms();
                         setIsEditModalOpen(false);

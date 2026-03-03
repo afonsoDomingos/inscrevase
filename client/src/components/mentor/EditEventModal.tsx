@@ -25,6 +25,7 @@ interface EditEventModalProps {
     onSuccess: () => void;
     form: FormModel;
     userPlan?: string;
+    userRole?: string;
     onUpgradeClick?: () => void;
 }
 
@@ -85,9 +86,10 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
     );
 }
 
-export default function EditEventModal({ isOpen, onClose, onSuccess, form, userPlan = 'free', onUpgradeClick }: EditEventModalProps) {
+export default function EditEventModal({ isOpen, onClose, onSuccess, form, userPlan = 'free', userRole = 'mentor', onUpgradeClick }: EditEventModalProps) {
     const { t, locale } = useTranslate();
     const [step, setStep] = useState(1);
+    const isAdmin = userRole === 'admin' || userRole === 'superadmin';
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
@@ -649,7 +651,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                 { id: 9, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
                                 { id: 10, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
                             ].map((s) => {
-                                const isLocked = s.premium && (userPlan === 'free' || !userPlan);
+                                const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
                                     <button
                                         key={s.id}
@@ -1797,7 +1799,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.paymentConfig')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            {userPlan === 'free' ? (
+                                            {userPlan === 'free' && !isAdmin ? (
                                                 <FeaturePaywall
                                                     title="Evento Pago"
                                                     description="Transforme o seu conhecimento em lucro. Desbloqueie a funcionalidade de eventos pagos para aceitar pagamentos via Cartão, M-Pesa e muito mais."
@@ -2094,7 +2096,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Deixe a Aura criar o post perfeito para divulgar seu evento.</p>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            {userPlan === 'free' ? (
+                                            {userPlan === 'free' && !isAdmin ? (
                                                 <FeaturePaywall
                                                     title="Marketing com IA"
                                                     description="Deixe a nossa inteligência artificial criar textos persuasivos e posts para as suas redes sociais automaticamente."
@@ -2198,7 +2200,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Personalização do Hub</h2>
 
                                         <div style={{ display: 'grid', gap: '2rem' }}>
-                                            {userPlan === 'free' ? (
+                                            {userPlan === 'free' && !isAdmin ? (
                                                 <FeaturePaywall
                                                     title="Hub Personalizado"
                                                     description="Crie uma experiência única para os seus participantes com vídeos de boas-vindas, agenda detalhada e materiais exclusivos."
@@ -2422,7 +2424,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                 {step === 8 && (
                                     <motion.div key="step8" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração de Certificados</h2>
-                                        {userPlan === 'free' ? (
+                                        {userPlan === 'free' && !isAdmin ? (
                                             <FeaturePaywall
                                                 title="Certificados Automatizados"
                                                 description="Emita certificados personalizados automaticamente para todos os seus participantes com apenas um clique."
@@ -2443,7 +2445,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
 
-                                        {userPlan === 'free' ? (
+                                        {userPlan === 'free' && !isAdmin ? (
                                             <FeaturePaywall
                                                 title="Conteúdo e Aulas"
                                                 description="Hospede as suas aulas e conteúdos exclusivos diretamente no Hub do evento para os seus alunos assistirem quando quiserem."
@@ -2550,7 +2552,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                 )}
                                 {step === 10 && (
                                     <motion.div key="step10" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        {userPlan === 'free' ? (
+                                        {userPlan === 'free' && !isAdmin ? (
                                             <FeaturePaywall
                                                 title="Equipa e Parceiros"
                                                 description="Adicione co-organizadores, parceiros e palestrantes ao seu evento. Cada um terá o seu perfil em destaque na página do evento."
