@@ -712,10 +712,10 @@ function HubContent() {
                                     backdropFilter: 'blur(20px)',
                                     borderRadius: '48px',
                                     padding: '60px',
-                                    color: '#fff',
+                                    color: textColor,
                                     position: 'relative',
                                     overflow: 'hidden',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
                                     boxShadow: '0 40px 80px rgba(0,0,0,0.3)'
                                 }}
                             >
@@ -728,7 +728,7 @@ function HubContent() {
                                         fontSize: '2.5rem',
                                         fontWeight: 800,
                                         fontFamily: 'var(--font-playfair), serif',
-                                        background: `linear-gradient(to right, #fff, ${primaryColor}80)`,
+                                        background: `linear-gradient(to right, ${textColor}, ${primaryColor}80)`,
                                         WebkitBackgroundClip: 'text',
                                         WebkitTextFillColor: 'transparent'
                                     }}>
@@ -741,7 +741,7 @@ function HubContent() {
                                         whiteSpace: 'pre-wrap',
                                         opacity: 0.9,
                                         fontWeight: 500,
-                                        color: '#f4f4f5'
+                                        color: isDark ? '#f4f4f5' : '#333'
                                     }}>
                                         {form.welcomeMessage}
                                     </p>
@@ -752,10 +752,10 @@ function HubContent() {
                                         alignItems: 'center',
                                         gap: '16px',
                                         padding: '16px 24px',
-                                        background: 'rgba(255,255,255,0.03)',
+                                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
                                         borderRadius: '24px',
                                         width: 'fit-content',
-                                        border: '1px solid rgba(255,255,255,0.05)'
+                                        border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
                                     }}>
                                         <div style={{ position: 'relative', width: '50px', height: '50px' }}>
                                             <Image
@@ -766,8 +766,8 @@ function HubContent() {
                                             />
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{form.creator.name}</div>
-                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('hub.eventRole', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}</div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 700, color: textColor }}>{form.creator.name}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: textColor }}>{t('hub.eventRole', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}</div>
                                         </div>
                                     </div>
                                 </div>
