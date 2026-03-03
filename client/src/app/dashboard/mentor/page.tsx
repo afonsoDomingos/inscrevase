@@ -262,7 +262,31 @@ function MentorDashboardContent() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Polling effect for subscription upgrade
+    // Handle celebration redirect from /assinatura/sucesso page
+    useEffect(() => {
+        if (searchParams.get('celebration') === 'true') {
+            // User came from the success page — plan is already updated
+            setShowUpgradeSuccess(true);
+            router.replace('/dashboard/mentor'); // clear params
+
+            // Reload user and data
+            authService.getProfile()
+                .then(profile => setUser(profile))
+                .catch(e => console.error('Profile reload error', e));
+
+            Promise.all([
+                dashboardService.getMentorStats().catch(() => null),
+                formService.getMyForms().catch(() => [])
+            ]).then(([statsData, formsData]) => {
+                setStats(statsData);
+                setForms(formsData as any);
+                setLoading(false);
+            });
+            return;
+        }
+    }, [searchParams, router]);
+
+    // Polling effect for subscription upgrade (legacy fallback)
     useEffect(() => {
         if (searchParams.get('subscription') === 'success') {
             setLoading(true);
@@ -293,7 +317,7 @@ function MentorDashboardContent() {
                             formService.getMyForms().catch(() => [])
                         ]);
                         setStats(statsData);
-                        setForms(formsData);
+                        setForms(formsData as any);
                     }
                 } catch (e) {
                     console.error("Polling error", e);

@@ -909,7 +909,7 @@ exports.createSubscription = async (req, res) => {
                 metadata: { userId: user._id.toString(), plan }
             },
             metadata: { userId: user._id.toString(), plan },
-            success_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=success&plan=${plan}`,
+            success_url: `${process.env.CLIENT_URL}/assinatura/sucesso?plan=${plan}`,
             cancel_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=cancel`,
         });
 
