@@ -33,14 +33,14 @@ exports.createSubscriptionOrder = async (req, res) => {
 
         const body = {
             intent: 'CAPTURE',
-            purchaseUnits: [
+            purchase_units: [
                 {
                     amount: {
-                        currencyCode: finalCurrency,
+                        currency_code: finalCurrency,
                         value: amountValue,
                     },
                     description: `Plano ${plan.toUpperCase()} - Inscreva-se`,
-                    customId: JSON.stringify({ userId, plan, type: 'subscription' })
+                    custom_id: JSON.stringify({ userId, plan, type: 'subscription' })
                 },
             ],
         };
@@ -88,28 +88,28 @@ exports.createEventOrder = async (req, res) => {
 
         const body = {
             intent: 'CAPTURE',
-            purchaseUnits: [
+            purchase_units: [
                 {
                     amount: {
-                        currencyCode: currency,
+                        currency_code: currency,
                         value: totalAmount,
                     },
                     payee: {
-                        emailAddress: mentor.paypalEmail,
+                        email_address: mentor.paypalEmail,
                     },
-                    paymentInstruction: {
-                        disbursementMode: 'INSTANT',
-                        platformFees: [
+                    payment_instruction: {
+                        disbursement_mode: 'INSTANT',
+                        platform_fees: [
                             {
                                 amount: {
-                                    currencyCode: currency,
+                                    currency_code: currency,
                                     value: feeAmount,
                                 },
                             },
                         ],
                     },
                     description: `Inscrição: ${form.title}`,
-                    customId: JSON.stringify({
+                    custom_id: JSON.stringify({
                         formId,
                         submissionData,
                         type: 'event_registration',
