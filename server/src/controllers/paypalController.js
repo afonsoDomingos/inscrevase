@@ -137,18 +137,46 @@ exports.createEventOrder = async (req, res) => {
 exports.captureOrder = async (req, res) => {
     try {
         const { orderID } = req.body;
+        console.log('🧐 Capturing PayPal Order:', orderID);
         const result = await paypalService.captureOrder(orderID);
+
+        // LOG FULL RESULT FOR DEEP DEBUGGING IN RENDER
+        console.log('📦 PayPal Capture Response:', JSON.stringify(result, null, 2));
 
         if (result.status !== 'COMPLETED') {
             return res.status(400).json({ message: 'Payment not completed', status: result.status });
         }
 
-        const purchaseUnit = result.purchase_units[0];
-        const capture = purchaseUnit.payments.captures[0];
-        const customData = JSON.parse(purchaseUnit.custom_id);
+        const purchaseUnit = result.purchase_units && result.purchase_units[0];
+        if (!purchaseUnit) {
+            console.error('❌ No purchase unit in result:', result);
+            throw new Error("Invalid PayPal response: Missing purchase_units");
+        }
+
+        const capture = purchaseUnit.payments?.captures?.[0];
+        if (!capture) {
+            console.error('❌ No capture found in purchaseUnit:', purchaseUnit);
+            throw new Error("Invalid PayPal response: Missing capture details");
+        }
+
+        // PayPal v2 might put custom_id in different places depending on the specific flow
+        const rawCustomId = purchaseUnit.custom_id || result.custom_id || capture.custom_id;
+
+        if (!rawCustomId) {
+            console.error('❌ custom_id is missing in PayPal response. Result keys:', Object.keys(result));
+            throw new Error("Missing custom_id in PayPal response");
+        }
+
+        let customData;
+        try {
+            customData = JSON.parse(rawCustomId);
+        } catch (e) {
+            console.error('❌ JSON Parse Error for custom_id:', rawCustomId);
+            throw new Error(`"custom_id" is not valid JSON: ${rawCustomId}`);
+        }
 
         console.log('✅ PayPal Payment Captured:', capture.id);
-        console.log('📦 Data:', customData);
+        console.log('📦 Parsed Custom Data:', customData);
 
         if (customData.type === 'subscription') {
             const { userId, plan } = customData;

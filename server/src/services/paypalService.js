@@ -33,6 +33,7 @@ class PayPalService {
     async createOrder(orderData) {
         try {
             const token = await this.getAccessToken();
+            console.log(`🌐 Calling PayPal API (Create): ${this.baseUrl}/v2/checkout/orders`);
             const response = await axios.post(
                 `${this.baseUrl}/v2/checkout/orders`,
                 orderData,
@@ -43,6 +44,7 @@ class PayPalService {
                     }
                 }
             );
+            console.log(`✅ PayPal Order Created: ${response.data.id}`);
             return response.data;
         } catch (error) {
             console.error('❌ PayPal Create Order Error:', error.response?.data || error.message);
@@ -53,6 +55,7 @@ class PayPalService {
     async captureOrder(orderId) {
         try {
             const token = await this.getAccessToken();
+            console.log(`🌐 Calling PayPal API (Capture): ${this.baseUrl}/v2/checkout/orders/${orderId}/capture`);
             const response = await axios.post(
                 `${this.baseUrl}/v2/checkout/orders/${orderId}/capture`,
                 {},
@@ -63,6 +66,7 @@ class PayPalService {
                     }
                 }
             );
+            console.log(`✅ PayPal Capture Status: ${response.status}`);
             return response.data;
         } catch (error) {
             console.error('❌ PayPal Capture Order Error:', error.response?.data || error.message);
