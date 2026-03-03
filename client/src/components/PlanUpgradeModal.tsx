@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
@@ -33,6 +34,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
     onClose: () => void,
     initialManualPlan?: { id: string, amount: number } | null
 }) {
+    const router = useRouter();
     const [loading, setLoading] = useState<string | null>(null);
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(initialManualPlan || null);
     const [uploading, setUploading] = useState(false);
@@ -179,7 +181,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         features={[t('dashboard.plans.f1'), t('dashboard.plans.f2'), t('dashboard.plans.f3')]}
                                         onSelect={() => handleUpgradeStripe('pro')}
                                         onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
-                                        onPaypalSuccess={() => { onClose(); window.location.reload(); }}
+                                        onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=pro'); }}
                                         loading={loading === 'pro'} currency={currency} t={t}
                                     />
                                     <PlanCard
@@ -189,7 +191,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
                                         onSelect={() => handleUpgradeStripe('enterprise')}
                                         onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
-                                        onPaypalSuccess={() => { onClose(); window.location.reload(); }}
+                                        onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=enterprise'); }}
                                         loading={loading === 'enterprise'} currency={currency} t={t}
                                     />
                                 </div>
@@ -208,7 +210,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
                                         </div>
                                         <div style={{ position: 'relative', zIndex: 2 }}>
-                                            <PaypalButton type="subscription" planId={manualPlan.id} currency={currency} onSuccess={() => { onClose(); window.location.reload(); }} />
+                                            <PaypalButton type="subscription" planId={manualPlan.id} currency={currency} onSuccess={() => { onClose(); router.push(`/dashboard/mentor?subscription=success&plan=${manualPlan.id}`); }} />
                                         </div>
                                     </div>
                                 </div>

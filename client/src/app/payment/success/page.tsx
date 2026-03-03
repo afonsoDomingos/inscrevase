@@ -10,10 +10,16 @@ function SuccessContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const sessionId = searchParams.get('session_id');
+    const directSubmissionId = searchParams.get('submission_id');
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-    const [submissionId, setSubmissionId] = useState<string | null>(null);
+    const [submissionId, setSubmissionId] = useState<string | null>(directSubmissionId);
 
     useEffect(() => {
+        if (directSubmissionId) {
+            setStatus('success');
+            return;
+        }
+
         if (!sessionId) {
             setStatus('error');
             return;

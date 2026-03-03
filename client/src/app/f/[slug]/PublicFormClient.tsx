@@ -1239,7 +1239,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                         currency={form.paymentConfig.currency || 'USD'}
                                                                         onSuccess={(details) => {
                                                                             if (details.submissionId) {
-                                                                                router.push(`/hub/${details.submissionId}`);
+                                                                                router.push(`/payment/success?submission_id=${details.submissionId}`);
                                                                             } else {
                                                                                 setSuccess(true);
                                                                             }
