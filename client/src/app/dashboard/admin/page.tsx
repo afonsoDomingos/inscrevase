@@ -16,9 +16,10 @@ import AdRequestList from '@/components/admin/AdRequestList';
 import SmartLinkList from '@/components/admin/SmartLinkList';
 import SystemSettings from '@/components/admin/SystemSettings';
 import MarketingRequestList from '@/components/admin/MarketingRequestList';
+import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign } from 'lucide-react';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -41,7 +42,7 @@ import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCar
 import ThemeToggle from '@/components/common/ThemeToggle';
 import Image from 'next/image';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -363,6 +364,7 @@ export default function AdminDashboard() {
         { id: 'referrals', label: 'Referenciações', icon: <Trophy size={20} /> },
         { id: 'marketing', label: 'Marketing & Vendas', icon: <Zap size={20} /> },
         { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
+        { id: 'payouts', label: 'Repasses PayPal', icon: <DollarSign size={20} /> },
         { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={20} /> },
     ].filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing') || user?.role === 'SuperAdmin');
 
@@ -1727,6 +1729,13 @@ export default function AdminDashboard() {
                                         </tbody>
                                     </table>
                                 </div>
+                            </motion.div>
+                        )
+                    }
+                    {
+                        activeTab === 'payouts' && (
+                            <motion.div key="payouts" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                <PaypalPayouts />
                             </motion.div>
                         )
                     }

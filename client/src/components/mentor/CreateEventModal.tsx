@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -19,6 +19,8 @@ interface CreateEventModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    userPlan?: string;
+    onUpgradeClick?: () => void;
 }
 
 interface Field {
@@ -29,7 +31,61 @@ interface Field {
     options?: string[]; // Added options
 }
 
-export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateEventModalProps) {
+function FeaturePaywall({ title, description, onUpgrade }: { title: string, description: string, onUpgrade: () => void }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+                padding: '4rem 2rem',
+                textAlign: 'center',
+                background: '#fff',
+                borderRadius: '32px',
+                border: '1px solid #FFD70044',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                maxWidth: '600px',
+                margin: '2rem auto'
+            }}
+        >
+            <div style={{
+                width: '100px',
+                height: '100px',
+                background: 'linear-gradient(135deg, #FFD70015 0%, #FFD70005 100%)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '2rem',
+                border: '1px solid #FFD70033'
+            }}>
+                <Lock size={48} color="#FFD700" />
+            </div>
+            <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '1rem', color: '#111' }}>{title}</h3>
+            <p style={{ color: '#666', marginBottom: '2.5rem', fontSize: '1.1rem', lineHeight: 1.6 }}>{description}</p>
+            <button
+                onClick={onUpgrade}
+                className="btn-primary"
+                style={{
+                    padding: '1.2rem 2.5rem',
+                    borderRadius: '20px',
+                    fontWeight: 900,
+                    fontSize: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    boxShadow: '0 15px 30px rgba(255, 215, 0, 0.2)'
+                }}
+            >
+                DESBLOQUEAR AGORA <Crown size={20} />
+            </button>
+        </motion.div>
+    );
+}
+
+export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan = 'free', onUpgradeClick }: CreateEventModalProps) {
     const { t } = useTranslate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -983,36 +1039,61 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                 { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
                                 { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
                                 { id: 3, label: t('events.steps.design'), icon: <Palette size={18} /> },
-                                { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} /> },
+                                { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} />, premium: true },
                                 { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
-                                { id: 6, label: 'Aulas do Evento', icon: <BookOpen size={18} /> },
-                                { id: 7, label: 'Parceiros/Co-org', icon: <Users2 size={18} /> },
-                            ].map((s) => (
-                                <button
-                                    key={s.id}
-                                    onClick={() => setStep(s.id)}
-                                    title={s.label}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: isMobile ? '0' : '12px',
-                                        padding: '0.6rem 1rem',
-                                        borderRadius: '14px',
-                                        border: 'none',
-                                        background: step === s.id ? '#FFD70015' : 'transparent',
-                                        color: step === s.id ? '#FFD700' : '#888',
-                                        fontWeight: 700,
-                                        cursor: 'pointer',
-                                        textAlign: 'left',
-                                        transition: 'all 0.2s',
-                                        whiteSpace: 'nowrap',
-                                        fontSize: '0.9rem'
-                                    }}
-                                >
-                                    {s.icon}
-                                    {!isMobile && s.label}
-                                </button>
-                            ))}
+                                { id: 6, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
+                                { id: 7, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
+                            ].map((s) => {
+                                const isLocked = s.premium && (userPlan === 'free' || !userPlan);
+                                return (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => setStep(s.id)}
+                                        title={s.label}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: isMobile ? '0' : '12px',
+                                            padding: '0.6rem 1rem',
+                                            borderRadius: '14px',
+                                            border: 'none',
+                                            background: step === s.id ? '#FFD70015' : 'transparent',
+                                            color: step === s.id ? '#FFD700' : '#888',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            textAlign: 'left',
+                                            transition: 'all 0.2s',
+                                            whiteSpace: 'nowrap',
+                                            fontSize: '0.9rem',
+                                            position: 'relative'
+                                        }}
+                                    >
+                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {s.icon}
+                                            {isLocked && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '-8px',
+                                                    right: '-8px',
+                                                    background: '#111',
+                                                    color: '#FFD700',
+                                                    borderRadius: '50%',
+                                                    width: '14px',
+                                                    height: '14px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '8px',
+                                                    border: '1px solid #FFD700'
+                                                }}>
+                                                    <Lock size={8} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        {!isMobile && s.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -2409,15 +2490,32 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.paymentConfig')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={paymentConfig.enabled}
-                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
-                                                    style={{ width: '20px', height: '20px' }}
-                                                />
-                                                {t('events.isPaidEvent')}
-                                            </label>
+                                            {userPlan === 'free' ? (
+                                                <div
+                                                    onClick={onUpgradeClick}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#f8f9fa', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', opacity: 0.8 }}>
+                                                        <Lock size={20} color="#FFD700" />
+                                                        {t('events.isPaidEvent')}
+                                                        <span style={{ fontSize: '0.7rem', background: '#FFD700', color: '#000', padding: '4px 10px', borderRadius: '10px', marginLeft: 'auto', fontWeight: 900 }}>PREMIUM</span>
+                                                    </label>
+                                                    <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '12px', padding: '0 1rem', lineHeight: 1.5 }}>
+                                                        Para vender inscrições e gerir pagamentos, precisas de uma conta <strong>Pro ou Business</strong>.
+                                                        <span style={{ color: '#FFD700', fontWeight: 800, marginLeft: '5px' }}>Clica para saber mais.</span>
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={paymentConfig.enabled}
+                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
+                                                        style={{ width: '20px', height: '20px' }}
+                                                    />
+                                                    {t('events.isPaidEvent')}
+                                                </label>
+                                            )}
 
                                             {paymentConfig.enabled && (
                                                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
@@ -2783,102 +2881,112 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
 
-                                        {lessonsLoading ? (
-                                            <div style={{ padding: '3rem', textAlign: 'center' }}>
-                                                <Loader2 className="animate-spin" size={40} color="#FFD700" />
-                                                <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
-                                            </div>
-                                        ) : allLessons.length === 0 ? (
-                                            <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
-                                                <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
-                                                <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
-                                                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-                                                    Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
-                                                </p>
-                                                <a
-                                                    href="/dashboard/mentor/lessons"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '8px',
-                                                        marginTop: '1rem',
-                                                        padding: '0.75rem 1.5rem',
-                                                        borderRadius: '12px',
-                                                        background: '#111',
-                                                        color: '#FFD700',
-                                                        textDecoration: 'none',
-                                                        fontWeight: 700,
-                                                        fontSize: '0.9rem'
-                                                    }}
-                                                >
-                                                    Criar Nova Aula <ExternalLink size={16} />
-                                                </a>
-                                            </div>
+                                        {userPlan === 'free' ? (
+                                            <FeaturePaywall
+                                                title="Hub de Aulas e Materiais"
+                                                description="Disponibiliza gravações, materiais de apoio e certificados automaticamente para os teus participantes numa área exclusiva."
+                                                onUpgrade={onUpgradeClick || (() => { })}
+                                            />
                                         ) : (
-                                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                                {allLessons.map((lesson) => (
-                                                    <div
-                                                        key={lesson._id}
-                                                        onClick={() => toggleLessonSelection(lesson._id)}
-                                                        style={{
-                                                            padding: '1.25rem',
-                                                            borderRadius: '16px',
-                                                            border: '2px solid',
-                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
-                                                            background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '15px',
-                                                            transition: 'all 0.2s'
-                                                        }}
-                                                    >
-                                                        <div style={{
-                                                            width: '24px',
-                                                            height: '24px',
-                                                            borderRadius: '6px',
-                                                            border: '2px solid',
-                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
-                                                            background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#fff'
-                                                        }}>
-                                                            {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
-                                                        </div>
-
-                                                        <div style={{
-                                                            width: '60px',
-                                                            height: '40px',
-                                                            borderRadius: '8px',
-                                                            background: '#eee',
-                                                            position: 'relative',
-                                                            overflow: 'hidden',
-                                                            flexShrink: 0
-                                                        }}>
-                                                            {lesson.thumbnailUrl ? (
-                                                                <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
-                                                            ) : (
-                                                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
-                                                                    <Play size={16} color="#fff" fill="#fff" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        <div style={{ flex: 1 }}>
-                                                            <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
-                                                            <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
-                                                        </div>
-
-                                                        {!lesson.isPublished && (
-                                                            <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
-                                                        )}
+                                            <>
+                                                {lessonsLoading ? (
+                                                    <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                                        <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                                        <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                ) : allLessons.length === 0 ? (
+                                                    <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
+                                                        <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
+                                                        <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
+                                                        <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+                                                            Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
+                                                        </p>
+                                                        <a
+                                                            href="/dashboard/mentor/lessons"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '8px',
+                                                                marginTop: '1rem',
+                                                                padding: '0.75rem 1.5rem',
+                                                                borderRadius: '12px',
+                                                                background: '#111',
+                                                                color: '#FFD700',
+                                                                textDecoration: 'none',
+                                                                fontWeight: 700,
+                                                                fontSize: '0.9rem'
+                                                            }}
+                                                        >
+                                                            Criar Nova Aula <ExternalLink size={16} />
+                                                        </a>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                                        {allLessons.map((lesson) => (
+                                                            <div
+                                                                key={lesson._id}
+                                                                onClick={() => toggleLessonSelection(lesson._id)}
+                                                                style={{
+                                                                    padding: '1.25rem',
+                                                                    borderRadius: '16px',
+                                                                    border: '2px solid',
+                                                                    borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
+                                                                    background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '15px',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                            >
+                                                                <div style={{
+                                                                    width: '24px',
+                                                                    height: '24px',
+                                                                    borderRadius: '6px',
+                                                                    border: '2px solid',
+                                                                    borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
+                                                                    background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    color: '#fff'
+                                                                }}>
+                                                                    {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
+                                                                </div>
+
+                                                                <div style={{
+                                                                    width: '60px',
+                                                                    height: '40px',
+                                                                    borderRadius: '8px',
+                                                                    background: '#eee',
+                                                                    position: 'relative',
+                                                                    overflow: 'hidden',
+                                                                    flexShrink: 0
+                                                                }}>
+                                                                    {lesson.thumbnailUrl ? (
+                                                                        <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                                                                    ) : (
+                                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
+                                                                            <Play size={16} color="#fff" fill="#fff" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+
+                                                                <div style={{ flex: 1 }}>
+                                                                    <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
+                                                                    <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
+                                                                </div>
+
+                                                                {!lesson.isPublished && (
+                                                                    <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </motion.div>
                                 )}
@@ -2886,10 +2994,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                                     <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>Parceiros & Publicação</h2>
 
-                                        <PartnersEditor
-                                            partners={partners}
-                                            onChange={setPartners}
-                                        />
+                                        {userPlan === 'free' ? (
+                                            <FeaturePaywall
+                                                title="Co-organização e Parceiros"
+                                                description="Trabalha em equipa com outros mentores, divide comissões e adiciona patrocinadores oficiais ao teu evento."
+                                                onUpgrade={onUpgradeClick || (() => { })}
+                                            />
+                                        ) : (
+                                            <PartnersEditor
+                                                partners={partners}
+                                                onChange={setPartners}
+                                            />
+                                        )}
 
                                         <div style={{ marginTop: '3rem', padding: '1.5rem', background: isPublic ? '#f0fff4' : '#fff5f5', borderRadius: '16px', border: isPublic ? '1px solid #c6f6d5' : '1px solid #fed7d7', transition: 'all 0.3s' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

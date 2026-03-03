@@ -303,3 +303,34 @@ exports.handleWebhook = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+/**
+ * ADMIN: GET PAYPAL PAYOUTS (Transactions that need manual payout)
+ */
+exports.getPayPalPayouts = async (req, res) => {
+    try {
+        const transactions = await Transaction.find({
+            type: 'event_registration',
+            status: 'completed',
+            $or: [
+                { paymentMethod: 'paypal' },
+                {
+                    paymentMethod: 'stripe',
+                    'metadata.payoutMode': 'platform'
+                }
+            ]
+        })
+            .populate('user', 'name email businessName paypalEmail')
+            .populate('mentor', 'name email businessName paypalEmail stripeAccountId')
+            .populate({
+                path: 'form',
+                select: 'title slug'
+            })
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(transactions);
+    } catch (error) {
+        console.error('❌ PayPal Get Payouts Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};

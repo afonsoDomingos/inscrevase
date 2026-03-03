@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook, Sparkles } from 'lucide-react';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook, Sparkles, Mail } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService';
 import Image from 'next/image';
@@ -31,6 +31,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
     const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || '');
     const [socialLinks, setSocialLinks] = useState(user.socialLinks || {});
     const [facebookPixelId, setFacebookPixelId] = useState(user.facebookPixelId || '');
+    const [paypalEmail, setPaypalEmail] = useState(user.paypalEmail || '');
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -58,7 +59,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                 whatsapp,
                 profilePhoto,
                 socialLinks,
-                facebookPixelId
+                facebookPixelId,
+                paypalEmail
             });
             toast.success(t('events.profile.updateSuccess') || 'Perfil atualizado com sucesso!');
             onSuccess();
@@ -166,6 +168,24 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                                     style={{ padding: '0.8rem' }}
                                 />
                             </div>
+                        </div>
+
+                        {/* PayPal Email Section */}
+                        <div className="input-group">
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                <Mail size={12} /> E-mail do PayPal (Recebimento)
+                            </label>
+                            <input
+                                type="email"
+                                className="input-luxury"
+                                value={paypalEmail}
+                                onChange={(e) => setPaypalEmail(e.target.value)}
+                                placeholder="vendas@exemplo.com"
+                                style={{ padding: '0.8rem' }}
+                            />
+                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>
+                                Use este campo para definir onde você deseja receber o saldo das suas vendas pelo PayPal.
+                            </p>
                         </div>
 
                         {/* Social Links Section */}

@@ -2010,6 +2010,11 @@ function MentorDashboardContent() {
                     isOpen={isEventModalOpen}
                     onClose={() => setIsEventModalOpen(false)}
                     onSuccess={loadDashboard}
+                    userPlan={user?.plan || 'free'}
+                    onUpgradeClick={() => {
+                        setIsEventModalOpen(false);
+                        setIsUpgradeModalOpen(true);
+                    }}
                 />
 
                 <ProfileModal
@@ -2038,6 +2043,11 @@ function MentorDashboardContent() {
                         onClose={() => setEditModalData({ isOpen: false, form: null })}
                         form={editModalData.form}
                         onSuccess={loadDashboard}
+                        userPlan={user?.plan || 'free'}
+                        onUpgradeClick={() => {
+                            setEditModalData({ isOpen: false, form: null });
+                            setIsUpgradeModalOpen(true);
+                        }}
                     />
                 )}
 

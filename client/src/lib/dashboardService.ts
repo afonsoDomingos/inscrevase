@@ -137,5 +137,13 @@ export const dashboardService = {
         });
         if (!response.ok) throw new Error('Falha ao buscar analytics do SuperAdmin');
         return response.json();
+    },
+    async getPayPalPayouts(): Promise<any[]> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/paypal/admin/payouts`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Falha ao buscar repasses do PayPal');
+        return response.json();
     }
 };

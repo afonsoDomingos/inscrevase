@@ -153,9 +153,9 @@ exports.createCheckoutSession = async (req, res) => {
         if (!mentor.isEmailVerified && mentor.role !== 'admin' && mentor.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'O mentor deste evento ainda não confirmou o e-mail.' });
         }
-        if (!mentor.stripeAccountId || !mentor.stripeOnboardingComplete) {
-            return res.status(400).json({ message: 'Mentor is not ready to receive payments via Stripe' });
-        }
+
+        // Check if mentor is ready for Stripe Connect
+        const isMentorStripeReady = mentor.stripeAccountId && mentor.stripeOnboardingComplete;
 
         // Calculate application fee based on mentor plan
         const mentorPlan = mentor.plan || 'free';
@@ -163,7 +163,7 @@ exports.createCheckoutSession = async (req, res) => {
         const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
         const applicationFeeAmount = Math.round(form.paymentConfig.price * 100 * planConfig.commissionRate);
 
-        const session = await stripe.checkout.sessions.create({
+        const sessionData = {
             mode: 'payment',
             payment_method_types: ['card'],
             line_items: [{
@@ -178,22 +178,30 @@ exports.createCheckoutSession = async (req, res) => {
                 quantity: 1,
             }],
             payment_intent_data: {
-                application_fee_amount: applicationFeeAmount,
-                transfer_data: {
-                    destination: mentor.stripeAccountId,
-                },
                 metadata: {
                     formId: form._id.toString(),
                     mentorId: mentor._id.toString(),
+                    payoutMode: isMentorStripeReady ? 'direct' : 'platform'
                 }
             },
             metadata: {
                 formId: form._id.toString(),
-                submissionData: JSON.stringify(submissionData)
+                submissionData: JSON.stringify(submissionData),
+                payoutMode: isMentorStripeReady ? 'direct' : 'platform'
             },
             success_url: `${process.env.CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/f/${form.slug}?payment=cancel`,
-        });
+        };
+
+        // Only add transfer_data if mentor is ready
+        if (isMentorStripeReady) {
+            sessionData.payment_intent_data.application_fee_amount = applicationFeeAmount;
+            sessionData.payment_intent_data.transfer_data = {
+                destination: mentor.stripeAccountId,
+            };
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionData);
 
         res.status(200).json({ success: true, url: session.url, sessionId: session.id });
     } catch (error) {
@@ -424,8 +432,24 @@ const completeOrder = async (session) => {
         // 5. Create transaction for mentor dashboard
         const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
         const amount = expandedSession.amount_total / 100;
-        const platformFee = (paymentIntent.application_fee_amount || 0) / 100;
-        const mentorEarnings = (expandedSession.amount_total - (paymentIntent.application_fee_amount || 0)) / 100;
+
+        let platformFee = (paymentIntent.application_fee_amount || 0) / 100;
+        let mentorEarnings = (expandedSession.amount_total - (paymentIntent.application_fee_amount || 0)) / 100;
+
+        // If it was a platform payout, calculate the commission manually
+        if (paymentIntent.metadata.payoutMode === 'platform') {
+            try {
+                const mentor = await User.findById(paymentIntent.metadata.mentorId);
+                const mentorPlan = mentor?.plan || 'free';
+                const dynamicPlans = await getDynamicPlanConfig();
+                const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
+
+                platformFee = (expandedSession.amount_total / 100) * planConfig.commissionRate;
+                mentorEarnings = (expandedSession.amount_total / 100) - platformFee;
+            } catch (calcError) {
+                console.error('Error calculating platform fee for platform payout:', calcError);
+            }
+        }
 
         const transaction = new Transaction({
             type: 'event_registration',
@@ -443,7 +467,10 @@ const completeOrder = async (session) => {
             baseMentorEarnings: mentorEarnings * rate,
             status: 'completed',
             stripePaymentIntentId: paymentIntent.id,
-            paymentMethod: 'stripe'
+            paymentMethod: 'stripe',
+            metadata: {
+                payoutMode: paymentIntent.metadata.payoutMode || 'direct'
+            }
         });
         await transaction.save();
         console.log('Transaction logged for mentor:', transaction.mentor);

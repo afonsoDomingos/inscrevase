@@ -13,4 +13,8 @@ router.post('/orders/capture', paypalController.captureOrder);
 // Webhook
 router.post('/webhook', paypalController.handleWebhook);
 
+// Admin routes
+const { adminMiddleware } = require('../middleware/authMiddleware');
+router.get('/admin/payouts', authMiddleware, adminMiddleware, paypalController.getPayPalPayouts);
+
 module.exports = router;

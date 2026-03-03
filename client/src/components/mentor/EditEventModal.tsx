@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -24,9 +24,65 @@ interface EditEventModalProps {
     onClose: () => void;
     onSuccess: () => void;
     form: FormModel;
+    userPlan?: string;
+    onUpgradeClick?: () => void;
 }
 
-export default function EditEventModal({ isOpen, onClose, onSuccess, form }: EditEventModalProps) {
+function FeaturePaywall({ title, description, onUpgrade }: { title: string, description: string, onUpgrade: () => void }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+                padding: '4rem 2rem',
+                textAlign: 'center',
+                background: '#fff',
+                borderRadius: '32px',
+                border: '1px solid #FFD70044',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                maxWidth: '600px',
+                margin: '2.5rem auto'
+            }}
+        >
+            <div style={{
+                width: '100px',
+                height: '100px',
+                background: 'linear-gradient(135deg, #FFD70015 0%, #FFD70005 100%)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '2rem',
+                border: '1px solid #FFD70033'
+            }}>
+                <Lock size={48} color="#FFD700" />
+            </div>
+            <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '1rem', color: '#111' }}>{title}</h3>
+            <p style={{ color: '#666', marginBottom: '2.5rem', fontSize: '1.1rem', lineHeight: 1.6 }}>{description}</p>
+            <button
+                onClick={onUpgrade}
+                className="btn-primary"
+                style={{
+                    padding: '1.2rem 2.5rem',
+                    borderRadius: '20px',
+                    fontWeight: 900,
+                    fontSize: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    boxShadow: '0 15px 30px rgba(255, 215, 0, 0.2)'
+                }}
+            >
+                DESBLOQUEAR AGORA <Crown size={20} />
+            </button>
+        </motion.div>
+    );
+}
+
+export default function EditEventModal({ isOpen, onClose, onSuccess, form, userPlan = 'free', onUpgradeClick }: EditEventModalProps) {
     const { t, locale } = useTranslate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -582,37 +638,62 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                 { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
                                 { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
                                 { id: 3, label: t('events.steps.design'), icon: <Palette size={18} /> },
-                                { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} /> },
+                                { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} />, premium: true },
                                 { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
-                                { id: 6, label: 'Marketing AI', icon: <Megaphone size={18} /> },
-                                { id: 7, label: 'Hub Personalizado', icon: <Sparkles size={18} /> },
-                                { id: 8, label: 'Certificados', icon: <Award size={18} /> },
-                                { id: 9, label: 'Aulas do Evento', icon: <BookOpen size={18} /> },
-                                { id: 10, label: 'Parceiros/Co-org', icon: <Users2 size={18} /> },
-                            ].map((s) => (
-                                <button
-                                    key={s.id}
-                                    onClick={() => setStep(s.id)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        padding: '0.6rem 1rem',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        background: step === s.id ? '#FFD70015' : 'transparent',
-                                        color: step === s.id ? '#FFD700' : '#888',
-                                        fontWeight: 600,
-                                        cursor: 'pointer',
-                                        textAlign: 'left',
-                                        transition: 'all 0.2s',
-                                        fontSize: '0.85rem'
-                                    }}
-                                >
-                                    {s.icon}
-                                    <span className="btn-text" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</span>
-                                </button>
-                            ))}
+                                { id: 6, label: 'Marketing AI', icon: <Megaphone size={18} />, premium: true },
+                                { id: 7, label: 'Hub Personalizado', icon: <Sparkles size={18} />, premium: true },
+                                { id: 8, label: 'Certificados', icon: <Award size={18} />, premium: true },
+                                { id: 9, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
+                                { id: 10, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
+                            ].map((s) => {
+                                const isLocked = s.premium && (userPlan === 'free' || !userPlan);
+                                return (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => setStep(s.id)}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            padding: '0.6rem 1rem',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            background: step === s.id ? '#FFD70015' : 'transparent',
+                                            color: step === s.id ? '#FFD700' : '#888',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            textAlign: 'left',
+                                            transition: 'all 0.2s',
+                                            fontSize: '0.85rem',
+                                            position: 'relative'
+                                        }}
+                                    >
+                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {s.icon}
+                                            {isLocked && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '-8px',
+                                                    right: '-8px',
+                                                    background: '#111',
+                                                    color: '#FFD700',
+                                                    borderRadius: '50%',
+                                                    width: '14px',
+                                                    height: '14px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '8px',
+                                                    border: '1px solid #FFD700'
+                                                }}>
+                                                    <Lock size={8} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="btn-text" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -1707,15 +1788,23 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>{t('events.paymentConfig')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={paymentConfig.enabled}
-                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
-                                                    style={{ width: '20px', height: '20px' }}
+                                            {userPlan === 'free' ? (
+                                                <FeaturePaywall
+                                                    title="Evento Pago"
+                                                    description="Transforme o seu conhecimento em lucro. Desbloqueie a funcionalidade de eventos pagos para aceitar pagamentos via Cartão, M-Pesa e muito mais."
+                                                    onUpgrade={onUpgradeClick || (() => { })}
                                                 />
-                                                {t('events.isPaidEvent')}
-                                            </label>
+                                            ) : (
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 600, background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={paymentConfig.enabled}
+                                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, enabled: e.target.checked })}
+                                                        style={{ width: '20px', height: '20px' }}
+                                                    />
+                                                    {t('events.isPaidEvent')}
+                                                </label>
+                                            )}
 
                                             {paymentConfig.enabled && (
                                                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
@@ -1996,90 +2085,100 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Deixe a Aura criar o post perfeito para divulgar seu evento.</p>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Escolha a Plataforma</label>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                    {['instagram', 'linkedin', 'whatsapp'].map(p => (
-                                                        <button
-                                                            key={p}
-                                                            type="button"
-                                                            onClick={() => setMarketingPlatform(p)}
-                                                            style={{
-                                                                padding: '10px 20px',
-                                                                borderRadius: '12px',
-                                                                border: '1px solid',
-                                                                borderColor: marketingPlatform === p ? '#FFD700' : '#ddd',
-                                                                background: marketingPlatform === p ? '#FFD700' : '#fff',
-                                                                color: marketingPlatform === p ? '#000' : '#666',
-                                                                fontWeight: 700,
-                                                                textTransform: 'capitalize',
-                                                                cursor: 'pointer',
-                                                                transition: 'all 0.2s',
-                                                                flex: 1
-                                                            }}
-                                                        >
-                                                            {p}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
+                                            {userPlan === 'free' ? (
+                                                <FeaturePaywall
+                                                    title="Marketing com IA"
+                                                    description="Deixe a nossa inteligência artificial criar textos persuasivos e posts para as suas redes sociais automaticamente."
+                                                    onUpgrade={onUpgradeClick || (() => { })}
+                                                />
+                                            ) : (
+                                                <>
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Escolha a Plataforma</label>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            {['instagram', 'linkedin', 'whatsapp'].map(p => (
+                                                                <button
+                                                                    key={p}
+                                                                    type="button"
+                                                                    onClick={() => setMarketingPlatform(p)}
+                                                                    style={{
+                                                                        padding: '10px 20px',
+                                                                        borderRadius: '12px',
+                                                                        border: '1px solid',
+                                                                        borderColor: marketingPlatform === p ? '#FFD700' : '#ddd',
+                                                                        background: marketingPlatform === p ? '#FFD700' : '#fff',
+                                                                        color: marketingPlatform === p ? '#000' : '#666',
+                                                                        fontWeight: 700,
+                                                                        textTransform: 'capitalize',
+                                                                        cursor: 'pointer',
+                                                                        transition: 'all 0.2s',
+                                                                        flex: 1
+                                                                    }}
+                                                                >
+                                                                    {p}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
 
-                                            <button
-                                                type="button"
-                                                onClick={handleMarketingGenerate}
-                                                disabled={marketingLoading}
-                                                style={{
-                                                    background: 'linear-gradient(135deg, #000 0%, #333 100%)',
-                                                    color: '#FFD700',
-                                                    border: 'none',
-                                                    padding: '1rem',
-                                                    borderRadius: '15px',
-                                                    fontWeight: 800,
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '10px',
-                                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                                                }}
-                                            >
-                                                {marketingLoading ? <Loader2 className="animate-spin" /> : <Wand2 size={20} />}
-                                                GERAR POST COM AURA
-                                            </button>
-
-                                            {marketingContent && (
-                                                <div style={{ position: 'relative' }}>
-                                                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Resultado Gerado</label>
-                                                    <textarea
-                                                        value={marketingContent}
-                                                        onChange={(e) => setMarketingContent(e.target.value)}
-                                                        rows={10}
-                                                        style={{ width: '100%', padding: '1.5rem', borderRadius: '20px', border: '1px solid #ddd', outline: 'none', resize: 'none', background: '#f8f9fa', lineHeight: '1.6' }}
-                                                    />
                                                     <button
-                                                        onClick={copyToClipboard}
+                                                        type="button"
+                                                        onClick={handleMarketingGenerate}
+                                                        disabled={marketingLoading}
                                                         style={{
-                                                            position: 'absolute',
-                                                            top: '35px',
-                                                            right: '10px',
-                                                            background: copied ? '#48bb78' : '#fff',
-                                                            border: '1px solid #ddd',
-                                                            borderRadius: '8px',
-                                                            padding: '8px',
+                                                            background: 'linear-gradient(135deg, #000 0%, #333 100%)',
+                                                            color: '#FFD700',
+                                                            border: 'none',
+                                                            padding: '1rem',
+                                                            borderRadius: '15px',
+                                                            fontWeight: 800,
                                                             cursor: 'pointer',
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            gap: '5px',
-                                                            fontSize: '0.8rem',
-                                                            fontWeight: 600,
-                                                            color: copied ? '#fff' : '#333',
-                                                            transition: 'all 0.2s'
+                                                            justifyContent: 'center',
+                                                            gap: '10px',
+                                                            boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
                                                         }}
                                                     >
-                                                        {copied ? <Check size={16} /> : <Copy size={16} />}
-                                                        {copied ? 'Copiado!' : 'Copiar'}
+                                                        {marketingLoading ? <Loader2 className="animate-spin" /> : <Wand2 size={20} />}
+                                                        GERAR POST COM AURA
                                                     </button>
-                                                </div>
+
+                                                    {marketingContent && (
+                                                        <div style={{ position: 'relative' }}>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Resultado Gerado</label>
+                                                            <textarea
+                                                                value={marketingContent}
+                                                                onChange={(e) => setMarketingContent(e.target.value)}
+                                                                rows={10}
+                                                                style={{ width: '100%', padding: '1.5rem', borderRadius: '20px', border: '1px solid #ddd', outline: 'none', resize: 'none', background: '#f8f9fa', lineHeight: '1.6' }}
+                                                            />
+                                                            <button
+                                                                onClick={copyToClipboard}
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    top: '35px',
+                                                                    right: '10px',
+                                                                    background: copied ? '#48bb78' : '#fff',
+                                                                    border: '1px solid #ddd',
+                                                                    borderRadius: '8px',
+                                                                    padding: '8px',
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '5px',
+                                                                    fontSize: '0.8rem',
+                                                                    fontWeight: 600,
+                                                                    color: copied ? '#fff' : '#333',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                            >
+                                                                {copied ? <Check size={16} /> : <Copy size={16} />}
+                                                                {copied ? 'Copiado!' : 'Copiar'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </motion.div>
@@ -2090,213 +2189,223 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Personalização do Hub</h2>
 
                                         <div style={{ display: 'grid', gap: '2rem' }}>
-                                            {/* Imagem de Fundo do Hub */}
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                    🖼️ Imagem de Fundo do Hub
-                                                </label>
-                                                <div style={{
-                                                    width: '100%',
-                                                    height: '150px',
-                                                    background: hubBackgroundImage ? `url(${hubBackgroundImage}) center / cover` : '#eee',
-                                                    borderRadius: '20px',
-                                                    border: '2px dashed #ccc',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    position: 'relative',
-                                                    overflow: 'hidden'
-                                                }}>
-                                                    <input type="file" onChange={handleHubBackgroundUpload} accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
-                                                    {uploadingHubBackground ? <Loader2 className="animate-spin" size={32} color="#111" /> : (
-                                                        !hubBackgroundImage && (
-                                                            <>
-                                                                <ImageIcon size={32} color="#aaa" />
-                                                                <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>Clique para carregar imagem</span>
-                                                            </>
-                                                        )
-                                                    )}
-                                                    {hubBackgroundImage && (
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); setHubBackgroundImage(''); }}
-                                                            style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                        >
-                                                            <X size={16} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                    Substitui o fundo padrão do Hub. Recomendado: 1920x1080px (Escuro).
-                                                </p>
-                                            </div>
-
-                                            {/* Configuração do Botão Transmissão */}
-                                            <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                            {userPlan === 'free' ? (
+                                                <FeaturePaywall
+                                                    title="Hub Personalizado"
+                                                    description="Crie uma experiência única para os seus participantes com vídeos de boas-vindas, agenda detalhada e materiais exclusivos."
+                                                    onUpgrade={onUpgradeClick || (() => { })}
+                                                />
+                                            ) : (
+                                                <>
+                                                    {/* Imagem de Fundo do Hub */}
                                                     <div>
-                                                        <label style={{ display: 'block', fontWeight: 700, fontSize: '1rem' }}>
-                                                            🔴 Botão "Assistir Transmissão"
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                            🖼️ Imagem de Fundo do Hub
                                                         </label>
-                                                        <span style={{ fontSize: '0.8rem', color: '#666' }}>Personalize o botão de chamada para ação do Hub</span>
-                                                    </div>
-                                                    <div
-                                                        onClick={() => setShowHubButton(!showHubButton)}
-                                                        style={{
-                                                            width: '50px',
-                                                            height: '26px',
-                                                            background: showHubButton ? '#111' : '#ccc',
-                                                            borderRadius: '100px',
+                                                        <div style={{
+                                                            width: '100%',
+                                                            height: '150px',
+                                                            background: hubBackgroundImage ? `url(${hubBackgroundImage}) center / cover` : '#eee',
+                                                            borderRadius: '20px',
+                                                            border: '2px dashed #ccc',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
                                                             cursor: 'pointer',
                                                             position: 'relative',
-                                                            transition: '0.3s'
-                                                        }}
-                                                    >
-                                                        <div style={{
-                                                            width: '20px',
-                                                            height: '20px',
-                                                            background: '#fff',
-                                                            borderRadius: '50%',
-                                                            position: 'absolute',
-                                                            top: '3px',
-                                                            left: showHubButton ? '27px' : '3px',
-                                                            transition: '0.3s'
-                                                        }} />
+                                                            overflow: 'hidden'
+                                                        }}>
+                                                            <input type="file" onChange={handleHubBackgroundUpload} accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                            {uploadingHubBackground ? <Loader2 className="animate-spin" size={32} color="#111" /> : (
+                                                                !hubBackgroundImage && (
+                                                                    <>
+                                                                        <ImageIcon size={32} color="#aaa" />
+                                                                        <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>Clique para carregar imagem</span>
+                                                                    </>
+                                                                )
+                                                            )}
+                                                            {hubBackgroundImage && (
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); setHubBackgroundImage(''); }}
+                                                                    style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                >
+                                                                    <X size={16} />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                            Substitui o fundo padrão do Hub. Recomendado: 1920x1080px (Escuro).
+                                                        </p>
                                                     </div>
-                                                </div>
 
-                                                {showHubButton && (
-                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ overflow: 'hidden' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
-                                                            <div style={{ flex: 1 }}>
-                                                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '5px' }}>Cor do Botão</label>
-                                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                                    <input
-                                                                        type="color"
-                                                                        value={hubButtonColor}
-                                                                        onChange={(e) => setHubButtonColor(e.target.value)}
-                                                                        style={{ width: '40px', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-                                                                    />
-                                                                    <input
-                                                                        type="text"
-                                                                        value={hubButtonColor}
-                                                                        onChange={(e) => setHubButtonColor(e.target.value)}
-                                                                        style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }}
-                                                                    />
-                                                                </div>
+                                                    {/* Configuração do Botão Transmissão */}
+                                                    <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                                            <div>
+                                                                <label style={{ display: 'block', fontWeight: 700, fontSize: '1rem' }}>
+                                                                    🔴 Botão "Assistir Transmissão"
+                                                                </label>
+                                                                <span style={{ fontSize: '0.8rem', color: '#666' }}>Personalize o botão de chamada para ação do Hub</span>
                                                             </div>
-                                                            <div style={{
-                                                                width: '120px',
-                                                                height: '60px',
-                                                                background: hubButtonColor,
-                                                                borderRadius: '12px',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                color: '#000',
-                                                                fontWeight: 700,
-                                                                fontSize: '0.7rem',
-                                                                textTransform: 'uppercase',
-                                                                textAlign: 'center',
-                                                                padding: '5px',
-                                                                boxShadow: `0 4px 12px ${hubButtonColor} 40`
-                                                            }}>
-                                                                Preview
+                                                            <div
+                                                                onClick={() => setShowHubButton(!showHubButton)}
+                                                                style={{
+                                                                    width: '50px',
+                                                                    height: '26px',
+                                                                    background: showHubButton ? '#111' : '#ccc',
+                                                                    borderRadius: '100px',
+                                                                    cursor: 'pointer',
+                                                                    position: 'relative',
+                                                                    transition: '0.3s'
+                                                                }}
+                                                            >
+                                                                <div style={{
+                                                                    width: '20px',
+                                                                    height: '20px',
+                                                                    background: '#fff',
+                                                                    borderRadius: '50%',
+                                                                    position: 'absolute',
+                                                                    top: '3px',
+                                                                    left: showHubButton ? '27px' : '3px',
+                                                                    transition: '0.3s'
+                                                                }} />
                                                             </div>
                                                         </div>
-                                                    </motion.div>
-                                                )}
-                                            </div>
 
-                                            {/* Mensagem de Boas-Vindas */}
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                    💬 Mensagem de Boas-Vindas
-                                                </label>
+                                                        {showHubButton && (
+                                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ overflow: 'hidden' }}>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '5px' }}>Cor do Botão</label>
+                                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                                            <input
+                                                                                type="color"
+                                                                                value={hubButtonColor}
+                                                                                onChange={(e) => setHubButtonColor(e.target.value)}
+                                                                                style={{ width: '40px', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                                                                            />
+                                                                            <input
+                                                                                type="text"
+                                                                                value={hubButtonColor}
+                                                                                onChange={(e) => setHubButtonColor(e.target.value)}
+                                                                                style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{
+                                                                        width: '120px',
+                                                                        height: '60px',
+                                                                        background: hubButtonColor,
+                                                                        borderRadius: '12px',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        color: '#000',
+                                                                        fontWeight: 700,
+                                                                        fontSize: '0.7rem',
+                                                                        textTransform: 'uppercase',
+                                                                        textAlign: 'center',
+                                                                        padding: '5px',
+                                                                        boxShadow: `0 4px 12px ${hubButtonColor}40`
+                                                                    }}>
+                                                                        Preview
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </div>
 
-                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
-                                                        style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                    >
-                                                        {t('events.welcomeTemplates.formal')}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
-                                                        style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                    >
-                                                        {t('events.welcomeTemplates.excited')}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
-                                                        style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
-                                                    >
-                                                        {t('events.welcomeTemplates.brief')}
-                                                    </button>
-                                                </div>
-                                                <textarea
-                                                    value={welcomeMessage}
-                                                    onChange={(e) => setWelcomeMessage(e.target.value)}
-                                                    rows={3}
-                                                    placeholder="Escreva uma mensagem especial para seus participantes..."
-                                                    style={{
-                                                        width: '100%',
-                                                        padding: '1rem',
-                                                        borderRadius: '12px',
-                                                        border: '1px solid #ddd',
-                                                        outline: 'none',
-                                                        resize: 'none'
-                                                    }}
-                                                />
-                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                    Aparecerá em destaque no Hub com gradiente roxo
-                                                </p>
-                                            </div>
+                                                    {/* Mensagem de Boas-Vindas */}
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                            💬 Mensagem de Boas-Vindas
+                                                        </label>
 
-                                            {/* Vídeo de Boas-Vindas */}
-                                            <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                    🎥 Vídeo de Boas-Vindas
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={welcomeVideo}
-                                                    onChange={(e) => setWelcomeVideo(e.target.value)}
-                                                    placeholder="https://youtube.com/watch?v=..."
-                                                    style={{
-                                                        width: '100%',
-                                                        padding: '1rem',
-                                                        borderRadius: '12px',
-                                                        border: '1px solid #ddd',
-                                                        outline: 'none'
-                                                    }}
-                                                />
-                                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
-                                                    Cole o link do YouTube, Vimeo ou qualquer vídeo embeddable
-                                                </p>
-                                            </div>
+                                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setWelcomeMessage(t('events.welcomeTemplates.formalText'))}
+                                                                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                            >
+                                                                {t('events.welcomeTemplates.formal')}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setWelcomeMessage(t('events.welcomeTemplates.excitedText'))}
+                                                                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                            >
+                                                                {t('events.welcomeTemplates.excited')}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setWelcomeMessage(t('events.welcomeTemplates.briefText'))}
+                                                                style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                                                            >
+                                                                {t('events.welcomeTemplates.brief')}
+                                                            </button>
+                                                        </div>
+                                                        <textarea
+                                                            value={welcomeMessage}
+                                                            onChange={(e) => setWelcomeMessage(e.target.value)}
+                                                            rows={3}
+                                                            placeholder="Escreva uma mensagem especial para seus participantes..."
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '1rem',
+                                                                borderRadius: '12px',
+                                                                border: '1px solid #ddd',
+                                                                outline: 'none',
+                                                                resize: 'none'
+                                                            }}
+                                                        />
+                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                            Aparecerá em destaque no Hub com gradiente roxo
+                                                        </p>
+                                                    </div>
 
-                                            {/* Campos Customizados */}
-                                            <CustomFieldsEditor
-                                                fields={customFields}
-                                                onChange={setCustomFields}
-                                            />
+                                                    {/* Vídeo de Boas-Vindas */}
+                                                    <div>
+                                                        <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                            🎥 Vídeo de Boas-Vindas
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={welcomeVideo}
+                                                            onChange={(e) => setWelcomeVideo(e.target.value)}
+                                                            placeholder="https://youtube.com/watch?v=..."
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '1rem',
+                                                                borderRadius: '12px',
+                                                                border: '1px solid #ddd',
+                                                                outline: 'none'
+                                                            }}
+                                                        />
+                                                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '5px' }}>
+                                                            Cole o link do YouTube, Vimeo ou qualquer vídeo embeddable
+                                                        </p>
+                                                    </div>
 
-                                            {/* Agenda */}
-                                            <AgendaEditor
-                                                agenda={agenda}
-                                                onChange={setAgenda}
-                                            />
+                                                    {/* Campos Customizados */}
+                                                    <CustomFieldsEditor
+                                                        fields={customFields}
+                                                        onChange={setCustomFields}
+                                                    />
 
-                                            {/* Materiais */}
-                                            <MaterialsEditor
-                                                materials={materials}
-                                                onChange={setMaterials}
-                                            />
+                                                    {/* Agenda */}
+                                                    <AgendaEditor
+                                                        agenda={agenda}
+                                                        onChange={setAgenda}
+                                                    />
+
+                                                    {/* Materiais */}
+                                                    <MaterialsEditor
+                                                        materials={materials}
+                                                        onChange={setMaterials}
+                                                    />
+                                                </>
+                                            )}
                                         </div>
                                     </motion.div>
                                 )}
@@ -2304,11 +2413,19 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                 {step === 8 && (
                                     <motion.div key="step8" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração de Certificados</h2>
-                                        <CertificateEditor
-                                            config={certificateConfig}
-                                            onChange={setCertificateConfig}
-                                            mentorName={form.creator.name}
-                                        />
+                                        {userPlan === 'free' ? (
+                                            <FeaturePaywall
+                                                title="Certificados Automatizados"
+                                                description="Emita certificados personalizados automaticamente para todos os seus participantes com apenas um clique."
+                                                onUpgrade={onUpgradeClick || (() => { })}
+                                            />
+                                        ) : (
+                                            <CertificateEditor
+                                                config={certificateConfig}
+                                                onChange={setCertificateConfig}
+                                                mentorName={form.creator.name}
+                                            />
+                                        )}
                                     </motion.div>
                                 )}
 
@@ -2317,109 +2434,125 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form }: Edi
                                         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
 
-                                        {lessonsLoading ? (
-                                            <div style={{ padding: '3rem', textAlign: 'center' }}>
-                                                <Loader2 className="animate-spin" size={40} color="#FFD700" />
-                                                <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
-                                            </div>
-                                        ) : allLessons.length === 0 ? (
-                                            <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
-                                                <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
-                                                <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
-                                                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.</p>
-                                                <a
-                                                    href="/dashboard/mentor/lessons"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '8px',
-                                                        marginTop: '1rem',
-                                                        padding: '0.75rem 1.5rem',
-                                                        borderRadius: '12px',
-                                                        background: '#111',
-                                                        color: '#FFD700',
-                                                        textDecoration: 'none',
-                                                        fontWeight: 700,
-                                                        fontSize: '0.9rem'
-                                                    }}
-                                                >
-                                                    Criar Nova Aula <ExternalLink size={16} />
-                                                </a>
-                                            </div>
+                                        {userPlan === 'free' ? (
+                                            <FeaturePaywall
+                                                title="Conteúdo e Aulas"
+                                                description="Hospede as suas aulas e conteúdos exclusivos diretamente no Hub do evento para os seus alunos assistirem quando quiserem."
+                                                onUpgrade={onUpgradeClick || (() => { })}
+                                            />
                                         ) : (
-                                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                                {allLessons.map((lesson) => (
-                                                    <div
-                                                        key={lesson._id}
-                                                        onClick={() => toggleLessonSelection(lesson._id)}
+                                            lessonsLoading ? (
+                                                <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                                    <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                                    <p style={{ marginTop: '1rem', color: '#666' }}>Carregando suas aulas...</p>
+                                                </div>
+                                            ) : allLessons.length === 0 ? (
+                                                <div style={{ padding: '3rem', textAlign: 'center', background: '#f8f9fa', borderRadius: '20px', border: '1px dashed #ddd' }}>
+                                                    <BookOpen size={48} color="#ccc" style={{ marginBottom: '1rem' }} />
+                                                    <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
+                                                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.</p>
+                                                    <a
+                                                        href="/dashboard/mentor/lessons"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                         style={{
-                                                            padding: '1.25rem',
-                                                            borderRadius: '16px',
-                                                            border: '2px solid',
-                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
-                                                            background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
+                                                            display: 'inline-flex',
                                                             alignItems: 'center',
-                                                            gap: '15px',
-                                                            transition: 'all 0.2s'
+                                                            gap: '8px',
+                                                            marginTop: '1rem',
+                                                            padding: '0.75rem 1.5rem',
+                                                            borderRadius: '12px',
+                                                            background: '#111',
+                                                            color: '#FFD700',
+                                                            textDecoration: 'none',
+                                                            fontWeight: 700,
+                                                            fontSize: '0.9rem'
                                                         }}
                                                     >
-                                                        <div style={{
-                                                            width: '24px',
-                                                            height: '24px',
-                                                            borderRadius: '6px',
-                                                            border: '2px solid',
-                                                            borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
-                                                            background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#fff'
-                                                        }}>
-                                                            {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
-                                                        </div>
+                                                        Criar Nova Aula <ExternalLink size={16} />
+                                                    </a>
+                                                </div>
+                                            ) : (
+                                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                                    {allLessons.map((lesson) => (
+                                                        <div
+                                                            key={lesson._id}
+                                                            onClick={() => toggleLessonSelection(lesson._id)}
+                                                            style={{
+                                                                padding: '1.25rem',
+                                                                borderRadius: '16px',
+                                                                border: '2px solid',
+                                                                borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#eee',
+                                                                background: selectedLessons.includes(lesson._id) ? '#FFD70005' : '#fff',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '15px',
+                                                                transition: 'all 0.2s'
+                                                            }}
+                                                        >
+                                                            <div style={{
+                                                                width: '24px',
+                                                                height: '24px',
+                                                                borderRadius: '6px',
+                                                                border: '2px solid',
+                                                                borderColor: selectedLessons.includes(lesson._id) ? '#FFD700' : '#ddd',
+                                                                background: selectedLessons.includes(lesson._id) ? '#FFD700' : 'transparent',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                color: '#fff'
+                                                            }}>
+                                                                {selectedLessons.includes(lesson._id) && <Check size={16} strokeWidth={4} />}
+                                                            </div>
 
-                                                        <div style={{
-                                                            width: '60px',
-                                                            height: '40px',
-                                                            borderRadius: '8px',
-                                                            background: '#eee',
-                                                            position: 'relative',
-                                                            overflow: 'hidden',
-                                                            flexShrink: 0
-                                                        }}>
-                                                            {lesson.thumbnailUrl ? (
-                                                                <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
-                                                            ) : (
-                                                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
-                                                                    <Play size={16} color="#fff" fill="#fff" />
-                                                                </div>
+                                                            <div style={{
+                                                                width: '60px',
+                                                                height: '40px',
+                                                                borderRadius: '8px',
+                                                                background: '#eee',
+                                                                position: 'relative',
+                                                                overflow: 'hidden',
+                                                                flexShrink: 0
+                                                            }}>
+                                                                {lesson.thumbnailUrl ? (
+                                                                    <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                                                                ) : (
+                                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
+                                                                        <Play size={16} color="#fff" fill="#fff" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div style={{ flex: 1 }}>
+                                                                <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
+                                                                <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
+                                                            </div>
+
+                                                            {!lesson.isPublished && (
+                                                                <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
                                                             )}
                                                         </div>
-
-                                                        <div style={{ flex: 1 }}>
-                                                            <h4 style={{ fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>{lesson.title}</h4>
-                                                            <span style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase' }}>{lesson.category}</span>
-                                                        </div>
-
-                                                        {!lesson.isPublished && (
-                                                            <span style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: '#fffbeb', color: '#b45309', fontWeight: 600 }}>Rascunho</span>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
+                                                    ))}
+                                                </div>
+                                            )
                                         )}
                                     </motion.div>
                                 )}
                                 {step === 10 && (
                                     <motion.div key="step10" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <PartnersEditor
-                                            partners={partners}
-                                            onChange={setPartners}
-                                        />
+                                        {userPlan === 'free' ? (
+                                            <FeaturePaywall
+                                                title="Equipa e Parceiros"
+                                                description="Adicione co-organizadores, parceiros e palestrantes ao seu evento. Cada um terá o seu perfil em destaque na página do evento."
+                                                onUpgrade={onUpgradeClick || (() => { })}
+                                            />
+                                        ) : (
+                                            <PartnersEditor
+                                                partners={partners}
+                                                onChange={setPartners}
+                                            />
+                                        )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
