@@ -10,4 +10,7 @@ router.post('/checkout/create', paypalController.createEventOrder);
 // Order capture
 router.post('/orders/capture', paypalController.captureOrder);
 
+// Webhook
+router.post('/webhook', paypalController.handleWebhook);
+
 module.exports = router;

@@ -1,4 +1,4 @@
-const { Client, Environment, OrdersController, PaymentsController } = require('@paypal/paypal-server-sdk');
+const paypalService = require('../services/paypalService');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
@@ -7,16 +7,7 @@ const { getDynamicPlanConfig } = require('../utils/planConfigs');
 const { PLANS } = require('../config/stripe');
 const { getLatestRate } = require('../utils/currencyUtils');
 
-// Initialize PayPal client
-const client = new Client({
-    clientCredentialsAuthCredentials: {
-        clientId: process.env.PAYPAL_CLIENT_ID,
-        clientSecret: process.env.PAYPAL_SECRET,
-    },
-    environment: process.env.PAYPAL_MODE === 'live' ? Environment.Live : Environment.Sandbox,
-});
-
-const ordersController = new OrdersController(client);
+// Initializers removed (using paypalService)
 
 /**
  * CREATE ORDER FOR PLAN UPGRADE (SUBSCRIPTION)
@@ -55,14 +46,14 @@ exports.createSubscriptionOrder = async (req, res) => {
         };
 
         console.log('🚀 Creating PayPal Subscription Order:', JSON.stringify(body, null, 2));
-        const { result } = await ordersController.createOrder({ body });
+        const result = await paypalService.createOrder(body);
         res.status(200).json(result);
     } catch (error) {
-        console.error('\n❌ PayPal Create Subscription Order Error:', error.statusCode || error.message || error);
-        if (error.response) {
-            console.error('API Response Payload:', error.response?.body || error.response);
-        }
-        res.status(500).json({ message: error.message, details: error.response?.body || "SDK Error" });
+        console.error('\n❌ PayPal Create Subscription Order Error:', error.response?.data || error.message);
+        res.status(500).json({
+            message: error.message,
+            details: error.response?.data || "Axios/Service Error"
+        });
     }
 };
 
@@ -129,14 +120,14 @@ exports.createEventOrder = async (req, res) => {
         };
 
         console.log('🚀 Creating PayPal Event Order:', JSON.stringify(body, null, 2));
-        const { result } = await ordersController.createOrder({ body });
+        const result = await paypalService.createOrder(body);
         res.status(200).json(result);
     } catch (error) {
-        console.error('\n❌ PayPal Create Event Order Error:', error.statusCode || error.message || error);
-        if (error.response) {
-            console.error('API Response Payload:', error.response?.body || error.response);
-        }
-        res.status(500).json({ message: error.message, details: error.response?.body || "SDK Error" });
+        console.error('\n❌ PayPal Create Event Order Error:', error.response?.data || error.message);
+        res.status(500).json({
+            message: error.message,
+            details: error.response?.data || "Axios/Service Error"
+        });
     }
 };
 
@@ -146,14 +137,15 @@ exports.createEventOrder = async (req, res) => {
 exports.captureOrder = async (req, res) => {
     try {
         const { orderID } = req.body;
-        const { result } = await ordersController.captureOrder({ id: orderID });
+        const result = await paypalService.captureOrder(orderID);
 
         if (result.status !== 'COMPLETED') {
             return res.status(400).json({ message: 'Payment not completed', status: result.status });
         }
 
-        const capture = result.purchaseUnits[0].payments.captures[0];
-        const customData = JSON.parse(result.purchaseUnits[0].customId);
+        const purchaseUnit = result.purchase_units[0];
+        const capture = purchaseUnit.payments.captures[0];
+        const customData = JSON.parse(purchaseUnit.custom_id);
 
         console.log('✅ PayPal Payment Captured:', capture.id);
         console.log('📦 Data:', customData);
@@ -180,7 +172,7 @@ exports.captureOrder = async (req, res) => {
                 subscriptionPlan: plan,
                 user: userId,
                 amount: amount,
-                currency: capture.amount.currencyCode,
+                currency: capture.amount.currency_code,
                 baseAmount: amount * rate,
                 exchangeRate: rate,
                 platformFee: amount, // Full amount goes to platform for subscriptions
@@ -213,7 +205,7 @@ exports.captureOrder = async (req, res) => {
             // Create transaction for mentor dashboard
             const amount = parseFloat(capture.amount.value);
             const rate = await getLatestRate();
-            const fee = capture.sellerReceivableBreakdown?.platformFees?.[0]?.amount?.value || 0;
+            const fee = capture.seller_receivable_breakdown?.platform_fees?.[0]?.amount?.value || 0;
             const mentorEarnings = amount - parseFloat(fee);
 
             const transaction = new Transaction({
@@ -223,7 +215,7 @@ exports.captureOrder = async (req, res) => {
                 form: formId,
                 submission: submission._id,
                 amount: amount,
-                currency: capture.amount.currencyCode,
+                currency: capture.amount.currency_code,
                 baseAmount: amount * rate,
                 exchangeRate: rate,
                 platformFee: parseFloat(fee),
@@ -242,10 +234,42 @@ exports.captureOrder = async (req, res) => {
 
         res.status(200).json({ success: true, result });
     } catch (error) {
-        console.error('\n❌ PayPal Capture Order Error:', error.statusCode || error.message || error);
-        if (error.response) {
-            console.error('API Response Payload:', error.response?.body || error.response);
+        console.error('\n❌ PayPal Capture Order Error:', error.response?.data || error.message);
+        res.status(500).json({
+            message: error.message,
+            details: error.response?.data || "Axios/Service Error"
+        });
+    }
+};
+
+/**
+ * PAYPAL WEBHOOK HANDLER
+ */
+exports.handleWebhook = async (req, res) => {
+    try {
+        const event = req.body;
+        console.log('📩 PayPal Webhook Received:', event.event_type);
+
+        // Verification (Optional but recommended - requires extra SDK call or manual HMAC)
+        // For now, we process common events
+
+        switch (event.event_type) {
+            case 'PAYMENT.CAPTURE.COMPLETED':
+                console.log('💰 Payment Captured Event');
+                break;
+            case 'BILLING.SUBSCRIPTION.ACTIVATED':
+                console.log('✅ Subscription Activated Event');
+                break;
+            case 'BILLING.SUBSCRIPTION.CANCELLED':
+                console.log('❌ Subscription Cancelled Event');
+                break;
+            default:
+                console.log('ℹ️ Unhandled event type:', event.event_type);
         }
-        res.status(500).json({ message: error.message, details: error.response?.body || "SDK Error" });
+
+        res.status(200).json({ received: true });
+    } catch (error) {
+        console.error('❌ PayPal Webhook Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
