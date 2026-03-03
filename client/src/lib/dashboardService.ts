@@ -138,7 +138,18 @@ export const dashboardService = {
         if (!response.ok) throw new Error('Falha ao buscar analytics do SuperAdmin');
         return response.json();
     },
-    async getPayPalPayouts(): Promise<any[]> {
+    async getPayPalPayouts(): Promise<{
+        _id: string;
+        paymentMethod: string;
+        createdAt: string;
+        amount: number;
+        mentorEarnings: number;
+        currency: string;
+        stripePaymentIntentId?: string;
+        mentor?: { name: string; paypalEmail?: string; stripeAccountId?: string };
+        form?: { title: string };
+        user?: { name: string };
+    }[]> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/paypal/admin/payouts`, {
             headers: { 'Authorization': `Bearer ${token}` }

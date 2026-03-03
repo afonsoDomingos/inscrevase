@@ -3,11 +3,24 @@
 import { useState, useEffect } from 'react';
 import { dashboardService } from '@/lib/dashboardService';
 import { toast } from 'sonner';
-import { Loader2, DollarSign, User, Calendar, ExternalLink, Mail, CheckCircle2, AlertCircle, CreditCard } from 'lucide-react';
+import { Loader2, DollarSign, ExternalLink, Mail, CheckCircle2, AlertCircle, CreditCard } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 
+interface Payout {
+    _id: string;
+    paymentMethod: string;
+    createdAt: string;
+    amount: number;
+    mentorEarnings: number;
+    currency: string;
+    stripePaymentIntentId?: string;
+    mentor?: { name: string; paypalEmail?: string; stripeAccountId?: string };
+    form?: { title: string };
+    user?: { name: string };
+}
+
 export default function PaypalPayouts() {
-    const [payouts, setPayouts] = useState<any[]>([]);
+    const [payouts, setPayouts] = useState<Payout[]>([]);
     const [loading, setLoading] = useState(true);
     const { formatPrice, currency } = useCurrency();
 
