@@ -416,25 +416,21 @@ export default function Navbar() {
         .tesla-logo-text {
           font-family: 'Poppins', sans-serif !important;
           font-weight: 700 !important;
-          letter-spacing: 4px;
-          font-size: 1.2rem;
+          letter-spacing: 2px;
+          font-size: 1rem;
           color: #FFFFFF !important;
           text-decoration: none !important;
           transition: all 0.3s;
           display: inline-flex;
           align-items: center;
+          white-space: nowrap;
         }
         @media (max-width: 768px) {
           .tesla-logo-text {
-            letter-spacing: 2px !important;
-            font-size: 1.1rem !important;
+            letter-spacing: 1px !important;
+            font-size: 0.9rem !important;
           }
         }
-        @media (max-width: 768px) {
-          .tesla-logo-text {
-            letter-spacing: 2px !important;
-            font-size: 1rem !important;
-          }
           .logo-with-text {
             gap: 0.4rem !important;
           }
