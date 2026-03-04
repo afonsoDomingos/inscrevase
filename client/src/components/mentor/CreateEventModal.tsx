@@ -92,7 +92,7 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
 export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan = 'free', userRole = 'mentor', onUpgradeClick }: CreateEventModalProps) {
     const { t } = useTranslate();
     const [step, setStep] = useState(1);
-    const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+    const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'superadmin';
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [previousEvents, setPreviousEvents] = useState<FormModel[]>([]);

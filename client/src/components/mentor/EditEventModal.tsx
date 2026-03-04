@@ -89,7 +89,7 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
 export default function EditEventModal({ isOpen, onClose, onSuccess, form, userPlan = 'free', userRole = 'mentor', onUpgradeClick }: EditEventModalProps) {
     const { t, locale } = useTranslate();
     const [step, setStep] = useState(1);
-    const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+    const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'superadmin';
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
