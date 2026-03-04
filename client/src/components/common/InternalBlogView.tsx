@@ -13,6 +13,24 @@ export default function InternalBlogView() {
     const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
     const [loading, setLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    const [fetchingDetail, setFetchingDetail] = useState(false);
+
+    const handleSelectPost = async (post: BlogPost) => {
+        if (!post.content) {
+            setFetchingDetail(true);
+            try {
+                const fullPost = await blogService.getPostBySlug(post.slug);
+                setSelectedPost(fullPost);
+            } catch (err) {
+                console.error('Error fetching post detail:', err);
+                setSelectedPost(post);
+            } finally {
+                setFetchingDetail(false);
+            }
+        } else {
+            setSelectedPost(post);
+        }
+    };
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -124,10 +142,18 @@ export default function InternalBlogView() {
                                         lineHeight: 1.7,
                                         color: 'var(--foreground)',
                                         maxWidth: '900px',
-                                        minHeight: '10vh'
+                                        minHeight: '10vh',
+                                        opacity: fetchingDetail ? 0.5 : 1
                                     }}
-                                    dangerouslySetInnerHTML={{ __html: selectedPost.content || '' }}
-                                />
+                                >
+                                    {fetchingDetail ? (
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', opacity: 0.5 }}>
+                                            <Loader2 className="animate-spin" size={20} /> Carregando conteúdo completo...
+                                        </div>
+                                    ) : (
+                                        <div dangerouslySetInnerHTML={{ __html: selectedPost.content || '' }} />
+                                    )}
+                                </div>
                             </div>
                         </article>
                     </motion.div>
@@ -155,7 +181,7 @@ export default function InternalBlogView() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.1 }}
                                 className="luxury-card"
-                                onClick={() => setSelectedPost(post)}
+                                onClick={() => handleSelectPost(post)}
                                 style={{
                                     padding: '0',
                                     cursor: 'pointer',
