@@ -19,6 +19,7 @@ const {
     generateSubscriptionConfirmationEmail,
     generatePaymentProofReceivedEmail
 } = require('../utils/emailTemplates');
+const { logCommunication } = require('../utils/communicationLogger');
 
 
 /**
@@ -642,6 +643,13 @@ exports.handleWebhook = async (req, res) => {
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
                     const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
                     sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
+                    await logCommunication({
+                        recipientIds: [userId],
+                        recipientEmails: [user.email],
+                        subject: `💎 Pagamento Confirmado: Plano ${plan.toUpperCase()}`,
+                        content: `Assinatura do plano ${plan} confirmada com sucesso via Stripe.`,
+                        status: 'sent'
+                    });
                 }
 
                 // Check if transaction already created by invoice.paid
@@ -702,6 +710,13 @@ exports.handleWebhook = async (req, res) => {
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
                     const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
                     sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
+                    await logCommunication({
+                        recipientIds: [userId],
+                        recipientEmails: [user.email],
+                        subject: `💎 Pagamento Confirmado: Plano ${plan.toUpperCase()}`,
+                        content: `Assinatura renovada/confirmada via fatura Stripe.`,
+                        status: 'sent'
+                    });
                 }
 
                 const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
@@ -742,6 +757,13 @@ exports.handleWebhook = async (req, res) => {
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
                     const emailHtml = generatePaymentFailedEmail(user.name, plan, dashboardUrl);
                     sendEmail(user.email, `Problema com o Pagamento: Plano ${plan.toUpperCase()}`, emailHtml);
+                    await logCommunication({
+                        recipientIds: [userId],
+                        recipientEmails: [user.email],
+                        subject: `❌ Problema na Assinatura: Plano ${plan.toUpperCase()}`,
+                        content: `Erro ao processar pagamento automático da assinatura.`,
+                        status: 'sent'
+                    });
                 }
                 console.log(`❌ [Stripe Webhook] Payment failed for user ${userId}`);
             }

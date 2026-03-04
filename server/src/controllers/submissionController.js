@@ -15,6 +15,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
+const { logCommunication } = require('../utils/communicationLogger');
 const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail, generateEventPaymentConfirmationEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
@@ -131,6 +132,14 @@ const submitForm = async (req, res) => {
 
                 await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml);
 
+                await logCommunication({
+                    recipientIds: [mentor._id],
+                    recipientEmails: [mentor.email],
+                    subject: `⏳ Aprovação Pendente: ${participantName} - ${form.title}`,
+                    content: `Inscrição recebida para o evento "${form.title}".`,
+                    status: 'sent'
+                });
+
                 // --- AUTOMATION: First Submission Ever ---
                 if (!mentor.receivedFirstSubmissionNudge) {
                     const totalSubmissions = await Submission.countDocuments({
@@ -148,6 +157,13 @@ const submitForm = async (req, res) => {
                         );
 
                         await sendEmail(mentor.email, '🎉 Vitória! Recebeste a tua primeira inscrição! - Inscreva-se', congratsHtml);
+                        await logCommunication({
+                            recipientIds: [mentor._id],
+                            recipientEmails: [mentor.email],
+                            subject: '🎉 Vitória! Recebeste a tua primeira inscrição!',
+                            content: `Parabéns pela sua primeira inscrição na plataforma!`,
+                            status: 'sent'
+                        });
 
                         // Mark as nudge sent
                         mentor.receivedFirstSubmissionNudge = true;
@@ -427,6 +443,14 @@ const updateStatus = async (req, res) => {
                     }
 
                     await sendEmail(participantEmail, `✅ Inscrição Confirmada: ${submission.form.title} - Inscreva-se`, emailHtml);
+
+                    await logCommunication({
+                        recipientIds: submission.user ? [submission.user] : [],
+                        recipientEmails: [participantEmail],
+                        subject: `✅ Inscrição Confirmada: ${submission.form.title}`,
+                        content: `Inscrição aprovada para o evento "${submission.form.title}".`,
+                        status: 'sent'
+                    });
                     console.log('[Submission] Approval email sent to:', participantEmail);
 
                     // --- NEW: IN-APP NOTIFICATION FOR APPROVAL ---
@@ -483,6 +507,13 @@ const updateStatus = async (req, res) => {
                     );
 
                     await sendEmail(participantEmail, `⚠️ Atualização: Inscrição em ${submission.form.title}`, emailHtml);
+                    await logCommunication({
+                        recipientIds: submission.user ? [submission.user] : [],
+                        recipientEmails: [participantEmail],
+                        subject: `⚠️ Atualização: Inscrição em ${submission.form.title}`,
+                        content: `Inscrição não pôde ser aprovada no momento.`,
+                        status: 'sent'
+                    });
                     console.log('[Submission] Rejection email sent to:', participantEmail);
                 }
 

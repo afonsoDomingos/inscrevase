@@ -409,7 +409,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                         <div key={log._id} style={{ padding: '1rem', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '16px' }}>
                                             <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{log.subject}</div>
                                             <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: '8px' }}>
-                                                Enviado para: {log.recipientEmails?.length > 3
+                                                Enviado por: <span style={{ color: '#0070f3', fontWeight: 800 }}>{(log as any).sender?.name || 'Sistema'}</span> • Para: {log.recipientEmails?.length > 3
                                                     ? `${log.recipientEmails.slice(0, 3).join(', ')} e mais ${log.recipientEmails.length - 3}`
                                                     : log.recipientEmails?.join(', ') || 'N/A'}
                                             </div>

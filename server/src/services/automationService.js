@@ -10,6 +10,7 @@ const {
     generateReferralBonusEmail,
     generateBasicEmail
 } = require('../utils/emailTemplates');
+const { logCommunication } = require('../utils/communicationLogger');
 
 /**
  * Automation Service
@@ -66,6 +67,13 @@ const initAutomations = () => {
                     );
 
                     await sendEmail(mentor.email, `⌛ Lembrete: ${info.count} Inscrições Pendentes - Inscreva-se`, emailHtml);
+                    await logCommunication({
+                        recipientIds: [mentor._id],
+                        recipientEmails: [mentor.email],
+                        subject: `⌛ Lembrete: ${info.count} Inscrições Pendentes`,
+                        content: `Aviso automático de inscrições aguardando aprovação há mais de 24h.`,
+                        status: 'sent'
+                    });
                 }
             }
         } catch (err) {
@@ -102,6 +110,13 @@ const initAutomations = () => {
                     );
 
                     await sendEmail(mentor.email, `📊 Resultados: ${event.title} - Inscreva-se`, emailHtml);
+                    await logCommunication({
+                        recipientIds: [mentor._id],
+                        recipientEmails: [mentor.email],
+                        subject: `📊 Resultados: ${event.title}`,
+                        content: `Resumo de performance de evento finalizado enviado ao mentor.`,
+                        status: 'sent'
+                    });
                 }
             }
         } catch (err) {
@@ -173,6 +188,13 @@ const initAutomations = () => {
                     );
 
                     await sendEmail(user.email, '💡 Dica: Começa a faturar com o teu conhecimento - Inscreva-se', emailHtml);
+                    await logCommunication({
+                        recipientIds: [user._id],
+                        recipientEmails: [user.email],
+                        subject: '💡 Dica: Começa a faturar hoje',
+                        content: `Nudge de onboarding enviado a novo mentor sem eventos.`,
+                        status: 'sent'
+                    });
 
                     // Mark as sent
                     user.onboardingNudgeSent = true;
@@ -332,6 +354,13 @@ const initAutomations = () => {
                         );
 
                         await sendEmail(participantEmail, `📅 Lembrete: O evento ${event.title} é amanhã! - Inscreva-se`, emailHtml);
+                        await logCommunication({
+                            recipientIds: sub.user ? [sub.user] : [],
+                            recipientEmails: [participantEmail],
+                            subject: `📅 Lembrete: É Amanhã! (${event.title})`,
+                            content: `Lembrete automático de 24h para início de evento.`,
+                            status: 'sent'
+                        });
                         sub.eventReminderSent = true;
                         await sub.save();
                     }
