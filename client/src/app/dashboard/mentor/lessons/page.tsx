@@ -16,7 +16,6 @@ import {
     Video,
     Edit,
     Trash2,
-    Trash,
     Upload,
     TrendingUp,
     ArrowUp,
@@ -26,10 +25,6 @@ import {
     Sparkles,
     Shield,
     ShieldOff,
-    Save,
-    Loader2,
-    Users,
-    BookOpen,
     Heart,
     Award,
     Clock
