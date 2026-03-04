@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, EyeOff, ShieldCheck, Shield, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -62,7 +62,7 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
                     border: '1px solid #FFD70033',
                     cursor: 'pointer'
                 }}>
-                <Lock size={48} color="#FFD700" />
+                <ShieldCheck size={48} color="#FFD700" />
             </div>
             <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '1rem', color: '#111' }}>{title}</h3>
             <p style={{ color: '#666', marginBottom: '2.5rem', fontSize: '1.1rem', lineHeight: 1.6 }}>{description}</p>
@@ -914,7 +914,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
 
                                             <div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '10px' }}>
-                                                    <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t('events.description')}</label>
+                                                    <label style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.description')}</label>
 
                                                     {!showAiOptions ? (
                                                         <motion.button
@@ -1878,7 +1878,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                                                     style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
                                                                 />
                                                                 <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
-                                                                    <Lock size={12} color="#64748b" />
+                                                                    <Shield size={12} color="#64748b" />
                                                                 </div>
                                                             </div>
                                                             Habilitar Pagamento com Cartão (Stripe)
@@ -2177,7 +2177,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                                                 transition: 'all 0.2s'
                                                             }}
                                                         >
-                                                            {copied ? <Check size={16} /> : <Copy size={16} />}
+                                                            {form.active ? <Globe size={16} /> : <EyeOff size={16} />}
                                                             {copied ? 'Copiado!' : 'Copiar'}
                                                         </button>
                                                     </div>

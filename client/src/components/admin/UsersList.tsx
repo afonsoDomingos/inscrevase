@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '@/lib/userService';
 import { UserData, authService } from '@/lib/authService';
-import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Mail, Lock, Unlock, MessageSquare, BadgeCheck, XOctagon, CheckSquare, Square } from 'lucide-react';
+import { Trash2, UserX, UserCheck, Search, Pencil, Linkedin, Mail, Shield, ShieldOff, MessageSquare, BadgeCheck, XOctagon, CheckSquare, Square } from 'lucide-react';
 import { motion } from 'framer-motion';
 import EditUserModal from './EditUserModal';
 import PremiumBadge from '../common/PremiumBadge';
@@ -481,7 +481,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.canCreateEvents !== false ? '#38a169' : '#e53e3e' }}
                                             title={user.canCreateEvents !== false ? 'Bloquear Criação de Eventos' : 'Habilitar Criação de Eventos'}
                                         >
-                                            {user.canCreateEvents !== false ? <Lock size={18} /> : <Unlock size={18} />}
+                                            {user.canCreateEvents !== false ? <Shield size={18} /> : <ShieldOff size={18} />}
                                         </button>
                                         <button
                                             onClick={() => handleToggleStatus(user)}

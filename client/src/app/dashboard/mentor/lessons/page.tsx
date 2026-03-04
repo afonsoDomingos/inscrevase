@@ -11,21 +11,28 @@ import {
     Search,
     CheckCircle,
     EyeOff,
-    Heart,
-    Award,
-    Clock,
     Eye,
     Plus,
     Video,
     Edit,
     Trash2,
+    Trash,
     Upload,
     TrendingUp,
     ArrowUp,
     ArrowDown,
     Lock,
     Unlock,
-    Sparkles
+    Sparkles,
+    Shield,
+    ShieldOff,
+    Save,
+    Loader2,
+    Users,
+    BookOpen,
+    Heart,
+    Award,
+    Clock
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
@@ -35,6 +42,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { adService } from '@/lib/adService';
 import { formService } from '@/lib/formService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
+import { authService, UserData } from '@/lib/authService';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -88,6 +96,9 @@ export default function MentorLessonsPage() {
     const { t } = useTranslate();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'learn' | 'manage'>('learn');
+    const [user, setUser] = useState<UserData | null>(null);
+
+    const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
 
     // Learn Mode State
     const [learnLessons, setLearnLessons] = useState<Lesson[]>([]);
@@ -135,6 +146,17 @@ export default function MentorLessonsPage() {
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
 
     useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const profile = await authService.getProfile();
+                setUser(profile);
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+            }
+        };
+
+        fetchUser();
+
         if (activeTab === 'learn') {
             fetchLearnLessons();
         } else {
@@ -1032,9 +1054,24 @@ export default function MentorLessonsPage() {
                                                         <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }} title="Publicar/Despublicar">
                                                             {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
                                                         </button>
-                                                        <button onClick={() => toggleLock(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: lesson.isLocked ? '#f59e0b' : '#666' }} title={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}>
-                                                            {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
-                                                        </button>
+                                                        {isAdmin && (
+                                                            <button
+                                                                onClick={() => toggleLock(lesson._id)}
+                                                                style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: lesson.isLocked ? '#f59e0b' : '#666' }}
+                                                                title={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}
+                                                            >
+                                                                {lesson.isLocked ? <Shield size={18} /> : <ShieldOff size={18} />}
+                                                            </button>
+                                                        )}
+                                                        {!isAdmin && (
+                                                            <button
+                                                                onClick={() => toggleLock(lesson._id)}
+                                                                style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: lesson.isLocked ? '#f59e0b' : '#666' }}
+                                                                title={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}
+                                                            >
+                                                                {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
+                                                            </button>
+                                                        )}
                                                         <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }} title="Editar">
                                                             <Edit size={18} />
                                                         </button>

@@ -133,6 +133,8 @@ function MentorDashboardContent() {
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
 
+    const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
+
     const handleResendVerification = async () => {
         setIsResending(true);
         try {
@@ -1092,16 +1094,16 @@ function MentorDashboardContent() {
                                 alignItems: 'center',
                                 gap: '8px',
                                 padding: '0.5rem 1rem',
-                                background: '#fff5f5',
-                                border: '1px solid #fed7d7',
+                                background: isAdmin ? 'var(--gold-gradient)' : '#fff5f5',
+                                border: isAdmin ? 'none' : '1px solid #fed7d7',
                                 borderRadius: '10px',
-                                color: '#c53030',
+                                color: isAdmin ? '#000' : '#c53030',
                                 fontWeight: 700,
                                 fontSize: isMobile ? '0.8rem' : '0.9rem',
                                 height: '40px',
                                 whiteSpace: 'nowrap'
                             }}>
-                                <Lock size={16} /> {user.isEmailVerified ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
+                                {!isAdmin && <Lock size={16} />} {user.isEmailVerified || isAdmin ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>

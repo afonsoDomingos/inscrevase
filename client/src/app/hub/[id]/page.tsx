@@ -397,8 +397,8 @@ function HubContent() {
         ? `${bgOverlay}, url('${form.hubBackgroundImage}')`
         : (form.theme?.backgroundImage ? `${bgOverlay}, url("${form.theme.backgroundImage}")` : (isGradient ? rawBgColor : (isLuxury ? `${bgOverlay}, url("/bio-organic.png")` : rawBgColor)));
 
-    const textColor = isDark ? '#ffffff' : '#111111';
-    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#444444';
+    const textColor = isDark ? '#ffffff' : '#000000';
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#222222';
     const cardBg = isDark ? 'rgba(20, 20, 20, 0.75)' : '#ffffff';
     const cardBorder = isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)';
     const navBg = isDark ? 'rgba(10, 10, 10, 0.85)' : 'rgba(255, 255, 255, 0.85)';

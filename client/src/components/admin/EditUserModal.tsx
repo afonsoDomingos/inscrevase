@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield, Lock, Award } from 'lucide-react';
+import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Globe, Instagram, Linkedin, Facebook, Shield, Key, Award } from 'lucide-react';
 import { userService } from '@/lib/userService';
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService'; // For uploading images if admin wants to change user photo
@@ -388,7 +388,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                             {/* Security Section */}
                             <div style={{ background: '#fff5f5', padding: '1rem', borderRadius: '12px', border: '1px solid #fed7d7' }}>
                                 <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#e53e3e', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    <Lock size={14} /> Segurança (Redefinir Senha)
+                                    <Key size={14} /> Segurança (Redefinir Senha)
                                 </div>
                                 <div className="input-group">
                                     <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block', color: '#c53030' }}>Nova Senha</label>
