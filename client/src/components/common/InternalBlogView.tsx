@@ -99,9 +99,23 @@ export default function InternalBlogView() {
                                     </div>
                                 </div>
 
-                                <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '2rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>
+                                <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>
                                     {selectedPost.title}
                                 </h1>
+
+                                {selectedPost.excerpt && (
+                                    <p style={{
+                                        fontSize: '1.2rem',
+                                        color: 'var(--text-muted)',
+                                        lineHeight: 1.6,
+                                        marginBottom: '2.5rem',
+                                        fontWeight: 500,
+                                        borderLeft: '4px solid var(--primary)',
+                                        paddingLeft: '1.5rem'
+                                    }}>
+                                        {selectedPost.excerpt}
+                                    </p>
+                                )}
 
                                 <div
                                     className="blog-content-rendering"
@@ -110,9 +124,9 @@ export default function InternalBlogView() {
                                         lineHeight: 1.7,
                                         color: 'var(--foreground)',
                                         maxWidth: '900px',
-                                        minHeight: '20vh'
+                                        minHeight: '10vh'
                                     }}
-                                    dangerouslySetInnerHTML={{ __html: selectedPost.content }}
+                                    dangerouslySetInnerHTML={{ __html: selectedPost.content || '' }}
                                 />
                             </div>
                         </article>
@@ -149,20 +163,20 @@ export default function InternalBlogView() {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     height: 'auto',
-                                    minHeight: '450px',
-                                    border: '1px solid var(--border)'
+                                    border: '1px solid var(--border)',
+                                    overflow: 'visible'
                                 }}
                             >
-                                <div style={{ position: 'relative', height: isMobile ? '180px' : '220px', overflow: 'hidden' }}>
+                                <div style={{ position: 'relative', height: isMobile ? '180px' : '220px', overflow: 'hidden', borderRadius: '20px 20px 0 0' }}>
                                     <Image src={post.coverImage} fill style={{ objectFit: 'cover' }} alt={post.title} />
                                     <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(255,255,255,0.9)', color: '#000', padding: '5px 12px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase' }}>
                                         {post.category}
                                     </div>
                                 </div>
                                 <div style={{ padding: isMobile ? '1.5rem' : '2.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.6rem', fontWeight: 800, marginBottom: '0.8rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>{post.title}</h3>
-                                    <p style={{ color: 'var(--text-muted)', marginBottom: isMobile ? '1.5rem' : '2rem', fontSize: isMobile ? '0.9rem' : '1.05rem', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: '20', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{post.excerpt}</p>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
+                                    <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.6rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>{post.title}</h3>
+                                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1rem', lineHeight: 1.6 }}>{post.excerpt}</p>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', marginTop: 'auto' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#eee', overflow: 'hidden', border: '1px solid var(--primary)' }}>
                                                 {post.author.avatar && <Image src={post.author.avatar} alt={post.author.name} width={30} height={30} />}
