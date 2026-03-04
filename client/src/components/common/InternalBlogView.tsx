@@ -86,7 +86,7 @@ export default function InternalBlogView() {
                                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%)' }} />
                             </div>
 
-                            <div style={{ padding: '3rem 2.5rem', position: 'relative', maxHeight: '80vh', overflowY: 'auto' }}>
+                            <div style={{ padding: '3rem 2.5rem', position: 'relative' }}>
                                 <div style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                                     <span style={{ background: 'var(--gold-gradient)', color: '#000', padding: '5px 15px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
                                         {selectedPost.category}
@@ -109,7 +109,8 @@ export default function InternalBlogView() {
                                         fontSize: '1.05rem',
                                         lineHeight: 1.7,
                                         color: 'var(--foreground)',
-                                        maxWidth: '900px'
+                                        maxWidth: '900px',
+                                        minHeight: '20vh'
                                     }}
                                     dangerouslySetInnerHTML={{ __html: selectedPost.content }}
                                 />
@@ -147,7 +148,8 @@ export default function InternalBlogView() {
                                     background: 'var(--paper)',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    height: '100%',
+                                    height: 'auto',
+                                    minHeight: '450px',
                                     border: '1px solid var(--border)'
                                 }}
                             >
@@ -159,7 +161,7 @@ export default function InternalBlogView() {
                                 </div>
                                 <div style={{ padding: isMobile ? '1.5rem' : '2.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.6rem', fontWeight: 800, marginBottom: '0.8rem', lineHeight: 1.2, fontFamily: 'var(--font-playfair)' }}>{post.title}</h3>
-                                    <p style={{ color: 'var(--text-muted)', marginBottom: isMobile ? '1.5rem' : '2rem', fontSize: isMobile ? '0.9rem' : '1.05rem', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{post.excerpt}</p>
+                                    <p style={{ color: 'var(--text-muted)', marginBottom: isMobile ? '1.5rem' : '2rem', fontSize: isMobile ? '0.9rem' : '1.05rem', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: '20', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{post.excerpt}</p>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#eee', overflow: 'hidden', border: '1px solid var(--primary)' }}>
