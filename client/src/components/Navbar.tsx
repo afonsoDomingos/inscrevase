@@ -487,27 +487,28 @@ export default function Navbar() {
         }
         .nav-center-links {
           display: flex;
-          gap: 1rem;
+          gap: 0.5rem;
         }
         :global(.nav-item) {
           font-family: 'Poppins', sans-serif !important;
           color: #FFD700 !important;
           text-decoration: none !important;
-          font-size: 0.8rem;
+          font-size: 0.75rem;
           font-weight: 700 !important;
           text-transform: uppercase;
-          letter-spacing: 1.5px;
+          letter-spacing: 1px;
           transition: all 0.3s ease;
-          padding: 0.8rem 1.5rem;
+          padding: 0.8rem 0.6rem;
           position: relative;
           display: inline-block;
           overflow: hidden;
+          white-space: nowrap;
         }
         .navbar.scrolled :global(.nav-item) {
           color: #FFF !important;
         }
         /* Creative Background Hover Effect */
-        :global(.nav-item)::before {
+        :global(.nav-item):before {
           content: '';
           position: absolute;
           top: 0;
@@ -535,7 +536,7 @@ export default function Navbar() {
           color: #FFD700 !important;
         }
         /* Creative Floating Line */
-        :global(.nav-item)::after {
+        :global(.nav-item):after {
           content: '';
           position: absolute;
           bottom: 5px;
@@ -554,7 +555,7 @@ export default function Navbar() {
           display: flex;
           justify-content: flex-end;
           align-items: center;
-          gap: 1.5rem;
+          gap: 0.8rem;
         }
         :global(.icon-link) {
           color: #FFD700 !important;
