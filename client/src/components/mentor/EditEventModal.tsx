@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, EyeOff, ShieldCheck, Shield, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight, Minus, Coins, Database, Play, Lock, ExternalLink, Eye, EyeOff, ShieldCheck, Shield, FileText, Menu, AlignLeft, AlignRight, Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Globe, BookOpen, Users2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
@@ -16,7 +16,6 @@ import AgendaEditor from './AgendaEditor';
 import MaterialsEditor from './MaterialsEditor';
 import CertificateEditor from './CertificateEditor';
 import { lessonService, Lesson } from '@/lib/lessonService';
-import { BookOpen, Users2 } from 'lucide-react';
 import PartnersEditor from './PartnersEditor';
 
 interface EditEventModalProps {
