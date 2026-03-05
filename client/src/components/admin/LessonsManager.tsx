@@ -18,7 +18,6 @@ import {
     CheckCircle,
     Lock,
     Unlock,
-    Shield,
     Image as ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';

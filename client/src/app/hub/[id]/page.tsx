@@ -28,8 +28,7 @@ import {
     LayoutDashboard,
     UserCircle,
     Home,
-    Star,
-    Lock
+    Star
 } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import Image from 'next/image';

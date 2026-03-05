@@ -9,8 +9,7 @@ import {
     Send,
     Trash2,
     Lock,
-    Shield,
-    AlertCircle
+    Shield
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
