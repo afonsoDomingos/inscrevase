@@ -326,7 +326,7 @@ function HubContent() {
     };
 
     const isLessonLocked = (lesson: HubLesson, index: number) => {
-        if (currentUser?.role === 'admin' || currentUser?.role === 'superadmin') return false;
+        if (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') return false;
         if (lesson.isLocked) return true;
         if (index === 0) return false;
         const previousLesson = lessons[index - 1];
