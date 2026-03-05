@@ -8,7 +8,7 @@ import {
     Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight,
     Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight,
     Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Globe, ShieldCheck, EyeOff, Shield,
-    GraduationCap, BookOpen, Users2
+    GraduationCap, BookOpen, Users2, Briefcase
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
@@ -19,7 +19,6 @@ import { useTranslate } from '@/context/LanguageContext';
 import { lessonService, Lesson } from '@/lib/lessonService';
 import PartnersEditor from './PartnersEditor';
 import PricingTiersEditor from './PricingTiersEditor'; // Import Pricing Editor
-import { Users2 } from 'lucide-react';
 
 interface CreateEventModalProps {
     isOpen: boolean;
