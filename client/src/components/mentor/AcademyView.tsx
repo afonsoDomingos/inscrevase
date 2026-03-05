@@ -24,7 +24,10 @@ import {
     Heart,
     Award,
     Clock,
-    Loader2
+    Loader2,
+    Info,
+    Layout,
+    Users
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
@@ -543,7 +546,7 @@ export default function AcademyView() {
                                 </h1>
                             </div>
                             <p style={{ fontSize: '1rem', color: '#666', maxWidth: '600px' }}>
-                                Domine a plataforma com nossos cursos exclusivos para experts
+                                Domine a plataforma com nossos cursos exclusivos para experts. Assista aos vídeos abaixo para aprender a configurar seus eventos, gerenciar mentorias e maximizar seus resultados.
                             </p>
 
                             {/* Overall Progress */}
@@ -565,6 +568,11 @@ export default function AcademyView() {
                                 <div style={{ marginTop: '10px', fontSize: '0.85rem', color: '#666', fontWeight: '500' }}>
                                     {learnLessons.filter(l => l.isCompleted).length} de {learnLessons.length} aulas concluídas
                                 </div>
+                                {learnLessons.filter(l => l.isCompleted).length === 0 && learnLessons.length > 0 && (
+                                    <div style={{ marginTop: '1rem', padding: '8px 12px', background: 'var(--border)', borderRadius: '10px', fontSize: '0.8rem', color: 'var(--foreground)' }}>
+                                        👋 <b>Bem-vindo!</b> Comece pela primeira aula para entender como usar a plataforma.
+                                    </div>
+                                )}
                                 {Math.round((learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100) === 100 && (
                                     <motion.button
                                         initial={{ opacity: 0, y: 10 }}
@@ -596,6 +604,12 @@ export default function AcademyView() {
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Section Title */}
+                    <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '4px', height: '24px', background: 'var(--gold-gradient)', borderRadius: '2px' }} />
+                        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)', margin: 0 }}>Explorar Conteúdo</h2>
                     </div>
 
                     {/* Filters */}
@@ -664,8 +678,14 @@ export default function AcademyView() {
                                     transition={{ delay: idx * 0.05 }}
                                     whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
                                     onClick={() => openLesson(lesson)}
-                                    style={{ background: 'var(--paper)', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', border: '1px solid var(--border)' }}
+                                    style={{ background: 'var(--paper)', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', border: '1px solid var(--border)', position: 'relative' }}
                                 >
+                                    {/* New Badge */}
+                                    {new Date(lesson.createdAt).getTime() > new Date().getTime() - 7 * 24 * 60 * 60 * 1000 && (
+                                        <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--gold-gradient)', color: '#000', padding: '4px 12px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '900', zIndex: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                                            NOVO
+                                        </div>
+                                    )}
                                     <div style={{ position: 'relative', paddingTop: '56.25%', background: info.gradient }}>
                                         {lesson.thumbnailUrl && (
                                             <div style={{ position: 'absolute', inset: 0 }}>
@@ -748,6 +768,40 @@ export default function AcademyView() {
                                 </motion.div>
                             );
                         })}
+
+                        {learnLessons.filter(l =>
+                            (l.title.toLowerCase().includes(learnSearch.toLowerCase()) || l.description?.toLowerCase().includes(learnSearch.toLowerCase())) &&
+                            (learnCategory === 'all' || l.category === learnCategory) &&
+                            (!showFavoritesOnly || l.isFavorite)
+                        ).length === 0 && (
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: 'var(--paper)', borderRadius: '24px', border: '1px dashed var(--border)' }}>
+                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula encontrada</h3>
+                                    <p style={{ color: '#666' }}>Tente ajustar seus filtros ou termos de busca.</p>
+                                </div>
+                            )}
+                    </div>
+
+                    {/* Pro Tips Section */}
+                    <div style={{ marginTop: '4rem', padding: '2rem', background: 'rgba(0,0,0,0.02)', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <TrendingUp size={24} color="#D4AF37" />
+                            Dicas para Mentores de Sucesso
+                        </h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                            <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                                <h4 style={{ fontWeight: 'bold', marginBottom: '8px', color: '#D4AF37' }}>Conteúdo Curto</h4>
+                                <p style={{ fontSize: '0.85rem', color: '#666', margin: 0 }}>Vídeos de 5 a 10 minutos têm maior taxa de conclusão e retenção de conhecimento.</p>
+                            </div>
+                            <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                                <h4 style={{ fontWeight: 'bold', marginBottom: '8px', color: '#D4AF37' }}>Interação</h4>
+                                <p style={{ fontSize: '0.85rem', color: '#666', margin: 0 }}>Sempre peça feedback aos participantes nos primeiros minutos do seu evento ao vivo.</p>
+                            </div>
+                            <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                                <h4 style={{ fontWeight: 'bold', marginBottom: '8px', color: '#D4AF37' }}>Qualidade Visual</h4>
+                                <p style={{ fontSize: '0.85rem', color: '#666', margin: 0 }}>Use thumbnails atraentes e títulos claros para suas aulas gravadas.</p>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             )}
@@ -782,6 +836,29 @@ export default function AcademyView() {
                                 <div><p style={{ fontSize: '0.875rem', color: '#666' }}>{stat.label}</p><p style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 'bold', color: 'var(--foreground)' }}>{stat.value}</p></div>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Information Guide for Mentors */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)',
+                        padding: '1.5rem',
+                        borderRadius: '20px',
+                        marginBottom: '2rem',
+                        border: '1px solid #fcd34d',
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        alignItems: 'center',
+                        gap: '1.5rem'
+                    }}>
+                        <div style={{ background: '#fbbf24', padding: '12px', borderRadius: '50%', color: '#92400e' }}>
+                            <Award size={32} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', fontWeight: 'bold', color: '#92400e' }}>Como Criar sua Primeira Aula</h3>
+                            <p style={{ margin: 0, fontSize: '0.9rem', color: '#b45309', lineHeight: '1.5' }}>
+                                1. Clique em <b>+ Nova Aula</b> • 2. Faça o upload do seu vídeo ou cole um link • 3. Defina o <b>Público-Alvo</b> (quem poderá ver a aula) • 4. Marque como <b>Publicada</b> para seus alunos poderem assistir!
+                            </p>
+                        </div>
                     </div>
 
                     {/* Actions */}
@@ -856,7 +933,14 @@ export default function AcademyView() {
                                                 </div>
                                             </td>
                                             <td style={{ padding: '1rem' }}>
-                                                <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: 'rgba(0,0,0,0.05)', color: '#666' }}>{lesson.category}</span>
+                                                {(() => {
+                                                    const info = getCategoryInfo(lesson.category);
+                                                    return (
+                                                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', padding: '4px 10px', borderRadius: '12px', background: `${info.color}15`, color: info.color }}>
+                                                            {info.icon} {info.label}
+                                                        </span>
+                                                    );
+                                                })()}
                                             </td>
                                             <td style={{ padding: '1rem' }}>
                                                 <span style={{
@@ -920,7 +1004,23 @@ export default function AcademyView() {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
+                                    ))
+                                }
+                                {manageLessons.filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase())).length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎥</div>
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula criada</h3>
+                                            <p style={{ color: '#666' }}>Comece criando sua primeira aula para seus alunos!</p>
+                                            <button
+                                                onClick={() => openModal()}
+                                                style={{ marginTop: '1.5rem', padding: '12px 24px', background: 'var(--gold-gradient)', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                                            >
+                                                + Criar Minha Primeira Aula
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -1032,7 +1132,10 @@ export default function AcademyView() {
                                     </div>
 
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Público-Alvo</label>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>
+                                            Público-Alvo
+                                            <div title="Define quem poderá ver esta aula na academia ou nos eventos" style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
+                                        </label>
                                         <select
                                             value={formData.targetAudience}
                                             onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
@@ -1116,6 +1219,13 @@ export default function AcademyView() {
                                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                         }} />
                                     </button>
+                                </div>
+
+                                <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#856404', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Award size={16} />
+                                        <span><strong>Dica de Expert:</strong> Títulos claros e descrições detalhadas ajudam seus alunos a encontrar o conteúdo mais rápido.</span>
+                                    </p>
                                 </div>
 
                                 <button
