@@ -12,6 +12,7 @@ export interface Lesson {
     duration: number;
     category: 'basico' | 'intermediario' | 'avancado';
     isPublished: boolean;
+    isLocked?: boolean;
     views: number;
     createdAt: string;
     order?: number;

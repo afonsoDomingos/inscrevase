@@ -808,13 +808,38 @@ export default function MentorLessonsPage() {
                                                     <Play size={24} color={info.color} fill={info.color} />
                                                 </div>
                                             </div>
+
+                                            {/* Lock indicator */}
+                                            {lesson.isLocked && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '12px',
+                                                    left: '12px',
+                                                    background: isAdmin ? 'rgba(245, 158, 11, 0.95)' : 'rgba(0,0,0,0.7)',
+                                                    padding: '8px',
+                                                    borderRadius: '12px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    color: 'white',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 900,
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                                                    backdropFilter: 'blur(4px)',
+                                                    zIndex: 10
+                                                }}>
+                                                    {isAdmin ? <Shield size={14} /> : <Lock size={14} />}
+                                                    {lesson.isLocked && (isAdmin ? 'BLOQUEADA PARA USUÁRIOS' : 'BLOQUEADA')}
+                                                </div>
+                                            )}
+
                                             {lesson.isCompleted && (
                                                 <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#10b981', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Concluída">
                                                     <CheckCircle size={20} color="white" />
                                                 </div>
                                             )}
                                             {lesson.isFavorite && (
-                                                <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Favorita">
+                                                <div style={{ position: 'absolute', top: lesson.isLocked ? '50px' : '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Favorita">
                                                     <Heart size={20} color="#ef4444" fill="#ef4444" />
                                                 </div>
                                             )}
@@ -1424,9 +1449,15 @@ export default function MentorLessonsPage() {
                                             Se selecionado, esta aula aparecerá apenas na HUB para inscritos nestes eventos.
                                         </p>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <input type="checkbox" checked={formData.isPublished} onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })} id="pub" style={{ width: '20px', height: '20px' }} />
-                                        <label htmlFor="pub" style={{ fontWeight: '600' }}>Publicar imediatamente</label>
+                                    <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <input type="checkbox" checked={formData.isPublished} onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })} id="pub" style={{ width: '20px', height: '20px' }} />
+                                            <label htmlFor="pub" style={{ fontWeight: '600' }}>Público (Publicar)</label>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <input type="checkbox" checked={formData.isLocked} onChange={(e) => setFormData({ ...formData, isLocked: e.target.checked })} id="lock" style={{ width: '20px', height: '20px' }} />
+                                            <label htmlFor="lock" style={{ fontWeight: '600' }}>{isAdmin ? 'Bloquear para Usuários' : 'Bloquear Aula'}</label>
+                                        </div>
                                     </div>
                                     <button type="submit" disabled={!formData.videoUrl || !formData.title} style={{ padding: '12px', background: formData.videoUrl ? '#D4AF37' : '#e5e7eb', color: formData.videoUrl ? 'black' : '#9ca3af', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: formData.videoUrl ? 'pointer' : 'not-allowed' }}>
                                         {editingLesson ? 'Salvar Alterações' : 'Criar Aula'}

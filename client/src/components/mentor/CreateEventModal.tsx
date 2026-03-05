@@ -7,7 +7,8 @@ import {
     X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle,
     Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight,
     Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight,
-    Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Globe, ShieldCheck, EyeOff, Shield
+    Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Globe, ShieldCheck, EyeOff, Shield,
+    GraduationCap, BookOpen, Users2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
