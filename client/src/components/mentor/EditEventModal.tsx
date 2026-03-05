@@ -2448,7 +2448,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                                     <p style={{ fontWeight: 600, color: '#333' }}>Nenhuma aula encontrada</p>
                                                     <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.</p>
                                                     <a
-                                                        href="/dashboard/mentor/lessons"
+                                                        href="/dashboard/mentor?tab=lessons"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         style={{

@@ -37,6 +37,7 @@ import MarketingRequestModal from '@/components/mentor/MarketingRequestModal';
 import { marketingService, MarketingRequest } from '@/lib/marketingService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
+import AcademyView from '@/components/mentor/AcademyView';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -91,7 +92,7 @@ import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons';
 
 import { Suspense } from 'react';
 
@@ -334,7 +335,7 @@ function MentorDashboardContent() {
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab) {
-            const validTabs: Tab[] = ['overview', 'forms', 'submissions', 'reports', 'settings', 'earnings', 'blog', 'plans', 'services', 'ads', 'feedback', 'smartlinks', 'marketing'];
+            const validTabs: Tab[] = ['overview', 'forms', 'submissions', 'reports', 'settings', 'earnings', 'blog', 'plans', 'services', 'ads', 'feedback', 'smartlinks', 'marketing', 'lessons'];
             if (validTabs.includes(tab as Tab)) {
                 setActiveTab(tab as Tab);
             }
@@ -572,7 +573,7 @@ function MentorDashboardContent() {
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {[
                         { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
-                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor/lessons' },
+                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
                         { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
@@ -596,6 +597,9 @@ function MentorDashboardContent() {
                                     setIsReferralModalOpen(true);
                                 } else {
                                     setActiveTab(item.id as Tab);
+                                    const params = new URLSearchParams(searchParams.toString());
+                                    params.set('tab', item.id);
+                                    router.push(`?${params.toString()}`, { scroll: false });
                                 }
                             }}
                             title={isSidebarCollapsed ? item.label : ''}
@@ -1705,6 +1709,12 @@ function MentorDashboardContent() {
                                     </tbody>
                                 </table>
                             </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'lessons' && (
+                        <motion.div key="lessons" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <AcademyView />
                         </motion.div>
                     )}
 

@@ -2918,7 +2918,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                             Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
                                                         </p>
                                                         <a
-                                                            href="/dashboard/mentor/lessons"
+                                                            href="/dashboard/mentor?tab=lessons"
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             style={{
