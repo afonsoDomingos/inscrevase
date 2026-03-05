@@ -152,6 +152,7 @@ interface HubLesson {
     thumbnailUrl?: string;
     duration: number;
     order: number;
+    isLocked?: boolean;
     progress?: {
         completed: boolean;
         watchTime: number;
@@ -903,7 +904,7 @@ function HubContent() {
                                                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }} />
 
                                                     {/* Manual Lock indicator for Admin */}
-                                                    {lesson.isLocked && (currentUser?.role === 'admin' || currentUser?.role === 'superadmin') && (
+                                                    {lesson.isLocked && (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') && (
                                                         <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(245, 158, 11, 0.9)', color: '#000', padding: '4px 10px', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '5px', zIndex: 10 }}>
                                                             <Shield size={12} /> BLOQUEADA
                                                         </div>
@@ -911,7 +912,7 @@ function HubContent() {
 
                                                     {locked && (
                                                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <div style={{ color: '#fff', fontSize: '2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'superadmin' ? '🛡️' : '🔒'}</div>
+                                                            <div style={{ color: '#fff', fontSize: '2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'}</div>
                                                         </div>
                                                     )}
 
@@ -1061,7 +1062,7 @@ function HubContent() {
                                                 </a>
                                             ) : (
                                                 <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.availableAfterEvent')}>
-                                                    <div style={{ fontSize: '1.2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'superadmin' ? '🛡️' : '🔒'}</div>
+                                                    <div style={{ fontSize: '1.2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'}</div>
                                                 </div>
                                             )}
                                         </div>
@@ -1130,7 +1131,7 @@ function HubContent() {
                                     </a>
                                 )}
                                 <button style={{ background: '#f8f8f8', color: '#aaa', padding: '16px', borderRadius: '100px', border: 'none', fontWeight: 700, fontSize: '0.9rem', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                    {currentUser?.role === 'admin' || currentUser?.role === 'superadmin' ? '🛡️' : '🔒'} {t('hub.addToWallet')}
+                                    {currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'} {t('hub.addToWallet')}
                                 </button>
                                 {isApproved && form.certificateConfig?.enabled !== false && (
                                     (stats.total > 0 && stats.completed === stats.total) || (form.eventDate && new Date() >= new Date(form.eventDate)) ? (
