@@ -16,15 +16,11 @@ import {
     Video,
     Edit,
     Trash2,
-    Upload,
     TrendingUp,
     ArrowUp,
     ArrowDown,
     Lock,
-    Unlock,
-    Sparkles,
     Shield,
-    ShieldOff,
     Heart,
     Award,
     Clock,
@@ -82,7 +78,7 @@ interface Stats {
 }
 
 export default function AcademyView() {
-    const { t } = useTranslate();
+    useTranslate();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'learn' | 'manage'>('learn');
     const [user, setUser] = useState<UserData | null>(null);
@@ -102,7 +98,6 @@ export default function AcademyView() {
     const [showModal, setShowModal] = useState(false);
     const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
     const [manageSearch, setManageSearch] = useState('');
-    const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'url'>('upload');
     const [mentorEvents, setMentorEvents] = useState<MentorEvent[]>([]);
@@ -254,7 +249,6 @@ export default function AcademyView() {
         if (!file) return;
 
         setIsUploading(true);
-        setUploadProgress(0);
 
         const formDataUpload = new FormData();
         formDataUpload.append('video', file);
@@ -265,8 +259,7 @@ export default function AcademyView() {
 
             xhr.upload.addEventListener('progress', (e) => {
                 if (e.lengthComputable) {
-                    const percentComplete = (e.loaded / e.total) * 100;
-                    setUploadProgress(percentComplete);
+                    // Progress tracking removed to satisfy ESLint as it was unused in UI
                 }
             });
 
@@ -280,7 +273,6 @@ export default function AcademyView() {
                         duration: result.duration || 0
                     }));
                     setIsUploading(false);
-                    setUploadProgress(100);
                 } else {
                     console.error('Upload failed');
                     setIsUploading(false);
@@ -296,32 +288,7 @@ export default function AcademyView() {
         }
     };
 
-    const handleThumbnailUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
 
-        const formDataUpload = new FormData();
-        formDataUpload.append('file', file);
-        formDataUpload.append('folder', 'lesson-thumbnails');
-
-        try {
-            const token = Cookies.get('token');
-            const response = await fetch(`${API_URL}/upload`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formDataUpload
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setFormData(prev => ({ ...prev, thumbnailUrl: data.url }));
-            }
-        } catch (error) {
-            console.error('Error uploading thumbnail:', error);
-        }
-    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -381,20 +348,7 @@ export default function AcademyView() {
         }
     };
 
-    const toggleLock = async (id: string) => {
-        try {
-            const token = Cookies.get('token');
-            await fetch(`${API_URL}/lessons/${id}/toggle-lock`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            fetchManageLessons();
-            toast.success('Status de bloqueio atualizado!');
-        } catch (error) {
-            console.error('Error toggling lock:', error);
-            toast.error('Erro ao bloquear/desbloquear aula');
-        }
-    };
+
 
     const moveLesson = async (index: number, direction: 'up' | 'down') => {
         const sortedLessons = [...manageLessons].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -474,13 +428,11 @@ export default function AcademyView() {
             });
         }
         setShowModal(true);
-        setUploadProgress(0);
     };
 
     const closeModal = () => {
         setShowModal(false);
         setEditingLesson(null);
-        setUploadProgress(0);
     };
 
     const generateCertificate = async () => {
@@ -1070,7 +1022,7 @@ export default function AcademyView() {
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Nível / Categoria</label>
                                         <select
                                             value={formData.category}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
                                             style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
                                         >
                                             <option value="basico">🌱 Básico</option>
@@ -1083,7 +1035,7 @@ export default function AcademyView() {
                                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Público-Alvo</label>
                                         <select
                                             value={formData.targetAudience}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as any }))}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
                                             style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
                                         >
                                             <option value="mentors">🎓 Experts (Academia)</option>
