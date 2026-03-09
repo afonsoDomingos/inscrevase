@@ -415,14 +415,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 ],
                 eventType: 'modePresencial',
                 videoOrientation: 'horizontal' as const,
+                capacity: '20',
                 agenda: [
-                    { id: '1', time: '09:00', title: 'Fundamentos Teóricos', description: 'Base necessária para a prática.' },
-                    { id: '2', time: '10:30', title: 'Exercício Prático 1', description: 'Primeira aplicação assistida.' },
-                    { id: '3', time: '14:00', title: 'Projeto Final', description: 'Criação de um resultado real.' }
+                    { time: '09:00', activity: 'Atividade Prática 1', description: 'Execução direta do conceito X.', order: 0 },
+                    { time: '14:00', activity: 'Projeto em Tempo Real', description: 'Criação de um resultado prático.', order: 1 }
                 ],
                 materials: [
-                    { id: '1', title: 'Guia de Exercícios', type: 'pdf', url: '' },
-                    { id: '2', title: 'Templates de Trabalho', type: 'zip', url: '' }
+                    { name: 'Lista de Materiais Necessários', url: '', type: 'pdf', availableAfterEvent: false, order: 0 },
+                    { name: 'Guia de Execução', url: '', type: 'pdf', availableAfterEvent: true, order: 1 }
                 ]
             }
         },
@@ -436,11 +436,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 category: 'Negócios',
                 fields: [
                     { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
-                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true },
+                    { id: '3', label: 'Tipo de Sessão', type: 'select', required: true, options: ['Sessão Individual', 'Sessão em Grupo'] }
                 ],
                 customFields: [
-                    { id: '1', label: 'Qual seu maior desafio hoje?', type: 'textarea', required: true },
-                    { id: '2', label: 'O que espera alcançar nesta mentoria?', type: 'text', required: true }
+                    { label: 'Duração do Acompanhamento', value: '[Ex: 3 Meses]', order: 0 },
+                    { label: 'Frequência', value: 'Encontros Semanais', order: 1 }
                 ],
                 capacity: '10',
                 eventType: 'modeOnline',
@@ -458,6 +459,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 fields: [
                     { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
                     { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                ],
+                customFields: [
+                    { label: 'Número de Módulos', value: '[X] Módulos', order: 0 },
+                    { label: 'Total de Aulas', value: '[X] Aulas', order: 1 }
+                ],
+                materials: [
+                    { name: 'Apostila/E-book do Curso', url: '', type: 'pdf', availableAfterEvent: false, order: 0 }
                 ],
                 eventType: 'modeOnline',
                 videoOrientation: 'horizontal' as const,
@@ -504,8 +512,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 eventType: 'modeOnline',
                 videoOrientation: 'horizontal' as const,
                 agenda: [
-                    { id: '1', time: '14:00', title: 'Painel de Abertura', description: 'Visão geral do setor.' },
-                    { id: '2', time: '15:30', title: 'Apresentação de Estudos de Caso', description: 'Casos reais de aplicação.' }
+                    { time: '14:00', activity: 'Painel de Abertura', description: 'Visão geral do setor.', order: 0 },
+                    { time: '15:30', activity: 'Estudos de Caso', description: 'Casos reais de aplicação.', order: 1 }
                 ]
             }
         },
@@ -541,7 +549,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 category: 'Educação',
                 fields: [
                     { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
-                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true },
+                    { id: '3', label: 'Curso Relacionado', type: 'text', required: false }
+                ],
+                customFields: [
+                    { label: 'Objetivo da Aula', value: 'Apresentar os fundamentos de...', order: 0 },
+                    { label: 'Call to Action', value: 'Garanta sua vaga no curso completo com desconto!', order: 1 }
                 ],
                 eventType: 'modeOnline',
                 videoOrientation: 'vertical' as const
@@ -558,14 +571,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 fields: [
                     { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
                     { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true },
-                    { id: '3', label: 'Empresa / Organização', type: 'text', required: false }
+                    { id: '3', label: 'Número de Acompanhantes', type: 'number', required: false }
+                ],
+                customFields: [
+                    { label: 'Número de Palestrantes', value: '[X] Palestrantes Confirmados', order: 0 },
+                    { label: 'Sessões Paralelas', value: 'Disponíveis no Auditório A e B', order: 1 }
                 ],
                 eventType: 'modeHybrid',
                 videoOrientation: 'horizontal' as const,
                 agenda: [
-                    { id: '1', time: '08:00', title: 'Credenciamento', description: 'Recepção dos participantes.' },
-                    { id: '2', time: '09:00', title: 'Keynote de Abertura', description: 'Boas-vindas e palestra principal.' },
-                    { id: '3', time: '11:00', title: 'Painel de Discussão', description: 'Debate entre especialistas convidados.' }
+                    { time: '08:00', activity: 'Credenciamento', description: 'Recepção.', order: 0 },
+                    { time: '09:00', activity: 'Painel Principal', description: 'Início da conferência.', order: 1 },
+                    { time: '11:00', activity: 'Sessão Paralela 1', description: 'Auditório Principal / Sala de Reunião 2', order: 2 }
                 ]
             }
         }
