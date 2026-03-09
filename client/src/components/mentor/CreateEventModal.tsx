@@ -530,6 +530,44 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                     fontFamily: 'Outfit'
                 }
             }
+        },
+        aulaaberta: {
+            label: t('events.types.aulaaberta.title'),
+            description: t('events.types.aulaaberta.description'),
+            icon: <LayoutDashboard size={24} />,
+            data: {
+                title: 'Aula Aberta: [Tema da Aula]',
+                description: 'Uma aula gratuita e dinâmica para você conhecer meu método e aprender [Habilidade] de forma rápida.',
+                category: 'Educação',
+                fields: [
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                ],
+                eventType: 'modeOnline',
+                videoOrientation: 'vertical' as const
+            }
+        },
+        conferencia: {
+            label: t('events.types.conferencia.title'),
+            description: t('events.types.conferencia.description'),
+            icon: <Users2 size={24} />,
+            data: {
+                title: 'Conferência Nacional de [Área]',
+                description: 'O maior encontro de profissionais de [Área]. Networking de alto nível, múltiplos painéis e insights valiosos.',
+                category: 'Networking',
+                fields: [
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true },
+                    { id: '3', label: 'Empresa / Organização', type: 'text', required: false }
+                ],
+                eventType: 'modeHybrid',
+                videoOrientation: 'horizontal' as const,
+                agenda: [
+                    { id: '1', time: '08:00', title: 'Credenciamento', description: 'Recepção dos participantes.' },
+                    { id: '2', time: '09:00', title: 'Keynote de Abertura', description: 'Boas-vindas e palestra principal.' },
+                    { id: '3', time: '11:00', title: 'Painel de Discussão', description: 'Debate entre especialistas convidados.' }
+                ]
+            }
         }
     };
 

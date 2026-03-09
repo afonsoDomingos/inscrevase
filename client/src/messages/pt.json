@@ -1229,6 +1229,14 @@
             "masterclass": {
                 "title": "Masterclass",
                 "description": "Aula avançada conduzida por um especialista."
+            },
+            "aulaaberta": {
+                "title": "Aula Aberta",
+                "description": "Aula única rápida para atrair novos alunos e compartilhar valor."
+            },
+            "conferencia": {
+                "title": "Conferência",
+                "description": "Grande evento com múltiplos palestrantes e sessões complexas."
             }
         },
         "steps": {

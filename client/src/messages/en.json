@@ -1180,6 +1180,14 @@
             "masterclass": {
                 "title": "Masterclass",
                 "description": "Advanced class led by an expert."
+            },
+            "aulaaberta": {
+                "title": "Open Class",
+                "description": "Short single session to attract students and share quick value."
+            },
+            "conferencia": {
+                "title": "Conference",
+                "description": "Large scale event with multiple speakers and topics."
             }
         },
         "steps": {
