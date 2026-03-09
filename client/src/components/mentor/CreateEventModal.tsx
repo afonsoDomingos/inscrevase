@@ -2885,7 +2885,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 <CertificateEditor
                                                     config={certificateConfig}
                                                     onChange={setCertificateConfig}
-                                                    eventTitle={title || "Nome do Evento"}
+                                                    mentorName={currentUser?.name || ""}
                                                 />
                                             </div>
                                         )}
