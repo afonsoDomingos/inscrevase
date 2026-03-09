@@ -392,9 +392,15 @@ export default function AdminDashboard() {
             {/* Sidebar */}
             <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''} ${isDesktopSidebarCollapsed ? 'collapsed' : ''}`}>
                 <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
-                    <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
-                        Inscreva<span className="gold-text">.se</span>
-                    </h2>
+                    {!isDesktopSidebarCollapsed ? (
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
+                            Inscreva<span className="gold-text">.se</span>
+                        </h2>
+                    ) : (
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#FFD700' }}>
+                            I.
+                        </h2>
+                    )}
                 </div>
 
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
@@ -435,9 +441,13 @@ export default function AdminDashboard() {
                                     }}
                                 />
                             )}
-                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7 }}>{item.icon}</div>
-                            {item.label}
-                            {item.id === 'support' && unreadCount > 0 && (
+                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                            {!isDesktopSidebarCollapsed && (
+                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {item.label}
+                                </span>
+                            )}
+                            {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
                                 <span style={{
                                     marginLeft: 'auto',
                                     background: '#ef4444',
@@ -464,8 +474,9 @@ export default function AdminDashboard() {
                     style={{
                         display: 'flex',
                         alignItems: 'center',
+                        justifyContent: isDesktopSidebarCollapsed ? 'center' : 'flex-start',
                         gap: '12px',
-                        padding: '0.75rem 2rem',
+                        padding: isDesktopSidebarCollapsed ? '0.75rem' : '0.75rem 2rem',
                         width: '100%',
                         border: 'none',
                         background: 'transparent',
@@ -480,7 +491,7 @@ export default function AdminDashboard() {
                     onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                     <HelpCircle size={20} />
-                    {t('dashboard.settings.guidedTour')}
+                    {!isDesktopSidebarCollapsed && t('dashboard.settings.guidedTour')}
                 </button>
 
                 <div style={{ padding: '1.5rem' }}>
@@ -503,7 +514,7 @@ export default function AdminDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <Settings size={18} /> {t('events.profile.title')}
+                        <Settings size={18} /> {!isDesktopSidebarCollapsed && t('events.profile.title')}
                     </button>
                     <button
                         onClick={() => authService.logout()}
@@ -523,7 +534,7 @@ export default function AdminDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <LogOut size={18} /> {t('common.logout')}
+                        <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
                     </button>
                 </div>
             </aside>
