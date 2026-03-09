@@ -1263,7 +1263,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 { id: 6, label: t('events.steps.communication') || 'Comunicação', icon: <MessageCircle size={18} /> },
                                 { id: 7, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
                                 { id: 8, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
-                                { id: 9, label: t('events.steps.hub') || 'Área do Aluno (Hub)', icon: <Sparkles size={18} /> },
+                                { id: 9, label: t('events.steps.hub') || 'Área do Participante (Hub)', icon: <Sparkles size={18} /> },
                             ].map((s) => {
                                 const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
@@ -2791,8 +2791,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         }}>
                                             10º Passo (Configuração Final)
                                         </div>
-                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Área do Aluno (Hub de Conteúdos)</h2>
-                                        <p style={{ color: '#666', marginBottom: '2rem' }}>Personalize o que os alunos verão no Hub após a inscrição (materiais, agenda e links).</p>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Área do Participante (Hub de Conteúdo)</h2>
+                                        <p style={{ color: '#666', marginBottom: '2rem' }}>Personalize o que os participantes verão no Hub após a inscrição (materiais, agenda e links).</p>
 
                                         <div style={{ display: 'grid', gap: '2rem' }}>
                                             <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #eee' }}>
