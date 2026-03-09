@@ -424,7 +424,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         mentoria: {
             label: t('events.types.mentoria.title'),
             description: t('events.types.mentoria.description'),
-            icon: <Users size={24} />,
+            icon: <Users2 size={24} />,
             data: {
                 title: 'Sessão de Mentoria: [Especialidade]',
                 description: 'Acompanhamento próximo e personalizado para acelerar seus resultados em [Área]. Grupo restrito para máxima atenção.',
