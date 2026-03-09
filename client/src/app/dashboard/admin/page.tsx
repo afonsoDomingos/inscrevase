@@ -1750,10 +1750,10 @@ export default function AdminDashboard() {
                     id="admin-support-fab"
                     style={{
                         position: 'fixed',
-                        bottom: '140px',
-                        right: '25px',
-                        width: '50px',
-                        height: '50px',
+                        bottom: '130px',
+                        right: '20px',
+                        width: '40px',
+                        height: '40px',
                         borderRadius: '50%',
                         background: '#000',
                         color: '#FFD700',
@@ -1770,7 +1770,7 @@ export default function AdminDashboard() {
                     onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     title="Central de Suporte"
                 >
-                    <HelpCircle size={28} />
+                    <HelpCircle size={24} />
                 </button>
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="admin" />
