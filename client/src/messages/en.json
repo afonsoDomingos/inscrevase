@@ -1151,7 +1151,7 @@
             "resultLabel": "Generated Result"
         },
         "step0Title": "What type of event do you want to create?",
-        "step0Subtitle": "Choose the format that best fits your content so we can customize your experience.",
+        "step0Subtitle": "Greetings {name}, choose the format that best fits your content so we can customize your experience.",
         "types": {
             "title": "Event Type",
             "palestra": {

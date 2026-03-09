@@ -1488,7 +1488,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             maxWidth: '600px',
                                             margin: '0 auto'
                                         }}>
-                                            {t('events.step0Subtitle') || 'Escolha um modelo para começar com uma estrutura profissional já configurada.'}
+                                            {t('events.step0Subtitle', { name: currentUser?.name || 'Mentor' }) || 'Escolha um modelo para começar com uma estrutura profissional já configurada.'}
                                         </p>
                                     </div>
 
