@@ -1,6 +1,7 @@
 "use client";
 
 import { Award, UserCheck } from 'lucide-react';
+import Image from 'next/image';
 
 interface CertificateConfig {
     enabled: boolean;
@@ -258,7 +259,7 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                         <div style={{ display: 'flex', justifyContent: safeConfig.showLogo && logo ? 'space-between' : 'flex-end', alignItems: 'center', padding: '0 40px', marginBottom: '10px' }}>
                             {safeConfig.showLogo && logo && (
                                 <div style={{ width: '60px', height: '30px', position: 'relative' }}>
-                                    <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    <Image src={logo} alt="Logo" fill style={{ objectFit: 'contain' }} />
                                 </div>
                             )}
                             <div style={{ textAlign: safeConfig.showLogo && logo ? 'right' : 'center', flex: 1 }}>

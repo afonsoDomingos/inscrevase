@@ -277,6 +277,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     const [agenda, setAgenda] = useState<any[]>([]);
     const [materials, setMaterials] = useState<any[]>([]);
     const [customFields, setCustomFields] = useState<any[]>([]);
+    const [showHubPreview, setShowHubPreview] = useState(false);
     const [certificateConfig, setCertificateConfig] = useState({
         enabled: false,
         template: 'modern',
@@ -624,13 +625,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         setCertificateConfig({
             enabled: false,
             template: 'modern',
-            primaryColor: '#0d9488',
+            primaryColor: '#D4AF37',
+            backgroundColor: '#ffffff',
+            nameColor: '#EAB308',
             title: 'CERTIFICADO DE PARTICIPAÇÃO',
             subtitle: 'DE CONCLUSÃO',
             description: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
             signerName: '',
             signerRole: 'Mentor',
-            requireCheckIn: false
+            requireCheckIn: false,
+            showLogo: true
         });
         setTheme({
             primaryColor: '#0d9488',
@@ -1266,7 +1270,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 { id: 6, label: t('events.steps.communication') || 'Comunicação', icon: <MessageCircle size={18} /> },
                                 { id: 7, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
                                 { id: 8, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
-                                { id: 9, label: t('events.steps.hub') || 'Área do Participante (Hub)', icon: <Sparkles size={18} /> },
+                                { id: 9, label: t('events.steps.hub') || 'Área do Participante', icon: <Sparkles size={18} /> },
                             ].map((s) => {
                                 const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
@@ -2794,8 +2798,38 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         }}>
                                             10º Passo (Configuração Final)
                                         </div>
-                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Área do Participante (Hub de Conteúdo)</h2>
-                                        <p style={{ color: '#666', marginBottom: '2rem' }}>Personalize o que os participantes verão no Hub após a inscrição (materiais, agenda e links).</p>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                                            <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, margin: 0, wordBreak: 'break-word', hyphens: 'auto' }}>
+                                                {t('events.steps.hub') || 'Área do Participante'}
+                                            </h2>
+                                            <button
+                                                onClick={() => setShowHubPreview(true)}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px',
+                                                    padding: '8px 16px',
+                                                    borderRadius: '12px',
+                                                    background: '#000',
+                                                    color: '#FFD700',
+                                                    border: 'none',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 700,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2',
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                                }}
+                                            >
+                                                <Eye size={16} />
+                                                Visualizar Hub
+                                            </button>
+                                        </div>
+                                        <p style={{ color: '#666', marginBottom: '2rem' }}>
+                                            Personalize o que os participantes verão no Hub após a inscrição.
+                                            <span style={{ display: 'block', marginTop: '4px', fontSize: '0.85rem', color: '#888' }}>
+                                                ✨ Você poderá adicionar ou alterar esses conteúdos a qualquer momento após a publicação do evento.
+                                            </span>
+                                        </p>
 
                                         <div style={{ display: 'grid', gap: '2rem' }}>
                                             <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #eee' }}>
@@ -4023,6 +4057,107 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     </motion.div>
                                 </motion.div>
                             )}
+                    </AnimatePresence>
+
+                    <AnimatePresence>
+                        {showHubPreview && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                style={{ position: 'fixed', inset: 0, zIndex: 3200, background: 'rgba(0,0,0,0.85)', padding: isMobile ? '0' : '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}
+                            >
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    style={{
+                                        width: '100%',
+                                        maxWidth: '1000px',
+                                        height: isMobile ? '100vh' : '90vh',
+                                        background: '#f8fafc',
+                                        borderRadius: isMobile ? '0' : '24px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                                    }}
+                                >
+                                    <div style={{ padding: '1.2rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '10px', color: '#000', fontWeight: 700 }}>
+                                            <Sparkles size={20} /> Pré-visualização da Área do Participante
+                                        </h3>
+                                        <button onClick={() => setShowHubPreview(false)} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}><X size={20} /></button>
+                                    </div>
+
+                                    <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '1rem' : '2rem' }}>
+                                        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                                            {/* Header Simulation */}
+                                            <div style={{ background: '#fff', padding: '2rem', borderRadius: '24px', border: '1px solid #e2e8f0', marginBottom: '2rem' }}>
+                                                <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '1rem' }}>
+                                                    {logo && <div style={{ height: '40px', width: '100px', position: 'relative' }}><Image src={logo} alt="Logo" fill style={{ objectFit: 'contain' }} /></div>}
+                                                    <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>{title || 'Título do Evento'}</h1>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    <span style={{ padding: '4px 12px', background: '#f1f5f9', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>📅 {eventDate ? new Date(eventDate).toLocaleDateString() : 'Proximamente'}</span>
+                                                    <span style={{ padding: '4px 12px', background: '#ecfdf5', color: '#059669', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>✓ Inscrito</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Content Grid */}
+                                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                                                {/* Materials */}
+                                                <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
+                                                    <h4 style={{ fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <BookOpen size={18} /> Materiais
+                                                    </h4>
+                                                    {materials.length > 0 ? (
+                                                        <div style={{ display: 'grid', gap: '10px' }}>
+                                                            {materials.map((m, i) => (
+                                                                <div key={i} style={{ padding: '12px', border: '1px solid #f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                    <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name || 'Material sem nome'}</span>
+                                                                    <ExternalLink size={14} color="#64748b" />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>Nenhum material cadastrado ainda.</p>
+                                                    )}
+                                                </div>
+
+                                                {/* Agenda */}
+                                                <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
+                                                    <h4 style={{ fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <Calendar size={18} /> Agenda
+                                                    </h4>
+                                                    {agenda.length > 0 ? (
+                                                        <div style={{ display: 'grid', gap: '15px' }}>
+                                                            {agenda.map((a, i) => (
+                                                                <div key={i} style={{ display: 'flex', gap: '15px' }}>
+                                                                    <div style={{ fontWeight: 800, color: '#6366f1', fontSize: '0.85rem' }}>{a.time}</div>
+                                                                    <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{a.activity}</div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>Nenhuma agenda cadastrada ainda.</p>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Certificate Section Simulation */}
+                                            {certificateConfig.enabled && (
+                                                <div style={{ marginTop: '2rem', background: '#000', padding: '2rem', borderRadius: '24px', color: '#FFD700', textAlign: 'center' }}>
+                                                    <Award size={40} style={{ marginBottom: '1rem' }} />
+                                                    <h4 style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.5rem' }}>Seu Certificado está pronto!</h4>
+                                                    <p style={{ fontSize: '0.9rem', color: '#aaa', marginBottom: '1.5rem' }}>Baixe agora o seu certificado de conclusão oficial.</p>
+                                                    <button style={{ padding: '0.8rem 2rem', borderRadius: '12px', background: '#FFD700', color: '#000', fontWeight: 800, border: 'none' }}>Download PDF</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </motion.div>
             </div >

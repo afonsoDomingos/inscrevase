@@ -1248,7 +1248,7 @@
             "design": "Design",
             "payment": "Pagamento",
             "communication": "Comunicação",
-            "hub": "Área do Participante (Hub de Conteúdo)"
+            "hub": "Área do Participante"
         },
         "submissions": {
             "searchPlaceholder": "Buscar por nome ou evento...",
