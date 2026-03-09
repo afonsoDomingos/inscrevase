@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown } from 'lucide-react';
+import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Users, Award, Megaphone, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -14,6 +14,10 @@ import { lessonService, Lesson } from '@/lib/lessonService';
 import PartnersEditor from './PartnersEditor';
 import PricingTiersEditor from './PricingTiersEditor'; // Import Pricing Editor
 import { Users2 } from 'lucide-react';
+import CustomFieldsEditor from './CustomFieldsEditor';
+import AgendaEditor from './AgendaEditor';
+import MaterialsEditor from './MaterialsEditor';
+import CertificateEditor from './CertificateEditor';
 
 interface CreateEventModalProps {
     isOpen: boolean;
@@ -91,7 +95,8 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
 
 export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan = 'free', userRole = 'mentor', onUpgradeClick }: CreateEventModalProps) {
     const { t } = useTranslate();
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(0);
+    const [selectedType, setSelectedType] = useState<string | null>(null);
     const isAdmin = userRole === 'admin' || userRole === 'superadmin';
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
@@ -256,6 +261,29 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     // Partners State
     const [partners, setPartners] = useState<string[]>([]);
 
+    // Hub Content & Structure States
+    const [agenda, setAgenda] = useState<any[]>([]);
+    const [materials, setMaterials] = useState<any[]>([]);
+    const [customFields, setCustomFields] = useState<any[]>([]);
+    const [certificateConfig, setCertificateConfig] = useState({
+        enabled: false,
+        template: 'modern',
+        title: 'CERTIFICADO DE PARTICIPAÇÃO',
+        content: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
+        signatureUrl: '',
+        signatureName: '',
+        showDate: true,
+        showHours: false,
+        hours: 0,
+        primaryColor: '#0d9488'
+    });
+
+    // Marketing Social AI States
+    const [marketingPlatform, setMarketingPlatform] = useState('instagram');
+    const [marketingContent, setMarketingContent] = useState('');
+    const [marketingLoading, setMarketingLoading] = useState(false);
+    const [copied, setCopied] = useState(false);
+
     // Auto-Save & Draft Recovery State
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [showDraftBanner, setShowDraftBanner] = useState(false);
@@ -273,9 +301,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
     // Calculate Progress
     const calculateProgress = () => {
-        const totalFields = 8; // title, description, date, image, fields, theme, payment, communication
+        if (step === 0) return 0;
+
+        const totalFields = 11; // Adjusted for new capabilities
         let completedFields = 0;
 
+        if (selectedType) completedFields++;
         if (title.trim()) completedFields++;
         if (description.trim()) completedFields++;
         if (eventDate) completedFields++;
@@ -283,7 +314,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         if (fields.length > 0 && fields.every(f => f.label.trim())) completedFields++;
         if (theme.primaryColor) completedFields++;
         if (whatsappConfig.phoneNumber || whatsappConfig.communityUrl) completedFields++;
-        if (step >= 4) completedFields++; // viewed payment config
+        if (agenda.length > 0) completedFields++;
+        if (materials.length > 0) completedFields++;
+        if (certificateConfig.enabled || selectedType) completedFields++; // Count if enabled or template set it
 
         return Math.round((completedFields / totalFields) * 100);
     };
@@ -334,95 +367,189 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     };
 
     // --- SMART TEMPLATES & DEFAULTS ---
+    // --- SMART TEMPLATES & DEFAULTS ---
     const eventTemplates = {
-        workshop: {
-            label: 'Workshop',
-            icon: <GraduationCap size={24} />,
+        palestra: {
+            label: t('events.types.palestra.title'),
+            description: t('events.types.palestra.description'),
+            icon: <Sparkles size={24} />,
             data: {
-                title: 'Workshop: [Tema Principal]',
-                description: 'Participe deste workshop prático onde você aprenderá as melhores técnicas sobre [Tema]. Ideal para iniciantes e profissionais que desejam aprimorar suas habilidades.\n\nO que você vai aprender:\n- Tópico 1\n- Tópico 2\n- Aplicação prática',
+                title: 'Palestra: [Nome do Tema]',
+                description: 'Uma palestra inspiradora sobre [Tema], onde vamos explorar novas perspetivas e partilhar conhecimento valioso para a sua jornada profissional.',
                 category: 'Educação',
                 fields: [
-                    { id: '1', label: 'Nome Completo', type: 'text', required: true },
-                    { id: '2', label: 'Email', type: 'email', required: true },
-                    { id: '3', label: 'WhatsApp', type: 'phone', required: true },
-                    { id: '4', label: 'Nível de Conhecimento', type: 'select', required: true, options: ['Iniciante', 'Intermediário', 'Avançado'] }
-                ],
-                capacity: '30',
-                eventType: 'modePresencial',
-                videoOrientation: 'horizontal'
-            }
-        },
-        webinar: {
-            label: 'Webinar',
-            icon: <Video size={24} />,
-            data: {
-                title: 'Masterclass Online: [Assunto]',
-                description: 'Inscreva-se nesta aula exclusiva online. Descubra os segredos de [Assunto] sem sair de casa.',
-                category: 'Tecnologia',
-                fields: [
-                    { id: '1', label: 'Nome', type: 'text', required: true },
-                    { id: '2', label: 'Email', type: 'email', required: true },
-                    { id: '3', label: 'Pergunta para o Mentor', type: 'text', required: false }
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
                 ],
                 eventType: 'modeOnline',
-                onlineLink: 'https://zoom.us/',
-                videoOrientation: 'horizontal'
+                videoOrientation: 'vertical' as const,
+                agenda: [
+                    { id: '1', time: '00:00', title: 'Introdução e Boas-vindas', description: 'Abertura do evento e apresentação do palestrante.' },
+                    { id: '2', time: '00:15', title: 'Conteúdo Principal', description: 'Exploração profunda do tema central.' },
+                    { id: '3', time: '00:50', title: 'Q&A (Perguntas e Respostas)', description: 'Espaço para interação com a audiência.' }
+                ]
             }
         },
-        networking: {
-            label: 'Networking',
-            icon: <Users2 size={24} />,
+        workshop: {
+            label: t('events.types.workshop.title'),
+            description: t('events.types.workshop.description'),
+            icon: <GraduationCap size={24} />,
             data: {
-                title: 'Encontro de Líderes & Networking',
-                description: 'Uma oportunidade única para conectar com profissionais da área, trocar experiências e expandir sua rede de contatos. Traga seus cartões de visita!',
-                category: 'Negócios',
+                title: 'Workshop Prático: [Habilidade]',
+                description: 'Aprenda na prática como dominar [Habilidade]. Neste workshop "mãos na massa", você sairá com resultados concretos.',
+                category: 'Treinamento',
                 fields: [
-                    { id: '1', label: 'Nome', type: 'text', required: true },
-                    { id: '2', label: 'Email', type: 'email', required: true },
-                    { id: '3', label: 'Empresa', type: 'text', required: true },
-                    { id: '4', label: 'Cargo', type: 'text', required: true },
-                    { id: '5', label: 'LinkedIn', type: 'text', required: false }
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true },
+                    { id: '3', label: t('events.defaultFieldPhone') || 'Telefone / WhatsApp', type: 'phone', required: true }
                 ],
                 eventType: 'modePresencial',
-                videoOrientation: 'vertical'
+                videoOrientation: 'horizontal' as const,
+                agenda: [
+                    { id: '1', time: '09:00', title: 'Fundamentos Teóricos', description: 'Base necessária para a prática.' },
+                    { id: '2', time: '10:30', title: 'Exercício Prático 1', description: 'Primeira aplicação assistida.' },
+                    { id: '3', time: '14:00', title: 'Projeto Final', description: 'Criação de um resultado real.' }
+                ],
+                materials: [
+                    { id: '1', title: 'Guia de Exercícios', type: 'pdf', url: '' },
+                    { id: '2', title: 'Templates de Trabalho', type: 'zip', url: '' }
+                ]
             }
         },
-        mentorship: {
-            label: 'Mentoria',
+        mentoria: {
+            label: t('events.types.mentoria.title'),
+            description: t('events.types.mentoria.description'),
+            icon: <Users size={24} />,
+            data: {
+                title: 'Sessão de Mentoria: [Especialidade]',
+                description: 'Acompanhamento próximo e personalizado para acelerar seus resultados em [Área]. Grupo restrito para máxima atenção.',
+                category: 'Negócios',
+                fields: [
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                ],
+                customFields: [
+                    { id: '1', label: 'Qual seu maior desafio hoje?', type: 'textarea', required: true },
+                    { id: '2', label: 'O que espera alcançar nesta mentoria?', type: 'text', required: true }
+                ],
+                capacity: '10',
+                eventType: 'modeOnline',
+                videoOrientation: 'vertical' as const
+            }
+        },
+        curso: {
+            label: t('events.types.curso.title'),
+            description: t('events.types.curso.description'),
+            icon: <BookOpen size={24} />,
+            data: {
+                title: 'Formação Completa: [Nome do Curso]',
+                description: 'Uma jornada estruturada do zero ao avançado em [Assunto]. Aulas teóricas, práticas e suporte total.',
+                category: 'Educação',
+                fields: [
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                ],
+                eventType: 'modeOnline',
+                videoOrientation: 'horizontal' as const,
+                certificateConfig: {
+                    enabled: true,
+                    template: 'modern',
+                    title: 'CERTIFICADO DE CONCLUSÃO',
+                    content: 'Certificamos que {name} concluiu com êxito o curso {event_name}.',
+                    signatureUrl: '',
+                    signatureName: '',
+                    showDate: true,
+                    showHours: true,
+                    hours: 20,
+                    primaryColor: '#0d9488'
+                }
+            }
+        },
+        treinamento: {
+            label: t('events.types.treinamento.title'),
+            description: t('events.types.treinamento.description'),
             icon: <Briefcase size={24} />,
             data: {
-                title: 'Mentoria Individual com [Seu Nome]',
-                description: 'Sessão exclusiva de 1 hora para desbloquear seu potencial e traçar um plano de carreira personalizado.',
+                title: 'Treinamento Corporativo: [Habilidade Técnica]',
+                description: 'Capacitação intensiva em [Habilidade] focada em performance e resultados reais.',
+                category: 'Treinamento',
+                fields: [
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: 'Empresa / Cargo', type: 'text', required: true }
+                ],
+                eventType: 'modeHybrid',
+                videoOrientation: 'horizontal' as const
+            }
+        },
+        seminario: {
+            label: t('events.types.seminario.title'),
+            description: t('events.types.seminario.description'),
+            icon: <Globe size={24} />,
+            data: {
+                title: 'Seminário Técnico sobre [Tema]',
+                description: 'Discussão aprofundada com especialistas sobre as últimas tendências e pesquisas em [Área].',
+                category: 'Tecnologia',
+                fields: [
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
+                ],
+                eventType: 'modeOnline',
+                videoOrientation: 'horizontal' as const,
+                agenda: [
+                    { id: '1', time: '14:00', title: 'Painel de Abertura', description: 'Visão geral do setor.' },
+                    { id: '2', time: '15:30', title: 'Apresentação de Estudos de Caso', description: 'Casos reais de aplicação.' }
+                ]
+            }
+        },
+        masterclass: {
+            label: t('events.types.masterclass.title'),
+            description: t('events.types.masterclass.description'),
+            icon: <Award size={24} />,
+            data: {
+                title: 'Masterclass Exclusiva: [Segredo do Sucesso]',
+                description: 'Uma aula avançada onde revelo as estratégias exatas que utilizei para [Resultado]. Acesso para mentes que buscam o próximo nível.',
                 category: 'Negócios',
                 fields: [
-                    { id: '1', label: 'Nome Completo', type: 'text', required: true },
-                    { id: '2', label: 'Email', type: 'email', required: true },
-                    { id: '3', label: 'Qual seu maior desafio hoje?', type: 'textarea', required: true }
+                    { id: '1', label: t('events.defaultFieldName'), type: 'text', required: true },
+                    { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
                 ],
-                capacity: '5',
                 eventType: 'modeOnline',
-                onlineLink: 'https://meet.google.com/',
-                videoOrientation: 'vertical'
+                videoOrientation: 'vertical' as const,
+                theme: {
+                    style: 'luxury' as const,
+                    primaryColor: '#FFD700',
+                    backgroundColor: 'linear-gradient(135deg, #1a1a1b 0%, #111 100%)',
+                    fontFamily: 'Outfit'
+                }
             }
         }
     };
 
     const applyTemplate = (key: keyof typeof eventTemplates) => {
         const template = eventTemplates[key].data as any;
+        setSelectedType(key);
+
         if (template.title) setTitle(template.title);
         if (template.description) setDescription(template.description);
         if (template.category) setCategory(template.category);
         if (template.fields) setFields(template.fields);
         if (template.capacity) setCapacity(template.capacity);
         if (template.eventType) setEventType(template.eventType);
-        if (template.onlineLink) setOnlineLink(template.onlineLink);
+        if (template.onlineLink) setOnlineLink(template.onlineLink || '');
         if (template.videoOrientation) setVideoOrientation(template.videoOrientation as 'vertical' | 'horizontal');
+        if (template.agenda) setAgenda(template.agenda);
+        if (template.materials) setMaterials(template.materials);
+        if (template.customFields) setCustomFields(template.customFields);
+        if (template.certificateConfig) setCertificateConfig({ ...certificateConfig, ...template.certificateConfig });
+        if (template.theme) setTheme({ ...theme, ...template.theme });
 
-        toast.success(`Modelo "${eventTemplates[key].label}" aplicado! Personalize conforme necessário.`);
+        setStep(1); // Mover para as informações básicas após escolher
+        toast.success(`Estrutura de "${eventTemplates[key].label}" configurada!`);
     };
 
     const clearForm = () => {
+        setStep(0);
+        setSelectedType(null);
         setTitle('');
         setDescription('');
         setEventDate('');
@@ -430,7 +557,22 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         setFields([{ id: '1', label: t('events.defaultFieldName'), type: 'text', required: true }, { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }]);
         setCategory('Outros');
         setEventType('modePresencial');
-        toast.info('Formulário limpo para começar do zero.');
+        setAgenda([]);
+        setMaterials([]);
+        setCustomFields([]);
+        setCertificateConfig({
+            enabled: false,
+            template: 'modern',
+            title: 'CERTIFICADO DE PARTICIPAÇÃO',
+            content: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
+            signatureUrl: '',
+            signatureName: '',
+            showDate: true,
+            showHours: false,
+            hours: 0,
+            primaryColor: '#0d9488'
+        });
+        toast.info('Formulário reiniciado.');
     };
 
     // Auto-Save Effect
@@ -539,7 +681,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             // Ctrl/Cmd + → = Next step
             if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight') {
                 e.preventDefault();
-                setStep(Math.min(7, step + 1));
+                setStep(Math.min(9, step + 1));
             }
 
             // Ctrl/Cmd + ← = Previous step
@@ -858,7 +1000,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 );
                 if (invalidMethods.length > 0) {
                     toast.error('Métodos de pagamento devem ter nome e detalhes preenchidos');
-                    setStep(4);
+                    setStep(6);
                     return;
                 }
             }
@@ -881,7 +1023,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             const cleanPhone = whatsappConfig.phoneNumber.replace(/[\s\-()]/g, '');
             if (!phoneRegex.test(cleanPhone)) {
                 toast.error('Formato de telefone WhatsApp inválido. Use formato internacional: +258...');
-                setStep(5);
+                setStep(7);
                 return;
             }
         }
@@ -892,7 +1034,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 new URL(whatsappConfig.communityUrl);
             } catch {
                 toast.error('URL da comunidade WhatsApp inválida');
-                setStep(5);
+                setStep(7);
                 return;
             }
         }
@@ -932,6 +1074,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 welcomeMessage,
                 associatedLessons: selectedLessons,
                 partners,
+                agenda,
+                materials,
+                customFields,
+                certificateConfig: {
+                    ...certificateConfig,
+                    signerRole: (certificateConfig as any).signerRole || 'Mentor'
+                },
                 active: isPublic
             });
 
@@ -1041,13 +1190,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             justifyContent: isMobile ? 'center' : 'flex-start'
                         }} className="no-scrollbar">
                             {[
+                                { id: 0, label: t('events.types.title') || 'Escolher Tipo', icon: <Layout size={18} /> },
                                 { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
                                 { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
-                                { id: 3, label: t('events.steps.design'), icon: <Palette size={18} /> },
-                                { id: 4, label: t('events.steps.payment'), icon: <DollarSign size={18} />, premium: true },
-                                { id: 5, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
-                                { id: 6, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
-                                { id: 7, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
+                                { id: 3, label: 'Conteúdo do Hub', icon: <Sparkles size={18} /> },
+                                { id: 4, label: t('events.steps.design'), icon: <Palette size={18} /> },
+                                { id: 5, label: 'Certificado', icon: <Award size={18} />, premium: true },
+                                { id: 6, label: t('events.steps.payment'), icon: <DollarSign size={18} />, premium: true },
+                                { id: 7, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
+                                { id: 8, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
+                                { id: 9, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
                             ].map((s) => {
                                 const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
@@ -1057,7 +1209,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             if (isLocked) {
                                                 if (onUpgradeClick) onUpgradeClick();
                                             } else {
-                                                setStep(s.id);
+                                                if (s.id > 0 && !selectedType) {
+                                                    toast.warning('Por favor, escolha um tipo de evento primeiro.');
+                                                    setStep(0);
+                                                } else {
+                                                    setStep(s.id);
+                                                }
                                             }
                                         }}
                                         title={s.label}
@@ -1120,115 +1277,117 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                         overflow: 'hidden'
                     }}>
                         {/* Header Area (Sticky) */}
-                        <div style={{
-                            padding: isMobile ? '3rem 1.5rem 0.5rem' : '2rem 3.5rem 1rem',
-                            background: '#fcfcfc',
-                            zIndex: 20,
-                            position: 'relative'
-                        }}>
-                            <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', left: isMobile ? '1.2rem' : '2rem', zIndex: 30 }}>
-                                {!isMobile && (
-                                    <button
-                                        onClick={() => setIsSidebarVisible(!isSidebarVisible)}
-                                        style={{
-                                            background: '#fff',
-                                            border: '1px solid #ddd',
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: '12px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                                            color: '#666'
-                                        }}
-                                    >
-                                        <Menu size={20} />
-                                    </button>
-                                )}
-                            </div>
-
-                            {!isMobile && (
-                                <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
-                                    <button
-                                        onClick={() => setShowPreview(true)}
-                                        title="Pré-visualizar Evento"
-                                        style={{
-                                            background: '#fff',
-                                            border: '1px solid #ddd',
-                                            padding: '0.4rem 0.8rem',
-                                            borderRadius: '20px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 600,
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                            color: '#333'
-                                        }}
-                                    >
-                                        <Eye size={16} />
-                                        {!isMobile && "Pré-visualizar"}
-                                    </button>
-                                    <button
-                                        onClick={onClose}
-                                        style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Progress Indicator (Sticky) */}
-                            <div style={{ marginBottom: '1rem', maxWidth: '90%' }}>
-                                <div style={{
-                                    background: '#e5e7eb',
-                                    borderRadius: '999px',
-                                    height: '6px',
-                                    position: 'relative',
-                                    overflow: 'hidden'
-                                }}>
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${calculateProgress()}%` }}
-                                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                                        style={{
-                                            background: 'linear-gradient(90deg, #FFD700, #FFA500)',
-                                            height: '100%',
-                                            borderRadius: '999px'
-                                        }}
-                                    />
-                                </div>
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    marginTop: '6px'
-                                }}>
-                                    <span style={{
-                                        fontSize: '0.65rem',
-                                        color: '#888',
-                                        fontWeight: 600
-                                    }}>
-                                        {calculateProgress()}% {t('common.complete') || 'completo'}
-                                    </span>
-                                    {lastSaved && (
-                                        <span style={{
-                                            fontSize: '0.65rem',
-                                            color: '#10b981',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
-                                        }}>
-                                            <CheckCircle size={10} />
-                                            {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
+                        {step !== 0 && (
+                            <div style={{
+                                padding: isMobile ? '3rem 1.5rem 0.5rem' : '2rem 3.5rem 1rem',
+                                background: '#fcfcfc',
+                                zIndex: 20,
+                                position: 'relative'
+                            }}>
+                                <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', left: isMobile ? '1.2rem' : '2rem', zIndex: 30 }}>
+                                    {!isMobile && (
+                                        <button
+                                            onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+                                            style={{
+                                                background: '#fff',
+                                                border: '1px solid #ddd',
+                                                width: '40px',
+                                                height: '40px',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                                color: '#666'
+                                            }}
+                                        >
+                                            <Menu size={20} />
+                                        </button>
                                     )}
                                 </div>
+
+                                {!isMobile && (
+                                    <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
+                                        <button
+                                            onClick={() => setShowPreview(true)}
+                                            title="Pré-visualizar Evento"
+                                            style={{
+                                                background: '#fff',
+                                                border: '1px solid #ddd',
+                                                padding: '0.4rem 0.8rem',
+                                                borderRadius: '20px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 600,
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                                color: '#333'
+                                            }}
+                                        >
+                                            <Eye size={16} />
+                                            {!isMobile && "Pré-visualizar"}
+                                        </button>
+                                        <button
+                                            onClick={onClose}
+                                            style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Progress Indicator (Sticky) */}
+                                <div style={{ marginBottom: '1rem', maxWidth: '90%' }}>
+                                    <div style={{
+                                        background: '#e5e7eb',
+                                        borderRadius: '999px',
+                                        height: '6px',
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${calculateProgress()}%` }}
+                                            transition={{ duration: 0.5, ease: 'easeOut' }}
+                                            style={{
+                                                background: 'linear-gradient(90deg, #FFD700, #FFA500)',
+                                                height: '100%',
+                                                borderRadius: '999px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginTop: '6px'
+                                    }}>
+                                        <span style={{
+                                            fontSize: '0.65rem',
+                                            color: '#888',
+                                            fontWeight: 600
+                                        }}>
+                                            {calculateProgress()}% {t('common.complete') || 'completo'}
+                                        </span>
+                                        {lastSaved && (
+                                            <span style={{
+                                                fontSize: '0.65rem',
+                                                color: '#10b981',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px'
+                                            }}>
+                                                <CheckCircle size={10} />
+                                                {new Date(lastSaved).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Scrollable Area */}
                         <div style={{
@@ -1241,10 +1400,166 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             msOverflowStyle: 'auto',
                             paddingBottom: isMobile ? 'calc(8rem + env(safe-area-inset-bottom))' : '5rem' // Ensure safe area
                         }}>
+                            {/* Passo 0: Seleção de Tipo/Modelo */}
+                            {step === 0 && (
+                                <motion.div
+                                    key="step0"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    style={{ maxWidth: '1000px', margin: '0 auto', padding: isMobile ? '0' : '2rem 0' }}
+                                >
+                                    <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                                        <h2 style={{
+                                            fontSize: isMobile ? '1.8rem' : '2.5rem',
+                                            fontWeight: 900,
+                                            color: '#111',
+                                            marginBottom: '1rem',
+                                            letterSpacing: '-0.02em'
+                                        }}>
+                                            {t('events.step0Title') || 'Que tipo de evento você vai criar?'}
+                                        </h2>
+                                        <p style={{
+                                            fontSize: isMobile ? '1rem' : '1.2rem',
+                                            color: '#666',
+                                            maxWidth: '600px',
+                                            margin: '0 auto'
+                                        }}>
+                                            {t('events.step0Subtitle') || 'Escolha um modelo para começar com uma estrutura profissional já configurada.'}
+                                        </p>
+                                    </div>
+
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
+                                        gap: '1.5rem',
+                                        padding: '1rem'
+                                    }}>
+                                        {(Object.keys(eventTemplates) as Array<keyof typeof eventTemplates>).map((key) => {
+                                            const template = eventTemplates[key];
+                                            return (
+                                                <motion.div
+                                                    key={key}
+                                                    whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={() => applyTemplate(key)}
+                                                    style={{
+                                                        background: '#fff',
+                                                        borderRadius: '24px',
+                                                        padding: '2rem',
+                                                        cursor: 'pointer',
+                                                        border: '2px solid transparent',
+                                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-start',
+                                                        gap: '1.2rem',
+                                                        position: 'relative',
+                                                        overflow: 'hidden'
+                                                    }}
+                                                >
+                                                    <div style={{
+                                                        width: '56px',
+                                                        height: '56px',
+                                                        borderRadius: '16px',
+                                                        background: '#FFD70015',
+                                                        color: '#FFD700',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginBottom: '0.5rem'
+                                                    }}>
+                                                        {template.icon}
+                                                    </div>
+
+                                                    <div>
+                                                        <h3 style={{
+                                                            fontSize: '1.25rem',
+                                                            fontWeight: 800,
+                                                            color: '#111',
+                                                            marginBottom: '0.5rem'
+                                                        }}>
+                                                            {template.label}
+                                                        </h3>
+                                                        <p style={{
+                                                            fontSize: '0.9rem',
+                                                            color: '#666',
+                                                            lineHeight: 1.5
+                                                        }}>
+                                                            {template.description}
+                                                        </p>
+                                                    </div>
+
+                                                    <div style={{
+                                                        marginTop: 'auto',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: 700,
+                                                        color: '#FFD700'
+                                                    }}>
+                                                        Começar agora <ExternalLink size={14} />
+                                                    </div>
+
+                                                    {/* Subtle Background Glow */}
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        bottom: '-20px',
+                                                        right: '-20px',
+                                                        width: '100px',
+                                                        height: '100px',
+                                                        background: 'radial-gradient(circle, #FFD70010 0%, transparent 70%)',
+                                                        zIndex: 0
+                                                    }} />
+                                                </motion.div>
+                                            );
+                                        })}
+
+                                        {/* Blank Canvas Option */}
+                                        <motion.div
+                                            whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => {
+                                                clearForm();
+                                                setStep(1);
+                                            }}
+                                            style={{
+                                                background: 'transparent',
+                                                borderRadius: '24px',
+                                                padding: '2rem',
+                                                cursor: 'pointer',
+                                                border: '2px dashed #cbd5e1',
+                                                transition: 'all 0.3s',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                textAlign: 'center',
+                                                gap: '1rem',
+                                                minHeight: '200px'
+                                            }}
+                                        >
+                                            <div style={{ color: '#94a3b8' }}>
+                                                <Plus size={32} />
+                                            </div>
+                                            <div>
+                                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#64748b' }}>
+                                                    {t('events.blankCanvas') || 'Começar do Zero'}
+                                                </h3>
+                                                <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                                                    Sem estrutura pré-definida.
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    </div>
+                                </motion.div>
+                            )}
 
 
                             {/* Draft Recovery Banner - Compacted */}
-                            {showDraftBanner && (
+                            {step !== 0 && showDraftBanner && (
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -2301,6 +2616,54 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 3 && (
                                     <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Conteúdo & Estrutura do Hub</h2>
+
+                                        <div style={{ display: 'grid', gap: '2rem' }}>
+                                            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #eee' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                                                    <div style={{ background: '#000', color: '#FFD700', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <Calendar size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Agenda do Evento</h3>
+                                                        <p style={{ fontSize: '0.8rem', color: '#666', margin: 0 }}>Cronograma e temas das atividades</p>
+                                                    </div>
+                                                </div>
+                                                <AgendaEditor agenda={agenda} onChange={setAgenda} />
+                                            </div>
+
+                                            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #eee' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                                                    <div style={{ background: '#000', color: '#FFD700', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <Upload size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Materiais de Apoio</h3>
+                                                        <p style={{ fontSize: '0.8rem', color: '#666', margin: 0 }}>PDFs, links e arquivos extras para os alunos</p>
+                                                    </div>
+                                                </div>
+                                                <MaterialsEditor materials={materials} onChange={setMaterials} />
+                                            </div>
+
+                                            <div style={{ background: '#fffbeb', padding: '1.5rem', borderRadius: '24px', border: '1px solid #fef3c7' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                                                    <div style={{ background: '#b45309', color: '#fff', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <Sparkles size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: '#92400e' }}>Campos Adicionais</h3>
+                                                        <p style={{ fontSize: '0.8rem', color: '#b45309', margin: 0 }}>Informações extras exibidas no Hub (ex: Mentores, Localização)</p>
+                                                    </div>
+                                                </div>
+                                                <CustomFieldsEditor customFields={customFields} onChange={setCustomFields} />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+
+                                {step === 4 && (
+                                    <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.customization')}</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escolha um modelo pronto ou personalize as cores do seu evento.</p>
 
@@ -2496,7 +2859,33 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 )}
 
 
-                                {step === 4 && (
+                                {step === 5 && (
+                                    <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração do Certificado</h2>
+
+                                        {(userPlan === 'free' && !isAdmin) ? (
+                                            <div onClick={onUpgradeClick} style={{ cursor: 'pointer', background: '#f8fafc', padding: '2rem', borderRadius: '24px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                                                <Lock size={40} style={{ margin: '0 auto 1rem', color: '#94a3b8' }} />
+                                                <h3 style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.5rem' }}>Funcionalidade Premium</h3>
+                                                <p style={{ color: '#64748b', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
+                                                    A emissão automática de certificados está disponível apenas para planos <strong>Pro e Business</strong>.
+                                                </p>
+                                                <button className="btn-primary" style={{ padding: '0.8rem 2rem', borderRadius: '12px' }}>Fazer Upgrade agora</button>
+                                            </div>
+                                        ) : (
+                                            <div style={{ background: '#fff', padding: '2rem', borderRadius: '24px', border: '1px solid #eee' }}>
+                                                <CertificateEditor
+                                                    config={certificateConfig}
+                                                    onChange={setCertificateConfig}
+                                                    eventTitle={title || "Nome do Evento"}
+                                                />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+
+
+                                {step === 6 && (
                                     <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.paymentConfig')}</h2>
 
@@ -2798,7 +3187,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     </motion.div>
                                 )}
 
-                                {step === 5 && (
+                                {step === 7 && (
                                     <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.whatsappConclusion')}</h2>
 
@@ -2887,7 +3276,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     </motion.div>
                                 )}
 
-                                {step === 6 && (
+                                {step === 8 && (
                                     <motion.div key="step6" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
@@ -3001,7 +3390,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         )}
                                     </motion.div>
                                 )}
-                                {step === 7 && (
+                                {step === 9 && (
                                     <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>Parceiros & Publicação</h2>
 
@@ -3043,76 +3432,80 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                         </div >
 
                         {/* Unified Sticky Footer Action */}
-                        < div style={{
-                            padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', // Safe area for footer
-                            background: '#fff',
-                            borderTop: '2px solid #FFD700',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            zIndex: 2005,
-                            boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
-                            gap: '12px',
-                            flexShrink: 0,
-                            position: 'relative'
-                        }
-                        }>
-                            {/* Shortucts Info (Desktop Only) */}
-                            {
-                                !isMobile && (
-                                    <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
-                                        <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
-                                        <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
-                                        {step === 7 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
-                                    </div>
-                                )
+                        {step !== 0 && (
+                            <div style={{
+                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', // Safe area for footer
+                                background: '#fff',
+                                borderTop: '2px solid #FFD700',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                zIndex: 2005,
+                                boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
+                                gap: '12px',
+                                flexShrink: 0,
+                                position: 'relative'
                             }
+                            }>
+                                {/* Shortucts Info (Desktop Only) */}
+                                {
+                                    !isMobile && (
+                                        <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
+                                            <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
+                                            <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
+                                            {step === 7 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
+                                        </div>
+                                    )
+                                }
 
-                            <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', marginLeft: 'auto' }}>
-                                {step > 1 && (
-                                    <button
-                                        onClick={() => setStep(step - 1)}
-                                        style={{
-                                            padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem',
-                                            borderRadius: '12px',
-                                            border: '1px solid #ddd',
-                                            background: '#fff',
-                                            color: '#333',
-                                            fontWeight: 700,
-                                            fontSize: isMobile ? '0.9rem' : '1rem', // Smaller font on mobile
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '8px',
-                                            whiteSpace: 'nowrap' // Prevent text wrap inside button
-                                        }}
-                                    >
-                                        <ExternalLink size={18} style={{ transform: 'rotate(180deg)' }} /> {t('common.back')}
-                                    </button>
-                                )}
-                                <button
-                                    onClick={step === 7 ? handleSubmit : () => setStep(step + 1)}
-                                    disabled={loading}
-                                    className="btn-primary"
-                                    style={{
-                                        minWidth: isMobile ? 'none' : '200px',
-                                        flex: isMobile ? 1 : 'initial',
-                                        borderRadius: '12px',
-                                        padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem', // Reduced padding on mobile
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '8px',
-                                        fontSize: isMobile ? '0.85rem' : '0.95rem', // Reduced font size
-                                        fontWeight: 800,
-                                        whiteSpace: 'nowrap' // Prevent wrapping
-                                    }}
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 7 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
-                                </button>
+                                <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', marginLeft: 'auto' }}>
+                                    {step > 0 && (
+                                        <button
+                                            onClick={() => setStep(step - 1)}
+                                            style={{
+                                                padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem',
+                                                borderRadius: '12px',
+                                                border: '1px solid #ddd',
+                                                background: '#fff',
+                                                color: '#333',
+                                                fontWeight: 700,
+                                                fontSize: isMobile ? '0.9rem' : '1rem', // Smaller font on mobile
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                whiteSpace: 'nowrap' // Prevent text wrap inside button
+                                            }}
+                                        >
+                                            <ExternalLink size={18} style={{ transform: 'rotate(180deg)' }} /> {t('common.back')}
+                                        </button>
+                                    )}
+                                    {step > 0 && (
+                                        <button
+                                            onClick={step === 9 ? handleSubmit : () => setStep(step + 1)}
+                                            disabled={loading}
+                                            className="btn-primary"
+                                            style={{
+                                                minWidth: isMobile ? 'none' : '200px',
+                                                flex: isMobile ? 1 : 'initial',
+                                                borderRadius: '12px',
+                                                padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '8px',
+                                                fontSize: isMobile ? '0.85rem' : '0.95rem',
+                                                fontWeight: 800,
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 9 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        </div >
-                    </div >
+                        )}
+                    </div>
 
                     {/* SUCCESS MODAL OVERLAY */}
                     <AnimatePresence>
@@ -3368,7 +3761,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             )}
                     </AnimatePresence>
                 </motion.div>
-            </div>
-        </AnimatePresence>
+            </div >
+        </AnimatePresence >
     );
 }

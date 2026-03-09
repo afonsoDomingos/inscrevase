@@ -1192,6 +1192,45 @@
         "vslVideoLabel": "🎬 Vídeo de Vendas (VSL)",
         "videoConfigured": "Vídeo configurado",
         "videoTip": "💡 Vídeo vertical (9:16) recomendado para melhor visualização. Ideal para VSLs e Reels.",
+        "marketing": {
+            "title": "Marketing Social AI",
+            "subtitle": "Deixe a Aura criar o post perfeito para divulgar seu evento.",
+            "choosePlatform": "Escolha a Plataforma",
+            "generateWithAura": "GERAR POST COM AURA",
+            "resultLabel": "Resultado Gerado"
+        },
+        "step0Title": "Que tipo de evento deseja criar?",
+        "step0Subtitle": "Escolha o formato que melhor se adapta ao seu conteúdo para personalizarmos sua experiência.",
+        "types": {
+            "palestra": {
+                "title": "Palestra",
+                "description": "Focada em inspiração e partilha de conhecimento."
+            },
+            "workshop": {
+                "title": "Workshop",
+                "description": "Prático, onde os participantes aprendem fazendo."
+            },
+            "mentoria": {
+                "title": "Mentoria",
+                "description": "Acompanhamento personalizado em grupos pequenos."
+            },
+            "curso": {
+                "title": "Curso",
+                "description": "Formação estruturada com várias aulas ou módulos."
+            },
+            "treinamento": {
+                "title": "Treinamento",
+                "description": "Desenvolvimento de habilidades específicas."
+            },
+            "seminario": {
+                "title": "Seminário",
+                "description": "Discussão técnica ou académica com especialistas."
+            },
+            "masterclass": {
+                "title": "Masterclass",
+                "description": "Aula avançada conduzida por um especialista."
+            }
+        },
         "steps": {
             "info": "Informações",
             "form": "Formulário",

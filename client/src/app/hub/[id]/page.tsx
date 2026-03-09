@@ -503,7 +503,7 @@ function HubContent() {
                         {isApproved ? <CheckCircle2 size={16} /> : <Clock size={16} />}
                         {isApproved ? t('events.confirmedStatus') : t('events.processingStatus')}
                     </motion.div>
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-2px', marginBottom: '15px', color: '#fff', lineHeight: 1.1, textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>{form.title}</h1>
+                    <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-2px', marginBottom: '15px', color: textColor, lineHeight: 1.1, textShadow: isDark ? '0 10px 30px rgba(0,0,0,0.5)' : 'none' }}>{form.title}</h1>
                     <p style={{ color: '#d4d4d8', fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>{t('hub.exclusiveAccess')}</p>
                 </div>
 
