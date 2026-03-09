@@ -117,6 +117,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const { onlineUsers } = useSocket();
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
@@ -389,7 +390,7 @@ export default function AdminDashboard() {
             />
 
             {/* Sidebar */}
-            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''} ${isDesktopSidebarCollapsed ? 'collapsed' : ''}`}>
                 <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
                         Inscreva<span className="gold-text">.se</span>
@@ -528,7 +529,7 @@ export default function AdminDashboard() {
             </aside>
 
             {/* Main Content */}
-            <main className="admin-main">
+            <main className={`admin-main ${isDesktopSidebarCollapsed ? 'expanded' : ''}`}>
                 {/* Header */}
                 <header className="admin-header" style={{
                     display: 'flex',
@@ -538,31 +539,40 @@ export default function AdminDashboard() {
                     marginBottom: '3rem',
                     flexWrap: 'wrap'
                 }}>
-                    <div style={{ flex: '1 1 300px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
-                            <ShieldAlert size={16} />
-                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{(user.role === 'admin' || user.role === 'SuperAdmin') ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
-                        </div>
-                        <motion.h1
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            style={{
-                                fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-                                fontWeight: 800,
-                                fontFamily: 'var(--font-playfair)',
-                                lineHeight: 1.1,
-                                color: '#1a1a1a',
-                                overflowWrap: 'break-word',
-                                wordWrap: 'break-word',
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: '8px'
-                            }}
+                    <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                        <button
+                            className="desktop-sidebar-toggle"
+                            onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
+                            title={isDesktopSidebarCollapsed ? "Mostrar Menu" : "Ocultar Menu"}
                         >
-                            <span className="gold-text" style={{ wordBreak: 'break-word' }}>
-                                {user.name?.split(' ')[0] || 'Admin'}
-                            </span>
-                        </motion.h1>
+                            <Menu size={24} />
+                        </button>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
+                                <ShieldAlert size={16} />
+                                <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{(user.role === 'admin' || user.role === 'SuperAdmin') ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
+                            </div>
+                            <motion.h1
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                style={{
+                                    fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
+                                    fontWeight: 800,
+                                    fontFamily: 'var(--font-playfair)',
+                                    lineHeight: 1.1,
+                                    color: '#1a1a1a',
+                                    overflowWrap: 'break-word',
+                                    wordWrap: 'break-word',
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '8px'
+                                }}
+                            >
+                                <span className="gold-text" style={{ wordBreak: 'break-word' }}>
+                                    {user.name?.split(' ')[0] || 'Admin'}
+                                </span>
+                            </motion.h1>
+                        </div>
                     </div>
 
                     <div className="admin-actions-group" style={{
