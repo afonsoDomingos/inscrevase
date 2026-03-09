@@ -6,32 +6,39 @@ interface CertificateConfig {
     enabled: boolean;
     template: string;
     primaryColor: string;
+    backgroundColor: string;
+    nameColor: string;
     title: string;
     subtitle: string;
     description: string;
     signerName: string;
     signerRole: string;
     requireCheckIn: boolean;
+    showLogo: boolean;
 }
 
 interface CertificateEditorProps {
     config: CertificateConfig;
     onChange: (config: CertificateConfig) => void;
     mentorName: string; // fallback if signerName is empty
+    logo?: string;
 }
 
-export default function CertificateEditor({ config, onChange, mentorName }: CertificateEditorProps) {
+export default function CertificateEditor({ config, onChange, mentorName, logo }: CertificateEditorProps) {
     // Defaults if config is partial
-    const safeConfig = {
+    const safeConfig: CertificateConfig = {
         enabled: config?.enabled || false,
         template: config?.template || 'classic',
         primaryColor: config?.primaryColor || '#D4AF37',
-        title: config?.title || 'CERTIFICADO',
+        backgroundColor: config?.backgroundColor || '#ffffff',
+        nameColor: config?.nameColor || '#EAB308',
+        title: config?.title || 'CERTIFICADO DE PARTICIPAÇÃO',
         subtitle: config?.subtitle || 'DE CONCLUSÃO',
-        description: config?.description || 'concluiu com êxito a participação no evento:',
+        description: config?.description || 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
         signerName: config?.signerName || mentorName,
         signerRole: config?.signerRole || 'Mentor Responsável',
-        requireCheckIn: config?.requireCheckIn || false
+        requireCheckIn: config?.requireCheckIn || false,
+        showLogo: config?.showLogo !== undefined ? config.showLogo : true
     };
 
     const handleChange = (key: keyof CertificateConfig, value: string | boolean) => {
@@ -101,21 +108,73 @@ export default function CertificateEditor({ config, onChange, mentorName }: Cert
                 <div style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'grid', gap: '15px' }}>
                     <h3 style={{ fontSize: '1rem', fontWeight: 800 }}>Personalização Visual</h3>
 
-                    <div>
-                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Cor de Destaque (Ouro/Marca)</label>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <input
-                                type="color"
-                                value={safeConfig.primaryColor}
-                                onChange={(e) => handleChange('primaryColor', e.target.value)}
-                                style={{ width: '50px', height: '40px', border: 'none', background: 'none', cursor: 'pointer' }}
-                            />
-                            <input
-                                type="text"
-                                value={safeConfig.primaryColor}
-                                onChange={(e) => handleChange('primaryColor', e.target.value)}
-                                style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}
-                            />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Cor de Destaque</label>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <input
+                                    type="color"
+                                    value={safeConfig.primaryColor}
+                                    onChange={(e) => handleChange('primaryColor', e.target.value)}
+                                    style={{ width: '40px', height: '40px', border: 'none', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input
+                                    type="text"
+                                    value={safeConfig.primaryColor}
+                                    onChange={(e) => handleChange('primaryColor', e.target.value)}
+                                    style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Cor do Nome</label>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <input
+                                    type="color"
+                                    value={safeConfig.nameColor}
+                                    onChange={(e) => handleChange('nameColor', e.target.value)}
+                                    style={{ width: '40px', height: '40px', border: 'none', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input
+                                    type="text"
+                                    value={safeConfig.nameColor}
+                                    onChange={(e) => handleChange('nameColor', e.target.value)}
+                                    style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Cor do Fundo</label>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <input
+                                    type="color"
+                                    value={safeConfig.backgroundColor}
+                                    onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                    style={{ width: '40px', height: '40px', border: 'none', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input
+                                    type="text"
+                                    value={safeConfig.backgroundColor}
+                                    onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                    style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.8rem' }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Logotipo</label>
+                            <button
+                                onClick={() => handleChange('showLogo', !safeConfig.showLogo)}
+                                style={{
+                                    width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd',
+                                    background: safeConfig.showLogo ? '#f8f9fa' : '#fff', color: safeConfig.showLogo ? '#000' : '#888',
+                                    fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                }}
+                            >
+                                {safeConfig.showLogo ? '✅ Logo Ativado' : '❌ Logo Desativado'}
+                            </button>
                         </div>
                     </div>
 
@@ -171,7 +230,7 @@ export default function CertificateEditor({ config, onChange, mentorName }: Cert
                 <div
                     style={{
                         aspectRatio: '297/210',
-                        background: '#ffffff',
+                        background: safeConfig.backgroundColor,
                         borderRadius: '8px',
                         position: 'relative',
                         color: safeConfig.primaryColor,
@@ -196,9 +255,14 @@ export default function CertificateEditor({ config, onChange, mentorName }: Cert
 
                     {/* Content */}
                     <div style={{ position: 'relative', zIndex: 20, width: '100%', textAlign: 'center' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px', marginBottom: '10px' }}>
-                            <div style={{ textAlign: 'center' }}>
-                                <div style={{ fontSize: '32px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', fontWeight: 'bold', color: safeConfig.primaryColor }}>{safeConfig.title}</div>
+                        <div style={{ display: 'flex', justifyContent: safeConfig.showLogo && logo ? 'space-between' : 'flex-end', alignItems: 'center', padding: '0 40px', marginBottom: '10px' }}>
+                            {safeConfig.showLogo && logo && (
+                                <div style={{ width: '60px', height: '30px', position: 'relative' }}>
+                                    <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                </div>
+                            )}
+                            <div style={{ textAlign: safeConfig.showLogo && logo ? 'right' : 'center', flex: 1 }}>
+                                <div style={{ fontSize: '24px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', fontWeight: 'bold', color: safeConfig.primaryColor, lineHeight: 1 }}>{safeConfig.title}</div>
                                 <div style={{ fontSize: '8px', letterSpacing: '2px', color: '#666' }}>{safeConfig.subtitle}</div>
                             </div>
                         </div>
@@ -209,8 +273,8 @@ export default function CertificateEditor({ config, onChange, mentorName }: Cert
                             fontSize: '28px',
                             fontFamily: 'Times New Roman, serif',
                             fontStyle: 'italic',
-                            color: '#EAB308',
-                            borderBottom: '1px solid #D4AF37',
+                            color: safeConfig.nameColor,
+                            borderBottom: `1px solid ${safeConfig.primaryColor}`,
                             paddingBottom: '5px',
                             marginBottom: '10px',
                             display: 'inline-block',

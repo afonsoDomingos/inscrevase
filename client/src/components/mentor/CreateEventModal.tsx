@@ -280,13 +280,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     const [certificateConfig, setCertificateConfig] = useState({
         enabled: false,
         template: 'modern',
-        primaryColor: '#0d9488',
+        primaryColor: '#D4AF37',
+        backgroundColor: '#ffffff',
+        nameColor: '#EAB308',
         title: 'CERTIFICADO DE PARTICIPAÇÃO',
         subtitle: 'DE CONCLUSÃO',
         description: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
         signerName: '',
         signerRole: 'Mentor',
-        requireCheckIn: false
+        requireCheckIn: false,
+        showLogo: true
     });
 
     // Marketing Social AI States
@@ -3082,6 +3085,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                     config={certificateConfig}
                                                     onChange={setCertificateConfig}
                                                     mentorName={currentUser?.name || ""}
+                                                    logo={logo}
                                                 />
                                             </div>
                                         )}
