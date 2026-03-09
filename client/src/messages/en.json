@@ -101,6 +101,7 @@
         }
     },
     "common": {
+        "step": "Step",
         "language": "English",
         "welcome": "Welcome",
         "login": "Login",

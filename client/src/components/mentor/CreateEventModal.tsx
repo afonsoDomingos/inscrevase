@@ -1486,7 +1486,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             marginBottom: '1rem',
                                             border: '1px solid #FFD70030'
                                         }}>
-                                            1º {t('common.step') || 'Passo'}
+                                            1º Passo
                                         </div>
                                         <h2 style={{
                                             fontSize: isMobile ? '1.5rem' : '2rem',
@@ -1778,7 +1778,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             marginBottom: '0.8rem',
                                             border: '1px solid #FFD70030'
                                         }}>
-                                            2º {t('common.step') || 'Passo'}
+                                            2º Passo
                                         </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.basicInfo')}</h2>
 

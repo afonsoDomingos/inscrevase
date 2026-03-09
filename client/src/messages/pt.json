@@ -105,6 +105,7 @@
         }
     },
     "common": {
+        "step": "Passo",
         "language": "Português",
         "welcome": "Bem-vindo",
         "login": "Entrar",
