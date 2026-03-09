@@ -25,9 +25,7 @@ import {
     Award,
     Clock,
     Loader2,
-    Info,
-    Layout,
-    Users
+    Info
 } from 'lucide-react';
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
