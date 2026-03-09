@@ -1254,16 +1254,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             justifyContent: isMobile ? 'center' : 'flex-start'
                         }} className="no-scrollbar">
                             {[
-                                { id: 0, label: `1º Passo: ${t('events.types.title') || 'Tipo de Evento'}`, icon: <Layout size={18} /> },
-                                { id: 1, label: `2º Passo: ${t('events.steps.info') || 'Informações'}`, icon: <Info size={18} /> },
-                                { id: 2, label: `3º Passo: ${t('events.steps.form') || 'Formulário'}`, icon: <Plus size={18} /> },
-                                { id: 3, label: `4º Passo: Conteúdo do Hub`, icon: <Sparkles size={18} /> },
-                                { id: 4, label: `5º Passo: ${t('events.steps.design') || 'Design'}`, icon: <Palette size={18} /> },
-                                { id: 5, label: `6º Passo: Certificado`, icon: <Award size={18} />, premium: true },
-                                { id: 6, label: `7º Passo: ${t('events.steps.payment') || 'Pagamento'}`, icon: <DollarSign size={18} />, premium: true },
-                                { id: 7, label: `8º Passo: ${t('events.steps.communication') || 'Comunicação'}`, icon: <MessageCircle size={18} /> },
-                                { id: 8, label: `9º Passo: Aulas do Evento`, icon: <BookOpen size={18} />, premium: true },
-                                { id: 9, label: `10º Passo: Parceiros/Co-org`, icon: <Users2 size={18} />, premium: true },
+                                { id: 0, label: t('events.types.title') || 'Tipo de Evento', icon: <Layout size={18} /> },
+                                { id: 1, label: t('events.steps.info') || 'Informações', icon: <Info size={18} /> },
+                                { id: 2, label: t('events.steps.form') || 'Formulário', icon: <Plus size={18} /> },
+                                { id: 3, label: 'Conteúdo do Hub', icon: <Sparkles size={18} /> },
+                                { id: 4, label: t('events.steps.design') || 'Design', icon: <Palette size={18} /> },
+                                { id: 5, label: 'Certificado', icon: <Award size={18} />, premium: true },
+                                { id: 6, label: t('events.steps.payment') || 'Pagamento', icon: <DollarSign size={18} />, premium: true },
+                                { id: 7, label: t('events.steps.communication') || 'Comunicação', icon: <MessageCircle size={18} /> },
+                                { id: 8, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
+                                { id: 9, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
                             ].map((s) => {
                                 const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
