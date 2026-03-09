@@ -100,7 +100,7 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
 }
 
 export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan = 'free', userRole = 'mentor', onUpgradeClick }: CreateEventModalProps) {
-    const { t } = useTranslate();
+    const { t, locale } = useTranslate();
     const [step, setStep] = useState(0);
     const [selectedType, setSelectedType] = useState<string | null>(null);
     const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'superadmin' || userRole === 'mentor'; // Mentor as well for dev purposes or per actual logic
@@ -201,7 +201,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     // Theme State
     const [theme, setTheme] = useState({
         primaryColor: '#0d9488',
-        style: 'luxury',
+        style: 'luxury' as const,
         backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
         fontFamily: 'Inter'
     });
@@ -531,13 +531,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                     { id: '2', label: t('events.defaultFieldEmail'), type: 'email', required: true }
                 ],
                 eventType: 'modeOnline',
-                videoOrientation: 'vertical' as const,
-                theme: {
-                    style: 'luxury' as const,
-                    primaryColor: '#FFD700',
-                    backgroundColor: 'linear-gradient(135deg, #1a1a1b 0%, #111 100%)',
-                    fontFamily: 'Outfit'
-                }
+                videoOrientation: 'vertical' as const
             }
         },
         aulaaberta: {
@@ -634,6 +628,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             signerName: '',
             signerRole: 'Mentor',
             requireCheckIn: false
+        });
+        setTheme({
+            primaryColor: '#0d9488',
+            style: 'luxury' as const,
+            backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
+            fontFamily: 'Inter'
         });
         toast.info('Formulário reiniciado.');
     };
