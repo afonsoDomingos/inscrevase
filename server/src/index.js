@@ -150,6 +150,7 @@ const limiter = rateLimit({
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
     message: { message: 'Muitas requisições. Por favor, aguarde alguns minutos e tente novamente.' },
     handler: (req, res) => {
+        console.warn(`[SECURITY] Rate limit excedido: IP ${req.ip} tentou acessar ${req.originalUrl}`);
         res.status(429).json({ message: 'Muitas requisições. Por favor, aguarde alguns minutos e tente novamente.' });
     }
 });
@@ -161,6 +162,7 @@ const authLimiter = rateLimit({
     max: 100, // Limit each IP to 100 auth requests per hour
     message: { message: 'Muitas tentativas de autenticação. Por favor, tente novamente em uma hora.' },
     handler: (req, res) => {
+        console.warn(`[SECURITY] Auth Rate limit excedido: IP ${req.ip} tentou acesso em ${req.originalUrl}`);
         res.status(429).json({ message: 'Muitas tentativas de autenticação. Por favor, tente novamente em uma hora.' });
     }
 });
@@ -174,7 +176,7 @@ app.use(express.json()); // No more verify hack needed since webhook is handled 
 app.use(require('./config/passport').initialize());
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/forms', require('./routes/formRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));

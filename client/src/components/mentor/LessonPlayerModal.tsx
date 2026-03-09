@@ -7,7 +7,9 @@ import {
     Heart,
     MessageCircle,
     Send,
-    Trash2
+    Trash2,
+    Lock,
+    Shield
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -31,6 +33,7 @@ interface Lesson {
     duration: number;
     category: string;
     views: number;
+    isLocked?: boolean;
     order?: number;
     targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
     comments?: Comment[];
@@ -325,163 +328,234 @@ export default function LessonPlayerModal({ lesson, onClose, onComplete }: Lesso
                     flexDirection: isMobile ? 'column' : 'row',
                     overflow: isMobile ? 'visible' : 'hidden'
                 }}>
-                    {/* Video Player Section */}
-                    <div style={{
-                        flex: isMobile ? 'none' : 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        background: 'black',
-                        position: 'relative',
-                        aspectRatio: isMobile ? '16/9' : 'auto'
-                    }}>
-                        {(lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be') || lesson.videoUrl.includes('vimeo') || lesson.videoUrl.includes('drive.google.com')) ? (
-                            <>
-                                <iframe
-                                    src={
-                                        lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be')
-                                            ? lesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
-                                            : lesson.videoUrl.includes('vimeo.com/')
-                                                ? lesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')
-                                                : lesson.videoUrl.includes('drive.google.com')
-                                                    ? lesson.videoUrl.replace('/view', '/preview').replace('/edit', '/preview').replace('usp=sharing', '')
-                                                    : lesson.videoUrl
-                                    }
-                                    style={{ width: '100%', height: '100%', border: 'none' }}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                />
-                                {!isCompleted && (
-                                    <button
-                                        onClick={markAsCompleted}
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '20px',
-                                            right: '20px',
-                                            padding: '10px 20px',
-                                            background: '#D4AF37',
-                                            color: '#000',
-                                            border: 'none',
-                                            borderRadius: '8px',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer',
-                                            zIndex: 10
-                                        }}
-                                    >
-                                        Marcar como Concluída
-                                    </button>
-                                )}
-                            </>
-                        ) : (
-                            <video
-                                ref={videoRef}
-                                src={lesson.videoUrl}
-                                style={{ width: '100%', height: '100%' }}
-                                onTimeUpdate={handleTimeUpdate}
-                                controlsList="nodownload"
-                                controls
-                            />
-                        )}
-                        {/* Optional Custom Controls Overlay could go here if native controls aren't enough */}
-                    </div>
-
-                    {/* Comments Sidebar (Collapsible) */}
-                    <AnimatePresence>
-                        {showComments && (
-                            <motion.div
-                                initial={isMobile ? { height: 0, opacity: 0 } : { width: 0, opacity: 0 }}
-                                animate={isMobile ? { height: 'auto', opacity: 1 } : { width: '350px', opacity: 1 }}
-                                exit={isMobile ? { height: 0, opacity: 0 } : { width: 0, opacity: 0 }}
+                    {/* Lock Screen if Lesson is Locked and User is NOT Admin */}
+                    {lesson.isLocked && currentUser?.role !== 'admin' && currentUser?.role !== 'SuperAdmin' ? (
+                        <div style={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: '#111',
+                            padding: '2rem',
+                            textAlign: 'center',
+                            gap: '1.5rem'
+                        }}>
+                            <div style={{
+                                width: '80px',
+                                height: '80px',
+                                background: 'rgba(245, 158, 11, 0.1)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '1px solid rgba(245, 158, 11, 0.3)'
+                            }}>
+                                <Lock size={40} color="#f59e0b" />
+                            </div>
+                            <div>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', marginBottom: '0.5rem' }}>Aula Restrita</h3>
+                                <p style={{ color: '#888', maxWidth: '400px', lineHeight: 1.5 }}>
+                                    Esta aula está temporariamente bloqueada. Complete os pré-requisitos ou contate o tutor.
+                                </p>
+                            </div>
+                            <button
+                                onClick={onClose}
                                 style={{
-                                    borderLeft: isMobile ? 'none' : '1px solid #333',
-                                    borderTop: isMobile ? '1px solid #333' : 'none',
-                                    background: '#1a1a1a',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    height: isMobile ? 'auto' : '100%',
-                                    minHeight: isMobile ? '400px' : 'auto'
+                                    padding: '0.8rem 2rem',
+                                    background: 'transparent',
+                                    border: '1px solid #333',
+                                    color: '#fff',
+                                    borderRadius: '12px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
                                 }}
                             >
-                                <div style={{ padding: '1.5rem', borderBottom: '1px solid #333', color: 'white', fontWeight: 'bold' }}>
-                                    Comentários ({comments.length})
-                                </div>
-
-                                <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
-                                    {comments.length === 0 ? (
-                                        <div style={{ textAlign: 'center', color: '#666', marginTop: '2rem' }}>
-                                            <p>Seja o primeiro a comentar!</p>
-                                        </div>
-                                    ) : (
-                                        comments.map((comment) => (
-                                            <div key={comment._id} style={{ marginBottom: '1.5rem', color: '#e5e5e5' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                                    <span style={{ fontWeight: '600', fontSize: '0.9rem', color: '#D4AF37' }}>{comment.userName}</span>
-                                                    <span style={{ fontSize: '0.75rem', color: '#666' }}>
-                                                        {new Date(comment.createdAt).toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                                <p style={{ fontSize: '0.9rem', lineHeight: '1.4', color: '#ccc' }}>{comment.text}</p>
-                                                {(currentUser && (currentUser.id === comment.user || currentUser.role === 'admin')) && (
-                                                    <button
-                                                        onClick={() => handleDeleteComment(comment._id)}
-                                                        style={{
-                                                            background: 'transparent',
-                                                            border: 'none',
-                                                            color: '#666',
-                                                            fontSize: '0.75rem',
-                                                            cursor: 'pointer',
-                                                            padding: 0,
-                                                            marginTop: '4px',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '4px'
-                                                        }}
-                                                    >
-                                                        <Trash2 size={12} /> Excluir
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                <form onSubmit={handleCommentSubmit} style={{ padding: '1rem', borderTop: '1px solid #333' }}>
-                                    <div style={{ position: 'relative' }}>
-                                        <textarea
-                                            value={newComment}
-                                            onChange={(e) => setNewComment(e.target.value)}
-                                            placeholder="Escreva um comentário..."
-                                            style={{
-                                                width: '100%',
-                                                background: '#2a2a2a',
-                                                border: '1px solid #333',
-                                                borderRadius: '12px',
-                                                padding: '12px 40px 12px 12px',
-                                                color: 'white',
-                                                resize: 'none',
-                                                height: '50px'
-                                            }}
-                                        />
-                                        <button
-                                            type="submit"
-                                            disabled={!newComment.trim()}
-                                            style={{
-                                                position: 'absolute',
-                                                right: '8px',
-                                                top: '50%',
-                                                transform: 'translateY(-50%)',
-                                                background: 'transparent',
-                                                border: 'none',
-                                                color: newComment.trim() ? '#D4AF37' : '#666',
-                                                cursor: newComment.trim() ? 'pointer' : 'not-allowed'
-                                            }}
-                                        >
-                                            <Send size={18} />
-                                        </button>
+                                Voltar
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Video Player Section */}
+                            <div style={{
+                                flex: isMobile ? 'none' : 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                background: 'black',
+                                position: 'relative',
+                                aspectRatio: isMobile ? '16/9' : 'auto'
+                            }}>
+                                {/* Admin Badge if Locked */}
+                                {lesson.isLocked && (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '20px',
+                                        left: '20px',
+                                        zIndex: 100,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        background: 'rgba(245, 158, 11, 0.9)',
+                                        color: '#000',
+                                        padding: '6px 14px',
+                                        borderRadius: '100px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 900,
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                                    }}>
+                                        <Shield size={14} /> ACESSO ADMINISTRADOR (AULA BLOQUEADA)
                                     </div>
-                                </form>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                )}
+                                {(lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be') || lesson.videoUrl.includes('vimeo') || lesson.videoUrl.includes('drive.google.com')) ? (
+                                    <>
+                                        <iframe
+                                            src={
+                                                lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be')
+                                                    ? lesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')
+                                                    : lesson.videoUrl.includes('vimeo.com/')
+                                                        ? lesson.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')
+                                                        : lesson.videoUrl.includes('drive.google.com')
+                                                            ? lesson.videoUrl.replace('/view', '/preview').replace('/edit', '/preview').replace('usp=sharing', '')
+                                                            : lesson.videoUrl
+                                            }
+                                            style={{ width: '100%', height: '100%', border: 'none' }}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                        {!isCompleted && (
+                                            <button
+                                                onClick={markAsCompleted}
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '20px',
+                                                    right: '20px',
+                                                    padding: '10px 20px',
+                                                    background: '#D4AF37',
+                                                    color: '#000',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer',
+                                                    zIndex: 10
+                                                }}
+                                            >
+                                                Marcar como Concluída
+                                            </button>
+                                        )}
+                                    </>
+                                ) : (
+                                    <video
+                                        ref={videoRef}
+                                        src={lesson.videoUrl}
+                                        style={{ width: '100%', height: '100%' }}
+                                        onTimeUpdate={handleTimeUpdate}
+                                        controlsList="nodownload"
+                                        controls
+                                    />
+                                )}
+                                {/* Optional Custom Controls Overlay could go here if native controls aren't enough */}
+                            </div>
+
+                            {/* Comments Sidebar (Collapsible) */}
+                            <AnimatePresence>
+                                {showComments && (
+                                    <motion.div
+                                        initial={isMobile ? { height: 0, opacity: 0 } : { width: 0, opacity: 0 }}
+                                        animate={isMobile ? { height: 'auto', opacity: 1 } : { width: '350px', opacity: 1 }}
+                                        exit={isMobile ? { height: 0, opacity: 0 } : { width: 0, opacity: 0 }}
+                                        style={{
+                                            borderLeft: isMobile ? 'none' : '1px solid #333',
+                                            borderTop: isMobile ? '1px solid #333' : 'none',
+                                            background: '#1a1a1a',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: isMobile ? 'auto' : '100%',
+                                            minHeight: isMobile ? '400px' : 'auto'
+                                        }}
+                                    >
+                                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #333', color: 'white', fontWeight: 'bold' }}>
+                                            Comentários ({comments.length})
+                                        </div>
+
+                                        <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+                                            {comments.length === 0 ? (
+                                                <div style={{ textAlign: 'center', color: '#666', marginTop: '2rem' }}>
+                                                    <p>Seja o primeiro a comentar!</p>
+                                                </div>
+                                            ) : (
+                                                comments.map((comment) => (
+                                                    <div key={comment._id} style={{ marginBottom: '1.5rem', color: '#e5e5e5' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                            <span style={{ fontWeight: '600', fontSize: '0.9rem', color: '#D4AF37' }}>{comment.userName}</span>
+                                                            <span style={{ fontSize: '0.75rem', color: '#666' }}>
+                                                                {new Date(comment.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.9rem', lineHeight: '1.4', color: '#ccc' }}>{comment.text}</p>
+                                                        {(currentUser && (currentUser.id === comment.user || currentUser.role === 'admin')) && (
+                                                            <button
+                                                                onClick={() => handleDeleteComment(comment._id)}
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                    color: '#666',
+                                                                    fontSize: '0.75rem',
+                                                                    cursor: 'pointer',
+                                                                    padding: 0,
+                                                                    marginTop: '4px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '4px'
+                                                                }}
+                                                            >
+                                                                <Trash2 size={12} /> Excluir
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+
+                                        <form onSubmit={handleCommentSubmit} style={{ padding: '1rem', borderTop: '1px solid #333' }}>
+                                            <div style={{ position: 'relative' }}>
+                                                <textarea
+                                                    value={newComment}
+                                                    onChange={(e) => setNewComment(e.target.value)}
+                                                    placeholder="Escreva um comentário..."
+                                                    style={{
+                                                        width: '100%',
+                                                        background: '#2a2a2a',
+                                                        border: '1px solid #333',
+                                                        borderRadius: '12px',
+                                                        padding: '12px 40px 12px 12px',
+                                                        color: 'white',
+                                                        resize: 'none',
+                                                        height: '50px'
+                                                    }}
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    disabled={!newComment.trim()}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        right: '8px',
+                                                        top: '50%',
+                                                        transform: 'translateY(-50%)',
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: newComment.trim() ? '#D4AF37' : '#666',
+                                                        cursor: newComment.trim() ? 'pointer' : 'not-allowed'
+                                                    }}
+                                                >
+                                                    <Send size={18} />
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </>
+                    )}
                 </div>
             </motion.div>
         </motion.div>

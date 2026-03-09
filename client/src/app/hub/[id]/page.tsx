@@ -11,6 +11,7 @@ import {
     ArrowLeft,
     Share2,
     ShieldCheck,
+    Shield,
     Instagram,
     Linkedin,
     Loader2,
@@ -151,6 +152,7 @@ interface HubLesson {
     thumbnailUrl?: string;
     duration: number;
     order: number;
+    isLocked?: boolean;
     progress?: {
         completed: boolean;
         watchTime: number;
@@ -325,6 +327,8 @@ function HubContent() {
     };
 
     const isLessonLocked = (lesson: HubLesson, index: number) => {
+        if (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') return false;
+        if (lesson.isLocked) return true;
         if (index === 0) return false;
         const previousLesson = lessons[index - 1];
         return !previousLesson.progress?.completed;
@@ -397,8 +401,8 @@ function HubContent() {
         ? `${bgOverlay}, url('${form.hubBackgroundImage}')`
         : (form.theme?.backgroundImage ? `${bgOverlay}, url("${form.theme.backgroundImage}")` : (isGradient ? rawBgColor : (isLuxury ? `${bgOverlay}, url("/bio-organic.png")` : rawBgColor)));
 
-    const textColor = isDark ? '#ffffff' : '#111111';
-    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#444444';
+    const textColor = isDark ? '#ffffff' : '#000000';
+    const secondaryTextColor = isDark ? 'rgba(255,255,255,0.7)' : '#222222';
     const cardBg = isDark ? 'rgba(20, 20, 20, 0.75)' : '#ffffff';
     const cardBorder = isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)';
     const navBg = isDark ? 'rgba(10, 10, 10, 0.85)' : 'rgba(255, 255, 255, 0.85)';
@@ -504,7 +508,7 @@ function HubContent() {
                         {isApproved ? t('events.confirmedStatus') : t('events.processingStatus')}
                     </motion.div>
                     <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-2px', marginBottom: '15px', color: textColor, lineHeight: 1.1, textShadow: isDark ? '0 10px 30px rgba(0,0,0,0.5)' : 'none' }}>{form.title}</h1>
-                    <p style={{ color: '#d4d4d8', fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>{t('hub.exclusiveAccess')}</p>
+                    <p style={{ color: secondaryTextColor, fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: isDark ? '0 2px 10px rgba(0,0,0,0.3)' : 'none' }}>{t('hub.exclusiveAccess')}</p>
                 </div>
 
                 {/* Live Stream Hero - Prioridade: Live -> Espera -> Default Aquecimento */}
@@ -899,9 +903,16 @@ function HubContent() {
                                                     {/* Overlays */}
                                                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }} />
 
+                                                    {/* Manual Lock indicator for Admin */}
+                                                    {lesson.isLocked && (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') && (
+                                                        <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(245, 158, 11, 0.9)', color: '#000', padding: '4px 10px', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '5px', zIndex: 10 }}>
+                                                            <Shield size={12} /> BLOQUEADA
+                                                        </div>
+                                                    )}
+
                                                     {locked && (
                                                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <div style={{ color: '#fff', fontSize: '2rem' }}>🔒</div>
+                                                            <div style={{ color: '#fff', fontSize: '2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'}</div>
                                                         </div>
                                                     )}
 
@@ -1051,7 +1062,7 @@ function HubContent() {
                                                 </a>
                                             ) : (
                                                 <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.availableAfterEvent')}>
-                                                    <div style={{ fontSize: '1.2rem' }}>🔒</div>
+                                                    <div style={{ fontSize: '1.2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'}</div>
                                                 </div>
                                             )}
                                         </div>
@@ -1120,7 +1131,7 @@ function HubContent() {
                                     </a>
                                 )}
                                 <button style={{ background: '#f8f8f8', color: '#aaa', padding: '16px', borderRadius: '100px', border: 'none', fontWeight: 700, fontSize: '0.9rem', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                    🔒 {t('hub.addToWallet')}
+                                    {currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'} {t('hub.addToWallet')}
                                 </button>
                                 {isApproved && form.certificateConfig?.enabled !== false && (
                                     (stats.total > 0 && stats.completed === stats.total) || (form.eventDate && new Date() >= new Date(form.eventDate)) ? (

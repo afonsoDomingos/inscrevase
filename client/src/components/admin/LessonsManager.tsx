@@ -16,6 +16,8 @@ import {
     Video,
     Clock,
     CheckCircle,
+    Lock,
+    Unlock,
     Image as ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
@@ -30,6 +32,7 @@ interface Lesson {
     duration: number;
     category: 'basico' | 'intermediario' | 'avancado';
     isPublished: boolean;
+    isLocked: boolean;
     views: number;
     order: number;
     targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
@@ -67,6 +70,7 @@ export default function LessonsManager() {
         duration: 0,
         category: 'basico' as 'basico' | 'intermediario' | 'avancado',
         isPublished: false,
+        isLocked: false,
         order: 0,
         targetAudience: 'mentors' as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all'
     });
@@ -238,6 +242,21 @@ export default function LessonsManager() {
         }
     };
 
+    const toggleLock = async (id: string) => {
+        try {
+            const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+            await fetch(`${API_URL}/lessons/${id}/toggle-lock`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            fetchLessons();
+        } catch (error) {
+            console.error('Error toggling lock:', error);
+        }
+    };
+
     const openModal = (lesson?: Lesson) => {
         if (lesson) {
             setEditingLesson(lesson);
@@ -249,6 +268,7 @@ export default function LessonsManager() {
                 duration: lesson.duration,
                 category: lesson.category,
                 isPublished: lesson.isPublished,
+                isLocked: lesson.isLocked || false,
                 order: lesson.order,
                 targetAudience: lesson.targetAudience || 'mentors'
             });
@@ -262,6 +282,7 @@ export default function LessonsManager() {
                 duration: 0,
                 category: 'basico',
                 isPublished: false,
+                isLocked: false,
                 order: 0,
                 targetAudience: 'mentors'
             });
@@ -413,9 +434,10 @@ export default function LessonsManager() {
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Aula</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Categoria</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Duração</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Visualizações</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Viz.</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Público</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Status</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Acesso</th>
                             <th style={{ padding: '1rem', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Ações</th>
                         </tr>
                     </thead>
@@ -510,6 +532,23 @@ export default function LessonsManager() {
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
+                                    <span style={{
+                                        padding: '4px 12px',
+                                        borderRadius: '20px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: '600',
+                                        background: lesson.isLocked ? '#fee2e2' : '#dcfce7',
+                                        color: lesson.isLocked ? '#ef4444' : '#166534',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        width: 'fit-content'
+                                    }}>
+                                        {lesson.isLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                                        {lesson.isLocked ? 'Bloqueada' : 'Livre'}
+                                    </span>
+                                </td>
+                                <td style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                         <button
                                             onClick={() => togglePublish(lesson._id)}
@@ -524,6 +563,20 @@ export default function LessonsManager() {
                                             title={lesson.isPublished ? 'Despublicar' : 'Publicar'}
                                         >
                                             {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                        <button
+                                            onClick={() => toggleLock(lesson._id)}
+                                            style={{
+                                                padding: '8px',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                cursor: 'pointer',
+                                                color: lesson.isLocked ? '#ef4444' : '#666'
+                                            }}
+                                            title={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}
+                                        >
+                                            {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
                                         </button>
                                         <button
                                             onClick={() => openModal(lesson)}
@@ -1001,17 +1054,33 @@ export default function LessonsManager() {
                                 </div>
 
                                 {/* Published */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <input
-                                        type="checkbox"
-                                        id="published"
-                                        checked={formData.isPublished}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-                                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                                    />
-                                    <label htmlFor="published" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer' }}>
-                                        Publicar aula imediatamente
-                                    </label>
+                                <div style={{ display: 'flex', gap: '2rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <input
+                                            type="checkbox"
+                                            id="published"
+                                            checked={formData.isPublished}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
+                                            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                        />
+                                        <label htmlFor="published" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer' }}>
+                                            Publicar aula
+                                        </label>
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <input
+                                            type="checkbox"
+                                            id="locked"
+                                            checked={formData.isLocked}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, isLocked: e.target.checked }))}
+                                            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                        />
+                                        <label htmlFor="locked" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            {formData.isLocked ? <Lock size={14} color="#ef4444" /> : <Unlock size={14} color="#10b981" />}
+                                            Bloquear aula (Premium/Restrita)
+                                        </label>
+                                    </div>
                                 </div>
 
                                 {/* Actions */}

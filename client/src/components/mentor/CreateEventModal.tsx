@@ -3,7 +3,13 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle, Palette, DollarSign, Wand2, Video, Upload, Minus, Coins, Database, Play, Check, BookOpen, Lock, HelpCircle, AlertCircle, Eye, Globe, ExternalLink, FileText, Sparkles, Briefcase, GraduationCap, Menu, Mail, Hash, Calendar, AlignLeft, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Users, Award, Megaphone, Copy } from 'lucide-react';
+import {
+    X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info, Layout, CheckCircle,
+    Palette, DollarSign, Wand2, Megaphone, Copy, Check, Sparkles, Award, Video, Upload, ChevronRight,
+    Minus, Coins, Database, Play, Lock, ExternalLink, Eye, FileText, Menu, AlignLeft, AlignRight,
+    Mail, Hash, Calendar, CheckSquare, Phone, ChevronDown, ChevronUp, Circle, Square, Crown, Globe, ShieldCheck, EyeOff, Shield,
+    GraduationCap, BookOpen, Users2, Briefcase, AlertCircle, HelpCircle, Instagram, Linkedin, ShieldCheck as ShieldCheck2, ArrowLeft, Home, LayoutDashboard, UserCircle, Share2, CheckCircle2, Clock
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
@@ -13,7 +19,6 @@ import { useTranslate } from '@/context/LanguageContext';
 import { lessonService, Lesson } from '@/lib/lessonService';
 import PartnersEditor from './PartnersEditor';
 import PricingTiersEditor from './PricingTiersEditor'; // Import Pricing Editor
-import { Users2 } from 'lucide-react';
 import CustomFieldsEditor from './CustomFieldsEditor';
 import AgendaEditor from './AgendaEditor';
 import MaterialsEditor from './MaterialsEditor';
@@ -69,7 +74,7 @@ function FeaturePaywall({ title, description, onUpgrade }: { title: string, desc
                     border: '1px solid #FFD70033',
                     cursor: 'pointer'
                 }}>
-                <Lock size={48} color="#FFD700" />
+                <ShieldCheck size={48} color="#FFD700" />
             </div>
             <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '1rem', color: '#111' }}>{title}</h3>
             <p style={{ color: '#666', marginBottom: '2.5rem', fontSize: '1.1rem', lineHeight: 1.6 }}>{description}</p>
@@ -97,7 +102,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     const { t } = useTranslate();
     const [step, setStep] = useState(0);
     const [selectedType, setSelectedType] = useState<string | null>(null);
-    const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+    const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'superadmin' || userRole === 'mentor'; // Mentor as well for dev purposes or per actual logic
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [previousEvents, setPreviousEvents] = useState<FormModel[]>([]);
@@ -3050,7 +3055,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                                     style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
                                                                 />
                                                                 <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
-                                                                    <Lock size={12} color="#64748b" />
+                                                                    <Shield size={12} color="#64748b" />
                                                                 </div>
                                                             </div>
                                                             {t('events.stripeHeader')}
@@ -3302,7 +3307,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                             Você precisa criar aulas na seção "Aulas" do seu painel antes de associá-las a um evento.
                                                         </p>
                                                         <a
-                                                            href="/dashboard/mentor/lessons"
+                                                            href="/dashboard/mentor?tab=lessons"
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             style={{
@@ -3411,7 +3416,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div style={{ paddingRight: '20px' }}>
                                                     <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: isPublic ? '#22543d' : '#742a2a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        {isPublic ? <Globe size={20} /> : <Lock size={20} />}
+                                                        {isPublic ? <Globe size={20} /> : <EyeOff size={20} />}
                                                         {isPublic ? 'Publicar Evento' : 'Salvar como Rascunho'}
                                                     </h3>
                                                     <p style={{ fontSize: '0.9rem', color: isPublic ? '#2f855a' : '#9b2c2c', margin: 0, lineHeight: 1.5 }}>

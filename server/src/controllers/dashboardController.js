@@ -36,6 +36,7 @@ exports.getAdminStats = async (req, res) => {
         res.json({
             mentors: totalMentors,
             participants: totalParticipants,
+            totalUsers: totalUsers,
             forms: totalForms,
             submissions: totalSubmissions,
             approved: approvedSubmissions,

@@ -313,7 +313,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
 
                         {/* Input Area */}
                         <div style={{ padding: '20px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
-                            {!isApproved ? (
+                            {(!isApproved && currentUser?.role?.toLowerCase() !== 'admin' && currentUser?.role?.toLowerCase() !== 'superadmin') ? (
                                 <div style={{ padding: '20px', background: '#fff8f0', border: '1px solid #ffe8cc', borderRadius: '16px', textAlign: 'center' }}>
                                     <div style={{ color: '#f59e0b', marginBottom: '8px' }}><Lock size={20} style={{ margin: '0 auto' }} /></div>
                                     <h4 style={{ margin: '0 0 5px', fontSize: '0.9rem', fontWeight: 800 }}>{t('hub.chatLockedTitle')}</h4>

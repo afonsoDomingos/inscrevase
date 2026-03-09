@@ -367,7 +367,7 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                     <div style={{ margin: '3rem 0', background: 'linear-gradient(135deg, #000 0%, #333 100%)', borderRadius: '20px', padding: '2rem 1.5rem', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', zIndex: 10 }}>
                             <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.5rem', color: '#FFD700' }}>Organize eventos como um profissional</h3>
-                            <p style={{ opacity: 0.9, marginBottom: '1.5rem', fontSize: '0.95rem' }}>Use a mesma plataforma que os maiores organizadores de Moçambique.</p>
+                            <p style={{ opacity: 0.9, marginBottom: '1.5rem', fontSize: '0.95rem' }}>Use a mesma plataforma que os maiores organizadores a nível global.</p>
                             <Link href="/cadastro" style={{ display: 'inline-block', background: '#FFD700', color: '#000', padding: '12px 30px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none' }}>
                                 Começar Agora
                             </Link>

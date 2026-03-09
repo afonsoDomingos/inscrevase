@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const CommunicationLogSchema = new mongoose.Schema({
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     recipientEmails: [{ type: String }],
     subject: { type: String, required: true },

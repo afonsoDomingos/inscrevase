@@ -117,6 +117,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const { onlineUsers } = useSocket();
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
@@ -333,7 +334,12 @@ export default function AdminDashboard() {
         return null;
     }
 
+    const totalUsers = (stats?.mentors || 0) + (stats?.participants || 0);
+
     const vitalCards = [
+        { label: 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
+        { label: 'Experts / Mentors', value: showValues ? stats?.mentors || 0 : '••', icon: <Trophy size={24} />, color: '#D4AF37', tab: 'users' },
+        { label: 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
         { label: 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
@@ -384,11 +390,17 @@ export default function AdminDashboard() {
             />
 
             {/* Sidebar */}
-            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''} ${isDesktopSidebarCollapsed ? 'collapsed' : ''}`}>
                 <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
-                    <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
-                        Inscreva<span className="gold-text">.se</span>
-                    </h2>
+                    {!isDesktopSidebarCollapsed ? (
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
+                            Inscreva<span className="gold-text">.se</span>
+                        </h2>
+                    ) : (
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#FFD700' }}>
+                            I.
+                        </h2>
+                    )}
                 </div>
 
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
@@ -429,9 +441,13 @@ export default function AdminDashboard() {
                                     }}
                                 />
                             )}
-                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7 }}>{item.icon}</div>
-                            {item.label}
-                            {item.id === 'support' && unreadCount > 0 && (
+                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                            {!isDesktopSidebarCollapsed && (
+                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {item.label}
+                                </span>
+                            )}
+                            {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
                                 <span style={{
                                     marginLeft: 'auto',
                                     background: '#ef4444',
@@ -458,8 +474,9 @@ export default function AdminDashboard() {
                     style={{
                         display: 'flex',
                         alignItems: 'center',
+                        justifyContent: isDesktopSidebarCollapsed ? 'center' : 'flex-start',
                         gap: '12px',
-                        padding: '0.75rem 2rem',
+                        padding: isDesktopSidebarCollapsed ? '0.75rem' : '0.75rem 2rem',
                         width: '100%',
                         border: 'none',
                         background: 'transparent',
@@ -474,7 +491,7 @@ export default function AdminDashboard() {
                     onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                     <HelpCircle size={20} />
-                    {t('dashboard.settings.guidedTour')}
+                    {!isDesktopSidebarCollapsed && t('dashboard.settings.guidedTour')}
                 </button>
 
                 <div style={{ padding: '1.5rem' }}>
@@ -497,7 +514,7 @@ export default function AdminDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <Settings size={18} /> {t('events.profile.title')}
+                        <Settings size={18} /> {!isDesktopSidebarCollapsed && t('events.profile.title')}
                     </button>
                     <button
                         onClick={() => authService.logout()}
@@ -517,13 +534,13 @@ export default function AdminDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <LogOut size={18} /> {t('common.logout')}
+                        <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
                     </button>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="admin-main">
+            <main className={`admin-main ${isDesktopSidebarCollapsed ? 'expanded' : ''}`}>
                 {/* Header */}
                 <header className="admin-header" style={{
                     display: 'flex',
@@ -533,31 +550,40 @@ export default function AdminDashboard() {
                     marginBottom: '3rem',
                     flexWrap: 'wrap'
                 }}>
-                    <div style={{ flex: '1 1 300px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
-                            <ShieldAlert size={16} />
-                            <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{(user.role === 'admin' || user.role === 'SuperAdmin') ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
-                        </div>
-                        <motion.h1
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            style={{
-                                fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-                                fontWeight: 800,
-                                fontFamily: 'var(--font-playfair)',
-                                lineHeight: 1.1,
-                                color: '#1a1a1a',
-                                overflowWrap: 'break-word',
-                                wordWrap: 'break-word',
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: '8px'
-                            }}
+                    <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                        <button
+                            className="desktop-sidebar-toggle"
+                            onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
+                            title={isDesktopSidebarCollapsed ? "Mostrar Menu" : "Ocultar Menu"}
                         >
-                            <span className="gold-text" style={{ wordBreak: 'break-word' }}>
-                                {user.name?.split(' ')[0] || 'Admin'}
-                            </span>
-                        </motion.h1>
+                            <Menu size={24} />
+                        </button>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
+                                <ShieldAlert size={16} />
+                                <span style={{ fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>{(user.role === 'admin' || user.role === 'SuperAdmin') ? t('dashboard.adminDashboard') : t('dashboard.mentorDashboard')}</span>
+                            </div>
+                            <motion.h1
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                style={{
+                                    fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
+                                    fontWeight: 800,
+                                    fontFamily: 'var(--font-playfair)',
+                                    lineHeight: 1.1,
+                                    color: '#1a1a1a',
+                                    overflowWrap: 'break-word',
+                                    wordWrap: 'break-word',
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '8px'
+                                }}
+                            >
+                                <span className="gold-text" style={{ wordBreak: 'break-word' }}>
+                                    {user.name?.split(' ')[0] || 'Admin'}
+                                </span>
+                            </motion.h1>
+                        </div>
                     </div>
 
                     <div className="admin-actions-group" style={{
@@ -1745,10 +1771,10 @@ export default function AdminDashboard() {
                     id="admin-support-fab"
                     style={{
                         position: 'fixed',
-                        bottom: '140px',
-                        right: '25px',
-                        width: '50px',
-                        height: '50px',
+                        bottom: '130px',
+                        right: '20px',
+                        width: '40px',
+                        height: '40px',
                         borderRadius: '50%',
                         background: '#000',
                         color: '#FFD700',
@@ -1765,7 +1791,7 @@ export default function AdminDashboard() {
                     onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     title="Central de Suporte"
                 >
-                    <HelpCircle size={28} />
+                    <HelpCircle size={24} />
                 </button>
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="admin" />

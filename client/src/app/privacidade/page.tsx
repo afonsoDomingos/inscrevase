@@ -108,16 +108,21 @@ export default function PrivacyPolicy() {
                     <div style={{ background: '#f8fafc', padding: '40px', borderRadius: '32px', border: '1px solid #f1f5f9' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                             <Lock color="#FFD700" />
-                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Google AdSense e Cookies</h2>
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Google AdSense e Publicidade</h2>
                         </div>
                         <p>
-                            A nossa plataforma utiliza o <strong>Google AdSense</strong> para exibir anúncios. É importante saber que:
+                            A nossa plataforma utiliza o <strong>Google AdSense</strong>, um serviço de publicidade da <strong>Google LLC</strong> (1600 Amphitheatre Parkway, Mountain View, CA 94043, EUA), para exibir anúncios. Ao visitar o nosso site, concorda que a Google possa exibir anúncios com base nos seus interesses.
                         </p>
                         <ul>
-                            <li>Fornecedores de terceiros, incluindo a Google, utilizam cookies para apresentar anúncios com base em visitas anteriores do utilizador ao seu website ou a outros websites.</li>
-                            <li>Com a utilização de cookies de publicidade, a Google e os parceiros dela podem apresentar anúncios aos utilizadores com base nas visitas que estes fizeram ao seu site e/ou a outros sites na Internet.</li>
-                            <li>Os utilizadores podem desativar a publicidade personalizada ao aceder às <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>Definições de Anúncios</a>.</li>
+                            <li><strong>Cookies DART:</strong> A Google utiliza o cookie DART para veicular anúncios aos utilizadores com base na visita a este site e a outros sites na Internet. Os utilizadores podem desativar o uso do cookie DART visitando a <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>Política de Privacidade de anúncios e conteúdo da Google</a>.</li>
+                            <li><strong>Cookies de terceiros:</strong> Fornecedores de terceiros, incluindo a Google, utilizam cookies para apresentar anúncios com base em visitas anteriores do utilizador a este website ou a outros websites.</li>
+                            <li><strong>Publicidade personalizada:</strong> Com a utilização de cookies de publicidade, a Google e os parceiros podem apresentar anúncios personalizados com base nas suas visitas a este e outros sites na Internet.</li>
+                            <li><strong>Como desativar:</strong> Os utilizadores podem desativar a publicidade personalizada acedendo às <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>Definições de Anúncios da Google</a> ou através do <a href="https://optout.aboutads.info/" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>Network Advertising Initiative opt-out</a>.</li>
+                            <li><strong>Política completa do Google:</strong> Para mais informações, consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>Política de Privacidade da Google</a>.</li>
                         </ul>
+                        <p style={{ marginTop: '1rem', fontSize: '0.95rem', color: '#64748b' }}>
+                            O uso do Google AdSense por esta plataforma está em conformidade com as <a href="https://support.google.com/adsense/answer/48182" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>Políticas do Programa AdSense</a>.
+                        </p>
                     </div>
 
                     <div>
@@ -132,7 +137,7 @@ export default function PrivacyPolicy() {
 
                     <div style={{ borderTop: '1px solid #eee', paddingTop: '40px', textAlign: 'center' }}>
                         <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
-                            Última atualização: 26 de Janeiro de 2026.
+                            Última atualização: 4 de Março de 2026.
                         </p>
                     </div>
                 </div>

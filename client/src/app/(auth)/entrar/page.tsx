@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
+import { Mail, Key, ArrowRight, Loader2, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -248,7 +248,7 @@ function LoginContent() {
                                 </Link>
                             </div>
                             <div style={{ position: 'relative' }}>
-                                <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'password' ? '#D4AF37' : '#444', transition: '0.3s' }} />
+                                <Key size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'password' ? '#D4AF37' : '#444', transition: '0.3s' }} />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}

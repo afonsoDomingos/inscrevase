@@ -31,8 +31,7 @@ const upload = multer({
 router.get('/', async (req, res) => {
     try {
         const posts = await BlogPost.find({ published: true })
-            .sort({ publishedAt: -1 })
-            .select('-content'); // Don't send full content for list
+            .sort({ publishedAt: -1 });
 
         res.json(posts);
     } catch (error) {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Play, CheckCircle, Video, X } from 'lucide-react';
+import { Search, Play, CheckCircle, Video, X, Lock, Shield } from 'lucide-react';
 import Image from 'next/image';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -17,6 +17,7 @@ interface Lesson {
     duration: number;
     category: 'basico' | 'intermediario' | 'avancado';
     isCompleted?: boolean;
+    isLocked?: boolean;
     views: number;
     order?: number;
     targetAudience?: 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all';
@@ -34,12 +35,27 @@ export default function ParticipantLessons() {
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [courseFilter, setCourseFilter] = useState<string>('all');
+    const [userRole, setUserRole] = useState<string>('');
     const [sortBy, setSortBy] = useState<string>('order');
     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
     useEffect(() => {
         fetchLessons();
+        fetchUserRole();
     }, []);
+
+    const fetchUserRole = async () => {
+        try {
+            const token = Cookies.get('token');
+            if (!token) return;
+            const res = await axios.get(`${API_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUserRole(res.data.role);
+        } catch (error) {
+            console.error('Error fetching user role:', error);
+        }
+    };
 
     const fetchLessons = async () => {
         try {
@@ -149,6 +165,8 @@ export default function ParticipantLessons() {
         return badges[category as keyof typeof badges] || badges.basico;
     };
 
+    const isAdmin = userRole === 'admin' || userRole === 'SuperAdmin';
+
     const LessonCard = ({ lesson, index, type }: { lesson: Lesson, index: number, type: 'Course' | 'Mentor' | 'Admin' }) => (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -176,9 +194,20 @@ export default function ParticipantLessons() {
                 e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
             }}
         >
-            <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#000' }}>
+            <div style={{
+                position: 'relative',
+                paddingBottom: '56.25%',
+                background: '#000',
+                filter: lesson.isLocked && !isAdmin ? 'grayscale(0.8)' : 'none',
+                opacity: lesson.isLocked && !isAdmin ? 0.8 : 1
+            }}>
                 {lesson.thumbnailUrl ? (
-                    <Image src={lesson.thumbnailUrl} alt={lesson.title} fill style={{ objectFit: 'cover' }} />
+                    <Image
+                        src={lesson.thumbnailUrl}
+                        alt={lesson.title}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                    />
                 ) : (
                     <div style={{
                         position: 'absolute',
@@ -243,6 +272,25 @@ export default function ParticipantLessons() {
                     }}>
                         {type}
                     </span>
+                    {lesson.isLocked && (
+                        <span style={{
+                            padding: '6px 12px',
+                            borderRadius: '20px',
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            background: isAdmin ? 'rgba(59, 130, 246, 0.9)' : 'rgba(239, 68, 68, 1)',
+                            color: '#fff',
+                            backdropFilter: 'blur(10px)',
+                            textTransform: 'uppercase',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}>
+                            {isAdmin ? <Shield size={12} /> : <Lock size={12} />}
+                            {isAdmin ? 'ADMIN ACCESS' : 'LOCKED'}
+                        </span>
+                    )}
                 </div>
 
                 {lesson.isCompleted && (

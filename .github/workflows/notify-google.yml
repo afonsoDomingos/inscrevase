@@ -1,0 +1,57 @@
+name: 🔍 Notify Google After Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ping-google:
+    name: Ping Google & Bing Sitemap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Wait for Vercel deploy to finish
+        run: |
+          echo "⏳ Aguardando deploy da Vercel concluir (60 segundos)..."
+          sleep 60
+
+      - name: Ping Google & Bing with sitemap
+        run: node scripts/ping-google.mjs
+
+      - name: Request indexing for key pages
+        run: |
+          echo "📄 Notificando páginas principais..."
+          PAGES=(
+            "https://inscreva-se.com"
+            "https://inscreva-se.com/blog"
+            "https://inscreva-se.com/experts"
+            "https://inscreva-se.com/planos"
+            "https://inscreva-se.com/sobre-nos"
+            "https://inscreva-se.com/funcionalidades"
+            "https://inscreva-se.com/privacidade"
+            "https://inscreva-se.com/termos"
+          )
+          for PAGE in "${PAGES[@]}"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PAGE")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ $PAGE — $STATUS"
+            else
+              echo "⚠️  $PAGE — $STATUS"
+            fi
+          done
+
+      - name: Report success
+        run: |
+          echo ""
+          echo "🎉 Notificação ao Google concluída com sucesso!"
+          echo "🔗 Sitemap: https://inscreva-se.com/sitemap.xml"
+          echo "📊 Verifica o estado em: https://search.google.com/search-console"
