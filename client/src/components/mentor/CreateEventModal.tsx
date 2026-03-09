@@ -2663,7 +2663,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                         <p style={{ fontSize: '0.8rem', color: '#b45309', margin: 0 }}>Informações extras exibidas no Hub (ex: Mentores, Localização)</p>
                                                     </div>
                                                 </div>
-                                                <CustomFieldsEditor customFields={customFields} onChange={setCustomFields} />
+                                                <CustomFieldsEditor fields={customFields} onChange={setCustomFields} />
                                             </div>
                                         </div>
                                     </motion.div>
