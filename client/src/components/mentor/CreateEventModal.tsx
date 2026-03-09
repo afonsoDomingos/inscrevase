@@ -1470,20 +1470,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
-                                    style={{ maxWidth: '1000px', margin: '0 auto', padding: isMobile ? '0' : '2rem 0' }}
+                                    style={{ maxWidth: '1100px', margin: '0 auto', padding: isMobile ? '0' : '1rem 0' }}
                                 >
-                                    <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                                         <h2 style={{
-                                            fontSize: isMobile ? '1.8rem' : '2.5rem',
+                                            fontSize: isMobile ? '1.5rem' : '2rem',
                                             fontWeight: 900,
                                             color: '#111',
-                                            marginBottom: '1rem',
+                                            marginBottom: '0.4rem',
                                             letterSpacing: '-0.02em'
                                         }}>
                                             {t('events.step0Title') || 'Que tipo de evento você vai criar?'}
                                         </h2>
                                         <p style={{
-                                            fontSize: isMobile ? '1rem' : '1.2rem',
+                                            fontSize: isMobile ? '0.9rem' : '1rem',
                                             color: '#666',
                                             maxWidth: '600px',
                                             margin: '0 auto'
@@ -1494,85 +1494,93 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                     <div style={{
                                         display: 'grid',
-                                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
-                                        gap: '1.5rem',
-                                        padding: '1rem'
+                                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                                        gap: '1rem',
+                                        padding: '0.5rem'
                                     }}>
                                         {(Object.keys(eventTemplates) as Array<keyof typeof eventTemplates>).map((key) => {
                                             const template = eventTemplates[key];
                                             return (
                                                 <motion.div
                                                     key={key}
-                                                    whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+                                                    whileHover={{ y: -3, boxShadow: '0 10px 20px -5px rgba(255, 215, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', backgroundColor: '#fffcf0', borderColor: '#FFD700' }}
                                                     whileTap={{ scale: 0.98 }}
                                                     onClick={() => applyTemplate(key)}
                                                     style={{
                                                         background: '#fff',
-                                                        borderRadius: '24px',
-                                                        padding: '2rem',
+                                                        borderRadius: '16px',
+                                                        padding: '1.25rem',
                                                         cursor: 'pointer',
-                                                        border: '2px solid transparent',
-                                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                                                        border: '1px solid #f0f0f0',
+                                                        transition: 'all 0.25s ease',
                                                         display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'flex-start',
-                                                        gap: '1.2rem',
+                                                        flexDirection: isMobile ? 'column' : 'row',
+                                                        alignItems: 'center',
+                                                        gap: '1.25rem',
                                                         position: 'relative',
                                                         overflow: 'hidden'
                                                     }}
                                                 >
                                                     <div style={{
-                                                        width: '56px',
-                                                        height: '56px',
-                                                        borderRadius: '16px',
-                                                        background: '#FFD70015',
+                                                        width: '44px',
+                                                        height: '44px',
+                                                        minWidth: '44px',
+                                                        borderRadius: '12px',
+                                                        background: '#FFD70010',
                                                         color: '#FFD700',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        marginBottom: '0.5rem'
+                                                        flexShrink: 0
                                                     }}>
                                                         {template.icon}
                                                     </div>
 
-                                                    <div>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        flex: 1
+                                                    }}>
                                                         <h3 style={{
-                                                            fontSize: '1.25rem',
+                                                            fontSize: '1rem',
                                                             fontWeight: 800,
                                                             color: '#111',
-                                                            marginBottom: '0.5rem'
+                                                            marginBottom: '0.2rem'
                                                         }}>
                                                             {template.label}
                                                         </h3>
                                                         <p style={{
-                                                            fontSize: '0.9rem',
+                                                            fontSize: '0.8rem',
                                                             color: '#666',
-                                                            lineHeight: 1.5
+                                                            lineHeight: 1.4,
+                                                            display: '-webkit-box',
+                                                            WebkitLineClamp: isMobile ? 3 : 2,
+                                                            WebkitBoxOrient: 'vertical',
+                                                            overflow: 'hidden',
+                                                            marginBottom: '0.4rem'
                                                         }}>
                                                             {template.description}
                                                         </p>
-                                                    </div>
-
-                                                    <div style={{
-                                                        marginTop: 'auto',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px',
-                                                        fontSize: '0.8rem',
-                                                        fontWeight: 700,
-                                                        color: '#FFD700'
-                                                    }}>
-                                                        Começar agora <ExternalLink size={14} />
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 700,
+                                                            color: '#FFD700'
+                                                        }}>
+                                                            Começar agora <ExternalLink size={12} />
+                                                        </div>
                                                     </div>
 
                                                     {/* Subtle Background Glow */}
                                                     <div style={{
                                                         position: 'absolute',
-                                                        bottom: '-20px',
-                                                        right: '-20px',
-                                                        width: '100px',
-                                                        height: '100px',
+                                                        bottom: '-10px',
+                                                        right: '-10px',
+                                                        width: '60px',
+                                                        height: '60px',
                                                         background: 'radial-gradient(circle, #FFD70010 0%, transparent 70%)',
                                                         zIndex: 0
                                                     }} />
@@ -1582,7 +1590,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                         {/* Blank Canvas Option */}
                                         <motion.div
-                                            whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
+                                            whileHover={{ y: -3, boxShadow: '0 10px 20px -10px rgba(0, 0, 0, 0.1)', backgroundColor: '#fcfcfc' }}
                                             whileTap={{ scale: 0.98 }}
                                             onClick={() => {
                                                 clearForm();
@@ -1590,28 +1598,37 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             }}
                                             style={{
                                                 background: 'transparent',
-                                                borderRadius: '24px',
-                                                padding: '2rem',
+                                                borderRadius: '16px',
+                                                padding: '1.25rem',
                                                 cursor: 'pointer',
-                                                border: '2px dashed #cbd5e1',
-                                                transition: 'all 0.3s',
+                                                border: '1px dashed #cbd5e1',
+                                                transition: 'all 0.25s',
                                                 display: 'flex',
-                                                flexDirection: 'column',
+                                                flexDirection: isMobile ? 'column' : 'row',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                textAlign: 'center',
-                                                gap: '1rem',
-                                                minHeight: '200px'
+                                                textAlign: isMobile ? 'center' : 'left',
+                                                gap: '1.25rem'
                                             }}
                                         >
-                                            <div style={{ color: '#94a3b8' }}>
-                                                <Plus size={32} />
+                                            <div style={{
+                                                width: '44px',
+                                                height: '44px',
+                                                borderRadius: '12px',
+                                                background: '#f1f5f9',
+                                                color: '#64748b',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                flexShrink: 0
+                                            }}>
+                                                <Plus size={20} />
                                             </div>
                                             <div>
-                                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#64748b' }}>
+                                                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#64748b', marginBottom: '0.1rem' }}>
                                                     {t('events.blankCanvas') || 'Começar do Zero'}
                                                 </h3>
-                                                <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                                                <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
                                                     Sem estrutura pré-definida.
                                                 </p>
                                             </div>
