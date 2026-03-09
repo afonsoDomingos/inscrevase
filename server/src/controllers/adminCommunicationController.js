@@ -11,13 +11,13 @@ exports.sendAdminEmail = async (req, res) => {
         let targetUsers = [];
         if (isAllUsers) {
             // Send to everyone registered
-            targetUsers = await User.find({}, 'email name');
+            targetUsers = await User.find({}, 'email name role');
         } else if (isAllMentors) {
             // Send only to business roles
-            targetUsers = await User.find({ role: { $in: ['mentor', 'specialist', 'company'] } }, 'email name');
+            targetUsers = await User.find({ role: { $in: ['mentor', 'specialist', 'company'] } }, 'email name role');
         } else if (recipientIds && Array.isArray(recipientIds)) {
             // Send to select IDs
-            targetUsers = await User.find({ _id: { $in: recipientIds } }, 'email name');
+            targetUsers = await User.find({ _id: { $in: recipientIds } }, 'email name role');
         }
 
         if (targetUsers.length === 0) {
