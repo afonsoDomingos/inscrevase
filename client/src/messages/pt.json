@@ -1202,6 +1202,7 @@
         "step0Title": "Que tipo de evento deseja criar?",
         "step0Subtitle": "Escolha o formato que melhor se adapta ao seu conteúdo para personalizarmos sua experiência.",
         "types": {
+            "title": "Tipo de Evento",
             "palestra": {
                 "title": "Palestra",
                 "description": "Focada em inspiração e partilha de conhecimento."
