@@ -1246,7 +1246,8 @@
             "form": "Formulário",
             "design": "Design",
             "payment": "Pagamento",
-            "communication": "Comunicação"
+            "communication": "Comunicação",
+            "hub": "Área do Aluno (Hub de Conteúdo)"
         },
         "submissions": {
             "searchPlaceholder": "Buscar por nome ou evento...",

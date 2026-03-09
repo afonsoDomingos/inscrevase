@@ -1197,7 +1197,8 @@
             "form": "Form",
             "design": "Design",
             "payment": "Payment",
-            "communication": "Communication"
+            "communication": "Communication",
+            "hub": "Student Area (Content Hub)"
         },
         "submissions": {
             "searchPlaceholder": "Search by name or event...",
