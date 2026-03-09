@@ -201,7 +201,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     // Theme State
     const [theme, setTheme] = useState({
         primaryColor: '#0d9488',
-        style: 'luxury' as const,
+        style: 'luxury' as 'luxury' | 'minimalist',
         backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
         fontFamily: 'Inter'
     });
@@ -631,7 +631,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         });
         setTheme({
             primaryColor: '#0d9488',
-            style: 'luxury' as const,
+            style: 'luxury' as 'luxury' | 'minimalist',
             backgroundColor: 'radial-gradient(at 0% 0%, #2dd4bf50 0%, transparent 50%), radial-gradient(at 100% 100%, #6366f130 0%, transparent 50%), #fff',
             fontFamily: 'Inter'
         });
