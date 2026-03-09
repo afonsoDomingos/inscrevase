@@ -1200,7 +1200,8 @@
             "resultLabel": "Resultado Gerado"
         },
         "step0Title": "Que tipo de evento deseja criar?",
-        "step0Subtitle": "Saudações {name}! Escolha o formato que melhor se adapta ao seu conteúdo para personalizarmos sua experiência.",
+        "step0Subtitle": "Escolha o formato que melhor se adapta ao seu conteúdo para personalizarmos sua experiência.",
+        "blankCanvas": "Começar do Zero",
         "types": {
             "title": "Tipo de Evento",
             "palestra": {

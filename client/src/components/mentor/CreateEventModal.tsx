@@ -109,6 +109,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     const [previousEvents, setPreviousEvents] = useState<FormModel[]>([]);
 
     const [currentUser, setCurrentUser] = useState<any>(null);
+    const [hoveredType, setHoveredTypeState] = useState<string | null>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -1488,7 +1489,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             maxWidth: '600px',
                                             margin: '0 auto'
                                         }}>
-                                            {t('events.step0Subtitle', { name: currentUser?.name || 'Mentor' }) || 'Escolha um modelo para começar com uma estrutura profissional já configurada.'}
+                                            {locale === 'pt' ? 'Saudações ' : 'Greetings '}
+                                            <span style={{
+                                                color: '#FFD700',
+                                                fontWeight: 800,
+                                                background: 'linear-gradient(45deg, #FFD700, #ff8c00)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                                display: 'inline-block',
+                                                transition: 'all 0.3s ease'
+                                            }}>
+                                                {currentUser?.name || 'Mentor'}
+                                            </span>! {t('events.step0Subtitle')}
                                         </p>
                                     </div>
 
@@ -1503,7 +1515,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             return (
                                                 <motion.div
                                                     key={key}
-                                                    whileHover={{ y: -3, boxShadow: '0 10px 20px -5px rgba(255, 215, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', backgroundColor: '#fffcf0', borderColor: '#FFD700' }}
+                                                    onMouseEnter={() => setHoveredTypeState(key)}
+                                                    onMouseLeave={() => setHoveredTypeState(null)}
+                                                    whileHover={{
+                                                        scale: 1.05,
+                                                        y: -5,
+                                                        zIndex: 10
+                                                    }}
+                                                    animate={{
+                                                        opacity: hoveredType ? (hoveredType === key ? 1 : 0.4) : 1,
+                                                        scale: hoveredType === key ? 1.05 : 1,
+                                                        filter: hoveredType && hoveredType !== key ? 'grayscale(0.5) blur(1px)' : 'none'
+                                                    }}
                                                     whileTap={{ scale: 0.98 }}
                                                     onClick={() => applyTemplate(key)}
                                                     style={{
@@ -1511,8 +1534,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                         borderRadius: '16px',
                                                         padding: '1.25rem',
                                                         cursor: 'pointer',
-                                                        border: '1px solid #f0f0f0',
-                                                        transition: 'all 0.25s ease',
+                                                        border: '1px solid',
+                                                        borderColor: hoveredType === key ? '#FFD700' : '#f0f0f0',
+                                                        transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+                                                        boxShadow: hoveredType === key
+                                                            ? '0 20px 25px -5px rgba(255, 215, 0, 0.15), 0 10px 10px -5px rgba(255, 215, 0, 0.1)'
+                                                            : '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
                                                         display: 'flex',
                                                         flexDirection: isMobile ? 'column' : 'row',
                                                         alignItems: 'center',
@@ -1590,7 +1617,18 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                         {/* Blank Canvas Option */}
                                         <motion.div
-                                            whileHover={{ y: -3, boxShadow: '0 10px 20px -10px rgba(0, 0, 0, 0.1)', backgroundColor: '#fcfcfc' }}
+                                            onMouseEnter={() => setHoveredTypeState('blank')}
+                                            onMouseLeave={() => setHoveredTypeState(null)}
+                                            whileHover={{
+                                                scale: 1.05,
+                                                y: -5,
+                                                zIndex: 10
+                                            }}
+                                            animate={{
+                                                opacity: hoveredType ? (hoveredType === 'blank' ? 1 : 0.4) : 1,
+                                                scale: hoveredType === 'blank' ? 1.05 : 1,
+                                                filter: hoveredType && hoveredType !== 'blank' ? 'grayscale(0.5) blur(1px)' : 'none'
+                                            }}
                                             whileTap={{ scale: 0.98 }}
                                             onClick={() => {
                                                 clearForm();
@@ -1601,7 +1639,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 borderRadius: '16px',
                                                 padding: '1.25rem',
                                                 cursor: 'pointer',
-                                                border: '1px dashed #cbd5e1',
+                                                border: '1px dashed',
+                                                borderColor: hoveredType === 'blank' ? '#94a3b8' : '#cbd5e1',
                                                 transition: 'all 0.25s',
                                                 display: 'flex',
                                                 flexDirection: isMobile ? 'column' : 'row',
