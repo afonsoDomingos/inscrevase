@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
+import { authService } from '@/lib/authService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { lessonService, Lesson } from '@/lib/lessonService';
@@ -107,8 +108,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     const [aiLoading, setAiLoading] = useState(false);
     const [previousEvents, setPreviousEvents] = useState<FormModel[]>([]);
 
+    const [currentUser, setCurrentUser] = useState<any>(null);
+
     useEffect(() => {
         if (isOpen) {
+            const user = authService.getCurrentUser();
+            setCurrentUser(user);
+
             formService.getMyForms()
                 .then(events => setPreviousEvents(events))
                 .catch(err => console.error("Failed to load previous events", err));
@@ -273,14 +279,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
     const [certificateConfig, setCertificateConfig] = useState({
         enabled: false,
         template: 'modern',
+        primaryColor: '#0d9488',
         title: 'CERTIFICADO DE PARTICIPAÇÃO',
-        content: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
-        signatureUrl: '',
-        signatureName: '',
-        showDate: true,
-        showHours: false,
-        hours: 0,
-        primaryColor: '#0d9488'
+        subtitle: 'DE CONCLUSÃO',
+        description: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
+        signerName: '',
+        signerRole: 'Mentor',
+        requireCheckIn: false
     });
 
     // Marketing Social AI States
@@ -460,12 +465,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                     enabled: true,
                     template: 'modern',
                     title: 'CERTIFICADO DE CONCLUSÃO',
-                    content: 'Certificamos que {name} concluiu com êxito o curso {event_name}.',
-                    signatureUrl: '',
-                    signatureName: '',
-                    showDate: true,
-                    showHours: true,
-                    hours: 20,
+                    subtitle: 'CONFERIDO A',
+                    description: 'Certificamos que concluiu com êxito o curso {event_name}. Este documento atesta a dedicação e o conhecimento adquirido durante a formação.',
+                    signerRole: 'Mentor Responsável',
+                    requireCheckIn: false,
                     primaryColor: '#0d9488'
                 }
             }
@@ -568,14 +571,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         setCertificateConfig({
             enabled: false,
             template: 'modern',
+            primaryColor: '#0d9488',
             title: 'CERTIFICADO DE PARTICIPAÇÃO',
-            content: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
-            signatureUrl: '',
-            signatureName: '',
-            showDate: true,
-            showHours: false,
-            hours: 0,
-            primaryColor: '#0d9488'
+            subtitle: 'DE CONCLUSÃO',
+            description: 'Certificamos que {name} participou com sucesso do evento {event_name}, realizado na data {date}.',
+            signerName: '',
+            signerRole: 'Mentor',
+            requireCheckIn: false
         });
         toast.info('Formulário reiniciado.');
     };
@@ -1084,7 +1086,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 customFields,
                 certificateConfig: {
                     ...certificateConfig,
-                    signerRole: (certificateConfig as any).signerRole || 'Mentor'
+                    signerName: certificateConfig.signerName || (currentUser?.name || ''),
+                    signerRole: certificateConfig.signerRole || 'Mentor'
                 },
                 active: isPublic
             });
