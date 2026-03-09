@@ -137,7 +137,7 @@ const initAutomations = () => {
             }).limit(10); // Batch it
 
             for (const user of topPerformers) {
-                const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`;
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/participant`;
                 const content = `Notamos o teu impacto incrível na plataforma! Com o teu saldo de pontos, és elegível para o nosso <strong>Programa de Embaixadores Inscreva-se</strong>. Isso pode dar-te acesso a Taxa Zero em vendas e destaque prioritário na homepage. Queres subir de nível?`;
 
                 const emailHtml = generateBasicEmail(

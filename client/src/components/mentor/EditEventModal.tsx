@@ -14,7 +14,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import CustomFieldsEditor from './CustomFieldsEditor';
 import AgendaEditor from './AgendaEditor';
 import MaterialsEditor from './MaterialsEditor';
-import CertificateEditor from './CertificateEditor';
+import CertificateEditor, { CertificateConfig } from './CertificateEditor';
 import { lessonService, Lesson } from '@/lib/lessonService';
 import PartnersEditor from './PartnersEditor';
 
@@ -251,16 +251,19 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
     const [materials, setMaterials] = useState<any[]>([]);
 
     // Certificate State
-    const [certificateConfig, setCertificateConfig] = useState({
+    const [certificateConfig, setCertificateConfig] = useState<CertificateConfig>({
         enabled: false,
         template: 'classic',
         primaryColor: '#D4AF37',
+        backgroundColor: '#ffffff',
+        nameColor: '#EAB308',
         title: 'CERTIFICADO',
         subtitle: 'DE CONCLUSÃO',
         description: 'concluiu com êxito a participação no evento:',
         signerName: '',
         signerRole: 'Mentor Responsável',
-        requireCheckIn: false
+        requireCheckIn: false,
+        showLogo: true
     });
 
     // Lesson Selection State
@@ -331,16 +334,20 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                 });
             }
             if (form.certificateConfig) {
+                const certConfig = form.certificateConfig as any;
                 setCertificateConfig({
-                    enabled: form.certificateConfig.enabled || false,
-                    template: form.certificateConfig.template || 'classic',
-                    primaryColor: form.certificateConfig.primaryColor || '#D4AF37',
-                    title: form.certificateConfig.title || 'CERTIFICADO',
-                    subtitle: form.certificateConfig.subtitle || 'DE CONCLUSÃO',
-                    description: form.certificateConfig.description || 'concluiu com êxito a participação no evento:',
-                    signerName: form.certificateConfig.signerName || '',
-                    signerRole: form.certificateConfig.signerRole || 'Mentor Responsável',
-                    requireCheckIn: form.certificateConfig.requireCheckIn || false
+                    enabled: certConfig.enabled || false,
+                    template: certConfig.template || 'classic',
+                    primaryColor: certConfig.primaryColor || '#D4AF37',
+                    backgroundColor: certConfig.backgroundColor || '#ffffff',
+                    nameColor: certConfig.nameColor || '#EAB308',
+                    title: certConfig.title || 'CERTIFICADO',
+                    subtitle: certConfig.subtitle || 'DE CONCLUSÃO',
+                    description: certConfig.description || 'concluiu com êxito a participação no evento:',
+                    signerName: certConfig.signerName || '',
+                    signerRole: certConfig.signerRole || 'Mentor Responsável',
+                    requireCheckIn: certConfig.requireCheckIn || false,
+                    showLogo: certConfig.showLogo !== undefined ? certConfig.showLogo : true
                 });
             }
             if (form.paymentConfig) {
@@ -2420,6 +2427,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                                 config={certificateConfig}
                                                 onChange={setCertificateConfig}
                                                 mentorName={form.creator.name}
+                                                logo={logo}
                                             />
                                         )}
                                     </motion.div>

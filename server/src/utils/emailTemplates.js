@@ -42,7 +42,12 @@ const getSocialFooter = () => {
 
 const generateWelcomeEmail = (name, verificationLink = null, role = 'mentor') => {
     const isSocial = !verificationLink;
-    const dashboardUrl = 'https://inscreva-se.com/dashboard';
+    let dashboardUrl = 'https://inscreva-se.com/dashboard/participant';
+    if (role === 'admin' || role === 'superadmin') {
+        dashboardUrl = 'https://inscreva-se.com/dashboard/admin';
+    } else if (['mentor', 'specialist', 'company'].includes(role)) {
+        dashboardUrl = 'https://inscreva-se.com/dashboard/mentor';
+    }
 
     // Role-specific configuration
     const roleConfig = {
@@ -889,7 +894,7 @@ const generateFeatureAnnouncementEmail = (
     featureName,
     featureDescription,
     benefits = [],
-    ctaUrl = 'https://inscreva-se.com/dashboard',
+    ctaUrl = 'https://inscreva-se.com/dashboard/participant',
     ctaLabel = 'Explorar Agora',
     isIntegration = false
 ) => {
@@ -1169,7 +1174,7 @@ const generateMilestoneEmail = (
     milestoneDescription,
     milestoneNumber,
     milestoneUnit,
-    ctaUrl = 'https://inscreva-se.com/dashboard',
+    ctaUrl = 'https://inscreva-se.com/dashboard/participant',
     ctaLabel = 'Celebrar Connosco'
 ) => {
     const accentColor = '#D4AF37';

@@ -45,7 +45,7 @@ const handleReferral = async (user, referralCode) => {
 
             // Notify new user via Email about the bonus
             try {
-                const bonusEmailHtml = generateReferralBonusEmail(user.name, referrer.name, 10, `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`);
+                const bonusEmailHtml = generateReferralBonusEmail(user.name, referrer.name, 10, `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/participant`);
                 await sendEmail(user.email, '🎁 Bónus de Boas-vindas Creditado! - Inscreva-se', bonusEmailHtml);
             } catch (emailErr) {
                 console.error("Error sending social referral bonus email:", emailErr);

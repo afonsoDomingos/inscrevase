@@ -82,7 +82,8 @@ const register = async (req, res) => {
                 }
 
                 // Notify new user via Email about the bonus
-                const bonusEmailHtml = generateReferralBonusEmail(name, referrer.name, 10, `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`);
+                const newUserDashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/${userRole === 'participant' ? 'participant' : 'mentor'}`;
+                const bonusEmailHtml = generateReferralBonusEmail(name, referrer.name, 10, newUserDashboardUrl);
                 await sendEmail(email, '🎁 Bónus de Boas-vindas Creditado! - Inscreva-se', bonusEmailHtml);
 
                 // Final save for the new user with points and referrer link
@@ -465,7 +466,10 @@ const verifyEmail = async (req, res) => {
         await user.save();
 
         // Send confirmation email after success
-        const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`;
+        let rolePath = 'participant';
+        if (user.role === 'admin' || user.role === 'superadmin') rolePath = 'admin';
+        else if (['mentor', 'specialist', 'company'].includes(user.role)) rolePath = 'mentor';
+        const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/${rolePath}`;
         const content = `Sua conta foi verificada com sucesso. Agora você tem acesso total a todas as funcionalidades da nossa plataforma de elite.`;
         const emailHtml = generateBasicEmail('E-mail Verificado com Sucesso! ✅', user.name, content, 'Ir para o Dashboard', dashboardUrl, '#22c55e');
 

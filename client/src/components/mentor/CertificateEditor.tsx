@@ -3,7 +3,7 @@
 import { Award, UserCheck } from 'lucide-react';
 import Image from 'next/image';
 
-interface CertificateConfig {
+export interface CertificateConfig {
     enabled: boolean;
     template: string;
     primaryColor: string;

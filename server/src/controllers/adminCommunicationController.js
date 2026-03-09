@@ -27,12 +27,19 @@ exports.sendAdminEmail = async (req, res) => {
         const results = [];
 
         for (const user of targetUsers) {
+            let dashboardUrl = 'https://inscreva-se.com/dashboard/participant';
+            if (user.role === 'admin' || user.role === 'superadmin') {
+                dashboardUrl = 'https://inscreva-se.com/dashboard/admin';
+            } else if (['mentor', 'specialist', 'company'].includes(user.role)) {
+                dashboardUrl = 'https://inscreva-se.com/dashboard/mentor';
+            }
+
             const html = generateBasicEmail(
                 subject,
                 user.name,
                 content.replace(/\n/g, '<br>'),
                 'Aceder ao Painel',
-                'https://inscreva-se.com/dashboard'
+                dashboardUrl
             );
 
             const sent = await sendEmail(user.email, subject, html);
