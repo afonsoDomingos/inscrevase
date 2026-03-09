@@ -1254,16 +1254,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             justifyContent: isMobile ? 'center' : 'flex-start'
                         }} className="no-scrollbar">
                             {[
-                                { id: 0, label: t('events.types.title') || 'Escolher Tipo', icon: <Layout size={18} /> },
-                                { id: 1, label: t('events.steps.info'), icon: <Info size={18} /> },
-                                { id: 2, label: t('events.steps.form'), icon: <Plus size={18} /> },
-                                { id: 3, label: 'Conteúdo do Hub', icon: <Sparkles size={18} /> },
-                                { id: 4, label: t('events.steps.design'), icon: <Palette size={18} /> },
-                                { id: 5, label: 'Certificado', icon: <Award size={18} />, premium: true },
-                                { id: 6, label: t('events.steps.payment'), icon: <DollarSign size={18} />, premium: true },
-                                { id: 7, label: t('events.steps.communication'), icon: <MessageCircle size={18} /> },
-                                { id: 8, label: 'Aulas do Evento', icon: <BookOpen size={18} />, premium: true },
-                                { id: 9, label: 'Parceiros/Co-org', icon: <Users2 size={18} />, premium: true },
+                                { id: 0, label: `1º Passo: ${t('events.types.title') || 'Tipo de Evento'}`, icon: <Layout size={18} /> },
+                                { id: 1, label: `2º Passo: ${t('events.steps.info') || 'Informações'}`, icon: <Info size={18} /> },
+                                { id: 2, label: `3º Passo: ${t('events.steps.form') || 'Formulário'}`, icon: <Plus size={18} /> },
+                                { id: 3, label: `4º Passo: Conteúdo do Hub`, icon: <Sparkles size={18} /> },
+                                { id: 4, label: `5º Passo: ${t('events.steps.design') || 'Design'}`, icon: <Palette size={18} /> },
+                                { id: 5, label: `6º Passo: Certificado`, icon: <Award size={18} />, premium: true },
+                                { id: 6, label: `7º Passo: ${t('events.steps.payment') || 'Pagamento'}`, icon: <DollarSign size={18} />, premium: true },
+                                { id: 7, label: `8º Passo: ${t('events.steps.communication') || 'Comunicação'}`, icon: <MessageCircle size={18} /> },
+                                { id: 8, label: `9º Passo: Aulas do Evento`, icon: <BookOpen size={18} />, premium: true },
+                                { id: 9, label: `10º Passo: Parceiros/Co-org`, icon: <Users2 size={18} />, premium: true },
                             ].map((s) => {
                                 const isLocked = !isAdmin && s.premium && (userPlan === 'free' || !userPlan);
                                 return (
@@ -1474,6 +1474,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     style={{ maxWidth: '1100px', margin: '0 auto', padding: isMobile ? '0' : '1rem 0' }}
                                 >
                                     <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '1rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            1º {t('common.step') || 'Passo'}
+                                        </div>
                                         <h2 style={{
                                             fontSize: isMobile ? '1.5rem' : '2rem',
                                             fontWeight: 900,
@@ -1752,6 +1766,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             <AnimatePresence mode="wait">
                                 {step === 1 && (
                                     <motion.div key="step1" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            2º {t('common.step') || 'Passo'}
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.basicInfo')}</h2>
 
                                         {previousEvents.length > 0 && (
@@ -2469,6 +2497,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 2 && (
                                     <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            3º Passo
+                                        </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                             <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
                                             <button
@@ -2735,6 +2777,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 3 && (
                                     <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            4º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Conteúdo & Estrutura do Hub</h2>
 
                                         <div style={{ display: 'grid', gap: '2rem' }}>
@@ -2783,6 +2839,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 4 && (
                                     <motion.div key="step3" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            5º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.customization')}</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.9rem' }}>Escolha um modelo pronto ou personalize as cores do seu evento.</p>
 
@@ -2980,6 +3050,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 5 && (
                                     <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            6º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração do Certificado</h2>
 
                                         {(userPlan === 'free' && !isAdmin) ? (
@@ -3006,6 +3090,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 6 && (
                                     <motion.div key="step4" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            7º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.paymentConfig')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -3308,6 +3406,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 7 && (
                                     <motion.div key="step5" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            8º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>{t('events.whatsappConclusion')}</h2>
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -3397,6 +3509,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                 {step === 8 && (
                                     <motion.div key="step6" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            9º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '0.5rem', wordBreak: 'break-word', hyphens: 'auto' }}>Aulas do Evento</h2>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>Selecione quais aulas da sua biblioteca estarão disponíveis no Hub deste evento.</p>
 
@@ -3511,6 +3637,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 )}
                                 {step === 9 && (
                                     <motion.div key="step7" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '4px 12px',
+                                            background: '#FFD70015',
+                                            color: '#FFD700',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            marginBottom: '0.8rem',
+                                            border: '1px solid #FFD70030'
+                                        }}>
+                                            10º Passo
+                                        </div>
                                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem', wordBreak: 'break-word', hyphens: 'auto' }}>Parceiros & Publicação</h2>
 
                                         {userPlan === 'free' && !isAdmin ? (
