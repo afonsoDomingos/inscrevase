@@ -70,9 +70,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const titleY = useTransform(scrollY, [0, 300], [0, -10]);
 
     const [currentStep, setCurrentStep] = useState(0);
-    const FIELDS_PER_STEP = 3;
+    const FIELDS_PER_STEP = 2;
     const [isVideoHidden, setIsVideoHidden] = useState(false);
-    const isMultiStep = form && form.fields && form.fields.length > 3;
+    const isMultiStep = form && form.fields && form.fields.length > 2;
     const numFieldSteps = form ? Math.ceil(form.fields.length / FIELDS_PER_STEP) : 1;
     const hasPaymentStep = isMultiStep && form?.paymentConfig?.enabled;
     const totalSteps = isMultiStep ? numFieldSteps + (hasPaymentStep ? 1 : 0) : 1;
