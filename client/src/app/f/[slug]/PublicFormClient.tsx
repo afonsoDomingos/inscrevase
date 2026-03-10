@@ -402,18 +402,23 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                 }
                 @media (max-width: 1200px) {
                     .responsive-form-grid.has-vsl,
-                    .responsive-form-grid.no-vsl {
+                    .responsive-form-grid.no-vsl,
+                    .responsive-form-grid.form-left.has-vsl,
+                    .responsive-form-grid.form-left.no-vsl {
                         grid-template-columns: 1fr 1fr;
                         gap: 25px;
                     }
-                    .responsive-form-grid.has-vsl .vsl-column {
+                    .responsive-form-grid.has-vsl .vsl-column,
+                    .responsive-form-grid.form-left.has-vsl .vsl-column {
                         grid-column: 1 / -1;
                         justify-self: center;
                     }
                 }
                 @media (max-width: 768px) {
                     .responsive-form-grid.has-vsl,
-                    .responsive-form-grid.no-vsl {
+                    .responsive-form-grid.no-vsl,
+                    .responsive-form-grid.form-left.has-vsl,
+                    .responsive-form-grid.form-left.no-vsl {
                         grid-template-columns: 1fr;
                     }
                     .info-column {
