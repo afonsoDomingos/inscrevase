@@ -420,11 +420,37 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         align-items: center !important;
                         text-align: center !important;
                     }
+                    .info-column > div, .info-column > a, .info-column > form {
+                        justify-content: center !important;
+                        margin-left: auto !important;
+                        margin-right: auto !important;
+                    }
                     .info-column h1 {
                         text-align: center !important;
+                        margin-left: auto !important;
+                        margin-right: auto !important;
                     }
                     .info-column .markdown-content p {
                         text-align: center !important;
+                    }
+                    .form-column > div {
+                        margin-left: auto !important;
+                        margin-right: auto !important;
+                        max-width: 600px;
+                        width: 100%;
+                    }
+                    .form-column label {
+                        text-align: center !important;
+                        justify-content: center !important;
+                        width: 100%;
+                    }
+                    .form-column .premium-input {
+                        text-align: center !important;
+                        text-align-last: center;
+                    }
+                    .form-column .premium-upload {
+                        align-items: center !important;
+                        justify-content: center !important;
                     }
                 }
                 .responsive-form-grid.horizontal-vsl {
