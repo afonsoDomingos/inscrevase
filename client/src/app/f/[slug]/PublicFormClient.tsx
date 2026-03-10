@@ -290,7 +290,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             position: 'relative',
             minHeight: '100vh',
             color: textColor,
-            fontFamily: form.theme?.fontFamily || 'Inter'
+            fontFamily: form.theme?.fontFamily || 'Inter',
+            overflowX: 'hidden'
         }}>
             {form.creator?.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Animated Background */}
@@ -415,6 +416,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     }
                 }
                 @media (max-width: 768px) {
+                    * {
+                        box-sizing: border-box !important;
+                        max-width: 100% !important;
+                    }
+                    html, body {
+                        overflow-x: hidden !important;
+                    }
                     .responsive-form-grid.has-vsl,
                     .responsive-form-grid.no-vsl,
                     .responsive-form-grid.form-left.has-vsl,
@@ -424,6 +432,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     .info-column {
                         align-items: center !important;
                         text-align: center !important;
+                        width: 100% !important;
+                        overflow-x: hidden !important;
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                    }
+                    .info-column > * {
+                        max-width: 100% !important;
                     }
                     .info-column > div, .info-column > a, .info-column > form {
                         justify-content: center !important;
@@ -434,28 +449,41 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         text-align: center !important;
                         margin-left: auto !important;
                         margin-right: auto !important;
+                        word-break: break-word !important;
                     }
                     .info-column .markdown-content p {
                         text-align: center !important;
+                        word-break: break-word !important;
+                    }
+                    .form-column {
+                        width: 100% !important;
+                        overflow-x: hidden !important;
                     }
                     .form-column > div {
                         margin-left: auto !important;
                         margin-right: auto !important;
-                        max-width: 600px;
-                        width: 100%;
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
                     }
                     .form-column label {
                         text-align: center !important;
                         justify-content: center !important;
-                        width: 100%;
+                        width: 100% !important;
                     }
                     .form-column .premium-input {
-                        text-align: center !important;
-                        text-align-last: center;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
                     }
                     .form-column .premium-upload {
                         align-items: center !important;
                         justify-content: center !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
+                    }
+                    .responsive-form-grid {
+                        overflow-x: hidden !important;
+                        width: 100% !important;
                     }
                 }
                 .responsive-form-grid.horizontal-vsl {
@@ -590,7 +618,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         </div>
                     </motion.div>
                 ) : (
-                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: '20px', paddingRight: '20px' }}>
+                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: 'clamp(16px, 5vw, 40px)', paddingRight: 'clamp(16px, 5vw, 40px)', boxSizing: 'border-box', overflowX: 'hidden', width: '100%' }}>
 
                         {/* Logo removed from absolute positioning */}
 
