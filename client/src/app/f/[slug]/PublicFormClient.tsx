@@ -1084,7 +1084,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             >
                                                 {/* STEP CONTENT: FIELDS */}
                                                 {currentStep < numFieldSteps && (isMultiStep ? form.fields.slice(currentStep * FIELDS_PER_STEP, (currentStep + 1) * FIELDS_PER_STEP) : form.fields).map((field) => (
-                                                    <motion.div variants={itemVariants} key={field.label} style={{ marginBottom: '1.5rem' }}>
+                                                    <div key={field.label} style={{ marginBottom: '1.5rem' }}>
                                                         {field.type !== 'checkbox' && (
                                                             <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
                                                                 {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
@@ -1187,7 +1187,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
                                                             />
                                                         )}
-                                                    </motion.div>
+                                                    </div>
                                                 ))}
 
                                                 {/* STEP CONTENT: PAYMENT SECTION (IF LAST STEP OR SINGLE STEP) */}
