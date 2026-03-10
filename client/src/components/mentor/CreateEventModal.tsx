@@ -399,9 +399,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 eventType: 'modeOnline',
                 videoOrientation: 'vertical' as const,
                 agenda: [
-                    { id: '1', time: '00:00', title: 'Introdução e Boas-vindas', description: 'Abertura do evento e apresentação do palestrante.' },
-                    { id: '2', time: '00:15', title: 'Conteúdo Principal', description: 'Exploração profunda do tema central.' },
-                    { id: '3', time: '00:50', title: 'Q&A (Perguntas e Respostas)', description: 'Espaço para interação com a audiência.' }
+                    { id: '1', time: '00:00', activity: 'Introdução e Boas-vindas', description: 'Abertura do evento e apresentação do palestrante.' },
+                    { id: '2', time: '00:15', activity: 'Conteúdo Principal', description: 'Exploração profunda do tema central.' },
+                    { id: '3', time: '00:50', activity: 'Q&A (Perguntas e Respostas)', description: 'Espaço para interação com a audiência.' }
                 ]
             }
         },
@@ -1115,6 +1115,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             return rest;
         });
 
+        // Clean up arrays to avoid Mongoose validation errors
+        const cleanedAgenda = agenda
+            .filter(a => a.activity || a.title)
+            .map(a => ({ ...a, activity: a.activity || a.title }));
+
+        const cleanedMaterials = materials.filter(m => m.name && m.url);
+        const cleanedCustomFields = customFields.filter(c => c.label && c.value);
+
         setLoading(true);
         try {
             const createdForm = await formService.createForm({
@@ -1144,9 +1152,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 welcomeMessage,
                 associatedLessons: selectedLessons,
                 partners,
-                agenda,
-                materials,
-                customFields,
+                agenda: cleanedAgenda,
+                materials: cleanedMaterials,
+                customFields: cleanedCustomFields,
                 certificateConfig: {
                     ...certificateConfig,
                     signerName: certificateConfig.signerName || (currentUser?.name || ''),
