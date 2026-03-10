@@ -1122,12 +1122,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 exit={{ opacity: 0, x: -20 }}
                                                 transition={{ duration: 0.3 }}
+                                                style={{ textAlign: 'center' }}
                                             >
                                                 {/* STEP CONTENT: FIELDS */}
                                                 {currentStep < numFieldSteps && (isMultiStep ? form.fields.slice(currentStep * FIELDS_PER_STEP, (currentStep + 1) * FIELDS_PER_STEP) : form.fields).map((field) => (
                                                     <div key={field.label} style={{ marginBottom: '1.5rem' }}>
                                                         {field.type !== 'checkbox' && (
-                                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor }}>
+                                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor, textAlign: 'center' }}>
                                                                 {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                             </label>
                                                         )}
@@ -1405,7 +1406,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             document.querySelector('.premium-card')?.scrollIntoView({ behavior: 'smooth' });
                                                         }
                                                     }}
-                                                    style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', color: titleColor, fontWeight: 700, cursor: 'pointer', transition: '0.3s' }}
+                                                    style={{ flex: 1, padding: '0.85rem 1rem', borderRadius: '16px', border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', color: titleColor, fontWeight: 700, cursor: 'pointer', transition: '0.3s', fontSize: '0.9rem' }}
                                                 >
                                                     {t('common.prev') === 'common.prev' ? 'Voltar' : t('common.prev')}
                                                 </button>
@@ -1420,14 +1421,15 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     className="btn-primary premium-btn"
                                                     style={{
                                                         flex: isMultiStep && currentStep > 0 ? 2 : 1,
-                                                        padding: '1.2rem',
+                                                        padding: '0.85rem 1rem',
                                                         background: primaryColor,
                                                         color: isDark ? '#000' : '#fff',
-                                                        borderRadius: '20px',
+                                                        borderRadius: '16px',
                                                         fontWeight: 900,
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        fontSize: '1rem',
+                                                        fontSize: '0.85rem',
+                                                        whiteSpace: 'nowrap',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
