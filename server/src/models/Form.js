@@ -33,7 +33,7 @@ const FormSchema = new mongoose.Schema({
     eventType: { type: String, enum: ['modePresencial', 'modeOnline', 'modeHybrid'], default: 'modeOnline' },
     category: {
         type: String,
-        enum: ['Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Outros'],
+        enum: ['Negócios', 'Tecnologia', 'Arte & Música', 'Educação', 'Saúde & Bem-estar', 'Treinamento', 'Networking', 'Outros'],
         default: 'Outros'
     },
     location: { type: String }, // Physical address

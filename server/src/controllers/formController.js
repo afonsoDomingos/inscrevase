@@ -96,6 +96,19 @@ exports.createForm = async (req, res) => {
         const form = await newForm.save();
         await form.populate('partners', 'name businessName profilePhoto');
 
+        // Handle Lesson Associations (same as updateForm)
+        if (req.body.associatedLessons && Array.isArray(req.body.associatedLessons) && req.body.associatedLessons.length > 0) {
+            try {
+                const Lesson = require('../models/Lesson');
+                const lessonIds = req.body.associatedLessons;
+                await Lesson.updateMany(
+                    { _id: { $in: lessonIds }, createdBy: req.user.id },
+                    { $addToSet: { associatedEvents: form._id } }
+                );
+            } catch (lessonErr) {
+                console.error('Error associating lessons in createForm:', lessonErr);
+            }
+        }
         // Notify new partners
         if (safePartners.length > 0) {
             try {
