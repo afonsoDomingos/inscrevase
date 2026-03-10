@@ -1328,7 +1328,7 @@ function HubContent() {
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                                 >
                                                     <Star
-                                                        size={48}
+                                                        size={36}
                                                         fill={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : 'none'}
                                                         color={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : '#ddd'}
                                                         style={{ transition: 'all 0.2s ease' }}
