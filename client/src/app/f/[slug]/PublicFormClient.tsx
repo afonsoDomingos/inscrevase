@@ -72,6 +72,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [currentStep, setCurrentStep] = useState(0);
     const FIELDS_PER_STEP = 2;
     const [isVideoHidden, setIsVideoHidden] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const isMultiStep = form && form.fields && form.fields.length > 2;
     const numFieldSteps = form ? Math.ceil(form.fields.length / FIELDS_PER_STEP) : 1;
     const hasPaymentStep = isMultiStep && form?.paymentConfig?.enabled;
@@ -129,6 +130,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             transition: { type: "spring", stiffness: 50, damping: 15 }
         }
     };
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth <= 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
 
     useEffect(() => {
         if (slug && !visitRecorded.current) {
@@ -602,7 +610,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
-                                style={{ display: 'flex', flexDirection: 'column' }}
+                                style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'center' : 'flex-start', textAlign: isMobile ? 'center' : 'left' }}
                             >
                                 {/* Strategic Logo Placement */}
                                 {form.logo && (
@@ -675,7 +683,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     </motion.div>
                                 )}
 
-                                <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                                <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
                                     <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: secondaryTextColor }}>
                                         <Eye size={14} /> {form.visits || 0} visitas
@@ -727,7 +735,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         letterSpacing: '-1px',
                                         opacity: titleOpacity,
                                         scale: titleScale,
-                                        y: titleY
+                                        y: titleY,
+                                        textAlign: isMobile ? 'center' : 'left'
                                     }}
                                 >
                                     {form.title}
@@ -739,7 +748,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         color: isDark ? 'rgba(255,255,255,0.9)' : secondaryTextColor,
                                         fontSize: '1.1rem',
                                         lineHeight: '1.8',
-                                        marginBottom: '2.5rem'
+                                        marginBottom: '2.5rem',
+                                        textAlign: isMobile ? 'center' : 'left'
                                     }}
                                 >
                                     <div className="markdown-content">
