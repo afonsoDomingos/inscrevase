@@ -105,7 +105,7 @@ const FormSchema = new mongoose.Schema({
     }],
     materials: [{
         name: { type: String, required: true },
-        url: { type: String, required: true },
+        url: { type: String }, // Removed required: true to allow placeholders
         type: { type: String, enum: ['pdf', 'video', 'link', 'zip', 'other'], default: 'other' },
         size: { type: String }, // Ex: "2.5 MB"
         availableAfterEvent: { type: Boolean, default: false }, // Só disponível após o evento
