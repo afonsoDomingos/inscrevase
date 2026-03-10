@@ -1081,16 +1081,24 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             </label>
                                                         )}
                                                         {field.type === 'select' ? (
-                                                            <motion.select
-                                                                whileFocus={{ scale: 1.01 }}
-                                                                required={field.required}
-                                                                onChange={(e) => handleInputChange(field.label, e.target.value)}
-                                                                className="premium-input"
-                                                                style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', cursor: 'pointer' }}
-                                                            >
-                                                                <option value="">{t('form.select')}</option>
-                                                                {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                            </motion.select>
+                                                            <div style={{ position: 'relative' }}>
+                                                                <motion.select
+                                                                    whileFocus={{ scale: 1.01 }}
+                                                                    required={field.required}
+                                                                    value={formData[field.label] || ''}
+                                                                    onChange={(e) => handleInputChange(field.label, e.target.value)}
+                                                                    className="premium-input"
+                                                                    style={{ width: '100%', padding: '1.2rem', paddingRight: '3rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem', cursor: 'pointer', appearance: 'none', WebkitAppearance: 'none' }}
+                                                                >
+                                                                    <option value="" disabled>{t('form.select')}</option>
+                                                                    {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                                </motion.select>
+                                                                <div style={{ position: 'absolute', right: '1.2rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: textColor, opacity: 0.6 }}>
+                                                                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                    </svg>
+                                                                </div>
+                                                            </div>
                                                         ) : field.type === 'textarea' ? (
                                                             <motion.textarea
                                                                 whileFocus={{ scale: 1.01 }}
@@ -1104,7 +1112,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                         ) : field.type === 'radio' ? (
                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                                                 {(field.options || []).map((opt) => (
-                                                                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: formData[field.label] === opt ? `${primaryColor}15` : 'rgba(255,255,255,0.02)', borderRadius: '16px', border: `1px solid ${formData[field.label] === opt ? primaryColor : borderColor}`, transition: '0.2s' }}>
+                                                                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: formData[field.label] === opt ? `${primaryColor}15` : inputBg, borderRadius: '16px', border: `1px solid ${formData[field.label] === opt ? primaryColor : borderColor}`, transition: '0.2s' }}>
                                                                         <input
                                                                             type="radio"
                                                                             name={field.label}
@@ -1124,7 +1132,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                         const currentValues = formData[field.label] ? formData[field.label].split(', ') : [];
                                                                         const isChecked = currentValues.includes(opt);
                                                                         return (
-                                                                            <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: isChecked ? `${primaryColor}15` : 'rgba(255,255,255,0.02)', borderRadius: '16px', border: `1px solid ${isChecked ? primaryColor : borderColor}`, transition: '0.2s' }}>
+                                                                            <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: isChecked ? `${primaryColor}15` : inputBg, borderRadius: '16px', border: `1px solid ${isChecked ? primaryColor : borderColor}`, transition: '0.2s' }}>
                                                                                 <input
                                                                                     type="checkbox"
                                                                                     value={opt}
@@ -1145,7 +1153,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                         );
                                                                     })
                                                                 ) : (
-                                                                    <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '1.2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: `1px solid ${borderColor}` }}>
+                                                                    <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '1.2rem', background: inputBg, borderRadius: '16px', border: `1px solid ${borderColor}` }}>
                                                                         <input
                                                                             type="checkbox"
                                                                             required={field.required}
