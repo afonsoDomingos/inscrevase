@@ -1303,7 +1303,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 </motion.div>
                                                             )}
                                                             {paymentMode === 'manual' && (
-                                                                <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                                <motion.div key="manual" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center' }}>
                                                                     {/* Manual Payment Details Card */}
                                                                     <div style={{
                                                                         background: isDark ? 'rgba(255,215,0,0.05)' : '#fff9e6',
@@ -1313,20 +1313,20 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                         marginBottom: '1.5rem',
                                                                         fontSize: '0.85rem'
                                                                     }}>
-                                                                        <h5 style={{ fontWeight: 800, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px', color: primaryColor }}>
+                                                                        <h5 style={{ fontWeight: 800, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: primaryColor }}>
                                                                             <Info size={16} /> {t('form.paymentDetails')}
                                                                         </h5>
 
                                                                         <div style={{ display: 'grid', gap: '10px' }}>
                                                                             {/* Legacy M-Pesa/eMola for backward compatibility */}
                                                                             {form.paymentConfig?.mpesaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('M-Pesa')) && (
-                                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                                                                                     <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> M-Pesa:</span>
                                                                                     <span style={{ fontWeight: 700 }}>{form.paymentConfig.mpesaNumber}</span>
                                                                                 </div>
                                                                             )}
                                                                             {form.paymentConfig?.emolaNumber && !form.paymentConfig.manualMethods?.some(m => m.label.includes('e-Mola')) && (
-                                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                                                                                     <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> e-Mola:</span>
                                                                                     <span style={{ fontWeight: 700 }}>{form.paymentConfig.emolaNumber}</span>
                                                                                 </div>
@@ -1334,7 +1334,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                                                             {/* Dynamic Custom Methods */}
                                                                             {form.paymentConfig?.manualMethods?.map((method, idx) => (
-                                                                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                <div key={idx} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                                                                                     <span style={{ color: secondaryTextColor, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                                                                                         {method.label.toLowerCase().includes('mobile') || method.label.toLowerCase().includes('money') || method.label.toLowerCase().includes('phone') ? <Phone size={14} /> : <Coins size={14} />}
                                                                                         {method.label}:
