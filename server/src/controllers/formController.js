@@ -167,7 +167,7 @@ exports.createForm = async (req, res) => {
     } catch (err) {
         console.error("CRITICAL Create Form Error:", err);
         res.status(500).json({
-            message: 'Erro interno ao criar formulário',
+            message: 'Erro interno ao criar formulário: ' + err.message,
             error: err.message,
             details: err.errors
         });
