@@ -72,7 +72,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [currentStep, setCurrentStep] = useState(0);
     const FIELDS_PER_STEP = 2;
     const [isVideoHidden, setIsVideoHidden] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
     const isMultiStep = form && form.fields && form.fields.length > 2;
     const numFieldSteps = form ? Math.ceil(form.fields.length / FIELDS_PER_STEP) : 1;
     const hasPaymentStep = isMultiStep && form?.paymentConfig?.enabled;
@@ -130,13 +129,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             transition: { type: "spring", stiffness: 50, damping: 15 }
         }
     };
-
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth <= 768);
-        check();
-        window.addEventListener('resize', check);
-        return () => window.removeEventListener('resize', check);
-    }, []);
 
     useEffect(() => {
         if (slug && !visitRecorded.current) {
