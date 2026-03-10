@@ -1346,9 +1346,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             document.querySelector('.premium-card')?.scrollIntoView({ behavior: 'smooth' });
                                                         }
                                                     }}
-                                                    style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', border: `1px solid ${borderColor}`, background: 'rgba(255,255,255,0.03)', color: titleColor, fontWeight: 700, cursor: 'pointer', transition: '0.3s' }}
+                                                    style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', color: titleColor, fontWeight: 700, cursor: 'pointer', transition: '0.3s' }}
                                                 >
-                                                    {t('common.prev') || 'Voltar'}
+                                                    {t('common.prev') === 'common.prev' ? 'Voltar' : t('common.prev')}
                                                 </button>
                                             )}
 
