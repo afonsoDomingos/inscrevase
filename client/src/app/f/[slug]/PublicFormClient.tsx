@@ -610,7 +610,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
-                                style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'center' : 'flex-start', textAlign: isMobile ? 'center' : 'left' }}
+                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
                             >
                                 {/* Strategic Logo Placement */}
                                 {form.logo && (
@@ -683,7 +683,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     </motion.div>
                                 )}
 
-                                <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
+                                <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                                     <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: secondaryTextColor }}>
                                         <Eye size={14} /> {form.visits || 0} visitas
@@ -736,7 +736,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         opacity: titleOpacity,
                                         scale: titleScale,
                                         y: titleY,
-                                        textAlign: isMobile ? 'center' : 'left'
+                                        textAlign: 'center'
                                     }}
                                 >
                                     {form.title}
@@ -749,7 +749,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         fontSize: '1.1rem',
                                         lineHeight: '1.8',
                                         marginBottom: '2.5rem',
-                                        textAlign: isMobile ? 'center' : 'left'
+                                        textAlign: 'center'
                                     }}
                                 >
                                     <div className="markdown-content">
