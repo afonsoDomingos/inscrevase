@@ -30,18 +30,30 @@ export default function Whiteboard({
     backgroundImage = null
 }: WhiteboardProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const bgCanvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+    const bgContextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const historyRef = useRef<any[]>([]);
+    const currentStrokeIdRef = useRef<string>('');
 
     const drawData = useCallback((data: any) => {
         const context = contextRef.current;
         if (!context) return;
 
         const { type, x0, y0, x1, y1, color, size, text } = data;
+
         context.beginPath();
-        context.strokeStyle = color;
-        context.fillStyle = color;
+        if (type === 'eraser') {
+            context.globalCompositeOperation = 'destination-out';
+            context.strokeStyle = 'rgba(0,0,0,1)';
+            context.fillStyle = 'rgba(0,0,0,1)';
+        } else {
+            context.globalCompositeOperation = 'source-over';
+            context.strokeStyle = color;
+            context.fillStyle = color;
+        }
+
         context.lineWidth = size;
         context.lineCap = 'round';
         context.lineJoin = 'round';
@@ -76,6 +88,8 @@ export default function Whiteboard({
         }
 
         context.closePath();
+        // Always reset to normal drawing
+        context.globalCompositeOperation = 'source-over';
     }, []);
 
     const drawGrid = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -96,6 +110,35 @@ export default function Whiteboard({
         ctx.restore();
     }, [isDark]);
 
+    const redrawBg = useCallback(() => {
+        const canvas = bgCanvasRef.current;
+        const context = bgContextRef.current;
+        if (!context || !canvas) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+
+        context.clearRect(0, 0, width, height);
+        // Base fill color if no image or even with image to hide transparency behind
+        context.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
+        context.fillRect(0, 0, width, height);
+
+        if (backgroundImage) {
+            const img = new Image();
+            img.src = backgroundImage;
+            img.onload = () => {
+                const ratio = Math.min(width / img.width, height / img.height);
+                const x = (width - img.width * ratio) / 2;
+                const y = (height - img.height * ratio) / 2;
+                context.drawImage(img, x, y, img.width * ratio, img.height * ratio);
+                drawGrid(context, canvas.width, canvas.height);
+            };
+        } else {
+            drawGrid(context, canvas.width, canvas.height);
+        }
+    }, [drawGrid, backgroundImage, isDark]);
+
     const redrawHistory = useCallback(() => {
         const context = contextRef.current;
         const canvas = canvasRef.current;
@@ -106,27 +149,8 @@ export default function Whiteboard({
         const height = canvas.height / dpr;
 
         context.clearRect(0, 0, width, height);
-
-        // Draw Background Image
-        if (backgroundImage) {
-            const img = new Image();
-            img.src = backgroundImage;
-            img.onload = () => {
-                const ratio = Math.min(width / img.width, height / img.height);
-                const x = (width - img.width * ratio) / 2;
-                const y = (height - img.height * ratio) / 2;
-                context.drawImage(img, x, y, img.width * ratio, img.height * ratio);
-
-                // Draw Grid on top of image but more subtle
-                drawGrid(context, canvas.width, canvas.height);
-                historyRef.current.forEach(drawData);
-            };
-        } else {
-            // Draw Grid
-            drawGrid(context, canvas.width, canvas.height);
-            historyRef.current.forEach(drawData);
-        }
-    }, [drawData, drawGrid, backgroundImage]);
+        historyRef.current.forEach(drawData);
+    }, [drawData]);
 
     const clearCanvas = useCallback(() => {
         const canvas = canvasRef.current;
@@ -137,7 +161,7 @@ export default function Whiteboard({
         context.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
         historyRef.current = [];
-        redrawHistory(); // To redraw grid
+        redrawHistory();
 
         if (isMentor) {
             socket.emit('live_board:action', { formId, action: 'clear' });
@@ -145,7 +169,17 @@ export default function Whiteboard({
     }, [formId, isMentor, socket, redrawHistory]);
 
     const undoAction = useCallback(() => {
-        historyRef.current.pop();
+        const arr = historyRef.current;
+        if (arr.length > 0) {
+            const lastItem = arr[arr.length - 1];
+            if (lastItem.strokeId) {
+                while (arr.length > 0 && arr[arr.length - 1].strokeId === lastItem.strokeId) {
+                    arr.pop();
+                }
+            } else {
+                arr.pop();
+            }
+        }
         redrawHistory();
         if (isMentor) {
             socket.emit('live_board:action', { formId, action: 'undo' });
@@ -161,12 +195,28 @@ export default function Whiteboard({
             const rect = canvas.parentElement?.getBoundingClientRect();
             if (rect) {
                 const dpr = window.devicePixelRatio || 1;
+
+                // Adjust BG Canvas
+                const bgCanvas = bgCanvasRef.current;
+                if (bgCanvas) {
+                    bgCanvas.width = rect.width * dpr;
+                    bgCanvas.height = rect.height * dpr;
+                    bgCanvas.style.width = `${rect.width}px`;
+                    bgCanvas.style.height = `${rect.height}px`;
+                    const bgCtx = bgCanvas.getContext('2d');
+                    if (bgCtx) {
+                        bgCtx.scale(dpr, dpr);
+                        bgContextRef.current = bgCtx;
+                    }
+                }
+
+                // Adjust Main Canvas
                 canvas.width = rect.width * dpr;
                 canvas.height = rect.height * dpr;
                 canvas.style.width = `${rect.width}px`;
                 canvas.style.height = `${rect.height}px`;
 
-                const context = canvas.getContext('2d');
+                const context = canvas.getContext('2d', { alpha: true });
                 if (context) {
                     context.scale(dpr, dpr);
                     context.lineCap = 'round';
@@ -175,7 +225,8 @@ export default function Whiteboard({
                     context.lineWidth = brushSize;
                     contextRef.current = context;
 
-                    // Redraw history if resized
+                    // Redraw all content
+                    redrawBg();
                     redrawHistory();
                 }
             }
@@ -218,14 +269,19 @@ export default function Whiteboard({
                 socket.off('live_board:history');
             }
         };
-    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, undoAction, color, brushSize, isDark]);
+    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark]);
+
+    // Independent effect for drawing the background to avoid re-binding socket
+    useEffect(() => {
+        redrawBg();
+    }, [redrawBg]);
 
     useEffect(() => {
         if (contextRef.current) {
-            contextRef.current.strokeStyle = isEraser ? (isDark ? '#1a1a1a' : '#ffffff') : color;
+            contextRef.current.strokeStyle = color;
             contextRef.current.lineWidth = brushSize;
         }
-    }, [color, brushSize, isEraser, isDark]);
+    }, [color, brushSize]);
 
     useEffect(() => {
         if (undoTrigger) undoAction();
@@ -249,6 +305,7 @@ export default function Whiteboard({
         }
         const data = {
             type: 'text',
+            strokeId: Math.random().toString(36).substring(7),
             x0: textInput.x,
             y0: textInput.y,
             text,
@@ -270,6 +327,7 @@ export default function Whiteboard({
             return;
         }
 
+        currentStrokeIdRef.current = Math.random().toString(36).substring(7);
         setIsDrawing(true);
         lastPointRef.current = { x: offsetX, y: offsetY };
 
@@ -307,12 +365,13 @@ export default function Whiteboard({
         if (tool === 'pen' || tool === 'eraser') {
             const data = {
                 type: tool,
+                strokeId: currentStrokeIdRef.current,
                 x0: lastPointRef.current.x,
                 y0: lastPointRef.current.y,
                 x1: offsetX,
                 y1: offsetY,
-                color: isEraser ? (isDark ? '#1a1a1a' : '#ffffff') : color,
-                size: brushSize
+                color: tool === 'eraser' ? 'rgba(0,0,0,1)' : color,
+                size: tool === 'eraser' ? brushSize * 2 : brushSize
             };
 
             drawData(data);
@@ -341,6 +400,7 @@ export default function Whiteboard({
             const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
             const data = {
                 type: tool,
+                strokeId: currentStrokeIdRef.current,
                 x0: lastPointRef.current.x,
                 y0: lastPointRef.current.y,
                 x1: offsetX,
@@ -355,6 +415,7 @@ export default function Whiteboard({
 
         setIsDrawing(false);
         lastPointRef.current = null;
+        currentStrokeIdRef.current = '';
         contextRef.current?.closePath();
     };
 
@@ -373,7 +434,17 @@ export default function Whiteboard({
     };
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: isDark ? '#1a1a1a' : '#fff' }}>
+            <canvas
+                ref={bgCanvasRef}
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    pointerEvents: 'none',
+                    display: 'block'
+                }}
+            />
             <canvas
                 ref={canvasRef}
                 onMouseDown={startDrawing}
@@ -384,8 +455,10 @@ export default function Whiteboard({
                 onTouchMove={draw}
                 onTouchEnd={stopDrawing}
                 style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
                     cursor: isMentor ? (tool === 'laser' ? 'none' : (isEraser ? 'crosshair' : 'pencil')) : 'default',
-                    background: isDark ? '#1a1a1a' : '#fff',
                     display: 'block',
                     touchAction: 'none'
                 }}

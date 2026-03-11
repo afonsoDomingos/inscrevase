@@ -164,7 +164,17 @@ class LiveBoardService {
                 if (action === 'clear') {
                     session.history = [];
                 } else if (action === 'undo') {
-                    session.history.pop();
+                    if (session.history.length > 0) {
+                        const lastItem = session.history[session.history.length - 1];
+                        if (lastItem.strokeId) {
+                            // Pop all segments with the same strokeId
+                            while (session.history.length > 0 && session.history[session.history.length - 1].strokeId === lastItem.strokeId) {
+                                session.history.pop();
+                            }
+                        } else {
+                            session.history.pop();
+                        }
+                    }
                 }
                 socket.to(`live_board_${formId}`).emit('live_board:action', action);
             }
