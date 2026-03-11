@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 
 interface WhiteboardProps {
     isMentor: boolean;
@@ -11,6 +12,9 @@ interface WhiteboardProps {
     socket: any;
     formId: string;
     undoTrigger?: number;
+    tool: 'pen' | 'eraser' | 'rectangle' | 'circle' | 'arrow' | 'laser' | 'text';
+    isDark?: boolean;
+    backgroundImage?: string | null;
 }
 
 export default function Whiteboard({
@@ -20,7 +24,10 @@ export default function Whiteboard({
     isEraser,
     socket,
     formId,
-    undoTrigger
+    undoTrigger,
+    tool,
+    isDark = false,
+    backgroundImage = null
 }: WhiteboardProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -31,23 +38,53 @@ export default function Whiteboard({
         const context = contextRef.current;
         if (!context) return;
 
-        const { x0, y0, x1, y1, color, size } = data;
+        const { type, x0, y0, x1, y1, color, size, text } = data;
         context.beginPath();
         context.strokeStyle = color;
+        context.fillStyle = color;
         context.lineWidth = size;
-        context.moveTo(x0, y0);
-        context.lineTo(x1, y1);
-        context.stroke();
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+
+        if (!type || type === 'pen' || type === 'eraser') {
+            context.moveTo(x0, y0);
+            context.lineTo(x1, y1);
+            context.stroke();
+        } else if (type === 'rectangle') {
+            context.strokeRect(x0, y0, x1 - x0, y1 - y0);
+        } else if (type === 'circle') {
+            const radius = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
+            context.arc(x0, y0, radius, 0, Math.PI * 2);
+            context.stroke();
+        } else if (type === 'arrow') {
+            const headlen = 15;
+            const angle = Math.atan2(y1 - y0, x1 - x0);
+            context.moveTo(x0, y0);
+            context.lineTo(x1, y1);
+            context.stroke();
+
+            context.beginPath();
+            context.moveTo(x1, y1);
+            context.lineTo(x1 - headlen * Math.cos(angle - Math.PI / 6), y1 - headlen * Math.sin(angle - Math.PI / 6));
+            context.moveTo(x1, y1);
+            context.lineTo(x1 - headlen * Math.cos(angle + Math.PI / 6), y1 - headlen * Math.sin(angle + Math.PI / 6));
+            context.stroke();
+        } else if (type === 'text' && text) {
+            context.font = `${size * 6}px Inter, sans-serif`;
+            context.textBaseline = 'top';
+            context.fillText(text, x0, y0);
+        }
+
         context.closePath();
     }, []);
 
     const drawGrid = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
-        const dotSize = 1.5;
-        const spacing = 35;
+        const dotSize = 1.2;
+        const spacing = 40;
         const dpr = window.devicePixelRatio || 1;
 
         ctx.save();
-        ctx.fillStyle = '#e5e7eb'; // Light gray for dots
+        ctx.fillStyle = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
         for (let x = spacing; x < width / dpr; x += spacing) {
             for (let y = spacing; y < height / dpr; y += spacing) {
@@ -57,7 +94,7 @@ export default function Whiteboard({
             }
         }
         ctx.restore();
-    }, []);
+    }, [isDark]);
 
     const redrawHistory = useCallback(() => {
         const context = contextRef.current;
@@ -70,11 +107,26 @@ export default function Whiteboard({
 
         context.clearRect(0, 0, width, height);
 
-        // Draw Grid
-        drawGrid(context, canvas.width, canvas.height);
+        // Draw Background Image
+        if (backgroundImage) {
+            const img = new Image();
+            img.src = backgroundImage;
+            img.onload = () => {
+                const ratio = Math.min(width / img.width, height / img.height);
+                const x = (width - img.width * ratio) / 2;
+                const y = (height - img.height * ratio) / 2;
+                context.drawImage(img, x, y, img.width * ratio, img.height * ratio);
 
-        historyRef.current.forEach(drawData);
-    }, [drawData, drawGrid]);
+                // Draw Grid on top of image but more subtle
+                drawGrid(context, canvas.width, canvas.height);
+                historyRef.current.forEach(drawData);
+            };
+        } else {
+            // Draw Grid
+            drawGrid(context, canvas.width, canvas.height);
+            historyRef.current.forEach(drawData);
+        }
+    }, [drawData, drawGrid, backgroundImage]);
 
     const clearCanvas = useCallback(() => {
         const canvas = canvasRef.current;
@@ -139,6 +191,10 @@ export default function Whiteboard({
                 drawData(data);
             });
 
+            socket.on('live_board:laser', (data: any) => {
+                showLaser(data.x, data.y);
+            });
+
             socket.on('live_board:action', (action: string) => {
                 if (action === 'clear') {
                     clearCanvas();
@@ -157,65 +213,146 @@ export default function Whiteboard({
             window.removeEventListener('resize', setCanvasSize);
             if (socket) {
                 socket.off('live_board:draw');
+                socket.off('live_board:laser');
                 socket.off('live_board:action');
                 socket.off('live_board:history');
             }
         };
-    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, undoAction, color, brushSize]);
+    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, undoAction, color, brushSize, isDark]);
 
     useEffect(() => {
         if (contextRef.current) {
-            contextRef.current.strokeStyle = isEraser ? '#ffffff' : color;
+            contextRef.current.strokeStyle = isEraser ? (isDark ? '#1a1a1a' : '#ffffff') : color;
             contextRef.current.lineWidth = brushSize;
         }
-    }, [color, brushSize, isEraser]);
+    }, [color, brushSize, isEraser, isDark]);
 
     useEffect(() => {
         if (undoTrigger) undoAction();
     }, [undoTrigger, undoAction]);
 
     const lastPointRef = useRef<{ x: number, y: number } | null>(null);
+    const [laserPos, setLaserPos] = useState<{ x: number, y: number } | null>(null);
+    const [textInput, setTextInput] = useState<{ x: number, y: number } | null>(null);
+    const laserTimeoutRef = useRef<any>(null);
+
+    const showLaser = (x: number, y: number) => {
+        setLaserPos({ x, y });
+        if (laserTimeoutRef.current) clearTimeout(laserTimeoutRef.current);
+        laserTimeoutRef.current = setTimeout(() => setLaserPos(null), 1000);
+    };
+
+    const handleTextSubmit = (text: string) => {
+        if (!textInput || !text) {
+            setTextInput(null);
+            return;
+        }
+        const data = {
+            type: 'text',
+            x0: textInput.x,
+            y0: textInput.y,
+            text,
+            color,
+            size: brushSize
+        };
+        drawData(data);
+        historyRef.current.push(data);
+        socket.emit('live_board:draw', { formId, data });
+        setTextInput(null);
+    };
 
     const startDrawing = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
         if (!isMentor) return;
         const { offsetX, offsetY } = getCoordinates(nativeEvent);
+
+        if (tool === 'text') {
+            setTextInput({ x: offsetX, y: offsetY });
+            return;
+        }
+
         setIsDrawing(true);
         lastPointRef.current = { x: offsetX, y: offsetY };
-        contextRef.current?.beginPath();
-        contextRef.current?.moveTo(offsetX, offsetY);
+
+        if (tool === 'pen' || tool === 'eraser') {
+            contextRef.current?.beginPath();
+            contextRef.current?.moveTo(offsetX, offsetY);
+        } else if (tool === 'laser') {
+            showLaser(offsetX, offsetY);
+            socket.emit('live_board:laser', { formId, x: offsetX, y: offsetY });
+        }
     };
 
     const draw = (event: React.MouseEvent | React.TouchEvent) => {
-        if (!isDrawing || !isMentor) return;
+        if (!isMentor) return;
+
+        const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
+
+        if (tool === 'laser') {
+            if (event.type === 'touchmove') event.preventDefault();
+            showLaser(offsetX, offsetY);
+            socket.emit('live_board:laser', { formId, x: offsetX, y: offsetY });
+            return;
+        }
+
+        if (!isDrawing) return;
 
         // Prevent scrolling while drawing on mobile
         if (event.type === 'touchmove') {
             event.preventDefault();
         }
 
-        const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
         const context = contextRef.current;
         if (!context || !lastPointRef.current) return;
 
-        const data = {
-            x0: lastPointRef.current.x,
-            y0: lastPointRef.current.y,
-            x1: offsetX,
-            y1: offsetY,
-            color: isEraser ? '#ffffff' : color,
-            size: brushSize
-        };
+        if (tool === 'pen' || tool === 'eraser') {
+            const data = {
+                type: tool,
+                x0: lastPointRef.current.x,
+                y0: lastPointRef.current.y,
+                x1: offsetX,
+                y1: offsetY,
+                color: isEraser ? (isDark ? '#1a1a1a' : '#ffffff') : color,
+                size: brushSize
+            };
 
-        drawData(data);
-        historyRef.current.push(data);
-        socket.emit('live_board:draw', { formId, data });
-
-        // Update last point to current point for next segment
-        lastPointRef.current = { x: offsetX, y: offsetY };
+            drawData(data);
+            historyRef.current.push(data);
+            socket.emit('live_board:draw', { formId, data });
+            lastPointRef.current = { x: offsetX, y: offsetY };
+        } else {
+            // Preview for shapes
+            redrawHistory();
+            drawData({
+                type: tool,
+                x0: lastPointRef.current.x,
+                y0: lastPointRef.current.y,
+                x1: offsetX,
+                y1: offsetY,
+                color: color,
+                size: brushSize
+            });
+        }
     };
 
-    const stopDrawing = () => {
-        if (!isMentor) return;
+    const stopDrawing = (event: React.MouseEvent | React.TouchEvent) => {
+        if (!isMentor || !isDrawing) return;
+
+        if (tool !== 'pen' && tool !== 'eraser' && tool !== 'laser' && lastPointRef.current) {
+            const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
+            const data = {
+                type: tool,
+                x0: lastPointRef.current.x,
+                y0: lastPointRef.current.y,
+                x1: offsetX,
+                y1: offsetY,
+                color: color,
+                size: brushSize
+            };
+            historyRef.current.push(data);
+            socket.emit('live_board:draw', { formId, data });
+            redrawHistory();
+        }
+
         setIsDrawing(false);
         lastPointRef.current = null;
         contextRef.current?.closePath();
@@ -236,20 +373,67 @@ export default function Whiteboard({
     };
 
     return (
-        <canvas
-            ref={canvasRef}
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            onMouseOut={stopDrawing}
-            onTouchStart={startDrawing}
-            onTouchMove={draw}
-            onTouchEnd={stopDrawing}
-            style={{
-                cursor: isMentor ? (isEraser ? 'crosshair' : 'pencil') : 'default',
-                background: '#fff',
-                display: 'block'
-            }}
-        />
+        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+            <canvas
+                ref={canvasRef}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseOut={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+                style={{
+                    cursor: isMentor ? (tool === 'laser' ? 'none' : (isEraser ? 'crosshair' : 'pencil')) : 'default',
+                    background: isDark ? '#1a1a1a' : '#fff',
+                    display: 'block',
+                    touchAction: 'none'
+                }}
+            />
+            {laserPos && (
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    style={{
+                        position: 'absolute',
+                        left: laserPos.x - 10,
+                        top: laserPos.y - 10,
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        background: '#ff4757',
+                        boxShadow: '0 0 15px #ff4757, 0 0 30px #ff4757',
+                        pointerEvents: 'none',
+                        zIndex: 100
+                    }}
+                />
+            )}
+            {textInput && (
+                <div style={{
+                    position: 'absolute',
+                    left: textInput.x,
+                    top: textInput.y,
+                    zIndex: 200
+                }}>
+                    <input
+                        autoFocus
+                        style={{
+                            background: 'transparent',
+                            border: '1px dashed #ccc',
+                            color: color,
+                            font: `${brushSize * 6}px Inter, sans-serif`,
+                            outline: 'none',
+                            padding: '2px'
+                        }}
+                        onBlur={(e) => handleTextSubmit(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleTextSubmit(e.currentTarget.value);
+                            if (e.key === 'Escape') setTextInput(null);
+                        }}
+                    />
+                </div>
+            )}
+        </div>
     );
 }
