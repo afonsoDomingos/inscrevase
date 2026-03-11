@@ -44,6 +44,7 @@ import CommunityChat from '@/components/hub/CommunityChat';
 import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
 import { Sparkles as SparklesIcon } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { getSocketUrl, getSocketOptions } from '@/lib/socketConfig';
 
 const getEmbedUrl = (url?: string) => {
     if (!url) return undefined;
@@ -241,11 +242,7 @@ function HubContent() {
 
                 // Setup board status monitor (For both paths)
                 if (!statusSocketRef.current && id) {
-                    const token = authService.getToken();
-                    const s = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
-                        auth: { token },
-                        transports: ['websocket']
-                    });
+                    const s = io(getSocketUrl(), getSocketOptions());
 
                     s.on('connect', () => {
                         console.log('[Hub] Connected to status socket');

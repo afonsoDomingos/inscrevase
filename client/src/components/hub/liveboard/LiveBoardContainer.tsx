@@ -19,6 +19,7 @@ import Image from 'next/image';
 import Whiteboard from './Whiteboard';
 import { io, Socket } from 'socket.io-client';
 import { authService } from '@/lib/authService';
+import { getSocketUrl, getSocketOptions } from '@/lib/socketConfig';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
 
@@ -56,11 +57,7 @@ export default function LiveBoardContainer({
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
     useEffect(() => {
-        const token = authService.getToken();
-        const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
-            auth: { token },
-            transports: ['websocket']
-        });
+        const newSocket = io(getSocketUrl(), getSocketOptions());
 
         newSocket.on('connect', () => {
             console.log('[LiveBoard] Connected to socket');
