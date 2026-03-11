@@ -290,8 +290,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             position: 'relative',
             minHeight: '100vh',
             color: textColor,
-            fontFamily: form.theme?.fontFamily || 'Inter',
-            overflowX: 'hidden'
+            fontFamily: form.theme?.fontFamily || 'Inter'
         }}>
             {form.creator?.facebookPixelId && <MetaPixel pixelId={form.creator.facebookPixelId} />}
             {/* Animated Background */}
@@ -416,12 +415,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     }
                 }
                 @media (max-width: 768px) {
-                    * {
-                        box-sizing: border-box !important;
+                    img, video, iframe {
                         max-width: 100% !important;
-                    }
-                    html, body {
-                        overflow-x: hidden !important;
                     }
                     .responsive-form-grid.has-vsl,
                     .responsive-form-grid.no-vsl,
@@ -433,7 +428,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         align-items: center !important;
                         text-align: center !important;
                         width: 100% !important;
-                        overflow-x: hidden !important;
                         padding-left: 0 !important;
                         padding-right: 0 !important;
                     }
@@ -457,7 +451,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     }
                     .form-column {
                         width: 100% !important;
-                        overflow-x: hidden !important;
                     }
                     .form-column > div {
                         margin-left: auto !important;
@@ -482,7 +475,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         box-sizing: border-box !important;
                     }
                     .responsive-form-grid {
-                        overflow-x: hidden !important;
                         width: 100% !important;
                     }
                 }
@@ -618,7 +610,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         </div>
                     </motion.div>
                 ) : (
-                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: 'clamp(16px, 5vw, 40px)', paddingRight: 'clamp(16px, 5vw, 40px)', boxSizing: 'border-box', overflowX: 'hidden', width: '100%' }}>
+                    <div key="form" className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', paddingTop: '40px', paddingBottom: '80px', paddingLeft: 'clamp(16px, 5vw, 40px)', paddingRight: 'clamp(16px, 5vw, 40px)', boxSizing: 'border-box' }}>
 
                         {/* Logo removed from absolute positioning */}
 
@@ -794,16 +786,16 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '12px',
-                                            padding: '16px 28px',
+                                            padding: '12px 20px',
                                             background: '#25D366',
                                             color: '#ffffff',
                                             textDecoration: 'none',
-                                            borderRadius: '16px',
+                                            borderRadius: '12px',
                                             fontWeight: 800,
-                                            fontSize: '1rem',
+                                            fontSize: '0.9rem',
                                             border: 'none',
-                                            marginBottom: '2rem',
-                                            boxShadow: '0 8px 20px rgba(37, 211, 102, 0.25)',
+                                            marginBottom: '1rem',
+                                            boxShadow: '0 8px 15px rgba(37, 211, 102, 0.2)',
                                             width: '100%',
                                         }}
                                     >
@@ -820,42 +812,42 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         variants={itemVariants}
                                         style={{
                                             display: 'grid',
-                                            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                                            gap: '15px',
-                                            marginBottom: '2rem'
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                                            gap: '10px',
+                                            marginBottom: '1rem'
                                         }}
                                     >
                                         {(form.totalStudents !== undefined && form.totalStudents > 0) && (
-                                            <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                                <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
-                                                    <Users size={24} />
+                                            <div style={{ background: cardBg, padding: '0.8rem', borderRadius: '12px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                                <div style={{ color: primaryColor, marginBottom: '6px', display: 'flex', justifyContent: 'center' }}>
+                                                    <Users size={20} />
                                                 </div>
-                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalStudents}+</div>
-                                                <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.students')}</div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: titleColor }}>{form.totalStudents}+</div>
+                                                <div style={{ fontSize: '0.65rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.students')}</div>
                                             </div>
                                         )}
 
                                         {(form.totalEvents !== undefined && form.totalEvents > 0) && (
-                                            <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                                <div style={{ color: primaryColor, marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
-                                                    <Zap size={24} />
+                                            <div style={{ background: cardBg, padding: '0.8rem', borderRadius: '12px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                                <div style={{ color: primaryColor, marginBottom: '6px', display: 'flex', justifyContent: 'center' }}>
+                                                    <Zap size={20} />
                                                 </div>
-                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.totalEvents}+</div>
-                                                <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.eventsCreated')}</div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: titleColor }}>{form.totalEvents}+</div>
+                                                <div style={{ fontSize: '0.65rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.eventsCreated')}</div>
                                             </div>
                                         )}
 
                                         {(form.averageRating !== undefined && form.averageRating > 0) && (
-                                            <div style={{ background: cardBg, padding: '1.25rem', borderRadius: '20px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                                <div style={{ color: '#FFD700', marginBottom: '8px', display: 'flex', justifyContent: 'center', gap: '2px' }}>
-                                                    <Star size={18} fill="#FFD700" />
-                                                    <Star size={18} fill="#FFD700" />
-                                                    <Star size={18} fill="#FFD700" />
-                                                    <Star size={18} fill="#FFD700" />
-                                                    <Star size={18} fill="#FFD700" />
+                                            <div style={{ background: cardBg, padding: '0.8rem', borderRadius: '12px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
+                                                <div style={{ color: '#FFD700', marginBottom: '6px', display: 'flex', justifyContent: 'center', gap: '2px' }}>
+                                                    <Star size={14} fill="#FFD700" />
+                                                    <Star size={14} fill="#FFD700" />
+                                                    <Star size={14} fill="#FFD700" />
+                                                    <Star size={14} fill="#FFD700" />
+                                                    <Star size={14} fill="#FFD700" />
                                                 </div>
-                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: titleColor }}>{form.averageRating}</div>
-                                                <div style={{ fontSize: '0.7rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.eventRating.stats.average')}</div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: titleColor }}>{form.averageRating}</div>
+                                                <div style={{ fontSize: '0.65rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.eventRating.stats.average')}</div>
                                             </div>
                                         )}
                                     </motion.div>
@@ -864,15 +856,15 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 {form.creator && (
                                     <motion.div
                                         variants={itemVariants}
-                                        whileHover={{ y: -5, boxShadow: `0 10px 30px ${primaryColor}10` }}
-                                        style={{ background: cardBg, padding: '1.5rem', borderRadius: '24px', border: `1px solid ${borderColor}`, marginBottom: '2rem', transition: 'all 0.3s ease' }}
+                                        whileHover={{ y: -3, boxShadow: `0 8px 25px ${primaryColor}10` }}
+                                        style={{ background: cardBg, padding: '1rem', borderRadius: '16px', border: `1px solid ${borderColor}`, marginBottom: '1rem', transition: 'all 0.3s ease' }}
                                     >
-                                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                                            <div style={{ width: '60px', height: '60px', borderRadius: '16px', overflow: 'hidden', border: `2px solid ${primaryColor}40`, flexShrink: 0 }}>
+                                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                            <div style={{ width: '45px', height: '45px', borderRadius: '12px', overflow: 'hidden', border: `2px solid ${primaryColor}40`, flexShrink: 0 }}>
                                                 {form.creator.profilePhoto ? (
-                                                    <Image src={form.creator.profilePhoto} alt={form.creator.name} width={60} height={60} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    <Image src={form.creator.profilePhoto} alt={form.creator.name} width={45} height={45} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                 ) : (
-                                                    <div style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor, fontSize: '1.5rem', fontWeight: 800 }}>
+                                                    <div style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor, fontSize: '1.2rem', fontWeight: 800 }}>
                                                         {form.creator.name.charAt(0)}
                                                     </div>
                                                 )}
@@ -916,7 +908,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     <motion.div
                                         variants={itemVariants}
                                         whileHover={{ scale: 1.02 }}
-                                        style={{ background: cardBg, padding: '1.5rem', borderRadius: '20px', border: `1px solid ${primaryColor}40`, transition: 'all 0.3s ease' }}
+                                        style={{ background: cardBg, padding: '1rem', borderRadius: '16px', border: `1px solid ${primaryColor}40`, transition: 'all 0.3s ease', marginBottom: '1rem' }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1415,7 +1407,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         </AnimatePresence>
 
                                         {/* FORM NAVIGATION BUTTONS */}
-                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
+                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
                                             {isMultiStep && currentStep > 0 && (
                                                 <button
                                                     type="button"
