@@ -12,7 +12,6 @@ import {
     MousePointer2,
     Moon,
     Sun,
-    RotateCcw,
     Layers,
     Eraser,
     Undo,
@@ -31,6 +30,60 @@ import { authService } from '@/lib/authService';
 import { getSocketUrl, getSocketOptions } from '@/lib/socketConfig';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
+
+const RealisticBrush = ({ color, isActive, onClick }: any) => (
+    <button
+        onClick={onClick}
+        style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            transition: 'all 0.2s',
+            transform: isActive ? 'scale(1.2) translateY(-4px)' : 'scale(1)',
+            filter: isActive ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.25))' : 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '2px'
+        }}
+    >
+        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Bristles */}
+            <path d="M12 2C9 2 7 5 7 9C7 11 8.5 12.5 8.5 12.5H15.5C15.5 12.5 17 11 17 9C17 5 15 2 12 2Z" fill={color} />
+            {/* Ferrule */}
+            <rect x="8" y="12.5" width="8" height="4" fill="#C0C0C0" stroke="#888" strokeWidth="0.5" />
+            {/* Handle */}
+            <path d="M10 16.5V28C10 29.1 10.9 30 12 30C13.1 30 14 29.1 14 28V16.5H10Z" fill="#D2B48C" stroke="#A67C52" strokeWidth="0.5" />
+        </svg>
+    </button>
+);
+
+const RealisticEraser = ({ isActive, onClick }: any) => (
+    <button
+        onClick={onClick}
+        style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            transition: 'all 0.2s',
+            transform: isActive ? 'scale(1.2) translateY(-4px)' : 'scale(1)',
+            filter: isActive ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.25))' : 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '2px'
+        }}
+    >
+        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="4" width="12" height="24" rx="2" fill="#4CAF50" stroke="#2E7D32" strokeWidth="1" />
+            <rect x="6" y="12" width="12" height="4" fill="#2E7D32" opacity="0.8" />
+            <rect x="8" y="6" width="2" height="20" fill="white" opacity="0.1" />
+        </svg>
+    </button>
+);
+
 
 interface LiveBoardContainerProps {
     formId: string;
@@ -572,33 +625,26 @@ export default function LiveBoardContainer({
                 }}>
                     {isMentor ? (
                         <>
-                            {/* Colors */}
-                            <div style={{ display: 'flex', gap: '4px', paddingRight: '4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
-                                {['#000000', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ff4757', '#ffffff'].map((c) => (
-                                    <button
+                            {/* Colors (Brushes) */}
+                            <div style={{ display: 'flex', gap: '4px', paddingRight: '8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                                {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
+                                    <RealisticBrush
                                         key={c}
-                                        onClick={() => { setColor(c); if (tool === 'eraser') setTool('pen'); }}
-                                        style={{
-                                            width: '32px',
-                                            height: '32px',
-                                            borderRadius: '8px',
-                                            background: c,
-                                            border: '2px solid transparent',
-                                            borderColor: color === c && tool !== 'eraser' ? (isDark ? '#fff' : '#000') : 'transparent',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            transform: color === c && tool !== 'eraser' ? 'scale(1.1)' : 'scale(1)',
-                                            boxShadow: color === c && tool !== 'eraser' ? `0 4px 12px ${c}40` : 'none'
-                                        }}
+                                        color={c}
+                                        isActive={color === c && tool !== 'eraser'}
+                                        isDark={isDark}
+                                        onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
                                     />
                                 ))}
+                                <RealisticEraser
+                                    isActive={tool === 'eraser'}
+                                    onClick={() => setTool('eraser')}
+                                />
                             </div>
 
                             {/* Main Tools */}
                             <div style={{ display: 'flex', gap: '2px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
                                 {[
-                                    { id: 'pen', icon: <RotateCcw size={18} style={{ transform: 'rotate(90deg)' }} /> }, // Pencil replacement
-                                    { id: 'eraser', icon: <Eraser size={18} /> },
                                     { id: 'laser', icon: <MousePointer2 size={18} /> },
                                     { id: 'rectangle', icon: <Square size={18} /> },
                                     { id: 'circle', icon: <CircleIcon size={18} /> },
@@ -623,11 +669,10 @@ export default function LiveBoardContainer({
                                         }}
                                         title={t.id}
                                     >
-                                        {t.id === 'pen' ? <Save size={0} /> : null} {/* placeholder logic removed */}
                                         {t.icon}
                                     </button>
                                 ))}
-                                {/* Actual Pen Icon Fix */}
+
                                 <button
                                     onClick={() => setTool('pen')}
                                     style={{
@@ -642,7 +687,7 @@ export default function LiveBoardContainer({
                                         alignItems: 'center',
                                         justifyContent: 'center'
                                     }}
-                                    title="Pen"
+                                    title="Pincel Livre"
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                                 </button>

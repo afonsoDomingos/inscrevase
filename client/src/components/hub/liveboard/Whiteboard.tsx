@@ -341,22 +341,36 @@ export default function Whiteboard({
             selectedShapeIndexRef.current = -1;
             for (let i = historyRef.current.length - 1; i >= 0; i--) {
                 const item = historyRef.current[i];
-                if (['rectangle', 'circle', 'arrow', 'text'].includes(item.type)) {
-                    // Simple bounding box hit test
-                    const minX = Math.min(item.x0, item.x1 ?? item.x0);
-                    const maxX = Math.max(item.x0, item.x1 ?? item.x0 + (item.type === 'text' ? item.text.length * item.size * 3 : 0));
-                    const minY = Math.min(item.y0, item.y1 ?? item.y0);
-                    const maxY = Math.max(item.y0, item.y1 ?? item.y0 + (item.type === 'text' ? item.size * 6 : 0));
+                let isHit = false;
 
-                    // Add padding to hit test
-                    const hitPadding = 20;
-                    if (offsetX >= minX - hitPadding && offsetX <= maxX + hitPadding &&
-                        offsetY >= minY - hitPadding && offsetY <= maxY + hitPadding) {
-                        selectedShapeIndexRef.current = i;
-                        initialDragPosRef.current = { x: offsetX, y: offsetY };
-                        setIsDrawing(true);
-                        return; // Found the item
+                if (item.type === 'circle') {
+                    const radius = Math.sqrt(Math.pow(item.x1 - item.x0, 2) + Math.pow(item.y1 - item.y0, 2));
+                    const dist = Math.sqrt(Math.pow(offsetX - item.x0, 2) + Math.pow(offsetY - item.y0, 2));
+                    // Check if click is near the center or on the edge
+                    if (dist <= radius + 15) isHit = true;
+                } else if (['rectangle', 'arrow'].includes(item.type)) {
+                    const minX = Math.min(item.x0, item.x1);
+                    const maxX = Math.max(item.x0, item.x1);
+                    const minY = Math.min(item.y0, item.y1);
+                    const maxY = Math.max(item.y0, item.y1);
+                    if (offsetX >= minX - 15 && offsetX <= maxX + 15 &&
+                        offsetY >= minY - 15 && offsetY <= maxY + 15) {
+                        isHit = true;
                     }
+                } else if (item.type === 'text') {
+                    const width = (item.text?.length || 0) * item.size * 3;
+                    const height = item.size * 6;
+                    if (offsetX >= item.x0 - 15 && offsetX <= item.x0 + width + 15 &&
+                        offsetY >= item.y0 - 15 && offsetY <= item.y0 + height + 15) {
+                        isHit = true;
+                    }
+                }
+
+                if (isHit) {
+                    selectedShapeIndexRef.current = i;
+                    initialDragPosRef.current = { x: offsetX, y: offsetY };
+                    setIsDrawing(true);
+                    return; // Found the item
                 }
             }
             return; // Clicked empty space

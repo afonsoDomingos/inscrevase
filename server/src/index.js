@@ -50,7 +50,8 @@ const io = new Server(server, {
         origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true
-    }
+    },
+    maxHttpBufferSize: 5e7 // 50MB
 });
 
 // Middleware de Autenticação para Socket.IO
