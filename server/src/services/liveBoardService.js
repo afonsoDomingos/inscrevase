@@ -144,6 +144,19 @@ class LiveBoardService {
             }
         });
 
+        // Laser Pointer Event (No history)
+        socket.on('live_board:laser', ({ formId, x, y }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                socket.to(`live_board_${formId}`).emit('live_board:laser', { x, y });
+            }
+        });
+
+        // Reaction Event (No history)
+        socket.on('live_board:reaction', ({ formId, emoji, x, y }) => {
+            this.io.to(`live_board_${formId}`).emit('live_board:reaction', { emoji, x, y, userId });
+        });
+
         // Board Action (Undo, Clear)
         socket.on('live_board:action', ({ formId, action }) => {
             const session = this.activeSessions.get(formId);
@@ -172,6 +185,26 @@ class LiveBoardService {
                     userId,
                     name: userData.name
                 });
+            }
+        });
+
+        // Chat Message (Questions)
+        socket.on('live_board:message', ({ formId, message, userData }) => {
+            this.io.to(`live_board_${formId}`).emit('live_board:message', {
+                userId,
+                userData,
+                message,
+                timestamp: new Date()
+            });
+        });
+
+        // Page Change & Backgrounds
+        socket.on('live_board:page_change', ({ formId, index, pages }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                session.currentPage = index;
+                session.pages = pages; // optionally store pages on server if needed
+                socket.to(`live_board_${formId}`).emit('live_board:page_change', { index, pages });
             }
         });
 
