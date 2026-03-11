@@ -1574,10 +1574,28 @@
         "linkAvailableInCabin": "Link disponível na sua cabine",
         "viewAccess": "Ver Meus Acessos",
         "status": {
-            "pending": "Pendente",
-            "confirmed": "Confirmado",
-            "rejected": "Recusado",
-            "waitingApproval": "Aguardando Aprovação do {role}"
+            "waitingApproval": "Aguardando aprovação do {role}",
+            "approved": "Inscrição Aprovada",
+            "rejected": "Inscrição Rejeitada"
+        },
+        "liveBoard": {
+            "activateBoard": "Ativar Board Ao Vivo",
+            "exclusiveMentor": "Exclusivo para Mentor: Inicie uma mentoria interativa agora.",
+            "liveNow": "AO VIVO",
+            "endSession": "Encerrar",
+            "raiseHand": "Levantar a Mão",
+            "questions": "Perguntas",
+            "muteAudio": "Mutar Áudio",
+            "unmuteAudio": "Ativar Áudio",
+            "eraser": "Borracha",
+            "undo": "Desfazer",
+            "save": "Salvar Board",
+            "chatTitle": "Chat da Sessão",
+            "chatPlaceholder": "Sua pergunta...",
+            "handRaisedToast": "{name} levantou a mão!",
+            "audioEnabled": "Áudio ativado! Eles estão te ouvindo.",
+            "saveSuccess": "Board salvo com sucesso!",
+            "handRaisedSuccess": "Mão levantada! Aguarde o mentor."
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",

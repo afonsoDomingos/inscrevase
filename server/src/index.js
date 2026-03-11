@@ -80,9 +80,11 @@ io.use((socket, next) => {
 // Map<UserId, Set<SocketId>>
 const onlineUsers = new Map();
 
-// Initialize NotificationService
+// Initialize services
 const NotificationService = require('./services/notificationService');
+const LiveBoardService = require('./services/liveBoardService');
 NotificationService.init(io);
+LiveBoardService.init(io);
 
 io.on('connection', (socket) => {
     // UserId agora vem do middleware de autenticação (seguro)
@@ -105,6 +107,9 @@ io.on('connection', (socket) => {
 
         // Send current list ONLY to the new client
         socket.emit('online_users_list', Array.from(onlineUsers.keys()));
+
+        // Hook LiveBoard events
+        LiveBoardService.handleSocket(socket);
     } else {
         console.log('Socket connection without userId (should be caught by middleware)');
     }

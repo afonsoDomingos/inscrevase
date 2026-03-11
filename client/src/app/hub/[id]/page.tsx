@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -40,6 +40,9 @@ import MetaPixel from '@/components/MetaPixel';
 import AdBanner from '@/components/common/AdBanner';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import CommunityChat from '@/components/hub/CommunityChat';
+import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
+import { Sparkles as SparklesIcon } from 'lucide-react';
+import { io } from 'socket.io-client';
 
 const getEmbedUrl = (url?: string) => {
     if (!url) return undefined;
@@ -174,6 +177,9 @@ function HubContent() {
     const [userRating, setUserRating] = useState<number>(0);
     const [hoverRating, setHoverRating] = useState<number>(0);
     const [isRatingSubmitted, setIsRatingSubmitted] = useState(false);
+    const [isBoardActive, setIsBoardActive] = useState(false);
+    const [boardMentorData, setBoardMentorData] = useState<any>(null);
+    const statusSocketRef = useRef<any>(null);
 
     useEffect(() => {
         setCurrentUser(authService.getCurrentUser());
@@ -198,6 +204,28 @@ function HubContent() {
                     // Se a inscrição estiver aprovada, buscar as aulas
                     if (data.status === 'approved' || data.paymentStatus === 'paid') {
                         fetchLessons();
+                    }
+
+                    // Setup board status monitor
+                    if (!statusSocketRef.current) {
+                        const token = authService.getToken();
+                        const s = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+                            auth: { token },
+                            transports: ['websocket']
+                        });
+
+                        s.on('connect', () => {
+                            s.emit('live_board:join', id);
+                        });
+
+                        s.on('live_board:status', (status: any) => {
+                            setIsBoardActive(status.active);
+                            if (status.active) {
+                                setBoardMentorData(status.mentorData);
+                            }
+                        });
+
+                        statusSocketRef.current = s;
                     }
                 } else {
                     // FALLBACK: Try to fetch as a Form Slug (Mentor Preview Mode)
@@ -604,12 +632,73 @@ function HubContent() {
                     <AdBanner slot="5589508956" format="horizontal" />
                 </div>
 
+                {/* --- LIVE BOARD SECTION --- */}
+                <AnimatePresence>
+                    {isBoardActive && (
+                        <div style={{ maxWidth: '900px', margin: '0 auto 40px' }}>
+                            <LiveBoardContainer
+                                formId={String(id)}
+                                isMentor={currentUser?._id === form.creator?._id || currentUser?.role === 'admin'}
+                                mentorData={boardMentorData || {
+                                    name: form.creator.name,
+                                    photo: form.creator.profilePhoto,
+                                    title: form.creator.role?.toUpperCase() || 'MENTOR'
+                                }}
+                                primaryColor={primaryColor}
+                                onClose={() => {
+                                    if (statusSocketRef.current) {
+                                        statusSocketRef.current.emit('live_board:end', id);
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {!isBoardActive && (currentUser?._id === form.creator?._id || currentUser?.role === 'admin') && (
+                    <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                                if (statusSocketRef.current) {
+                                    statusSocketRef.current.emit('live_board:start', {
+                                        formId: id,
+                                        mentorData: {
+                                            name: form.creator.name,
+                                            photo: form.creator.profilePhoto,
+                                            title: form.creator.role || 'MENTOR'
+                                        }
+                                    });
+                                }
+                            }}
+                            style={{
+                                background: 'linear-gradient(135deg, #111 0%, #333 100%)',
+                                color: '#fff',
+                                padding: '12px 30px',
+                                borderRadius: '100px',
+                                border: `1px solid ${primaryColor}40`,
+                                fontWeight: 800,
+                                fontSize: '0.95rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                margin: '0 auto',
+                                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            <SparklesIcon size={18} color={primaryColor} /> {t('hub.liveBoard.activateBoard')}
+                        </motion.button>
+                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.liveBoard.exclusiveMentor')}</p>
+                    </div>
+                )}
+
                 <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: '25px', alignItems: 'start' }} className="hub-grid">
 
                     {/* Left Column: Details */}
                     <div style={{ display: 'grid', gap: '35px' }}>
 
-                        {/* Event Hero Card */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
