@@ -26,7 +26,9 @@ import {
     Linkedin,
     Globe,
     Phone,
-    HelpCircle
+    HelpCircle,
+    Clock,
+    Mail
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -152,6 +154,13 @@ export default function LiveBoardContainer({
     const [isQuizRevealed, setIsQuizRevealed] = useState(false);
     const [correctQuizOption, setCorrectQuizOption] = useState<number | null>(null);
 
+    // Timer & Cursor State
+    const [timerSeconds, setTimerSeconds] = useState<number>(0);
+    const [isTimerActive, setIsTimerActive] = useState(false);
+    const [mentorCursorPos, setMentorCursorPos] = useState<{ x: number, y: number } | null>(null);
+    const [showTimerSelector, setShowTimerSelector] = useState(false);
+    const [isNotifying, setIsNotifying] = useState(false);
+
     useEffect(() => {
         const handleInteraction = () => {
             if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
@@ -220,13 +229,48 @@ export default function LiveBoardContainer({
             if (status.currentQuiz) {
                 setCurrentQuiz(status.currentQuiz);
                 setQuizResults(status.results || []);
-                // Check if we already voted (using userId)
                 const myVote = status.currentQuiz.votes?.find(([id]: any) => id === userId?.toString());
                 if (myVote) {
                     setHasVoted(true);
                     setSelectedOption(myVote[1]);
                 }
             }
+            if (status.currentTimer && status.currentTimer.remaining > 0) {
+                setTimerSeconds(status.currentTimer.remaining);
+                setIsTimerActive(true);
+            }
+        });
+
+        newSocket.on('live_board:timer:start', ({ duration }: any) => {
+            setTimerSeconds(duration);
+            setIsTimerActive(true);
+            toast.info(t('hub.liveBoard.timerStarted') || "O foco começa agora!");
+        });
+
+        newSocket.on('live_board:timer:stop', () => {
+            setIsTimerActive(false);
+            setTimerSeconds(0);
+        });
+
+        newSocket.on('live_board:cursor:move', (pos: { x: number, y: number }) => {
+            if (!isMentor) {
+                setMentorCursorPos(pos);
+            }
+        });
+
+        newSocket.on('live_board:notify_missing:success', ({ count, total }: any) => {
+            setIsNotifying(false);
+            toast.success(`E-mails enviados com sucesso para ${count} de ${total} participantes ausentes!`);
+        });
+
+        newSocket.on('live_board:notify_missing:info', (msg: string) => {
+            setIsNotifying(false);
+            toast.info(msg);
+        });
+
+        newSocket.on('live_board:notify_missing:error', (msg: string) => {
+            setIsNotifying(false);
+            toast.error(msg);
         });
 
         newSocket.on('live_board:quiz_start', (quiz: any) => {
@@ -295,6 +339,25 @@ export default function LiveBoardContainer({
             console.error("Error playing audio chunk", e);
         }
     };
+
+    useEffect(() => {
+        let interval: any;
+        if (isTimerActive && timerSeconds > 0) {
+            interval = setInterval(() => {
+                setTimerSeconds(prev => {
+                    if (prev <= 1) {
+                        setIsTimerActive(false);
+                        if (!isMentor) {
+                            toast(t('hub.liveBoard.timerFinished') || "Tempo Esgotado!", { icon: '⏰' });
+                        }
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isTimerActive, timerSeconds, isMentor, t]);
 
     const handleStartAudio = async () => {
         try {
@@ -377,6 +440,26 @@ export default function LiveBoardContainer({
         setCurrentPage(index);
         socket?.emit('live_board:page_change', { formId, index, pages });
     };
+
+    const handleCursorMove = (e: React.MouseEvent) => {
+        if (isMentor && socket) {
+            const rect = whiteboardContainerRef.current?.getBoundingClientRect();
+            if (rect) {
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                socket.emit('live_board:cursor:move', { formId, x, y });
+            }
+        }
+    };
+
+    const handleNotifyMissing = () => {
+        if (!socket || !isMentor) return;
+        setIsNotifying(true);
+        socket.emit('live_board:notify_missing', formId);
+        toast.loading("A processar notificações...");
+    };
+
+    const whiteboardContainerRef = useRef<HTMLDivElement>(null);
 
     const handleBackgroundUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -572,6 +655,122 @@ export default function LiveBoardContainer({
                         </span>
                     </div>
 
+                    {isTimerActive && (
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: timerSeconds < 10 ? '#fee2e2' : (isDark ? 'rgba(14,165,233,0.1)' : '#f0f9ff'),
+                            padding: '6px 14px',
+                            borderRadius: '12px',
+                            color: timerSeconds < 10 ? '#ef4444' : '#0ea5e9',
+                            fontWeight: 900,
+                            fontSize: '0.9rem',
+                            border: `1px solid ${timerSeconds < 10 ? '#fecaca' : '#bae6fd'}`,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                        }}>
+                            <Clock size={16} className={timerSeconds < 10 ? "animate-pulse" : ""} />
+                            <span style={{ minWidth: '45px', textAlign: 'center' }}>
+                                {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
+                            </span>
+                        </div>
+                    )}
+
+                    {isMentor && (
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                                onClick={handleNotifyMissing}
+                                disabled={isNotifying}
+                                style={{
+                                    background: isDark ? 'rgba(34,197,94,0.1)' : '#f0fdf4',
+                                    color: '#22c55e',
+                                    border: 'none',
+                                    padding: '0 12px',
+                                    height: '32px',
+                                    borderRadius: '8px',
+                                    fontWeight: 800,
+                                    cursor: isNotifying ? 'default' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontSize: '0.75rem',
+                                    opacity: isNotifying ? 0.6 : 1
+                                }}
+                                title="Enviar e-mail para inscritos que ainda não entraram"
+                            >
+                                <Mail size={14} /> Chamar Inscritos
+                            </button>
+
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    onClick={() => setShowTimerSelector(!showTimerSelector)}
+                                    style={{
+                                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
+                                        color: isDark ? '#fff' : '#666',
+                                        border: 'none',
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <Clock size={16} />
+                                </button>
+
+                                <AnimatePresence>
+                                    {showTimerSelector && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '40px',
+                                                right: 0,
+                                                background: isDark ? '#1a1a1a' : '#fff',
+                                                padding: '12px',
+                                                borderRadius: '16px',
+                                                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                                                border: isDark ? '1px solid #333' : '1px solid #eee',
+                                                zIndex: 100,
+                                                width: '180px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '8px'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ESTABELECER FOCO</span>
+                                            {[1, 2, 5, 10, 15].map(min => (
+                                                <button
+                                                    key={min}
+                                                    onClick={() => {
+                                                        socket?.emit('live_board:timer:start', { formId, duration: min * 60 });
+                                                        setShowTimerSelector(false);
+                                                    }}
+                                                    style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                >
+                                                    {min} {min === 1 ? 'minuto' : 'minutos'}
+                                                </button>
+                                            ))}
+                                            {isTimerActive && (
+                                                <button
+                                                    onClick={() => {
+                                                        socket?.emit('live_board:timer:stop', formId);
+                                                        setShowTimerSelector(false);
+                                                    }}
+                                                    style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                >
+                                                    Parar Timer
+                                                </button>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    )}
+
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -630,7 +829,11 @@ export default function LiveBoardContainer({
             </div>
 
             {/* Canvas Area */}
-            <div style={{ flex: 1, position: 'relative', background: '#fff' }}>
+            <div
+                ref={whiteboardContainerRef}
+                onMouseMove={handleCursorMove}
+                style={{ flex: 1, position: 'relative', background: '#fff' }}
+            >
                 <Whiteboard
                     ref={whiteboardRef}
                     isMentor={isMentor}
@@ -645,361 +848,399 @@ export default function LiveBoardContainer({
                     backgroundImage={pages[currentPage]?.backgroundImage}
                 />
 
-                {/* Floating Reactions Render */}
-                <AnimatePresence>
-                    {reactions.map((r) => (
-                        <motion.div
-                            key={r.id}
-                            initial={{ y: 0, x: `${r.x}%`, opacity: 0, scale: 0.5 }}
-                            animate={{ y: -400, opacity: [0, 1, 1, 0], scale: [0.5, 1.5, 1.5, 1] }}
-                            transition={{ duration: 3, ease: "easeOut" }}
+                {/* Mentor Cursor Overlay (for participants) */}
+                {mentorCursorPos && !isMentor && (
+                    <motion.div
+                        animate={{ x: mentorCursorPos.x, y: mentorCursorPos.y }}
+                        transition={{ duration: 0.1, ease: 'linear' }}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            pointerEvents: 'none',
+                            zIndex: 1000,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start'
+                        }}
+                    >
+                        <MousePointer2
+                            size={20}
                             style={{
-                                position: 'absolute',
-                                bottom: '20px',
-                                fontSize: '2rem',
-                                left: 0,
-                                pointerEvents: 'none',
-                                zIndex: 50
+                                color: primaryColor,
+                                fill: primaryColor,
+                                transform: 'rotate(-25deg)',
+                                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
                             }}
-                        >
-                            {r.emoji}
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-
-                <div style={{
-                    position: 'absolute',
-                    bottom: '20px',
-                    left: '20px',
-                    pointerEvents: 'none',
-                    opacity: 0.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    zIndex: 10
-                }}>
-                    <Image src="/logo.png" alt="Inscreva-se" width={24} height={24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
-                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
-                </div>
-
-                {/* Participant Audio Control */}
-                {!isMentor && (
-                    <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
-                        <button
-                            onClick={() => setIsParticipantAudioMuted(!isParticipantAudioMuted)}
-                            style={{
-                                background: isParticipantAudioMuted ? '#111' : primaryColor,
-                                color: '#fff',
-                                width: '54px',
-                                height: '54px',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: 'none',
-                                cursor: 'pointer',
-                                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-                            }}
-                        >
-                            {isParticipantAudioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-                        </button>
-                    </div>
+                        />
+                        <div style={{
+                            background: primaryColor,
+                            color: '#fff',
+                            fontSize: '0.65rem',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontWeight: 800,
+                            marginTop: '2px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        }}>
+                            Mentor
+                        </div>
+                    </motion.div>
                 )}
+            </div>      {/* Floating Reactions Render */}
+            <AnimatePresence>
+                {reactions.map((r) => (
+                    <motion.div
+                        key={r.id}
+                        initial={{ y: 0, x: `${r.x}%`, opacity: 0, scale: 0.5 }}
+                        animate={{ y: -400, opacity: [0, 1, 1, 0], scale: [0.5, 1.5, 1.5, 1] }}
+                        transition={{ duration: 3, ease: "easeOut" }}
+                        style={{
+                            position: 'absolute',
+                            bottom: '20px',
+                            fontSize: '2rem',
+                            left: 0,
+                            pointerEvents: 'none',
+                            zIndex: 50
+                        }}
+                    >
+                        {r.emoji}
+                    </motion.div>
+                ))}
+            </AnimatePresence>
 
-                <div style={{
-                    position: 'absolute',
-                    bottom: '30px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-                    backdropFilter: 'blur(16px)',
-                    padding: '8px',
-                    borderRadius: '20px',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
-                    zIndex: 200
-                }}>
-                    {isMentor ? (
-                        <>
-                            {/* Colors (Brushes) */}
-                            <div style={{ display: 'flex', gap: '4px', paddingRight: '8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
-                                {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
-                                    <RealisticBrush
-                                        key={c}
-                                        color={c}
-                                        isActive={color === c && tool !== 'eraser'}
-                                        isDark={isDark}
-                                        onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
-                                    />
-                                ))}
-                                <RealisticEraser
-                                    isActive={tool === 'eraser'}
-                                    onClick={() => setTool('eraser')}
+            <div style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '20px',
+                pointerEvents: 'none',
+                opacity: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                zIndex: 10
+            }}>
+                <Image src="/logo.png" alt="Inscreva-se" width={24} height={24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
+            </div>
+
+            {/* Participant Audio Control */}
+            {!isMentor && (
+                <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
+                    <button
+                        onClick={() => setIsParticipantAudioMuted(!isParticipantAudioMuted)}
+                        style={{
+                            background: isParticipantAudioMuted ? '#111' : primaryColor,
+                            color: '#fff',
+                            width: '54px',
+                            height: '54px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: 'none',
+                            cursor: 'pointer',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                        }}
+                    >
+                        {isParticipantAudioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+                    </button>
+                </div>
+            )}
+
+            <div style={{
+                position: 'absolute',
+                bottom: '30px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(16px)',
+                padding: '8px',
+                borderRadius: '20px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                zIndex: 200
+            }}>
+                {isMentor ? (
+                    <>
+                        {/* Colors (Brushes) */}
+                        <div style={{ display: 'flex', gap: '4px', paddingRight: '8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                            {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
+                                <RealisticBrush
+                                    key={c}
+                                    color={c}
+                                    isActive={color === c && tool !== 'eraser'}
+                                    isDark={isDark}
+                                    onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
                                 />
-                            </div>
+                            ))}
+                            <RealisticEraser
+                                isActive={tool === 'eraser'}
+                                onClick={() => setTool('eraser')}
+                            />
+                        </div>
 
-                            {/* Main Tools */}
-                            <div style={{ display: 'flex', gap: '2px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
-                                {[
-                                    { id: 'laser', icon: <MousePointer2 size={18} /> },
-                                    { id: 'rectangle', icon: <Square size={18} /> },
-                                    { id: 'circle', icon: <CircleIcon size={18} /> },
-                                    { id: 'arrow', icon: <ArrowUpRight size={18} /> },
-                                    { id: 'text', icon: <Type size={18} /> }
-                                ].map((t) => (
-                                    <button
-                                        key={t.id}
-                                        onClick={() => setTool(t.id as any)}
-                                        style={{
-                                            width: '38px',
-                                            height: '38px',
-                                            borderRadius: '10px',
-                                            background: tool === t.id ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: tool === t.id ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            transition: 'all 0.2s'
-                                        }}
-                                        title={t.id}
-                                    >
-                                        {t.icon}
-                                    </button>
-                                ))}
-
+                        {/* Main Tools */}
+                        <div style={{ display: 'flex', gap: '2px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                            {[
+                                { id: 'laser', icon: <MousePointer2 size={18} /> },
+                                { id: 'rectangle', icon: <Square size={18} /> },
+                                { id: 'circle', icon: <CircleIcon size={18} /> },
+                                { id: 'arrow', icon: <ArrowUpRight size={18} /> },
+                                { id: 'text', icon: <Type size={18} /> }
+                            ].map((t) => (
                                 <button
-                                    onClick={() => setTool('pen')}
+                                    key={t.id}
+                                    onClick={() => setTool(t.id as any)}
                                     style={{
                                         width: '38px',
                                         height: '38px',
                                         borderRadius: '10px',
-                                        background: tool === 'pen' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
+                                        background: tool === t.id ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                         border: 'none',
                                         cursor: 'pointer',
-                                        color: tool === 'pen' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
+                                        color: tool === t.id ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        transition: 'all 0.2s'
                                     }}
-                                    title="Pincel Livre"
+                                    title={t.id}
                                 >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                    {t.icon}
                                 </button>
+                            ))}
 
-                                <button
-                                    onClick={() => setTool('select')}
-                                    style={{
-                                        width: '38px',
-                                        height: '38px',
-                                        borderRadius: '10px',
-                                        background: tool === 'select' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        color: tool === 'select' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                    title="Mover Sólidos"
-                                >
-                                    <Hand size={18} />
-                                </button>
-                            </div>
-
-                            {/* Actions */}
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="50"
-                                    value={brushSize}
-                                    onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                                    style={{ width: '60px', accentColor: color }}
-                                    title="Tamanho do Pincel/Borracha"
-                                />
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '2px' }}>
-                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={18} /></button>
-                                <button
-                                    onClick={() => {
-                                        if (window.confirm('Tem certeza que deseja apagar todo o quadro?')) {
-                                            socket?.emit('live_board:action', { formId, action: 'clear' });
-                                        }
-                                    }}
-                                    style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
-                                >
-                                    <Eraser size={18} />
-                                </button>
-
-
-                                <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
-                                <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={18} /></button>
-
-                                <button onClick={() => setIsDark(!isDark)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
-
-                                <button onClick={saveBoard} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Save"><Save size={18} /></button>
-
-                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
-
-                                {/* Page Navigation */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
-                                    <button
-                                        onClick={() => currentPage > 0 && changePage(currentPage - 1)}
-                                        style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                                    </button>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 800, minWidth: '40px', textAlign: 'center' }}>{currentPage + 1} / {pages.length}</span>
-                                    <button
-                                        onClick={() => currentPage < pages.length - 1 ? changePage(currentPage + 1) : addPage()}
-                                        style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer' }}
-                                    >
-                                        {currentPage < pages.length - 1 ? (
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                                        ) : (
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-                                        )}
-                                    </button>
-                                </div>
-
-                                <button
-                                    onClick={isAudioActive ? handleStopAudio : handleStartAudio}
-                                    style={{
-                                        background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
-                                        color: isAudioActive ? '#ef4444' : '#0ea5e9',
-                                        border: 'none',
-                                        padding: '0 12px',
-                                        height: '38px',
-                                        borderRadius: '10px',
-                                        fontWeight: 800,
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        fontSize: '0.75rem'
-                                    }}
-                                >
-                                    {isAudioActive ? <MicOff size={16} /> : <Mic size={16} />}
-                                    {isAudioActive ? 'Silenciar' : 'Falar'}
-                                </button>
-
-                                {isMentor && (
-                                    <button
-                                        onClick={() => setShowQuizCreator(true)}
-                                        style={{
-                                            background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                            color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
-                                            border: 'none',
-                                            width: '38px',
-                                            height: '38px',
-                                            borderRadius: '10px',
-                                            fontWeight: 800,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
-                                        title="Criar Quiz"
-                                    >
-                                        <HelpCircle size={18} />
-                                    </button>
-                                )}
-
-                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
-
-                                <button
-                                    onClick={() => setIsSidebarOpen(true)}
-                                    style={{
-                                        background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
-                                        color: '#fff',
-                                        border: 'none',
-                                        padding: '0 12px',
-                                        height: '38px',
-                                        borderRadius: '10px',
-                                        fontWeight: 800,
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        fontSize: '0.8rem'
-                                    }}
-                                >
-                                    <MessageSquare size={16} /> Chat
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            {/* Participant View */}
-                            <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
-                                {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
-                                    <button
-                                        key={emoji}
-                                        onClick={() => sendReaction(emoji)}
-                                        style={{
-                                            fontSize: '1.4rem',
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            padding: '4px',
-                                            transition: 'transform 0.1s'
-                                        }}
-                                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
-                                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                    >
-                                        {emoji}
-                                    </button>
-                                ))}
-                            </div>
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
                             <button
-                                onClick={handleRaiseHand}
-                                disabled={isHandRaised}
+                                onClick={() => setTool('pen')}
                                 style={{
-                                    background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
-                                    color: isHandRaised ? '#888' : '#0ea5e9',
-                                    border: 'none',
-                                    padding: '0 16px',
+                                    width: '38px',
                                     height: '38px',
                                     borderRadius: '10px',
-                                    fontWeight: 800,
-                                    cursor: isHandRaised ? 'default' : 'pointer',
+                                    background: tool === 'pen' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    color: tool === 'pen' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '8px',
-                                    fontSize: '0.8rem'
+                                    justifyContent: 'center'
                                 }}
+                                title="Pincel Livre"
                             >
-                                <Hand size={18} /> {isHandRaised ? 'Mão Levantada' : 'Dúvida'}
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                             </button>
+
                             <button
-                                onClick={() => setIsSidebarOpen(true)}
+                                onClick={() => setTool('select')}
                                 style={{
-                                    background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
-                                    color: '#fff',
+                                    width: '38px',
+                                    height: '38px',
+                                    borderRadius: '10px',
+                                    background: tool === 'select' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                     border: 'none',
-                                    padding: '0 16px',
+                                    cursor: 'pointer',
+                                    color: tool === 'select' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Mover Sólidos"
+                            >
+                                <Hand size={18} />
+                            </button>
+                        </div>
+
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                            <input
+                                type="range"
+                                min="1"
+                                max="50"
+                                value={brushSize}
+                                onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                                style={{ width: '60px', accentColor: color }}
+                                title="Tamanho do Pincel/Borracha"
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                            <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={18} /></button>
+                            <button
+                                onClick={() => {
+                                    if (window.confirm('Tem certeza que deseja apagar todo o quadro?')) {
+                                        socket?.emit('live_board:action', { formId, action: 'clear' });
+                                    }
+                                }}
+                                style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
+                            >
+                                <Eraser size={18} />
+                            </button>
+
+
+                            <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
+                            <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={18} /></button>
+
+                            <button onClick={() => setIsDark(!isDark)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
+
+                            <button onClick={saveBoard} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Save"><Save size={18} /></button>
+
+                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
+
+                            {/* Page Navigation */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                                <button
+                                    onClick={() => currentPage > 0 && changePage(currentPage - 1)}
+                                    style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                                </button>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 800, minWidth: '40px', textAlign: 'center' }}>{currentPage + 1} / {pages.length}</span>
+                                <button
+                                    onClick={() => currentPage < pages.length - 1 ? changePage(currentPage + 1) : addPage()}
+                                    style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer' }}
+                                >
+                                    {currentPage < pages.length - 1 ? (
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                                    ) : (
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                    )}
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={isAudioActive ? handleStopAudio : handleStartAudio}
+                                style={{
+                                    background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
+                                    color: isAudioActive ? '#ef4444' : '#0ea5e9',
+                                    border: 'none',
+                                    padding: '0 12px',
                                     height: '38px',
                                     borderRadius: '10px',
                                     fontWeight: 800,
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '8px',
+                                    gap: '6px',
+                                    fontSize: '0.75rem'
+                                }}
+                            >
+                                {isAudioActive ? <MicOff size={16} /> : <Mic size={16} />}
+                                {isAudioActive ? 'Silenciar' : 'Falar'}
+                            </button>
+
+                            {isMentor && (
+                                <button
+                                    onClick={() => setShowQuizCreator(true)}
+                                    style={{
+                                        background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                        color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
+                                        border: 'none',
+                                        width: '38px',
+                                        height: '38px',
+                                        borderRadius: '10px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                    title="Criar Quiz"
+                                >
+                                    <HelpCircle size={18} />
+                                </button>
+                            )}
+
+                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
+
+                            <button
+                                onClick={() => setIsSidebarOpen(true)}
+                                style={{
+                                    background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
+                                    color: '#fff',
+                                    border: 'none',
+                                    padding: '0 12px',
+                                    height: '38px',
+                                    borderRadius: '10px',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
                                     fontSize: '0.8rem'
                                 }}
                             >
-                                <MessageSquare size={18} /> Perguntas
+                                <MessageSquare size={16} /> Chat
                             </button>
-                        </>
-                    )}
-                </div>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {/* Participant View */}
+                        <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
+                            {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
+                                <button
+                                    key={emoji}
+                                    onClick={() => sendReaction(emoji)}
+                                    style={{
+                                        fontSize: '1.4rem',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '4px',
+                                        transition: 'transform 0.1s'
+                                    }}
+                                    onMouseDown={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
+                                    onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                >
+                                    {emoji}
+                                </button>
+                            ))}
+                        </div>
+                        <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
+                        <button
+                            onClick={handleRaiseHand}
+                            disabled={isHandRaised}
+                            style={{
+                                background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
+                                color: isHandRaised ? '#888' : '#0ea5e9',
+                                border: 'none',
+                                padding: '0 16px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                cursor: isHandRaised ? 'default' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                fontSize: '0.8rem'
+                            }}
+                        >
+                            <Hand size={18} /> {isHandRaised ? 'Mão Levantada' : 'Dúvida'}
+                        </button>
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            style={{
+                                background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
+                                color: '#fff',
+                                border: 'none',
+                                padding: '0 16px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                fontSize: '0.8rem'
+                            }}
+                        >
+                            <MessageSquare size={18} /> Perguntas
+                        </button>
+                    </>
+                )}
             </div>
 
             {/* Sidebar Perguntas */}
@@ -1130,7 +1371,7 @@ export default function LiveBoardContainer({
                     animation: pulse-subtle 2s infinite ease-in-out;
                 }
             `}</style>
-        </motion.div>
+        </motion.div >
     );
 }
 

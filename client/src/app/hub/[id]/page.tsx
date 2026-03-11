@@ -134,6 +134,7 @@ interface SubmissionData {
                 linkedin?: string;
                 website?: string;
             };
+            whatsapp?: string;
             isVerified?: boolean;
             facebookPixelId?: string;
         };

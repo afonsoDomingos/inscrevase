@@ -1,6 +1,12 @@
 /**
  * Service to handle Live Board real-time logic
  */
+const Submission = require('../models/Submission');
+const User = require('../models/User');
+const Form = require('../models/Form');
+const sendEmail = require('../utils/emailService');
+const { generateBasicEmail } = require('../utils/emailTemplates');
+
 class LiveBoardService {
     static io = null;
     static activeSessions = new Map(); // formId -> sessionData { mentorId, startTime, history: [] }
@@ -71,6 +77,10 @@ class LiveBoardService {
                         ...session.currentQuiz,
                         votes: Array.from(session.currentQuiz.votes.entries()),
                         results: this.calculateQuizResults(session.currentQuiz)
+                    } : null,
+                    currentTimer: session.currentTimer ? {
+                        ...session.currentTimer,
+                        remaining: Math.max(0, session.currentTimer.duration - Math.floor((new Date() - new Date(session.currentTimer.startTime)) / 1000))
                     } : null
                 });
                 socket.emit('live_board:history', session.history);
@@ -292,6 +302,106 @@ class LiveBoardService {
             if (session && session.mentorId === userId) {
                 delete session.currentQuiz;
                 this.io.to(`live_board_${formId}`).emit('live_board:quiz_end');
+            }
+        });
+
+        // Timer Events
+        socket.on('live_board:timer:start', ({ formId, duration }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                session.currentTimer = {
+                    duration,
+                    startTime: new Date()
+                };
+                this.io.to(`live_board_${formId}`).emit('live_board:timer:start', session.currentTimer);
+            }
+        });
+
+        socket.on('live_board:timer:stop', (formId) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                delete session.currentTimer;
+                this.io.to(`live_board_${formId}`).emit('live_board:timer:stop');
+            }
+        });
+
+        // Mentor Cursor Event
+        socket.on('live_board:cursor:move', ({ formId, x, y }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                socket.to(`live_board_${formId}`).emit('live_board:cursor:move', { x, y });
+            }
+        });
+
+        // Notify Missing Participants (Mentor Only)
+        socket.on('live_board:notify_missing', async (formId) => {
+            console.log(`[LiveBoard] Request to notify missing participants for form: ${formId}`);
+
+            const session = this.activeSessions.get(formId);
+            if (!session || session.mentorId !== userId) {
+                return socket.emit('live_board:notify_missing:error', 'Apenas o mentor pode realizar esta ação.');
+            }
+
+            try {
+                // 1. Get current active participant IDs
+                const activeParticipantIds = Array.from(session.participants.keys());
+
+                // 2. Find all approved submissions for this form
+                const submissions = await Submission.find({
+                    form: formId,
+                    status: 'approved'
+                }).populate('user', 'email name role');
+
+                if (!submissions || submissions.length === 0) {
+                    return socket.emit('live_board:notify_missing:error', 'Nenhum participante inscrito encontrado.');
+                }
+
+                // 3. Filter those not in session.participants
+                const missingSubmissions = submissions.filter(sub =>
+                    sub.user && !activeParticipantIds.includes(sub.user._id.toString())
+                );
+
+                if (missingSubmissions.length === 0) {
+                    return socket.emit('live_board:notify_missing:info', 'Todos os participantes já estão na sessão!');
+                }
+
+                // 4. Get Form details for email content
+                const form = await Form.findById(formId).populate('creator', 'name');
+
+                // 5. Send emails
+                const mentorName = form.creator?.name || session.mentorData?.name || 'O seu Mentor';
+                const eventTitle = form.title || 'Evento em Direto';
+                const boardLink = `https://inscreva-se.com/hub/${formId}`;
+
+                let successCount = 0;
+                for (const sub of missingSubmissions) {
+                    const subject = `🚀 O evento "${eventTitle}" começou!`;
+                    const content = `
+                        O evento <b>${eventTitle}</b> com <b>${mentorName}</b> já começou e estamos à sua espera!
+                        <br><br>
+                        Não perca os conteúdos exclusivos, a interatividade da Live Board e a oportunidade de tirar dúvidas em tempo real.
+                    `;
+
+                    const html = generateBasicEmail(
+                        subject,
+                        sub.user.name,
+                        content,
+                        'Entrar Agora',
+                        boardLink
+                    );
+
+                    const sent = await sendEmail(sub.user.email, subject, html);
+                    if (sent) successCount++;
+                }
+
+                socket.emit('live_board:notify_missing:success', {
+                    count: successCount,
+                    total: missingSubmissions.length
+                });
+
+            } catch (err) {
+                console.error('[LiveBoard] Error notifying missing participants:', err);
+                socket.emit('live_board:notify_missing:error', 'Erro interno ao tentar notificar participantes.');
             }
         });
 
