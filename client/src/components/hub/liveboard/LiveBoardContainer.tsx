@@ -257,7 +257,7 @@ export default function LiveBoardContainer({
             }
             // Auto-close context after sound finishes
             setTimeout(() => ctx.close(), 1500);
-        } catch (_) {
+        } catch (_err) {
             // Silently ignore if AudioContext not available
         }
     }, []);
@@ -447,7 +447,7 @@ export default function LiveBoardContainer({
         return () => {
             newSocket.disconnect();
         };
-    }, [formId, isMentor, isParticipantAudioMuted, t, userId]);
+    }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound]);
 
     const playAudioChunk = async (data: ArrayBuffer) => {
         if (!audioContextRef.current) {
