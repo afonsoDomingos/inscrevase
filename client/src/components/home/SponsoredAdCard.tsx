@@ -399,30 +399,30 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                                             style={{
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
-                                                gap: '6px',
-                                                fontSize: '0.7rem',
+                                                gap: '4px',
+                                                fontSize: isMobile ? '0.5rem' : '0.6rem',
                                                 fontWeight: 900,
                                                 color: '#000',
                                                 background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
                                                 textDecoration: 'none',
-                                                padding: isMobile ? '6px 12px' : '8px 16px',
+                                                padding: isMobile ? '4px 8px' : '5px 12px',
                                                 borderRadius: '50px',
-                                                letterSpacing: '0.5px',
-                                                boxShadow: '0 8px 20px rgba(184, 134, 11, 0.3)',
+                                                letterSpacing: '0.3px',
+                                                boxShadow: '0 4px 12px rgba(184, 134, 11, 0.2)',
                                                 transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                                                 textTransform: 'uppercase',
                                                 border: '1px solid rgba(255, 255, 255, 0.2)'
                                             }}
                                             onMouseOver={(e) => {
-                                                e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
-                                                e.currentTarget.style.boxShadow = '0 12px 25px rgba(184, 134, 11, 0.5)';
+                                                e.currentTarget.style.transform = 'scale(1.05) translateY(-1px)';
+                                                e.currentTarget.style.boxShadow = '0 8px 18px rgba(184, 134, 11, 0.4)';
                                             }}
                                             onMouseOut={(e) => {
                                                 e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(184, 134, 11, 0.3)';
+                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(184, 134, 11, 0.2)';
                                             }}
                                         >
-                                            <Zap size={12} fill="#000" /> Aumenta as tuas vendas!
+                                            <Zap size={10} fill="#000" /> Aumenta as tuas vendas!
                                         </Link>
                                     </motion.div>
                                 </div>
