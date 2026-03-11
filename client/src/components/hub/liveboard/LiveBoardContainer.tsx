@@ -846,93 +846,6 @@ export default function LiveBoardContainer({
                                     )}
                                 </AnimatePresence>
                             </div>
-
-                            <div style={{ position: 'relative' }}>
-                                <button
-                                    onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
-                                    style={{
-                                        background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                        color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
-                                        border: 'none',
-                                        padding: '0 12px',
-                                        height: '32px',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '6px',
-                                        fontWeight: 800,
-                                        fontSize: '0.7rem'
-                                    }}
-                                    title="Enviar avisos e alertas para os alunos"
-                                >
-                                    <Megaphone size={14} /> Avisos
-                                </button>
-
-                                <AnimatePresence>
-                                    {showAnnouncementMenu && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                            style={{
-                                                position: 'absolute',
-                                                top: '40px',
-                                                right: 0,
-                                                background: isDark ? '#1a1a1a' : '#fff',
-                                                padding: '12px',
-                                                borderRadius: '16px',
-                                                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-                                                border: isDark ? '1px solid #333' : '1px solid #eee',
-                                                zIndex: 100,
-                                                width: '220px',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                gap: '8px'
-                                            }}
-                                        >
-                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
-                                            {announcementsList.map(ann => (
-                                                <button
-                                                    key={ann.id}
-                                                    onClick={() => {
-                                                        handleAnnouncement(ann);
-                                                        setShowAnnouncementMenu(false);
-                                                    }}
-                                                    style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                                                >
-                                                    <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
-                                                </button>
-                                            ))}
-
-                                            <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
-                                                <input
-                                                    type="text"
-                                                    value={customAnnouncementText}
-                                                    onChange={(e) => setCustomAnnouncementText(e.target.value)}
-                                                    placeholder="Aviso personalizado..."
-                                                    style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' && customAnnouncementText.trim()) {
-                                                            handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
-                                                            setCustomAnnouncementText("");
-                                                            setShowAnnouncementMenu(false);
-                                                        }
-                                                    }}
-                                                />
-                                            </div>
-
-                                            {currentAnnouncement && (
-                                                <button
-                                                    onClick={clearAnnouncement}
-                                                    style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
-                                                >
-                                                    Limpar Anúncio
-                                                </button>
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
                         </div>
                     )}
 
@@ -1297,25 +1210,112 @@ export default function LiveBoardContainer({
                             </button>
 
                             {isMentor && (
-                                <button
-                                    onClick={() => setShowQuizCreator(true)}
-                                    style={{
-                                        background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                        color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
-                                        border: 'none',
-                                        width: '38px',
-                                        height: '38px',
-                                        borderRadius: '10px',
-                                        fontWeight: 800,
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                    title="Criar Quiz"
-                                >
-                                    <HelpCircle size={18} />
-                                </button>
+                                <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
+                                    <button
+                                        onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
+                                        style={{
+                                            background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                            color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
+                                            border: 'none',
+                                            padding: '0 12px',
+                                            height: '38px',
+                                            borderRadius: '10px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px',
+                                            fontWeight: 800,
+                                            fontSize: '0.75rem'
+                                        }}
+                                        title="Enviar avisos e alertas para os alunos"
+                                    >
+                                        <Megaphone size={16} /> Avisos
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {showAnnouncementMenu && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '50px',
+                                                    right: 0,
+                                                    background: isDark ? '#1a1a1a' : '#fff',
+                                                    padding: '12px',
+                                                    borderRadius: '16px',
+                                                    boxShadow: '0 -10px 25px rgba(0,0,0,0.2)',
+                                                    border: isDark ? '1px solid #333' : '1px solid #eee',
+                                                    zIndex: 100,
+                                                    width: '220px',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '8px'
+                                                }}
+                                            >
+                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
+                                                {announcementsList.map(ann => (
+                                                    <button
+                                                        key={ann.id}
+                                                        onClick={() => {
+                                                            handleAnnouncement(ann);
+                                                            setShowAnnouncementMenu(false);
+                                                        }}
+                                                        style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                                    >
+                                                        <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
+                                                    </button>
+                                                ))}
+
+                                                <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
+                                                    <input
+                                                        type="text"
+                                                        value={customAnnouncementText}
+                                                        onChange={(e) => setCustomAnnouncementText(e.target.value)}
+                                                        placeholder="Aviso personalizado..."
+                                                        style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' && customAnnouncementText.trim()) {
+                                                                handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
+                                                                setCustomAnnouncementText("");
+                                                                setShowAnnouncementMenu(false);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                {currentAnnouncement && (
+                                                    <button
+                                                        onClick={clearAnnouncement}
+                                                        style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                    >
+                                                        Limpar Anúncio
+                                                    </button>
+                                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
+                                    <button
+                                        onClick={() => setShowQuizCreator(true)}
+                                        style={{
+                                            background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                            color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
+                                            border: 'none',
+                                            width: '38px',
+                                            height: '38px',
+                                            borderRadius: '10px',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                        title="Criar Quiz"
+                                    >
+                                        <HelpCircle size={18} />
+                                    </button>
+                                </div>
                             )}
 
                             <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
@@ -1520,7 +1520,7 @@ export default function LiveBoardContainer({
                                 socket?.emit('live_board:quiz_vote', {
                                     formId,
                                     optionIndex: idx,
-                                    userData: { name: user?.name, photo: user?.photo || user?.profilePhoto }
+                                    userData: { name: user?.name, photo: (user as any)?.photo || (user as any)?.profilePhoto }
                                 });
                                 toast.success(t('hub.liveBoard.quizVotedToast') || "Voto registado!");
                             }
@@ -1894,8 +1894,8 @@ const QuizOverlay = ({ quiz, results, detailedResults, hasVoted, selectedOption,
                             {detailedResults.map((res: any, i: number) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0' }}>
-                                            <img src={res.photo || '/default-avatar.png'} width={20} height={20} alt="" style={{ objectFit: 'cover' }} />
+                                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0', position: 'relative' }}>
+                                            <Image src={res.photo || '/default-avatar.png'} width={20} height={20} alt="" style={{ objectFit: 'cover' }} />
                                         </div>
                                         <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isDark ? '#ccc' : '#444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
                                             {res.name}

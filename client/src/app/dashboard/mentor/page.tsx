@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
@@ -2076,8 +2076,8 @@ function MentorDashboardContent() {
                                                 transition: 'all 0.3s',
                                                 boxShadow: '0 20px 40px rgba(212, 175, 55, 0.2)'
                                             }}
-                                            onMouseOver={(e: any) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)'}
-                                            onMouseOut={(e: any) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
+                                            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)'}
+                                            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
                                         >
                                             ENTRAR NO LABORATÓRIO <Monitor size={22} />
                                         </button>
