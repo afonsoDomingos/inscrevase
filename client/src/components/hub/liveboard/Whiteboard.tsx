@@ -10,9 +10,7 @@ interface WhiteboardProps {
     isEraser: boolean;
     socket: any;
     formId: string;
-    onActionPush?: (action: any) => void;
     undoTrigger?: number;
-    clearTrigger?: number;
 }
 
 export default function Whiteboard({
@@ -22,8 +20,7 @@ export default function Whiteboard({
     isEraser,
     socket,
     formId,
-    undoTrigger,
-    clearTrigger
+    undoTrigger
 }: WhiteboardProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -141,10 +138,6 @@ export default function Whiteboard({
             contextRef.current.lineWidth = brushSize;
         }
     }, [color, brushSize, isEraser]);
-
-    useEffect(() => {
-        if (clearTrigger) clearCanvas();
-    }, [clearTrigger, clearCanvas]);
 
     useEffect(() => {
         if (undoTrigger) undoAction();

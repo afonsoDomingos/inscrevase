@@ -13,9 +13,9 @@ import {
     VolumeX,
     Hand,
     MessageSquare,
-    X,
-    Users
+    X
 } from 'lucide-react';
+import Image from 'next/image';
 import Whiteboard from './Whiteboard';
 import { io, Socket } from 'socket.io-client';
 import { authService } from '@/lib/authService';
@@ -44,19 +44,16 @@ export default function LiveBoardContainer({
     const { t } = useTranslate();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [color, setColor] = useState('#000000');
-    const [brushSize, setBrushSize] = useState(3);
+    const brushSize = 3;
     const [isEraser, setIsEraser] = useState(false);
     const [undoTrigger, setUndoTrigger] = useState(0);
-    const [clearTrigger, setClearTrigger] = useState(0);
     const [isAudioActive, setIsAudioActive] = useState(false);
     const [isParticipantAudioMuted, setIsParticipantAudioMuted] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isHandRaised, setIsHandRaised] = useState(false);
-    const [participantsCount, setParticipantsCount] = useState(0);
 
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
 
     useEffect(() => {
         const token = authService.getToken();
@@ -199,11 +196,14 @@ export default function LiveBoardContainer({
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <div style={{ position: 'relative' }}>
-                        <img
-                            src={mentorData.photo || '/default-avatar.png'}
-                            style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: `2.5px solid ${primaryColor}` }}
-                            alt={mentorData.name}
-                        />
+                        <div style={{ width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: `2.5px solid ${primaryColor}`, position: 'relative' }}>
+                            <Image
+                                src={mentorData.photo || '/default-avatar.png'}
+                                fill
+                                style={{ objectFit: 'cover' }}
+                                alt={mentorData.name}
+                            />
+                        </div>
                         <div style={{
                             position: 'absolute',
                             bottom: -5,
@@ -216,7 +216,8 @@ export default function LiveBoardContainer({
                             fontWeight: 900,
                             letterSpacing: '0.5px',
                             boxShadow: '0 4px 10px rgba(255,71,87,0.3)',
-                            animation: 'pulse 1.5s infinite'
+                            animation: 'pulse 1.5s infinite',
+                            zIndex: 2
                         }}>{t('hub.liveBoard.liveNow')}</div>
                     </div>
                     <div>
@@ -262,7 +263,6 @@ export default function LiveBoardContainer({
                     brushSize={brushSize}
                     isEraser={isEraser}
                     undoTrigger={undoTrigger}
-                    clearTrigger={clearTrigger}
                 />
 
                 {/* Participant Audio Control */}
