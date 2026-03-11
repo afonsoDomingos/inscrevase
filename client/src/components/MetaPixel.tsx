@@ -36,20 +36,9 @@ export default function MetaPixel({ pixelId }: Props) {
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '${pixelId}');
-            fbq('track', 'PageView');
           `,
                 }}
             />
-            <noscript>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    height="1"
-                    width="1"
-                    style={{ display: 'none' }}
-                    src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-                    alt=""
-                />
-            </noscript>
         </>
     );
 }

@@ -207,27 +207,6 @@ function HubContent() {
                         fetchLessons();
                     }
 
-                    // Setup board status monitor
-                    if (!statusSocketRef.current) {
-                        const token = authService.getToken();
-                        const s = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
-                            auth: { token },
-                            transports: ['websocket']
-                        });
-
-                        s.on('connect', () => {
-                            s.emit('live_board:join', id);
-                        });
-
-                        s.on('live_board:status', (status: any) => {
-                            setIsBoardActive(status.active);
-                            if (status.active) {
-                                setBoardMentorData(status.mentorData);
-                            }
-                        });
-
-                        statusSocketRef.current = s;
-                    }
                 } else {
                     // FALLBACK: Try to fetch as a Form Slug (Mentor Preview Mode)
                     try {
@@ -258,6 +237,29 @@ function HubContent() {
                         console.error("Preview fallback failed:", err);
                         toast.error(t('dashboard.submissionNotFound'));
                     }
+                }
+
+                // Setup board status monitor (For both paths)
+                if (!statusSocketRef.current && id) {
+                    const token = authService.getToken();
+                    const s = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+                        auth: { token },
+                        transports: ['websocket']
+                    });
+
+                    s.on('connect', () => {
+                        console.log('[Hub] Connected to status socket');
+                        s.emit('live_board:join', id);
+                    });
+
+                    s.on('live_board:status', (status: any) => {
+                        setIsBoardActive(status.active);
+                        if (status.active) {
+                            setBoardMentorData(status.mentorData);
+                        }
+                    });
+
+                    statusSocketRef.current = s;
                 }
             } catch (err) {
                 console.error(err);
