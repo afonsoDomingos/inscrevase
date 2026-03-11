@@ -238,12 +238,15 @@ class LiveBoardService {
         // Raise Hand (Participant)
         socket.on('live_board:raise_hand', ({ formId, userData }) => {
             const session = this.activeSessions.get(formId);
-            if (session) {
-                this.io.to(session.mentorId.toString()).emit('live_board:hand_raised', {
+            if (session && session.mentorId) {
+                // Emit to mentor's socket directly, or fall back to room broadcast
+                const mentorTarget = session.mentorSocketId || `live_board_${formId}`;
+                this.io.to(mentorTarget).emit('live_board:hand_raised', {
                     userId,
                     userData,
                     timestamp: new Date()
                 });
+                // Also broadcast to room so others can see the hand-raise indicator
                 this.io.to(`live_board_${formId}`).emit('live_board:hand_raised_broadcast', {
                     userId,
                     name: userData.name
