@@ -62,20 +62,60 @@ class LiveBoardService {
                     mentorData: session.mentorData
                 });
                 socket.emit('live_board:history', session.history);
+            } else if (session.countdown) {
+                // If countdown is active, send remaining time
+                const elapsedSeconds = Math.floor((new Date() - new Date(session.countdown.startTime)) / 1000);
+                const timeLeft = Math.max(0, session.countdown.duration - elapsedSeconds);
+                if (timeLeft > 0) {
+                    socket.emit('live_board:countdown', {
+                        ...session.countdown,
+                        duration: timeLeft
+                    });
+                }
             }
+        });
+
+        // Start Countdown (Mentor Only)
+        socket.on('live_board:countdown', ({ formId, duration, mentorData }) => {
+            console.log(`[LiveBoard] Countdown started for form ${formId}: ${duration}s`);
+
+            if (!this.activeSessions.has(formId)) {
+                this.activeSessions.set(formId, { history: [], participants: new Map() });
+            }
+            const session = this.activeSessions.get(formId);
+
+            session.countdown = {
+                duration,
+                mentorData,
+                startTime: new Date()
+            };
+
+            this.io.to(`live_board_${formId}`).emit('live_board:countdown', session.countdown);
         });
 
         // Start Live Board (Mentor Only)
         socket.on('live_board:start', ({ formId, mentorData }) => {
             // In a real app, we'd verify if the user IS the creator of the form here
             // For now we assume the frontend only shows the button to the mentor
-            const session = {
-                mentorId: userId,
-                mentorData: mentorData,
-                startTime: new Date(),
-                history: []
-            };
-            this.activeSessions.set(formId, session);
+            console.log(`[LiveBoard] Starting session for form: ${formId}`);
+
+            let session = this.activeSessions.get(formId);
+            if (!session) {
+                session = { history: [], participants: new Map() };
+                this.activeSessions.set(formId, session);
+            }
+
+            session.mentorId = userId;
+            session.mentorData = mentorData;
+            session.startTime = new Date();
+            delete session.countdown;
+
+            // Update participant list to highlight mentor
+            if (session.participants && session.participants.has(userId.toString())) {
+                const p = session.participants.get(userId.toString());
+                p.isMentor = true;
+                this.io.to(`live_board_${formId}`).emit('live_board:participants', Array.from(session.participants.values()));
+            }
 
             this.io.to(`live_board_${formId}`).emit('live_board:status', {
                 active: true,

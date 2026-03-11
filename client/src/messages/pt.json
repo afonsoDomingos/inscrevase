@@ -1597,7 +1597,17 @@
             "handRaisedToast": "{name} levantou a mão!",
             "audioEnabled": "Áudio ativado! Eles estão te ouvindo.",
             "saveSuccess": "Board salvo com sucesso!",
-            "handRaisedSuccess": "Mão levantada! Aguarde o mentor."
+            "handRaisedSuccess": "Mão levantada! Aguarde o mentor.",
+            "countdownTitle": "A preparar início...",
+            "countdownMessage": "O Live Board vai iniciar em {seconds} segundos",
+            "selectCountdown": "Tempo de preparação",
+            "startingIn": "Iniciando em {seconds}s",
+            "seconds_5": "5 Segundos",
+            "seconds_10": "10 Segundos",
+            "seconds_30": "30 Segundos",
+            "minute_1": "1 Minuto",
+            "minutes_5": "5 Minutos",
+            "startNow": "Iniciar Agora"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",

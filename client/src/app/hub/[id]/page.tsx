@@ -181,6 +181,9 @@ function HubContent() {
     const [isRatingSubmitted, setIsRatingSubmitted] = useState(false);
     const [isBoardActive, setIsBoardActive] = useState(false);
     const [boardMentorData, setBoardMentorData] = useState<any>(null);
+    const [isBoardStarting, setIsBoardStarting] = useState(false);
+    const [boardStartCountdown, setBoardStartCountdown] = useState(0);
+    const [showBoardActivationOptions, setShowBoardActivationOptions] = useState(false);
     const statusSocketRef = useRef<any>(null);
 
     useEffect(() => {
@@ -284,7 +287,15 @@ function HubContent() {
             setIsBoardActive(status.active);
             if (status.active) {
                 setBoardMentorData(status.mentorData);
+                setIsBoardStarting(false); // Cancel countdown if board is already active
             }
+        });
+
+        s.on('live_board:countdown', (data: any) => {
+            console.log('[Hub] Live Board Countdown starting:', data.duration);
+            setBoardMentorData(data.mentorData);
+            setBoardStartCountdown(data.duration);
+            setIsBoardStarting(true);
         });
 
         statusSocketRef.current = s;
@@ -636,63 +647,217 @@ function HubContent() {
                     <AdBanner slot="5589508956" format="horizontal" />
                 </div>
 
+                {/* Live Board Countdown Overlay */}
+                <AnimatePresence>
+                    {isBoardStarting && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            style={{
+                                position: 'fixed',
+                                inset: 0,
+                                zIndex: 10000,
+                                background: 'rgba(0,0,0,0.9)',
+                                backdropFilter: 'blur(10px)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#fff',
+                                textAlign: 'center'
+                            }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                style={{
+                                    width: '180px',
+                                    height: '180px',
+                                    borderRadius: '50%',
+                                    border: `4px solid ${primaryColor}`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '5rem',
+                                    fontWeight: 900,
+                                    marginBottom: '30px',
+                                    boxShadow: `0 0 50px ${primaryColor}40`
+                                }}
+                            >
+                                {boardStartCountdown}
+                            </motion.div>
+                            <motion.h2
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}
+                            >
+                                {t('hub.liveBoard.countdownTitle')}
+                            </motion.h2>
+                            <motion.p
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                                style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}
+                            >
+                                {t('hub.liveBoard.countdownMessage', { seconds: boardStartCountdown })}
+                            </motion.p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 {/* --- LIVE BOARD SECTION --- */}
                 <AnimatePresence>
                     {isBoardActive && (
                         <LiveBoardContainer
-                            formId={String(form._id)}
-                            isMentor={currentUser?._id === form.creator?._id || currentUser?.role === 'admin'}
+                            formId={String(submission.form._id)}
+                            isMentor={currentUser?._id === submission.form.creator?._id || currentUser?.role === 'admin'}
                             mentorData={boardMentorData || {
-                                name: form.creator.name,
-                                photo: form.creator.profilePhoto,
-                                title: form.creator.role?.toUpperCase() || 'MENTOR'
+                                name: submission.form.creator.name,
+                                photo: submission.form.creator.profilePhoto,
+                                title: submission.form.creator.role || 'MENTOR'
                             }}
                             primaryColor={primaryColor}
                             onClose={() => {
                                 if (statusSocketRef.current) {
-                                    statusSocketRef.current.emit('live_board:end', form._id);
+                                    statusSocketRef.current.emit('live_board:end', submission.form._id);
                                 }
                             }}
                         />
                     )}
                 </AnimatePresence>
 
-                {!isBoardActive && (currentUser?._id === form.creator?._id || currentUser?.role === 'admin') && (
-                    <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                                if (statusSocketRef.current && submission) {
-                                    statusSocketRef.current.emit('live_board:start', {
-                                        formId: submission.form._id,
-                                        mentorData: {
-                                            name: submission.form.creator.name,
-                                            photo: submission.form.creator.profilePhoto,
-                                            title: submission.form.creator.role || 'MENTOR'
-                                        }
-                                    });
-                                }
-                            }}
-                            style={{
-                                background: 'linear-gradient(135deg, #111 0%, #333 100%)',
-                                color: '#fff',
-                                padding: '12px 30px',
-                                borderRadius: '100px',
-                                border: `1px solid ${primaryColor}40`,
-                                fontWeight: 800,
-                                fontSize: '0.95rem',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px',
-                                margin: '0 auto',
-                                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                            }}
-                        >
-                            <SparklesIcon size={18} color={primaryColor} /> {t('hub.liveBoard.activateBoard')}
-                        </motion.button>
-                        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.liveBoard.exclusiveMentor')}</p>
+                {!isBoardActive && (currentUser?._id === submission?.form?.creator?._id || currentUser?.role === 'admin') && (
+                    <div style={{ textAlign: 'center', marginBottom: '40px', position: 'relative' }}>
+                        {showBoardActivationOptions ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                style={{
+                                    background: '#fff',
+                                    padding: '24px',
+                                    borderRadius: '24px',
+                                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                                    display: 'inline-block',
+                                    border: '1px solid #f0f0f0',
+                                    textAlign: 'left',
+                                    width: '320px'
+                                }}
+                            >
+                                <h4 style={{ margin: '0 0 15px', fontSize: '0.9rem', fontWeight: 800, color: '#111' }}>
+                                    {t('hub.liveBoard.selectCountdown')}
+                                </h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                    {[5, 10, 30, 60, 300].map(seconds => (
+                                        <button
+                                            key={seconds}
+                                            onClick={() => {
+                                                setShowBoardActivationOptions(false);
+                                                if (statusSocketRef.current && submission) {
+                                                    statusSocketRef.current.emit('live_board:countdown', {
+                                                        formId: submission.form._id,
+                                                        duration: seconds,
+                                                        mentorData: {
+                                                            name: submission.form.creator.name,
+                                                            photo: submission.form.creator.profilePhoto,
+                                                            title: submission.form.creator.role || 'MENTOR'
+                                                        }
+                                                    });
+                                                }
+                                            }}
+                                            style={{
+                                                padding: '10px',
+                                                borderRadius: '12px',
+                                                border: '1px solid #f0f0f0',
+                                                background: '#f8f8f8',
+                                                fontSize: '0.8rem',
+                                                fontWeight: 700,
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.background = '#eee')}
+                                            onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f8f8')}
+                                        >
+                                            {seconds < 60 ? t(`hub.liveBoard.seconds_${seconds}`) : t(`hub.liveBoard.minute_${seconds / 60}`)}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => {
+                                            setShowBoardActivationOptions(false);
+                                            if (statusSocketRef.current && submission) {
+                                                statusSocketRef.current.emit('live_board:start', {
+                                                    formId: submission.form._id,
+                                                    mentorData: {
+                                                        name: submission.form.creator.name,
+                                                        photo: submission.form.creator.profilePhoto,
+                                                        title: submission.form.creator.role || 'MENTOR'
+                                                    }
+                                                });
+                                            }
+                                        }}
+                                        style={{
+                                            gridColumn: 'span 2',
+                                            padding: '10px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            background: '#111',
+                                            color: '#fff',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            marginTop: '8px'
+                                        }}
+                                    >
+                                        {t('hub.liveBoard.startNow')}
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={() => setShowBoardActivationOptions(false)}
+                                    style={{
+                                        display: 'block',
+                                        width: '100%',
+                                        marginTop: '15px',
+                                        background: 'none',
+                                        border: 'none',
+                                        fontSize: '0.7rem',
+                                        color: '#888',
+                                        cursor: 'pointer',
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                            </motion.div>
+                        ) : (
+                            <>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                        setShowBoardActivationOptions(true);
+                                    }}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #111 0%, #333 100%)',
+                                        color: '#fff',
+                                        padding: '12px 30px',
+                                        borderRadius: '100px',
+                                        border: `1px solid ${primaryColor}40`,
+                                        fontWeight: 800,
+                                        fontSize: '0.95rem',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        margin: '0 auto',
+                                        boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                                    }}
+                                >
+                                    <SparklesIcon size={18} color={primaryColor} /> {t('hub.liveBoard.activateBoard')}
+                                </motion.button>
+                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.liveBoard.exclusiveMentor')}</p>
+                            </>
+                        )}
                     </div>
                 )}
 
