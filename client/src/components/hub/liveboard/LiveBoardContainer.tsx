@@ -139,6 +139,7 @@ export default function LiveBoardContainer({
 
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const whiteboardRef = useRef<any>(null);
 
     useEffect(() => {
         const handleInteraction = () => {
@@ -337,8 +338,25 @@ export default function LiveBoardContainer({
             const reader = new FileReader();
             reader.onload = (event) => {
                 const base64 = event.target?.result as string;
+
+                // Instead of a fixed background, we add it as a movable image object
+                const data = {
+                    type: 'image',
+                    src: base64,
+                    x0: 50,
+                    y0: 50,
+                    x1: 450, // Default width 400
+                    y1: 350, // Default height 300
+                    strokeId: Math.random().toString(36).substring(7),
+                };
+
+                // Add to local history and sync
+                whiteboardRef.current?.addExternalItem(data);
+                socket?.emit('live_board:draw', { formId, data });
+
+                // Clear the static background image property if we want it to be object-only
                 const newPages = [...pages];
-                newPages[currentPage].backgroundImage = base64;
+                newPages[currentPage].backgroundImage = null;
                 setPages(newPages);
                 socket?.emit('live_board:page_change', { formId, index: currentPage, pages: newPages });
             };
@@ -568,6 +586,7 @@ export default function LiveBoardContainer({
             {/* Canvas Area */}
             <div style={{ flex: 1, position: 'relative', background: '#fff' }}>
                 <Whiteboard
+                    ref={whiteboardRef}
                     isMentor={isMentor}
                     socket={socket}
                     formId={formId}

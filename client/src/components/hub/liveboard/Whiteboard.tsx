@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface WhiteboardProps {
@@ -17,7 +17,7 @@ interface WhiteboardProps {
     backgroundImage?: string | null;
 }
 
-export default function Whiteboard({
+const Whiteboard = forwardRef(({
     isMentor,
     color,
     brushSize,
@@ -28,21 +28,26 @@ export default function Whiteboard({
     tool,
     isDark = false,
     backgroundImage = null
-}: WhiteboardProps) {
+}: WhiteboardProps, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const bgCanvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const bgContextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [selectedShapeIndex, setSelectedShapeIndex] = useState<number>(-1);
     const historyRef = useRef<any[]>([]);
     const currentStrokeIdRef = useRef<string>('');
+
+    const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
+    const redrawHistoryRef = useRef<() => void>(() => { });
 
     const drawData = useCallback((data: any) => {
         const context = contextRef.current;
         if (!context) return;
 
-        const { type, x0, y0, x1, y1, color, size, text } = data;
+        const { type, x0, y0, x1, y1, color, size, text, src } = data;
 
+        context.save();
         context.beginPath();
         if (type === 'eraser') {
             context.globalCompositeOperation = 'destination-out';
@@ -63,7 +68,7 @@ export default function Whiteboard({
             context.lineTo(x1, y1);
             context.stroke();
         } else if (type === 'rectangle') {
-            context.strokeRect(x0, y0, x1 - x0, y1 - y0);
+            context.strokeRect(x0, y0, (x1 - x0) || 5, (y1 - y0) || 5);
         } else if (type === 'circle') {
             const radius = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
             context.arc(x0, y0, radius, 0, Math.PI * 2);
@@ -82,15 +87,86 @@ export default function Whiteboard({
             context.lineTo(x1 - headlen * Math.cos(angle + Math.PI / 6), y1 - headlen * Math.sin(angle + Math.PI / 6));
             context.stroke();
         } else if (type === 'text' && text) {
-            context.font = `${size * 6}px Inter, sans-serif`;
+            context.font = `bold ${size * 6}px system-ui, -apple-system, sans-serif`;
             context.textBaseline = 'top';
             context.fillText(text, x0, y0);
+            context.closePath();
+        } else if (type === 'image' && src) {
+            if (!imageCache.current.has(src)) {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    imageCache.current.set(src, img);
+                    redrawHistoryRef.current();
+                };
+            } else {
+                const cachedImg = imageCache.current.get(src);
+                if (cachedImg) {
+                    context.drawImage(cachedImg, x0, y0, (x1 - x0) || cachedImg.width, (y1 - y0) || cachedImg.height);
+                }
+            }
         }
 
-        context.closePath();
-        // Always reset to normal drawing
-        context.globalCompositeOperation = 'source-over';
+        context.restore();
     }, []);
+
+    const redrawHistory = useCallback(() => {
+        const context = contextRef.current;
+        const canvas = canvasRef.current;
+        if (!context || !canvas) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+
+        context.clearRect(0, 0, width, height);
+        historyRef.current.forEach(drawData);
+
+        // Draw selection UI
+        if (selectedShapeIndex >= 0 && isMentor && tool === 'select') {
+            const item = historyRef.current[selectedShapeIndex];
+            if (item) {
+                context.save();
+                context.strokeStyle = '#0ea5e9';
+                context.lineWidth = 2;
+                context.setLineDash([5, 5]);
+
+                let x = item.x0, y = item.y0, w = (item.x1 - item.x0), h = (item.y1 - item.y0);
+                if (item.type === 'text') {
+                    w = (item.text?.length || 0) * item.size * 3;
+                    h = item.size * 5;
+                } else if (item.type === 'circle') {
+                    const radius = Math.sqrt(Math.pow(item.x1 - item.x0, 2) + Math.pow(item.y1 - item.y0, 2));
+                    x = item.x0 - radius;
+                    y = item.y0 - radius;
+                    w = radius * 2;
+                    h = radius * 2;
+                }
+
+                context.strokeRect(x - 5, y - 5, (w || 200) + 10, (h || 200) + 10);
+
+                if (item.type === 'image' || item.type === 'rectangle' || item.type === 'circle' || item.type === 'arrow') {
+                    context.setLineDash([]);
+                    context.fillStyle = '#0ea5e9';
+                    context.fillRect(x + (w || 200), y + (h || 200), 12, 12);
+                }
+                context.restore();
+            }
+        }
+    }, [drawData, selectedShapeIndex, isMentor, tool]);
+
+    useEffect(() => {
+        redrawHistoryRef.current = redrawHistory;
+    }, [redrawHistory]);
+
+    useImperativeHandle(ref, () => ({
+        addExternalItem: (data: any) => {
+            if (historyRef.current.some(item => item.strokeId === data.strokeId)) return;
+            historyRef.current.push(data);
+            drawData(data);
+            if (data.type === 'image') redrawHistory();
+        }
+    }));
 
     const drawGrid = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
         const dotSize = 1.2;
@@ -120,7 +196,6 @@ export default function Whiteboard({
         const height = canvas.height / dpr;
 
         context.clearRect(0, 0, width, height);
-        // Base fill color if no image or even with image to hide transparency behind
         context.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
         context.fillRect(0, 0, width, height);
 
@@ -138,19 +213,6 @@ export default function Whiteboard({
             drawGrid(context, canvas.width, canvas.height);
         }
     }, [drawGrid, backgroundImage, isDark]);
-
-    const redrawHistory = useCallback(() => {
-        const context = contextRef.current;
-        const canvas = canvasRef.current;
-        if (!context || !canvas) return;
-
-        const dpr = window.devicePixelRatio || 1;
-        const width = canvas.width / dpr;
-        const height = canvas.height / dpr;
-
-        context.clearRect(0, 0, width, height);
-        historyRef.current.forEach(drawData);
-    }, [drawData]);
 
     const clearCanvas = useCallback(() => {
         const canvas = canvasRef.current;
@@ -190,13 +252,11 @@ export default function Whiteboard({
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Handle high DPI displays
         const setCanvasSize = () => {
             const rect = canvas.parentElement?.getBoundingClientRect();
             if (rect) {
                 const dpr = window.devicePixelRatio || 1;
 
-                // Adjust BG Canvas
                 const bgCanvas = bgCanvasRef.current;
                 if (bgCanvas) {
                     bgCanvas.width = rect.width * dpr;
@@ -210,7 +270,6 @@ export default function Whiteboard({
                     }
                 }
 
-                // Adjust Main Canvas
                 canvas.width = rect.width * dpr;
                 canvas.height = rect.height * dpr;
                 canvas.style.width = `${rect.width}px`;
@@ -225,7 +284,6 @@ export default function Whiteboard({
                     context.lineWidth = brushSize;
                     contextRef.current = context;
 
-                    // Redraw all content
                     redrawBg();
                     redrawHistory();
                 }
@@ -235,11 +293,12 @@ export default function Whiteboard({
         setCanvasSize();
         window.addEventListener('resize', setCanvasSize);
 
-        // Socket listeners for participants
-        if (!isMentor && socket) {
+        if (socket) {
             socket.on('live_board:draw', (data: any) => {
+                if (historyRef.current.some(item => item.strokeId === data.strokeId)) return;
                 historyRef.current.push(data);
                 drawData(data);
+                if (data.type === 'image') redrawHistory();
             });
 
             socket.on('live_board:laser', (data: any) => {
@@ -247,11 +306,8 @@ export default function Whiteboard({
             });
 
             socket.on('live_board:action', (action: string) => {
-                if (action === 'clear') {
-                    clearCanvas();
-                } else if (action === 'undo') {
-                    undoAction();
-                }
+                if (action === 'clear') clearCanvas();
+                else if (action === 'undo') undoAction();
             });
 
             socket.on('live_board:history', (history: any[]) => {
@@ -275,9 +331,8 @@ export default function Whiteboard({
                 socket.off('live_board:history_replace');
             }
         };
-    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark]);
+    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark, formId]);
 
-    // Independent effect for drawing the background to avoid re-binding socket
     useEffect(() => {
         redrawBg();
     }, [redrawBg]);
@@ -337,8 +392,8 @@ export default function Whiteboard({
         }
 
         if (tool === 'select') {
-            // Find a shape to select (reverse order to find topmost)
             selectedShapeIndexRef.current = -1;
+            setSelectedShapeIndex(-1);
             for (let i = historyRef.current.length - 1; i >= 0; i--) {
                 const item = historyRef.current[i];
                 let isHit = false;
@@ -346,34 +401,36 @@ export default function Whiteboard({
                 if (item.type === 'circle') {
                     const radius = Math.sqrt(Math.pow(item.x1 - item.x0, 2) + Math.pow(item.y1 - item.y0, 2));
                     const dist = Math.sqrt(Math.pow(offsetX - item.x0, 2) + Math.pow(offsetY - item.y0, 2));
-                    // Check if click is near the center or on the edge
                     if (dist <= radius + 15) isHit = true;
                 } else if (['rectangle', 'arrow'].includes(item.type)) {
                     const minX = Math.min(item.x0, item.x1);
                     const maxX = Math.max(item.x0, item.x1);
                     const minY = Math.min(item.y0, item.y1);
                     const maxY = Math.max(item.y0, item.y1);
-                    if (offsetX >= minX - 15 && offsetX <= maxX + 15 &&
-                        offsetY >= minY - 15 && offsetY <= maxY + 15) {
-                        isHit = true;
-                    }
+                    if (offsetX >= minX - 15 && offsetX <= maxX + 15 && offsetY >= minY - 15 && offsetY <= maxY + 15) isHit = true;
                 } else if (item.type === 'text') {
                     const width = (item.text?.length || 0) * item.size * 3;
                     const height = item.size * 6;
-                    if (offsetX >= item.x0 - 15 && offsetX <= item.x0 + width + 15 &&
-                        offsetY >= item.y0 - 15 && offsetY <= item.y0 + height + 15) {
+                    if (offsetX >= item.x0 - 15 && offsetX <= item.x0 + width + 15 && offsetY >= item.y0 - 15 && offsetY <= item.y0 + height + 15) isHit = true;
+                } else if (item.type === 'image') {
+                    const width = (item.x1 - item.x0) || 200;
+                    const height = (item.y1 - item.y0) || 200;
+                    if (offsetX >= item.x0 - 15 && offsetX <= item.x0 + width + 15 && offsetY >= item.y0 - 15 && offsetY <= item.y0 + height + 15) {
                         isHit = true;
+                        const isResizing = offsetX >= item.x0 + (width || 200) - 30 && offsetY >= item.y0 + (height || 200) - 30;
+                        (selectedShapeIndexRef as any).isResizing = isResizing;
                     }
                 }
 
                 if (isHit) {
                     selectedShapeIndexRef.current = i;
+                    setSelectedShapeIndex(i);
                     initialDragPosRef.current = { x: offsetX, y: offsetY };
                     setIsDrawing(true);
-                    return; // Found the item
+                    return;
                 }
             }
-            return; // Clicked empty space
+            return;
         }
 
         currentStrokeIdRef.current = Math.random().toString(36).substring(7);
@@ -391,7 +448,6 @@ export default function Whiteboard({
 
     const draw = (event: React.MouseEvent | React.TouchEvent) => {
         if (!isMentor) return;
-
         const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
 
         if (tool === 'laser') {
@@ -402,23 +458,24 @@ export default function Whiteboard({
         }
 
         if (!isDrawing) return;
-
-        // Prevent scrolling while drawing on mobile
-        if (event.type === 'touchmove') {
-            event.preventDefault();
-        }
+        if (event.type === 'touchmove') event.preventDefault();
 
         if (tool === 'select' && selectedShapeIndexRef.current >= 0 && initialDragPosRef.current) {
             const dx = offsetX - initialDragPosRef.current.x;
             const dy = offsetY - initialDragPosRef.current.y;
-
             const shape = historyRef.current[selectedShapeIndexRef.current];
-            const updatedShape = { ...shape, x0: shape.x0 + dx, y0: shape.y0 + dy };
-            if (shape.x1 !== undefined && shape.y1 !== undefined) {
-                updatedShape.x1 = shape.x1 + dx;
-                updatedShape.y1 = shape.y1 + dy;
+            const isResizing = (selectedShapeIndexRef as any).isResizing;
+
+            let updatedShape;
+            if (isResizing) {
+                updatedShape = { ...shape, x1: (shape.x1 ?? (shape.x0 + 200)) + dx, y1: (shape.y1 ?? (shape.y0 + 200)) + dy };
+            } else {
+                updatedShape = { ...shape, x0: shape.x0 + dx, y0: shape.y0 + dy };
+                if (shape.x1 !== undefined && shape.y1 !== undefined) {
+                    updatedShape.x1 = shape.x1 + dx;
+                    updatedShape.y1 = shape.y1 + dy;
+                }
             }
-            // Update the history locally and redraw
             historyRef.current[selectedShapeIndexRef.current] = updatedShape;
             initialDragPosRef.current = { x: offsetX, y: offsetY };
             redrawHistory();
@@ -439,23 +496,13 @@ export default function Whiteboard({
                 color: tool === 'eraser' ? 'rgba(0,0,0,1)' : color,
                 size: tool === 'eraser' ? brushSize * 2 : brushSize
             };
-
             drawData(data);
             historyRef.current.push(data);
             socket.emit('live_board:draw', { formId, data });
             lastPointRef.current = { x: offsetX, y: offsetY };
         } else {
-            // Preview for shapes
             redrawHistory();
-            drawData({
-                type: tool,
-                x0: lastPointRef.current.x,
-                y0: lastPointRef.current.y,
-                x1: offsetX,
-                y1: offsetY,
-                color: color,
-                size: brushSize
-            });
+            drawData({ type: tool, x0: lastPointRef.current.x, y0: lastPointRef.current.y, x1: offsetX, y1: offsetY, color, size: brushSize });
         }
     };
 
@@ -465,25 +512,14 @@ export default function Whiteboard({
         if (tool === 'select') {
             setIsDrawing(false);
             if (selectedShapeIndexRef.current >= 0) {
-                // We moved a shape! Tell server to sync history.
                 socket.emit('live_board:history_replace', { formId, history: historyRef.current });
-                selectedShapeIndexRef.current = -1;
             }
             return;
         }
 
         if (tool !== 'pen' && tool !== 'eraser' && tool !== 'laser' && lastPointRef.current) {
             const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
-            const data = {
-                type: tool,
-                strokeId: currentStrokeIdRef.current,
-                x0: lastPointRef.current.x,
-                y0: lastPointRef.current.y,
-                x1: offsetX,
-                y1: offsetY,
-                color: color,
-                size: brushSize
-            };
+            const data = { type: tool, strokeId: currentStrokeIdRef.current, x0: lastPointRef.current.x, y0: lastPointRef.current.y, x1: offsetX, y1: offsetY, color, size: brushSize };
             historyRef.current.push(data);
             socket.emit('live_board:draw', { formId, data });
             redrawHistory();
@@ -503,24 +539,12 @@ export default function Whiteboard({
                 offsetY: (event as any).touches[0].clientY - (rect?.top || 0)
             };
         }
-        return {
-            offsetX: (event as any).offsetX,
-            offsetY: (event as any).offsetY
-        };
+        return { offsetX: (event as any).offsetX, offsetY: (event as any).offsetY };
     };
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: isDark ? '#1a1a1a' : '#fff' }}>
-            <canvas
-                ref={bgCanvasRef}
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    pointerEvents: 'none',
-                    display: 'block'
-                }}
-            />
+            <canvas ref={bgCanvasRef} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', display: 'block' }} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={startDrawing}
@@ -534,47 +558,22 @@ export default function Whiteboard({
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    cursor: isMentor ? (tool === 'laser' ? 'none' : (isEraser ? 'crosshair' : 'pencil')) : 'default',
+                    cursor: isMentor ? (tool === 'laser' ? 'none' : (tool === 'select' ? 'default' : (isEraser ? 'crosshair' : 'pencil'))) : 'default',
                     display: 'block',
                     touchAction: 'none'
                 }}
             />
             {laserPos && (
                 <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    style={{
-                        position: 'absolute',
-                        left: laserPos.x - 10,
-                        top: laserPos.y - 10,
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        background: '#ff4757',
-                        boxShadow: '0 0 15px #ff4757, 0 0 30px #ff4757',
-                        pointerEvents: 'none',
-                        zIndex: 100
-                    }}
+                    initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                    style={{ position: 'absolute', left: laserPos.x - 10, top: laserPos.y - 10, width: '20px', height: '20px', borderRadius: '50%', background: '#ff4757', boxShadow: '0 0 15px #ff4757, 0 0 30px #ff4757', pointerEvents: 'none', zIndex: 100 }}
                 />
             )}
             {textInput && (
-                <div style={{
-                    position: 'absolute',
-                    left: textInput.x,
-                    top: textInput.y,
-                    zIndex: 200
-                }}>
+                <div style={{ position: 'absolute', left: textInput.x, top: textInput.y, zIndex: 200 }}>
                     <input
                         autoFocus
-                        style={{
-                            background: 'transparent',
-                            border: '1px dashed #ccc',
-                            color: color,
-                            font: `${brushSize * 6}px Inter, sans-serif`,
-                            outline: 'none',
-                            padding: '2px'
-                        }}
+                        style={{ background: 'transparent', border: '1px dashed #ccc', color: color, font: `bold ${brushSize * 6}px system-ui, sans-serif`, outline: 'none', padding: '2px' }}
                         onBlur={(e) => handleTextSubmit(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') handleTextSubmit(e.currentTarget.value);
@@ -585,4 +584,8 @@ export default function Whiteboard({
             )}
         </div>
     );
-}
+});
+
+Whiteboard.displayName = 'Whiteboard';
+
+export default Whiteboard;
