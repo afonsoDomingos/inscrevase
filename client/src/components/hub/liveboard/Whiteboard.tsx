@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 
 interface WhiteboardProps {
     isMentor: boolean;
@@ -28,6 +29,48 @@ export default function Whiteboard({
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const historyRef = useRef<any[]>([]);
+
+    const drawData = useCallback((data: any) => {
+        const context = contextRef.current;
+        if (!context) return;
+
+        const { x0, y0, x1, y1, color, size } = data;
+        context.beginPath();
+        context.strokeStyle = color;
+        context.lineWidth = size;
+        context.moveTo(x0, y0);
+        context.lineTo(x1, y1);
+        context.stroke();
+        context.closePath();
+    }, []);
+
+    const redrawHistory = useCallback(() => {
+        const context = contextRef.current;
+        const canvas = canvasRef.current;
+        if (!context || !canvas) return;
+
+        context.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+        historyRef.current.forEach(drawData);
+    }, [drawData]);
+
+    const clearCanvas = useCallback(() => {
+        const canvas = canvasRef.current;
+        const context = contextRef.current;
+        if (!canvas || !context) return;
+        context.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+        historyRef.current = [];
+        if (isMentor) {
+            socket.emit('live_board:action', { formId, action: 'clear' });
+        }
+    }, [formId, isMentor, socket]);
+
+    const undoAction = useCallback(() => {
+        historyRef.current.pop();
+        redrawHistory();
+        if (isMentor) {
+            socket.emit('live_board:action', { formId, action: 'undo' });
+        }
+    }, [formId, isMentor, socket, redrawHistory]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -90,7 +133,7 @@ export default function Whiteboard({
                 socket.off('live_board:history');
             }
         };
-    }, [socket, isMentor]);
+    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, undoAction, color, brushSize]);
 
     useEffect(() => {
         if (contextRef.current) {
@@ -101,53 +144,11 @@ export default function Whiteboard({
 
     useEffect(() => {
         if (clearTrigger) clearCanvas();
-    }, [clearTrigger]);
+    }, [clearTrigger, clearCanvas]);
 
     useEffect(() => {
         if (undoTrigger) undoAction();
-    }, [undoTrigger]);
-
-    const drawData = (data: any) => {
-        const context = contextRef.current;
-        if (!context) return;
-
-        const { x0, y0, x1, y1, color, size } = data;
-        context.beginPath();
-        context.strokeStyle = color;
-        context.lineWidth = size;
-        context.moveTo(x0, y0);
-        context.lineTo(x1, y1);
-        context.stroke();
-        context.closePath();
-    };
-
-    const redrawHistory = () => {
-        const context = contextRef.current;
-        const canvas = canvasRef.current;
-        if (!context || !canvas) return;
-
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        historyRef.current.forEach(drawData);
-    };
-
-    const clearCanvas = () => {
-        const canvas = canvasRef.current;
-        const context = contextRef.current;
-        if (!canvas || !context) return;
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        historyRef.current = [];
-        if (isMentor) {
-            socket.emit('live_board:action', { formId, action: 'clear' });
-        }
-    };
-
-    const undoAction = () => {
-        historyRef.current.pop();
-        redrawHistory();
-        if (isMentor) {
-            socket.emit('live_board:action', { formId, action: 'undo' });
-        }
-    };
+    }, [undoTrigger, undoAction]);
 
     const startDrawing = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
         if (!isMentor) return;
@@ -188,16 +189,16 @@ export default function Whiteboard({
     };
 
     const getCoordinates = (event: MouseEvent | TouchEvent | any) => {
-        if (event.touches) {
+        if ((event as any).touches) {
             const rect = canvasRef.current?.getBoundingClientRect();
             return {
-                offsetX: event.touches[0].clientX - (rect?.left || 0),
-                offsetY: event.touches[0].clientY - (rect?.top || 0)
+                offsetX: (event as any).touches[0].clientX - (rect?.left || 0),
+                offsetY: (event as any).touches[0].clientY - (rect?.top || 0)
             };
         }
         return {
-            offsetX: event.offsetX,
-            offsetY: event.offsetY
+            offsetX: (event as any).offsetX,
+            offsetY: (event as any).offsetY
         };
     };
 

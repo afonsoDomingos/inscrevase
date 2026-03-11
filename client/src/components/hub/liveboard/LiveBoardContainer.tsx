@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -98,7 +99,7 @@ export default function LiveBoardContainer({
         return () => {
             newSocket.disconnect();
         };
-    }, [formId]);
+    }, [formId, isMentor, isParticipantAudioMuted, t]);
 
     const playAudioChunk = async (data: ArrayBuffer) => {
         if (!audioContextRef.current) {
