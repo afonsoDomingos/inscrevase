@@ -1518,6 +1518,7 @@
         "status": {
             "pending": "Pending",
             "confirmed": "Confirmed",
+            "approved": "Registration Approved",
             "rejected": "Rejected",
             "waitingApproval": "Waiting for {role} Approval"
         },

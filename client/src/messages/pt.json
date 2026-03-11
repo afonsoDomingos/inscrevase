@@ -1574,9 +1574,11 @@
         "linkAvailableInCabin": "Link disponível na sua cabine",
         "viewAccess": "Ver Meus Acessos",
         "status": {
-            "waitingApproval": "Aguardando aprovação do {role}",
+            "pending": "Pendente",
+            "confirmed": "Inscrição Confirmada",
             "approved": "Inscrição Aprovada",
-            "rejected": "Inscrição Rejeitada"
+            "rejected": "Inscrição Rejeitada",
+            "waitingApproval": "Aguardando aprovação do {role}"
         },
         "liveBoard": {
             "activateBoard": "Ativar Board Ao Vivo",
