@@ -4,7 +4,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Pencil,
     Eraser,
     Undo,
     Save,
@@ -15,9 +14,6 @@ import {
     Hand,
     MessageSquare,
     X,
-    Circle,
-    Maximize2,
-    Minimize2,
     Users
 } from 'lucide-react';
 import Whiteboard from './Whiteboard';
