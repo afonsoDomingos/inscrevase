@@ -33,14 +33,16 @@ export const getSocketUrl = () => {
 };
 
 export const socketConfig = {
-    transports: ['polling', 'websocket'],
+    // Try WebSocket first (single upgrade request), fall back to polling
+    transports: ['websocket', 'polling'],
     withCredentials: true,
     reconnection: true,
-    reconnectionAttempts: 15,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    timeout: 20000,
-    forceNew: true // Garante uma nova tentativa se a anterior falhou
+    reconnectionAttempts: 8,          // Stop after 8 tries (~4 minutes with backoff)
+    reconnectionDelay: 3000,          // Wait 3s before first retry
+    reconnectionDelayMax: 30000,      // Max 30s between retries (exponential backoff)
+    randomizationFactor: 0.5,         // Add jitter to spread reconnection load
+    timeout: 25000,
+    forceNew: false                   // Reuse connection instead of creating new one
 };
 
 export const getSocketOptions = () => {

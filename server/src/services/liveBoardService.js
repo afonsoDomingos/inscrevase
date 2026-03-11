@@ -21,85 +21,92 @@ class LiveBoardService {
 
         // Join Live Board Room
         socket.on('live_board:join', async (formId) => {
-            if (session && session.mentorId === userId) {
-                session.mentorSocketId = socket.id;
-            }
+            try {
 
-            socket.join(`live_board_${formId}`);
+                socket.join(`live_board_${formId}`);
 
-            // Try to get user data from User model if not in socket
-            let userData = socket.userData;
-            if (!userData && userId) {
-                try {
-                    const User = require('../models/User');
-                    const user = await User.findById(userId).select('name profilePhoto role');
-                    if (user) {
-                        userData = {
-                            id: userId,
-                            name: user.name,
-                            photo: user.profilePhoto,
-                            role: user.role
-                        };
+                // Try to get user data from User model if not in socket
+                let userData = socket.userData;
+                if (!userData && userId) {
+                    try {
+                        const User = require('../models/User');
+                        const user = await User.findById(userId).select('name profilePhoto role');
+                        if (user) {
+                            userData = {
+                                id: userId,
+                                name: user.name,
+                                photo: user.profilePhoto,
+                                role: user.role
+                            };
+                        }
+                    } catch (err) {
+                        console.error('[LiveBoard] Error fetching user for presence:', err);
                     }
-                } catch (err) {
-                    console.error('[LiveBoard] Error fetching user for presence:', err);
                 }
-            }
 
-            console.log(`[LiveBoard] User ${userData?.name || userId} joined room: live_board_${formId}`);
+                console.log(`[LiveBoard] User ${userData?.name || userId} joined room: live_board_${formId}`);
 
-            if (!this.activeSessions.has(formId)) {
-                this.activeSessions.set(formId, {
-                    history: [],
-                    participants: new Map(),
-                    pages: [{ history: [], backgroundImage: null }],
-                    currentPage: 0
-                });
-            }
-
-            const session = this.activeSessions.get(formId);
-
-            if (userData) {
-                session.participants.set(userId.toString(), {
-                    ...userData,
-                    socketId: socket.id,
-                    isMentor: session.mentorId === userId
-                });
-
-                // Broadcast updated list
-                this.io.to(`live_board_${formId}`).emit('live_board:participants', Array.from(session.participants.values()));
-            }
-
-            // Tell this socket its own ID (so client can identify drawing permissions)
-            socket.emit('live_board:my_socket_id', socket.id);
-
-            // If session is active, send status and current board state
-            if (session.mentorId) {
-                socket.emit('live_board:status', {
-                    active: true,
-                    mentorId: session.mentorId,
-                    mentorData: session.mentorData,
-                    pages: session.pages || [{ history: [], backgroundImage: null }],
-                    currentPage: session.currentPage || 0,
-                    currentQuiz: session.currentQuiz ? {
-                        ...session.currentQuiz,
-                        votes: Array.from(session.currentQuiz.votes.entries()),
-                        results: this.calculateQuizResults(session.currentQuiz)
-                    } : null,
-                    currentTimer: session.currentTimer ? { ...session.currentTimer, remaining: Math.max(0, Math.floor((session.currentTimer.endTime - Date.now()) / 1000)) } : null,
-                    currentAnnouncement: session.currentAnnouncement || null
-                });
-                socket.emit('live_board:history', session.history);
-            } else if (session.countdown) {
-                // If countdown is active, send remaining time
-                const elapsedSeconds = Math.floor((new Date() - new Date(session.countdown.startTime)) / 1000);
-                const timeLeft = Math.max(0, session.countdown.duration - elapsedSeconds);
-                if (timeLeft > 0) {
-                    socket.emit('live_board:countdown', {
-                        ...session.countdown,
-                        duration: timeLeft
+                if (!this.activeSessions.has(formId)) {
+                    this.activeSessions.set(formId, {
+                        history: [],
+                        participants: new Map(),
+                        pages: [{ history: [], backgroundImage: null }],
+                        currentPage: 0
                     });
                 }
+
+                const session = this.activeSessions.get(formId);
+
+                // Update mentor socket ID now that session is defined
+                if (session.mentorId === userId) {
+                    session.mentorSocketId = socket.id;
+                }
+
+                if (userData) {
+                    session.participants.set(userId.toString(), {
+                        ...userData,
+                        socketId: socket.id,
+                        isMentor: session.mentorId === userId
+                    });
+
+                    // Broadcast updated list
+                    this.io.to(`live_board_${formId}`).emit('live_board:participants', Array.from(session.participants.values()));
+                }
+
+                // Tell this socket its own ID (so client can identify drawing permissions)
+                socket.emit('live_board:my_socket_id', socket.id);
+
+                // If session is active, send status and current board state
+                if (session.mentorId) {
+                    socket.emit('live_board:status', {
+                        active: true,
+                        mentorId: session.mentorId,
+                        mentorData: session.mentorData,
+                        pages: session.pages || [{ history: [], backgroundImage: null }],
+                        currentPage: session.currentPage || 0,
+                        currentQuiz: session.currentQuiz ? {
+                            ...session.currentQuiz,
+                            // votes is a plain object {}, not a Map
+                            votes: Object.entries(session.currentQuiz.votes || {}),
+                            results: this.calculateQuizResults(session.currentQuiz)
+                        } : null,
+                        currentTimer: session.currentTimer ? { ...session.currentTimer, remaining: Math.max(0, Math.floor((session.currentTimer.endTime - Date.now()) / 1000)) } : null,
+                        currentAnnouncement: session.currentAnnouncement || null
+                    });
+                    socket.emit('live_board:history', session.history);
+                } else if (session.countdown) {
+                    // If countdown is active, send remaining time
+                    const elapsedSeconds = Math.floor((new Date() - new Date(session.countdown.startTime)) / 1000);
+                    const timeLeft = Math.max(0, session.countdown.duration - elapsedSeconds);
+                    if (timeLeft > 0) {
+                        socket.emit('live_board:countdown', {
+                            ...session.countdown,
+                            duration: timeLeft
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('[LiveBoard] Error in live_board:join handler:', err);
             }
         });
 
