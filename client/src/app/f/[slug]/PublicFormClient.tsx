@@ -945,9 +945,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 >USD</button>
                                             </div>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
                                             <div style={{ fontSize: '2rem', fontWeight: 900, color: primaryColor, wordBreak: 'break-word', lineHeight: '1' }}>
                                                 {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency)}
+                                            </div>
+                                            <div style={{ fontSize: '0.8rem', color: secondaryTextColor, fontWeight: 600, paddingBottom: '4px' }}>
+                                                <span style={{ opacity: 0.6 }}>Aprox. </span>
+                                                {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency, currency === 'MZN' ? 'USD' : 'MZN')}
                                             </div>
                                             {form.paymentConfig.originalPrice && form.paymentConfig.originalPrice > (form.paymentConfig.price || 0) && (
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '4px' }}>
@@ -968,11 +972,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     </div>
                                                 </div>
                                             )}
-                                        </div>
-                                        {/* Alternative Currency Hint */}
-                                        <div style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontWeight: 600, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-                                            <span style={{ opacity: 0.6 }}>Aprox. </span>
-                                            {formatPrice(form.paymentConfig.price || 0, form.paymentConfig.currency, currency === 'MZN' ? 'USD' : 'MZN')}
                                         </div>
                                         {form.paymentConfig.instructions && (
                                             <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontSize: '0.9rem', color: secondaryTextColor, whiteSpace: 'pre-wrap' }}>
