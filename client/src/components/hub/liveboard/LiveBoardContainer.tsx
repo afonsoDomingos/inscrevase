@@ -403,7 +403,7 @@ export default function LiveBoardContainer({
                         <span>LIVE BOARD</span>
                     </div>
 
-                    {isMentor && (
+                    {isMentor ? (
                         <button
                             onClick={onClose}
                             style={{
@@ -421,6 +421,25 @@ export default function LiveBoardContainer({
                             }}
                         >
                             <X size={16} /> Encerramento
+                        </button>
+                    ) : (
+                        <button
+                            onClick={onClose}
+                            style={{
+                                background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0',
+                                color: isDark ? '#fff' : '#444',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}
+                        >
+                            <X size={16} /> Minimizar
                         </button>
                     )}
                 </div>
