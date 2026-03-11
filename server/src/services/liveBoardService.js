@@ -39,7 +39,12 @@ class LiveBoardService {
             console.log(`[LiveBoard] User ${userData?.name || userId} joined room: live_board_${formId}`);
 
             if (!this.activeSessions.has(formId)) {
-                this.activeSessions.set(formId, { history: [], participants: new Map() });
+                this.activeSessions.set(formId, {
+                    history: [],
+                    participants: new Map(),
+                    pages: [{ history: [], backgroundImage: null }],
+                    currentPage: 0
+                });
             }
 
             const session = this.activeSessions.get(formId);
@@ -59,7 +64,9 @@ class LiveBoardService {
                 socket.emit('live_board:status', {
                     active: true,
                     mentorId: session.mentorId,
-                    mentorData: session.mentorData
+                    mentorData: session.mentorData,
+                    pages: session.pages,
+                    currentPage: session.currentPage
                 });
                 socket.emit('live_board:history', session.history);
             } else if (session.countdown) {
@@ -80,7 +87,12 @@ class LiveBoardService {
             console.log(`[LiveBoard] Countdown started for form ${formId}: ${duration}s`);
 
             if (!this.activeSessions.has(formId)) {
-                this.activeSessions.set(formId, { history: [], participants: new Map() });
+                this.activeSessions.set(formId, {
+                    history: [],
+                    participants: new Map(),
+                    pages: [{ history: [], backgroundImage: null }],
+                    currentPage: 0
+                });
             }
             const session = this.activeSessions.get(formId);
 
@@ -101,7 +113,12 @@ class LiveBoardService {
 
             let session = this.activeSessions.get(formId);
             if (!session) {
-                session = { history: [], participants: new Map() };
+                session = {
+                    history: [],
+                    participants: new Map(),
+                    pages: [{ history: [], backgroundImage: null }],
+                    currentPage: 0
+                };
                 this.activeSessions.set(formId, session);
             }
 
@@ -141,6 +158,15 @@ class LiveBoardService {
                 session.history.push(data);
                 // Broadcast to all participants in the room except sender
                 socket.to(`live_board_${formId}`).emit('live_board:draw', data);
+            }
+        });
+
+        // History Replace Event (for moving shapes)
+        socket.on('live_board:history_replace', ({ formId, history }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                session.history = history;
+                socket.to(`live_board_${formId}`).emit('live_board:history_replace', history);
             }
         });
 
@@ -213,7 +239,7 @@ class LiveBoardService {
             const session = this.activeSessions.get(formId);
             if (session && session.mentorId === userId) {
                 session.currentPage = index;
-                session.pages = pages; // optionally store pages on server if needed
+                session.pages = pages;
                 socket.to(`live_board_${formId}`).emit('live_board:page_change', { index, pages });
             }
         });

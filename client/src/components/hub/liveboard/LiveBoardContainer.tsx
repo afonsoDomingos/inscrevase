@@ -54,8 +54,8 @@ export default function LiveBoardContainer({
     const { t } = useTranslate();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [color, setColor] = useState('#000000');
-    const brushSize = 3;
-    const [tool, setTool] = useState<'pen' | 'eraser' | 'rectangle' | 'circle' | 'arrow' | 'laser' | 'text'>('pen');
+    const [brushSize, setBrushSize] = useState(3);
+    const [tool, setTool] = useState<'pen' | 'eraser' | 'rectangle' | 'circle' | 'arrow' | 'laser' | 'text' | 'select'>('pen');
     const [isDark, setIsDark] = useState(false);
     const [undoTrigger, setUndoTrigger] = useState(0);
     const [isAudioActive, setIsAudioActive] = useState(false);
@@ -76,6 +76,25 @@ export default function LiveBoardContainer({
 
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+    useEffect(() => {
+        const handleInteraction = () => {
+            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+                audioContextRef.current.resume();
+            } else if (!audioContextRef.current) {
+                // Pre-initialize on first click if not exist
+                audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            }
+        };
+
+        window.addEventListener('click', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction);
+
+        return () => {
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+    }, []);
 
     useEffect(() => {
         const newSocket = io(getSocketUrl(), getSocketOptions());
@@ -118,10 +137,23 @@ export default function LiveBoardContainer({
             }, 3000);
         });
 
+        newSocket.on('live_board:status', (status: any) => {
+            if (status.pages && !isMentor) {
+                setPages(status.pages);
+                setCurrentPage(status.currentPage || 0);
+            }
+        });
+
         newSocket.on('live_board:page_change', ({ index, pages: syncedPages }: any) => {
             if (!isMentor) {
                 setCurrentPage(index);
                 if (syncedPages) setPages(syncedPages);
+            }
+        });
+
+        newSocket.on('live_board:action', (action: string) => {
+            if (action === 'clear' && !isMentor) {
+                // Not needed here, Whiteboard component listens to this, but we could handle it globally.
             }
         });
 
@@ -482,6 +514,22 @@ export default function LiveBoardContainer({
                     ))}
                 </AnimatePresence>
 
+                {/* Powered by Watermark */}
+                <div style={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    left: '20px',
+                    pointerEvents: 'none',
+                    opacity: 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    zIndex: 10
+                }}>
+                    <Image src="/logo1.png" alt="Inscreva-se" width={20} height={20} style={{ opacity: isDark ? 0.8 : 0.5, filter: isDark ? 'invert(1)' : 'none' }} />
+                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000' }}>POWERED BY INSCREVA-SE</span>
+                </div>
+
                 {/* Participant Audio Control */}
                 {!isMentor && (
                     <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
@@ -594,14 +642,57 @@ export default function LiveBoardContainer({
                                         alignItems: 'center',
                                         justifyContent: 'center'
                                     }}
+                                    title="Pen"
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                </button>
+
+                                <button
+                                    onClick={() => setTool('select')}
+                                    style={{
+                                        width: '38px',
+                                        height: '38px',
+                                        borderRadius: '10px',
+                                        background: tool === 'select' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: tool === 'select' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    title="Mover Sólidos"
+                                >
+                                    <Hand size={18} />
                                 </button>
                             </div>
 
                             {/* Actions */}
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="50"
+                                    value={brushSize}
+                                    onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                                    style={{ width: '60px', accentColor: color }}
+                                    title="Tamanho do Pincel/Borracha"
+                                />
+                            </div>
+
                             <div style={{ display: 'flex', gap: '2px' }}>
-                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Undo"><Undo size={18} /></button>
+                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={18} /></button>
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('Tem certeza que deseja apagar todo o quadro?')) {
+                                            socket?.emit('live_board:action', { formId, action: 'clear' });
+                                        }
+                                    }}
+                                    style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
+                                >
+                                    <Eraser size={18} />
+                                </button>
+
 
                                 <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
                                 <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={18} /></button>

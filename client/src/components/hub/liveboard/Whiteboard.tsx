@@ -12,7 +12,7 @@ interface WhiteboardProps {
     socket: any;
     formId: string;
     undoTrigger?: number;
-    tool: 'pen' | 'eraser' | 'rectangle' | 'circle' | 'arrow' | 'laser' | 'text';
+    tool: 'pen' | 'eraser' | 'rectangle' | 'circle' | 'arrow' | 'laser' | 'text' | 'select';
     isDark?: boolean;
     backgroundImage?: string | null;
 }
@@ -258,6 +258,11 @@ export default function Whiteboard({
                 historyRef.current = history;
                 redrawHistory();
             });
+
+            socket.on('live_board:history_replace', (history: any[]) => {
+                historyRef.current = history;
+                redrawHistory();
+            });
         }
 
         return () => {
@@ -267,6 +272,7 @@ export default function Whiteboard({
                 socket.off('live_board:laser');
                 socket.off('live_board:action');
                 socket.off('live_board:history');
+                socket.off('live_board:history_replace');
             }
         };
     }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark]);
@@ -318,6 +324,9 @@ export default function Whiteboard({
         setTextInput(null);
     };
 
+    const selectedShapeIndexRef = useRef<number>(-1);
+    const initialDragPosRef = useRef<{ x: number, y: number } | null>(null);
+
     const startDrawing = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
         if (!isMentor) return;
         const { offsetX, offsetY } = getCoordinates(nativeEvent);
@@ -325,6 +334,32 @@ export default function Whiteboard({
         if (tool === 'text') {
             setTextInput({ x: offsetX, y: offsetY });
             return;
+        }
+
+        if (tool === 'select') {
+            // Find a shape to select (reverse order to find topmost)
+            selectedShapeIndexRef.current = -1;
+            for (let i = historyRef.current.length - 1; i >= 0; i--) {
+                const item = historyRef.current[i];
+                if (['rectangle', 'circle', 'arrow', 'text'].includes(item.type)) {
+                    // Simple bounding box hit test
+                    const minX = Math.min(item.x0, item.x1 ?? item.x0);
+                    const maxX = Math.max(item.x0, item.x1 ?? item.x0 + (item.type === 'text' ? item.text.length * item.size * 3 : 0));
+                    const minY = Math.min(item.y0, item.y1 ?? item.y0);
+                    const maxY = Math.max(item.y0, item.y1 ?? item.y0 + (item.type === 'text' ? item.size * 6 : 0));
+
+                    // Add padding to hit test
+                    const hitPadding = 20;
+                    if (offsetX >= minX - hitPadding && offsetX <= maxX + hitPadding &&
+                        offsetY >= minY - hitPadding && offsetY <= maxY + hitPadding) {
+                        selectedShapeIndexRef.current = i;
+                        initialDragPosRef.current = { x: offsetX, y: offsetY };
+                        setIsDrawing(true);
+                        return; // Found the item
+                    }
+                }
+            }
+            return; // Clicked empty space
         }
 
         currentStrokeIdRef.current = Math.random().toString(36).substring(7);
@@ -357,6 +392,23 @@ export default function Whiteboard({
         // Prevent scrolling while drawing on mobile
         if (event.type === 'touchmove') {
             event.preventDefault();
+        }
+
+        if (tool === 'select' && selectedShapeIndexRef.current >= 0 && initialDragPosRef.current) {
+            const dx = offsetX - initialDragPosRef.current.x;
+            const dy = offsetY - initialDragPosRef.current.y;
+
+            const shape = historyRef.current[selectedShapeIndexRef.current];
+            const updatedShape = { ...shape, x0: shape.x0 + dx, y0: shape.y0 + dy };
+            if (shape.x1 !== undefined && shape.y1 !== undefined) {
+                updatedShape.x1 = shape.x1 + dx;
+                updatedShape.y1 = shape.y1 + dy;
+            }
+            // Update the history locally and redraw
+            historyRef.current[selectedShapeIndexRef.current] = updatedShape;
+            initialDragPosRef.current = { x: offsetX, y: offsetY };
+            redrawHistory();
+            return;
         }
 
         const context = contextRef.current;
@@ -395,6 +447,16 @@ export default function Whiteboard({
 
     const stopDrawing = (event: React.MouseEvent | React.TouchEvent) => {
         if (!isMentor || !isDrawing) return;
+
+        if (tool === 'select') {
+            setIsDrawing(false);
+            if (selectedShapeIndexRef.current >= 0) {
+                // We moved a shape! Tell server to sync history.
+                socket.emit('live_board:history_replace', { formId, history: historyRef.current });
+                selectedShapeIndexRef.current = -1;
+            }
+            return;
+        }
 
         if (tool !== 'pen' && tool !== 'eraser' && tool !== 'laser' && lastPointRef.current) {
             const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
