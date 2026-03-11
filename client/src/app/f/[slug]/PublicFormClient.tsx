@@ -477,6 +477,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     .responsive-form-grid {
                         width: 100% !important;
                     }
+                    .vsl-wrapper {
+                        max-width: 100% !important;
+                    }
                 }
                 .responsive-form-grid.horizontal-vsl {
                     grid-template-columns: 1fr 400px !important;
@@ -991,7 +994,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         transition={{ duration: 0.6, delay: 0.2, type: 'spring' }}
                                         style={{ position: (form as any).videoOrientation === 'horizontal' ? 'relative' : 'sticky', top: '20px' }}
                                     >
-                                        <div style={{
+                                        <div className="vsl-wrapper" style={{
                                             position: 'relative',
                                             borderRadius: '24px',
                                             overflow: 'hidden',
@@ -1000,7 +1003,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             background: '#000',
                                             aspectRatio: (form as any).videoOrientation === 'horizontal' ? '16/9' : '9/16',
                                             width: '100%',
-                                            maxWidth: (form as any).videoOrientation === 'horizontal' ? '100%' : '300px',
+                                            maxWidth: (form as any).videoOrientation === 'horizontal' ? '100%' : '420px',
                                             margin: '0 auto'
                                         }}>
                                             {/* Hide Video Button */}
