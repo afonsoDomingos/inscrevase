@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState, Suspense, useRef } from 'react';
+import { useEffect, useState, Suspense, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -187,111 +187,115 @@ function HubContent() {
         setCurrentUser(authService.getCurrentUser());
     }, []);
 
-    useEffect(() => {
-        const fetchSubmission = async () => {
-            try {
-                const url = process.env.NEXT_PUBLIC_API_URL
-                    ? `${process.env.NEXT_PUBLIC_API_URL}/submissions/${id}`
-                    : `http://localhost:5000/api/submissions/${id}`;
-                const response = await fetch(url);
-                const data = await response.json();
+    const fetchLessons = useCallback(async () => {
+        try {
+            const token = typeof window !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
 
-                if (response.ok) {
-                    setSubmission(data);
-                    if (data.form.showVideoOnStart) {
-                        setIsPlayerExpanded(true);
-                    }
-                    document.title = `${data.form.title} - Hub`;
+            const url = process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/lessons/hub/${id}`
+                : `http://localhost:5000/api/lessons/hub/${id}`;
 
-                    // Se a inscrição estiver aprovada, buscar as aulas
-                    if (data.status === 'approved' || data.paymentStatus === 'paid') {
+            const response = await fetch(url, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
+            const data = await response.json();
+            if (response.ok) {
+                const sorted = data.sort((a: HubLesson, b: HubLesson) => (a.order || 0) - (b.order || 0));
+                setLessons(sorted);
+            }
+        } catch (err) {
+            console.error('Error fetching hub lessons:', err);
+        }
+    }, [id]);
+
+    const fetchSubmission = useCallback(async () => {
+        try {
+            const url = process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/submissions/${id}`
+                : `http://localhost:5000/api/submissions/${id}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (response.ok) {
+                setSubmission(data);
+                if (data.form.showVideoOnStart) {
+                    setIsPlayerExpanded(true);
+                }
+                document.title = `${data.form.title} - Hub`;
+
+                if (data.status === 'approved' || data.paymentStatus === 'paid') {
+                    fetchLessons();
+                }
+
+            } else {
+                try {
+                    const formUrl = process.env.NEXT_PUBLIC_API_URL
+                        ? `${process.env.NEXT_PUBLIC_API_URL}/forms/${id}`
+                        : `http://localhost:5000/api/forms/${id}`;
+                    const formResponse = await fetch(formUrl);
+                    const formData = await formResponse.json();
+
+                    if (formResponse.ok) {
+                        setSubmission({
+                            _id: 'preview',
+                            status: 'approved',
+                            paymentStatus: 'paid',
+                            data: {},
+                            submittedAt: new Date().toISOString(),
+                            form: formData
+                        });
+                        document.title = `${formData.title} - Hub (Preview)`;
                         fetchLessons();
-                    }
-
-                } else {
-                    // FALLBACK: Try to fetch as a Form Slug (Mentor Preview Mode)
-                    try {
-                        const formUrl = process.env.NEXT_PUBLIC_API_URL
-                            ? `${process.env.NEXT_PUBLIC_API_URL}/forms/${id}`
-                            : `http://localhost:5000/api/forms/${id}`;
-                        const formResponse = await fetch(formUrl);
-                        const formData = await formResponse.json();
-
-                        if (formResponse.ok) {
-                            // Create a dummy submission object for preview
-                            setSubmission({
-                                _id: 'preview',
-                                status: 'approved',
-                                paymentStatus: 'paid',
-                                data: {},
-                                submittedAt: new Date().toISOString(),
-                                form: formData
-                            });
-                            document.title = `${formData.title} - Hub (Preview)`;
-
-                            // Load lessons for the form
-                            fetchLessons();
-                        } else {
-                            toast.error(t('dashboard.submissionNotFound'));
-                        }
-                    } catch (err) {
-                        console.error("Preview fallback failed:", err);
+                    } else {
                         toast.error(t('dashboard.submissionNotFound'));
                     }
+                } catch (err) {
+                    console.error("Preview fallback failed:", err);
+                    toast.error(t('dashboard.submissionNotFound'));
                 }
-
-                // Setup board status monitor (For both paths)
-                if (!statusSocketRef.current && id) {
-                    const s = io(getSocketUrl(), getSocketOptions());
-
-                    s.on('connect', () => {
-                        console.log('[Hub] Connected to status socket');
-                        s.emit('live_board:join', id);
-                    });
-
-                    s.on('live_board:status', (status: any) => {
-                        setIsBoardActive(status.active);
-                        if (status.active) {
-                            setBoardMentorData(status.mentorData);
-                        }
-                    });
-
-                    statusSocketRef.current = s;
-                }
-            } catch (err) {
-                console.error(err);
-                toast.error(t('dashboard.cancelError'));
-            } finally {
-                setLoading(false);
             }
-        };
+        } catch (err) {
+            console.error(err);
+            toast.error(t('dashboard.cancelError'));
+        } finally {
+            setLoading(false);
+        }
+    }, [id, t, fetchLessons]);
 
-        const fetchLessons = async () => {
-            try {
-                // Get token if logged in to fetch personal progress
-                const token = typeof window !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
-
-                const url = process.env.NEXT_PUBLIC_API_URL
-                    ? `${process.env.NEXT_PUBLIC_API_URL}/lessons/hub/${id}`
-                    : `http://localhost:5000/api/lessons/hub/${id}`;
-
-                const response = await fetch(url, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    // Sort by order
-                    const sorted = data.sort((a: HubLesson, b: HubLesson) => (a.order || 0) - (b.order || 0));
-                    setLessons(sorted);
-                }
-            } catch (err) {
-                console.error('Error fetching hub lessons:', err);
-            }
-        };
-
+    useEffect(() => {
         fetchSubmission();
         if (id) fetchLessons();
-    }, [id, t]);
+    }, [id, fetchSubmission, fetchLessons]);
+
+    // Socket Monitor Logic (depends on submission)
+    useEffect(() => {
+        if (!submission || statusSocketRef.current) return;
+
+        const formId = submission.form._id;
+        const s = io(getSocketUrl(), getSocketOptions());
+
+        s.on('connect', () => {
+            console.log(`[Hub] Connected to status socket. Joining room: live_board_${formId}`);
+            s.emit('live_board:join', formId);
+        });
+
+        s.on('live_board:status', (status: any) => {
+            console.log('[Hub] Live Board Status received:', status);
+            setIsBoardActive(status.active);
+            if (status.active) {
+                setBoardMentorData(status.mentorData);
+            }
+        });
+
+        statusSocketRef.current = s;
+
+        return () => {
+            if (statusSocketRef.current) {
+                statusSocketRef.current.disconnect();
+                statusSocketRef.current = null;
+            }
+        };
+    }, [submission]);
 
     const markLessonComplete = async (lessonId: string) => {
         try {
@@ -635,23 +639,21 @@ function HubContent() {
                 {/* --- LIVE BOARD SECTION --- */}
                 <AnimatePresence>
                     {isBoardActive && (
-                        <div style={{ maxWidth: '900px', margin: '0 auto 40px' }}>
-                            <LiveBoardContainer
-                                formId={String(id)}
-                                isMentor={currentUser?._id === form.creator?._id || currentUser?.role === 'admin'}
-                                mentorData={boardMentorData || {
-                                    name: form.creator.name,
-                                    photo: form.creator.profilePhoto,
-                                    title: form.creator.role?.toUpperCase() || 'MENTOR'
-                                }}
-                                primaryColor={primaryColor}
-                                onClose={() => {
-                                    if (statusSocketRef.current) {
-                                        statusSocketRef.current.emit('live_board:end', id);
-                                    }
-                                }}
-                            />
-                        </div>
+                        <LiveBoardContainer
+                            formId={String(form._id)}
+                            isMentor={currentUser?._id === form.creator?._id || currentUser?.role === 'admin'}
+                            mentorData={boardMentorData || {
+                                name: form.creator.name,
+                                photo: form.creator.profilePhoto,
+                                title: form.creator.role?.toUpperCase() || 'MENTOR'
+                            }}
+                            primaryColor={primaryColor}
+                            onClose={() => {
+                                if (statusSocketRef.current) {
+                                    statusSocketRef.current.emit('live_board:end', form._id);
+                                }
+                            }}
+                        />
                     )}
                 </AnimatePresence>
 
@@ -661,13 +663,13 @@ function HubContent() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => {
-                                if (statusSocketRef.current) {
+                                if (statusSocketRef.current && submission) {
                                     statusSocketRef.current.emit('live_board:start', {
-                                        formId: id,
+                                        formId: submission.form._id,
                                         mentorData: {
-                                            name: form.creator.name,
-                                            photo: form.creator.profilePhoto,
-                                            title: form.creator.role || 'MENTOR'
+                                            name: submission.form.creator.name,
+                                            photo: submission.form.creator.profilePhoto,
+                                            title: submission.form.creator.role || 'MENTOR'
                                         }
                                     });
                                 }

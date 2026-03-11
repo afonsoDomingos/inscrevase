@@ -164,94 +164,90 @@ export default function LiveBoardContainer({
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             className="live-board-main"
             style={{
-                width: '100%',
-                background: '#f0f0f0',
-                borderRadius: '32px',
-                overflow: 'hidden',
-                boxShadow: '0 40px 100px rgba(0,0,0,0.25)',
-                marginBottom: '2.5rem',
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100vw',
+                height: '100vh',
+                background: '#fff',
+                zIndex: 9999,
                 display: 'flex',
                 flexDirection: 'column',
-                height: '75vh',
-                position: 'relative',
-                border: `1px solid ${primaryColor}40`
+                overflow: 'hidden'
             }}
         >
-            {/* Header */}
+            {/* Minimal Top Header */}
             <div style={{
-                padding: '20px 30px',
+                padding: '10px 25px',
                 background: '#fff',
-                borderBottom: '1px solid #eee',
+                borderBottom: '1px solid #f0f0f0',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                height: '60px'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ position: 'relative' }}>
-                        <div style={{ width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: `2.5px solid ${primaryColor}`, position: 'relative' }}>
-                            <Image
-                                src={mentorData.photo || '/default-avatar.png'}
-                                fill
-                                style={{ objectFit: 'cover' }}
-                                alt={mentorData.name}
-                            />
-                        </div>
-                        <div style={{
-                            position: 'absolute',
-                            bottom: -5,
-                            right: -5,
-                            background: '#ff4757',
-                            color: '#fff',
-                            fontSize: '0.65rem',
-                            padding: '3px 7px',
-                            borderRadius: '100px',
-                            fontWeight: 900,
-                            letterSpacing: '0.5px',
-                            boxShadow: '0 4px 10px rgba(255,71,87,0.3)',
-                            animation: 'pulse 1.5s infinite',
-                            zIndex: 2
-                        }}>{t('hub.liveBoard.liveNow')}</div>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', overflow: 'hidden', border: `2px solid ${primaryColor}` }}>
+                        <Image
+                            src={mentorData.photo || '/default-avatar.png'}
+                            width={36}
+                            height={36}
+                            style={{ objectFit: 'cover' }}
+                            alt={mentorData.name}
+                        />
                     </div>
                     <div>
-                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#111' }}>{mentorData.name}</div>
-                        <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>{mentorData.title}</div>
+                        <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#111' }}>{mentorData.name}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600 }}>{mentorData.title}</div>
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
                         background: '#f8f8f8',
-                        padding: '8px 16px',
-                        borderRadius: '100px',
-                        fontSize: '0.85rem',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        fontSize: '0.75rem',
                         fontWeight: 700,
-                        color: '#666',
-                        border: '1px solid #eee'
+                        color: '#444'
                     }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ff4757' }} />
-                        <span>Live Board</span>
+                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ff4757' }} className="animate-pulse" />
+                        <span>LIVE BOARD</span>
                     </div>
+
                     {isMentor && (
                         <button
                             onClick={onClose}
-                            style={{ background: '#111', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '100px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', boxShadow: '0 5px 15px rgba(0,0,0,0.1)' }}
+                            style={{
+                                background: '#fee2e2',
+                                color: '#ef4444',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}
                         >
-                            <X size={18} /> {t('hub.liveBoard.endSession')}
+                            <X size={16} /> Encerramento
                         </button>
                     )}
                 </div>
             </div>
 
             {/* Canvas Area */}
-            <div style={{ flex: 1, position: 'relative', background: '#fff', overflow: 'hidden' }}>
+            <div style={{ flex: 1, position: 'relative', background: '#fff' }}>
                 <Whiteboard
                     isMentor={isMentor}
                     socket={socket}
@@ -264,210 +260,203 @@ export default function LiveBoardContainer({
 
                 {/* Participant Audio Control */}
                 {!isMentor && (
-                    <div style={{ position: 'absolute', bottom: 25, left: 25, zIndex: 10 }}>
+                    <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
                         <button
                             onClick={() => setIsParticipantAudioMuted(!isParticipantAudioMuted)}
                             style={{
                                 background: isParticipantAudioMuted ? '#111' : primaryColor,
                                 color: '#fff',
-                                width: '60px',
-                                height: '60px',
+                                width: '54px',
+                                height: '54px',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 border: 'none',
                                 cursor: 'pointer',
-                                boxShadow: '0 15px 30px rgba(0,0,0,0.2)',
-                                transition: 'all 0.3s ease'
+                                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
                             }}
                         >
-                            {isParticipantAudioMuted ? <VolumeX size={28} /> : <Volume2 size={28} />}
+                            {isParticipantAudioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
                         </button>
                     </div>
                 )}
-            </div>
 
-            {/* Toolbar */}
-            <div style={{
-                padding: '15px 30px',
-                background: '#fff',
-                borderTop: '1px solid #eee',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '25px',
-                zIndex: 10
-            }}>
-                {isMentor ? (
-                    <>
-                        <div style={{ display: 'flex', gap: '10px', borderRight: '1px solid #eee', paddingRight: '25px' }}>
-                            {['#000000', '#ff4757', '#2e86de', '#27ae60', '#f1c40f'].map((c) => (
-                                <button
-                                    key={c}
-                                    onClick={() => { setColor(c); setIsEraser(false); }}
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '50%',
-                                        background: c,
-                                        border: color === c && !isEraser ? '4px solid #f0f0f0' : '2px solid transparent',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        transform: color === c && !isEraser ? 'scale(1.2)' : 'scale(1)',
-                                        boxShadow: color === c && !isEraser ? `0 0 15px ${c}50` : 'none'
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                {/* FLOATING TOOLBAR - Baseado na Inspiração */}
+                <div style={{
+                    position: 'absolute',
+                    bottom: '30px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#fff',
+                    padding: '8px',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '1px solid #f0f0f0'
+                }}>
+                    {isMentor ? (
+                        <>
+                            <div style={{ display: 'flex', gap: '4px', paddingRight: '8px', borderRight: '1px solid #f0f0f0' }}>
+                                {['#000000', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'].map((c) => (
+                                    <button
+                                        key={c}
+                                        onClick={() => { setColor(c); setIsEraser(false); }}
+                                        style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            borderRadius: '10px',
+                                            background: c,
+                                            border: '3px solid transparent',
+                                            borderColor: color === c && !isEraser ? '#f0f0f0' : 'transparent',
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.2s',
+                                            transform: color === c && !isEraser ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
+                                            boxShadow: color === c && !isEraser ? `0 4px 12px ${c}40` : 'none'
+                                        }}
+                                    />
+                                ))}
+                            </div>
+
                             <button
                                 onClick={() => setIsEraser(!isEraser)}
-                                style={{ background: isEraser ? `${primaryColor}15` : 'transparent', border: 'none', width: '45px', height: '45px', borderRadius: '14px', cursor: 'pointer', color: isEraser ? primaryColor : '#111', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                title={t('hub.liveBoard.eraser')}
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '10px',
+                                    background: isEraser ? '#f0f0f0' : 'transparent',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    color: isEraser ? '#111' : '#666',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
                             >
-                                <Eraser size={24} />
+                                <Eraser size={20} strokeWidth={2.5} />
                             </button>
+
                             <button
                                 onClick={() => setUndoTrigger(prev => prev + 1)}
-                                style={{ background: 'transparent', border: 'none', width: '45px', height: '45px', borderRadius: '14px', cursor: 'pointer', color: '#111', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                title={t('hub.liveBoard.undo')}
+                                style={{ width: '40px', height: '40px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
-                                <Undo size={24} />
+                                <Undo size={20} strokeWidth={2.5} />
                             </button>
+
                             <button
                                 onClick={saveBoard}
-                                style={{ background: 'transparent', border: 'none', width: '45px', height: '45px', borderRadius: '14px', cursor: 'pointer', color: '#111', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                title={t('hub.liveBoard.save')}
+                                style={{ width: '40px', height: '40px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
-                                <Save size={24} />
+                                <Save size={20} strokeWidth={2.5} />
                             </button>
-                            <div style={{ width: '1px', height: '30px', background: '#eee', margin: '0 10px' }}></div>
+
+                            <div style={{ width: '1px', height: '24px', background: '#f0f0f0', margin: '0 8px' }} />
+
                             <button
                                 onClick={isAudioActive ? handleStopAudio : handleStartAudio}
                                 style={{
-                                    background: isAudioActive ? '#ff475715' : `${primaryColor}15`,
-                                    color: isAudioActive ? '#ff4757' : primaryColor,
-                                    border: `1.5px solid ${isAudioActive ? '#ff475730' : `${primaryColor}30`}`,
-                                    padding: '10px 25px',
-                                    borderRadius: '100px',
+                                    background: isAudioActive ? '#fee2e2' : '#f0f9ff',
+                                    color: isAudioActive ? '#ef4444' : '#0ea5e9',
+                                    border: 'none',
+                                    padding: '8px 16px',
+                                    borderRadius: '10px',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontSize: '0.8rem'
+                                }}
+                            >
+                                {isAudioActive ? <MicOff size={18} /> : <Mic size={18} />}
+                                {isAudioActive ? 'Silenciar' : 'Falar'}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                onClick={handleRaiseHand}
+                                disabled={isHandRaised}
+                                style={{
+                                    background: isHandRaised ? '#f8f8f8' : '#f0f9ff',
+                                    color: isHandRaised ? '#ccc' : '#0ea5e9',
+                                    border: 'none',
+                                    padding: '12px 24px',
+                                    borderRadius: '12px',
+                                    fontWeight: 800,
+                                    cursor: isHandRaised ? 'default' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    fontSize: '0.9rem'
+                                }}
+                            >
+                                <Hand size={20} /> Levantar Mão
+                            </button>
+                            <button
+                                onClick={() => setIsSidebarOpen(true)}
+                                style={{
+                                    background: '#111',
+                                    color: '#fff',
+                                    border: 'none',
+                                    padding: '12px 24px',
+                                    borderRadius: '12px',
                                     fontWeight: 800,
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '10px',
-                                    fontSize: '0.9rem',
-                                    transition: 'all 0.3s'
+                                    fontSize: '0.9rem'
                                 }}
                             >
-                                {isAudioActive ? <MicOff size={20} /> : <Mic size={20} />}
-                                {isAudioActive ? t('hub.liveBoard.muteAudio') : t('hub.liveBoard.unmuteAudio')}
+                                <MessageSquare size={20} /> Perguntas
                             </button>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <button
-                            onClick={handleRaiseHand}
-                            disabled={isHandRaised}
-                            style={{
-                                background: isHandRaised ? '#f8f8f8' : `${primaryColor}15`,
-                                color: isHandRaised ? '#aaa' : primaryColor,
-                                border: `1.5px solid ${isHandRaised ? '#eee' : `${primaryColor}30`}`,
-                                padding: '14px 35px',
-                                borderRadius: '100px',
-                                fontWeight: 900,
-                                cursor: isHandRaised ? 'default' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                fontSize: '1rem',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <Hand size={22} /> {t('hub.liveBoard.raiseHand')}
-                        </button>
-                        <button
-                            onClick={() => setIsSidebarOpen(true)}
-                            style={{
-                                background: '#111',
-                                color: '#fff',
-                                border: 'none',
-                                padding: '14px 35px',
-                                borderRadius: '100px',
-                                fontWeight: 900,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                fontSize: '1rem',
-                                boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <MessageSquare size={22} /> {t('hub.liveBoard.questions')}
-                        </button>
-                    </>
-                )}
+                        </>
+                    )}
+                </div>
             </div>
 
-            {/* Chat Sidebar Overlay */}
+            {/* Sidebar Perguntas */}
             <AnimatePresence>
                 {isSidebarOpen && (
                     <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         style={{
                             position: 'absolute',
                             top: 0,
                             right: 0,
-                            width: '350px',
+                            width: '320px',
                             height: '100%',
                             background: '#fff',
-                            boxShadow: '-20px 0 50px rgba(0,0,0,0.15)',
-                            zIndex: 100,
+                            boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
+                            zIndex: 10000,
                             display: 'flex',
                             flexDirection: 'column',
-                            borderLeft: '1px solid #eee'
+                            borderLeft: '1px solid #f0f0f0'
                         }}
                     >
-                        <div style={{ padding: '25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ fontWeight: 900, fontSize: '1.2rem' }}>{t('hub.liveBoard.chatTitle')}</div>
-                            <button onClick={() => setIsSidebarOpen(false)} style={{ background: '#f8f8f8', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
+                        <div style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ fontWeight: 800, fontSize: '1rem' }}>Perguntas</div>
+                            <button onClick={() => setIsSidebarOpen(false)} style={{ background: '#f8f8f8', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer' }}><X size={18} /></button>
                         </div>
-                        <div style={{ flex: 1, padding: '25px', overflowY: 'auto' }}>
-                            <div style={{ background: '#fcfcfc', border: '1px dashed #eee', padding: '30px 20px', borderRadius: '20px', color: '#888', fontSize: '0.9rem', textAlign: 'center', marginTop: '50px' }}>
-                                <MessageSquare size={40} style={{ opacity: 0.1, marginBottom: '15px' }} />
-                                <p>Pergunte ao mentor em tempo real. Suas mensagens aparecerão aqui.</p>
-                            </div>
-                        </div>
-                        <div style={{ padding: '25px', borderTop: '1px solid #eee' }}>
-                            <input
-                                placeholder={t('hub.liveBoard.chatPlaceholder')}
-                                style={{
-                                    width: '100%',
-                                    padding: '15px 20px',
-                                    borderRadius: '16px',
-                                    border: '1.5px solid #eee',
-                                    outline: 'none',
-                                    fontSize: '0.95rem',
-                                    transition: 'all 0.2s'
-                                }}
-                                onFocus={(e) => e.target.style.borderColor = primaryColor}
-                                onBlur={(e) => e.target.style.borderColor = '#eee'}
-                            />
+                        <div style={{ flex: 1, padding: '20px', color: '#999', fontSize: '0.9rem', textAlign: 'center', paddingTop: '100px' }}>
+                            <p>O chat em tempo real aparecerá aqui em breve.</p>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
             <style jsx>{`
-                @keyframes pulse {
-                    0% { transform: scale(1); opacity: 1; }
-                    50% { transform: scale(1.05); opacity: 0.8; }
-                    100% { transform: scale(1); opacity: 1; }
+                @keyframes pulse-subtle {
+                    0% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.6; transform: scale(1.1); }
+                    100% { opacity: 1; transform: scale(1); }
+                }
+                .animate-pulse-subtle {
+                    animation: pulse-subtle 2s infinite ease-in-out;
                 }
             `}</style>
         </motion.div>

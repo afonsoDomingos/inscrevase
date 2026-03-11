@@ -41,25 +41,56 @@ export default function Whiteboard({
         context.closePath();
     }, []);
 
+    const drawGrid = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
+        const dotSize = 1.5;
+        const spacing = 35;
+        const dpr = window.devicePixelRatio || 1;
+
+        ctx.save();
+        ctx.fillStyle = '#e5e7eb'; // Light gray for dots
+
+        for (let x = spacing; x < width / dpr; x += spacing) {
+            for (let y = spacing; y < height / dpr; y += spacing) {
+                ctx.beginPath();
+                ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        ctx.restore();
+    }, []);
+
     const redrawHistory = useCallback(() => {
         const context = contextRef.current;
         const canvas = canvasRef.current;
         if (!context || !canvas) return;
 
-        context.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+        const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+
+        context.clearRect(0, 0, width, height);
+
+        // Draw Grid
+        drawGrid(context, canvas.width, canvas.height);
+
         historyRef.current.forEach(drawData);
-    }, [drawData]);
+    }, [drawData, drawGrid]);
 
     const clearCanvas = useCallback(() => {
         const canvas = canvasRef.current;
         const context = contextRef.current;
         if (!canvas || !context) return;
-        context.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+
+        const dpr = window.devicePixelRatio || 1;
+        context.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
         historyRef.current = [];
+        redrawHistory(); // To redraw grid
+
         if (isMentor) {
             socket.emit('live_board:action', { formId, action: 'clear' });
         }
-    }, [formId, isMentor, socket]);
+    }, [formId, isMentor, socket, redrawHistory]);
 
     const undoAction = useCallback(() => {
         historyRef.current.pop();
