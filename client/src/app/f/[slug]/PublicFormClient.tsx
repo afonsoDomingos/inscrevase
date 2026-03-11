@@ -814,7 +814,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                             display: 'grid',
                                             gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                                             gap: '10px',
-                                            marginBottom: '1rem'
+                                            marginBottom: '1rem',
+                                            width: '100%'
                                         }}
                                     >
                                         {(form.totalStudents !== undefined && form.totalStudents > 0) && (
@@ -829,9 +830,6 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                         {(form.totalEvents !== undefined && form.totalEvents > 0) && (
                                             <div style={{ background: cardBg, padding: '0.5rem 0.8rem', borderRadius: '10px', border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-                                                <div style={{ color: primaryColor, marginBottom: '2px', display: 'flex', justifyContent: 'center' }}>
-                                                    <Zap size={16} />
-                                                </div>
                                                 <div style={{ fontSize: '1rem', fontWeight: 900, color: titleColor }}>{form.totalEvents}+</div>
                                                 <div style={{ fontSize: '0.6rem', color: secondaryTextColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('feedback.socialProof.eventsCreated')}</div>
                                             </div>
@@ -857,7 +855,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     <motion.div
                                         variants={itemVariants}
                                         whileHover={{ y: -2, boxShadow: `0 4px 15px ${primaryColor}10` }}
-                                        style={{ background: cardBg, padding: '0.6rem 0.8rem', borderRadius: '12px', border: `1px solid ${borderColor}`, marginBottom: '0.8rem', transition: 'all 0.3s ease' }}
+                                        style={{ background: cardBg, padding: '0.6rem 0.8rem', borderRadius: '12px', border: `1px solid ${borderColor}`, marginBottom: '0.8rem', transition: 'all 0.3s ease', width: '100%' }}
                                     >
                                         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                             <div style={{ width: '36px', height: '36px', borderRadius: '10px', overflow: 'hidden', border: `1px solid ${primaryColor}40`, flexShrink: 0 }}>
@@ -908,7 +906,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     <motion.div
                                         variants={itemVariants}
                                         whileHover={{ scale: 1.01 }}
-                                        style={{ background: cardBg, padding: '0.8rem 1rem', borderRadius: '14px', border: `1px solid ${primaryColor}40`, transition: 'all 0.3s ease', marginBottom: '0.5rem' }}
+                                        style={{ background: cardBg, padding: '0.8rem 1rem', borderRadius: '14px', border: `1px solid ${primaryColor}40`, transition: 'all 0.3s ease', marginBottom: '0.5rem', width: '100%' }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
