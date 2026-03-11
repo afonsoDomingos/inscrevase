@@ -30,7 +30,8 @@ import {
     Clock,
     Mail,
     Send,
-    Edit2
+    Edit2,
+    Megaphone
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -140,6 +141,16 @@ export default function LiveBoardContainer({
     const [showNotifyModal, setShowNotifyModal] = useState(false);
     const [customSubject, setCustomSubject] = useState("");
     const [customMessage, setCustomMessage] = useState("");
+    const [currentAnnouncement, setCurrentAnnouncement] = useState<any>(null);
+    const [showAnnouncementMenu, setShowAnnouncementMenu] = useState(false);
+
+    const announcementsList = [
+        { id: 'welcome', label: 'Boas-vindas', message: 'Bem-vindo à nossa aula em direto! Prepare o seu material, começamos em instantes. 🚀', icon: '✨', color: '#3b82f6' },
+        { id: 'break', label: 'Pausa Rápida', message: 'Pausa rápida para hidratar o conhecimento. Volto em 2 minutos! ☕💧', icon: '☕', color: '#f59e0b' },
+        { id: 'exercise', label: 'Mão na Massa', message: 'Momento de Exercício! Use este tempo para resolver o desafio desenhado no ecrã. ✍️', icon: '🎯', color: '#10b981' },
+        { id: 'qa', label: 'Dúvidas (Q&A)', message: 'Momento de Dúvidas! Se tiver questões, levante a mão (✋) ou escreva no chat!', icon: '❓', color: '#8b5cf6' },
+        { id: 'focus', label: 'Foco Total', message: 'Foco Absoluto! Desligue as notificações e mergulhe no conteúdo agora. 🛡️', icon: '🛡️', color: '#ef4444' },
+    ];
 
     // Page Management
     const [pages, setPages] = useState<{ history: any[], backgroundImage: string | null }[]>([{ history: [], backgroundImage: null }]);
@@ -169,6 +180,16 @@ export default function LiveBoardContainer({
     const [mentorCursorPos, setMentorCursorPos] = useState<{ x: number, y: number } | null>(null);
     const [showTimerSelector, setShowTimerSelector] = useState(false);
     const [isNotifying, setIsNotifying] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const handleInteraction = () => {
@@ -248,6 +269,9 @@ export default function LiveBoardContainer({
                 setTimerSeconds(status.currentTimer.remaining);
                 setIsTimerActive(true);
             }
+            if (status.currentAnnouncement) {
+                setCurrentAnnouncement(status.currentAnnouncement);
+            }
         });
 
         newSocket.on('live_board:timer:start', ({ duration }: any) => {
@@ -259,6 +283,17 @@ export default function LiveBoardContainer({
         newSocket.on('live_board:timer:stop', () => {
             setIsTimerActive(false);
             setTimerSeconds(0);
+        });
+
+        newSocket.on('live_board:announcement', (data: any) => {
+            setCurrentAnnouncement(data);
+            if (!isMentor) {
+                toast.info(data.message, { icon: '📢', duration: 5000 });
+            }
+        });
+
+        newSocket.on('live_board:announcement:clear', () => {
+            setCurrentAnnouncement(null);
         });
 
         newSocket.on('live_board:cursor:move', (pos: { x: number, y: number }) => {
@@ -417,11 +452,11 @@ export default function LiveBoardContainer({
     };
 
     const handleStopAudio = () => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop();
+        if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
             mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-            setIsAudioActive(false);
+            mediaRecorderRef.current = null;
         }
+        setIsAudioActive(false);
     };
 
     const handleRaiseHand = () => {
@@ -478,6 +513,21 @@ export default function LiveBoardContainer({
             customText: customMessage
         });
         toast.loading("A enviar notificações personalizadas...");
+    };
+
+    const handleAnnouncement = (ann: any) => {
+        if (!socket || !isMentor) return;
+        socket.emit('live_board:announcement', {
+            formId,
+            message: ann.message,
+            type: ann.id
+        });
+        setShowAnnouncementMenu(false);
+    };
+
+    const clearAnnouncement = () => {
+        if (!socket || !isMentor) return;
+        socket.emit('live_board:announcement:clear', formId);
     };
 
     const whiteboardContainerRef = useRef<HTMLDivElement>(null);
@@ -783,6 +833,68 @@ export default function LiveBoardContainer({
                                                     style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
                                                 >
                                                     Parar Timer
+                                                </button>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
+                                    style={{
+                                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
+                                        color: isDark ? '#fff' : '#666',
+                                        border: 'none',
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <Megaphone size={16} />
+                                </button>
+
+                                <AnimatePresence>
+                                    {showAnnouncementMenu && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '40px',
+                                                right: 0,
+                                                background: isDark ? '#1a1a1a' : '#fff',
+                                                padding: '12px',
+                                                borderRadius: '16px',
+                                                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                                                border: isDark ? '1px solid #333' : '1px solid #eee',
+                                                zIndex: 100,
+                                                width: '220px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '8px'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
+                                            {announcementsList.map(ann => (
+                                                <button
+                                                    key={ann.id}
+                                                    onClick={() => handleAnnouncement(ann)}
+                                                    style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                                >
+                                                    <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
+                                                </button>
+                                            ))}
+                                            {currentAnnouncement && (
+                                                <button
+                                                    onClick={clearAnnouncement}
+                                                    style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                >
+                                                    Limpar Anúncio
                                                 </button>
                                             )}
                                         </motion.div>
@@ -1384,6 +1496,76 @@ export default function LiveBoardContainer({
 
             {/* Question Sidebar Logic Overlay UI should be above Canvas but below specialized modals */}
 
+            {/* Announcement / Status Overlay (Non-intrusive card at bottom-center) */}
+            <AnimatePresence>
+                {currentAnnouncement && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '30px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            maxWidth: isMobile ? '85%' : '500px',
+                            width: 'fit-content',
+                            background: isDark ? 'rgba(26,26,26,0.95)' : 'rgba(255,255,255,0.95)',
+                            backdropFilter: 'blur(20px)',
+                            padding: '15px 25px',
+                            borderRadius: '24px',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                            border: `2px solid ${announcementsList.find(a => a.id === currentAnnouncement.type)?.color || '#D4AF37'}`,
+                            zIndex: 9998,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '15px'
+                        }}
+                    >
+                        <div style={{
+                            fontSize: '2rem',
+                            flexShrink: 0
+                        }}>
+                            {announcementsList.find(a => a.id === currentAnnouncement.type)?.icon || '📢'}
+                        </div>
+                        <div>
+                            <div style={{
+                                fontSize: '0.65rem',
+                                fontWeight: 900,
+                                color: announcementsList.find(a => a.id === currentAnnouncement.type)?.color || '#D4AF37',
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px',
+                                marginBottom: '2px'
+                            }}>
+                                {announcementsList.find(a => a.id === currentAnnouncement.type)?.label || 'Aviso do Mentor'}
+                            </div>
+                            <div style={{
+                                fontSize: isMobile ? '0.8rem' : '0.95rem',
+                                fontWeight: 600,
+                                color: isDark ? '#fff' : '#111',
+                                lineHeight: 1.4
+                            }}>
+                                {currentAnnouncement.message}
+                            </div>
+                        </div>
+                        {isMentor && (
+                            <button
+                                onClick={clearAnnouncement}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#888',
+                                    cursor: 'pointer',
+                                    marginLeft: '10px'
+                                }}
+                            >
+                                <X size={16} />
+                            </button>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <AnimatePresence>
                 {showNotifyModal && (
                     <motion.div
@@ -1506,9 +1688,9 @@ export default function LiveBoardContainer({
                                 </p>
                             </div>
                         </motion.div>
-                    </motion.div>
+                    </motion.div >
                 )}
-            </AnimatePresence>
+            </AnimatePresence >
 
             <style jsx>{`
                 @keyframes pulse-subtle {

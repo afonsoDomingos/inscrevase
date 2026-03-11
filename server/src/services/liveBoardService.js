@@ -71,17 +71,15 @@ class LiveBoardService {
                     active: true,
                     mentorId: session.mentorId,
                     mentorData: session.mentorData,
-                    pages: session.pages,
-                    currentPage: session.currentPage,
+                    pages: session.pages || [{ history: [], backgroundImage: null }],
+                    currentPage: session.currentPage || 0,
                     currentQuiz: session.currentQuiz ? {
                         ...session.currentQuiz,
                         votes: Array.from(session.currentQuiz.votes.entries()),
                         results: this.calculateQuizResults(session.currentQuiz)
                     } : null,
-                    currentTimer: session.currentTimer ? {
-                        ...session.currentTimer,
-                        remaining: Math.max(0, session.currentTimer.duration - Math.floor((new Date() - new Date(session.currentTimer.startTime)) / 1000))
-                    } : null
+                    currentTimer: session.currentTimer ? { ...session.currentTimer, remaining: Math.max(0, Math.floor((session.currentTimer.endTime - Date.now()) / 1000)) } : null,
+                    currentAnnouncement: session.currentAnnouncement || null
                 });
                 socket.emit('live_board:history', session.history);
             } else if (session.countdown) {
@@ -403,6 +401,23 @@ class LiveBoardService {
             } catch (err) {
                 console.error('[LiveBoard] Error notifying missing participants:', err);
                 socket.emit('live_board:notify_missing:error', 'Erro interno ao tentar notificar participantes.');
+            }
+        });
+
+        // Live Board Announcements/Status (Mentor Only)
+        socket.on('live_board:announcement', ({ formId, message, type }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                session.currentAnnouncement = { message, type, timestamp: Date.now() };
+                this.io.to(`live_board_${formId}`).emit('live_board:announcement', session.currentAnnouncement);
+            }
+        });
+
+        socket.on('live_board:announcement:clear', (formId) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                delete session.currentAnnouncement;
+                this.io.to(`live_board_${formId}`).emit('live_board:announcement:clear');
             }
         });
 
