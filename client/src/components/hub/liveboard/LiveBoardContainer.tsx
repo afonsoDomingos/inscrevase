@@ -257,7 +257,7 @@ export default function LiveBoardContainer({
             }
             // Auto-close context after sound finishes
             setTimeout(() => ctx.close(), 1500);
-        } catch (_err) {
+        } catch {
             // Silently ignore if AudioContext not available
         }
     }, []);
