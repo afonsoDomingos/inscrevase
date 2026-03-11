@@ -174,27 +174,32 @@ export default function Whiteboard({
         if (undoTrigger) undoAction();
     }, [undoTrigger, undoAction]);
 
+    const lastPointRef = useRef<{ x: number, y: number } | null>(null);
+
     const startDrawing = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
         if (!isMentor) return;
         const { offsetX, offsetY } = getCoordinates(nativeEvent);
         setIsDrawing(true);
+        lastPointRef.current = { x: offsetX, y: offsetY };
         contextRef.current?.beginPath();
         contextRef.current?.moveTo(offsetX, offsetY);
     };
 
-    const draw = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
+    const draw = (event: React.MouseEvent | React.TouchEvent) => {
         if (!isDrawing || !isMentor) return;
-        const { offsetX, offsetY } = getCoordinates(nativeEvent);
-        const context = contextRef.current;
-        if (!context) return;
 
-        const lastPoint = historyRef.current[historyRef.current.length - 1];
-        const prevX = lastPoint ? lastPoint.x1 : offsetX;
-        const prevY = lastPoint ? lastPoint.y1 : offsetY;
+        // Prevent scrolling while drawing on mobile
+        if (event.type === 'touchmove') {
+            event.preventDefault();
+        }
+
+        const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
+        const context = contextRef.current;
+        if (!context || !lastPointRef.current) return;
 
         const data = {
-            x0: prevX,
-            y0: prevY,
+            x0: lastPointRef.current.x,
+            y0: lastPointRef.current.y,
             x1: offsetX,
             y1: offsetY,
             color: isEraser ? '#ffffff' : color,
@@ -204,11 +209,15 @@ export default function Whiteboard({
         drawData(data);
         historyRef.current.push(data);
         socket.emit('live_board:draw', { formId, data });
+
+        // Update last point to current point for next segment
+        lastPointRef.current = { x: offsetX, y: offsetY };
     };
 
     const stopDrawing = () => {
         if (!isMentor) return;
         setIsDrawing(false);
+        lastPointRef.current = null;
         contextRef.current?.closePath();
     };
 

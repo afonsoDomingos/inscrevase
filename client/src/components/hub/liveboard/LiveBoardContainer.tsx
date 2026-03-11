@@ -108,8 +108,26 @@ export default function LiveBoardContainer({
 
     const handleStartAudio = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+            // Check if mediaDevices is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                toast.error("Seu navegador não suporta gravação de áudio.");
+                return;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                }
+            });
+
+            // Detect supported MIME type
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                ? 'audio/webm;codecs=opus'
+                : (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus') ? 'audio/ogg;codecs=opus' : 'audio/webm');
+
+            const recorder = new MediaRecorder(stream, { mimeType });
 
             recorder.ondataavailable = (e) => {
                 if (e.data.size > 0 && socket) {
@@ -123,9 +141,16 @@ export default function LiveBoardContainer({
             mediaRecorderRef.current = recorder;
             setIsAudioActive(true);
             toast.success(t('hub.liveBoard.audioEnabled'));
-        } catch (err) {
-            console.error("Microphone permission denied", err);
-            toast.error("Erro ao acessar microfone. Verifique as permissões.");
+        } catch (err: any) {
+            console.error("Microphone error:", err);
+
+            if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                toast.error("Nenhum microfone foi encontrado. Verifique se ele está conectado.");
+            } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                toast.error("Permissão de microfone negada. Ative-a nas configurações do navegador.");
+            } else {
+                toast.error("Erro ao acessar microfone. Verifique as permissões.");
+            }
         }
     };
 
