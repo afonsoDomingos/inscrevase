@@ -62,12 +62,16 @@ class LiveBoardService {
             if (userData) {
                 session.participants.set(userId.toString(), {
                     ...userData,
+                    socketId: socket.id,
                     isMentor: session.mentorId === userId
                 });
 
                 // Broadcast updated list
                 this.io.to(`live_board_${formId}`).emit('live_board:participants', Array.from(session.participants.values()));
             }
+
+            // Tell this socket its own ID (so client can identify drawing permissions)
+            socket.emit('live_board:my_socket_id', socket.id);
 
             // If session is active, send status and current board state
             if (session.mentorId) {
@@ -166,10 +170,13 @@ class LiveBoardService {
             }
         });
 
-        // Drawing Event
+        // Drawing Event (allowed for mentor OR explicitly-permitted participant sockets)
         socket.on('live_board:draw', ({ formId, data }) => {
             const session = this.activeSessions.get(formId);
-            if (session && session.mentorId === userId) {
+            if (!session) return;
+            const isMentorOrAllowed = session.mentorId === userId ||
+                (session.drawingPermissions && session.drawingPermissions.has(socket.id));
+            if (isMentorOrAllowed) {
                 session.history.push(data);
                 socket.to(`live_board_${formId}`).emit('live_board:draw', data);
             }
@@ -184,10 +191,12 @@ class LiveBoardService {
             }
         });
 
-        // Laser Pointer Event (No history)
+        // Laser Pointer Event (No history) - also allowed for permitted participants
         socket.on('live_board:laser', ({ formId, x, y }) => {
             const session = this.activeSessions.get(formId);
-            if (session && session.mentorId === userId) {
+            const isAllowed = session && (session.mentorId === userId ||
+                (session.drawingPermissions && session.drawingPermissions.has(socket.id)));
+            if (isAllowed) {
                 socket.to(`live_board_${formId}`).emit('live_board:laser', { x, y });
             }
         });
@@ -337,6 +346,30 @@ class LiveBoardService {
                 delete session.currentTimer;
                 this.io.to(`live_board_${formId}`).emit('live_board:timer:stop');
             }
+        });
+
+        // Drawing Permission (Mentor Only) - grants or revokes participant drawing access
+        socket.on('live_board:drawing_permission', ({ formId, socketId, granted }) => {
+            const session = this.activeSessions.get(formId);
+            if (!session || session.mentorId !== userId) return;
+
+            if (!session.drawingPermissions) {
+                session.drawingPermissions = new Set();
+            }
+
+            if (granted) {
+                session.drawingPermissions.add(socketId);
+            } else {
+                session.drawingPermissions.delete(socketId);
+            }
+
+            // Broadcast to the entire room so the specific participant receives it
+            this.io.to(`live_board_${formId}`).emit('live_board:drawing_permission', {
+                socketId,
+                granted
+            });
+
+            console.log(`[LiveBoard] Drawing permission ${granted ? 'granted' : 'revoked'} for socket ${socketId} in form ${formId}`);
         });
 
         // Mentor Cursor Event

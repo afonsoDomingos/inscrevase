@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
@@ -31,7 +31,10 @@ import {
     Mail,
     Send,
     Edit2,
-    Megaphone
+    Megaphone,
+    Download,
+    Users,
+    PenLine
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -184,6 +187,10 @@ export default function LiveBoardContainer({
     const [isNotifying, setIsNotifying] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
+    // Collaborative Drawing Permissions
+    const [drawingPermissions, setDrawingPermissions] = useState<Set<string>>(new Set());
+    const [showParticipantsPanel, setShowParticipantsPanel] = useState(false);
+
     useEffect(() => {
         const checkMobile = () => {
             setIsMobile(window.innerWidth <= 768);
@@ -212,6 +219,49 @@ export default function LiveBoardContainer({
         };
     }, []);
 
+    // ─── Sound Effects (Web Audio API tone synthesis) ──────────────────────────
+    const playSound = useCallback((type: 'timer_end' | 'hand_raised' | 'reaction') => {
+        try {
+            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (type === 'timer_end') {
+                // Three gentle ascending tones
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523, ctx.currentTime);        // C5
+                osc.frequency.setValueAtTime(659, ctx.currentTime + 0.15); // E5
+                osc.frequency.setValueAtTime(784, ctx.currentTime + 0.30); // G5
+                gain.gain.setValueAtTime(0.18, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.7);
+            } else if (type === 'hand_raised') {
+                // A soft "ding"
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);  // A5
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.5);
+            } else if (type === 'reaction') {
+                // A very subtle pop
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(660, ctx.currentTime);
+                gain.gain.setValueAtTime(0.07, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.25);
+            }
+            // Auto-close context after sound finishes
+            setTimeout(() => ctx.close(), 1500);
+        } catch (_) {
+            // Silently ignore if AudioContext not available
+        }
+    }, []);
+
     useEffect(() => {
         const newSocket = io(getSocketUrl(), getSocketOptions());
 
@@ -222,6 +272,7 @@ export default function LiveBoardContainer({
 
         newSocket.on('live_board:hand_raised', ({ userData }: any) => {
             if (isMentor) {
+                playSound('hand_raised');
                 toast(t('hub.liveBoard.handRaisedToast', { name: userData.name }), {
                     description: "O participante tem uma pergunta.",
                     action: {
@@ -248,6 +299,7 @@ export default function LiveBoardContainer({
         newSocket.on('live_board:reaction', (data: any) => {
             const id = Math.random().toString(36).substr(2, 9);
             setReactions(prev => [...prev, { ...data, id }]);
+            playSound('reaction');
             setTimeout(() => {
                 setReactions(prev => prev.filter(r => r.id !== id));
             }, 3000);
@@ -280,6 +332,27 @@ export default function LiveBoardContainer({
             setTimerSeconds(duration);
             setIsTimerActive(true);
             toast.info(t('hub.liveBoard.timerStarted') || "O foco começa agora!");
+        });
+
+        newSocket.on('live_board:drawing_permission', ({ socketId, granted }: { socketId: string, granted: boolean }) => {
+            setDrawingPermissions(prev => {
+                const next = new Set(prev);
+                if (granted) next.add(socketId);
+                else next.delete(socketId);
+                return next;
+            });
+            if (!isMentor) {
+                if (granted) {
+                    toast.success('✏️ O Mentor deu-te permissão para desenhar!', { duration: 4000 });
+                } else {
+                    toast.info('O mentor retirou a tua permissão de desenho.');
+                }
+            }
+        });
+
+        newSocket.on('live_board:my_socket_id', (id: string) => {
+            // Store our own socket ID so participant knows if they have permission
+            (window as any).__liveBoardSocketId = id;
         });
 
         newSocket.on('live_board:timer:stop', () => {
@@ -398,9 +471,8 @@ export default function LiveBoardContainer({
                 setTimerSeconds(prev => {
                     if (prev <= 1) {
                         setIsTimerActive(false);
-                        if (!isMentor) {
-                            toast(t('hub.liveBoard.timerFinished') || "Tempo Esgotado!", { icon: '⏰' });
-                        }
+                        playSound('timer_end');
+                        toast(t('hub.liveBoard.timerFinished') || "Tempo Esgotado! ⏰", { icon: '⏰' });
                         return 0;
                     }
                     return prev - 1;
@@ -408,7 +480,7 @@ export default function LiveBoardContainer({
             }, 1000);
         }
         return () => clearInterval(interval);
-    }, [isTimerActive, timerSeconds, isMentor, t]);
+    }, [isTimerActive, timerSeconds, isMentor, t, playSound]);
 
     const handleStartAudio = async () => {
         try {
@@ -473,9 +545,57 @@ export default function LiveBoardContainer({
                 userData: authService.getCurrentUser()
             });
             setIsHandRaised(true);
+            playSound('hand_raised');
             toast.success(t('hub.liveBoard.handRaisedSuccess'));
             setTimeout(() => setIsHandRaised(false), 5000);
         }
+    };
+
+    const toggleDrawingPermission = (participantSocketId: string) => {
+        if (!socket || !isMentor) return;
+        const hasPermission = drawingPermissions.has(participantSocketId);
+        socket.emit('live_board:drawing_permission', {
+            formId,
+            socketId: participantSocketId,
+            granted: !hasPermission
+        });
+        setDrawingPermissions(prev => {
+            const next = new Set(prev);
+            if (hasPermission) next.delete(participantSocketId);
+            else next.add(participantSocketId);
+            return next;
+        });
+        toast.success(
+            hasPermission
+                ? 'Permissão de desenho removida.'
+                : '✏️ Permissão de desenho concedida!'
+        );
+    };
+
+    const handleExportBoard = () => {
+        const canvas = document.querySelector('canvas');
+        if (!canvas) { toast.error('Quadro não encontrado.'); return; }
+
+        // Draw watermark onto a temp canvas
+        const tmp = document.createElement('canvas');
+        tmp.width = canvas.width;
+        tmp.height = canvas.height;
+        const tmpCtx = tmp.getContext('2d')!;
+        tmpCtx.drawImage(canvas, 0, 0);
+
+        // Watermark text
+        const wm = 'inscreva-se.com';
+        tmpCtx.font = `bold ${Math.max(16, tmp.width * 0.018)}px Inter, sans-serif`;
+        tmpCtx.fillStyle = 'rgba(0,0,0,0.18)';
+        tmpCtx.textAlign = 'right';
+        tmpCtx.textBaseline = 'bottom';
+        tmpCtx.fillText(wm, tmp.width - 18, tmp.height - 16);
+
+        const link = document.createElement('a');
+        link.download = `liveboard-${formId}-${Date.now()}.png`;
+        link.href = tmp.toDataURL('image/png');
+        link.click();
+        toast.success('📸 Quadro exportado com sucesso!');
     };
 
     const addPage = () => {
@@ -914,7 +1034,7 @@ export default function LiveBoardContainer({
             >
                 <Whiteboard
                     ref={whiteboardRef}
-                    isMentor={isMentor}
+                    isMentor={isMentor || drawingPermissions.has((window as any).__liveBoardSocketId || '')}
                     socket={socket}
                     formId={formId}
                     color={color}
@@ -1157,13 +1277,82 @@ export default function LiveBoardContainer({
                                 <Eraser size={18} />
                             </button>
 
-
                             <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
                             <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={18} /></button>
 
                             <button onClick={() => setIsDark(!isDark)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
 
-                            <button onClick={saveBoard} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Save"><Save size={18} /></button>
+                            <button onClick={saveBoard} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={18} /></button>
+
+                            {/* Collaborative Drawing Panel */}
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
+                                    style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                    title="Permissões de Desenho"
+                                >
+                                    <PenLine size={18} />
+                                </button>
+                                <AnimatePresence>
+                                    {showParticipantsPanel && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                            style={{
+                                                position: 'absolute',
+                                                bottom: '50px',
+                                                right: 0,
+                                                background: isDark ? '#1a1a1a' : '#fff',
+                                                border: isDark ? '1px solid #333' : '1px solid #eee',
+                                                borderRadius: '16px',
+                                                padding: '14px',
+                                                boxShadow: '0 -10px 30px rgba(0,0,0,0.2)',
+                                                zIndex: 200,
+                                                minWidth: '240px',
+                                                maxHeight: '320px',
+                                                overflowY: 'auto'
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Users size={12} /> Dar Giz (Permissões de Desenho)
+                                            </div>
+                                            {participants.length === 0 ? (
+                                                <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
+                                            ) : (
+                                                participants.map((p: any) => (
+                                                    <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0', flexShrink: 0 }}>
+                                                                <Image src={p.photo || '/default-avatar.png'} width={28} height={28} alt={p.name} style={{ objectFit: 'cover' }} />
+                                                            </div>
+                                                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: isDark ? '#fff' : '#111', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => toggleDrawingPermission(p.socketId)}
+                                                            style={{
+                                                                background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
+                                                                color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
+                                                                border: 'none',
+                                                                padding: '4px 10px',
+                                                                borderRadius: '8px',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 800,
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px',
+                                                                whiteSpace: 'nowrap'
+                                                            }}
+                                                        >
+                                                            <PenLine size={12} />
+                                                            {drawingPermissions.has(p.socketId) ? 'Revogar' : 'Dar Giz'}
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
 
                             <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
 
@@ -1385,6 +1574,47 @@ export default function LiveBoardContainer({
                         >
                             <Hand size={18} /> {isHandRaised ? 'Mão Levantada' : 'Dúvida'}
                         </button>
+                        {/* Export Button for participants */}
+                        <button
+                            onClick={handleExportBoard}
+                            style={{
+                                background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
+                                color: '#22c55e',
+                                border: 'none',
+                                padding: '0 14px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                fontSize: '0.75rem'
+                            }}
+                            title="Exportar quadro como PNG"
+                        >
+                            <Download size={16} /> Exportar
+                        </button>
+
+                        {/* Drawing permission indicator for participant */}
+                        {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
+                            <div style={{
+                                background: 'rgba(14,165,233,0.1)',
+                                color: '#0ea5e9',
+                                border: '1px solid rgba(14,165,233,0.3)',
+                                padding: '0 12px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                fontSize: '0.75rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}>
+                                <PenLine size={14} /> A Desenhar
+                            </div>
+                        )}
+
                         <button
                             onClick={() => setIsSidebarOpen(true)}
                             style={{
