@@ -135,54 +135,54 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-links">
-          <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-poppins)' }}>{t('common.menu')}</div>
+          <div className="mobile-menu-section-title" style={{ color: '#1a1a1a', fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-poppins)' }}>{t('common.menu')}</div>
 
-          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <Home size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.home')}</span>
+          <Link href="/" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Home size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.home')}</span>
             </div>
           </Link>
-          <Link href="/experts" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <Users size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.mentors')}</span>
+          <Link href="/experts" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Users size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.mentors')}</span>
             </div>
           </Link>
-          <Link href="/calendario" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <CalendarIcon size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.calendar')}</span>
+          <Link href="/calendario" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <CalendarIcon size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.calendar')}</span>
             </div>
           </Link>
-          <Link href="/sobre-nos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <Info size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.about')}</span>
+          <Link href="/sobre-nos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Info size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.about')}</span>
             </div>
           </Link>
-          <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <Newspaper size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.blog')}</span>
+          <Link href="/blog" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Newspaper size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.blog')}</span>
             </div>
           </Link>
-          <Link href="/updates" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <Sparkles size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.updates')}</span>
+          <Link href="/updates" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Sparkles size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.updates')}</span>
             </div>
           </Link>
-          <Link href="/feedback" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <MessageSquare size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('nav.feedback')}</span>
+          <Link href="/feedback" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <MessageSquare size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.feedback')}</span>
             </div>
           </Link>
-          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '1.2rem', display: 'flex', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#000', textDecoration: 'none' }}>
-              <LifeBuoy size={24} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.25rem' }}>{t('dashboard.support')}</span>
+          <Link href="/suporte" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <LifeBuoy size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('dashboard.support')}</span>
             </div>
           </Link>
 
@@ -191,25 +191,28 @@ export default function Navbar() {
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
+            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '0.8rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', marginBottom: '1rem', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
               {t('nav.dashboard')}
             </Link>
           ) : (
-            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '1.2rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
+            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '0.8rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', marginBottom: '1rem', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
               {t('auth.login')}
             </Link>
           )}
 
-          <div className="mobile-footer" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '2rem' }}>
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginBottom: '1.5rem' }}>
-              <a href="https://www.linkedin.com/company/inscreva-se" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Linkedin size={20} /></a>
-              <a href="https://www.youtube.com/@Inscreva-se-events" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Youtube size={20} /></a>
-              <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><Facebook size={20} /></a>
-              <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'flex' }}><MessageCircle size={20} /></a>
-            </div>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '1rem' }}>
-              <LanguageSwitcher />
-              <CurrencySwitcher />
+          <div className="mobile-footer" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '1rem', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+              <a href="https://www.linkedin.com/company/inscreva-se" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><Linkedin size={18} /></a>
+              <a href="https://www.youtube.com/@Inscreva-se-events" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><Youtube size={18} /></a>
+              <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><Facebook size={18} /></a>
+              <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><MessageCircle size={18} /></a>
+
+              <div style={{ width: '1px', height: '20px', background: '#e0e0e0', margin: '0 4px' }}></div>
+
+              <div style={{ transform: 'scale(0.85)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <LanguageSwitcher />
+                <CurrencySwitcher />
+              </div>
             </div>
           </div>
         </div>
