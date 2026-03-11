@@ -308,6 +308,37 @@ function HubContent() {
         };
     }, [submission]);
 
+    // Live Board Countdown Timer Logic
+    useEffect(() => {
+        let timer: any;
+        if (isBoardStarting && boardStartCountdown > 0) {
+            timer = setInterval(() => {
+                setBoardStartCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else if (isBoardStarting && boardStartCountdown === 0) {
+            setIsBoardStarting(false);
+            // If mentor, trigger the actual start after countdown
+            const isCreatorOrAdmin = currentUser?._id === submission?.form?.creator?._id || currentUser?.role === 'admin';
+            if (isCreatorOrAdmin && statusSocketRef.current && submission) {
+                statusSocketRef.current.emit('live_board:start', {
+                    formId: submission.form._id,
+                    mentorData: {
+                        name: submission.form.creator.name,
+                        photo: submission.form.creator.profilePhoto,
+                        title: submission.form.creator.role || 'MENTOR'
+                    }
+                });
+            }
+        }
+        return () => clearInterval(timer);
+    }, [isBoardStarting, boardStartCountdown, currentUser?._id, submission, currentUser?.role]);
+
     const markLessonComplete = async (lessonId: string) => {
         try {
             const token = typeof window !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
