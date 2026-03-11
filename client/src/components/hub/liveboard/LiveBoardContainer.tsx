@@ -526,7 +526,7 @@ export default function LiveBoardContainer({
                     gap: '6px',
                     zIndex: 10
                 }}>
-                    <Image src="/logo1.png" alt="Inscreva-se" width={20} height={20} style={{ opacity: isDark ? 0.8 : 0.5, filter: isDark ? 'invert(1)' : 'none' }} />
+                    <Image src="/logo.png" alt="Inscreva-se" width={20} height={20} style={{ opacity: isDark ? 0.8 : 0.5, filter: isDark ? 'invert(1)' : 'none' }} />
                     <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000' }}>POWERED BY INSCREVA-SE</span>
                 </div>
 
