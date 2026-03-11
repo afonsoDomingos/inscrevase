@@ -602,7 +602,6 @@ export default function LiveBoardContainer({
                     ))}
                 </AnimatePresence>
 
-                {/* Powered by Watermark */}
                 <div style={{
                     position: 'absolute',
                     bottom: '20px',
@@ -611,11 +610,11 @@ export default function LiveBoardContainer({
                     opacity: 0.5,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '8px',
                     zIndex: 10
                 }}>
-                    <Image src="/logo.png" alt="Inscreva-se" width={20} height={20} style={{ opacity: isDark ? 0.8 : 0.5, filter: isDark ? 'invert(1)' : 'none' }} />
-                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000' }}>POWERED BY INSCREVA-SE</span>
+                    <Image src="/logo.png" alt="Inscreva-se" width={24} height={24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
+                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
                 </div>
 
                 {/* Participant Audio Control */}
