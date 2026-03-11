@@ -90,7 +90,6 @@ const Whiteboard = forwardRef(({
             context.font = `bold ${size * 6}px system-ui, -apple-system, sans-serif`;
             context.textBaseline = 'top';
             context.fillText(text, x0, y0);
-            context.closePath();
         } else if (type === 'image' && src) {
             if (!imageCache.current.has(src)) {
                 const img = new Image();
@@ -352,6 +351,7 @@ const Whiteboard = forwardRef(({
     const [laserPos, setLaserPos] = useState<{ x: number, y: number } | null>(null);
     const [textInput, setTextInput] = useState<{ x: number, y: number } | null>(null);
     const laserTimeoutRef = useRef<any>(null);
+    const isSubmittingText = useRef(false);
 
     const showLaser = (x: number, y: number) => {
         setLaserPos({ x, y });
@@ -360,22 +360,29 @@ const Whiteboard = forwardRef(({
     };
 
     const handleTextSubmit = (text: string) => {
-        if (!textInput || !text) {
-            setTextInput(null);
-            return;
+        if (!textInput || isSubmittingText.current) return;
+
+        const trimmedText = text.trim();
+        if (trimmedText) {
+            isSubmittingText.current = true;
+            const data = {
+                type: 'text',
+                strokeId: Math.random().toString(36).substring(7),
+                x0: textInput.x,
+                y0: textInput.y,
+                text: trimmedText,
+                color,
+                size: brushSize
+            };
+            drawData(data);
+            historyRef.current.push(data);
+            socket.emit('live_board:draw', { formId, data });
+
+            // Short timeout to prevent double-submit from blur after enter
+            setTimeout(() => {
+                isSubmittingText.current = false;
+            }, 100);
         }
-        const data = {
-            type: 'text',
-            strokeId: Math.random().toString(36).substring(7),
-            x0: textInput.x,
-            y0: textInput.y,
-            text,
-            color,
-            size: brushSize
-        };
-        drawData(data);
-        historyRef.current.push(data);
-        socket.emit('live_board:draw', { formId, data });
         setTextInput(null);
     };
 
@@ -558,7 +565,12 @@ const Whiteboard = forwardRef(({
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    cursor: isMentor ? (tool === 'laser' ? 'none' : (tool === 'select' ? 'default' : (isEraser ? 'crosshair' : 'pencil'))) : 'default',
+                    cursor: isMentor ? (
+                        tool === 'laser' ? 'none' :
+                            tool === 'select' ? 'default' :
+                                tool === 'text' ? 'text' :
+                                    (isEraser ? 'crosshair' : 'pencil')
+                    ) : 'default',
                     display: 'block',
                     touchAction: 'none'
                 }}
@@ -570,10 +582,21 @@ const Whiteboard = forwardRef(({
                 />
             )}
             {textInput && (
-                <div style={{ position: 'absolute', left: textInput.x, top: textInput.y, zIndex: 200 }}>
+                <div style={{ position: 'absolute', left: textInput.x - 5, top: textInput.y - 5, zIndex: 200 }}>
                     <input
                         autoFocus
-                        style={{ background: 'transparent', border: '1px dashed #ccc', color: color, font: `bold ${brushSize * 6}px system-ui, sans-serif`, outline: 'none', padding: '2px' }}
+                        placeholder="Escrever..."
+                        style={{
+                            background: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)',
+                            border: `2px dashed ${color}`,
+                            color: color,
+                            font: `bold ${brushSize * 6}px system-ui, sans-serif`,
+                            outline: 'none',
+                            padding: '4px 8px',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            minWidth: '50px'
+                        }}
                         onBlur={(e) => handleTextSubmit(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') handleTextSubmit(e.currentTarget.value);
