@@ -460,8 +460,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                         box-sizing: border-box !important;
                     }
                     .form-column label {
-                        text-align: center !important;
-                        justify-content: center !important;
+                        text-align: left !important;
+                        justify-content: flex-start !important;
                         width: 100% !important;
                     }
                     .form-column .premium-input {
@@ -1064,7 +1064,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     src={(form as any).videoUrl}
                                                     controls
                                                     playsInline
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                                 />
                                             )}
 
@@ -1134,13 +1134,13 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 exit={{ opacity: 0, x: -20 }}
                                                 transition={{ duration: 0.3 }}
-                                                style={{ textAlign: 'center' }}
+                                                style={{ textAlign: 'left' }}
                                             >
                                                 {/* STEP CONTENT: FIELDS */}
                                                 {currentStep < numFieldSteps && (isMultiStep ? form.fields.slice(currentStep * FIELDS_PER_STEP, (currentStep + 1) * FIELDS_PER_STEP) : form.fields).map((field) => (
                                                     <div key={field.label} style={{ marginBottom: '1.5rem' }}>
                                                         {field.type !== 'checkbox' && (
-                                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor, textAlign: 'center' }}>
+                                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor, textAlign: 'left' }}>
                                                                 {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                             </label>
                                                         )}
