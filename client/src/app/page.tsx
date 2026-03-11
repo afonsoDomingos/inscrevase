@@ -1053,8 +1053,8 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
-              flex: '1 1 450px',
-              maxWidth: '540px',
+              flex: '1 1 280px',
+              maxWidth: '340px',
               position: 'relative',
               height: '450px',
               borderRadius: '12px',
@@ -1114,8 +1114,8 @@ export default function Home() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             style={{
-              flex: '1 1 450px',
-              maxWidth: '540px',
+              flex: '1 1 280px',
+              maxWidth: '340px',
               position: 'relative',
               height: '450px',
               borderRadius: '12px',
