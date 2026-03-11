@@ -595,7 +595,7 @@ const getSubmissionPublic = async (req, res) => {
                 select: 'title description coverImage hubBackgroundImage hubButtonColor showHubButton logo eventDate eventTime eventType location onlineLink waitingVideo showVideoOnStart whatsappConfig theme creator welcomeMessage welcomeVideo customFields agenda materials certificateConfig',
                 populate: {
                     path: 'creator',
-                    select: 'name profilePhoto bio socialLinks facebookPixelId'
+                    select: 'name profilePhoto bio socialLinks whatsapp facebookPixelId'
                 }
             });
 

@@ -21,7 +21,11 @@ import {
     Volume2,
     VolumeX,
     Hand,
-    MessageSquare
+    MessageSquare,
+    Instagram,
+    Linkedin,
+    Globe,
+    Phone
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -92,6 +96,12 @@ interface LiveBoardContainerProps {
         name: string;
         photo: string;
         title: string;
+        socialLinks?: {
+            instagram?: string;
+            linkedin?: string;
+            website?: string;
+        };
+        whatsapp?: string;
     };
     onClose: () => void;
     primaryColor?: string;
@@ -416,8 +426,33 @@ export default function LiveBoardContainer({
                         />
                     </div>
                     <div>
-                        <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#111' }}>{mentorData.name}</div>
-                        <div style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600 }}>{mentorData.title}</div>
+                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: isDark ? '#fff' : '#111' }}>{mentorData.name}</div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, color: isDark ? '#fff' : '#111' }}>{mentorData.title}</div>
+
+                        {/* Social Links & Contact */}
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                            {mentorData.socialLinks?.instagram && (
+                                <a href={mentorData.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
+                                    <Instagram size={14} />
+                                </a>
+                            )}
+                            {mentorData.socialLinks?.linkedin && (
+                                <a href={mentorData.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
+                                    <Linkedin size={14} />
+                                </a>
+                            )}
+                            {mentorData.socialLinks?.website && (
+                                <a href={mentorData.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
+                                    <Globe size={14} />
+                                </a>
+                            )}
+                            {mentorData.whatsapp && (
+                                <a href={`https://wa.me/${mentorData.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
+                                    <Phone size={14} />
+                                    <span style={{ fontSize: '0.7rem' }}>{mentorData.whatsapp}</span>
+                                </a>
+                            )}
+                        </div>
                     </div>
                 </div>
 

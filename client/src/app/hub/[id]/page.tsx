@@ -337,7 +337,9 @@ function HubContent() {
                     mentorData: {
                         name: submission.form.creator.name,
                         photo: submission.form.creator.profilePhoto,
-                        title: submission.form.creator.role || 'MENTOR'
+                        title: submission.form.creator.role || 'MENTOR',
+                        socialLinks: submission.form.creator.socialLinks,
+                        whatsapp: submission.form.creator.whatsapp
                     }
                 });
             }
@@ -753,7 +755,9 @@ function HubContent() {
                             mentorData={boardMentorData || {
                                 name: submission.form.creator.name,
                                 photo: submission.form.creator.profilePhoto,
-                                title: submission.form.creator.role || 'MENTOR'
+                                title: submission.form.creator.role || 'MENTOR',
+                                socialLinks: submission.form.creator.socialLinks,
+                                whatsapp: submission.form.creator.whatsapp
                             }}
                             primaryColor={primaryColor}
                             onClose={() => {
@@ -836,7 +840,9 @@ function HubContent() {
                                                         mentorData: {
                                                             name: submission.form.creator.name,
                                                             photo: submission.form.creator.profilePhoto,
-                                                            title: submission.form.creator.role || 'MENTOR'
+                                                            title: submission.form.creator.role || 'MENTOR',
+                                                            socialLinks: submission.form.creator.socialLinks,
+                                                            whatsapp: submission.form.creator.whatsapp
                                                         }
                                                     });
                                                 }
