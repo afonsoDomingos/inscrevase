@@ -28,7 +28,9 @@ import {
     Phone,
     HelpCircle,
     Clock,
-    Mail
+    Mail,
+    Send,
+    Edit2
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -106,6 +108,7 @@ interface LiveBoardContainerProps {
         };
         whatsapp?: string;
     };
+    eventTitle: string;
     onClose: () => void;
     primaryColor?: string;
 }
@@ -114,6 +117,7 @@ export default function LiveBoardContainer({
     formId,
     isMentor,
     mentorData,
+    eventTitle,
     onClose,
     primaryColor = '#CFB53B'
 }: LiveBoardContainerProps) {
@@ -131,6 +135,11 @@ export default function LiveBoardContainer({
     const [participants, setParticipants] = useState<any[]>([]);
     const [reactions, setReactions] = useState<{ id: string, emoji: string, x: number, y: number }[]>([]);
     const userId = authService.getCurrentUser()?.id;
+
+    // Notify Missing Modal
+    const [showNotifyModal, setShowNotifyModal] = useState(false);
+    const [customSubject, setCustomSubject] = useState("");
+    const [customMessage, setCustomMessage] = useState("");
 
     // Page Management
     const [pages, setPages] = useState<{ history: any[], backgroundImage: string | null }[]>([{ history: [], backgroundImage: null }]);
@@ -454,9 +463,21 @@ export default function LiveBoardContainer({
 
     const handleNotifyMissing = () => {
         if (!socket || !isMentor) return;
+        setCustomSubject(`🚀 O evento "${eventTitle}" começou!`);
+        setCustomMessage(`O evento ${eventTitle} com ${mentorData.name} já começou e estamos à sua espera!\n\nNão perca os conteúdos exclusivos, a interatividade da Live Board e a oportunidade de tirar dúvidas em tempo real.`);
+        setShowNotifyModal(true);
+    };
+
+    const confirmNotifyMissing = () => {
+        if (!socket || !isMentor) return;
         setIsNotifying(true);
-        socket.emit('live_board:notify_missing', formId);
-        toast.loading("A processar notificações...");
+        setShowNotifyModal(false);
+        socket.emit('live_board:notify_missing', {
+            formId,
+            customSubject,
+            customText: customMessage
+        });
+        toast.loading("A enviar notificações personalizadas...");
     };
 
     const whiteboardContainerRef = useRef<HTMLDivElement>(null);
@@ -1358,6 +1379,134 @@ export default function LiveBoardContainer({
                         isRevealed={isQuizRevealed}
                         correctOption={correctQuizOption !== null ? correctQuizOption : currentQuiz.correctOption}
                     />
+                )}
+            </AnimatePresence>
+
+            {/* Question Sidebar Logic Overlay UI should be above Canvas but below specialized modals */}
+
+            <AnimatePresence>
+                {showNotifyModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.85)',
+                            backdropFilter: 'blur(12px)',
+                            zIndex: 10001,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            style={{
+                                background: isDark ? '#1a1a1a' : '#fff',
+                                width: '100%',
+                                maxWidth: '550px',
+                                borderRadius: '32px',
+                                padding: '35px',
+                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                                border: isDark ? '1px solid #333' : '1px solid #eee'
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ width: '45px', height: '45px', borderRadius: '15px', background: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#22c55e' }}>
+                                        <Mail size={22} />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Notificar Participantes</h3>
+                                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>Personalize o convite antes de enviar</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setShowNotifyModal(false)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', fontWeight: 800, color: '#888', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                        <Edit2 size={12} /> Assunto do E-mail
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={customSubject}
+                                        onChange={(e) => setCustomSubject(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '14px 18px',
+                                            borderRadius: '16px',
+                                            background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
+                                            border: isDark ? '1px solid #333' : '1px solid #eee',
+                                            color: isDark ? '#fff' : '#111',
+                                            fontSize: '0.9rem',
+                                            fontWeight: 600,
+                                            outline: 'none'
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', fontWeight: 800, color: '#888', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                        <Edit2 size={12} /> Corpo da Mensagem
+                                    </label>
+                                    <textarea
+                                        value={customMessage}
+                                        onChange={(e) => setCustomMessage(e.target.value)}
+                                        rows={6}
+                                        style={{
+                                            width: '100%',
+                                            padding: '14px 18px',
+                                            borderRadius: '16px',
+                                            background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
+                                            border: isDark ? '1px solid #333' : '1px solid #eee',
+                                            color: isDark ? '#fff' : '#111',
+                                            fontSize: '0.9rem',
+                                            fontWeight: 600,
+                                            outline: 'none',
+                                            resize: 'none',
+                                            lineHeight: 1.5
+                                        }}
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={confirmNotifyMissing}
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px',
+                                        borderRadius: '18px',
+                                        background: '#22c55e',
+                                        color: '#fff',
+                                        border: 'none',
+                                        fontSize: '1rem',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px',
+                                        marginTop: '10px',
+                                        boxShadow: '0 10px 20px rgba(34,197,94,0.3)'
+                                    }}
+                                >
+                                    <Send size={18} /> Enviar Convites Agora
+                                </button>
+
+                                <p style={{ margin: 0, textAlign: 'center', fontSize: '0.7rem', color: '#888', fontWeight: 600 }}>
+                                    * Os e-mails serão enviados apenas para inscritos que ainda não entraram na sessão.
+                                </p>
+                            </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

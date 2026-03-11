@@ -23,6 +23,7 @@ import SmartInsights from '@/components/mentor/SmartInsights';
 import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
+import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
 import { adService } from '@/lib/adService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { Pencil } from 'lucide-react';
@@ -92,7 +93,7 @@ import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard';
 
 import { Suspense } from 'react';
 
@@ -133,6 +134,7 @@ function MentorDashboardContent() {
     const [myMarketingRequests, setMyMarketingRequests] = useState<MarketingRequest[]>([]);
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
+    const [isLabActive, setIsLabActive] = useState(false);
 
     const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
 
@@ -585,6 +587,7 @@ function MentorDashboardContent() {
                         { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
                         { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
+                        { id: 'liveboard', label: 'Live Board (Lab)', icon: <Monitor size={20} /> },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
@@ -2030,10 +2033,100 @@ function MentorDashboardContent() {
                         </motion.div>
                     )}
 
+                    {activeTab === 'liveboard' && (
+                        <motion.div key="liveboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #111 0%, #1a1a1a 100%)',
+                                    padding: isMobile ? '2rem' : '4rem 3rem',
+                                    borderRadius: '32px',
+                                    border: '1px solid rgba(255, 215, 0, 0.2)',
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    color: '#fff'
+                                }}>
+                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }} />
+                                    <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+
+                                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(255, 215, 0, 0.15)', border: '1px solid rgba(255, 215, 0, 0.3)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#FFD700', marginBottom: '1.5rem' }}>
+                                            🛸 Ambiente de Testes
+                                        </div>
+                                        <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem' }}>
+                                            Laboratório <span className="gold-text">Live Board</span>
+                                        </h2>
+                                        <p style={{ fontSize: '1.1rem', color: '#888', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+                                            Este é o seu espaço privado para praticar. Teste todos os recursos da Live Board — pincéis, cronómetros, quizzes e sincronização — para garantir que a sua próxima aula em direto seja impecável.
+                                        </p>
+
+                                        <button
+                                            onClick={() => setIsLabActive(true)}
+                                            style={{
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                padding: '1.2rem 2.5rem',
+                                                borderRadius: '20px',
+                                                fontWeight: 900,
+                                                fontSize: '1.1rem',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px',
+                                                transition: 'all 0.3s',
+                                                boxShadow: '0 20px 40px rgba(212, 175, 55, 0.2)'
+                                            }}
+                                            onMouseOver={(e: any) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)'}
+                                            onMouseOut={(e: any) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
+                                        >
+                                            ENTRAR NO LABORATÓRIO <Monitor size={22} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
+                                    {[
+                                        { title: "Dominar Ferramentas", desc: "Pratique o uso de formas, textos e desenhos à mão livre para tornar a sua explicação visualmente rica.", icon: <Palette size={24} /> },
+                                        { title: "Testar Quizzes", desc: "Crie e visualize como os alunos interagem com as perguntas em tempo real para maximizar a retenção.", icon: <CheckCircle size={24} /> },
+                                        { title: "Gestão de Tempo", desc: "Habitue-se a usar o temporizador de foco para gerir os exercícios práticos da sua aula.", icon: <Clock size={24} /> }
+                                    ].map((feature, i) => (
+                                        <div key={i} style={{ padding: '2.5rem', borderRadius: '32px', background: 'var(--paper)', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                                            <div style={{ color: '#D4AF37', marginBottom: '1.5rem', background: 'rgba(212, 175, 55, 0.05)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                {feature.icon}
+                                            </div>
+                                            <h4 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '0.75rem', color: 'var(--foreground)' }}>{feature.title}</h4>
+                                            <p style={{ color: '#666', fontSize: '0.9rem', lineHeight: 1.5 }}>{feature.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
                     {activeTab === 'feedback' && (
                         <motion.div key="feedback" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <FeedbackManagement />
                         </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Lab Interface Overlay */}
+                <AnimatePresence>
+                    {isLabActive && (
+                        <LiveBoardContainer
+                            formId={`lab-${user._id}`}
+                            isMentor={true}
+                            eventTitle="LABORATÓRIO DE TESTES"
+                            mentorData={{
+                                name: user.name,
+                                photo: user.profilePhoto,
+                                title: "MENTOR (MODO TESTE)",
+                                socialLinks: {},
+                                whatsapp: ""
+                            }}
+                            primaryColor="#D4AF37"
+                            onClose={() => setIsLabActive(false)}
+                        />
                     )}
                 </AnimatePresence>
 

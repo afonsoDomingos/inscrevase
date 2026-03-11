@@ -760,6 +760,7 @@ function HubContent() {
                                 socialLinks: submission.form.creator.socialLinks,
                                 whatsapp: submission.form.creator.whatsapp
                             }}
+                            eventTitle={submission.form.title}
                             primaryColor={primaryColor}
                             onClose={() => {
                                 // If mentor, actually end the session

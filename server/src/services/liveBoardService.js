@@ -334,7 +334,8 @@ class LiveBoardService {
         });
 
         // Notify Missing Participants (Mentor Only)
-        socket.on('live_board:notify_missing', async (formId) => {
+        socket.on('live_board:notify_missing', async (data) => {
+            const { formId, customSubject, customText } = (typeof data === 'string') ? { formId: data, customSubject: null, customText: null } : data;
             console.log(`[LiveBoard] Request to notify missing participants for form: ${formId}`);
 
             const session = this.activeSessions.get(formId);
@@ -375,8 +376,8 @@ class LiveBoardService {
 
                 let successCount = 0;
                 for (const sub of missingSubmissions) {
-                    const subject = `🚀 O evento "${eventTitle}" começou!`;
-                    const content = `
+                    const subject = customSubject || `🚀 O evento "${eventTitle}" começou!`;
+                    const content = customText ? customText.replace(/\n/g, '<br>') : `
                         O evento <b>${eventTitle}</b> com <b>${mentorName}</b> já começou e estamos à sua espera!
                         <br><br>
                         Não perca os conteúdos exclusivos, a interatividade da Live Board e a oportunidade de tirar dúvidas em tempo real.
