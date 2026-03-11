@@ -66,7 +66,12 @@ class LiveBoardService {
                     mentorId: session.mentorId,
                     mentorData: session.mentorData,
                     pages: session.pages,
-                    currentPage: session.currentPage
+                    currentPage: session.currentPage,
+                    currentQuiz: session.currentQuiz ? {
+                        ...session.currentQuiz,
+                        votes: Array.from(session.currentQuiz.votes.entries()),
+                        results: this.calculateQuizResults(session.currentQuiz)
+                    } : null
                 });
                 socket.emit('live_board:history', session.history);
             } else if (session.countdown) {
@@ -107,8 +112,6 @@ class LiveBoardService {
 
         // Start Live Board (Mentor Only)
         socket.on('live_board:start', ({ formId, mentorData }) => {
-            // In a real app, we'd verify if the user IS the creator of the form here
-            // For now we assume the frontend only shows the button to the mentor
             console.log(`[LiveBoard] Starting session for form: ${formId}`);
 
             let session = this.activeSessions.get(formId);
@@ -156,7 +159,6 @@ class LiveBoardService {
             const session = this.activeSessions.get(formId);
             if (session && session.mentorId === userId) {
                 session.history.push(data);
-                // Broadcast to all participants in the room except sender
                 socket.to(`live_board_${formId}`).emit('live_board:draw', data);
             }
         });
@@ -193,7 +195,6 @@ class LiveBoardService {
                     if (session.history.length > 0) {
                         const lastItem = session.history[session.history.length - 1];
                         if (lastItem.strokeId) {
-                            // Pop all segments with the same strokeId
                             while (session.history.length > 0 && session.history[session.history.length - 1].strokeId === lastItem.strokeId) {
                                 session.history.pop();
                             }
@@ -210,13 +211,11 @@ class LiveBoardService {
         socket.on('live_board:raise_hand', ({ formId, userData }) => {
             const session = this.activeSessions.get(formId);
             if (session) {
-                // Send notification to the mentor's private room or specific board event
                 this.io.to(session.mentorId.toString()).emit('live_board:hand_raised', {
                     userId,
                     userData,
                     timestamp: new Date()
                 });
-                // Also broadcast to the board room so others might see (optional)
                 this.io.to(`live_board_${formId}`).emit('live_board:hand_raised_broadcast', {
                     userId,
                     name: userData.name
@@ -253,11 +252,53 @@ class LiveBoardService {
             }
         });
 
+        // Quiz Events
+        socket.on('live_board:quiz_start', ({ formId, quiz }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                session.currentQuiz = {
+                    ...quiz,
+                    id: Math.random().toString(36).substring(7),
+                    votes: new Map(),
+                    isRevealed: false
+                };
+                this.io.to(`live_board_${formId}`).emit('live_board:quiz_start', session.currentQuiz);
+            }
+        });
+
+        socket.on('live_board:quiz_vote', ({ formId, optionIndex }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.currentQuiz) {
+                session.currentQuiz.votes.set(userId, optionIndex);
+                this.io.to(`live_board_${formId}`).emit('live_board:quiz_results', {
+                    results: this.calculateQuizResults(session.currentQuiz),
+                    totalVotes: session.currentQuiz.votes.size
+                });
+            }
+        });
+
+        socket.on('live_board:quiz_reveal', (formId) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId && session.currentQuiz) {
+                session.currentQuiz.isRevealed = true;
+                this.io.to(`live_board_${formId}`).emit('live_board:quiz_reveal', {
+                    correctOption: session.currentQuiz.correctOption
+                });
+            }
+        });
+
+        socket.on('live_board:quiz_end', (formId) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId === userId) {
+                delete session.currentQuiz;
+                this.io.to(`live_board_${formId}`).emit('live_board:quiz_end');
+            }
+        });
+
         // Binary Audio Stream (Fallback/Simple)
         socket.on('live_board:audio_stream', ({ formId, data }) => {
             const session = this.activeSessions.get(formId);
             if (session && session.mentorId === userId) {
-                // Broadcast binary data to participants
                 socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
             }
         });
@@ -275,6 +316,17 @@ class LiveBoardService {
                 }
             }
         });
+    }
+
+    static calculateQuizResults(quiz) {
+        if (!quiz || !quiz.options) return [];
+        const results = quiz.options.map(() => 0);
+        quiz.votes.forEach((optionIndex) => {
+            if (results[optionIndex] !== undefined) {
+                results[optionIndex]++;
+            }
+        });
+        return results;
     }
 }
 

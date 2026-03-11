@@ -25,7 +25,8 @@ import {
     Instagram,
     Linkedin,
     Globe,
-    Phone
+    Phone,
+    HelpCircle
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -127,6 +128,7 @@ export default function LiveBoardContainer({
     const [isHandRaised, setIsHandRaised] = useState(false);
     const [participants, setParticipants] = useState<any[]>([]);
     const [reactions, setReactions] = useState<{ id: string, emoji: string, x: number, y: number }[]>([]);
+    const userId = authService.getCurrentUser()?.id;
 
     // Page Management
     const [pages, setPages] = useState<{ history: any[], backgroundImage: string | null }[]>([{ history: [], backgroundImage: null }]);
@@ -140,6 +142,15 @@ export default function LiveBoardContainer({
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const whiteboardRef = useRef<any>(null);
+
+    // Quiz State
+    const [showQuizCreator, setShowQuizCreator] = useState(false);
+    const [currentQuiz, setCurrentQuiz] = useState<any>(null);
+    const [quizResults, setQuizResults] = useState<number[]>([]);
+    const [hasVoted, setHasVoted] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<number | null>(null);
+    const [isQuizRevealed, setIsQuizRevealed] = useState(false);
+    const [correctQuizOption, setCorrectQuizOption] = useState<number | null>(null);
 
     useEffect(() => {
         const handleInteraction = () => {
@@ -206,6 +217,41 @@ export default function LiveBoardContainer({
                 setPages(status.pages);
                 setCurrentPage(status.currentPage || 0);
             }
+            if (status.currentQuiz) {
+                setCurrentQuiz(status.currentQuiz);
+                setQuizResults(status.results || []);
+                // Check if we already voted (using userId)
+                const myVote = status.currentQuiz.votes?.find(([id]: any) => id === userId?.toString());
+                if (myVote) {
+                    setHasVoted(true);
+                    setSelectedOption(myVote[1]);
+                }
+            }
+        });
+
+        newSocket.on('live_board:quiz_start', (quiz: any) => {
+            setCurrentQuiz(quiz);
+            setQuizResults(new Array(quiz.options.length).fill(0));
+            setHasVoted(false);
+            setSelectedOption(null);
+            setIsQuizRevealed(false);
+            setCorrectQuizOption(null);
+            toast.info(t('hub.liveBoard.newQuizToast') || "Novo Quiz disponível!");
+        });
+
+        newSocket.on('live_board:quiz_results', ({ results }: any) => {
+            setQuizResults(results);
+        });
+
+        newSocket.on('live_board:quiz_reveal', ({ correctOption }: any) => {
+            setIsQuizRevealed(true);
+            setCorrectQuizOption(correctOption);
+            toast(t('hub.liveBoard.quizRevealedToast') || "Resposta revelada!");
+        });
+
+        newSocket.on('live_board:quiz_end', () => {
+            setCurrentQuiz(null);
+            setShowQuizCreator(false);
         });
 
         newSocket.on('live_board:page_change', ({ index, pages: syncedPages }: any) => {
@@ -233,7 +279,7 @@ export default function LiveBoardContainer({
         return () => {
             newSocket.disconnect();
         };
-    }, [formId, isMentor, isParticipantAudioMuted, t]);
+    }, [formId, isMentor, isParticipantAudioMuted, t, userId]);
 
     const playAudioChunk = async (data: ArrayBuffer) => {
         if (!audioContextRef.current) {
@@ -843,6 +889,28 @@ export default function LiveBoardContainer({
                                     {isAudioActive ? 'Silenciar' : 'Falar'}
                                 </button>
 
+                                {isMentor && (
+                                    <button
+                                        onClick={() => setShowQuizCreator(true)}
+                                        style={{
+                                            background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                            color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
+                                            border: 'none',
+                                            width: '38px',
+                                            height: '38px',
+                                            borderRadius: '10px',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                        title="Criar Quiz"
+                                    >
+                                        <HelpCircle size={18} />
+                                    </button>
+                                )}
+
                                 <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
 
                                 <button
@@ -1016,6 +1084,42 @@ export default function LiveBoardContainer({
                     </motion.div>
                 )}
             </AnimatePresence>
+            {/* Quiz Overlays */}
+            <AnimatePresence>
+                {showQuizCreator && (
+                    <QuizCreator
+                        isDark={isDark}
+                        onClose={() => setShowQuizCreator(false)}
+                        onSubmit={(quiz: any) => {
+                            socket?.emit('live_board:quiz_start', { formId, quiz });
+                            setShowQuizCreator(false);
+                        }}
+                    />
+                )}
+
+                {currentQuiz && (
+                    <QuizOverlay
+                        quiz={currentQuiz}
+                        results={quizResults}
+                        hasVoted={hasVoted}
+                        selectedOption={selectedOption}
+                        isMentor={isMentor}
+                        isDark={isDark}
+                        onVote={(idx: number) => {
+                            if (!hasVoted) {
+                                setSelectedOption(idx);
+                                setHasVoted(true);
+                                socket?.emit('live_board:quiz_vote', { formId, optionIndex: idx });
+                            }
+                        }}
+                        onReveal={() => socket?.emit('live_board:quiz_reveal', formId)}
+                        onEnd={() => socket?.emit('live_board:quiz_end', formId)}
+                        isRevealed={isQuizRevealed}
+                        correctOption={correctQuizOption !== null ? correctQuizOption : currentQuiz.correctOption}
+                    />
+                )}
+            </AnimatePresence>
+
             <style jsx>{`
                 @keyframes pulse-subtle {
                     0% { opacity: 1; transform: scale(1); }
@@ -1029,3 +1133,144 @@ export default function LiveBoardContainer({
         </motion.div>
     );
 }
+
+// Componente para Criar Quiz
+const QuizCreator = ({ isDark, onClose, onSubmit }: any) => {
+    const [question, setQuestion] = useState('');
+    const [options, setOptions] = useState(['', '']);
+    const [correctOption, setCorrectOption] = useState(0);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+        >
+            <motion.div
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+                style={{ background: isDark ? '#1a1a1a' : '#fff', width: '100%', maxWidth: '450px', borderRadius: '24px', padding: '32px', border: isDark ? '1px solid #333' : '1px solid #eee' }}
+            >
+                <h3 style={{ margin: '0 0 24px 0', fontSize: '1.25rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Lançar Novo Quiz</h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, marginBottom: '6px', color: '#888' }}>PERGUNTA</label>
+                        <input
+                            autoFocus value={question} onChange={e => setQuestion(e.target.value)}
+                            placeholder="Ex: Qual o resultado de 2 + 2?"
+                            style={{ width: '100%', padding: '12px', borderRadius: '12px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontWeight: 600, outline: 'none' }}
+                        />
+                    </div>
+
+                    <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, marginBottom: '6px', color: '#888' }}>OPÇÕES</label>
+                        {options.map((opt, idx) => (
+                            <div key={idx} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                                <input
+                                    type="radio" name="correct" checked={correctOption === idx} onChange={() => setCorrectOption(idx)}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                                <input
+                                    value={opt} onChange={e => {
+                                        const newOpts = [...options];
+                                        newOpts[idx] = e.target.value;
+                                        setOptions(newOpts);
+                                    }}
+                                    placeholder={`Opção ${idx + 1}`}
+                                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontWeight: 600, outline: 'none' }}
+                                />
+                                {options.length > 2 && (
+                                    <button onClick={() => setOptions(options.filter((_, i) => i !== idx))} style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}><X size={16} /></button>
+                                )}
+                            </div>
+                        ))}
+                        {options.length < 4 && (
+                            <button onClick={() => setOptions([...options, ''])} style={{ background: 'none', border: 'none', color: '#0ea5e9', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer', padding: '4px' }}>+ Adicionar Opção</button>
+                        )}
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+                    <button onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: '14px', border: 'none', background: isDark ? '#333' : '#f0f0f0', color: isDark ? '#fff' : '#666', fontWeight: 800, cursor: 'pointer' }}>Cancelar</button>
+                    <button
+                        onClick={() => onSubmit({ question, options, correctOption })}
+                        disabled={!question || options.some(o => !o)}
+                        style={{ flex: 1, padding: '12px', borderRadius: '14px', border: 'none', background: '#0ea5e9', color: '#fff', fontWeight: 800, cursor: 'pointer', opacity: (!question || options.some(o => !o)) ? 0.5 : 1 }}
+                    >
+                        Lançar Quiz
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+};
+
+// Componente para Visualizar Quiz (Participante e Mentor)
+const QuizOverlay = ({ quiz, results, hasVoted, selectedOption, isMentor, isDark, onVote, onReveal, onEnd, isRevealed, correctOption }: any) => {
+    const totalVotes = results.reduce((a: number, b: number) => a + b, 0);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+            style={{ position: 'absolute', top: '80px', right: '20px', width: '300px', background: isDark ? '#1a1a1a' : '#fff', borderRadius: '20px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', border: isDark ? '1px solid #333' : '1px solid #eee', zIndex: 500 }}
+        >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#0ea5e9', background: 'rgba(14,165,233,0.1)', padding: '4px 8px', borderRadius: '6px' }}>QUIZ EM DIRETO</span>
+                {isMentor && <button onClick={onEnd} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}><X size={16} /></button>}
+            </div>
+
+            <h4 style={{ margin: '0 0 20px 0', fontSize: '1rem', fontWeight: 900, color: isDark ? '#fff' : '#111', lineHeight: 1.4 }}>{quiz.question}</h4>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {quiz.options.map((option: string, idx: number) => {
+                    const percent = totalVotes > 0 ? Math.round((results[idx] / totalVotes) * 100) : 0;
+                    const isCorrect = isRevealed && idx === correctOption;
+                    const isSelected = hasVoted && idx === selectedOption;
+
+                    return (
+                        <button
+                            key={idx}
+                            disabled={hasVoted && !isMentor}
+                            onClick={() => onVote(idx)}
+                            style={{
+                                position: 'relative',
+                                width: '100%',
+                                padding: '12px 16px',
+                                borderRadius: '12px',
+                                border: isCorrect ? '2px solid #22c55e' : (isSelected ? '2px solid #0ea5e9' : (isDark ? '1px solid #333' : '1px solid #eee')),
+                                background: isCorrect ? (isDark ? 'rgba(34,197,94,0.1)' : '#f0fdf4') : (isSelected ? (isDark ? 'rgba(14,165,233,0.1)' : '#f0f9ff') : (isDark ? '#111' : '#fff')),
+                                textAlign: 'left',
+                                cursor: (hasVoted || isMentor) ? 'default' : 'pointer',
+                                overflow: 'hidden',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontWeight: 700, color: isCorrect ? (isDark ? '#4ade80' : '#166534') : (isSelected ? '#0ea5e9' : (isDark ? '#fff' : '#444')), fontSize: '0.85rem' }}>{option}</span>
+                                {(hasVoted || isMentor) && <span style={{ fontSize: '0.75rem', fontWeight: 800, color: isCorrect ? (isDark ? '#4ade80' : '#166534') : '#888' }}>{percent}%</span>}
+                            </div>
+
+                            {(hasVoted || isMentor) && (
+                                <motion.div
+                                    initial={{ width: 0 }} animate={{ width: `${percent}%` }}
+                                    style={{ position: 'absolute', top: 0, left: 0, bottom: 0, background: isCorrect ? (isDark ? 'rgba(34,197,94,0.2)' : '#dcfce7') : (isSelected ? (isDark ? 'rgba(14,165,233,0.2)' : '#e0f2fe') : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8')), zIndex: 0 }}
+                                />
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#888' }}>{totalVotes} {totalVotes === 1 ? 'voto' : 'votos'}</span>
+                {isMentor && !isRevealed && (
+                    <button
+                        onClick={onReveal}
+                        style={{ background: '#0ea5e9', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                        Revelar Resposta
+                    </button>
+                )}
+            </div>
+        </motion.div>
+    );
+};
