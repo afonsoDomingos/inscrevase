@@ -2119,7 +2119,7 @@ function MentorDashboardContent() {
                             eventTitle="LABORATÓRIO DE TESTES"
                             mentorData={{
                                 name: user.name,
-                                photo: user.profilePhoto,
+                                photo: user.profilePhoto || "",
                                 title: "MENTOR (MODO TESTE)",
                                 socialLinks: {},
                                 whatsapp: ""
