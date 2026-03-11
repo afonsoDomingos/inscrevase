@@ -1607,7 +1607,14 @@
             "seconds_30": "30 Segundos",
             "minute_1": "1 Minuto",
             "minutes_5": "5 Minutos",
-            "startNow": "Iniciar Agora"
+            "startNow": "Iniciar Agora",
+            "quizRevealedToast": "A resposta correta foi revelada!",
+            "quizVotedToast": "Voto computado com sucesso!",
+            "announcementTitle": "Aviso do Mentor",
+            "announcementSent": "Anúncio enviado!",
+            "responses": "Respostas",
+            "participant": "Participante",
+            "answer": "Resposta"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",

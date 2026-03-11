@@ -173,6 +173,8 @@ export default function LiveBoardContainer({
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [isQuizRevealed, setIsQuizRevealed] = useState(false);
     const [correctQuizOption, setCorrectQuizOption] = useState<number | null>(null);
+    const [quizDetailedResults, setQuizDetailedResults] = useState<any[]>([]);
+    const [customAnnouncementText, setCustomAnnouncementText] = useState("");
 
     // Timer & Cursor State
     const [timerSeconds, setTimerSeconds] = useState<number>(0);
@@ -340,6 +342,11 @@ export default function LiveBoardContainer({
         newSocket.on('live_board:quiz_end', () => {
             setCurrentQuiz(null);
             setShowQuizCreator(false);
+            setQuizDetailedResults([]);
+        });
+
+        newSocket.on('live_board:quiz_detailed_results', (detailed: any[]) => {
+            setQuizDetailedResults(detailed);
         });
 
         newSocket.on('live_board:page_change', ({ index, pages: syncedPages }: any) => {
@@ -844,19 +851,23 @@ export default function LiveBoardContainer({
                                 <button
                                     onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
                                     style={{
-                                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
-                                        color: isDark ? '#fff' : '#666',
+                                        background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                        color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
                                         border: 'none',
-                                        width: '32px',
+                                        padding: '0 12px',
                                         height: '32px',
                                         borderRadius: '8px',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                        fontWeight: 800,
+                                        fontSize: '0.7rem'
                                     }}
+                                    title="Enviar avisos e alertas para os alunos"
                                 >
-                                    <Megaphone size={16} />
+                                    <Megaphone size={14} /> Avisos
                                 </button>
 
                                 <AnimatePresence>
@@ -883,12 +894,33 @@ export default function LiveBoardContainer({
                                             {announcementsList.map(ann => (
                                                 <button
                                                     key={ann.id}
-                                                    onClick={() => handleAnnouncement(ann)}
+                                                    onClick={() => {
+                                                        handleAnnouncement(ann);
+                                                        setShowAnnouncementMenu(false);
+                                                    }}
                                                     style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                                                 >
                                                     <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
                                                 </button>
                                             ))}
+
+                                            <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
+                                                <input
+                                                    type="text"
+                                                    value={customAnnouncementText}
+                                                    onChange={(e) => setCustomAnnouncementText(e.target.value)}
+                                                    placeholder="Aviso personalizado..."
+                                                    style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && customAnnouncementText.trim()) {
+                                                            handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
+                                                            setCustomAnnouncementText("");
+                                                            setShowAnnouncementMenu(false);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+
                                             {currentAnnouncement && (
                                                 <button
                                                     onClick={clearAnnouncement}
@@ -1475,6 +1507,7 @@ export default function LiveBoardContainer({
                     <QuizOverlay
                         quiz={currentQuiz}
                         results={quizResults}
+                        detailedResults={quizDetailedResults}
                         hasVoted={hasVoted}
                         selectedOption={selectedOption}
                         isMentor={isMentor}
@@ -1483,7 +1516,13 @@ export default function LiveBoardContainer({
                             if (!hasVoted) {
                                 setSelectedOption(idx);
                                 setHasVoted(true);
-                                socket?.emit('live_board:quiz_vote', { formId, optionIndex: idx });
+                                const user = authService.getCurrentUser();
+                                socket?.emit('live_board:quiz_vote', {
+                                    formId,
+                                    optionIndex: idx,
+                                    userData: { name: user?.name, photo: user?.photo || user?.profilePhoto }
+                                });
+                                toast.success(t('hub.liveBoard.quizVotedToast') || "Voto registado!");
                             }
                         }}
                         onReveal={() => socket?.emit('live_board:quiz_reveal', formId)}
@@ -1777,8 +1816,9 @@ const QuizCreator = ({ isDark, onClose, onSubmit }: any) => {
 };
 
 // Componente para Visualizar Quiz (Participante e Mentor)
-const QuizOverlay = ({ quiz, results, hasVoted, selectedOption, isMentor, isDark, onVote, onReveal, onEnd, isRevealed, correctOption }: any) => {
+const QuizOverlay = ({ quiz, results, detailedResults, hasVoted, selectedOption, isMentor, isDark, onVote, onReveal, onEnd, isRevealed, correctOption }: any) => {
     const totalVotes = results.reduce((a: number, b: number) => a + b, 0);
+    const { t } = useTranslate();
 
     return (
         <motion.div
@@ -1832,15 +1872,49 @@ const QuizOverlay = ({ quiz, results, hasVoted, selectedOption, isMentor, isDark
                 })}
             </div>
 
-            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#888' }}>{totalVotes} {totalVotes === 1 ? 'voto' : 'votos'}</span>
-                {isMentor && !isRevealed && (
-                    <button
-                        onClick={onReveal}
-                        style={{ background: '#0ea5e9', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-                    >
-                        Revelar Resposta
-                    </button>
+            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#888' }}>{totalVotes} {totalVotes === 1 ? 'voto' : 'votos'}</span>
+                    {isMentor && !isRevealed && (
+                        <button
+                            onClick={onReveal}
+                            style={{ background: '#0ea5e9', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                        >
+                            Revelar Resposta
+                        </button>
+                    )}
+                </div>
+
+                {isMentor && detailedResults && detailedResults.length > 0 && (
+                    <div style={{ borderTop: isDark ? '1px solid #333' : '1px solid #eee', paddingTop: '15px' }}>
+                        <h5 style={{ margin: '0 0 10px 0', fontSize: '0.7rem', fontWeight: 900, color: '#888', textTransform: 'uppercase' }}>
+                            {t('hub.liveBoard.responses') || 'Respostas Detalhadas'}
+                        </h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
+                            {detailedResults.map((res: any, i: number) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0' }}>
+                                            <img src={res.photo || '/default-avatar.png'} width={20} height={20} alt="" style={{ objectFit: 'cover' }} />
+                                        </div>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isDark ? '#ccc' : '#444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
+                                            {res.name}
+                                        </span>
+                                    </div>
+                                    <span style={{
+                                        fontSize: '0.65rem',
+                                        fontWeight: 800,
+                                        color: res.optionIndex === quiz.correctOption ? '#22c55e' : '#ef4444',
+                                        background: res.optionIndex === quiz.correctOption ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                                        padding: '2px 6px',
+                                        borderRadius: '4px'
+                                    }}>
+                                        {quiz.options[res.optionIndex]}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
         </motion.div>

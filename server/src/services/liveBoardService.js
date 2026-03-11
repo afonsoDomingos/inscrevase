@@ -21,6 +21,10 @@ class LiveBoardService {
 
         // Join Live Board Room
         socket.on('live_board:join', async (formId) => {
+            if (session && session.mentorId === userId) {
+                session.mentorSocketId = socket.id;
+            }
+
             socket.join(`live_board_${formId}`);
 
             // Try to get user data from User model if not in socket
@@ -267,21 +271,33 @@ class LiveBoardService {
                 session.currentQuiz = {
                     ...quiz,
                     id: Math.random().toString(36).substring(7),
-                    votes: new Map(),
+                    votes: {}, // Use object for easier serialization
                     isRevealed: false
                 };
                 this.io.to(`live_board_${formId}`).emit('live_board:quiz_start', session.currentQuiz);
             }
         });
 
-        socket.on('live_board:quiz_vote', ({ formId, optionIndex }) => {
+        socket.on('live_board:quiz_vote', ({ formId, optionIndex, userData }) => {
             const session = this.activeSessions.get(formId);
             if (session && session.currentQuiz) {
-                session.currentQuiz.votes.set(userId, optionIndex);
+                session.currentQuiz.votes[userId] = { optionIndex, userData };
+
                 this.io.to(`live_board_${formId}`).emit('live_board:quiz_results', {
                     results: this.calculateQuizResults(session.currentQuiz),
-                    totalVotes: session.currentQuiz.votes.size
+                    totalVotes: Object.keys(session.currentQuiz.votes).length
                 });
+
+                // Detailed results for mentor
+                if (session.mentorId) {
+                    const detailed = Object.entries(session.currentQuiz.votes).map(([uid, data]) => ({
+                        userId: uid,
+                        name: data.userData?.name || 'Participante',
+                        photo: data.userData?.photo,
+                        optionIndex: data.optionIndex
+                    }));
+                    this.io.to(session.mentorId.toString()).emit('live_board:quiz_detailed_results', detailed);
+                }
             }
         });
 
@@ -447,9 +463,10 @@ class LiveBoardService {
     static calculateQuizResults(quiz) {
         if (!quiz || !quiz.options) return [];
         const results = quiz.options.map(() => 0);
-        quiz.votes.forEach((optionIndex) => {
-            if (results[optionIndex] !== undefined) {
-                results[optionIndex]++;
+        Object.values(quiz.votes).forEach((vote) => {
+            const idx = vote.optionIndex;
+            if (results[idx] !== undefined) {
+                results[idx]++;
             }
         });
         return results;
