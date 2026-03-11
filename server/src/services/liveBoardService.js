@@ -14,13 +14,48 @@ class LiveBoardService {
         const userId = socket.userId;
 
         // Join Live Board Room
-        socket.on('live_board:join', (formId) => {
+        socket.on('live_board:join', async (formId) => {
             socket.join(`live_board_${formId}`);
-            console.log(`[LiveBoard] User ${userId} joined room: live_board_${formId}`);
+
+            // Try to get user data from User model if not in socket
+            let userData = socket.userData;
+            if (!userData && userId) {
+                try {
+                    const User = require('../models/User');
+                    const user = await User.findById(userId).select('name profilePhoto role');
+                    if (user) {
+                        userData = {
+                            id: userId,
+                            name: user.name,
+                            photo: user.profilePhoto,
+                            role: user.role
+                        };
+                    }
+                } catch (err) {
+                    console.error('[LiveBoard] Error fetching user for presence:', err);
+                }
+            }
+
+            console.log(`[LiveBoard] User ${userData?.name || userId} joined room: live_board_${formId}`);
+
+            if (!this.activeSessions.has(formId)) {
+                this.activeSessions.set(formId, { history: [], participants: new Map() });
+            }
+
+            const session = this.activeSessions.get(formId);
+
+            if (userData) {
+                session.participants.set(userId.toString(), {
+                    ...userData,
+                    isMentor: session.mentorId === userId
+                });
+
+                // Broadcast updated list
+                this.io.to(`live_board_${formId}`).emit('live_board:participants', Array.from(session.participants.values()));
+            }
 
             // If session is active, send status and current board state
-            if (this.activeSessions.has(formId)) {
-                const session = this.activeSessions.get(formId);
+            if (session.mentorId) {
                 socket.emit('live_board:status', {
                     active: true,
                     mentorId: session.mentorId,
@@ -115,6 +150,20 @@ class LiveBoardService {
             if (session && session.mentorId === userId) {
                 // Broadcast binary data to participants
                 socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
+            }
+        });
+
+        // Handle disconnect for presence
+        socket.on('disconnecting', () => {
+            for (const room of socket.rooms) {
+                if (room.startsWith('live_board_')) {
+                    const formId = room.replace('live_board_', '');
+                    const session = this.activeSessions.get(formId);
+                    if (session && session.participants) {
+                        session.participants.delete(userId.toString());
+                        this.io.to(room).emit('live_board:participants', Array.from(session.participants.values()));
+                    }
+                }
             }
         });
     }

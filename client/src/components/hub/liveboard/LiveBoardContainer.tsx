@@ -52,6 +52,7 @@ export default function LiveBoardContainer({
     const [isParticipantAudioMuted, setIsParticipantAudioMuted] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isHandRaised, setIsHandRaised] = useState(false);
+    const [participants, setParticipants] = useState<any[]>([]);
 
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -74,6 +75,11 @@ export default function LiveBoardContainer({
                     }
                 });
             }
+        });
+
+        newSocket.on('live_board:participants', (list: any[]) => {
+            console.log('[LiveBoard] Participants updated:', list);
+            setParticipants(list);
         });
 
         if (!isMentor) {
@@ -233,6 +239,57 @@ export default function LiveBoardContainer({
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    {/* Participant Avatars (Overlap Style like Google Meet) */}
+                    <div style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
+                        {participants.slice(0, 5).map((p, idx) => (
+                            <div
+                                key={p.id || idx}
+                                title={p.name}
+                                style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '50%',
+                                    border: '2px solid #fff',
+                                    marginLeft: idx === 0 ? 0 : '-12px',
+                                    overflow: 'hidden',
+                                    background: '#f0f0f0',
+                                    zIndex: 10 - idx,
+                                    position: 'relative'
+                                }}
+                            >
+                                <Image
+                                    src={p.photo || '/default-avatar.png'}
+                                    width={32}
+                                    height={32}
+                                    alt={p.name}
+                                    style={{ objectFit: 'cover' }}
+                                />
+                            </div>
+                        ))}
+                        {participants.length > 5 && (
+                            <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                background: '#111',
+                                color: '#fff',
+                                fontSize: '0.65rem',
+                                fontWeight: 800,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '2px solid #fff',
+                                marginLeft: '-12px',
+                                zIndex: 0
+                            }}>
+                                +{participants.length - 5}
+                            </div>
+                        )}
+                        <span style={{ marginLeft: '12px', fontSize: '0.75rem', fontWeight: 700, color: '#666' }}>
+                            {participants.length} {participants.length === 1 ? 'conetado' : 'conectados'}
+                        </span>
+                    </div>
+
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
