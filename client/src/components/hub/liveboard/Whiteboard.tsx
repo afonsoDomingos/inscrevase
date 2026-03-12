@@ -15,6 +15,7 @@ interface WhiteboardProps {
     tool: 'pen' | 'eraser' | 'rectangle' | 'circle' | 'arrow' | 'laser' | 'text' | 'select';
     isDark?: boolean;
     backgroundImage?: string | null;
+    primaryColor?: string;
 }
 
 const Whiteboard = forwardRef(({
@@ -27,7 +28,8 @@ const Whiteboard = forwardRef(({
     undoTrigger,
     tool,
     isDark = false,
-    backgroundImage = null
+    backgroundImage = null,
+    primaryColor = '#CFB53B'
 }: WhiteboardProps, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const bgCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -45,7 +47,18 @@ const Whiteboard = forwardRef(({
         const context = contextRef.current;
         if (!context) return;
 
+        const canvas = context.canvas;
+        const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+
         const { type, x0, y0, x1, y1, color, size, text, src } = data;
+
+        // Convert normalized to pixels
+        const px0 = x0 * width;
+        const py0 = y0 * height;
+        const px1 = x1 * width;
+        const py1 = y1 * height;
 
         context.save();
         context.beginPath();
@@ -64,32 +77,32 @@ const Whiteboard = forwardRef(({
         context.lineJoin = 'round';
 
         if (!type || type === 'pen' || type === 'eraser') {
-            context.moveTo(x0, y0);
-            context.lineTo(x1, y1);
+            context.moveTo(px0, py0);
+            context.lineTo(px1, py1);
             context.stroke();
         } else if (type === 'rectangle') {
-            context.strokeRect(x0, y0, (x1 - x0) || 5, (y1 - y0) || 5);
+            context.strokeRect(px0, py0, (px1 - px0) || 5, (py1 - py0) || 5);
         } else if (type === 'circle') {
-            const radius = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
-            context.arc(x0, y0, radius, 0, Math.PI * 2);
+            const radius = Math.sqrt(Math.pow(px1 - px0, 2) + Math.pow(py1 - py0, 2));
+            context.arc(px0, py0, radius, 0, Math.PI * 2);
             context.stroke();
         } else if (type === 'arrow') {
             const headlen = 15;
-            const angle = Math.atan2(y1 - y0, x1 - x0);
-            context.moveTo(x0, y0);
-            context.lineTo(x1, y1);
+            const angle = Math.atan2(py1 - py0, px1 - px0);
+            context.moveTo(px0, py0);
+            context.lineTo(px1, py1);
             context.stroke();
 
             context.beginPath();
-            context.moveTo(x1, y1);
-            context.lineTo(x1 - headlen * Math.cos(angle - Math.PI / 6), y1 - headlen * Math.sin(angle - Math.PI / 6));
-            context.moveTo(x1, y1);
-            context.lineTo(x1 - headlen * Math.cos(angle + Math.PI / 6), y1 - headlen * Math.sin(angle + Math.PI / 6));
+            context.moveTo(px1, py1);
+            context.lineTo(px1 - headlen * Math.cos(angle - Math.PI / 6), py1 - headlen * Math.sin(angle - Math.PI / 6));
+            context.moveTo(px1, py1);
+            context.lineTo(px1 - headlen * Math.cos(angle + Math.PI / 6), py1 - headlen * Math.sin(angle + Math.PI / 6));
             context.stroke();
         } else if (type === 'text' && text) {
             context.font = `bold ${size * 6}px system-ui, -apple-system, sans-serif`;
             context.textBaseline = 'top';
-            context.fillText(text, x0, y0);
+            context.fillText(text, px0, py0);
         } else if (type === 'image' && src) {
             if (!imageCache.current.has(src)) {
                 const img = new Image();
@@ -101,7 +114,7 @@ const Whiteboard = forwardRef(({
             } else {
                 const cachedImg = imageCache.current.get(src);
                 if (cachedImg) {
-                    context.drawImage(cachedImg, x0, y0, (x1 - x0) || cachedImg.width, (y1 - y0) || cachedImg.height);
+                    context.drawImage(cachedImg, px0, py0, (px1 - px0) || cachedImg.width, (py1 - py0) || cachedImg.height);
                 }
             }
         }
@@ -130,14 +143,16 @@ const Whiteboard = forwardRef(({
                 context.lineWidth = 2;
                 context.setLineDash([5, 5]);
 
-                let x = item.x0, y = item.y0, w = (item.x1 - item.x0), h = (item.y1 - item.y0);
+                let x = item.x0 * width, y = item.y0 * height;
+                let w = (item.x1 - item.x0) * width, h = (item.y1 - item.y0) * height;
+
                 if (item.type === 'text') {
                     w = (item.text?.length || 0) * item.size * 3;
                     h = item.size * 5;
                 } else if (item.type === 'circle') {
-                    const radius = Math.sqrt(Math.pow(item.x1 - item.x0, 2) + Math.pow(item.y1 - item.y0, 2));
-                    x = item.x0 - radius;
-                    y = item.y0 - radius;
+                    const radius = Math.sqrt(Math.pow((item.x1 - item.x0) * width, 2) + Math.pow((item.y1 - item.y0) * height, 2));
+                    x = item.x0 * width - radius;
+                    y = item.y0 * height - radius;
                     w = radius * 2;
                     h = radius * 2;
                 }
@@ -301,7 +316,10 @@ const Whiteboard = forwardRef(({
             });
 
             socket.on('live_board:laser', (data: any) => {
-                showLaser(data.x, data.y);
+                const canvas = canvasRef.current;
+                if (!canvas) return;
+                const dpr = window.devicePixelRatio || 1;
+                showLaser(data.x * (canvas.width / dpr), data.y * (canvas.height / dpr));
             });
 
             socket.on('live_board:action', (action: string) => {
@@ -362,14 +380,22 @@ const Whiteboard = forwardRef(({
     const handleTextSubmit = (text: string) => {
         if (!textInput || isSubmittingText.current) return;
 
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+
         const trimmedText = text.trim();
         if (trimmedText) {
             isSubmittingText.current = true;
             const data = {
                 type: 'text',
                 strokeId: Math.random().toString(36).substring(7),
-                x0: textInput.x,
-                y0: textInput.y,
+                x0: textInput.x / width,
+                y0: textInput.y / height,
+                x1: textInput.x / width, // text doesn't really have x1, but for consistency
+                y1: textInput.y / height,
                 text: trimmedText,
                 color,
                 size: brushSize
@@ -399,42 +425,61 @@ const Whiteboard = forwardRef(({
         }
 
         if (tool === 'select') {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const dpr = window.devicePixelRatio || 1;
+            const width = canvas.width / dpr;
+            const height = canvas.height / dpr;
+
             selectedShapeIndexRef.current = -1;
             setSelectedShapeIndex(-1);
+
             for (let i = historyRef.current.length - 1; i >= 0; i--) {
                 const item = historyRef.current[i];
                 let isHit = false;
 
+                // Normalize click position for comparison
+                const nx = offsetX / width;
+                const ny = offsetY / height;
+                const hitBuffer = 20 / width; // 20px normalized
+
                 if (item.type === 'circle') {
                     const radius = Math.sqrt(Math.pow(item.x1 - item.x0, 2) + Math.pow(item.y1 - item.y0, 2));
-                    const dist = Math.sqrt(Math.pow(offsetX - item.x0, 2) + Math.pow(offsetY - item.y0, 2));
-                    if (dist <= radius + 15) isHit = true;
-                } else if (['rectangle', 'arrow'].includes(item.type)) {
+                    const dist = Math.sqrt(Math.pow(nx - item.x0, 2) + Math.pow(ny - item.y0, 2));
+                    if (dist <= radius + hitBuffer) isHit = true;
+                } else if (['rectangle', 'arrow', 'image'].includes(item.type)) {
                     const minX = Math.min(item.x0, item.x1);
                     const maxX = Math.max(item.x0, item.x1);
                     const minY = Math.min(item.y0, item.y1);
                     const maxY = Math.max(item.y0, item.y1);
-                    if (offsetX >= minX - 15 && offsetX <= maxX + 15 && offsetY >= minY - 15 && offsetY <= maxY + 15) isHit = true;
+                    if (nx >= minX - hitBuffer && nx <= maxX + hitBuffer && ny >= minY - hitBuffer && ny <= maxY + hitBuffer) isHit = true;
                 } else if (item.type === 'text') {
-                    const width = (item.text?.length || 0) * item.size * 3;
-                    const height = item.size * 6;
-                    if (offsetX >= item.x0 - 15 && offsetX <= item.x0 + width + 15 && offsetY >= item.y0 - 15 && offsetY <= item.y0 + height + 15) isHit = true;
-                } else if (item.type === 'image') {
-                    const width = (item.x1 - item.x0) || 200;
-                    const height = (item.y1 - item.y0) || 200;
-                    if (offsetX >= item.x0 - 15 && offsetX <= item.x0 + width + 15 && offsetY >= item.y0 - 15 && offsetY <= item.y0 + height + 15) {
-                        isHit = true;
-                        const isResizing = offsetX >= item.x0 + (width || 200) - 30 && offsetY >= item.y0 + (height || 200) - 30;
-                        (selectedShapeIndexRef as any).isResizing = isResizing;
-                    }
+                    // Approximate text box since we don't know exact width without context
+                    const approxWidth = (item.text?.length || 0) * (item.size * 5) / width;
+                    const approxHeight = (item.size * 8) / height;
+                    if (nx >= item.x0 - hitBuffer && nx <= item.x0 + approxWidth + hitBuffer && ny >= item.y0 - hitBuffer && ny <= item.y0 + approxHeight + hitBuffer) isHit = true;
                 }
 
                 if (isHit) {
                     selectedShapeIndexRef.current = i;
                     setSelectedShapeIndex(i);
                     initialDragPosRef.current = { x: offsetX, y: offsetY };
+
+                    // Check for resize handle (bottom-right)
+                    let w = (item.x1 - item.x0) * width || 200;
+                    let h = (item.y1 - item.y0) * height || 200;
+                    if (item.type === 'text') {
+                        w = (item.text?.length || 0) * item.size * 3;
+                        h = item.size * 5;
+                    }
+                    const px = item.x0 * width;
+                    const py = item.y0 * height;
+                    const isResizing = offsetX >= px + w - 10 && offsetX <= px + w + 15 &&
+                        offsetY >= py + h - 10 && offsetY <= py + h + 15;
+                    (selectedShapeIndexRef as any).isResizing = isResizing;
+
                     setIsDrawing(true);
-                    return;
+                    break;
                 }
             }
             return;
@@ -448,8 +493,12 @@ const Whiteboard = forwardRef(({
             contextRef.current?.beginPath();
             contextRef.current?.moveTo(offsetX, offsetY);
         } else if (tool === 'laser') {
-            showLaser(offsetX, offsetY);
-            socket.emit('live_board:laser', { formId, x: offsetX, y: offsetY });
+            const canvas = canvasRef.current;
+            if (canvas) {
+                const dpr = window.devicePixelRatio || 1;
+                showLaser(offsetX, offsetY);
+                socket.emit('live_board:laser', { formId, x: offsetX / (canvas.width / dpr), y: offsetY / (canvas.height / dpr) });
+            }
         }
     };
 
@@ -459,23 +508,37 @@ const Whiteboard = forwardRef(({
 
         if (tool === 'laser') {
             if (event.type === 'touchmove') event.preventDefault();
-            showLaser(offsetX, offsetY);
-            socket.emit('live_board:laser', { formId, x: offsetX, y: offsetY });
+            const canvas = canvasRef.current;
+            if (canvas) {
+                const dpr = window.devicePixelRatio || 1;
+                showLaser(offsetX, offsetY);
+                socket.emit('live_board:laser', { formId, x: offsetX / (canvas.width / dpr), y: offsetY / (canvas.height / dpr) });
+            }
             return;
         }
 
         if (!isDrawing) return;
         if (event.type === 'touchmove') event.preventDefault();
 
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+
         if (tool === 'select' && selectedShapeIndexRef.current >= 0 && initialDragPosRef.current) {
-            const dx = offsetX - initialDragPosRef.current.x;
-            const dy = offsetY - initialDragPosRef.current.y;
+            const dx = (offsetX - initialDragPosRef.current.x) / width;
+            const dy = (offsetY - initialDragPosRef.current.y) / height;
             const shape = historyRef.current[selectedShapeIndexRef.current];
             const isResizing = (selectedShapeIndexRef as any).isResizing;
 
             let updatedShape;
             if (isResizing) {
-                updatedShape = { ...shape, x1: (shape.x1 ?? (shape.x0 + 200)) + dx, y1: (shape.y1 ?? (shape.y0 + 200)) + dy };
+                updatedShape = {
+                    ...shape,
+                    x1: (shape.x1 ?? (shape.x0 + (200 / width))) + dx,
+                    y1: (shape.y1 ?? (shape.y0 + (200 / height))) + dy
+                };
             } else {
                 updatedShape = { ...shape, x0: shape.x0 + dx, y0: shape.y0 + dy };
                 if (shape.x1 !== undefined && shape.y1 !== undefined) {
@@ -496,10 +559,10 @@ const Whiteboard = forwardRef(({
             const data = {
                 type: tool,
                 strokeId: currentStrokeIdRef.current,
-                x0: lastPointRef.current.x,
-                y0: lastPointRef.current.y,
-                x1: offsetX,
-                y1: offsetY,
+                x0: lastPointRef.current.x / width,
+                y0: lastPointRef.current.y / height,
+                x1: offsetX / width,
+                y1: offsetY / height,
                 color: tool === 'eraser' ? 'rgba(0,0,0,1)' : color,
                 size: tool === 'eraser' ? brushSize * 2 : brushSize
             };
@@ -509,7 +572,15 @@ const Whiteboard = forwardRef(({
             lastPointRef.current = { x: offsetX, y: offsetY };
         } else {
             redrawHistory();
-            drawData({ type: tool, x0: lastPointRef.current.x, y0: lastPointRef.current.y, x1: offsetX, y1: offsetY, color, size: brushSize });
+            drawData({
+                type: tool,
+                x0: lastPointRef.current.x / width,
+                y0: lastPointRef.current.y / height,
+                x1: offsetX / width,
+                y1: offsetY / height,
+                color,
+                size: brushSize
+            });
         }
     };
 
@@ -525,8 +596,23 @@ const Whiteboard = forwardRef(({
         }
 
         if (tool !== 'pen' && tool !== 'eraser' && tool !== 'laser' && lastPointRef.current) {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const dpr = window.devicePixelRatio || 1;
+            const width = canvas.width / dpr;
+            const height = canvas.height / dpr;
+
             const { offsetX, offsetY } = getCoordinates(event.nativeEvent);
-            const data = { type: tool, strokeId: currentStrokeIdRef.current, x0: lastPointRef.current.x, y0: lastPointRef.current.y, x1: offsetX, y1: offsetY, color, size: brushSize };
+            const data = {
+                type: tool,
+                strokeId: currentStrokeIdRef.current,
+                x0: lastPointRef.current.x / width,
+                y0: lastPointRef.current.y / height,
+                x1: offsetX / width,
+                y1: offsetY / height,
+                color,
+                size: brushSize
+            };
             historyRef.current.push(data);
             socket.emit('live_board:draw', { formId, data });
             redrawHistory();
@@ -582,26 +668,37 @@ const Whiteboard = forwardRef(({
                 />
             )}
             {textInput && (
-                <div style={{ position: 'absolute', left: textInput.x - 5, top: textInput.y - 5, zIndex: 200 }}>
+                <div
+                    style={{ position: 'absolute', left: textInput.x - 10, top: textInput.y - 10, zIndex: 1000 }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onMouseUp={(e) => e.stopPropagation()}
+                    onMouseMove={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                >
                     <input
                         autoFocus
-                        placeholder="Escrever..."
+                        placeholder="Escreva aqui..."
                         style={{
-                            background: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)',
-                            border: `2px dashed ${color}`,
-                            color: color,
-                            font: `bold ${brushSize * 6}px system-ui, sans-serif`,
+                            background: isDark ? '#222' : '#fff',
+                            border: `3px solid ${primaryColor || '#CFB53B'}`,
+                            color: isDark ? '#fff' : '#000',
+                            font: `bold ${Math.max(18, brushSize * 4)}px 'Outfit', system-ui, sans-serif`,
                             outline: 'none',
-                            padding: '4px 8px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            minWidth: '50px'
+                            padding: '12px 20px',
+                            borderRadius: '16px',
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                            minWidth: '200px',
+                            caretColor: primaryColor || '#CFB53B'
                         }}
                         onBlur={(e) => handleTextSubmit(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleTextSubmit(e.currentTarget.value);
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleTextSubmit(e.currentTarget.value);
+                            }
                             if (e.key === 'Escape') setTextInput(null);
                         }}
+                        onClick={(e) => e.stopPropagation()}
                     />
                 </div>
             )}
