@@ -1492,71 +1492,7 @@ export default function LiveBoardContainer({
                                 <Eraser size={isMobile ? 14 : 16} />
                             </button>
 
-                            <AnimatePresence>
-                                {showClearConfirm && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        style={{
-                                            position: 'fixed',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            background: 'rgba(0,0,0,0.85)',
-                                            backdropFilter: 'blur(10px)',
-                                            zIndex: 20000,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: '20px'
-                                        }}
-                                    >
-                                        <motion.div
-                                            initial={{ scale: 0.9, y: 30 }}
-                                            animate={{ scale: 1, y: 0 }}
-                                            exit={{ scale: 0.9, y: 30 }}
-                                            style={{
-                                                background: isDark ? '#1a1a1a' : '#fff',
-                                                padding: isMobile ? '30px 20px' : '40px',
-                                                borderRadius: '32px',
-                                                maxWidth: '420px',
-                                                width: '100%',
-                                                textAlign: 'center',
-                                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
-                                                border: isDark ? '1px solid #333' : '1px solid #eee'
-                                            }}
-                                        >
-                                            <div style={{ width: '70px', height: '70px', borderRadius: '24px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                                                <Eraser size={36} />
-                                            </div>
-                                            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.75rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Limpar Quadro?</h3>
-                                            <p style={{ margin: '0 0 32px 0', color: isDark ? '#aaa' : '#666', fontWeight: 600, fontSize: '1rem', lineHeight: '1.6' }}>
-                                                Esta ação apagará permanentemente todos os desenhos de todas as páginas. Tem a certeza que deseja prosseguir?
-                                            </p>
-                                            <div style={{ display: 'flex', gap: '12px' }}>
-                                                <button
-                                                    onClick={() => setShowClearConfirm(false)}
-                                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#666', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
-                                                >
-                                                    Cancelar
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        socket?.emit('live_board:action', { formId, action: 'clear' });
-                                                        setShowClearConfirm(false);
-                                                        toast.success('🪄 Quadro limpo com sucesso!');
-                                                    }}
-                                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem', boxShadow: '0 10px 20px rgba(239,68,68,0.2)' }}
-                                                >
-                                                    Sim, Limpar
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+
 
                             <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
                             <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 14 : 16} /></button>
@@ -1758,68 +1694,7 @@ export default function LiveBoardContainer({
                                         <Megaphone size={14} /> {!isMobile && "Avisos"}
                                     </button>
 
-                                    <AnimatePresence>
-                                        {showAnnouncementMenu && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                                                style={{
-                                                    position: 'fixed',
-                                                    bottom: '90px',
-                                                    right: '20px',
-                                                    background: isDark ? '#1a1a1a' : '#fff',
-                                                    padding: '12px',
-                                                    borderRadius: '16px',
-                                                    boxShadow: '0 -10px 25px rgba(0,0,0,0.3)',
-                                                    border: isDark ? '1px solid #444' : '1px solid #e0e0e0',
-                                                    zIndex: 9999,
-                                                    width: '240px',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    gap: '8px'
-                                                }}
-                                            >
-                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
-                                                {announcementsList.map(ann => (
-                                                    <button
-                                                        key={ann.id}
-                                                        onClick={() => {
-                                                            handleAnnouncement(ann);
-                                                            setShowAnnouncementMenu(false);
-                                                        }}
-                                                        style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                                                    >
-                                                        <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
-                                                    </button>
-                                                ))}
 
-                                                <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
-                                                    <input
-                                                        type="text"
-                                                        value={customAnnouncementText}
-                                                        onChange={(e) => setCustomAnnouncementText(e.target.value)}
-                                                        placeholder="Aviso personalizado..."
-                                                        style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' && customAnnouncementText.trim()) {
-                                                                handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
-                                                                setCustomAnnouncementText("");
-                                                                setShowAnnouncementMenu(false);
-                                                            }
-                                                        }}
-                                                    />
-                                                </div>
-
-                                                {currentAnnouncement && (
-                                                    <button
-                                                        onClick={clearAnnouncement}
-                                                        style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
-                                                    >
-                                                        Limpar Anúncio
-                                                    </button>
-                                                )}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
 
                                     <button
                                         onClick={() => setShowQuizCreator(true)}
@@ -2427,6 +2302,137 @@ export default function LiveBoardContainer({
                     </motion.div >
                 )}
             </AnimatePresence >
+
+            {/* MODALS MOVED TO ROOT TO PREVENT POSITION:FIXED ISSUES */}
+            <AnimatePresence>
+                {showClearConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0,0,0,0.85)',
+                            backdropFilter: 'blur(10px)',
+                            zIndex: 20000,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 30 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 30 }}
+                            style={{
+                                background: isDark ? '#1a1a1a' : '#fff',
+                                padding: isMobile ? '30px 20px' : '40px',
+                                borderRadius: '32px',
+                                maxWidth: '420px',
+                                width: '100%',
+                                textAlign: 'center',
+                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                                border: isDark ? '1px solid #333' : '1px solid #eee'
+                            }}
+                        >
+                            <div style={{ width: '70px', height: '70px', borderRadius: '24px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                                <Eraser size={36} />
+                            </div>
+                            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.75rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Limpar Quadro?</h3>
+                            <p style={{ margin: '0 0 32px 0', color: isDark ? '#aaa' : '#666', fontWeight: 600, fontSize: '1rem', lineHeight: '1.6' }}>
+                                Esta ação apagará permanentemente todos os desenhos de todas as páginas. Tem a certeza que deseja prosseguir?
+                            </p>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button
+                                    onClick={() => setShowClearConfirm(false)}
+                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#666', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        socket?.emit('live_board:action', { formId, action: 'clear' });
+                                        setShowClearConfirm(false);
+                                        toast.success('🪄 Quadro limpo com sucesso!');
+                                    }}
+                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem', boxShadow: '0 10px 20px rgba(239,68,68,0.2)' }}
+                                >
+                                    Sim, Limpar
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showAnnouncementMenu && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '90px',
+                            right: '50%',
+                            transform: 'translateX(50%)',
+                            background: isDark ? '#1a1a1a' : '#fff',
+                            padding: '12px',
+                            borderRadius: '16px',
+                            boxShadow: '0 -10px 25px rgba(0,0,0,0.3)',
+                            border: isDark ? '1px solid #444' : '1px solid #e0e0e0',
+                            zIndex: 9999,
+                            width: '240px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px'
+                        }}
+                    >
+                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
+                        {announcementsList.map(ann => (
+                            <button
+                                key={ann.id}
+                                onClick={() => {
+                                    handleAnnouncement(ann);
+                                    setShowAnnouncementMenu(false);
+                                }}
+                                style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            >
+                                <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
+                            </button>
+                        ))}
+
+                        <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
+                            <input
+                                type="text"
+                                value={customAnnouncementText}
+                                onChange={(e) => setCustomAnnouncementText(e.target.value)}
+                                placeholder="Aviso personalizado..."
+                                style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && customAnnouncementText.trim()) {
+                                        handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
+                                        setCustomAnnouncementText("");
+                                        setShowAnnouncementMenu(false);
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        {currentAnnouncement && (
+                            <button
+                                onClick={clearAnnouncement}
+                                style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+                            >
+                                Limpar Anúncio
+                            </button>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <style jsx>{`
                 @keyframes pulse-subtle {
