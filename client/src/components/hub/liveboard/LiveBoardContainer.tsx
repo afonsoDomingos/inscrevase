@@ -1221,7 +1221,7 @@ export default function LiveBoardContainer({
                 boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: isMobile ? '2px' : '4px',
+                gap: isMobile ? '2px' : '2px',
                 border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
                 zIndex: 200,
                 maxWidth: '95vw',
@@ -1231,7 +1231,7 @@ export default function LiveBoardContainer({
                 {(isMentor || drawingPermissions.has((window as any).__liveBoardSocketId || '')) ? (
                     <>
                         {/* Colors (Brushes) */}
-                        <div style={{ display: 'flex', gap: '4px', paddingRight: '8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                        <div style={{ display: 'flex', gap: '3px', paddingRight: '4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
                             {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
                                 <RealisticBrush
                                     key={c}
@@ -1248,7 +1248,7 @@ export default function LiveBoardContainer({
                         </div>
 
                         {/* Main Tools */}
-                        <div style={{ display: 'flex', gap: '2px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                        <div style={{ display: 'flex', gap: '2px', padding: '0 2px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
                             {[
                                 { id: 'laser', icon: <MousePointer2 size={18} /> },
                                 { id: 'rectangle', icon: <Square size={18} /> },
@@ -1346,7 +1346,7 @@ export default function LiveBoardContainer({
 
                         {/* Actions */}
                         {!isMobile && (
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
                                 <input
                                     type="range"
                                     min="1"
@@ -1359,7 +1359,7 @@ export default function LiveBoardContainer({
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', gap: '2px' }}>
+                        <div style={{ display: 'flex', gap: '1px', flexShrink: 0 }}>
                             <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={18} /></button>
                             <button
                                 onClick={() => setShowClearConfirm(true)}
@@ -1376,10 +1376,13 @@ export default function LiveBoardContainer({
                                         exit={{ opacity: 0 }}
                                         style={{
                                             position: 'fixed',
-                                            inset: 0,
-                                            background: 'rgba(0,0,0,0.8)',
-                                            backdropFilter: 'blur(8px)',
-                                            zIndex: 10005,
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            background: 'rgba(0,0,0,0.85)',
+                                            backdropFilter: 'blur(10px)',
+                                            zIndex: 20000, // Extremely high z-index to be above everything
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -1387,31 +1390,31 @@ export default function LiveBoardContainer({
                                         }}
                                     >
                                         <motion.div
-                                            initial={{ scale: 0.9, y: 20 }}
+                                            initial={{ scale: 0.9, y: 30 }}
                                             animate={{ scale: 1, y: 0 }}
-                                            exit={{ scale: 0.9, y: 20 }}
+                                            exit={{ scale: 0.9, y: 30 }}
                                             style={{
                                                 background: isDark ? '#1a1a1a' : '#fff',
-                                                padding: '35px',
+                                                padding: isMobile ? '30px 20px' : '40px',
                                                 borderRadius: '32px',
-                                                maxWidth: '400px',
+                                                maxWidth: '420px',
                                                 width: '100%',
                                                 textAlign: 'center',
-                                                boxShadow: '0 25px 50px rgba(0,0,0,0.4)',
+                                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
                                                 border: isDark ? '1px solid #333' : '1px solid #eee'
                                             }}
                                         >
-                                            <div style={{ width: '64px', height: '64px', borderRadius: '24px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                                                <Eraser size={32} />
+                                            <div style={{ width: '70px', height: '70px', borderRadius: '24px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                                                <Eraser size={36} />
                                             </div>
-                                            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.5rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Limpar Quadro?</h3>
-                                            <p style={{ margin: '0 0 32px 0', color: '#888', fontWeight: 600, lineHeight: '1.5' }}>
+                                            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.75rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Limpar Quadro?</h3>
+                                            <p style={{ margin: '0 0 32px 0', color: isDark ? '#aaa' : '#666', fontWeight: 600, fontSize: '1rem', lineHeight: '1.6' }}>
                                                 Esta ação apagará permanentemente todos os desenhos de todas as páginas. Tem a certeza que deseja prosseguir?
                                             </p>
                                             <div style={{ display: 'flex', gap: '12px' }}>
                                                 <button
                                                     onClick={() => setShowClearConfirm(false)}
-                                                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#666', fontWeight: 800, cursor: 'pointer' }}
+                                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#666', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
                                                 >
                                                     Cancelar
                                                 </button>
@@ -1421,7 +1424,7 @@ export default function LiveBoardContainer({
                                                         setShowClearConfirm(false);
                                                         toast.success('🪄 Quadro limpo com sucesso!');
                                                     }}
-                                                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 800, cursor: 'pointer' }}
+                                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem', boxShadow: '0 10px 20px rgba(239,68,68,0.2)' }}
                                                 >
                                                     Sim, Limpar
                                                 </button>
@@ -1508,10 +1511,10 @@ export default function LiveBoardContainer({
                                 </AnimatePresence>
                             </div>
 
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
+                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px' }} />
 
                             {/* Page Navigation */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
                                 <button
                                     onClick={() => currentPage > 0 && changePage(currentPage - 1)}
                                     style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
@@ -1537,7 +1540,7 @@ export default function LiveBoardContainer({
                                     background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
                                     color: isAudioActive ? '#ef4444' : '#0ea5e9',
                                     border: 'none',
-                                    padding: '0 12px',
+                                    padding: '0 10px',
                                     height: '38px',
                                     borderRadius: '10px',
                                     fontWeight: 800,
@@ -1545,8 +1548,9 @@ export default function LiveBoardContainer({
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '6px',
-                                    fontSize: '0.75rem'
+                                    gap: '4px',
+                                    fontSize: '0.7rem',
+                                    flexShrink: 0
                                 }}
                             >
                                 {isAudioActive ? <MicOff size={16} /> : <Mic size={16} />}
@@ -1561,16 +1565,17 @@ export default function LiveBoardContainer({
                                             background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
                                             color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
                                             border: 'none',
-                                            padding: isMobile ? '0 8px' : '0 12px',
+                                            padding: '0 10px',
                                             height: '38px',
                                             borderRadius: '10px',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            gap: '6px',
+                                            gap: '4px',
                                             fontWeight: 800,
-                                            fontSize: '0.75rem'
+                                            fontSize: '0.7rem',
+                                            flexShrink: 0
                                         }}
                                         title="Enviar avisos e alertas para os alunos"
                                     >
@@ -1654,6 +1659,7 @@ export default function LiveBoardContainer({
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
+                                            flexShrink: 0
                                         }}
                                         title="Criar Quiz"
                                     >
@@ -1662,7 +1668,7 @@ export default function LiveBoardContainer({
 
                                     <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
 
-                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
                                         <button
                                             onClick={() => sendReaction('Sim')}
                                             style={{
@@ -1675,7 +1681,8 @@ export default function LiveBoardContainer({
                                                 fontWeight: 900,
                                                 fontSize: '0.65rem',
                                                 cursor: 'pointer',
-                                                boxShadow: '0 4px 10px rgba(34,197,94,0.3)'
+                                                boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
+                                                flexShrink: 0
                                             }}
                                         >
                                             SIM
@@ -1692,7 +1699,8 @@ export default function LiveBoardContainer({
                                                 fontWeight: 900,
                                                 fontSize: '0.65rem',
                                                 cursor: 'pointer',
-                                                boxShadow: '0 4px 10px rgba(239,68,68,0.3)'
+                                                boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
+                                                flexShrink: 0
                                             }}
                                         >
                                             NÃO
@@ -1701,7 +1709,7 @@ export default function LiveBoardContainer({
                                 </div>
                             )}
 
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
+                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
 
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
@@ -1709,7 +1717,7 @@ export default function LiveBoardContainer({
                                     background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                     color: '#fff',
                                     border: 'none',
-                                    padding: isMobile ? '0 10px' : '0 12px',
+                                    padding: '0 10px',
                                     height: '38px',
                                     borderRadius: '10px',
                                     fontWeight: 800,
@@ -1718,7 +1726,8 @@ export default function LiveBoardContainer({
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '6px',
-                                    fontSize: '0.8rem'
+                                    fontSize: '0.75rem',
+                                    flexShrink: 0
                                 }}
                             >
                                 <MessageSquare size={16} /> {!isMobile && "Chat"}
