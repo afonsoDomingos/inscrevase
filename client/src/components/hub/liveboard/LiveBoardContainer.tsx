@@ -188,6 +188,12 @@ export default function LiveBoardContainer({
     const [showTimerSelector, setShowTimerSelector] = useState(false);
     const [isNotifying, setIsNotifying] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     // Collaborative Drawing Permissions
     const [drawingPermissions, setDrawingPermissions] = useState<Set<string>>(new Set());
@@ -882,6 +888,28 @@ export default function LiveBoardContainer({
                         }
                     </div >
                 </div >
+
+                {/* Date and Time Header Center */}
+                {!isMobile && (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'absolute',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        color: isDark ? '#fff' : '#111',
+                        opacity: 0.8
+                    }}>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.5px' }}>
+                            {currentTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'capitalize' }}>
+                            {currentTime.toLocaleDateString('pt-PT', { weekday: 'long', day: '2-digit', month: 'short' }).replace('.', '')}
+                        </div>
+                    </div>
+                )}
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '20px' }}>
                     {/* Participant Avatars (Overlap Style like Google Meet) */}
