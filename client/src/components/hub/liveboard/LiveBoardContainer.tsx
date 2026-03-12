@@ -629,29 +629,35 @@ export default function LiveBoardContainer({
     };
 
     const handleExportBoard = () => {
-        const canvas = document.querySelector('canvas');
-        if (!canvas) { toast.error('Quadro não encontrado.'); return; }
+        const fullBoardDataUrl = whiteboardRef.current?.getFullBoardDataURL();
+        if (!fullBoardDataUrl) {
+            toast.error('Não foi possível capturar o quadro.');
+            return;
+        }
 
-        // Draw watermark onto a temp canvas
-        const tmp = document.createElement('canvas');
-        tmp.width = canvas.width;
-        tmp.height = canvas.height;
-        const tmpCtx = tmp.getContext('2d')!;
-        tmpCtx.drawImage(canvas, 0, 0);
+        const img = new window.Image();
+        img.onload = () => {
+            const tmp = document.createElement('canvas');
+            tmp.width = img.width;
+            tmp.height = img.height;
+            const tmpCtx = tmp.getContext('2d')!;
+            tmpCtx.drawImage(img, 0, 0);
 
-        // Watermark text
-        const wm = 'inscreva-se.com';
-        tmpCtx.font = `bold ${Math.max(16, tmp.width * 0.018)}px Inter, sans-serif`;
-        tmpCtx.fillStyle = 'rgba(0,0,0,0.18)';
-        tmpCtx.textAlign = 'right';
-        tmpCtx.textBaseline = 'bottom';
-        tmpCtx.fillText(wm, tmp.width - 18, tmp.height - 16);
+            // Watermark text
+            const wm = 'inscreva-se.com';
+            tmpCtx.font = `bold ${Math.max(16, tmp.width * 0.018)}px Inter, sans-serif`;
+            tmpCtx.fillStyle = 'rgba(0,0,0,0.18)';
+            tmpCtx.textAlign = 'right';
+            tmpCtx.textBaseline = 'bottom';
+            tmpCtx.fillText(wm, tmp.width - 18, tmp.height - 16);
 
-        const link = document.createElement('a');
-        link.download = `liveboard-${formId}-${Date.now()}.png`;
-        link.href = tmp.toDataURL('image/png');
-        link.click();
-        toast.success('📸 Quadro exportado com sucesso!');
+            const link = document.createElement('a');
+            link.download = `sala-eventos-${formId}-${Date.now()}.png`;
+            link.href = tmp.toDataURL('image/png');
+            link.click();
+            toast.success('📸 Screenshot guardado com sucesso!');
+        };
+        img.src = fullBoardDataUrl;
     };
 
     const addPage = () => {
@@ -772,14 +778,7 @@ export default function LiveBoardContainer({
     };
 
     const saveBoard = () => {
-        const canvas = document.querySelector('canvas');
-        if (canvas) {
-            const link = document.createElement('a');
-            link.download = `board-${formId}-${Date.now()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            toast.success(t('hub.liveBoard.saveSuccess'));
-        }
+        handleExportBoard();
     };
 
     if (!socket) return null;

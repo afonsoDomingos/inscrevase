@@ -100,7 +100,7 @@ const Whiteboard = forwardRef(({
             context.lineTo(px1 - headlen * Math.cos(angle + Math.PI / 6), py1 - headlen * Math.sin(angle + Math.PI / 6));
             context.stroke();
         } else if (type === 'text' && text) {
-            context.font = `bold ${size * 6}px system-ui, -apple-system, sans-serif`;
+            context.font = `bold ${size * 4}px 'Outfit', system-ui, -apple-system, sans-serif`;
             context.textBaseline = 'top';
             context.fillText(text, px0, py0);
         } else if (type === 'image' && src) {
@@ -183,6 +183,24 @@ const Whiteboard = forwardRef(({
             historyRef.current.push(data);
             drawData(data);
             if (data.type === 'image') redrawHistory();
+        },
+        getFullBoardDataURL: () => {
+            const canvas = canvasRef.current;
+            const bgCanvas = bgCanvasRef.current;
+            if (!canvas || !bgCanvas) return null;
+
+            const tmp = document.createElement('canvas');
+            tmp.width = canvas.width;
+            tmp.height = canvas.height;
+            const ctx = tmp.getContext('2d');
+            if (!ctx) return null;
+
+            // Draw background
+            ctx.drawImage(bgCanvas, 0, 0);
+            // Draw drawings
+            ctx.drawImage(canvas, 0, 0);
+
+            return tmp.toDataURL('image/png');
         }
     }));
 
