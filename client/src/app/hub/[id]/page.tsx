@@ -289,10 +289,8 @@ function HubContent() {
             setIsBoardActive(status.active);
             if (status.active) {
                 setBoardMentorData(status.mentorData);
-                setIsBoardStarting(false); // Cancel countdown if board is already active
-                if (!isBoardMinimized) {
-                    setIsBoardMinimized(false); // Explicitly ensure it is maximized for new joins, but respect if user already minimized it voluntarily? For simplicity let's maximize on start
-                }
+                setIsBoardStarting(false);
+                setIsBoardMinimized(false); // Always maximize when it's active
             } else {
                 setIsBoardMinimized(false);
             }

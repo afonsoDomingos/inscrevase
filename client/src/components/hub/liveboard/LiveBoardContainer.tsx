@@ -193,6 +193,7 @@ export default function LiveBoardContainer({
     // Collaborative Drawing Permissions
     const [drawingPermissions, setDrawingPermissions] = useState<Set<string>>(new Set());
     const [showParticipantsPanel, setShowParticipantsPanel] = useState(false);
+    const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const checkMobile = () => {
@@ -273,8 +274,24 @@ export default function LiveBoardContainer({
             newSocket.emit('live_board:join', formId);
         });
 
-        newSocket.on('live_board:hand_raised', ({ userData }: any) => {
+        newSocket.on('live_board:hand_raised', ({ socketId, userData }: any) => {
             if (isMentor) {
+                if (socketId) {
+                    setRaisedHands(prev => {
+                        const next = new Set(prev);
+                        next.add(socketId);
+                        return next;
+                    });
+                    // Auto-remove after 15 seconds
+                    setTimeout(() => {
+                        setRaisedHands(prev => {
+                            const next = new Set(prev);
+                            next.delete(socketId);
+                            return next;
+                        });
+                    }, 15000);
+                }
+
                 playSound('hand_raised');
                 toast(t('hub.liveBoard.handRaisedToast', { name: userData.name }), {
                     description: "O participante tem uma pergunta.",
@@ -1477,11 +1494,37 @@ export default function LiveBoardContainer({
                                             ) : (
                                                 participants.map((p: any) => (
                                                     <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', background: '#f0f0f0', flexShrink: 0 }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+                                                            <div style={{
+                                                                width: '28px',
+                                                                height: '28px',
+                                                                borderRadius: '50%',
+                                                                overflow: 'hidden',
+                                                                background: '#f0f0f0',
+                                                                flexShrink: 0,
+                                                                border: raisedHands.has(p.socketId) ? `2px solid ${primaryColor}` : '2px solid transparent',
+                                                                boxShadow: raisedHands.has(p.socketId) ? `0 0 10px ${primaryColor}4D` : 'none',
+                                                                transition: 'all 0.3s'
+                                                            }}>
                                                                 <Image src={p.photo || '/default-avatar.png'} width={28} height={28} alt={p.name} style={{ objectFit: 'cover' }} />
                                                             </div>
-                                                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: isDark ? '#fff' : '#111', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                                <span style={{
+                                                                    fontSize: '0.8rem',
+                                                                    fontWeight: 700,
+                                                                    color: raisedHands.has(p.socketId) ? primaryColor : (isDark ? '#fff' : '#111'),
+                                                                    maxWidth: '110px',
+                                                                    overflow: 'hidden',
+                                                                    textOverflow: 'ellipsis',
+                                                                    whiteSpace: 'nowrap',
+                                                                    transition: 'all 0.3s'
+                                                                }}>
+                                                                    {p.name}
+                                                                </span>
+                                                                {raisedHands.has(p.socketId) && (
+                                                                    <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                         <button
                                                             onClick={() => toggleDrawingPermission(p.socketId)}
