@@ -483,9 +483,9 @@ const Whiteboard = forwardRef(({
                     const dist = Math.sqrt(Math.pow(nx - item.x0, 2) + Math.pow(ny - item.y0, 2));
                     if (dist <= radius + hitBuffer) isHit = true;
                 } else if (['rectangle', 'arrow', 'image'].includes(item.type)) {
-                    let minX = Math.min(item.x0, item.x1);
-                    let maxX = Math.max(item.x0, item.x1);
-                    let minY = Math.min(item.y0, item.y1);
+                    const minX = Math.min(item.x0, item.x1);
+                    const maxX = Math.max(item.x0, item.x1);
+                    const minY = Math.min(item.y0, item.y1);
                     let maxY = Math.max(item.y0, item.y1);
 
                     if (item.type === 'image') {
