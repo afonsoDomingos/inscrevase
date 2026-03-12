@@ -114,7 +114,10 @@ const Whiteboard = forwardRef(({
             } else {
                 const cachedImg = imageCache.current.get(src);
                 if (cachedImg) {
-                    context.drawImage(cachedImg, px0, py0, (px1 - px0) || cachedImg.width, (py1 - py0) || cachedImg.height);
+                    const drawWidth = (px1 - px0) || cachedImg.width;
+                    const aspect = cachedImg.width / cachedImg.height;
+                    const drawHeight = drawWidth / aspect;
+                    context.drawImage(cachedImg, px0, py0, drawWidth, drawHeight);
                 }
             }
         }
@@ -146,7 +149,13 @@ const Whiteboard = forwardRef(({
                 let x = item.x0 * width, y = item.y0 * height;
                 let w = (item.x1 - item.x0) * width, h = (item.y1 - item.y0) * height;
 
-                if (item.type === 'text') {
+                if (item.type === 'image') {
+                    const cachedImg = imageCache.current.get(item.src);
+                    if (cachedImg) {
+                        const aspect = cachedImg.width / cachedImg.height;
+                        h = w / aspect;
+                    }
+                } else if (item.type === 'text') {
                     w = (item.text?.length || 0) * item.size * 3;
                     h = item.size * 5;
                 } else if (item.type === 'circle') {
@@ -560,11 +569,24 @@ const Whiteboard = forwardRef(({
 
             let updatedShape;
             if (isResizing) {
-                updatedShape = {
-                    ...shape,
-                    x1: (shape.x1 ?? (shape.x0 + (200 / width))) + dx,
-                    y1: (shape.y1 ?? (shape.y0 + (200 / height))) + dy
-                };
+                if (shape.type === 'image') {
+                    const cachedImg = imageCache.current.get(shape.src);
+                    const aspect = cachedImg ? cachedImg.width / cachedImg.height : 1;
+                    const newW = (shape.x1 ?? (shape.x0 + (200 / width))) - shape.x0 + dx;
+                    const newH = newW * (width / aspect) / height;
+
+                    updatedShape = {
+                        ...shape,
+                        x1: shape.x0 + newW,
+                        y1: shape.y0 + newH
+                    };
+                } else {
+                    updatedShape = {
+                        ...shape,
+                        x1: (shape.x1 ?? (shape.x0 + (200 / width))) + dx,
+                        y1: (shape.y1 ?? (shape.y0 + (200 / height))) + dy
+                    };
+                }
             } else {
                 updatedShape = { ...shape, x0: shape.x0 + dx, y0: shape.y0 + dy };
                 if (shape.x1 !== undefined && shape.y1 !== undefined) {
