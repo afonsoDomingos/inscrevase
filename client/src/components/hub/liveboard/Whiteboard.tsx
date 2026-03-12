@@ -483,10 +483,21 @@ const Whiteboard = forwardRef(({
                     const dist = Math.sqrt(Math.pow(nx - item.x0, 2) + Math.pow(ny - item.y0, 2));
                     if (dist <= radius + hitBuffer) isHit = true;
                 } else if (['rectangle', 'arrow', 'image'].includes(item.type)) {
-                    const minX = Math.min(item.x0, item.x1);
-                    const maxX = Math.max(item.x0, item.x1);
-                    const minY = Math.min(item.y0, item.y1);
-                    const maxY = Math.max(item.y0, item.y1);
+                    let minX = Math.min(item.x0, item.x1);
+                    let maxX = Math.max(item.x0, item.x1);
+                    let minY = Math.min(item.y0, item.y1);
+                    let maxY = Math.max(item.y0, item.y1);
+
+                    if (item.type === 'image') {
+                        const cachedImg = imageCache.current.get(item.src);
+                        if (cachedImg) {
+                            const aspect = cachedImg.width / cachedImg.height;
+                            const wPix = (maxX - minX) * width;
+                            const hPix = wPix / aspect;
+                            maxY = minY + (hPix / height);
+                        }
+                    }
+
                     if (nx >= minX - hitBuffer && nx <= maxX + hitBuffer && ny >= minY - hitBuffer && ny <= maxY + hitBuffer) isHit = true;
                 } else if (item.type === 'text') {
                     // Approximate text box since we don't know exact width without context
@@ -506,6 +517,12 @@ const Whiteboard = forwardRef(({
                     if (item.type === 'text') {
                         w = (item.text?.length || 0) * item.size * 3;
                         h = item.size * 5;
+                    } else if (item.type === 'image') {
+                        const cachedImg = imageCache.current.get(item.src);
+                        if (cachedImg) {
+                            const aspect = cachedImg.width / cachedImg.height;
+                            h = w / aspect;
+                        }
                     }
                     const px = item.x0 * width;
                     const py = item.y0 * height;
