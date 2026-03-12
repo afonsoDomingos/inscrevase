@@ -286,11 +286,15 @@ function HubContent() {
 
         s.on('live_board:status', (status: any) => {
             console.log('[Hub] Live Board Status received:', status);
-            setIsBoardActive(status.active);
+            setIsBoardActive((prevActive) => {
+                if (!prevActive && status.active) {
+                    setIsBoardMinimized(false); // Only maximize when it originally starts
+                }
+                return status.active;
+            });
             if (status.active) {
                 setBoardMentorData(status.mentorData);
                 setIsBoardStarting(false);
-                setIsBoardMinimized(false); // Always maximize when it's active
             } else {
                 setIsBoardMinimized(false);
             }
@@ -311,7 +315,7 @@ function HubContent() {
                 statusSocketRef.current = null;
             }
         };
-    }, [submission, isBoardMinimized]);
+    }, [submission]);
 
     // Live Board Countdown Timer Logic
     useEffect(() => {
