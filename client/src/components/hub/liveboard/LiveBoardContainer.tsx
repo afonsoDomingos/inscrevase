@@ -1229,7 +1229,45 @@ export default function LiveBoardContainer({
             {/* Participant Audio Control */}
             {
                 !isMentor && (
-                    <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
+                    <div style={{ position: 'absolute', bottom: 30, right: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        {/* Mentor speaking indicator for participants */}
+                        <AnimatePresence>
+                            {isMentorSpeaking && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                                    style={{
+                                        background: isDark ? 'rgba(30,30,30,0.92)' : 'rgba(255,255,255,0.95)',
+                                        backdropFilter: 'blur(10px)',
+                                        border: `1px solid ${primaryColor}40`,
+                                        borderRadius: '12px',
+                                        padding: '8px 12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        boxShadow: `0 4px 20px ${primaryColor}30`,
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    <div style={{ background: primaryColor, borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '14px' }}>
+                                            {[0, 0.1, 0.2].map((delay, i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    animate={{ height: ['4px', '12px', '4px'] }}
+                                                    transition={{ repeat: Infinity, duration: 0.5, delay, ease: 'easeInOut' }}
+                                                    style={{ width: '2px', background: '#fff', borderRadius: '1px' }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: isDark ? '#fff' : '#111' }}>
+                                        {mentorData.name} a falar
+                                    </span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                         <button
                             onClick={() => setIsParticipantAudioMuted(!isParticipantAudioMuted)}
                             style={{
@@ -1725,16 +1763,16 @@ export default function LiveBoardContainer({
                                             <motion.div
                                                 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                                                 style={{
-                                                    position: 'absolute',
-                                                    bottom: '50px',
-                                                    right: 0,
+                                                    position: 'fixed',
+                                                    bottom: '90px',
+                                                    right: '20px',
                                                     background: isDark ? '#1a1a1a' : '#fff',
                                                     padding: '12px',
                                                     borderRadius: '16px',
-                                                    boxShadow: '0 -10px 25px rgba(0,0,0,0.2)',
-                                                    border: isDark ? '1px solid #333' : '1px solid #eee',
-                                                    zIndex: 100,
-                                                    width: '220px',
+                                                    boxShadow: '0 -10px 25px rgba(0,0,0,0.3)',
+                                                    border: isDark ? '1px solid #444' : '1px solid #e0e0e0',
+                                                    zIndex: 9999,
+                                                    width: '240px',
                                                     display: 'flex',
                                                     flexDirection: 'column',
                                                     gap: '8px'
