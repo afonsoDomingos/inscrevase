@@ -587,7 +587,7 @@ function MentorDashboardContent() {
                         { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
                         { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
-                        { id: 'liveboard', label: 'Live Board (Lab)', icon: <Monitor size={20} /> },
+                        { id: 'liveboard', label: 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
                         <button
@@ -2053,10 +2053,10 @@ function MentorDashboardContent() {
                                             🛸 Ambiente de Testes
                                         </div>
                                         <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem' }}>
-                                            Laboratório <span className="gold-text">Live Board</span>
+                                            Laboratório <span className="gold-text">Sala de Eventos</span>
                                         </h2>
                                         <p style={{ fontSize: '1.1rem', color: '#888', lineHeight: 1.6, marginBottom: '2.5rem' }}>
-                                            Este é o seu espaço privado para praticar. Teste todos os recursos da Live Board — pincéis, cronómetros, quizzes e sincronização — para garantir que a sua próxima aula em direto seja impecável.
+                                            Este é o seu espaço privado para praticar. Teste todos os recursos da Sala de Eventos — pincéis, cronómetros, quizzes e sincronização — para garantir que a sua próxima aula em direto seja impecável.
                                         </p>
 
                                         <button

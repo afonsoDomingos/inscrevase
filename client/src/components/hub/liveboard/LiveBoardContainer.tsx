@@ -45,52 +45,51 @@ import { getSocketUrl, getSocketOptions } from '@/lib/socketConfig';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
 
-const RealisticBrush = ({ color, isActive, onClick }: any) => (
+const RealisticBrush = ({ color, isActive, onClick, isMobile }: any) => (
     <button
         onClick={onClick}
         style={{
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            padding: '4px',
+            padding: isMobile ? '2px' : '4px',
             transition: 'all 0.2s',
-            transform: isActive ? 'scale(1.2) translateY(-4px)' : 'scale(1)',
-            filter: isActive ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.25))' : 'none',
+            transform: isActive ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
+            filter: isActive ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' : 'none',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '2px'
+            gap: '1px',
+            flexShrink: 0
         }}
     >
-        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Bristles */}
+        <svg width={isMobile ? "16" : "18"} height={isMobile ? "24" : "26"} viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2C9 2 7 5 7 9C7 11 8.5 12.5 8.5 12.5H15.5C15.5 12.5 17 11 17 9C17 5 15 2 12 2Z" fill={color} />
-            {/* Ferrule */}
             <rect x="8" y="12.5" width="8" height="4" fill="#C0C0C0" stroke="#888" strokeWidth="0.5" />
-            {/* Handle */}
             <path d="M10 16.5V28C10 29.1 10.9 30 12 30C13.1 30 14 29.1 14 28V16.5H10Z" fill="#D2B48C" stroke="#A67C52" strokeWidth="0.5" />
         </svg>
     </button>
 );
 
-const RealisticEraser = ({ isActive, onClick }: any) => (
+const RealisticEraser = ({ isActive, onClick, isMobile }: any) => (
     <button
         onClick={onClick}
         style={{
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            padding: '4px',
+            padding: isMobile ? '2px' : '4px',
             transition: 'all 0.2s',
-            transform: isActive ? 'scale(1.2) translateY(-4px)' : 'scale(1)',
-            filter: isActive ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.25))' : 'none',
+            transform: isActive ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
+            filter: isActive ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' : 'none',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '2px'
+            gap: '1px',
+            flexShrink: 0
         }}
     >
-        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width={isMobile ? "16" : "18"} height={isMobile ? "24" : "26"} viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="6" y="4" width="12" height="24" rx="2" fill="#4CAF50" stroke="#2E7D32" strokeWidth="1" />
             <rect x="6" y="12" width="12" height="4" fill="#2E7D32" opacity="0.8" />
             <rect x="8" y="6" width="2" height="20" fill="white" opacity="0.1" />
@@ -601,6 +600,34 @@ export default function LiveBoardContainer({
         );
     };
 
+    const grantAllDrawingPermissions = () => {
+        if (!socket || !isMentor || participants.length === 0) return;
+        participants.forEach(p => {
+            if (!drawingPermissions.has(p.socketId)) {
+                socket.emit('live_board:drawing_permission', {
+                    formId,
+                    socketId: p.socketId,
+                    granted: true
+                });
+            }
+        });
+        setDrawingPermissions(new Set(participants.map(p => p.socketId)));
+        toast.success('✏️ Todos os participantes podem desenhar!');
+    };
+
+    const revokeAllDrawingPermissions = () => {
+        if (!socket || !isMentor) return;
+        drawingPermissions.forEach(socketId => {
+            socket.emit('live_board:drawing_permission', {
+                formId,
+                socketId,
+                granted: false
+            });
+        });
+        setDrawingPermissions(new Set());
+        toast.info('Permissões de desenho revogadas para todos.');
+    };
+
     const handleExportBoard = () => {
         const canvas = document.querySelector('canvas');
         if (!canvas) { toast.error('Quadro não encontrado.'); return; }
@@ -655,7 +682,7 @@ export default function LiveBoardContainer({
     const handleNotifyMissing = () => {
         if (!socket || !isMentor) return;
         setCustomSubject(`🚀 O evento "${eventTitle}" começou!`);
-        setCustomMessage(`O evento ${eventTitle} com ${mentorData.name} já começou e estamos à sua espera!\n\nNão perca os conteúdos exclusivos, a interatividade da Live Board e a oportunidade de tirar dúvidas em tempo real.`);
+        setCustomMessage(`O evento ${eventTitle} com ${mentorData.name} já começou e estamos à sua espera!\n\nNão perca os conteúdos exclusivos, a interatividade da Sala de Eventos e a oportunidade de tirar dúvidas em tempo real.`);
         setShowNotifyModal(true);
     };
 
@@ -1233,12 +1260,12 @@ export default function LiveBoardContainer({
                 transform: 'translateX(-50%)',
                 background: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
                 backdropFilter: 'blur(16px)',
-                padding: isMobile ? '6px' : '8px',
-                borderRadius: isMobile ? '15px' : '20px',
+                padding: '4px 6px',
+                borderRadius: isMobile ? '12px' : '15px',
                 boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: isMobile ? '2px' : '2px',
+                gap: '1px',
                 border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
                 zIndex: 200,
                 maxWidth: '95vw',
@@ -1255,24 +1282,26 @@ export default function LiveBoardContainer({
                                     color={c}
                                     isActive={color === c && tool !== 'eraser'}
                                     isDark={isDark}
+                                    isMobile={isMobile}
                                     onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
                                 />
                             ))}
                             <RealisticEraser
                                 isActive={tool === 'eraser'}
+                                isMobile={isMobile}
                                 onClick={() => setTool('eraser')}
                             />
                         </div>
 
                         {/* Main Tools */}
-                        <div style={{ display: 'flex', gap: '2px', padding: '0 2px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', gap: '0px', padding: '0 1px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
                             {[
-                                { id: 'laser', icon: <MousePointer2 size={18} /> },
-                                { id: 'rectangle', icon: <Square size={18} /> },
-                                { id: 'circle', icon: <CircleIcon size={18} /> },
-                                { id: 'arrow', icon: <ArrowUpRight size={18} /> },
-                                { id: 'text', icon: <Type size={18} /> },
-                                { id: 'image', icon: <ImageIcon size={18} /> }
+                                { id: 'laser', icon: <MousePointer2 size={isMobile ? 14 : 16} /> },
+                                { id: 'rectangle', icon: <Square size={isMobile ? 14 : 16} /> },
+                                { id: 'circle', icon: <CircleIcon size={isMobile ? 14 : 16} /> },
+                                { id: 'arrow', icon: <ArrowUpRight size={isMobile ? 14 : 16} /> },
+                                { id: 'text', icon: <Type size={isMobile ? 14 : 16} /> },
+                                { id: 'image', icon: <ImageIcon size={isMobile ? 14 : 16} /> }
                             ].map((t) => (
                                 <button
                                     key={t.id}
@@ -1286,14 +1315,52 @@ export default function LiveBoardContainer({
                                                 if (file) {
                                                     const reader = new FileReader();
                                                     reader.onload = (re: any) => {
-                                                        const data = {
-                                                            type: 'image',
-                                                            strokeId: Math.random().toString(36).substring(7),
-                                                            src: re.target.result,
-                                                            x0: 0.1, y0: 0.1, x1: 0.4, y1: 0.4 // Default position/size
+                                                        const img = new window.Image();
+                                                        img.onload = () => {
+                                                            // Create a temporary canvas for compression
+                                                            const canvas = document.createElement('canvas');
+                                                            const MAX_WIDTH = 1200;
+                                                            const MAX_HEIGHT = 1200;
+                                                            let width = img.width;
+                                                            let height = img.height;
+
+                                                            if (width > height) {
+                                                                if (width > MAX_WIDTH) {
+                                                                    height *= MAX_WIDTH / width;
+                                                                    width = MAX_WIDTH;
+                                                                }
+                                                            } else {
+                                                                if (height > MAX_HEIGHT) {
+                                                                    width *= MAX_HEIGHT / height;
+                                                                    height = MAX_HEIGHT;
+                                                                }
+                                                            }
+
+                                                            canvas.width = width;
+                                                            canvas.height = height;
+                                                            const ctx = canvas.getContext('2d');
+                                                            ctx?.drawImage(img, 0, 0, width, height);
+
+                                                            // Compress to JPEG with 0.6 quality to keep it light
+                                                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
+                                                            // Calculate aspect ratio for initial display
+                                                            // We use a fixed width of 0.3 (30%) of the board and calculate height
+                                                            const displayWidth = 0.3;
+                                                            const displayHeight = (img.height / img.width) * displayWidth;
+
+                                                            const data = {
+                                                                type: 'image',
+                                                                strokeId: Math.random().toString(36).substring(7),
+                                                                src: compressedDataUrl,
+                                                                x0: 0.1, y0: 0.1,
+                                                                x1: 0.1 + displayWidth,
+                                                                y1: 0.1 + displayHeight
+                                                            };
+                                                            socket?.emit('live_board:draw', { formId, data });
+                                                            whiteboardRef.current?.addExternalItem(data);
                                                         };
-                                                        socket?.emit('live_board:draw', { formId, data });
-                                                        whiteboardRef.current?.addExternalItem(data);
+                                                        img.src = re.target.result;
                                                     };
                                                     reader.readAsDataURL(file);
                                                 }
@@ -1304,9 +1371,9 @@ export default function LiveBoardContainer({
                                         }
                                     }}
                                     style={{
-                                        width: '38px',
-                                        height: '38px',
-                                        borderRadius: '10px',
+                                        width: isMobile ? '28px' : '32px',
+                                        height: isMobile ? '28px' : '32px',
+                                        borderRadius: '6px',
                                         background: tool === t.id ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                         border: 'none',
                                         cursor: 'pointer',
@@ -1314,7 +1381,8 @@ export default function LiveBoardContainer({
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        flexShrink: 0
                                     }}
                                     title={t.id}
                                 >
@@ -1325,39 +1393,41 @@ export default function LiveBoardContainer({
                             <button
                                 onClick={() => setTool('pen')}
                                 style={{
-                                    width: '38px',
-                                    height: '38px',
-                                    borderRadius: '10px',
+                                    width: isMobile ? '28px' : '32px',
+                                    height: isMobile ? '28px' : '32px',
+                                    borderRadius: '6px',
                                     background: tool === 'pen' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                     border: 'none',
                                     cursor: 'pointer',
                                     color: tool === 'pen' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
+                                    flexShrink: 0
                                 }}
                                 title="Pincel Livre"
                             >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                             </button>
 
                             <button
                                 onClick={() => setTool('select')}
                                 style={{
-                                    width: '38px',
-                                    height: '38px',
-                                    borderRadius: '10px',
+                                    width: isMobile ? '28px' : '32px',
+                                    height: isMobile ? '28px' : '32px',
+                                    borderRadius: '6px',
                                     background: tool === 'select' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                     border: 'none',
                                     cursor: 'pointer',
                                     color: tool === 'select' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
+                                    flexShrink: 0
                                 }}
                                 title="Mover Sólidos"
                             >
-                                <Hand size={18} />
+                                <Hand size={isMobile ? 14 : 16} />
                             </button>
                         </div>
 
@@ -1370,19 +1440,19 @@ export default function LiveBoardContainer({
                                     max="50"
                                     value={brushSize}
                                     onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                                    style={{ width: '60px', accentColor: color }}
+                                    style={{ width: '40px', accentColor: color }}
                                     title="Tamanho do Pincel/Borracha"
                                 />
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', gap: '1px', flexShrink: 0 }}>
-                            <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={18} /></button>
+                        <div style={{ display: 'flex', gap: '0px', flexShrink: 0 }}>
+                            <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 14 : 16} /></button>
                             <button
                                 onClick={() => setShowClearConfirm(true)}
-                                style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
+                                style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
                             >
-                                <Eraser size={18} />
+                                <Eraser size={isMobile ? 14 : 16} />
                             </button>
 
                             <AnimatePresence>
@@ -1399,7 +1469,7 @@ export default function LiveBoardContainer({
                                             bottom: 0,
                                             background: 'rgba(0,0,0,0.85)',
                                             backdropFilter: 'blur(10px)',
-                                            zIndex: 20000, // Extremely high z-index to be above everything
+                                            zIndex: 20000,
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -1452,20 +1522,20 @@ export default function LiveBoardContainer({
                             </AnimatePresence>
 
                             <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
-                            <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={18} /></button>
+                            <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 14 : 16} /></button>
 
-                            <button onClick={() => setIsDark(!isDark)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
+                            <button onClick={() => setIsDark(!isDark)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={isMobile ? 14 : 16} /> : <Moon size={isMobile ? 14 : 16} />}</button>
 
-                            <button onClick={saveBoard} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={18} /></button>
+                            <button onClick={saveBoard} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={isMobile ? 14 : 16} /></button>
 
                             {/* Collaborative Drawing Panel */}
                             <div style={{ position: 'relative' }}>
                                 <button
                                     onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
-                                    style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                    style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                                     title="Permissões de Desenho"
                                 >
-                                    <PenLine size={18} />
+                                    <PenLine size={isMobile ? 14 : 16} />
                                 </button>
                                 <AnimatePresence>
                                     {showParticipantsPanel && (
@@ -1486,8 +1556,24 @@ export default function LiveBoardContainer({
                                                 overflowY: 'auto'
                                             }}
                                         >
-                                            <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                <Users size={12} /> Dar Giz (Permissões de Desenho)
+                                            <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> Giz (Permissões)</div>
+                                                {participants.length > 0 && (
+                                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                                        <button
+                                                            onClick={grantAllDrawingPermissions}
+                                                            style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
+                                                        >
+                                                            Tudo
+                                                        </button>
+                                                        <button
+                                                            onClick={revokeAllDrawingPermissions}
+                                                            style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
+                                                        >
+                                                            Limpar
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                             {participants.length === 0 ? (
                                                 <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
@@ -1522,7 +1608,17 @@ export default function LiveBoardContainer({
                                                                     {p.name}
                                                                 </span>
                                                                 {raisedHands.has(p.socketId) && (
-                                                                    <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
+                                                                        {!drawingPermissions.has(p.socketId) && (
+                                                                            <button
+                                                                                onClick={() => toggleDrawingPermission(p.socketId)}
+                                                                                style={{ background: primaryColor, color: '#fff', border: 'none', padding: '1px 4px', borderRadius: '3px', fontSize: '0.55rem', fontWeight: 900, cursor: 'pointer' }}
+                                                                            >
+                                                                                Dar Giz
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -1583,20 +1679,20 @@ export default function LiveBoardContainer({
                                     background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
                                     color: isAudioActive ? '#ef4444' : '#0ea5e9',
                                     border: 'none',
-                                    padding: '0 10px',
-                                    height: '38px',
-                                    borderRadius: '10px',
+                                    padding: '0 8px',
+                                    height: '32px',
+                                    borderRadius: '8px',
                                     fontWeight: 800,
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '4px',
-                                    fontSize: '0.7rem',
+                                    fontSize: '0.65rem',
                                     flexShrink: 0
                                 }}
                             >
-                                {isAudioActive ? <MicOff size={16} /> : <Mic size={16} />}
+                                {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
                                 {!isMobile && (isAudioActive ? 'Silenciar' : 'Falar')}
                             </button>
 
@@ -1608,21 +1704,21 @@ export default function LiveBoardContainer({
                                             background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
                                             color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
                                             border: 'none',
-                                            padding: '0 10px',
-                                            height: '38px',
-                                            borderRadius: '10px',
+                                            padding: '0 8px',
+                                            height: '32px',
+                                            borderRadius: '8px',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '4px',
                                             fontWeight: 800,
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.65rem',
                                             flexShrink: 0
                                         }}
                                         title="Enviar avisos e alertas para os alunos"
                                     >
-                                        <Megaphone size={16} /> {!isMobile && "Avisos"}
+                                        <Megaphone size={14} /> {!isMobile && "Avisos"}
                                     </button>
 
                                     <AnimatePresence>
@@ -1694,9 +1790,9 @@ export default function LiveBoardContainer({
                                             background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
                                             color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
                                             border: 'none',
-                                            width: '38px',
-                                            height: '38px',
-                                            borderRadius: '10px',
+                                            width: isMobile ? '28px' : '32px',
+                                            height: isMobile ? '28px' : '32px',
+                                            borderRadius: '8px',
                                             fontWeight: 800,
                                             cursor: 'pointer',
                                             display: 'flex',
@@ -1706,7 +1802,7 @@ export default function LiveBoardContainer({
                                         }}
                                         title="Criar Quiz"
                                     >
-                                        <HelpCircle size={18} />
+                                        <HelpCircle size={isMobile ? 14 : 16} />
                                     </button>
 
                                     <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
@@ -1760,20 +1856,20 @@ export default function LiveBoardContainer({
                                     background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                     color: '#fff',
                                     border: 'none',
-                                    padding: '0 10px',
-                                    height: '38px',
-                                    borderRadius: '10px',
+                                    padding: '0 8px',
+                                    height: '32px',
+                                    borderRadius: '8px',
                                     fontWeight: 800,
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '6px',
-                                    fontSize: '0.75rem',
+                                    gap: '4px',
+                                    fontSize: '0.65rem',
                                     flexShrink: 0
                                 }}
                             >
-                                <MessageSquare size={16} /> {!isMobile && "Chat"}
+                                <MessageSquare size={14} /> {!isMobile && "Chat"}
                             </button>
                         </div>
                     </>
@@ -1848,11 +1944,11 @@ export default function LiveBoardContainer({
                                     background: primaryColor,
                                     color: '#fff',
                                     border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: '32px',
+                                    padding: isMobile ? '0 6px' : '0 10px',
+                                    height: isMobile ? '28px' : '32px',
                                     borderRadius: '8px',
                                     fontWeight: 900,
-                                    fontSize: '0.7rem',
+                                    fontSize: '0.65rem',
                                     cursor: 'pointer',
                                     boxShadow: `0 4px 10px ${primaryColor}4D`,
                                     transition: 'transform 0.1s'
@@ -1871,16 +1967,16 @@ export default function LiveBoardContainer({
                                 background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
                                 color: isHandRaised ? '#888' : '#0ea5e9',
                                 border: 'none',
-                                padding: isMobile ? '0 10px' : '0 16px',
-                                height: '38px',
-                                borderRadius: '10px',
+                                padding: isMobile ? '0 8px' : '0 12px',
+                                height: isMobile ? '32px' : '32px',
+                                borderRadius: '8px',
                                 fontWeight: 800,
                                 cursor: isHandRaised ? 'default' : 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '8px',
-                                fontSize: '0.8rem'
+                                gap: '6px',
+                                fontSize: '0.7rem'
                             }}
                         >
                             <Hand size={18} /> {!isMobile && (isHandRaised ? 'Mão Levantada' : 'Dúvida')}
@@ -1892,20 +1988,20 @@ export default function LiveBoardContainer({
                                 background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
                                 color: '#22c55e',
                                 border: 'none',
-                                padding: isMobile ? '0 10px' : '0 14px',
-                                height: '38px',
-                                borderRadius: '10px',
+                                padding: isMobile ? '0 8px' : '0 12px',
+                                height: isMobile ? '32px' : '36px',
+                                borderRadius: '8px',
                                 fontWeight: 800,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '6px',
-                                fontSize: '0.75rem'
+                                gap: '4px',
+                                fontSize: '0.65rem'
                             }}
-                            title="Exportar quadro como PNG"
+                            title="Tirar Screenshot do quadro"
                         >
-                            <Download size={16} /> {!isMobile && "Exportar"}
+                            <Download size={14} /> {!isMobile && "Screenshot"}
                         </button>
 
                         {/* Drawing permission indicator for participant */}
@@ -1914,16 +2010,16 @@ export default function LiveBoardContainer({
                                 background: 'rgba(14,165,233,0.1)',
                                 color: '#0ea5e9',
                                 border: '1px solid rgba(14,165,233,0.3)',
-                                padding: '0 12px',
-                                height: '38px',
-                                borderRadius: '10px',
+                                padding: '0 10px',
+                                height: isMobile ? '28px' : '32px',
+                                borderRadius: '8px',
                                 fontWeight: 800,
-                                fontSize: '0.75rem',
+                                fontSize: '0.7rem',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '6px'
+                                gap: '4px'
                             }}>
-                                <PenLine size={14} /> A Desenhar
+                                <PenLine size={12} /> A Desenhar
                             </div>
                         )}
 
@@ -1933,19 +2029,19 @@ export default function LiveBoardContainer({
                                 background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                 color: '#fff',
                                 border: 'none',
-                                padding: isMobile ? '0 10px' : '0 16px',
-                                height: '38px',
-                                borderRadius: '10px',
+                                padding: isMobile ? '0 8px' : '0 12px',
+                                height: isMobile ? '32px' : '32px',
+                                borderRadius: '8px',
                                 fontWeight: 800,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '8px',
-                                fontSize: '0.8rem'
+                                gap: '6px',
+                                fontSize: '0.7rem'
                             }}
                         >
-                            <MessageSquare size={18} /> {!isMobile && "Perguntas"}
+                            <MessageSquare size={16} /> {!isMobile && "Perguntas"}
                         </button>
                     </>
                 )}

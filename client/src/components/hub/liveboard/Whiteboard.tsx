@@ -175,7 +175,11 @@ const Whiteboard = forwardRef(({
 
     useImperativeHandle(ref, () => ({
         addExternalItem: (data: any) => {
-            if (historyRef.current.some(item => item.strokeId === data.strokeId)) return;
+            if (historyRef.current.some(item =>
+                item.strokeId === data.strokeId &&
+                item.x0 === data.x0 && item.y0 === data.y0 &&
+                item.x1 === data.x1 && item.y1 === data.y1
+            )) return;
             historyRef.current.push(data);
             drawData(data);
             if (data.type === 'image') redrawHistory();
@@ -309,7 +313,11 @@ const Whiteboard = forwardRef(({
 
         if (socket) {
             socket.on('live_board:draw', (data: any) => {
-                if (historyRef.current.some(item => item.strokeId === data.strokeId)) return;
+                if (historyRef.current.some(item =>
+                    item.strokeId === data.strokeId &&
+                    item.x0 === data.x0 && item.y0 === data.y0 &&
+                    item.x1 === data.x1 && item.y1 === data.y1
+                )) return;
                 historyRef.current.push(data);
                 drawData(data);
                 if (data.type === 'image') redrawHistory();
