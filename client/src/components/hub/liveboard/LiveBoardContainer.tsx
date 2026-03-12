@@ -821,7 +821,7 @@ export default function LiveBoardContainer({
                 backdropFilter: 'blur(10px)',
                 zIndex: 100
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '15px' }}>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: isMobile ? '10px' : '15px', overflow: 'hidden' }}>
                     <div style={{ position: 'relative' }}>
                         <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', overflow: 'hidden', border: `2px solid ${primaryColor}`, flexShrink: 0 }}>
                             <Image
@@ -896,11 +896,10 @@ export default function LiveBoardContainer({
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
                         color: isDark ? '#fff' : '#111',
-                        opacity: 0.8
+                        opacity: 0.8,
+                        flexShrink: 0,
+                        padding: '0 15px'
                     }}>
                         <div style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.5px' }}>
                             {currentTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
@@ -911,7 +910,7 @@ export default function LiveBoardContainer({
                     </div>
                 )}
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '20px' }}>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: isMobile ? '8px' : '20px' }}>
                     {/* Participant Avatars (Overlap Style like Google Meet) */}
                     <div style={{ display: 'flex', alignItems: 'center', marginRight: isMobile ? '0' : '10px' }}>
                         {!isMobile && participants.slice(0, 5).map((p, idx) => (
