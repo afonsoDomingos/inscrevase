@@ -1229,7 +1229,43 @@ export default function LiveBoardContainer({
             {/* Participant Audio Control */}
             {
                 !isMentor && (
-                    <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
+                    <div style={{ position: 'absolute', bottom: 30, right: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        {/* Mentor speaking indicator for participants */}
+                        {isMentorSpeaking && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                style={{
+                                    background: isDark ? 'rgba(30,30,30,0.9)' : 'rgba(255,255,255,0.95)',
+                                    backdropFilter: 'blur(10px)',
+                                    border: `1px solid ${primaryColor}40`,
+                                    borderRadius: '12px',
+                                    padding: '8px 12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    boxShadow: `0 4px 20px ${primaryColor}30`,
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                <div style={{ background: primaryColor, borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '14px' }}>
+                                        {[0, 0.1, 0.2].map((delay, i) => (
+                                            <motion.div
+                                                key={i}
+                                                animate={{ height: ['4px', '12px', '4px'] }}
+                                                transition={{ repeat: Infinity, duration: 0.5, delay, ease: 'easeInOut' }}
+                                                style={{ width: '2px', background: '#fff', borderRadius: '1px' }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: isDark ? '#fff' : '#111' }}>
+                                    {mentorData.name} está a falar...
+                                </span>
+                            </motion.div>
+                        )}
                         <button
                             onClick={() => setIsParticipantAudioMuted(!isParticipantAudioMuted)}
                             style={{
@@ -1245,6 +1281,7 @@ export default function LiveBoardContainer({
                                 cursor: 'pointer',
                                 boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
                             }}
+                            title={isParticipantAudioMuted ? 'Ativar áudio' : 'Silenciar áudio'}
                         >
                             {isParticipantAudioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
                         </button>
@@ -1432,563 +1469,243 @@ export default function LiveBoardContainer({
 
                         {/* Actions */}
                         {!isMobile && (
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 8px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
                                 <input
                                     type="range"
                                     min="1"
                                     max="50"
                                     value={brushSize}
                                     onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                                    style={{ width: '40px', accentColor: color }}
+                                    style={{ width: '40px', accentColor: color, cursor: 'pointer' }}
                                     title="Tamanho do Pincel/Borracha"
                                 />
                             </div>
                         )}
 
                         <div style={{ display: 'flex', gap: '0px', flexShrink: 0 }}>
-                            <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 14 : 16} /></button>
+                            <button
+                                onClick={() => setUndoTrigger(prev => prev + 1)}
+                                style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: 'transparent', color: isDark ? '#fff' : '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                title="Desfazer (Undo)"
+                            >
+                                <Undo size={isMobile ? 14 : 16} />
+                            </button>
+
                             <button
                                 onClick={() => setShowClearConfirm(true)}
-                                style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
+                                style={{
+                                    width: isMobile ? '28px' : '32px',
+                                    height: isMobile ? '28px' : '32px',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: 'transparent',
+                                    color: '#ef4444',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                }}
+                                title="Apagar Tudo"
                             >
                                 <Eraser size={isMobile ? 14 : 16} />
                             </button>
-
-                            <AnimatePresence>
-                                {showClearConfirm && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        style={{
-                                            position: 'fixed',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            background: 'rgba(0,0,0,0.85)',
-                                            backdropFilter: 'blur(10px)',
-                                            zIndex: 20000,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: '20px'
-                                        }}
-                                    >
-                                        <motion.div
-                                            initial={{ scale: 0.9, y: 30 }}
-                                            animate={{ scale: 1, y: 0 }}
-                                            exit={{ scale: 0.9, y: 30 }}
-                                            style={{
-                                                background: isDark ? '#1a1a1a' : '#fff',
-                                                padding: isMobile ? '30px 20px' : '40px',
-                                                borderRadius: '32px',
-                                                maxWidth: '420px',
-                                                width: '100%',
-                                                textAlign: 'center',
-                                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
-                                                border: isDark ? '1px solid #333' : '1px solid #eee'
-                                            }}
-                                        >
-                                            <div style={{ width: '70px', height: '70px', borderRadius: '24px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                                                <Eraser size={36} />
-                                            </div>
-                                            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.75rem', fontWeight: 900, color: isDark ? '#fff' : '#111' }}>Limpar Quadro?</h3>
-                                            <p style={{ margin: '0 0 32px 0', color: isDark ? '#aaa' : '#666', fontWeight: 600, fontSize: '1rem', lineHeight: '1.6' }}>
-                                                Esta ação apagará permanentemente todos os desenhos de todas as páginas. Tem a certeza que deseja prosseguir?
-                                            </p>
-                                            <div style={{ display: 'flex', gap: '12px' }}>
-                                                <button
-                                                    onClick={() => setShowClearConfirm(false)}
-                                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#666', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
-                                                >
-                                                    Cancelar
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        socket?.emit('live_board:action', { formId, action: 'clear' });
-                                                        setShowClearConfirm(false);
-                                                        toast.success('🪄 Quadro limpo com sucesso!');
-                                                    }}
-                                                    style={{ flex: 1, padding: '16px', borderRadius: '18px', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem', boxShadow: '0 10px 20px rgba(239,68,68,0.2)' }}
-                                                >
-                                                    Sim, Limpar
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
-                            <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 14 : 16} /></button>
-
-                            <button onClick={() => setIsDark(!isDark)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={isMobile ? 14 : 16} /> : <Moon size={isMobile ? 14 : 16} />}</button>
-
-                            <button onClick={saveBoard} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={isMobile ? 14 : 16} /></button>
-
-                            {/* Collaborative Drawing Panel */}
-                            <div style={{ position: 'relative' }}>
-                                <button
-                                    onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
-                                    style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                                    title="Permissões de Desenho"
-                                >
-                                    <PenLine size={isMobile ? 14 : 16} />
-                                </button>
-                                <AnimatePresence>
-                                    {showParticipantsPanel && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                            style={{
-                                                position: 'absolute',
-                                                bottom: '50px',
-                                                right: 0,
-                                                background: isDark ? '#1a1a1a' : '#fff',
-                                                border: isDark ? '1px solid #333' : '1px solid #eee',
-                                                borderRadius: '16px',
-                                                padding: '14px',
-                                                boxShadow: '0 -10px 30px rgba(0,0,0,0.2)',
-                                                zIndex: 200,
-                                                minWidth: '240px',
-                                                maxHeight: '320px',
-                                                overflowY: 'auto'
-                                            }}
-                                        >
-                                            <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> Giz (Permissões)</div>
-                                                {participants.length > 0 && (
-                                                    <div style={{ display: 'flex', gap: '4px' }}>
-                                                        <button
-                                                            onClick={grantAllDrawingPermissions}
-                                                            style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
-                                                        >
-                                                            Tudo
-                                                        </button>
-                                                        <button
-                                                            onClick={revokeAllDrawingPermissions}
-                                                            style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
-                                                        >
-                                                            Limpar
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {participants.length === 0 ? (
-                                                <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
-                                            ) : (
-                                                participants.map((p: any) => (
-                                                    <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-                                                            <div style={{
-                                                                width: '28px',
-                                                                height: '28px',
-                                                                borderRadius: '50%',
-                                                                overflow: 'hidden',
-                                                                background: '#f0f0f0',
-                                                                flexShrink: 0,
-                                                                border: raisedHands.has(p.socketId) ? `2px solid ${primaryColor}` : '2px solid transparent',
-                                                                boxShadow: raisedHands.has(p.socketId) ? `0 0 10px ${primaryColor}4D` : 'none',
-                                                                transition: 'all 0.3s'
-                                                            }}>
-                                                                <Image src={p.photo || '/default-avatar.png'} width={28} height={28} alt={p.name} style={{ objectFit: 'cover' }} />
-                                                            </div>
-                                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                                <span style={{
-                                                                    fontSize: '0.8rem',
-                                                                    fontWeight: 700,
-                                                                    color: raisedHands.has(p.socketId) ? primaryColor : (isDark ? '#fff' : '#111'),
-                                                                    maxWidth: '110px',
-                                                                    overflow: 'hidden',
-                                                                    textOverflow: 'ellipsis',
-                                                                    whiteSpace: 'nowrap',
-                                                                    transition: 'all 0.3s'
-                                                                }}>
-                                                                    {p.name}
-                                                                </span>
-                                                                {raisedHands.has(p.socketId) && (
-                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
-                                                                        {!drawingPermissions.has(p.socketId) && (
-                                                                            <button
-                                                                                onClick={() => toggleDrawingPermission(p.socketId)}
-                                                                                style={{ background: primaryColor, color: '#fff', border: 'none', padding: '1px 4px', borderRadius: '3px', fontSize: '0.55rem', fontWeight: 900, cursor: 'pointer' }}
-                                                                            >
-                                                                                Dar Giz
-                                                                            </button>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                        <button
-                                                            onClick={() => toggleDrawingPermission(p.socketId)}
-                                                            style={{
-                                                                background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
-                                                                color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
-                                                                border: 'none',
-                                                                padding: '4px 10px',
-                                                                borderRadius: '8px',
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: 800,
-                                                                cursor: 'pointer',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '4px',
-                                                                whiteSpace: 'nowrap'
-                                                            }}
-                                                        >
-                                                            <PenLine size={12} />
-                                                            {drawingPermissions.has(p.socketId) ? 'Revogar' : 'Dar Giz'}
-                                                        </button>
-                                                    </div>
-                                                ))
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px' }} />
-
-                            {/* Page Navigation */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
-                                <button
-                                    onClick={() => currentPage > 0 && changePage(currentPage - 1)}
-                                    style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                                </button>
-                                <span style={{ fontSize: '0.75rem', fontWeight: 800, minWidth: '40px', textAlign: 'center' }}>{currentPage + 1} / {pages.length}</span>
-                                <button
-                                    onClick={() => currentPage < pages.length - 1 ? changePage(currentPage + 1) : addPage()}
-                                    style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer' }}
-                                >
-                                    {currentPage < pages.length - 1 ? (
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                                    ) : (
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-                                    )}
-                                </button>
-                            </div>
-
-                            <button
-                                onClick={isAudioActive ? handleStopAudio : handleStartAudio}
-                                style={{
-                                    background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
-                                    color: isAudioActive ? '#ef4444' : '#0ea5e9',
-                                    border: 'none',
-                                    padding: '0 8px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '4px',
-                                    fontSize: '0.65rem',
-                                    flexShrink: 0
-                                }}
-                            >
-                                {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
-                                {!isMobile && (isAudioActive ? 'Silenciar' : 'Falar')}
-                            </button>
-
-                            {isMentor && (
-                                <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
-                                    <button
-                                        onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
-                                        style={{
-                                            background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                            color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
-                                            border: 'none',
-                                            padding: '0 8px',
-                                            height: '32px',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '4px',
-                                            fontWeight: 800,
-                                            fontSize: '0.65rem',
-                                            flexShrink: 0
-                                        }}
-                                        title="Enviar avisos e alertas para os alunos"
-                                    >
-                                        <Megaphone size={14} /> {!isMobile && "Avisos"}
-                                    </button>
-
-                                    <AnimatePresence>
-                                        {showAnnouncementMenu && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                                                style={{
-                                                    position: 'absolute',
-                                                    bottom: '50px',
-                                                    right: 0,
-                                                    background: isDark ? '#1a1a1a' : '#fff',
-                                                    padding: '12px',
-                                                    borderRadius: '16px',
-                                                    boxShadow: '0 -10px 25px rgba(0,0,0,0.2)',
-                                                    border: isDark ? '1px solid #333' : '1px solid #eee',
-                                                    zIndex: 100,
-                                                    width: '220px',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    gap: '8px'
-                                                }}
-                                            >
-                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
-                                                {announcementsList.map(ann => (
-                                                    <button
-                                                        key={ann.id}
-                                                        onClick={() => {
-                                                            handleAnnouncement(ann);
-                                                            setShowAnnouncementMenu(false);
-                                                        }}
-                                                        style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                                                    >
-                                                        <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
-                                                    </button>
-                                                ))}
-
-                                                <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
-                                                    <input
-                                                        type="text"
-                                                        value={customAnnouncementText}
-                                                        onChange={(e) => setCustomAnnouncementText(e.target.value)}
-                                                        placeholder="Aviso personalizado..."
-                                                        style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' && customAnnouncementText.trim()) {
-                                                                handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
-                                                                setCustomAnnouncementText("");
-                                                                setShowAnnouncementMenu(false);
-                                                            }
-                                                        }}
-                                                    />
-                                                </div>
-
-                                                {currentAnnouncement && (
-                                                    <button
-                                                        onClick={clearAnnouncement}
-                                                        style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
-                                                    >
-                                                        Limpar Anúncio
-                                                    </button>
-                                                )}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-
-                                    <button
-                                        onClick={() => setShowQuizCreator(true)}
-                                        style={{
-                                            background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                            color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
-                                            border: 'none',
-                                            width: isMobile ? '28px' : '32px',
-                                            height: isMobile ? '28px' : '32px',
-                                            borderRadius: '8px',
-                                            fontWeight: 800,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            flexShrink: 0
-                                        }}
-                                        title="Criar Quiz"
-                                    >
-                                        <HelpCircle size={isMobile ? 14 : 16} />
-                                    </button>
-
-                                    <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
-
-                                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                                        <button
-                                            onClick={() => sendReaction('Sim')}
-                                            style={{
-                                                background: '#22c55e',
-                                                color: '#fff',
-                                                border: 'none',
-                                                padding: '0 8px',
-                                                height: '32px',
-                                                borderRadius: '8px',
-                                                fontWeight: 900,
-                                                fontSize: '0.65rem',
-                                                cursor: 'pointer',
-                                                boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
-                                                flexShrink: 0
-                                            }}
-                                        >
-                                            SIM
-                                        </button>
-                                        <button
-                                            onClick={() => sendReaction('Não')}
-                                            style={{
-                                                background: '#ef4444',
-                                                color: '#fff',
-                                                border: 'none',
-                                                padding: '0 8px',
-                                                height: '32px',
-                                                borderRadius: '8px',
-                                                fontWeight: 900,
-                                                fontSize: '0.65rem',
-                                                cursor: 'pointer',
-                                                boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
-                                                flexShrink: 0
-                                            }}
-                                        >
-                                            NÃO
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
-
-                            <button
-                                onClick={() => setIsSidebarOpen(true)}
-                                style={{
-                                    background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: '0 8px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '4px',
-                                    fontSize: '0.65rem',
-                                    flexShrink: 0
-                                }}
-                            >
-                                <MessageSquare size={14} /> {!isMobile && "Chat"}
-                            </button>
                         </div>
-                    </>
-                ) : (
-                    <>
-                        {/* Participant View */}
-                        <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
-                            {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
-                                <button
-                                    key={emoji}
-                                    onClick={() => sendReaction(emoji)}
-                                    style={{
-                                        fontSize: '1.4rem',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        padding: '4px',
-                                        transition: 'transform 0.1s'
-                                    }}
-                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
-                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                >
-                                    {emoji}
-                                </button>
-                            ))}
 
-                            <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
-
-                            <button
-                                onClick={() => sendReaction('Sim')}
-                                style={{
-                                    background: '#22c55e',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 900,
-                                    fontSize: '0.7rem',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
-                                    transition: 'transform 0.1s'
-                                }}
-                                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                SIM
-                            </button>
-                            <button
-                                onClick={() => sendReaction('Não')}
-                                style={{
-                                    background: '#ef4444',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 900,
-                                    fontSize: '0.7rem',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
-                                    transition: 'transform 0.1s'
-                                }}
-                                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                NÃO
-                            </button>
-                            <button
-                                onClick={() => sendReaction('Entendi!')}
-                                style={{
-                                    background: primaryColor,
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 6px' : '0 10px',
-                                    height: isMobile ? '28px' : '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 900,
-                                    fontSize: '0.65rem',
-                                    cursor: 'pointer',
-                                    boxShadow: `0 4px 10px ${primaryColor}4D`,
-                                    transition: 'transform 0.1s'
-                                }}
-                                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                ENTENDI
-                            </button>
-                        </div>
-                        <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
+                        <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
                         <button
-                            onClick={handleRaiseHand}
-                            disabled={isHandRaised}
+                            onClick={() => document.getElementById('bg-upload')?.click()}
+                            style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: 'transparent', color: isDark ? '#fff' : '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Imagem de Fundo"
+                        >
+                            <Layers size={isMobile ? 14 : 16} />
+                        </button>
+
+                        <button
+                            onClick={() => setIsDark(!isDark)}
+                            style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: 'transparent', color: isDark ? '#fff' : '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Trocar Tema"
+                        >
+                            {isDark ? <Sun size={isMobile ? 14 : 16} /> : <Moon size={isMobile ? 14 : 16} />}
+                        </button>
+
+                        <button
+                            onClick={handleExportBoard}
                             style={{
-                                background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
-                                color: isHandRaised ? '#888' : '#0ea5e9',
-                                border: 'none',
-                                padding: isMobile ? '0 8px' : '0 12px',
-                                height: isMobile ? '32px' : '32px',
+                                width: isMobile ? '28px' : 'auto',
+                                padding: isMobile ? '0' : '0 10px',
+                                height: isMobile ? '28px' : '32px',
                                 borderRadius: '8px',
-                                fontWeight: 800,
-                                cursor: isHandRaised ? 'default' : 'pointer',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                                color: isDark ? '#fff' : '#111',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '6px',
+                                fontWeight: 800,
                                 fontSize: '0.7rem'
                             }}
+                            title="Fazer Screenshot"
                         >
-                            <Hand size={18} /> {!isMobile && (isHandRaised ? 'Mão Levantada' : 'Dúvida')}
+                            <Download size={isMobile ? 14 : 16} /> {!isMobile && "Screenshot"}
                         </button>
-                        {/* Export Button for participants */}
+
+
+                        {/* Collaborative Drawing Panel */}
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
+                                style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                title="Permissões de Desenho"
+                            >
+                                <PenLine size={isMobile ? 14 : 16} />
+                            </button>
+                            <AnimatePresence>
+                                {showParticipantsPanel && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '50px',
+                                            right: 0,
+                                            background: isDark ? '#1a1a1a' : '#fff',
+                                            border: isDark ? '1px solid #333' : '1px solid #eee',
+                                            borderRadius: '16px',
+                                            padding: '14px',
+                                            boxShadow: '0 -10px 30px rgba(0,0,0,0.2)',
+                                            zIndex: 200,
+                                            minWidth: '240px',
+                                            maxHeight: '320px',
+                                            overflowY: 'auto'
+                                        }}
+                                    >
+                                        <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> Giz (Permissões)</div>
+                                            {participants.length > 0 && (
+                                                <div style={{ display: 'flex', gap: '4px' }}>
+                                                    <button
+                                                        onClick={grantAllDrawingPermissions}
+                                                        style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
+                                                    >
+                                                        Tudo
+                                                    </button>
+                                                    <button
+                                                        onClick={revokeAllDrawingPermissions}
+                                                        style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
+                                                    >
+                                                        Limpar
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {participants.length === 0 ? (
+                                            <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
+                                        ) : (
+                                            participants.map((p: any) => (
+                                                <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+                                                        <div style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            borderRadius: '50%',
+                                                            overflow: 'hidden',
+                                                            background: '#f0f0f0',
+                                                            flexShrink: 0,
+                                                            border: raisedHands.has(p.socketId) ? `2px solid ${primaryColor}` : '2px solid transparent',
+                                                            boxShadow: raisedHands.has(p.socketId) ? `0 0 10px ${primaryColor}4D` : 'none',
+                                                            transition: 'all 0.3s'
+                                                        }}>
+                                                            <Image src={p.photo || '/default-avatar.png'} width={28} height={28} alt={p.name} style={{ objectFit: 'cover' }} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                            <span style={{
+                                                                fontSize: '0.8rem',
+                                                                fontWeight: 700,
+                                                                color: raisedHands.has(p.socketId) ? primaryColor : (isDark ? '#fff' : '#111'),
+                                                                maxWidth: '110px',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'nowrap',
+                                                                transition: 'all 0.3s'
+                                                            }}>
+                                                                {p.name}
+                                                            </span>
+                                                            {raisedHands.has(p.socketId) && (
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                    <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
+                                                                    {!drawingPermissions.has(p.socketId) && (
+                                                                        <button
+                                                                            onClick={() => toggleDrawingPermission(p.socketId)}
+                                                                            style={{ background: primaryColor, color: '#fff', border: 'none', padding: '1px 4px', borderRadius: '3px', fontSize: '0.55rem', fontWeight: 900, cursor: 'pointer' }}
+                                                                        >
+                                                                            Dar Giz
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => toggleDrawingPermission(p.socketId)}
+                                                        style={{
+                                                            background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
+                                                            color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
+                                                            border: 'none',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '8px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px',
+                                                            whiteSpace: 'nowrap'
+                                                        }}
+                                                    >
+                                                        <PenLine size={12} />
+                                                        {drawingPermissions.has(p.socketId) ? 'Revogar' : 'Dar Giz'}
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px' }} />
+
+                        {/* Page Navigation */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                            <button
+                                onClick={() => currentPage > 0 && changePage(currentPage - 1)}
+                                style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                            </button>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 800, minWidth: '40px', textAlign: 'center' }}>{currentPage + 1} / {pages.length}</span>
+                            <button
+                                onClick={() => currentPage < pages.length - 1 ? changePage(currentPage + 1) : addPage()}
+                                style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer' }}
+                            >
+                                {currentPage < pages.length - 1 ? (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                                ) : (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                )}
+                            </button>
+                        </div>
+
                         <button
-                            onClick={handleExportBoard}
+                            onClick={isAudioActive ? handleStopAudio : handleStartAudio}
                             style={{
-                                background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
-                                color: '#22c55e',
+                                background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
+                                color: isAudioActive ? '#ef4444' : '#0ea5e9',
                                 border: 'none',
-                                padding: isMobile ? '0 8px' : '0 12px',
-                                height: isMobile ? '32px' : '36px',
+                                padding: '0 8px',
+                                height: '32px',
                                 borderRadius: '8px',
                                 fontWeight: 800,
                                 cursor: 'pointer',
@@ -1996,31 +1713,167 @@ export default function LiveBoardContainer({
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '4px',
-                                fontSize: '0.65rem'
+                                fontSize: '0.65rem',
+                                flexShrink: 0
                             }}
-                            title="Tirar Screenshot do quadro"
                         >
-                            <Download size={14} /> {!isMobile && "Screenshot"}
+                            {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
+                            {!isMobile && (isAudioActive ? 'Silenciar' : 'Falar')}
                         </button>
 
-                        {/* Drawing permission indicator for participant */}
-                        {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
-                            <div style={{
-                                background: 'rgba(14,165,233,0.1)',
-                                color: '#0ea5e9',
-                                border: '1px solid rgba(14,165,233,0.3)',
-                                padding: '0 10px',
-                                height: isMobile ? '28px' : '32px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                fontSize: '0.7rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                            }}>
-                                <PenLine size={12} /> A Desenhar
+                        {isMentor && (
+                            <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
+                                <button
+                                    onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
+                                    style={{
+                                        background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                        color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
+                                        border: 'none',
+                                        padding: '0 8px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '4px',
+                                        fontWeight: 800,
+                                        fontSize: '0.65rem',
+                                        flexShrink: 0
+                                    }}
+                                    title="Enviar avisos e alertas para os alunos"
+                                >
+                                    <Megaphone size={14} /> {!isMobile && "Avisos"}
+                                </button>
+
+                                <AnimatePresence>
+                                    {showAnnouncementMenu && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                                            style={{
+                                                position: 'fixed',
+                                                bottom: '90px',
+                                                right: '20px',
+                                                background: isDark ? '#1a1a1a' : '#fff',
+                                                padding: '12px',
+                                                borderRadius: '16px',
+                                                boxShadow: '0 -10px 25px rgba(0,0,0,0.3)',
+                                                border: isDark ? '1px solid #444' : '1px solid #e0e0e0',
+                                                zIndex: 9999,
+                                                width: '240px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '8px'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ANÚNCIOS RÁPIDOS</span>
+                                            {announcementsList.map(ann => (
+                                                <button
+                                                    key={ann.id}
+                                                    onClick={() => {
+                                                        handleAnnouncement(ann);
+                                                        setShowAnnouncementMenu(false);
+                                                    }}
+                                                    style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                                >
+                                                    <span style={{ fontSize: '1rem' }}>{ann.icon}</span> {ann.label}
+                                                </button>
+                                            ))}
+
+                                            <div style={{ padding: '4px 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: '4px' }}>
+                                                <input
+                                                    type="text"
+                                                    value={customAnnouncementText}
+                                                    onChange={(e) => setCustomAnnouncementText(e.target.value)}
+                                                    placeholder="Aviso personalizado..."
+                                                    style={{ width: '100%', padding: '8px', borderRadius: '8px', border: isDark ? '1px solid #333' : '1px solid #eee', background: isDark ? '#111' : '#f8f8f8', color: isDark ? '#fff' : '#111', fontSize: '0.75rem', fontWeight: 600, outline: 'none' }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && customAnnouncementText.trim()) {
+                                                            handleAnnouncement({ id: 'custom', message: customAnnouncementText, type: 'custom', icon: '📢', color: primaryColor });
+                                                            setCustomAnnouncementText("");
+                                                            setShowAnnouncementMenu(false);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+
+                                            {currentAnnouncement && (
+                                                <button
+                                                    onClick={clearAnnouncement}
+                                                    style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                >
+                                                    Limpar Anúncio
+                                                </button>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                <button
+                                    onClick={() => setShowQuizCreator(true)}
+                                    style={{
+                                        background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                        color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
+                                        border: 'none',
+                                        width: isMobile ? '28px' : '32px',
+                                        height: isMobile ? '28px' : '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexShrink: 0
+                                    }}
+                                    title="Criar Quiz"
+                                >
+                                    <HelpCircle size={isMobile ? 14 : 16} />
+                                </button>
+
+                                <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
+                                <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                                    <button
+                                        onClick={() => sendReaction('Sim')}
+                                        style={{
+                                            background: '#22c55e',
+                                            color: '#fff',
+                                            border: 'none',
+                                            padding: '0 8px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 900,
+                                            fontSize: '0.65rem',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
+                                            flexShrink: 0
+                                        }}
+                                    >
+                                        SIM
+                                    </button>
+                                    <button
+                                        onClick={() => sendReaction('Não')}
+                                        style={{
+                                            background: '#ef4444',
+                                            color: '#fff',
+                                            border: 'none',
+                                            padding: '0 8px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 900,
+                                            fontSize: '0.65rem',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
+                                            flexShrink: 0
+                                        }}
+                                    >
+                                        NÃO
+                                    </button>
+                                </div>
                             </div>
                         )}
+
+                        <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
 
                         <button
                             onClick={() => setIsSidebarOpen(true)}
@@ -2028,154 +1881,327 @@ export default function LiveBoardContainer({
                                 background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                 color: '#fff',
                                 border: 'none',
-                                padding: isMobile ? '0 8px' : '0 12px',
-                                height: isMobile ? '32px' : '32px',
+                                padding: '0 8px',
+                                height: '32px',
                                 borderRadius: '8px',
                                 fontWeight: 800,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '6px',
-                                fontSize: '0.7rem'
+                                gap: '4px',
+                                fontSize: '0.65rem',
+                                flexShrink: 0
                             }}
                         >
-                            <MessageSquare size={16} /> {!isMobile && "Perguntas"}
+                            <MessageSquare size={14} /> {!isMobile && "Chat"}
                         </button>
-                    </>
-                )}
-            </div>
+                    </div>
+            </>
+            ) : (
+            <>
+                {/* Participant View */}
+                <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
+                    {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
+                        <button
+                            key={emoji}
+                            onClick={() => sendReaction(emoji)}
+                            style={{
+                                fontSize: '1.4rem',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                transition: 'transform 0.1s'
+                            }}
+                            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
+                            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                        >
+                            {emoji}
+                        </button>
+                    ))}
 
-            {/* Sidebar Perguntas */}
-            <AnimatePresence>
-                {isSidebarOpen && (
-                    <motion.div
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
+                    <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
+                    <button
+                        onClick={() => sendReaction('Sim')}
                         style={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            width: isMobile ? '100%' : '320px',
-                            height: '100%',
-                            background: '#fff',
-                            boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
-                            zIndex: 10000,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            borderLeft: '1px solid #f0f0f0'
+                            background: '#22c55e',
+                            color: '#fff',
+                            border: 'none',
+                            padding: isMobile ? '0 8px' : '0 12px',
+                            height: '32px',
+                            borderRadius: '8px',
+                            fontWeight: 900,
+                            fontSize: '0.7rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
+                            transition: 'transform 0.1s'
                         }}
+                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                     >
-                        <div style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#111' }}>Perguntas e Chat</div>
-                            <button onClick={() => setIsSidebarOpen(false)} style={{ background: '#f8f8f8', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', color: '#666' }}><X size={18} /></button>
+                        SIM
+                    </button>
+                    <button
+                        onClick={() => sendReaction('Não')}
+                        style={{
+                            background: '#ef4444',
+                            color: '#fff',
+                            border: 'none',
+                            padding: isMobile ? '0 8px' : '0 12px',
+                            height: '32px',
+                            borderRadius: '8px',
+                            fontWeight: 900,
+                            fontSize: '0.7rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
+                            transition: 'transform 0.1s'
+                        }}
+                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                    >
+                        NÃO
+                    </button>
+                    <button
+                        onClick={() => sendReaction('Entendi!')}
+                        style={{
+                            background: primaryColor,
+                            color: '#fff',
+                            border: 'none',
+                            padding: isMobile ? '0 6px' : '0 10px',
+                            height: isMobile ? '28px' : '32px',
+                            borderRadius: '8px',
+                            fontWeight: 900,
+                            fontSize: '0.65rem',
+                            cursor: 'pointer',
+                            boxShadow: `0 4px 10px ${primaryColor}4D`,
+                            transition: 'transform 0.1s'
+                        }}
+                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                    >
+                        ENTENDI
+                    </button>
+                </div>
+                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
+                <button
+                    onClick={handleRaiseHand}
+                    disabled={isHandRaised}
+                    style={{
+                        background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
+                        color: isHandRaised ? '#888' : '#0ea5e9',
+                        border: 'none',
+                        padding: isMobile ? '0 8px' : '0 12px',
+                        height: isMobile ? '32px' : '32px',
+                        borderRadius: '8px',
+                        fontWeight: 800,
+                        cursor: isHandRaised ? 'default' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        fontSize: '0.7rem'
+                    }}
+                >
+                    <Hand size={18} /> {!isMobile && (isHandRaised ? 'Mão Levantada' : 'Dúvida')}
+                </button>
+                {/* Export Button for participants */}
+                <button
+                    onClick={handleExportBoard}
+                    style={{
+                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
+                        color: '#22c55e',
+                        border: 'none',
+                        padding: isMobile ? '0 8px' : '0 12px',
+                        height: isMobile ? '32px' : '36px',
+                        borderRadius: '8px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        fontSize: '0.65rem'
+                    }}
+                    title="Tirar Screenshot do quadro"
+                >
+                    <Download size={14} /> {!isMobile && "Screenshot"}
+                </button>
+
+                {/* Drawing permission indicator for participant */}
+                {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
+                    <div style={{
+                        background: 'rgba(14,165,233,0.1)',
+                        color: '#0ea5e9',
+                        border: '1px solid rgba(14,165,233,0.3)',
+                        padding: '0 10px',
+                        height: isMobile ? '28px' : '32px',
+                        borderRadius: '8px',
+                        fontWeight: 800,
+                        fontSize: '0.7rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                    }}>
+                        <PenLine size={12} /> A Desenhar
+                    </div>
+                )}
+
+                <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    style={{
+                        background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
+                        color: '#fff',
+                        border: 'none',
+                        padding: isMobile ? '0 8px' : '0 12px',
+                        height: isMobile ? '32px' : '32px',
+                        borderRadius: '8px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        fontSize: '0.7rem'
+                    }}
+                >
+                    <MessageSquare size={16} /> {!isMobile && "Perguntas"}
+                </button>
+            </>
+                )}
+        </div>
+
+            {/* Sidebar Perguntas */ }
+    <AnimatePresence>
+        {isSidebarOpen && (
+            <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    width: isMobile ? '100%' : '320px',
+                    height: '100%',
+                    background: '#fff',
+                    boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
+                    zIndex: 10000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    borderLeft: '1px solid #f0f0f0'
+                }}
+            >
+                <div style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1rem', color: '#111' }}>Perguntas e Chat</div>
+                    <button onClick={() => setIsSidebarOpen(false)} style={{ background: '#f8f8f8', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', color: '#666' }}><X size={18} /></button>
+                </div>
+                <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', overflowY: 'auto' }}>
+                    {messages.length === 0 ? (
+                        <div style={{ color: '#999', fontSize: '0.9rem', textAlign: 'center', marginTop: '40px' }}>
+                            <p>Nenhuma pergunta ainda.</p>
+                            <p style={{ fontSize: '0.8rem', marginTop: '10px' }}>Seja o primeiro a mandar algo!</p>
                         </div>
-                        <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', overflowY: 'auto' }}>
-                            {messages.length === 0 ? (
-                                <div style={{ color: '#999', fontSize: '0.9rem', textAlign: 'center', marginTop: '40px' }}>
-                                    <p>Nenhuma pergunta ainda.</p>
-                                    <p style={{ fontSize: '0.8rem', marginTop: '10px' }}>Seja o primeiro a mandar algo!</p>
+                    ) : (
+                        messages.map((msg, i) => (
+                            <div key={i} style={{ display: 'flex', gap: '12px' }}>
+                                <div style={{ width: '30px', height: '30px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0' }}>
+                                    <Image src={msg.userData?.photo || msg.userData?.profilePhoto || '/default-avatar.png'} width={30} height={30} alt="" style={{ objectFit: 'cover' }} />
                                 </div>
-                            ) : (
-                                messages.map((msg, i) => (
-                                    <div key={i} style={{ display: 'flex', gap: '12px' }}>
-                                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0' }}>
-                                            <Image src={msg.userData?.photo || msg.userData?.profilePhoto || '/default-avatar.png'} width={30} height={30} alt="" style={{ objectFit: 'cover' }} />
-                                        </div>
-                                        <div>
-                                            <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#111', marginBottom: '2px' }}>{msg.userData?.name || 'Usuário'}</div>
-                                            <div style={{ fontSize: '0.9rem', color: '#444', lineHeight: '1.4', background: '#f8f8f8', padding: '8px 12px', borderRadius: '0 12px 12px 12px' }}>{msg.message}</div>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                            <div ref={messagesEndRef} />
-                        </div>
-                        <div style={{ padding: '20px', borderTop: '1px solid #f0f0f0' }}>
-                            <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '10px' }}>
-                                <input
-                                    type="text"
-                                    value={chatInput}
-                                    onChange={(e) => setChatInput(e.target.value)}
-                                    placeholder="Escreva algo..."
-                                    style={{
-                                        flex: 1,
-                                        padding: '12px 16px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #e0e0e0',
-                                        fontSize: '0.9rem',
-                                        outline: 'none'
-                                    }}
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={!chatInput.trim()}
-                                    style={{
-                                        background: chatInput.trim() ? primaryColor : '#f0f0f0',
-                                        color: chatInput.trim() ? '#fff' : '#ccc',
-                                        border: 'none',
-                                        padding: '0 20px',
-                                        borderRadius: '12px',
-                                        fontWeight: 800,
-                                        cursor: chatInput.trim() ? 'pointer' : 'default'
-                                    }}
-                                >
-                                    Enviar
-                                </button>
-                            </form>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            {/* Quiz Overlays */}
-            <AnimatePresence>
-                {showQuizCreator && (
-                    <QuizCreator
-                        isDark={isDark}
-                        isMobile={isMobile}
-                        onClose={() => setShowQuizCreator(false)}
-                        onSubmit={(quiz: any) => {
-                            socket?.emit('live_board:quiz_start', { formId, quiz });
-                            setShowQuizCreator(false);
-                        }}
-                    />
-                )}
+                                <div>
+                                    <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#111', marginBottom: '2px' }}>{msg.userData?.name || 'Usuário'}</div>
+                                    <div style={{ fontSize: '0.9rem', color: '#444', lineHeight: '1.4', background: '#f8f8f8', padding: '8px 12px', borderRadius: '0 12px 12px 12px' }}>{msg.message}</div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+                <div style={{ padding: '20px', borderTop: '1px solid #f0f0f0' }}>
+                    <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '10px' }}>
+                        <input
+                            type="text"
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            placeholder="Escreva algo..."
+                            style={{
+                                flex: 1,
+                                padding: '12px 16px',
+                                borderRadius: '12px',
+                                border: '1px solid #e0e0e0',
+                                fontSize: '0.9rem',
+                                outline: 'none'
+                            }}
+                        />
+                        <button
+                            type="submit"
+                            disabled={!chatInput.trim()}
+                            style={{
+                                background: chatInput.trim() ? primaryColor : '#f0f0f0',
+                                color: chatInput.trim() ? '#fff' : '#ccc',
+                                border: 'none',
+                                padding: '0 20px',
+                                borderRadius: '12px',
+                                fontWeight: 800,
+                                cursor: chatInput.trim() ? 'pointer' : 'default'
+                            }}
+                        >
+                            Enviar
+                        </button>
+                    </form>
+                </div>
+            </motion.div>
+        )}
+    </AnimatePresence>
+    {/* Quiz Overlays */ }
+    <AnimatePresence>
+        {showQuizCreator && (
+            <QuizCreator
+                isDark={isDark}
+                isMobile={isMobile}
+                onClose={() => setShowQuizCreator(false)}
+                onSubmit={(quiz: any) => {
+                    socket?.emit('live_board:quiz_start', { formId, quiz });
+                    setShowQuizCreator(false);
+                }}
+            />
+        )}
 
-                {currentQuiz && (
-                    <QuizOverlay
-                        quiz={currentQuiz}
-                        results={quizResults}
-                        detailedResults={quizDetailedResults}
-                        hasVoted={hasVoted}
-                        selectedOption={selectedOption}
-                        isMentor={isMentor}
-                        isDark={isDark}
-                        isMobile={isMobile}
-                        onVote={(idx: number) => {
-                            if (!hasVoted) {
-                                setSelectedOption(idx);
-                                setHasVoted(true);
-                                const user = authService.getCurrentUser();
-                                socket?.emit('live_board:quiz_vote', {
-                                    formId,
-                                    optionIndex: idx,
-                                    userData: { name: user?.name, photo: (user as any)?.photo || (user as any)?.profilePhoto }
-                                });
-                                toast.success(t('hub.liveBoard.quizVotedToast') || "Voto registado!");
-                            }
-                        }}
-                        onReveal={() => socket?.emit('live_board:quiz_reveal', formId)}
-                        onEnd={() => socket?.emit('live_board:quiz_end', formId)}
-                        isRevealed={isQuizRevealed}
-                        correctOption={correctQuizOption !== null ? correctQuizOption : currentQuiz.correctOption}
-                    />
-                )}
-            </AnimatePresence>
+        {currentQuiz && (
+            <QuizOverlay
+                quiz={currentQuiz}
+                results={quizResults}
+                detailedResults={quizDetailedResults}
+                hasVoted={hasVoted}
+                selectedOption={selectedOption}
+                isMentor={isMentor}
+                isDark={isDark}
+                isMobile={isMobile}
+                onVote={(idx: number) => {
+                    if (!hasVoted) {
+                        setSelectedOption(idx);
+                        setHasVoted(true);
+                        const user = authService.getCurrentUser();
+                        socket?.emit('live_board:quiz_vote', {
+                            formId,
+                            optionIndex: idx,
+                            userData: { name: user?.name, photo: (user as any)?.photo || (user as any)?.profilePhoto }
+                        });
+                        toast.success(t('hub.liveBoard.quizVotedToast') || "Voto registado!");
+                    }
+                }}
+                onReveal={() => socket?.emit('live_board:quiz_reveal', formId)}
+                onEnd={() => socket?.emit('live_board:quiz_end', formId)}
+                isRevealed={isQuizRevealed}
+                correctOption={correctQuizOption !== null ? correctQuizOption : currentQuiz.correctOption}
+            />
+        )}
+    </AnimatePresence>
 
-            {/* Question Sidebar Logic Overlay UI should be above Canvas but below specialized modals */}
+    {/* Question Sidebar Logic Overlay UI should be above Canvas but below specialized modals */ }
 
-            {/* Announcement / Status Overlay (Non-intrusive card at bottom-center) */}
+    {/* Announcement / Status Overlay (Non-intrusive card at bottom-center) */ }
             <AnimatePresence>
                 {currentAnnouncement && (
                     <div style={{
