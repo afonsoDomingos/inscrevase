@@ -751,7 +751,7 @@ function HubContent() {
 
                 {/* --- LIVE BOARD SECTION --- */}
                 <AnimatePresence>
-                    {isBoardActive && !isBoardMinimized && (
+                    {isBoardActive && (
                         <LiveBoardContainer
                             formId={String(submission.form._id)}
                             isMentor={currentUser?._id === submission.form.creator?._id || currentUser?.role === 'admin'}
@@ -764,6 +764,8 @@ function HubContent() {
                             }}
                             eventTitle={submission.form.title}
                             primaryColor={primaryColor}
+                            isMinimized={isBoardMinimized}
+                            onRestore={() => setIsBoardMinimized(false)}
                             onClose={() => {
                                 // If mentor, actually end the session
                                 if (currentUser?._id === submission.form.creator?._id || currentUser?.role === 'admin') {
@@ -779,37 +781,6 @@ function HubContent() {
                     )}
                 </AnimatePresence>
 
-                {/* Floating Restore Board Button for Participants */}
-                <AnimatePresence>
-                    {isBoardActive && isBoardMinimized && (
-                        <motion.button
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0, opacity: 0 }}
-                            onClick={() => setIsBoardMinimized(false)}
-                            style={{
-                                position: 'fixed',
-                                bottom: '30px',
-                                right: '30px',
-                                background: primaryColor,
-                                color: '#fff',
-                                width: '60px',
-                                height: '60px',
-                                borderRadius: '50%',
-                                border: 'none',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                                zIndex: 9000
-                            }}
-                        >
-                            <SparklesIcon size={24} />
-                            <span style={{ position: 'absolute', top: '-5px', right: '-5px', width: '15px', height: '15px', background: '#e11d48', borderRadius: '50%', border: '2px solid #fff' }} className="animate-pulse" />
-                        </motion.button>
-                    )}
-                </AnimatePresence>
 
                 {!isBoardActive && (currentUser?._id === submission?.form?.creator?._id || currentUser?.role === 'admin') && (
                     <div style={{ textAlign: 'center', marginBottom: '40px', position: 'relative' }}>

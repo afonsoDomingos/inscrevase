@@ -35,7 +35,8 @@ import {
     Download,
     Users,
     PenLine,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Maximize2
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -115,6 +116,8 @@ interface LiveBoardContainerProps {
     eventTitle: string;
     onClose: () => void;
     primaryColor?: string;
+    isMinimized?: boolean;
+    onRestore?: () => void;
 }
 
 export default function LiveBoardContainer({
@@ -123,7 +126,9 @@ export default function LiveBoardContainer({
     mentorData,
     eventTitle,
     onClose,
-    primaryColor = '#CFB53B'
+    primaryColor = '#CFB53B',
+    isMinimized = false,
+    onRestore
 }: LiveBoardContainerProps) {
     const { t } = useTranslate();
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -795,7 +800,24 @@ export default function LiveBoardContainer({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
             className="live-board-main"
-            style={{
+            onClick={isMinimized && onRestore ? onRestore : undefined}
+            style={isMinimized ? {
+                position: 'fixed',
+                bottom: '20px',
+                right: '20px',
+                width: isMobile ? '160px' : '280px',
+                height: isMobile ? '90px' : '157px',
+                background: isDark ? '#1a1a1a' : '#fff',
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                borderRadius: '16px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+                border: `3px solid ${primaryColor}`,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+            } : {
                 position: 'fixed',
                 top: '0',
                 left: '0',
@@ -806,336 +828,339 @@ export default function LiveBoardContainer({
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                color: isDark ? '#fff' : '#111'
+                color: isDark ? '#fff' : '#111',
+                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
             }}
         >
             {/* Minimal Top Header */}
-            <div style={{
-                padding: isMobile ? '8px 12px' : '10px 25px',
-                background: isDark ? '#1a1a1a' : '#fff',
-                borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #f0f0f0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                height: isMobile ? '50px' : '65px',
-                backdropFilter: 'blur(10px)',
-                zIndex: 100
-            }}>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: isMobile ? '10px' : '15px', overflow: 'hidden' }}>
-                    <div style={{ position: 'relative' }}>
-                        <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', overflow: 'hidden', border: `2px solid ${primaryColor}`, flexShrink: 0 }}>
-                            <Image
-                                src={mentorData.photo || '/default-avatar.png'}
-                                width={isMobile ? 30 : 36}
-                                height={isMobile ? 30 : 36}
-                                style={{ objectFit: 'cover' }}
-                                alt={mentorData.name}
-                            />
-                        </div>
-                        {(isMentor ? isAudioActive : isMentorSpeaking) && (
-                            <motion.div
-                                animate={{ scale: [1, 1.25, 1], opacity: [0.5, 0.2, 0.5] }}
-                                transition={{ repeat: Infinity, duration: 1.5 }}
-                                style={{
-                                    position: 'absolute',
-                                    inset: -3,
-                                    borderRadius: '12px',
-                                    border: `2px solid ${primaryColor}`,
-                                    pointerEvents: 'none'
-                                }}
-                            />
-                        )}
-                        {(isMentor ? isAudioActive : isMentorSpeaking) && (
-                            <div style={{ position: 'absolute', bottom: -1, right: -1, background: primaryColor, borderRadius: '50%', width: '12px', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #fff', gap: '1px' }}>
-                                <motion.div animate={{ height: [3, 7, 3] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ width: '1.5px', background: '#fff' }} />
-                                <motion.div animate={{ height: [2, 5, 2] }} transition={{ repeat: Infinity, duration: 0.4, delay: 0.1 }} style={{ width: '1.5px', background: '#fff' }} />
-                                <motion.div animate={{ height: [3, 7, 3] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} style={{ width: '1.5px', background: '#fff' }} />
+            {!isMinimized && (
+                <div style={{
+                    padding: isMobile ? '8px 12px' : '10px 25px',
+                    background: isDark ? '#1a1a1a' : '#fff',
+                    borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #f0f0f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    height: isMobile ? '50px' : '65px',
+                    backdropFilter: 'blur(10px)',
+                    zIndex: 100
+                }}>
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: isMobile ? '10px' : '15px', overflow: 'hidden' }}>
+                        <div style={{ position: 'relative' }}>
+                            <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', overflow: 'hidden', border: `2px solid ${primaryColor}`, flexShrink: 0 }}>
+                                <Image
+                                    src={mentorData.photo || '/default-avatar.png'}
+                                    width={isMobile ? 30 : 36}
+                                    height={isMobile ? 30 : 36}
+                                    style={{ objectFit: 'cover' }}
+                                    alt={mentorData.name}
+                                />
                             </div>
-                        )}
-                    </div>
-                    <div>
-                        <div style={{ fontWeight: 800, fontSize: isMobile ? '0.85rem' : '0.95rem', color: isDark ? '#fff' : '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: isMobile ? '80px' : 'none' }}>{mentorData.name}</div>
-                        {!isMobile && (
-                            <>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, color: isDark ? '#fff' : '#111' }}>{mentorData.title}</div>
-
-                                {/* Social Links & Contact */}
-                                <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                                    {mentorData.socialLinks?.instagram && (
-                                        <a href={mentorData.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
-                                            <Instagram size={14} />
-                                        </a>
-                                    )}
-                                    {mentorData.socialLinks?.linkedin && (
-                                        <a href={mentorData.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
-                                            <Linkedin size={14} />
-                                        </a>
-                                    )}
-                                    {mentorData.socialLinks?.website && (
-                                        <a href={mentorData.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
-                                            <Globe size={14} />
-                                        </a>
-                                    )}
-                                    {mentorData.whatsapp && (
-                                        <a href={`https://wa.me/${mentorData.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
-                                            <Phone size={14} />
-                                            <span style={{ fontSize: '0.7rem' }}>{mentorData.whatsapp}</span>
-                                        </a>
-                                    )}
+                            {(isMentor ? isAudioActive : isMentorSpeaking) && (
+                                <motion.div
+                                    animate={{ scale: [1, 1.25, 1], opacity: [0.5, 0.2, 0.5] }}
+                                    transition={{ repeat: Infinity, duration: 1.5 }}
+                                    style={{
+                                        position: 'absolute',
+                                        inset: -3,
+                                        borderRadius: '12px',
+                                        border: `2px solid ${primaryColor}`,
+                                        pointerEvents: 'none'
+                                    }}
+                                />
+                            )}
+                            {(isMentor ? isAudioActive : isMentorSpeaking) && (
+                                <div style={{ position: 'absolute', bottom: -1, right: -1, background: primaryColor, borderRadius: '50%', width: '12px', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #fff', gap: '1px' }}>
+                                    <motion.div animate={{ height: [3, 7, 3] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ width: '1.5px', background: '#fff' }} />
+                                    <motion.div animate={{ height: [2, 5, 2] }} transition={{ repeat: Infinity, duration: 0.4, delay: 0.1 }} style={{ width: '1.5px', background: '#fff' }} />
+                                    <motion.div animate={{ height: [3, 7, 3] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} style={{ width: '1.5px', background: '#fff' }} />
                                 </div>
-                            </>
-                        )
-                        }
+                            )}
+                        </div>
+                        <div>
+                            <div style={{ fontWeight: 800, fontSize: isMobile ? '0.85rem' : '0.95rem', color: isDark ? '#fff' : '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: isMobile ? '80px' : 'none' }}>{mentorData.name}</div>
+                            {!isMobile && (
+                                <>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, color: isDark ? '#fff' : '#111' }}>{mentorData.title}</div>
+
+                                    {/* Social Links & Contact */}
+                                    <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                                        {mentorData.socialLinks?.instagram && (
+                                            <a href={mentorData.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
+                                                <Instagram size={14} />
+                                            </a>
+                                        )}
+                                        {mentorData.socialLinks?.linkedin && (
+                                            <a href={mentorData.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
+                                                <Linkedin size={14} />
+                                            </a>
+                                        )}
+                                        {mentorData.socialLinks?.website && (
+                                            <a href={mentorData.socialLinks.website} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5 }}>
+                                                <Globe size={14} />
+                                            </a>
+                                        )}
+                                        {mentorData.whatsapp && (
+                                            <a href={`https://wa.me/${mentorData.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
+                                                <Phone size={14} />
+                                                <span style={{ fontSize: '0.7rem' }}>{mentorData.whatsapp}</span>
+                                            </a>
+                                        )}
+                                    </div>
+                                </>
+                            )
+                            }
+                        </div >
                     </div >
-                </div >
 
-                {/* Date and Time Header Center */}
-                {!isMobile && (
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: isDark ? '#fff' : '#111',
-                        opacity: 0.8,
-                        flexShrink: 0,
-                        padding: '0 15px'
-                    }}>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.5px' }}>
-                            {currentTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                    {/* Date and Time Header Center */}
+                    {!isMobile && (
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: isDark ? '#fff' : '#111',
+                            opacity: 0.8,
+                            flexShrink: 0,
+                            padding: '0 15px'
+                        }}>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.5px' }}>
+                                {currentTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'capitalize' }}>
+                                {currentTime.toLocaleDateString('pt-PT', { weekday: 'long', day: '2-digit', month: 'short' }).replace('.', '')}
+                            </div>
                         </div>
-                        <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'capitalize' }}>
-                            {currentTime.toLocaleDateString('pt-PT', { weekday: 'long', day: '2-digit', month: 'short' }).replace('.', '')}
-                        </div>
-                    </div>
-                )}
+                    )}
 
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: isMobile ? '8px' : '20px' }}>
-                    {/* Participant Avatars (Overlap Style like Google Meet) */}
-                    <div style={{ display: 'flex', alignItems: 'center', marginRight: isMobile ? '0' : '10px' }}>
-                        {!isMobile && participants.slice(0, 5).map((p, idx) => (
-                            <div
-                                key={p.id || idx}
-                                title={p.name}
-                                style={{
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: isMobile ? '8px' : '20px' }}>
+                        {/* Participant Avatars (Overlap Style like Google Meet) */}
+                        <div style={{ display: 'flex', alignItems: 'center', marginRight: isMobile ? '0' : '10px' }}>
+                            {!isMobile && participants.slice(0, 5).map((p, idx) => (
+                                <div
+                                    key={p.id || idx}
+                                    title={p.name}
+                                    style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '50%',
+                                        border: '2px solid #fff',
+                                        marginLeft: idx === 0 ? 0 : '-12px',
+                                        overflow: 'hidden',
+                                        background: '#f0f0f0',
+                                        zIndex: 10 - idx,
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <Image
+                                        src={p.photo || '/default-avatar.png'}
+                                        width={32}
+                                        height={32}
+                                        alt={p.name}
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                </div>
+                            ))}
+                            {!isMobile && participants.length > 5 && (
+                                <div style={{
                                     width: '32px',
                                     height: '32px',
                                     borderRadius: '50%',
-                                    border: '2px solid #fff',
-                                    marginLeft: idx === 0 ? 0 : '-12px',
-                                    overflow: 'hidden',
-                                    background: '#f0f0f0',
-                                    zIndex: 10 - idx,
-                                    position: 'relative'
-                                }}
-                            >
-                                <Image
-                                    src={p.photo || '/default-avatar.png'}
-                                    width={32}
-                                    height={32}
-                                    alt={p.name}
-                                    style={{ objectFit: 'cover' }}
-                                />
-                            </div>
-                        ))}
-                        {!isMobile && participants.length > 5 && (
-                            <div style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '50%',
-                                background: '#111',
-                                color: '#fff',
-                                fontSize: '0.65rem',
-                                fontWeight: 800,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '2px solid #fff',
-                                marginLeft: '-12px',
-                                zIndex: 0
-                            }}>
-                                +{participants.length - 5}
-                            </div>
-                        )}
-                        <span style={{ marginLeft: isMobile ? '0' : '12px', fontSize: '0.75rem', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {isMobile && <Users size={14} />}
-                            {participants.length} {!isMobile && (participants.length === 1 ? 'conetado' : 'conectados')}
-                        </span>
-                    </div>
-
-                    {isTimerActive && (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            background: timerSeconds < 10 ? '#fee2e2' : (isDark ? 'rgba(14,165,233,0.1)' : '#f0f9ff'),
-                            padding: '6px 14px',
-                            borderRadius: '12px',
-                            color: timerSeconds < 10 ? '#ef4444' : '#0ea5e9',
-                            fontWeight: 900,
-                            fontSize: '0.9rem',
-                            border: `1px solid ${timerSeconds < 10 ? '#fecaca' : '#bae6fd'}`,
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                        }}>
-                            <Clock size={16} className={timerSeconds < 10 ? "animate-pulse" : ""} />
-                            <span style={{ minWidth: '45px', textAlign: 'center' }}>
-                                {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
-                            </span>
-                        </div>
-                    )}
-
-                    {isMentor && (
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                                onClick={handleNotifyMissing}
-                                disabled={isNotifying}
-                                style={{
-                                    background: isDark ? 'rgba(34,197,94,0.1)' : '#f0fdf4',
-                                    color: '#22c55e',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: '32px',
-                                    borderRadius: '8px',
+                                    background: '#111',
+                                    color: '#fff',
+                                    fontSize: '0.65rem',
                                     fontWeight: 800,
-                                    cursor: isNotifying ? 'default' : 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '6px',
-                                    fontSize: '0.75rem',
-                                    opacity: isNotifying ? 0.6 : 1
-                                }}
-                                title="Enviar e-mail para inscritos que ainda não entraram"
-                            >
-                                <Mail size={14} /> {!isMobile && "Chamar Inscritos"}
-                            </button>
+                                    border: '2px solid #fff',
+                                    marginLeft: '-12px',
+                                    zIndex: 0
+                                }}>
+                                    +{participants.length - 5}
+                                </div>
+                            )}
+                            <span style={{ marginLeft: isMobile ? '0' : '12px', fontSize: '0.75rem', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                {isMobile && <Users size={14} />}
+                                {participants.length} {!isMobile && (participants.length === 1 ? 'conetado' : 'conectados')}
+                            </span>
+                        </div>
 
-                            <div style={{ position: 'relative' }}>
+                        {isTimerActive && (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: timerSeconds < 10 ? '#fee2e2' : (isDark ? 'rgba(14,165,233,0.1)' : '#f0f9ff'),
+                                padding: '6px 14px',
+                                borderRadius: '12px',
+                                color: timerSeconds < 10 ? '#ef4444' : '#0ea5e9',
+                                fontWeight: 900,
+                                fontSize: '0.9rem',
+                                border: `1px solid ${timerSeconds < 10 ? '#fecaca' : '#bae6fd'}`,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                            }}>
+                                <Clock size={16} className={timerSeconds < 10 ? "animate-pulse" : ""} />
+                                <span style={{ minWidth: '45px', textAlign: 'center' }}>
+                                    {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
+                                </span>
+                            </div>
+                        )}
+
+                        {isMentor && (
+                            <div style={{ display: 'flex', gap: '8px' }}>
                                 <button
-                                    onClick={() => setShowTimerSelector(!showTimerSelector)}
+                                    onClick={handleNotifyMissing}
+                                    disabled={isNotifying}
                                     style={{
-                                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
-                                        color: isDark ? '#fff' : '#666',
+                                        background: isDark ? 'rgba(34,197,94,0.1)' : '#f0fdf4',
+                                        color: '#22c55e',
                                         border: 'none',
-                                        width: '32px',
+                                        padding: isMobile ? '0 8px' : '0 12px',
                                         height: '32px',
                                         borderRadius: '8px',
-                                        cursor: 'pointer',
+                                        fontWeight: 800,
+                                        cursor: isNotifying ? 'default' : 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                        fontSize: '0.75rem',
+                                        opacity: isNotifying ? 0.6 : 1
                                     }}
+                                    title="Enviar e-mail para inscritos que ainda não entraram"
                                 >
-                                    <Clock size={16} />
+                                    <Mail size={14} /> {!isMobile && "Chamar Inscritos"}
                                 </button>
 
-                                <AnimatePresence>
-                                    {showTimerSelector && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                            style={{
-                                                position: 'absolute',
-                                                top: '40px',
-                                                right: 0,
-                                                background: isDark ? '#1a1a1a' : '#fff',
-                                                padding: '12px',
-                                                borderRadius: '16px',
-                                                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-                                                border: isDark ? '1px solid #333' : '1px solid #eee',
-                                                zIndex: 100,
-                                                width: '180px',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                gap: '8px'
-                                            }}
-                                        >
-                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ESTABELECER FOCO</span>
-                                            {[1, 2, 5, 10, 15].map(min => (
-                                                <button
-                                                    key={min}
-                                                    onClick={() => {
-                                                        socket?.emit('live_board:timer:start', { formId, duration: min * 60 });
-                                                        setShowTimerSelector(false);
-                                                    }}
-                                                    style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
-                                                >
-                                                    {min} {min === 1 ? 'minuto' : 'minutos'}
-                                                </button>
-                                            ))}
-                                            {isTimerActive && (
-                                                <button
-                                                    onClick={() => {
-                                                        socket?.emit('live_board:timer:stop', formId);
-                                                        setShowTimerSelector(false);
-                                                    }}
-                                                    style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
-                                                >
-                                                    Parar Timer
-                                                </button>
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                <div style={{ position: 'relative' }}>
+                                    <button
+                                        onClick={() => setShowTimerSelector(!showTimerSelector)}
+                                        style={{
+                                            background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
+                                            color: isDark ? '#fff' : '#666',
+                                            border: 'none',
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Clock size={16} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {showTimerSelector && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '40px',
+                                                    right: 0,
+                                                    background: isDark ? '#1a1a1a' : '#fff',
+                                                    padding: '12px',
+                                                    borderRadius: '16px',
+                                                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                                                    border: isDark ? '1px solid #333' : '1px solid #eee',
+                                                    zIndex: 100,
+                                                    width: '180px',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '8px'
+                                                }}
+                                            >
+                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ESTABELECER FOCO</span>
+                                                {[1, 2, 5, 10, 15].map(min => (
+                                                    <button
+                                                        key={min}
+                                                        onClick={() => {
+                                                            socket?.emit('live_board:timer:start', { formId, duration: min * 60 });
+                                                            setShowTimerSelector(false);
+                                                        }}
+                                                        style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                    >
+                                                        {min} {min === 1 ? 'minuto' : 'minutos'}
+                                                    </button>
+                                                ))}
+                                                {isTimerActive && (
+                                                    <button
+                                                        onClick={() => {
+                                                            socket?.emit('live_board:timer:stop', formId);
+                                                            setShowTimerSelector(false);
+                                                        }}
+                                                        style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+                                                    >
+                                                        Parar Timer
+                                                    </button>
+                                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
+                        )}
+
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
+                            padding: isMobile ? '4px 8px' : '6px 12px',
+                            borderRadius: '8px',
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            color: isDark ? '#fff' : '#444'
+                        }}>
+                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ff4757' }} className="animate-pulse" />
+                            <span>LIVE {!isMobile && "BOARD"}</span>
                         </div>
-                    )}
 
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8',
-                        padding: isMobile ? '4px 8px' : '6px 12px',
-                        borderRadius: '8px',
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        color: isDark ? '#fff' : '#444'
-                    }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ff4757' }} className="animate-pulse" />
-                        <span>LIVE {!isMobile && "BOARD"}</span>
+                        {isMentor ? (
+                            <button
+                                onClick={onClose}
+                                style={{
+                                    background: '#fee2e2',
+                                    color: '#ef4444',
+                                    border: 'none',
+                                    padding: isMobile ? '8px' : '8px 16px',
+                                    borderRadius: '8px',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    fontSize: '0.8rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <X size={16} /> {!isMobile && "Encerramento"}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={onClose}
+                                style={{
+                                    background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0',
+                                    color: isDark ? '#fff' : '#444',
+                                    border: 'none',
+                                    padding: isMobile ? '8px' : '8px 16px',
+                                    borderRadius: '8px',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    fontSize: '0.8rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <X size={16} /> {!isMobile && "Minimizar"}
+                            </button>
+                        )}
                     </div>
-
-                    {isMentor ? (
-                        <button
-                            onClick={onClose}
-                            style={{
-                                background: '#fee2e2',
-                                color: '#ef4444',
-                                border: 'none',
-                                padding: isMobile ? '8px' : '8px 16px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                fontSize: '0.8rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                            }}
-                        >
-                            <X size={16} /> {!isMobile && "Encerramento"}
-                        </button>
-                    ) : (
-                        <button
-                            onClick={onClose}
-                            style={{
-                                background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0',
-                                color: isDark ? '#fff' : '#444',
-                                border: 'none',
-                                padding: isMobile ? '8px' : '8px 16px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                fontSize: '0.8rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                            }}
-                        >
-                            <X size={16} /> {!isMobile && "Minimizar"}
-                        </button>
-                    )}
-                </div>
-            </div >
+                </div >
+            )}
 
             {/* Canvas Area */}
             <div
@@ -1158,9 +1183,17 @@ export default function LiveBoardContainer({
                     primaryColor={primaryColor}
                 />
 
+                {isMinimized && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, pointerEvents: 'none' }}>
+                        <div style={{ background: primaryColor, color: '#fff', padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>
+                            <Maximize2 size={14} /> Maximizar
+                        </div>
+                    </div>
+                )}
+
                 {/* Mentor Cursor Overlay (for participants) */}
                 {
-                    mentorCursorPos && !isMentor && (
+                    !isMinimized && mentorCursorPos && !isMentor && (
                         <motion.div
                             animate={{ x: mentorCursorPos.x, y: mentorCursorPos.y }}
                             transition={{ duration: 0.1, ease: 'linear' }}
@@ -1238,24 +1271,27 @@ export default function LiveBoardContainer({
                 ))}
             </AnimatePresence >
 
-            <div style={{
-                position: 'absolute',
-                bottom: '20px',
-                left: '20px',
-                pointerEvents: 'none',
-                opacity: 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                zIndex: 10
-            }}>
-                <Image src="/logo.png" alt="Inscreva-se" width={24} height={24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
-                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
-            </div>
+            {/* Logo Watermark */}
+            {!isMinimized && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    left: '20px',
+                    pointerEvents: 'none',
+                    opacity: 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    zIndex: 10
+                }}>
+                    <Image src="/logo.png" alt="Inscreva-se" width={24} height={24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
+                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
+                </div>
+            )}
 
             {/* Participant Audio Control */}
             {
-                !isMentor && (
+                !isMinimized && !isMentor && (
                     <div style={{ position: 'absolute', bottom: 30, right: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                         {/* Mentor speaking indicator for participants */}
                         <AnimatePresence>
@@ -1317,370 +1353,620 @@ export default function LiveBoardContainer({
                 )
             }
 
-            <div style={{
-                position: 'absolute',
-                bottom: isMobile ? '15px' : '30px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(16px)',
-                padding: '4px 6px',
-                borderRadius: isMobile ? '12px' : '15px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1px',
-                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
-                zIndex: 200,
-                maxWidth: '95vw',
-                overflowX: 'auto',
-                scrollbarWidth: 'none'
-            }}>
-                {(isMentor || drawingPermissions.has((window as any).__liveBoardSocketId || '')) ? (
-                    <>
-                        {/* Colors (Brushes) */}
-                        <div style={{ display: 'flex', gap: '3px', paddingRight: '4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
-                            {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
-                                <RealisticBrush
-                                    key={c}
-                                    color={c}
-                                    isActive={color === c && tool !== 'eraser'}
-                                    isDark={isDark}
+            {/* Bottom Tools */}
+            {!isMinimized && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: isMobile ? '15px' : '30px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    padding: '4px 6px',
+                    borderRadius: isMobile ? '12px' : '15px',
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1px',
+                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                    zIndex: 200,
+                    maxWidth: '95vw',
+                    overflowX: 'auto',
+                    scrollbarWidth: 'none'
+                }}>
+                    {(isMentor || drawingPermissions.has((window as any).__liveBoardSocketId || '')) ? (
+                        <>
+                            {/* Colors (Brushes) */}
+                            <div style={{ display: 'flex', gap: '3px', paddingRight: '4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                                {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
+                                    <RealisticBrush
+                                        key={c}
+                                        color={c}
+                                        isActive={color === c && tool !== 'eraser'}
+                                        isDark={isDark}
+                                        isMobile={isMobile}
+                                        onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
+                                    />
+                                ))}
+                                <RealisticEraser
+                                    isActive={tool === 'eraser'}
                                     isMobile={isMobile}
-                                    onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
+                                    onClick={() => setTool('eraser')}
                                 />
-                            ))}
-                            <RealisticEraser
-                                isActive={tool === 'eraser'}
-                                isMobile={isMobile}
-                                onClick={() => setTool('eraser')}
-                            />
-                        </div>
+                            </div>
 
-                        {/* Main Tools */}
-                        <div style={{ display: 'flex', gap: '0px', padding: '0 1px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
-                            {[
-                                { id: 'laser', icon: <MousePointer2 size={isMobile ? 14 : 16} /> },
-                                { id: 'rectangle', icon: <Square size={isMobile ? 14 : 16} /> },
-                                { id: 'circle', icon: <CircleIcon size={isMobile ? 14 : 16} /> },
-                                { id: 'arrow', icon: <ArrowUpRight size={isMobile ? 14 : 16} /> },
-                                { id: 'text', icon: <Type size={isMobile ? 14 : 16} /> },
-                                { id: 'image', icon: <ImageIcon size={isMobile ? 14 : 16} /> }
-                            ].map((t) => (
-                                <button
-                                    key={t.id}
-                                    onClick={() => {
-                                        if (t.id === 'image') {
-                                            const input = document.createElement('input');
-                                            input.type = 'file';
-                                            input.accept = 'image/*';
-                                            input.onchange = async (e: any) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                    const reader = new FileReader();
-                                                    reader.onload = (re: any) => {
-                                                        const img = new window.Image();
-                                                        img.onload = () => {
-                                                            // Create a temporary canvas for compression
-                                                            const canvas = document.createElement('canvas');
-                                                            const MAX_WIDTH = 1200;
-                                                            const MAX_HEIGHT = 1200;
-                                                            let width = img.width;
-                                                            let height = img.height;
+                            {/* Main Tools */}
+                            <div style={{ display: 'flex', gap: '0px', padding: '0 1px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                                {[
+                                    { id: 'laser', icon: <MousePointer2 size={isMobile ? 14 : 16} /> },
+                                    { id: 'rectangle', icon: <Square size={isMobile ? 14 : 16} /> },
+                                    { id: 'circle', icon: <CircleIcon size={isMobile ? 14 : 16} /> },
+                                    { id: 'arrow', icon: <ArrowUpRight size={isMobile ? 14 : 16} /> },
+                                    { id: 'text', icon: <Type size={isMobile ? 14 : 16} /> },
+                                    { id: 'image', icon: <ImageIcon size={isMobile ? 14 : 16} /> }
+                                ].map((t) => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => {
+                                            if (t.id === 'image') {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = async (e: any) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (re: any) => {
+                                                            const img = new window.Image();
+                                                            img.onload = () => {
+                                                                // Create a temporary canvas for compression
+                                                                const canvas = document.createElement('canvas');
+                                                                const MAX_WIDTH = 1200;
+                                                                const MAX_HEIGHT = 1200;
+                                                                let width = img.width;
+                                                                let height = img.height;
 
-                                                            if (width > height) {
-                                                                if (width > MAX_WIDTH) {
-                                                                    height *= MAX_WIDTH / width;
-                                                                    width = MAX_WIDTH;
+                                                                if (width > height) {
+                                                                    if (width > MAX_WIDTH) {
+                                                                        height *= MAX_WIDTH / width;
+                                                                        width = MAX_WIDTH;
+                                                                    }
+                                                                } else {
+                                                                    if (height > MAX_HEIGHT) {
+                                                                        width *= MAX_HEIGHT / height;
+                                                                        height = MAX_HEIGHT;
+                                                                    }
                                                                 }
-                                                            } else {
-                                                                if (height > MAX_HEIGHT) {
-                                                                    width *= MAX_HEIGHT / height;
-                                                                    height = MAX_HEIGHT;
-                                                                }
-                                                            }
 
-                                                            canvas.width = width;
-                                                            canvas.height = height;
-                                                            const ctx = canvas.getContext('2d');
-                                                            ctx?.drawImage(img, 0, 0, width, height);
+                                                                canvas.width = width;
+                                                                canvas.height = height;
+                                                                const ctx = canvas.getContext('2d');
+                                                                ctx?.drawImage(img, 0, 0, width, height);
 
-                                                            // Compress to JPEG with 0.6 quality to keep it light
-                                                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                                                                // Compress to JPEG with 0.6 quality to keep it light
+                                                                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
 
-                                                            // Calculate aspect ratio for initial display
-                                                            // We use a fixed width of 0.3 (30%) of the board and calculate height
-                                                            const displayWidth = 0.3;
-                                                            const displayHeight = (img.height / img.width) * displayWidth;
+                                                                // Calculate aspect ratio for initial display
+                                                                // We use a fixed width of 0.3 (30%) of the board and calculate height
+                                                                const displayWidth = 0.3;
+                                                                const displayHeight = (img.height / img.width) * displayWidth;
 
-                                                            const data = {
-                                                                type: 'image',
-                                                                strokeId: Math.random().toString(36).substring(7),
-                                                                src: compressedDataUrl,
-                                                                x0: 0.1, y0: 0.1,
-                                                                x1: 0.1 + displayWidth,
-                                                                y1: 0.1 + displayHeight
+                                                                const data = {
+                                                                    type: 'image',
+                                                                    strokeId: Math.random().toString(36).substring(7),
+                                                                    src: compressedDataUrl,
+                                                                    x0: 0.1, y0: 0.1,
+                                                                    x1: 0.1 + displayWidth,
+                                                                    y1: 0.1 + displayHeight
+                                                                };
+                                                                socket?.emit('live_board:draw', { formId, data });
+                                                                whiteboardRef.current?.addExternalItem(data);
                                                             };
-                                                            socket?.emit('live_board:draw', { formId, data });
-                                                            whiteboardRef.current?.addExternalItem(data);
+                                                            img.src = re.target.result;
                                                         };
-                                                        img.src = re.target.result;
-                                                    };
-                                                    reader.readAsDataURL(file);
-                                                }
-                                            };
-                                            input.click();
-                                        } else {
-                                            setTool(t.id as any);
-                                        }
-                                    }}
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                };
+                                                input.click();
+                                            } else {
+                                                setTool(t.id as any);
+                                            }
+                                        }}
+                                        style={{
+                                            width: isMobile ? '28px' : '32px',
+                                            height: isMobile ? '28px' : '32px',
+                                            borderRadius: '6px',
+                                            background: tool === t.id ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: tool === t.id ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'all 0.2s',
+                                            flexShrink: 0
+                                        }}
+                                        title={t.id}
+                                    >
+                                        {t.icon}
+                                    </button>
+                                ))}
+
+                                <button
+                                    onClick={() => setTool('pen')}
                                     style={{
                                         width: isMobile ? '28px' : '32px',
                                         height: isMobile ? '28px' : '32px',
                                         borderRadius: '6px',
-                                        background: tool === t.id ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
+                                        background: tool === 'pen' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                         border: 'none',
                                         cursor: 'pointer',
-                                        color: tool === t.id ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
+                                        color: tool === 'pen' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        transition: 'all 0.2s',
                                         flexShrink: 0
                                     }}
-                                    title={t.id}
+                                    title="Pincel Livre"
                                 >
-                                    {t.icon}
+                                    <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                                 </button>
-                            ))}
 
-                            <button
-                                onClick={() => setTool('pen')}
-                                style={{
-                                    width: isMobile ? '28px' : '32px',
-                                    height: isMobile ? '28px' : '32px',
-                                    borderRadius: '6px',
-                                    background: tool === 'pen' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    color: tool === 'pen' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0
-                                }}
-                                title="Pincel Livre"
-                            >
-                                <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                            </button>
-
-                            <button
-                                onClick={() => setTool('select')}
-                                style={{
-                                    width: isMobile ? '28px' : '32px',
-                                    height: isMobile ? '28px' : '32px',
-                                    borderRadius: '6px',
-                                    background: tool === 'select' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    color: tool === 'select' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0
-                                }}
-                                title="Mover Sólidos"
-                            >
-                                <Hand size={isMobile ? 14 : 16} />
-                            </button>
-                        </div>
-
-                        {/* Actions */}
-                        {!isMobile && (
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="50"
-                                    value={brushSize}
-                                    onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                                    style={{ width: '40px', accentColor: color }}
-                                    title="Tamanho do Pincel/Borracha"
-                                />
-                            </div>
-                        )}
-
-                        <div style={{ display: 'flex', gap: '0px', flexShrink: 0 }}>
-                            <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 14 : 16} /></button>
-                            <button
-                                onClick={() => setShowClearConfirm(true)}
-                                style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
-                            >
-                                <Eraser size={isMobile ? 14 : 16} />
-                            </button>
-
-
-
-                            <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
-                            <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 14 : 16} /></button>
-
-                            <button onClick={() => setIsDark(!isDark)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={isMobile ? 14 : 16} /> : <Moon size={isMobile ? 14 : 16} />}</button>
-
-                            <button onClick={saveBoard} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={isMobile ? 14 : 16} /></button>
-
-                            {/* Collaborative Drawing Panel */}
-                            <div style={{ position: 'relative' }}>
                                 <button
-                                    onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
-                                    style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                                    title="Permissões de Desenho"
+                                    onClick={() => setTool('select')}
+                                    style={{
+                                        width: isMobile ? '28px' : '32px',
+                                        height: isMobile ? '28px' : '32px',
+                                        borderRadius: '6px',
+                                        background: tool === 'select' ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: tool === 'select' ? (isDark ? '#fff' : '#111') : (isDark ? '#aaa' : '#666'),
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexShrink: 0
+                                    }}
+                                    title="Mover Sólidos"
                                 >
-                                    <PenLine size={isMobile ? 14 : 16} />
+                                    <Hand size={isMobile ? 14 : 16} />
                                 </button>
-                                <AnimatePresence>
-                                    {showParticipantsPanel && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                            style={{
-                                                position: 'absolute',
-                                                bottom: '50px',
-                                                right: 0,
-                                                background: isDark ? '#1a1a1a' : '#fff',
-                                                border: isDark ? '1px solid #333' : '1px solid #eee',
-                                                borderRadius: '16px',
-                                                padding: '14px',
-                                                boxShadow: '0 -10px 30px rgba(0,0,0,0.2)',
-                                                zIndex: 200,
-                                                minWidth: '240px',
-                                                maxHeight: '320px',
-                                                overflowY: 'auto'
-                                            }}
-                                        >
-                                            <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> Giz (Permissões)</div>
-                                                {participants.length > 0 && (
-                                                    <div style={{ display: 'flex', gap: '4px' }}>
-                                                        <button
-                                                            onClick={grantAllDrawingPermissions}
-                                                            style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
-                                                        >
-                                                            Tudo
-                                                        </button>
-                                                        <button
-                                                            onClick={revokeAllDrawingPermissions}
-                                                            style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
-                                                        >
-                                                            Limpar
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {participants.length === 0 ? (
-                                                <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
-                                            ) : (
-                                                participants.map((p: any) => (
-                                                    <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-                                                            <div style={{
-                                                                width: '28px',
-                                                                height: '28px',
-                                                                borderRadius: '50%',
-                                                                overflow: 'hidden',
-                                                                background: '#f0f0f0',
-                                                                flexShrink: 0,
-                                                                border: raisedHands.has(p.socketId) ? `2px solid ${primaryColor}` : '2px solid transparent',
-                                                                boxShadow: raisedHands.has(p.socketId) ? `0 0 10px ${primaryColor}4D` : 'none',
-                                                                transition: 'all 0.3s'
-                                                            }}>
-                                                                <Image src={p.photo || '/default-avatar.png'} width={28} height={28} alt={p.name} style={{ objectFit: 'cover' }} />
-                                                            </div>
-                                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                                <span style={{
-                                                                    fontSize: '0.8rem',
-                                                                    fontWeight: 700,
-                                                                    color: raisedHands.has(p.socketId) ? primaryColor : (isDark ? '#fff' : '#111'),
-                                                                    maxWidth: '110px',
+                            </div>
+
+                            {/* Actions */}
+                            {!isMobile && (
+                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                                    <input
+                                        type="range"
+                                        min="1"
+                                        max="50"
+                                        value={brushSize}
+                                        onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                                        style={{ width: '40px', accentColor: color }}
+                                        title="Tamanho do Pincel/Borracha"
+                                    />
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '0px', flexShrink: 0 }}>
+                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 14 : 16} /></button>
+                                <button
+                                    onClick={() => setShowClearConfirm(true)}
+                                    style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
+                                >
+                                    <Eraser size={isMobile ? 14 : 16} />
+                                </button>
+
+
+
+                                <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
+                                <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 14 : 16} /></button>
+
+                                <button onClick={() => setIsDark(!isDark)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={isMobile ? 14 : 16} /> : <Moon size={isMobile ? 14 : 16} />}</button>
+
+                                <button onClick={saveBoard} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={isMobile ? 14 : 16} /></button>
+
+                                {/* Collaborative Drawing Panel */}
+                                <div style={{ position: 'relative' }}>
+                                    <button
+                                        onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
+                                        style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                        title="Permissões de Desenho"
+                                    >
+                                        <PenLine size={isMobile ? 14 : 16} />
+                                    </button>
+                                    <AnimatePresence>
+                                        {showParticipantsPanel && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '50px',
+                                                    right: 0,
+                                                    background: isDark ? '#1a1a1a' : '#fff',
+                                                    border: isDark ? '1px solid #333' : '1px solid #eee',
+                                                    borderRadius: '16px',
+                                                    padding: '14px',
+                                                    boxShadow: '0 -10px 30px rgba(0,0,0,0.2)',
+                                                    zIndex: 200,
+                                                    minWidth: '240px',
+                                                    maxHeight: '320px',
+                                                    overflowY: 'auto'
+                                                }}
+                                            >
+                                                <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> Giz (Permissões)</div>
+                                                    {participants.length > 0 && (
+                                                        <div style={{ display: 'flex', gap: '4px' }}>
+                                                            <button
+                                                                onClick={grantAllDrawingPermissions}
+                                                                style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
+                                                            >
+                                                                Tudo
+                                                            </button>
+                                                            <button
+                                                                onClick={revokeAllDrawingPermissions}
+                                                                style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
+                                                            >
+                                                                Limpar
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {participants.length === 0 ? (
+                                                    <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
+                                                ) : (
+                                                    participants.map((p: any) => (
+                                                        <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+                                                                <div style={{
+                                                                    width: '28px',
+                                                                    height: '28px',
+                                                                    borderRadius: '50%',
                                                                     overflow: 'hidden',
-                                                                    textOverflow: 'ellipsis',
-                                                                    whiteSpace: 'nowrap',
+                                                                    background: '#f0f0f0',
+                                                                    flexShrink: 0,
+                                                                    border: raisedHands.has(p.socketId) ? `2px solid ${primaryColor}` : '2px solid transparent',
+                                                                    boxShadow: raisedHands.has(p.socketId) ? `0 0 10px ${primaryColor}4D` : 'none',
                                                                     transition: 'all 0.3s'
                                                                 }}>
-                                                                    {p.name}
-                                                                </span>
-                                                                {raisedHands.has(p.socketId) && (
-                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
-                                                                        {!drawingPermissions.has(p.socketId) && (
-                                                                            <button
-                                                                                onClick={() => toggleDrawingPermission(p.socketId)}
-                                                                                style={{ background: primaryColor, color: '#fff', border: 'none', padding: '1px 4px', borderRadius: '3px', fontSize: '0.55rem', fontWeight: 900, cursor: 'pointer' }}
-                                                                            >
-                                                                                Dar Giz
-                                                                            </button>
-                                                                        )}
-                                                                    </div>
-                                                                )}
+                                                                    <Image src={p.photo || '/default-avatar.png'} width={28} height={28} alt={p.name} style={{ objectFit: 'cover' }} />
+                                                                </div>
+                                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                                    <span style={{
+                                                                        fontSize: '0.8rem',
+                                                                        fontWeight: 700,
+                                                                        color: raisedHands.has(p.socketId) ? primaryColor : (isDark ? '#fff' : '#111'),
+                                                                        maxWidth: '110px',
+                                                                        overflow: 'hidden',
+                                                                        textOverflow: 'ellipsis',
+                                                                        whiteSpace: 'nowrap',
+                                                                        transition: 'all 0.3s'
+                                                                    }}>
+                                                                        {p.name}
+                                                                    </span>
+                                                                    {raisedHands.has(p.socketId) && (
+                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                            <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
+                                                                            {!drawingPermissions.has(p.socketId) && (
+                                                                                <button
+                                                                                    onClick={() => toggleDrawingPermission(p.socketId)}
+                                                                                    style={{ background: primaryColor, color: '#fff', border: 'none', padding: '1px 4px', borderRadius: '3px', fontSize: '0.55rem', fontWeight: 900, cursor: 'pointer' }}
+                                                                                >
+                                                                                    Dar Giz
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
+                                                            <button
+                                                                onClick={() => toggleDrawingPermission(p.socketId)}
+                                                                style={{
+                                                                    background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
+                                                                    color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
+                                                                    border: 'none',
+                                                                    padding: '4px 10px',
+                                                                    borderRadius: '8px',
+                                                                    fontSize: '0.7rem',
+                                                                    fontWeight: 800,
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '4px',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}
+                                                            >
+                                                                <PenLine size={12} />
+                                                                {drawingPermissions.has(p.socketId) ? 'Revogar' : 'Dar Giz'}
+                                                            </button>
                                                         </div>
-                                                        <button
-                                                            onClick={() => toggleDrawingPermission(p.socketId)}
-                                                            style={{
-                                                                background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
-                                                                color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
-                                                                border: 'none',
-                                                                padding: '4px 10px',
-                                                                borderRadius: '8px',
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: 800,
-                                                                cursor: 'pointer',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '4px',
-                                                                whiteSpace: 'nowrap'
-                                                            }}
-                                                        >
-                                                            <PenLine size={12} />
-                                                            {drawingPermissions.has(p.socketId) ? 'Revogar' : 'Dar Giz'}
-                                                        </button>
-                                                    </div>
-                                                ))
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                                                    ))
+                                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
 
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px' }} />
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px' }} />
 
-                            {/* Page Navigation */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                                {/* Page Navigation */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0 4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
+                                    <button
+                                        onClick={() => currentPage > 0 && changePage(currentPage - 1)}
+                                        style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
+                                    >
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                                    </button>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 800, minWidth: '40px', textAlign: 'center' }}>{currentPage + 1} / {pages.length}</span>
+                                    <button
+                                        onClick={() => currentPage < pages.length - 1 ? changePage(currentPage + 1) : addPage()}
+                                        style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer' }}
+                                    >
+                                        {currentPage < pages.length - 1 ? (
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                                        ) : (
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                        )}
+                                    </button>
+                                </div>
+
                                 <button
-                                    onClick={() => currentPage > 0 && changePage(currentPage - 1)}
-                                    style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer', opacity: currentPage === 0 ? 0.3 : 1 }}
+                                    onClick={isAudioActive ? handleStopAudio : handleStartAudio}
+                                    style={{
+                                        background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
+                                        color: isAudioActive ? '#ef4444' : '#0ea5e9',
+                                        border: 'none',
+                                        padding: '0 8px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '4px',
+                                        fontSize: '0.65rem',
+                                        flexShrink: 0
+                                    }}
                                 >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                                    {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
+                                    {!isMobile && (isAudioActive ? 'Silenciar' : 'Falar')}
                                 </button>
-                                <span style={{ fontSize: '0.75rem', fontWeight: 800, minWidth: '40px', textAlign: 'center' }}>{currentPage + 1} / {pages.length}</span>
+
+                                {isMentor && (
+                                    <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
+                                        <button
+                                            onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
+                                            style={{
+                                                background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                                color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
+                                                border: 'none',
+                                                padding: '0 8px',
+                                                height: '32px',
+                                                borderRadius: '8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '4px',
+                                                fontWeight: 800,
+                                                fontSize: '0.65rem',
+                                                flexShrink: 0
+                                            }}
+                                            title="Enviar avisos e alertas para os alunos"
+                                        >
+                                            <Megaphone size={14} /> {!isMobile && "Avisos"}
+                                        </button>
+
+
+
+                                        <button
+                                            onClick={() => setShowQuizCreator(true)}
+                                            style={{
+                                                background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
+                                                color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
+                                                border: 'none',
+                                                width: isMobile ? '28px' : '32px',
+                                                height: isMobile ? '28px' : '32px',
+                                                borderRadius: '8px',
+                                                fontWeight: 800,
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                flexShrink: 0
+                                            }}
+                                            title="Criar Quiz"
+                                        >
+                                            <HelpCircle size={isMobile ? 14 : 16} />
+                                        </button>
+
+                                        <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
+                                        <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                                            <button
+                                                onClick={() => sendReaction('Sim')}
+                                                style={{
+                                                    background: '#22c55e',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    padding: '0 8px',
+                                                    height: '32px',
+                                                    borderRadius: '8px',
+                                                    fontWeight: 900,
+                                                    fontSize: '0.65rem',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
+                                                    flexShrink: 0
+                                                }}
+                                            >
+                                                SIM
+                                            </button>
+                                            <button
+                                                onClick={() => sendReaction('Não')}
+                                                style={{
+                                                    background: '#ef4444',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    padding: '0 8px',
+                                                    height: '32px',
+                                                    borderRadius: '8px',
+                                                    fontWeight: 900,
+                                                    fontSize: '0.65rem',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
+                                                    flexShrink: 0
+                                                }}
+                                            >
+                                                NÃO
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
+
                                 <button
-                                    onClick={() => currentPage < pages.length - 1 ? changePage(currentPage + 1) : addPage()}
-                                    style={{ background: 'none', border: 'none', color: isDark ? '#fff' : '#666', cursor: 'pointer' }}
+                                    onClick={() => setIsSidebarOpen(true)}
+                                    style={{
+                                        background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
+                                        color: '#fff',
+                                        border: 'none',
+                                        padding: '0 8px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '4px',
+                                        fontSize: '0.65rem',
+                                        flexShrink: 0
+                                    }}
                                 >
-                                    {currentPage < pages.length - 1 ? (
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                                    ) : (
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-                                    )}
+                                    <MessageSquare size={14} /> {!isMobile && "Chat"}
                                 </button>
                             </div>
+                        </>
+                    ) : (
+                        <>
+                            {/* Participant View */}
+                            <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
+                                {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
+                                    <button
+                                        key={emoji}
+                                        onClick={() => sendReaction(emoji)}
+                                        style={{
+                                            fontSize: '1.4rem',
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            padding: '4px',
+                                            transition: 'transform 0.1s'
+                                        }}
+                                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
+                                        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                    >
+                                        {emoji}
+                                    </button>
+                                ))}
 
+                                <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
+                                <button
+                                    onClick={() => sendReaction('Sim')}
+                                    style={{
+                                        background: '#22c55e',
+                                        color: '#fff',
+                                        border: 'none',
+                                        padding: isMobile ? '0 8px' : '0 12px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 900,
+                                        fontSize: '0.7rem',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
+                                        transition: 'transform 0.1s'
+                                    }}
+                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                >
+                                    SIM
+                                </button>
+                                <button
+                                    onClick={() => sendReaction('Não')}
+                                    style={{
+                                        background: '#ef4444',
+                                        color: '#fff',
+                                        border: 'none',
+                                        padding: isMobile ? '0 8px' : '0 12px',
+                                        height: '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 900,
+                                        fontSize: '0.7rem',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
+                                        transition: 'transform 0.1s'
+                                    }}
+                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                >
+                                    NÃO
+                                </button>
+                                <button
+                                    onClick={() => sendReaction('Entendi!')}
+                                    style={{
+                                        background: primaryColor,
+                                        color: '#fff',
+                                        border: 'none',
+                                        padding: isMobile ? '0 6px' : '0 10px',
+                                        height: isMobile ? '28px' : '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 900,
+                                        fontSize: '0.65rem',
+                                        cursor: 'pointer',
+                                        boxShadow: `0 4px 10px ${primaryColor}4D`,
+                                        transition: 'transform 0.1s'
+                                    }}
+                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                >
+                                    ENTENDI
+                                </button>
+                            </div>
+                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
                             <button
-                                onClick={isAudioActive ? handleStopAudio : handleStartAudio}
+                                onClick={handleRaiseHand}
+                                disabled={isHandRaised}
                                 style={{
-                                    background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
-                                    color: isAudioActive ? '#ef4444' : '#0ea5e9',
+                                    background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
+                                    color: isHandRaised ? '#888' : '#0ea5e9',
                                     border: 'none',
-                                    padding: '0 8px',
-                                    height: '32px',
+                                    padding: isMobile ? '0 8px' : '0 12px',
+                                    height: isMobile ? '32px' : '32px',
+                                    borderRadius: '8px',
+                                    fontWeight: 800,
+                                    cursor: isHandRaised ? 'default' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    fontSize: '0.7rem'
+                                }}
+                            >
+                                <Hand size={18} /> {!isMobile && (isHandRaised ? 'Mão Levantada' : 'Dúvida')}
+                            </button>
+                            {/* Export Button for participants */}
+                            <button
+                                onClick={handleExportBoard}
+                                style={{
+                                    background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
+                                    color: '#22c55e',
+                                    border: 'none',
+                                    padding: isMobile ? '0 8px' : '0 12px',
+                                    height: isMobile ? '32px' : '36px',
                                     borderRadius: '8px',
                                     fontWeight: 800,
                                     cursor: 'pointer',
@@ -1688,106 +1974,31 @@ export default function LiveBoardContainer({
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '4px',
-                                    fontSize: '0.65rem',
-                                    flexShrink: 0
+                                    fontSize: '0.65rem'
                                 }}
+                                title="Tirar Screenshot do quadro"
                             >
-                                {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
-                                {!isMobile && (isAudioActive ? 'Silenciar' : 'Falar')}
+                                <Download size={14} /> {!isMobile && "Screenshot"}
                             </button>
 
-                            {isMentor && (
-                                <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
-                                    <button
-                                        onClick={() => setShowAnnouncementMenu(!showAnnouncementMenu)}
-                                        style={{
-                                            background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                            color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
-                                            border: 'none',
-                                            padding: '0 8px',
-                                            height: '32px',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '4px',
-                                            fontWeight: 800,
-                                            fontSize: '0.65rem',
-                                            flexShrink: 0
-                                        }}
-                                        title="Enviar avisos e alertas para os alunos"
-                                    >
-                                        <Megaphone size={14} /> {!isMobile && "Avisos"}
-                                    </button>
-
-
-
-                                    <button
-                                        onClick={() => setShowQuizCreator(true)}
-                                        style={{
-                                            background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
-                                            color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
-                                            border: 'none',
-                                            width: isMobile ? '28px' : '32px',
-                                            height: isMobile ? '28px' : '32px',
-                                            borderRadius: '8px',
-                                            fontWeight: 800,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            flexShrink: 0
-                                        }}
-                                        title="Criar Quiz"
-                                    >
-                                        <HelpCircle size={isMobile ? 14 : 16} />
-                                    </button>
-
-                                    <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
-
-                                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                                        <button
-                                            onClick={() => sendReaction('Sim')}
-                                            style={{
-                                                background: '#22c55e',
-                                                color: '#fff',
-                                                border: 'none',
-                                                padding: '0 8px',
-                                                height: '32px',
-                                                borderRadius: '8px',
-                                                fontWeight: 900,
-                                                fontSize: '0.65rem',
-                                                cursor: 'pointer',
-                                                boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
-                                                flexShrink: 0
-                                            }}
-                                        >
-                                            SIM
-                                        </button>
-                                        <button
-                                            onClick={() => sendReaction('Não')}
-                                            style={{
-                                                background: '#ef4444',
-                                                color: '#fff',
-                                                border: 'none',
-                                                padding: '0 8px',
-                                                height: '32px',
-                                                borderRadius: '8px',
-                                                fontWeight: 900,
-                                                fontSize: '0.65rem',
-                                                cursor: 'pointer',
-                                                boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
-                                                flexShrink: 0
-                                            }}
-                                        >
-                                            NÃO
-                                        </button>
-                                    </div>
+                            {/* Drawing permission indicator for participant */}
+                            {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
+                                <div style={{
+                                    background: 'rgba(14,165,233,0.1)',
+                                    color: '#0ea5e9',
+                                    border: '1px solid rgba(14,165,233,0.3)',
+                                    padding: '0 10px',
+                                    height: isMobile ? '28px' : '32px',
+                                    borderRadius: '8px',
+                                    fontWeight: 800,
+                                    fontSize: '0.7rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                }}>
+                                    <PenLine size={12} /> A Desenhar
                                 </div>
                             )}
-
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
 
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
@@ -1795,196 +2006,24 @@ export default function LiveBoardContainer({
                                     background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                     color: '#fff',
                                     border: 'none',
-                                    padding: '0 8px',
-                                    height: '32px',
+                                    padding: isMobile ? '0 8px' : '0 12px',
+                                    height: isMobile ? '32px' : '32px',
                                     borderRadius: '8px',
                                     fontWeight: 800,
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '4px',
-                                    fontSize: '0.65rem',
-                                    flexShrink: 0
+                                    gap: '6px',
+                                    fontSize: '0.7rem'
                                 }}
                             >
-                                <MessageSquare size={14} /> {!isMobile && "Chat"}
+                                <MessageSquare size={16} /> {!isMobile && "Perguntas"}
                             </button>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        {/* Participant View */}
-                        <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
-                            {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
-                                <button
-                                    key={emoji}
-                                    onClick={() => sendReaction(emoji)}
-                                    style={{
-                                        fontSize: '1.4rem',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        padding: '4px',
-                                        transition: 'transform 0.1s'
-                                    }}
-                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
-                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                >
-                                    {emoji}
-                                </button>
-                            ))}
-
-                            <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
-
-                            <button
-                                onClick={() => sendReaction('Sim')}
-                                style={{
-                                    background: '#22c55e',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 900,
-                                    fontSize: '0.7rem',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
-                                    transition: 'transform 0.1s'
-                                }}
-                                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                SIM
-                            </button>
-                            <button
-                                onClick={() => sendReaction('Não')}
-                                style={{
-                                    background: '#ef4444',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 900,
-                                    fontSize: '0.7rem',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
-                                    transition: 'transform 0.1s'
-                                }}
-                                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                NÃO
-                            </button>
-                            <button
-                                onClick={() => sendReaction('Entendi!')}
-                                style={{
-                                    background: primaryColor,
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 6px' : '0 10px',
-                                    height: isMobile ? '28px' : '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 900,
-                                    fontSize: '0.65rem',
-                                    cursor: 'pointer',
-                                    boxShadow: `0 4px 10px ${primaryColor}4D`,
-                                    transition: 'transform 0.1s'
-                                }}
-                                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                ENTENDI
-                            </button>
-                        </div>
-                        <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
-                        <button
-                            onClick={handleRaiseHand}
-                            disabled={isHandRaised}
-                            style={{
-                                background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
-                                color: isHandRaised ? '#888' : '#0ea5e9',
-                                border: 'none',
-                                padding: isMobile ? '0 8px' : '0 12px',
-                                height: isMobile ? '32px' : '32px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                cursor: isHandRaised ? 'default' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '6px',
-                                fontSize: '0.7rem'
-                            }}
-                        >
-                            <Hand size={18} /> {!isMobile && (isHandRaised ? 'Mão Levantada' : 'Dúvida')}
-                        </button>
-                        {/* Export Button for participants */}
-                        <button
-                            onClick={handleExportBoard}
-                            style={{
-                                background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
-                                color: '#22c55e',
-                                border: 'none',
-                                padding: isMobile ? '0 8px' : '0 12px',
-                                height: isMobile ? '32px' : '36px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '4px',
-                                fontSize: '0.65rem'
-                            }}
-                            title="Tirar Screenshot do quadro"
-                        >
-                            <Download size={14} /> {!isMobile && "Screenshot"}
-                        </button>
-
-                        {/* Drawing permission indicator for participant */}
-                        {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
-                            <div style={{
-                                background: 'rgba(14,165,233,0.1)',
-                                color: '#0ea5e9',
-                                border: '1px solid rgba(14,165,233,0.3)',
-                                padding: '0 10px',
-                                height: isMobile ? '28px' : '32px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                fontSize: '0.7rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                            }}>
-                                <PenLine size={12} /> A Desenhar
-                            </div>
-                        )}
-
-                        <button
-                            onClick={() => setIsSidebarOpen(true)}
-                            style={{
-                                background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
-                                color: '#fff',
-                                border: 'none',
-                                padding: isMobile ? '0 8px' : '0 12px',
-                                height: isMobile ? '32px' : '32px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '6px',
-                                fontSize: '0.7rem'
-                            }}
-                        >
-                            <MessageSquare size={16} /> {!isMobile && "Perguntas"}
-                        </button>
-                    </>
-                )}
-            </div>
+                        </>
+                    )}
+                </div>
+            )}
 
             {/* Sidebar Perguntas */}
             <AnimatePresence>
