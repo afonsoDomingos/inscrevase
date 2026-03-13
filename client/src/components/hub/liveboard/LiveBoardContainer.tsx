@@ -36,7 +36,8 @@ import {
     Users,
     PenLine,
     Image as ImageIcon,
-    Maximize2
+    Maximize2,
+    Lock
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -206,6 +207,7 @@ export default function LiveBoardContainer({
     const [micPermissions, setMicPermissions] = useState<Set<string>>(new Set());
     const [showParticipantsPanel, setShowParticipantsPanel] = useState(false);
     const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set());
+    const [speakingParticipants, setSpeakingParticipants] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const checkMobile = () => {
@@ -351,6 +353,15 @@ export default function LiveBoardContainer({
 
         newSocket.on('live_board:mentor_audio_status', ({ isActive }: { isActive: boolean }) => {
             setIsMentorSpeaking(isActive);
+        });
+
+        newSocket.on('live_board:audio_status', ({ socketId, isActive }: { socketId: string, isActive: boolean }) => {
+            setSpeakingParticipants(prev => {
+                const next = new Set(prev);
+                if (isActive) next.add(socketId);
+                else next.delete(socketId);
+                return next;
+            });
         });
 
         newSocket.on('live_board:status', (status: any) => {
@@ -597,7 +608,13 @@ export default function LiveBoardContainer({
             recorder.start(250); // Send chunks every 250ms
             mediaRecorderRef.current = recorder;
             setIsAudioActive(true);
-            socket?.emit('live_board:mentor_audio_status', { formId, isActive: true });
+
+            if (isMentor) {
+                socket?.emit('live_board:mentor_audio_status', { formId, isActive: true });
+            } else {
+                socket?.emit('live_board:audio_status', { formId, isActive: true });
+            }
+
             toast.success(t('hub.liveBoard.audioEnabled'));
         } catch (err: any) {
             console.error("Microphone error:", err);
@@ -618,7 +635,11 @@ export default function LiveBoardContainer({
             mediaRecorderRef.current = null;
         }
         setIsAudioActive(false);
-        socket?.emit('live_board:mentor_audio_status', { formId, isActive: false });
+        if (isMentor) {
+            socket?.emit('live_board:mentor_audio_status', { formId, isActive: false });
+        } else {
+            socket?.emit('live_board:audio_status', { formId, isActive: false });
+        }
     };
 
     const handleRaiseHand = () => {
@@ -1011,7 +1032,18 @@ export default function LiveBoardContainer({
                             <div style={{ fontWeight: 800, fontSize: isMobile ? '0.85rem' : '0.95rem', color: isDark ? '#fff' : '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: isMobile ? '80px' : 'none' }}>{mentorData.name}</div>
                             {!isMobile && (
                                 <>
-                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, color: isDark ? '#fff' : '#111' }}>{mentorData.title}</div>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, color: isDark ? '#fff' : '#111', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        {mentorData.title}
+                                        {isMentorSpeaking && (
+                                            <motion.div
+                                                animate={{ opacity: [0.4, 1, 0.4] }}
+                                                transition={{ repeat: Infinity, duration: 1.5 }}
+                                                style={{ color: primaryColor, fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase' }}
+                                            >
+                                                • Falando
+                                            </motion.div>
+                                        )}
+                                    </div>
 
                                     {/* Social Links & Contact */}
                                     <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
@@ -1063,6 +1095,52 @@ export default function LiveBoardContainer({
                         </div>
                     )}
 
+                    {/* Currently Speaking (Participants) - HEADER */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: '20px' }}>
+                        <AnimatePresence>
+                            {participants.filter(p => speakingParticipants.has(p.socketId)).map(p => (
+                                <motion.div
+                                    key={`speaking-${p.socketId}`}
+                                    initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, x: -10 }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        background: isDark ? 'rgba(34, 197, 94, 0.15)' : '#f0fdf4',
+                                        padding: '6px 12px',
+                                        borderRadius: '20px',
+                                        border: '1.5px solid rgba(34, 197, 94, 0.3)',
+                                        boxShadow: '0 4px 15px rgba(34, 197, 94, 0.15)'
+                                    }}
+                                >
+                                    <div style={{ position: 'relative', width: '24px', height: '24px', flexShrink: 0 }}>
+                                        <Image src={p.photo || '/default-avatar.png'} width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #22c55e' }} alt="" />
+                                        <motion.div
+                                            animate={{ scale: [1, 1.2, 1] }}
+                                            transition={{ repeat: Infinity, duration: 1 }}
+                                            style={{ position: 'absolute', bottom: -1, right: -1, background: '#22c55e', borderRadius: '50%', width: '10px', height: '10px', border: '1.5px solid #fff' }}
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                                        <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#166534', letterSpacing: '0.3px' }}>{p.name.split(' ')[0]}</span>
+                                        <div style={{ display: 'flex', gap: '2px', height: '8px', alignItems: 'flex-end', marginTop: '2px' }}>
+                                            {[0.1, 0.2, 0.3, 0.4].map((delay, i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    animate={{ height: [2, 8, 2] }}
+                                                    transition={{ repeat: Infinity, duration: 0.6, delay }}
+                                                    style={{ width: '2px', background: '#22c55e', borderRadius: '1px' }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: isMobile ? '8px' : '20px' }}>
                         {/* Participant Avatars (Overlap Style like Google Meet) */}
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: isMobile ? '0' : '10px' }}>
@@ -1107,7 +1185,47 @@ export default function LiveBoardContainer({
                                     marginLeft: '-12px',
                                     zIndex: 0
                                 }}>
-                                    +{participants.length - 5}
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>+{participants.length - 5}</span>
+                                </div>
+                            )}
+
+                            {/* Raised Hands Indicator for Mentor - HEADER */}
+                            {isMentor && raisedHands.size > 0 && (
+                                <div style={{ display: 'flex', gap: '8px', marginLeft: '15px', alignItems: 'center', flexWrap: 'nowrap', overflowX: 'auto', maxWidth: '400px', scrollbarWidth: 'none' }}>
+                                    <AnimatePresence>
+                                        {participants.filter(p => raisedHands.has(p.socketId)).map(p => (
+                                            <motion.div
+                                                key={`header-hand-${p.socketId}`}
+                                                initial={{ scale: 0, x: 20 }}
+                                                animate={{ scale: 1, x: 0 }}
+                                                exit={{ scale: 0, x: 20 }}
+                                                onClick={() => mentorLowerHand(p.socketId)}
+                                                style={{
+                                                    background: '#3b82f6',
+                                                    color: '#fff',
+                                                    padding: '6px 14px',
+                                                    borderRadius: '24px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 900,
+                                                    boxShadow: '0 6px 15px rgba(59,130,246,0.3)',
+                                                    cursor: 'pointer',
+                                                    border: '2px solid rgba(255,255,255,0.3)',
+                                                    flexShrink: 0,
+                                                    textTransform: 'uppercase'
+                                                }}
+                                                whileHover={{ scale: 1.05, background: '#ef4444' }}
+                                                title="Clique para abaixar a mão"
+                                            >
+                                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', overflow: 'hidden', background: '#fff', flexShrink: 0, border: '1px solid #fff' }}>
+                                                    <Image src={p.photo || '/default-avatar.png'} width={22} height={22} style={{ objectFit: 'cover' }} alt="" />
+                                                </div>
+                                                <span style={{ whiteSpace: 'nowrap' }}>{p.name.split(' ')[0]} ✋</span>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
                                 </div>
                             )}
                             <span style={{ marginLeft: isMobile ? '0' : '12px', fontSize: '0.75rem', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -2075,7 +2193,51 @@ export default function LiveBoardContainer({
                     ) : (
                         <>
                             {/* Participant View */}
-                            <div style={{ display: 'flex', gap: '6px', padding: '4px' }}>
+                            <div style={{ display: 'flex', gap: '6px', padding: '4px', alignItems: 'center' }}>
+                                {/* Mic is now on the LEFT for better UX */}
+                                <div style={{ position: 'relative', marginRight: '4px' }}>
+                                    <button
+                                        onClick={() => {
+                                            if (micPermissions.has((window as any).__liveBoardSocketId || '')) {
+                                                isAudioActive ? handleStopAudio() : handleStartAudio();
+                                            } else {
+                                                toast.info('Aguarde o mentor abrir o seu microfone.');
+                                            }
+                                        }}
+                                        style={{
+                                            background: micPermissions.has((window as any).__liveBoardSocketId || '')
+                                                ? (isAudioActive ? '#fee2e2' : primaryColor)
+                                                : (isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f0'),
+                                            color: micPermissions.has((window as any).__liveBoardSocketId || '')
+                                                ? (isAudioActive ? '#ef4444' : '#fff')
+                                                : (isDark ? '#444' : '#bbb'),
+                                            border: 'none',
+                                            padding: isMobile ? '0 10px' : '0 16px',
+                                            height: '36px',
+                                            borderRadius: '10px',
+                                            fontWeight: 800,
+                                            cursor: micPermissions.has((window as any).__liveBoardSocketId || '') ? 'pointer' : 'not-allowed',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px',
+                                            fontSize: '0.7rem',
+                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            boxShadow: micPermissions.has((window as any).__liveBoardSocketId || '') ? `0 4px 12px ${primaryColor}33` : 'none',
+                                            borderBottom: micPermissions.has((window as any).__liveBoardSocketId || '') ? 'none' : `1px solid ${isDark ? '#333' : '#ddd'}`
+                                        }}
+                                    >
+                                        {micPermissions.has((window as any).__liveBoardSocketId || '') ? (
+                                            isAudioActive ? <MicOff size={16} /> : <Mic size={16} />
+                                        ) : (
+                                            <Lock size={14} style={{ opacity: 0.5 }} />
+                                        )}
+                                        {isAudioActive ? t('hub.liveBoard.mute') : t('hub.liveBoard.speak')}
+                                    </button>
+                                </div>
+
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
                                 {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
                                     <button
                                         key={emoji}
@@ -2157,30 +2319,6 @@ export default function LiveBoardContainer({
                                 >
                                     ENTENDI
                                 </button>
-                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
-
-                                {micPermissions.has((window as any).__liveBoardSocketId || '') && (
-                                    <button
-                                        onClick={isAudioActive ? handleStopAudio : handleStartAudio}
-                                        style={{
-                                            background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
-                                            color: isAudioActive ? '#ef4444' : '#0ea5e9',
-                                            border: 'none',
-                                            padding: '0 8px',
-                                            height: '32px',
-                                            borderRadius: '8px',
-                                            fontWeight: 800,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px',
-                                            fontSize: '0.65rem'
-                                        }}
-                                    >
-                                        {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
-                                        {!isMobile && (isAudioActive ? t('hub.liveBoard.mute') : t('hub.liveBoard.speak'))}
-                                    </button>
-                                )}
                             </div>
                             <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
                             <button

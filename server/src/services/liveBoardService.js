@@ -524,6 +524,19 @@ class LiveBoardService {
             }
         });
 
+        // Audio Status (Speaking Indicator)
+        socket.on('live_board:mentor_audio_status', ({ formId, isActive }) => {
+            socket.to(`live_board_${formId}`).emit('live_board:mentor_audio_status', { isActive });
+        });
+
+        socket.on('live_board:audio_status', ({ formId, isActive }) => {
+            this.io.to(`live_board_${formId}`).emit('live_board:audio_status', {
+                socketId: socket.id,
+                userId,
+                isActive
+            });
+        });
+
         // Handle disconnect for presence
         socket.on('disconnecting', () => {
             for (const room of socket.rooms) {
