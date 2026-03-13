@@ -100,7 +100,7 @@ const RealisticEraser = ({ isActive, onClick, isMobile }: any) => (
 );
 
 
-interface LiveBoardContainerProps {
+interface SalaDeEventosContainerProps {
     formId: string;
     isMentor: boolean;
     mentorData: {
@@ -121,7 +121,7 @@ interface LiveBoardContainerProps {
     onRestore?: () => void;
 }
 
-export default function LiveBoardContainer({
+export default function SalaDeEventosContainer({
     formId,
     isMentor,
     mentorData,
@@ -130,7 +130,7 @@ export default function LiveBoardContainer({
     primaryColor = '#CFB53B',
     isMinimized = false,
     onRestore
-}: LiveBoardContainerProps) {
+}: SalaDeEventosContainerProps) {
     const { t } = useTranslate();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [color, setColor] = useState('#000000');
@@ -284,7 +284,7 @@ export default function LiveBoardContainer({
         const newSocket = io(getSocketUrl(), getSocketOptions());
 
         newSocket.on('connect', () => {
-            console.log('[LiveBoard] Connected to socket');
+            console.log('[Sala de Eventos] Connected to socket');
             (window as any).__liveBoardSocketId = newSocket.id;
             newSocket.emit('live_board:join', formId);
         });
@@ -305,7 +305,7 @@ export default function LiveBoardContainer({
                 }
 
                 playSound('hand_raised');
-                toast(t('hub.liveBoard.handRaisedToast', { name: userData.name }), {
+                toast(t('hub.salaDeEventos.handRaisedToast', { name: userData.name }), {
                     description: "O participante tem uma pergunta.",
                     action: {
                         label: "Ok",
@@ -332,7 +332,7 @@ export default function LiveBoardContainer({
         });
 
         newSocket.on('live_board:participants', (list: any[]) => {
-            console.log('[LiveBoard] Participants updated:', list);
+            console.log('[Sala de Eventos] Participants updated:', list);
             setParticipants(list);
         });
 
@@ -422,7 +422,7 @@ export default function LiveBoardContainer({
         newSocket.on('live_board:timer:start', ({ duration }: any) => {
             setTimerSeconds(duration);
             setIsTimerActive(true);
-            toast.info(t('hub.liveBoard.timerStarted') || "O foco começa agora!");
+            toast.info(t('hub.salaDeEventos.timerStarted') || "O foco começa agora!");
         });
 
         newSocket.on('live_board:drawing_permission', ({ socketId, granted }: { socketId: string, granted: boolean }) => {
@@ -491,7 +491,7 @@ export default function LiveBoardContainer({
             setSelectedOption(null);
             setIsQuizRevealed(false);
             setCorrectQuizOption(null);
-            toast.info(t('hub.liveBoard.newQuizToast') || "Novo Quiz disponível!");
+            toast.info(t('hub.salaDeEventos.newQuizToast') || "Novo Quiz disponível!");
         });
 
         newSocket.on('live_board:quiz_results', ({ results }: any) => {
@@ -501,7 +501,7 @@ export default function LiveBoardContainer({
         newSocket.on('live_board:quiz_reveal', ({ correctOption }: any) => {
             setIsQuizRevealed(true);
             setCorrectQuizOption(correctOption);
-            toast(t('hub.liveBoard.quizRevealedToast') || "Resposta revelada!");
+            toast(t('hub.salaDeEventos.quizRevealedToast') || "Resposta revelada!");
         });
 
         newSocket.on('live_board:quiz_end', () => {
@@ -539,7 +539,7 @@ export default function LiveBoardContainer({
         return () => {
             newSocket.disconnect();
         };
-    }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound]);
+    }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound, handleStopAudio]);
 
     const playAudioChunk = async (data: ArrayBuffer) => {
         if (!audioContextRef.current) {
@@ -564,7 +564,7 @@ export default function LiveBoardContainer({
                     if (prev <= 1) {
                         setIsTimerActive(false);
                         playSound('timer_end');
-                        toast(t('hub.liveBoard.timerFinished') || "Tempo Esgotado! ⏰", { icon: '⏰' });
+                        toast(t('hub.salaDeEventos.timerFinished') || "Tempo Esgotado! ⏰", { icon: '⏰' });
                         return 0;
                     }
                     return prev - 1;
@@ -574,7 +574,7 @@ export default function LiveBoardContainer({
         return () => clearInterval(interval);
     }, [isTimerActive, timerSeconds, isMentor, t, playSound]);
 
-    const handleStartAudio = async () => {
+    const handleStartAudio = useCallback(async () => {
         try {
             // Check if mediaDevices is supported
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -615,7 +615,7 @@ export default function LiveBoardContainer({
                 socket?.emit('live_board:audio_status', { formId, isActive: true });
             }
 
-            toast.success(t('hub.liveBoard.audioEnabled'));
+            toast.success(t('hub.salaDeEventos.audioEnabled'));
         } catch (err: any) {
             console.error("Microphone error:", err);
 
@@ -627,9 +627,9 @@ export default function LiveBoardContainer({
                 toast.error("Erro ao acessar microfone. Verifique as permissões.");
             }
         }
-    };
+    }, [formId, isMentor, socket, t]);
 
-    const handleStopAudio = () => {
+    const handleStopAudio = useCallback(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
             mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
             mediaRecorderRef.current = null;
@@ -640,7 +640,7 @@ export default function LiveBoardContainer({
         } else {
             socket?.emit('live_board:audio_status', { formId, isActive: false });
         }
-    };
+    }, [formId, isMentor, socket]);
 
     const handleRaiseHand = () => {
         if (!socket) return;
@@ -651,7 +651,7 @@ export default function LiveBoardContainer({
             socket.emit('live_board:raise_hand', { formId, userData: authService.getCurrentUser() });
             setIsHandRaised(true);
             playSound('hand_raised');
-            toast.success(t('hub.liveBoard.handRaisedSuccess'));
+            toast.success(t('hub.salaDeEventos.handRaisedSuccess'));
         }
     };
 
@@ -1961,12 +1961,12 @@ export default function LiveBoardContainer({
                                                                                 transition={{ repeat: Infinity, duration: 2 }}
                                                                                 style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#3b82f6', color: '#fff', padding: '2px 8px', borderRadius: '12px', fontSize: '0.65rem', fontWeight: 900 }}
                                                                             >
-                                                                                ✋ {t('hub.liveBoard.raiseHand')}
+                                                                                ✋ {t('hub.salaDeEventos.raiseHand')}
                                                                                 {isMentor && (
                                                                                     <button
                                                                                         onClick={() => mentorLowerHand(p.socketId)}
                                                                                         style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', padding: '2px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                                        title={t('hub.liveBoard.lowerHand')}
+                                                                                        title={t('hub.salaDeEventos.lowerHand')}
                                                                                     >
                                                                                         <X size={10} />
                                                                                     </button>
@@ -1995,7 +1995,7 @@ export default function LiveBoardContainer({
                                                                     }}
                                                                 >
                                                                     <PenLine size={12} />
-                                                                    {drawingPermissions.has(p.socketId) ? t('hub.liveBoard.revokeDrawing') : t('hub.liveBoard.giveDrawing')}
+                                                                    {drawingPermissions.has(p.socketId) ? t('hub.salaDeEventos.revokeDrawing') : t('hub.salaDeEventos.giveDrawing')}
                                                                 </button>
                                                                 <button
                                                                     onClick={() => toggleMicPermission(p.socketId)}
@@ -2017,7 +2017,7 @@ export default function LiveBoardContainer({
                                                                     }}
                                                                 >
                                                                     {micPermissions.has(p.socketId) ? <MicOff size={12} /> : <Mic size={12} />}
-                                                                    {micPermissions.has(p.socketId) ? t('hub.liveBoard.closeMic') : t('hub.liveBoard.openMic')}
+                                                                    {micPermissions.has(p.socketId) ? t('hub.salaDeEventos.closeMic') : t('hub.salaDeEventos.openMic')}
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -2071,7 +2071,7 @@ export default function LiveBoardContainer({
                                     }}
                                 >
                                     {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
-                                    {!isMobile && (isAudioActive ? t('hub.liveBoard.mute') : t('hub.liveBoard.speak'))}
+                                    {!isMobile && (isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak'))}
                                 </button>
 
                                 {isMentor && (
@@ -2199,7 +2199,11 @@ export default function LiveBoardContainer({
                                     <button
                                         onClick={() => {
                                             if (micPermissions.has((window as any).__liveBoardSocketId || '')) {
-                                                isAudioActive ? handleStopAudio() : handleStartAudio();
+                                                if (isAudioActive) {
+                                                    handleStopAudio();
+                                                } else {
+                                                    handleStartAudio();
+                                                }
                                             } else {
                                                 toast.info('Aguarde o mentor abrir o seu microfone.');
                                             }
@@ -2232,7 +2236,7 @@ export default function LiveBoardContainer({
                                         ) : (
                                             <Lock size={14} style={{ opacity: 0.5 }} />
                                         )}
-                                        {isAudioActive ? t('hub.liveBoard.mute') : t('hub.liveBoard.speak')}
+                                        {isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak')}
                                     </button>
                                 </div>
 
@@ -2638,7 +2642,7 @@ export default function LiveBoardContainer({
                                     optionIndex: idx,
                                     userData: { name: user?.name, photo: (user as any)?.photo || (user as any)?.profilePhoto }
                                 });
-                                toast.success(t('hub.liveBoard.quizVotedToast') || "Voto registado!");
+                                toast.success(t('hub.salaDeEventos.quizVotedToast') || "Voto registado!");
                             }
                         }}
                         onReveal={() => socket?.emit('live_board:quiz_reveal', formId)}
@@ -3166,7 +3170,7 @@ const QuizOverlay = ({ quiz, results, detailedResults, hasVoted, selectedOption,
                 {isMentor && detailedResults && detailedResults.length > 0 && (
                     <div style={{ borderTop: isDark ? '1px solid #333' : '1px solid #eee', paddingTop: '15px' }}>
                         <h5 style={{ margin: '0 0 10px 0', fontSize: '0.7rem', fontWeight: 900, color: '#888', textTransform: 'uppercase' }}>
-                            {t('hub.liveBoard.responses') || 'Respostas Detalhadas'}
+                            {t('hub.salaDeEventos.responses') || 'Respostas Detalhadas'}
                         </h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
                             {detailedResults.map((res: any, i: number) => (

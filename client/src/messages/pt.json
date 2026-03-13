@@ -806,7 +806,15 @@
             "uploadSuccess": "Comprovativo enviado! Nossa equipe analisará e ativará sua conta em breve.",
             "payWithCard": "Pagar com Cartão",
             "payWithPaypal": "Pagar com PayPal",
-            "mpesaTransfer": "Transferência Manual"
+            "mpesaTransfer": "Transferência Manual",
+            "automaticPayment": "Pagamento Automático (Instantâneo)",
+            "manualTransferTitle": "OU TRANSFERÊNCIA MANUAL (VALIDAÇÃO EM 24H)",
+            "selectRegion": "Selecione o seu País / Região",
+            "allCountries": "🌍 Todos os Países",
+            "noMethods": "Nenhum método de pagamento disponível para este país ainda.",
+            "headerTitleManual": "📋 Enviar Comprovativo de Pagamento",
+            "headerTitlePlans": "🚀 Escolha o seu Plano",
+            "copySuccess": "Copiado para a área de transferência!"
         }
     },
     "blog": {
@@ -1580,7 +1588,7 @@
             "rejected": "Inscrição Rejeitada",
             "waitingApproval": "Aguardando aprovação do {role}"
         },
-        "liveBoard": {
+        "salaDeEventos": {
             "activateBoard": "Ativar Sala de Eventos",
             "exclusiveMentor": "Exclusivo para Mentor: Inicie uma mentoria interativa agora.",
             "liveNow": "AO VIVO",

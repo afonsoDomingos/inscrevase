@@ -23,7 +23,7 @@ import SmartInsights from '@/components/mentor/SmartInsights';
 import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
-import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
+import SalaDeEventosContainer from '@/components/hub/liveboard/SalaDeEventosContainer';
 import { adService } from '@/lib/adService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { Pencil } from 'lucide-react';
@@ -2113,7 +2113,7 @@ function MentorDashboardContent() {
                 {/* Lab Interface Overlay */}
                 <AnimatePresence>
                     {isLabActive && (
-                        <LiveBoardContainer
+                        <SalaDeEventosContainer
                             formId={`lab-${user._id}`}
                             isMentor={true}
                             eventTitle="LABORATÓRIO DE TESTES"

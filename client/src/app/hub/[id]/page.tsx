@@ -41,7 +41,7 @@ import MetaPixel from '@/components/MetaPixel';
 import AdBanner from '@/components/common/AdBanner';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import CommunityChat from '@/components/hub/CommunityChat';
-import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
+import SalaDeEventosContainer from '@/components/hub/liveboard/SalaDeEventosContainer';
 import { Sparkles as SparklesIcon } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { getSocketUrl, getSocketOptions } from '@/lib/socketConfig';
@@ -752,7 +752,7 @@ function HubContent() {
                 {/* --- LIVE BOARD SECTION --- */}
                 <AnimatePresence>
                     {isBoardActive && (
-                        <LiveBoardContainer
+                        <SalaDeEventosContainer
                             formId={String(submission.form._id)}
                             isMentor={currentUser?._id === submission.form.creator?._id || currentUser?.role === 'admin'}
                             mentorData={boardMentorData || {
