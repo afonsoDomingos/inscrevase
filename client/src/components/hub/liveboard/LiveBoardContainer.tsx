@@ -185,6 +185,7 @@ export default function LiveBoardContainer({
     const [correctQuizOption, setCorrectQuizOption] = useState<number | null>(null);
     const [quizDetailedResults, setQuizDetailedResults] = useState<any[]>([]);
     const [customAnnouncementText, setCustomAnnouncementText] = useState("");
+    const [isHovered, setIsHovered] = useState(false);
 
     // Timer & Cursor State
     const [timerSeconds, setTimerSeconds] = useState<number>(0);
@@ -823,6 +824,8 @@ export default function LiveBoardContainer({
             exit={{ opacity: 0, scale: 0.98 }}
             className="live-board-main"
             onClick={isMinimized && onRestore ? onRestore : undefined}
+            onMouseEnter={() => isMinimized && setIsHovered(true)}
+            onMouseLeave={() => isMinimized && setIsHovered(false)}
             style={isMinimized ? {
                 position: 'fixed',
                 bottom: '20px',
@@ -1206,11 +1209,29 @@ export default function LiveBoardContainer({
                 />
 
                 {isMinimized && (
-                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, pointerEvents: 'none' }}>
-                        <div style={{ background: primaryColor, color: '#fff', padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: isHovered ? 1 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            background: 'rgba(0,0,0,0.15)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 10000,
+                            pointerEvents: 'none',
+                            backdropFilter: isHovered ? 'blur(2px)' : 'none'
+                        }}
+                    >
+                        <div style={{ background: primaryColor, color: '#fff', padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
                             <Maximize2 size={14} /> Maximizar
                         </div>
-                    </div>
+                    </motion.div>
                 )}
 
                 {/* Mentor Cursor Overlay (for participants) */}
