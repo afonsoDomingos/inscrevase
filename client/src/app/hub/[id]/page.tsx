@@ -729,27 +729,25 @@ function HubContent() {
                             >
                                 {boardStartCountdown}
                             </motion.div>
-                            <motion.h2
+                            <motion.h3
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
                                 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}
                             >
-                                {t('hub.liveBoard.countdownTitle')}
-                            </motion.h2>
+                                {t('hub.salaDeEventos.countdownTitle')}
+                            </motion.h3>
                             <motion.p
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.3 }}
-                                style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                                style={{ fontSize: '1rem', color: '#666', fontWeight: 600 }}
                             >
-                                {t('hub.liveBoard.countdownMessage', { seconds: boardStartCountdown })}
+                                {t('hub.salaDeEventos.countdownMessage', { seconds: boardStartCountdown })}
                             </motion.p>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                {/* --- LIVE BOARD SECTION --- */}
+                {/* --- SALA DE EVENTOS --- */}
                 <AnimatePresence>
                     {isBoardActive && (
                         <SalaDeEventosContainer
@@ -800,7 +798,7 @@ function HubContent() {
                                 }}
                             >
                                 <h4 style={{ margin: '0 0 15px', fontSize: '0.9rem', fontWeight: 800, color: '#111' }}>
-                                    {t('hub.liveBoard.selectCountdown')}
+                                    {t('hub.salaDeEventos.selectCountdown')}
                                 </h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                     {[5, 10, 30, 60, 300].map(seconds => (
@@ -835,7 +833,7 @@ function HubContent() {
                                             onMouseEnter={(e) => (e.currentTarget.style.background = '#eee')}
                                             onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f8f8')}
                                         >
-                                            {seconds < 60 ? t(`hub.liveBoard.seconds_${seconds}`) : t(`hub.liveBoard.minute_${seconds / 60}`)}
+                                            {seconds < 60 ? t(`hub.salaDeEventos.seconds_${seconds}`) : t(`hub.salaDeEventos.minute_${seconds / 60}`)}
                                         </button>
                                     ))}
                                     <button
@@ -865,7 +863,7 @@ function HubContent() {
                                             marginTop: '8px'
                                         }}
                                     >
-                                        {t('hub.liveBoard.startNow')}
+                                        {t('hub.salaDeEventos.startNow')}
                                     </button>
                                 </div>
                                 <button
@@ -909,9 +907,9 @@ function HubContent() {
                                         boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
                                     }}
                                 >
-                                    <SparklesIcon size={18} color={primaryColor} /> {t('hub.liveBoard.activateBoard')}
+                                    <SparklesIcon size={18} color={primaryColor} /> {t('hub.salaDeEventos.activateBoard')}
                                 </motion.button>
-                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.liveBoard.exclusiveMentor')}</p>
+                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.salaDeEventos.exclusiveMentor')}</p>
                             </>
                         )}
                     </div>

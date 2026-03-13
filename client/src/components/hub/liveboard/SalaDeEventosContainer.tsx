@@ -1363,7 +1363,7 @@ export default function SalaDeEventosContainer({
                             color: isDark ? '#fff' : '#444'
                         }}>
                             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ff4757' }} className="animate-pulse" />
-                            <span>LIVE {!isMobile && "BOARD"}</span>
+                            <span>SALA DE {!isMobile && "EVENTOS"}</span>
                         </div>
 
                         {isMentor ? (
