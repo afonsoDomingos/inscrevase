@@ -828,20 +828,25 @@ export default function LiveBoardContainer({
             onMouseLeave={() => isMinimized && setIsHovered(false)}
             style={isMinimized ? {
                 position: 'fixed',
-                bottom: '20px',
-                right: '20px',
+                bottom: '24px',
+                right: '24px',
                 width: isMobile ? '160px' : '280px',
                 height: isMobile ? '90px' : '157px',
-                background: isDark ? '#1a1a1a' : '#fff',
+                background: isDark ? '#111' : '#fff',
                 zIndex: 9999,
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                borderRadius: '16px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
-                border: `3px solid ${primaryColor}`,
+                borderRadius: '24px',
+                boxShadow: isHovered
+                    ? `0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 20px ${primaryColor}4D`
+                    : '0 10px 30px -5px rgba(0, 0, 0, 0.3)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                outline: isHovered ? `2px solid ${primaryColor}` : `1px solid ${primaryColor}4D`,
+                outlineOffset: '-1px',
                 cursor: 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                transform: isHovered ? 'scale(1.05) translateY(-5px)' : 'scale(1) translateY(0)'
             } : {
                 position: 'fixed',
                 top: '0',
@@ -860,38 +865,46 @@ export default function LiveBoardContainer({
             {/* Minimal Top Header */}
             {isMinimized ? (
                 <div style={{
-                    padding: '6px 12px',
-                    background: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
-                    backdropFilter: 'blur(10px)',
-                    borderBottom: `2px solid ${primaryColor}`,
+                    padding: '8px 12px',
+                    background: isDark ? 'rgba(15,15,15,0.85)' : 'rgba(255,255,255,0.9)',
+                    backdropFilter: 'blur(12px)',
+                    borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '10px',
                     flexShrink: 0,
                     zIndex: 100,
-                    height: '34px'
+                    height: '40px'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
-                        <div style={{ width: '3px', height: '14px', background: primaryColor, borderRadius: '2px' }} />
+                        <div style={{
+                            width: '8px',
+                            height: '8px',
+                            background: primaryColor,
+                            borderRadius: '50%',
+                            boxShadow: `0 0 10px ${primaryColor}`
+                        }} />
                         <span style={{
-                            fontSize: '0.7rem',
-                            fontWeight: 900,
+                            fontSize: '0.75rem',
+                            fontWeight: 800,
                             color: isDark ? '#fff' : '#111',
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
-                            whiteSpace: 'nowrap'
+                            whiteSpace: 'nowrap',
+                            letterSpacing: '-0.2px'
                         }}>
                             {eventTitle}
                         </span>
                     </div>
                     <div style={{
-                        fontSize: '0.7rem',
+                        fontSize: '0.65rem',
                         fontWeight: 900,
-                        color: primaryColor,
-                        background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                        padding: '2px 8px',
-                        borderRadius: '6px'
+                        color: isDark ? '#fff' : '#111',
+                        background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(100,100,100,0.1)',
+                        padding: '3px 8px',
+                        borderRadius: '8px',
+                        fontFamily: 'monospace'
                     }}>
                         {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
@@ -1251,25 +1264,43 @@ export default function LiveBoardContainer({
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: isHovered ? 1 : 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.3 }}
                         style={{
                             position: 'absolute',
                             top: 0,
                             left: 0,
                             width: '100%',
                             height: '100%',
-                            background: 'rgba(0,0,0,0.15)',
+                            background: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             zIndex: 10000,
                             pointerEvents: 'none',
-                            backdropFilter: isHovered ? 'blur(2px)' : 'none'
+                            backdropFilter: isHovered ? 'blur(4px)' : 'none'
                         }}
                     >
-                        <div style={{ background: primaryColor, color: '#fff', padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                            <Maximize2 size={14} /> Maximizar
-                        </div>
+                        <motion.div
+                            initial={{ scale: 0.8, y: 10 }}
+                            animate={{ scale: isHovered ? 1 : 0.8, y: isHovered ? 0 : 10 }}
+                            style={{
+                                background: primaryColor,
+                                color: '#fff',
+                                padding: '8px 16px',
+                                borderRadius: '14px',
+                                fontSize: '0.8rem',
+                                fontWeight: 900,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                boxShadow: `0 15px 30px ${primaryColor}66`,
+                                border: '1px solid rgba(255,255,255,0.3)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                            }}
+                        >
+                            <Maximize2 size={16} strokeWidth={3} /> Maximizar
+                        </motion.div>
                     </motion.div>
                 )}
 
