@@ -539,7 +539,8 @@ export default function SalaDeEventosContainer({
         return () => {
             newSocket.disconnect();
         };
-    }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound, handleStopAudio]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound]);
 
     const playAudioChunk = async (data: ArrayBuffer) => {
         if (!audioContextRef.current) {
