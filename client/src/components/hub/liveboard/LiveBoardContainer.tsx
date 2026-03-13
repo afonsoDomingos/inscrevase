@@ -201,8 +201,9 @@ export default function LiveBoardContainer({
         return () => clearInterval(timer);
     }, []);
 
-    // Collaborative Drawing Permissions
+    // Collaborative Drawing & Voice Permissions
     const [drawingPermissions, setDrawingPermissions] = useState<Set<string>>(new Set());
+    const [micPermissions, setMicPermissions] = useState<Set<string>>(new Set());
     const [showParticipantsPanel, setShowParticipantsPanel] = useState(false);
     const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set());
 
@@ -282,6 +283,7 @@ export default function LiveBoardContainer({
 
         newSocket.on('connect', () => {
             console.log('[LiveBoard] Connected to socket');
+            (window as any).__liveBoardSocketId = newSocket.id;
             newSocket.emit('live_board:join', formId);
         });
 
@@ -332,13 +334,11 @@ export default function LiveBoardContainer({
             setParticipants(list);
         });
 
-        if (!isMentor) {
-            newSocket.on('live_board:audio_data', (data: ArrayBuffer) => {
-                if (!isParticipantAudioMuted) {
-                    playAudioChunk(data);
-                }
-            });
-        }
+        newSocket.on('live_board:audio_data', (data: ArrayBuffer) => {
+            if (!isParticipantAudioMuted) {
+                playAudioChunk(data);
+            }
+        });
 
         newSocket.on('live_board:reaction', (data: any) => {
             const id = Math.random().toString(36).substr(2, 9);
@@ -379,6 +379,35 @@ export default function LiveBoardContainer({
             }
         });
 
+        newSocket.on('live_board:mic_permission', ({ granted, socketId }: { granted: boolean, socketId: string }) => {
+            const myId = (window as any).__liveBoardSocketId;
+            const isMe = socketId === myId;
+
+            if (isMe) {
+                if (granted) {
+                    toast.success('🎙️ O mentor abriu o seu microfone! Você já pode falar.');
+                } else {
+                    toast.error('O mentor fechou o seu microfone.');
+                    handleStopAudio();
+                }
+
+                setMicPermissions(prev => {
+                    const next = new Set(prev);
+                    if (granted) next.add(myId);
+                    else next.delete(myId);
+                    return next;
+                });
+            } else if (isMentor) {
+                // If I am mentor, I should update my local state for this participant
+                setMicPermissions(prev => {
+                    const next = new Set(prev);
+                    if (granted) next.add(socketId);
+                    else next.delete(socketId);
+                    return next;
+                });
+            }
+        });
+
         newSocket.on('live_board:timer:start', ({ duration }: any) => {
             setTimerSeconds(duration);
             setIsTimerActive(true);
@@ -403,6 +432,7 @@ export default function LiveBoardContainer({
 
         newSocket.on('live_board:my_socket_id', (id: string) => {
             // Store our own socket ID so participant knows if they have permission
+            // This is already set on 'connect', but can be a fallback if needed.
             (window as any).__liveBoardSocketId = id;
         });
 
@@ -592,25 +622,48 @@ export default function LiveBoardContainer({
     };
 
     const handleRaiseHand = () => {
-        if (socket) {
-            if (isHandRaised) {
-                // Lower hand
-                socket.emit('live_board:lower_hand', {
-                    formId,
-                    userData: authService.getCurrentUser()
-                });
-                setIsHandRaised(false);
-            } else {
-                // Raise hand
-                socket.emit('live_board:raise_hand', {
-                    formId,
-                    userData: authService.getCurrentUser()
-                });
-                setIsHandRaised(true);
-                playSound('hand_raised');
-                toast.success(t('hub.liveBoard.handRaisedSuccess'));
-            }
+        if (!socket) return;
+        if (isHandRaised) {
+            socket.emit('live_board:lower_hand', { formId, userData: authService.getCurrentUser() });
+            setIsHandRaised(false);
+        } else {
+            socket.emit('live_board:raise_hand', { formId, userData: authService.getCurrentUser() });
+            setIsHandRaised(true);
+            playSound('hand_raised');
+            toast.success(t('hub.liveBoard.handRaisedSuccess'));
         }
+    };
+
+    const mentorLowerHand = (participantSocketId: string) => {
+        if (!socket || !isMentor) return;
+        socket.emit('live_board:hand_lower', { formId, participantSocketId });
+        setRaisedHands(prev => {
+            const next = new Set(prev);
+            next.delete(participantSocketId);
+            return next;
+        });
+    };
+    const toggleMicPermission = (participantSocketId: string) => {
+        if (!socket || !isMentor) return;
+        const hasPermission = micPermissions.has(participantSocketId);
+        socket.emit('live_board:mic_permission', {
+            formId,
+            socketId: participantSocketId,
+            granted: !hasPermission
+        });
+        // We update locally as well for immediate UI feedback
+        setMicPermissions(prev => {
+            const next = new Set(prev);
+            if (hasPermission) next.delete(participantSocketId);
+            else next.add(participantSocketId);
+            return next;
+        });
+
+        toast.success(
+            hasPermission
+                ? 'Microfone do participante fechado.'
+                : '🎙️ Microfone do participante aberto!'
+        );
     };
 
     const toggleDrawingPermission = (participantSocketId: string) => {
@@ -830,23 +883,25 @@ export default function LiveBoardContainer({
                 position: 'fixed',
                 bottom: '24px',
                 right: '24px',
-                width: isMobile ? '160px' : '280px',
-                height: isMobile ? '90px' : '157px',
-                background: isDark ? '#111' : '#fff',
+                width: isMobile ? '180px' : '320px',
+                height: isMobile ? '101px' : '180px',
+                background: isDark ? 'rgba(20, 20, 20, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(24px)',
                 zIndex: 9999,
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                borderRadius: '24px',
+                borderRadius: '28px',
                 boxShadow: isHovered
-                    ? `0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 20px ${primaryColor}4D`
-                    : '0 10px 30px -5px rgba(0, 0, 0, 0.3)',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                outline: isHovered ? `2px solid ${primaryColor}` : `1px solid ${primaryColor}4D`,
-                outlineOffset: '-1px',
+                    ? `0 35px 70px -15px rgba(0, 0, 0, 0.6), 0 0 40px ${primaryColor}4D`
+                    : '0 20px 40px -10px rgba(0, 0, 0, 0.4)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
+                outline: isHovered ? `2.5px solid ${primaryColor}` : `1px solid ${primaryColor}4D`,
+                outlineOffset: '-2px',
                 cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                transform: isHovered ? 'scale(1.05) translateY(-5px)' : 'scale(1) translateY(0)'
+                transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                transform: isHovered ? 'scale(1.08) translateY(-12px)' : 'scale(1) translateY(0)',
+                backgroundImage: isDark ? 'radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, transparent 60%)' : 'radial-gradient(circle at 10% 20%, rgba(0,0,0,0.01) 0%, transparent 60%)'
             } : {
                 position: 'fixed',
                 top: '0',
@@ -865,17 +920,16 @@ export default function LiveBoardContainer({
             {/* Minimal Top Header */}
             {isMinimized ? (
                 <div style={{
-                    padding: '8px 12px',
-                    background: isDark ? 'rgba(15,15,15,0.85)' : 'rgba(255,255,255,0.9)',
-                    backdropFilter: 'blur(12px)',
-                    borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
+                    padding: '0 16px',
+                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '10px',
                     flexShrink: 0,
                     zIndex: 100,
-                    height: '40px'
+                    height: '36px',
+                    borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
                         <div style={{
@@ -984,10 +1038,9 @@ export default function LiveBoardContainer({
                                         )}
                                     </div>
                                 </>
-                            )
-                            }
-                        </div >
-                    </div >
+                            )}
+                        </div>
+                    </div>
 
                     {/* Date and Time Header Center */}
                     {!isMobile && (
@@ -1403,7 +1456,7 @@ export default function LiveBoardContainer({
 
             {/* Participant Audio Control */}
             {
-                !isMinimized && !isMentor && (
+                !isMinimized && (
                     <div style={{ position: 'absolute', bottom: 30, right: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                         {/* Mentor speaking indicator for participants */}
                         <AnimatePresence>
@@ -1686,6 +1739,32 @@ export default function LiveBoardContainer({
                                         title="Permissões de Desenho"
                                     >
                                         <PenLine size={isMobile ? 14 : 16} />
+                                        {isMentor && raisedHands.size > 0 && (
+                                            <motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: -8,
+                                                    right: -8,
+                                                    background: '#ef4444',
+                                                    color: '#fff',
+                                                    borderRadius: '50%',
+                                                    width: '18px',
+                                                    height: '18px',
+                                                    fontSize: '0.65rem',
+                                                    fontWeight: 900,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    boxShadow: '0 2px 10px rgba(239,68,68,0.4)',
+                                                    border: `2px solid ${isDark ? '#1a1a1a' : '#fff'}`,
+                                                    zIndex: 2
+                                                }}
+                                            >
+                                                {raisedHands.size}
+                                            </motion.div>
+                                        )}
                                     </button>
                                     <AnimatePresence>
                                         {showParticipantsPanel && (
@@ -1758,40 +1837,71 @@ export default function LiveBoardContainer({
                                                                         {p.name}
                                                                     </span>
                                                                     {raisedHands.has(p.socketId) && (
-                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                            <span style={{ fontSize: '0.6rem', fontWeight: 800, color: primaryColor, textTransform: 'uppercase' }}>Dúvida ✋</span>
-                                                                            {!drawingPermissions.has(p.socketId) && (
-                                                                                <button
-                                                                                    onClick={() => toggleDrawingPermission(p.socketId)}
-                                                                                    style={{ background: primaryColor, color: '#fff', border: 'none', padding: '1px 4px', borderRadius: '3px', fontSize: '0.55rem', fontWeight: 900, cursor: 'pointer' }}
-                                                                                >
-                                                                                    Dar Giz
-                                                                                </button>
-                                                                            )}
+                                                                        <div style={{ position: 'relative' }}>
+                                                                            <motion.div
+                                                                                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                                                                                transition={{ repeat: Infinity, duration: 2 }}
+                                                                                style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#3b82f6', color: '#fff', padding: '2px 8px', borderRadius: '12px', fontSize: '0.65rem', fontWeight: 900 }}
+                                                                            >
+                                                                                ✋ {t('hub.liveBoard.raiseHand')}
+                                                                                {isMentor && (
+                                                                                    <button
+                                                                                        onClick={() => mentorLowerHand(p.socketId)}
+                                                                                        style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', padding: '2px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                                        title={t('hub.liveBoard.lowerHand')}
+                                                                                    >
+                                                                                        <X size={10} />
+                                                                                    </button>
+                                                                                )}
+                                                                            </motion.div>
                                                                         </div>
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <button
-                                                                onClick={() => toggleDrawingPermission(p.socketId)}
-                                                                style={{
-                                                                    background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
-                                                                    color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
-                                                                    border: 'none',
-                                                                    padding: '4px 10px',
-                                                                    borderRadius: '8px',
-                                                                    fontSize: '0.7rem',
-                                                                    fontWeight: 800,
-                                                                    cursor: 'pointer',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    gap: '4px',
-                                                                    whiteSpace: 'nowrap'
-                                                                }}
-                                                            >
-                                                                <PenLine size={12} />
-                                                                {drawingPermissions.has(p.socketId) ? 'Revogar' : 'Dar Giz'}
-                                                            </button>
+                                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                                <button
+                                                                    onClick={() => toggleDrawingPermission(p.socketId)}
+                                                                    style={{
+                                                                        background: drawingPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(14,165,233,0.1)',
+                                                                        color: drawingPermissions.has(p.socketId) ? '#ef4444' : '#0ea5e9',
+                                                                        border: 'none',
+                                                                        padding: '4px 10px',
+                                                                        borderRadius: '8px',
+                                                                        fontSize: '0.7rem',
+                                                                        fontWeight: 800,
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '4px',
+                                                                        whiteSpace: 'nowrap'
+                                                                    }}
+                                                                >
+                                                                    <PenLine size={12} />
+                                                                    {drawingPermissions.has(p.socketId) ? t('hub.liveBoard.revokeDrawing') : t('hub.liveBoard.giveDrawing')}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => toggleMicPermission(p.socketId)}
+                                                                    style={{
+                                                                        background: micPermissions.has(p.socketId) ? '#fee2e2' : 'rgba(34,197,94,0.1)',
+                                                                        color: micPermissions.has(p.socketId) ? '#ef4444' : '#22c55e',
+                                                                        border: 'none',
+                                                                        padding: '4px 10px',
+                                                                        borderRadius: '8px',
+                                                                        fontSize: '0.7rem',
+                                                                        fontWeight: 800,
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        gap: '4px',
+                                                                        whiteSpace: 'nowrap',
+                                                                        minWidth: '85px',
+                                                                    }}
+                                                                >
+                                                                    {micPermissions.has(p.socketId) ? <MicOff size={12} /> : <Mic size={12} />}
+                                                                    {micPermissions.has(p.socketId) ? t('hub.liveBoard.closeMic') : t('hub.liveBoard.openMic')}
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     ))
                                                 )}
@@ -1843,7 +1953,7 @@ export default function LiveBoardContainer({
                                     }}
                                 >
                                     {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
-                                    {!isMobile && (isAudioActive ? 'Silenciar' : 'Falar')}
+                                    {!isMobile && (isAudioActive ? t('hub.liveBoard.mute') : t('hub.liveBoard.speak'))}
                                 </button>
 
                                 {isMentor && (
@@ -2047,6 +2157,30 @@ export default function LiveBoardContainer({
                                 >
                                     ENTENDI
                                 </button>
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 4px' }} />
+
+                                {micPermissions.has((window as any).__liveBoardSocketId || '') && (
+                                    <button
+                                        onClick={isAudioActive ? handleStopAudio : handleStartAudio}
+                                        style={{
+                                            background: isAudioActive ? '#fee2e2' : (isDark ? 'rgba(14, 165, 233, 0.2)' : '#f0f9ff'),
+                                            color: isAudioActive ? '#ef4444' : '#0ea5e9',
+                                            border: 'none',
+                                            padding: '0 8px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            fontSize: '0.65rem'
+                                        }}
+                                    >
+                                        {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
+                                        {!isMobile && (isAudioActive ? t('hub.liveBoard.mute') : t('hub.liveBoard.speak'))}
+                                    </button>
+                                )}
                             </div>
                             <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
                             <button
@@ -2136,7 +2270,8 @@ export default function LiveBoardContainer({
                         </>
                     )}
                 </div>
-            )}
+            )
+            }
 
             {/* ===== Raised Hands Floating Panel (Mentor Only) ===== */}
             <AnimatePresence>

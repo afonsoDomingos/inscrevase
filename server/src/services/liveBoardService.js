@@ -396,6 +396,25 @@ class LiveBoardService {
             console.log(`[LiveBoard] Drawing permission ${granted ? 'granted' : 'revoked'} for socket ${socketId} in form ${formId}`);
         });
 
+        // Microphone Permission (Mentor Only)
+        socket.on('live_board:mic_permission', ({ formId, socketId, granted }) => {
+            const session = this.activeSessions.get(formId);
+            if (!session || session.mentorId !== userId) return;
+
+            if (!session.micPermissions) {
+                session.micPermissions = new Set();
+            }
+
+            if (granted) {
+                session.micPermissions.add(socketId);
+            } else {
+                session.micPermissions.delete(socketId);
+            }
+
+            this.io.to(`live_board_${formId}`).emit('live_board:mic_permission', { socketId, granted });
+            console.log(`[LiveBoard] Mic permission ${granted ? 'granted' : 'revoked'} for socket ${socketId}`);
+        });
+
         // Mentor Cursor Event
         socket.on('live_board:cursor:move', ({ formId, x, y }) => {
             const session = this.activeSessions.get(formId);
@@ -497,7 +516,10 @@ class LiveBoardService {
         // Binary Audio Stream (Fallback/Simple)
         socket.on('live_board:audio_stream', ({ formId, data }) => {
             const session = this.activeSessions.get(formId);
-            if (session && session.mentorId === userId) {
+            if (!session) return;
+            const isMentorOrAllowed = session.mentorId === userId ||
+                (session.micPermissions && session.micPermissions.has(socket.id));
+            if (isMentorOrAllowed) {
                 socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
             }
         });
