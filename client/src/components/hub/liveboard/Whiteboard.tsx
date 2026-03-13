@@ -310,7 +310,7 @@ const Whiteboard = forwardRef(({
                     bgCanvas.style.height = `${rect.height}px`;
                     const bgCtx = bgCanvas.getContext('2d');
                     if (bgCtx) {
-                        bgCtx.scale(dpr, dpr);
+                        bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
                         bgContextRef.current = bgCtx;
                     }
                 }
@@ -322,7 +322,7 @@ const Whiteboard = forwardRef(({
 
                 const context = canvas.getContext('2d', { alpha: true });
                 if (context) {
-                    context.scale(dpr, dpr);
+                    context.setTransform(dpr, 0, 0, dpr, 0, 0);
                     context.lineCap = 'round';
                     context.lineJoin = 'round';
                     context.strokeStyle = color;
