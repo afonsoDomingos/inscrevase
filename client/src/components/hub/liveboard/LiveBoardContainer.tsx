@@ -292,14 +292,11 @@ export default function LiveBoardContainer({
                         next.add(socketId);
                         return next;
                     });
-                    // Auto-remove after 15 seconds
-                    setTimeout(() => {
-                        setRaisedHands(prev => {
-                            const next = new Set(prev);
-                            next.delete(socketId);
-                            return next;
-                        });
-                    }, 15000);
+                    // Store userData keyed by socketId so we can show names
+                    setParticipants(prev => {
+                        // update in place so name is visible even outside sidebar
+                        return prev.map(p => p.socketId === socketId ? { ...p, _handRaised: true } : p);
+                    });
                 }
 
                 playSound('hand_raised');
@@ -310,6 +307,22 @@ export default function LiveBoardContainer({
                         onClick: () => console.log("Hand raise acknowledged")
                     }
                 });
+            }
+        });
+
+        newSocket.on('live_board:hand_lowered', ({ socketId }: any) => {
+            // Mentor view: remove from raisedHands set
+            if (isMentor && socketId) {
+                setRaisedHands(prev => {
+                    const next = new Set(prev);
+                    next.delete(socketId);
+                    return next;
+                });
+                setParticipants(prev => prev.map(p => p.socketId === socketId ? { ...p, _handRaised: false } : p));
+            }
+            // Participant view: if the mentor dismissed MY hand, reset it
+            if (!isMentor && socketId === newSocket.id) {
+                setIsHandRaised(false);
             }
         });
 
@@ -579,14 +592,23 @@ export default function LiveBoardContainer({
 
     const handleRaiseHand = () => {
         if (socket) {
-            socket.emit('live_board:raise_hand', {
-                formId,
-                userData: authService.getCurrentUser()
-            });
-            setIsHandRaised(true);
-            playSound('hand_raised');
-            toast.success(t('hub.liveBoard.handRaisedSuccess'));
-            setTimeout(() => setIsHandRaised(false), 5000);
+            if (isHandRaised) {
+                // Lower hand
+                socket.emit('live_board:lower_hand', {
+                    formId,
+                    userData: authService.getCurrentUser()
+                });
+                setIsHandRaised(false);
+            } else {
+                // Raise hand
+                socket.emit('live_board:raise_hand', {
+                    formId,
+                    userData: authService.getCurrentUser()
+                });
+                setIsHandRaised(true);
+                playSound('hand_raised');
+                toast.success(t('hub.liveBoard.handRaisedSuccess'));
+            }
         }
     };
 
@@ -1939,24 +1961,25 @@ export default function LiveBoardContainer({
                             <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
                             <button
                                 onClick={handleRaiseHand}
-                                disabled={isHandRaised}
                                 style={{
-                                    background: isHandRaised ? (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8') : '#f0f9ff',
-                                    color: isHandRaised ? '#888' : '#0ea5e9',
-                                    border: 'none',
+                                    background: isHandRaised ? '#fef3c7' : '#f0f9ff',
+                                    color: isHandRaised ? '#d97706' : '#0ea5e9',
+                                    border: isHandRaised ? '1.5px solid #fbbf24' : 'none',
                                     padding: isMobile ? '0 8px' : '0 12px',
                                     height: isMobile ? '32px' : '32px',
                                     borderRadius: '8px',
                                     fontWeight: 800,
-                                    cursor: isHandRaised ? 'default' : 'pointer',
+                                    cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '6px',
-                                    fontSize: '0.7rem'
+                                    fontSize: '0.7rem',
+                                    transition: 'all 0.2s'
                                 }}
                             >
-                                <Hand size={18} /> {!isMobile && (isHandRaised ? 'Mão Levantada' : 'Dúvida')}
+                                <Hand size={18} />
+                                {!isMobile && (isHandRaised ? 'Abaixar Mão' : 'Dúvida')}
                             </button>
                             {/* Export Button for participants */}
                             <button
@@ -2024,6 +2047,117 @@ export default function LiveBoardContainer({
                     )}
                 </div>
             )}
+
+            {/* ===== Raised Hands Floating Panel (Mentor Only) ===== */}
+            <AnimatePresence>
+                {isMentor && !isMinimized && raisedHands.size > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        style={{
+                            position: 'absolute',
+                            top: '80px',
+                            left: '20px',
+                            zIndex: 5000,
+                            background: isDark ? 'rgba(26,26,26,0.95)' : 'rgba(255,255,255,0.97)',
+                            backdropFilter: 'blur(16px)',
+                            borderRadius: '16px',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                            border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+                            padding: '12px 14px',
+                            minWidth: '220px',
+                            maxWidth: '280px',
+                        }}
+                    >
+                        {/* Panel Header */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                            <motion.span
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                                style={{ fontSize: '1.2rem' }}
+                            >
+                                ✋
+                            </motion.span>
+                            <div>
+                                <div style={{ fontWeight: 800, fontSize: '0.8rem', color: isDark ? '#fff' : '#111' }}>
+                                    Mãos Levantadas
+                                </div>
+                                <div style={{ fontSize: '0.65rem', color: isDark ? '#aaa' : '#888', fontWeight: 600 }}>
+                                    {raisedHands.size} participante{raisedHands.size !== 1 ? 's' : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Participant list */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {participants.filter(p => raisedHands.has(p.socketId)).map(p => (
+                                <motion.div
+                                    key={p.socketId}
+                                    initial={{ opacity: 0, y: -6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -6 }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9',
+                                        borderRadius: '10px',
+                                        padding: '7px 10px',
+                                        border: `1.5px solid ${primaryColor}33`
+                                    }}
+                                >
+                                    <div style={{
+                                        width: '28px', height: '28px', borderRadius: '50%',
+                                        overflow: 'hidden', flexShrink: 0,
+                                        border: `2px solid ${primaryColor}`
+                                    }}>
+                                        <Image
+                                            src={p.photo || '/default-avatar.png'}
+                                            width={28} height={28} alt={p.name}
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                    <span style={{
+                                        flex: 1,
+                                        fontSize: '0.78rem',
+                                        fontWeight: 700,
+                                        color: isDark ? '#fff' : '#111',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        {p.name}
+                                    </span>
+                                    <button
+                                        title="Dispensar"
+                                        onClick={() => {
+                                            // Mentor acknowledges / manually lowers hand
+                                            socket?.emit('live_board:lower_hand', { formId, socketId: p.socketId });
+                                            setRaisedHands(prev => {
+                                                const next = new Set(prev);
+                                                next.delete(p.socketId);
+                                                return next;
+                                            });
+                                        }}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: isDark ? '#aaa' : '#999',
+                                            padding: '0',
+                                            display: 'flex',
+                                            flexShrink: 0
+                                        }}
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Sidebar Perguntas */}
             <AnimatePresence>

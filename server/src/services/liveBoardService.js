@@ -243,6 +243,7 @@ class LiveBoardService {
                 const mentorTarget = session.mentorSocketId || `live_board_${formId}`;
                 this.io.to(mentorTarget).emit('live_board:hand_raised', {
                     userId,
+                    socketId: socket.id,
                     userData,
                     timestamp: new Date()
                 });
@@ -250,6 +251,19 @@ class LiveBoardService {
                 this.io.to(`live_board_${formId}`).emit('live_board:hand_raised_broadcast', {
                     userId,
                     name: userData.name
+                });
+            }
+        });
+
+        // Lower Hand (Participant or Mentor dismissing)
+        socket.on('live_board:lower_hand', ({ formId, socketId }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId) {
+                // socketId can be the participant's socketId or provided by mentor to dismiss
+                const targetSocketId = socketId || socket.id;
+                this.io.to(`live_board_${formId}`).emit('live_board:hand_lowered', {
+                    socketId: targetSocketId,
+                    userId
                 });
             }
         });
