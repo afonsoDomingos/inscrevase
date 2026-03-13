@@ -858,7 +858,45 @@ export default function LiveBoardContainer({
             }}
         >
             {/* Minimal Top Header */}
-            {!isMinimized && (
+            {isMinimized ? (
+                <div style={{
+                    padding: '6px 12px',
+                    background: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
+                    backdropFilter: 'blur(10px)',
+                    borderBottom: `2px solid ${primaryColor}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '10px',
+                    flexShrink: 0,
+                    zIndex: 100,
+                    height: '34px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
+                        <div style={{ width: '3px', height: '14px', background: primaryColor, borderRadius: '2px' }} />
+                        <span style={{
+                            fontSize: '0.7rem',
+                            fontWeight: 900,
+                            color: isDark ? '#fff' : '#111',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            {eventTitle}
+                        </span>
+                    </div>
+                    <div style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 900,
+                        color: primaryColor,
+                        background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                        padding: '2px 8px',
+                        borderRadius: '6px'
+                    }}>
+                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                </div>
+            ) : (
                 <div style={{
                     padding: isMobile ? '8px 12px' : '10px 25px',
                     background: isDark ? '#1a1a1a' : '#fff',
@@ -1184,8 +1222,9 @@ export default function LiveBoardContainer({
                             </button>
                         )}
                     </div>
-                </div >
+                </div>
             )}
+
 
             {/* Canvas Area */}
             <div
@@ -1315,22 +1354,21 @@ export default function LiveBoardContainer({
             </AnimatePresence >
 
             {/* Logo Watermark */}
-            {!isMinimized && (
-                <div style={{
-                    position: 'absolute',
-                    bottom: '20px',
-                    left: '20px',
-                    pointerEvents: 'none',
-                    opacity: 0.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    zIndex: 10
-                }}>
-                    <Image src="/logo.png" alt="Inscreva-se" width={24} height={24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
-                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
-                </div>
-            )}
+            <div style={{
+                position: 'absolute',
+                bottom: isMinimized ? '5px' : '20px',
+                left: isMinimized ? '5px' : '20px',
+                pointerEvents: 'none',
+                opacity: isMinimized ? 0.3 : 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: isMinimized ? '4px' : '8px',
+                zIndex: 10
+            }}>
+                <Image src="/logo.png" alt="Inscreva-se" width={isMinimized ? 14 : 24} height={isMinimized ? 14 : 24} style={{ opacity: isDark ? 0.9 : 0.7, filter: isDark ? 'invert(1)' : 'none' }} />
+                <span style={{ fontSize: isMinimized ? '0.45rem' : '0.65rem', fontWeight: 800, color: isDark ? '#fff' : '#000', letterSpacing: '0.5px' }}>POWERED BY INSCREVA-SE</span>
+            </div>
+
 
             {/* Participant Audio Control */}
             {

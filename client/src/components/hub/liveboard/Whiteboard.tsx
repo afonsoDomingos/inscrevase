@@ -336,6 +336,15 @@ const Whiteboard = forwardRef(({
         };
 
         setCanvasSize();
+
+        const resizeObserver = new ResizeObserver(() => {
+            setCanvasSize();
+        });
+
+        if (canvas.parentElement) {
+            resizeObserver.observe(canvas.parentElement);
+        }
+
         window.addEventListener('resize', setCanvasSize);
 
         if (socket) {
@@ -375,6 +384,7 @@ const Whiteboard = forwardRef(({
 
         return () => {
             window.removeEventListener('resize', setCanvasSize);
+            resizeObserver.disconnect();
             if (socket) {
                 socket.off('live_board:draw');
                 socket.off('live_board:laser');
@@ -383,7 +393,7 @@ const Whiteboard = forwardRef(({
                 socket.off('live_board:history_replace');
             }
         };
-    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark, formId]);
+    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark, formId, backgroundImage]);
 
     useEffect(() => {
         redrawBg();
