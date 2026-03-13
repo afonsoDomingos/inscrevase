@@ -344,7 +344,7 @@ interface PlanCardProps {
     loading: boolean; currency: string; t: (key: string) => string;
 }
 
-function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, onPaypalSuccess, loading, currency }: PlanCardProps) {
+function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, onPaypalSuccess, loading, currency, t }: PlanCardProps) {
     return (
         <div style={{ border: `1.5px solid ${color}25`, background: '#fff', padding: '28px 24px', borderRadius: '24px', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}
             onMouseOver={e => (e.currentTarget.style.transform = 'translateY(-4px)', e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)')}
