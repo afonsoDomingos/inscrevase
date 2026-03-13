@@ -2199,44 +2199,31 @@ export default function SalaDeEventosContainer({
                                 <div style={{ position: 'relative', marginRight: '4px' }}>
                                     <button
                                         onClick={() => {
-                                            if (micPermissions.has((window as any).__liveBoardSocketId || '')) {
-                                                if (isAudioActive) {
-                                                    handleStopAudio();
-                                                } else {
-                                                    handleStartAudio();
-                                                }
+                                            if (isAudioActive) {
+                                                handleStopAudio();
                                             } else {
-                                                toast.info('Aguarde o mentor abrir o seu microfone.');
+                                                handleStartAudio();
                                             }
                                         }}
                                         style={{
-                                            background: micPermissions.has((window as any).__liveBoardSocketId || '')
-                                                ? (isAudioActive ? '#fee2e2' : primaryColor)
-                                                : (isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f0'),
-                                            color: micPermissions.has((window as any).__liveBoardSocketId || '')
-                                                ? (isAudioActive ? '#ef4444' : '#fff')
-                                                : (isDark ? '#444' : '#bbb'),
+                                            background: isAudioActive ? '#fee2e2' : primaryColor,
+                                            color: isAudioActive ? '#ef4444' : '#fff',
                                             border: 'none',
                                             padding: isMobile ? '0 10px' : '0 16px',
                                             height: '36px',
                                             borderRadius: '10px',
                                             fontWeight: 800,
-                                            cursor: micPermissions.has((window as any).__liveBoardSocketId || '') ? 'pointer' : 'not-allowed',
+                                            cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '6px',
                                             fontSize: '0.7rem',
                                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                            boxShadow: micPermissions.has((window as any).__liveBoardSocketId || '') ? `0 4px 12px ${primaryColor}33` : 'none',
-                                            borderBottom: micPermissions.has((window as any).__liveBoardSocketId || '') ? 'none' : `1px solid ${isDark ? '#333' : '#ddd'}`
+                                            boxShadow: `0 4px 12px ${primaryColor}33`,
                                         }}
                                     >
-                                        {micPermissions.has((window as any).__liveBoardSocketId || '') ? (
-                                            isAudioActive ? <MicOff size={16} /> : <Mic size={16} />
-                                        ) : (
-                                            <Lock size={14} style={{ opacity: 0.5 }} />
-                                        )}
+                                        {isAudioActive ? <MicOff size={16} /> : <Mic size={16} />}
                                         {isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak')}
                                     </button>
                                 </div>
