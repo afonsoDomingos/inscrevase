@@ -36,8 +36,7 @@ import {
     Users,
     PenLine,
     Image as ImageIcon,
-    Maximize2,
-    Lock
+    Maximize2
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
