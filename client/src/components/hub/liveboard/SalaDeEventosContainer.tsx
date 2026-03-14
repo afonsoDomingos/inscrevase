@@ -2714,8 +2714,15 @@ export default function SalaDeEventosContainer({
                                     margin: '0 0 12px 0',
                                     fontSize: isMobile ? '1.5rem' : '2.25rem',
                                     fontWeight: 900,
-                                    color: (announcementsList.find(a => a.id === currentAnnouncement.type) as any)?.color || primaryColor
+                                    color: (announcementsList.find(a => a.id === currentAnnouncement.type) as any)?.color || primaryColor,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px'
                                 }}>
+                                    <span style={{ fontSize: isMobile ? '1.5rem' : '2rem' }}>
+                                        {announcementsList.find(a => a.id === currentAnnouncement.type)?.icon || '📢'}
+                                    </span>
                                     {announcementsList.find(a => a.id === currentAnnouncement.type)?.label || 'Aviso importante'}
                                 </h2>
                                 <p style={{
