@@ -2709,18 +2709,6 @@ export default function SalaDeEventosContainer({
                                 textAlign: 'center'
                             }}
                         >
-                            <div style={{
-                                width: isMobile ? '60px' : '80px',
-                                height: isMobile ? '60px' : '80px',
-                                borderRadius: '24px',
-                                background: 'rgba(207, 181, 59, 0.1)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: isMobile ? '2.5rem' : '3.5rem'
-                            }}>
-                                {announcementsList.find(a => a.id === currentAnnouncement.type)?.icon || '📢'}
-                            </div>
                             <div>
                                 <h2 style={{
                                     margin: '0 0 12px 0',
