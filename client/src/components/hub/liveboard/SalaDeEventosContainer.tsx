@@ -429,7 +429,6 @@ export default function SalaDeEventosContainer({
         newSocket.on('live_board:timer:start', ({ duration }: any) => {
             setTimerSeconds(duration);
             setIsTimerActive(true);
-            toast.info(t('hub.salaDeEventos.timerStarted') || "O foco começa agora!");
         });
 
         newSocket.on('live_board:drawing_permission', ({ socketId, granted }: { socketId: string, granted: boolean }) => {
@@ -495,7 +494,6 @@ export default function SalaDeEventosContainer({
             setSelectedOption(null);
             setIsQuizRevealed(false);
             setCorrectQuizOption(null);
-            toast.info(t('hub.salaDeEventos.newQuizToast') || "Novo Quiz disponível!");
         });
 
         newSocket.on('live_board:quiz_results', ({ results }: any) => {
