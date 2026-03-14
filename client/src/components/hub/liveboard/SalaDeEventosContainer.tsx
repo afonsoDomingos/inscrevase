@@ -138,7 +138,7 @@ export default function SalaDeEventosContainer({
     const [isDark, setIsDark] = useState(false);
     const [undoTrigger, setUndoTrigger] = useState(0);
     const [isAudioActive, setIsAudioActive] = useState(false);
-    const [isParticipantAudioMuted, setIsParticipantAudioMuted] = useState(true);
+    const [isParticipantAudioMuted, setIsParticipantAudioMuted] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isHandRaised, setIsHandRaised] = useState(false);
     const [participants, setParticipants] = useState<any[]>([]);
@@ -543,18 +543,29 @@ export default function SalaDeEventosContainer({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound]);
 
-    const playAudioChunk = async (data: ArrayBuffer) => {
+    const playAudioChunk = async (data: any) => {
         if (!audioContextRef.current) {
             audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
         }
+
+        if (audioContextRef.current.state === 'suspended') {
+            await audioContextRef.current.resume();
+        }
+
         try {
-            const buffer = await audioContextRef.current.decodeAudioData(data);
+            // Socket.io binary data can sometimes be a Buffer/Uint8Array instead of a raw ArrayBuffer
+            // decodeAudioData requires an ArrayBuffer.
+            const arrayBuffer = data instanceof ArrayBuffer ? data : (data.buffer || data);
+
+            const buffer = await audioContextRef.current.decodeAudioData(arrayBuffer.slice(0));
             const source = audioContextRef.current.createBufferSource();
             source.buffer = buffer;
             source.connect(audioContextRef.current.destination);
             source.start();
         } catch (e) {
-            console.error("Error playing audio chunk", e);
+            // We expect some silent errors here if chunks don't have headers, 
+            // but we log it for debugging the "can't hear" issue.
+            console.warn("[LiveBoard Audio] Decode error (possibly missing headers in chunk):", e);
         }
     };
 
@@ -1299,7 +1310,7 @@ export default function SalaDeEventosContainer({
                                             justifyContent: 'center'
                                         }}
                                     >
-                                        <Clock size={16} />
+                                        <Clock size={14} />
                                     </button>
 
                                     <AnimatePresence>
@@ -1385,7 +1396,7 @@ export default function SalaDeEventosContainer({
                                     gap: '6px'
                                 }}
                             >
-                                <X size={16} /> {!isMobile && "Encerramento"}
+                                <X size={14} /> {!isMobile && "Encerramento"}
                             </button>
                         ) : (
                             <button
@@ -1577,7 +1588,7 @@ export default function SalaDeEventosContainer({
             {/* Participant Audio Control */}
             {
                 !isMinimized && (
-                    <div style={{ position: 'absolute', bottom: 30, right: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ position: 'absolute', bottom: isMobile ? 85 : 125, right: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', zIndex: 1000 }}>
                         {/* Mentor speaking indicator for participants */}
                         <AnimatePresence>
                             {isMentorSpeaking && (
@@ -1621,8 +1632,8 @@ export default function SalaDeEventosContainer({
                             style={{
                                 background: isParticipantAudioMuted ? '#111' : primaryColor,
                                 color: '#fff',
-                                width: '54px',
-                                height: '54px',
+                                width: isMobile ? '40px' : '46px',
+                                height: isMobile ? '40px' : '46px',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1630,9 +1641,10 @@ export default function SalaDeEventosContainer({
                                 border: 'none',
                                 cursor: 'pointer',
                                 boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                                transition: 'all 0.3s ease'
                             }}
                         >
-                            {isParticipantAudioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+                            {isParticipantAudioMuted ? <VolumeX size={isMobile ? 18 : 22} /> : <Volume2 size={isMobile ? 18 : 22} />}
                         </button>
                     </div>
                 )
@@ -1758,8 +1770,8 @@ export default function SalaDeEventosContainer({
                                             }
                                         }}
                                         style={{
-                                            width: isMobile ? '28px' : '32px',
-                                            height: isMobile ? '28px' : '32px',
+                                            width: isMobile ? '26px' : '30px',
+                                            height: isMobile ? '26px' : '30px',
                                             borderRadius: '6px',
                                             background: tool === t.id ? (isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0') : 'transparent',
                                             border: 'none',
@@ -1814,7 +1826,7 @@ export default function SalaDeEventosContainer({
                                     }}
                                     title="Mover Sólidos"
                                 >
-                                    <Hand size={isMobile ? 14 : 16} />
+                                    <Hand size={isMobile ? 12 : 14} />
                                 </button>
                             </div>
 
@@ -1834,31 +1846,31 @@ export default function SalaDeEventosContainer({
                             )}
 
                             <div style={{ display: 'flex', gap: '0px', flexShrink: 0 }}>
-                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 14 : 16} /></button>
+                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 12 : 14} /></button>
                                 <button
                                     onClick={() => setShowClearConfirm(true)}
                                     style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
                                 >
-                                    <Eraser size={isMobile ? 14 : 16} />
+                                    <Eraser size={isMobile ? 12 : 14} />
                                 </button>
 
 
 
                                 <input type="file" id="bg-upload" hidden accept="image/*" onChange={handleBackgroundUpload} />
-                                <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 14 : 16} /></button>
+                                <button onClick={() => document.getElementById('bg-upload')?.click()} style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Background Image"><Layers size={isMobile ? 12 : 14} /></button>
 
-                                <button onClick={() => setIsDark(!isDark)} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={isMobile ? 14 : 16} /> : <Moon size={isMobile ? 14 : 16} />}</button>
+                                <button onClick={() => setIsDark(!isDark)} style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Toggle Theme">{isDark ? <Sun size={isMobile ? 12 : 14} /> : <Moon size={isMobile ? 12 : 14} />}</button>
 
-                                <button onClick={saveBoard} style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={isMobile ? 14 : 16} /></button>
+                                <button onClick={saveBoard} style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Guardar Quadro"><Save size={isMobile ? 12 : 14} /></button>
 
                                 {/* Collaborative Drawing Panel */}
                                 <div style={{ position: 'relative' }}>
                                     <button
                                         onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
-                                        style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                        style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                                         title="Permissões de Desenho"
                                     >
-                                        <PenLine size={isMobile ? 14 : 16} />
+                                        <PenLine size={isMobile ? 12 : 14} />
                                         {isMentor && raisedHands.size > 0 && (
                                             <motion.div
                                                 initial={{ scale: 0 }}
@@ -2138,8 +2150,8 @@ export default function SalaDeEventosContainer({
                                                 background: currentQuiz ? '#f0fdf4' : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
                                                 color: currentQuiz ? '#22c55e' : (isDark ? '#fff' : '#666'),
                                                 border: 'none',
-                                                width: isMobile ? '28px' : '32px',
-                                                height: isMobile ? '28px' : '32px',
+                                                width: isMobile ? '26px' : '30px',
+                                                height: isMobile ? '26px' : '30px',
                                                 borderRadius: '8px',
                                                 fontWeight: 800,
                                                 cursor: 'pointer',
@@ -2150,7 +2162,7 @@ export default function SalaDeEventosContainer({
                                             }}
                                             title="Criar Quiz"
                                         >
-                                            <HelpCircle size={isMobile ? 14 : 16} />
+                                            <HelpCircle size={isMobile ? 12 : 14} />
                                         </button>
 
                                         <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
@@ -2162,11 +2174,11 @@ export default function SalaDeEventosContainer({
                                                     background: '#22c55e',
                                                     color: '#fff',
                                                     border: 'none',
-                                                    padding: '0 8px',
-                                                    height: '32px',
+                                                    padding: '0 6px',
+                                                    height: '30px',
                                                     borderRadius: '8px',
                                                     fontWeight: 900,
-                                                    fontSize: '0.65rem',
+                                                    fontSize: '0.6rem',
                                                     cursor: 'pointer',
                                                     boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
                                                     flexShrink: 0
@@ -2180,11 +2192,11 @@ export default function SalaDeEventosContainer({
                                                     background: '#ef4444',
                                                     color: '#fff',
                                                     border: 'none',
-                                                    padding: '0 8px',
-                                                    height: '32px',
+                                                    padding: '0 6px',
+                                                    height: '30px',
                                                     borderRadius: '8px',
                                                     fontWeight: 900,
-                                                    fontSize: '0.65rem',
+                                                    fontSize: '0.6rem',
                                                     cursor: 'pointer',
                                                     boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
                                                     flexShrink: 0
@@ -2217,7 +2229,7 @@ export default function SalaDeEventosContainer({
                                         flexShrink: 0
                                     }}
                                 >
-                                    <MessageSquare size={14} /> {!isMobile && "Chat"}
+                                    <MessageSquare size={12} /> {!isMobile && "Chat"}
                                 </button>
                             </div>
                         </>
@@ -2239,21 +2251,21 @@ export default function SalaDeEventosContainer({
                                             background: isAudioActive ? '#fee2e2' : primaryColor,
                                             color: isAudioActive ? '#ef4444' : '#fff',
                                             border: 'none',
-                                            padding: isMobile ? '0 10px' : '0 16px',
-                                            height: '36px',
-                                            borderRadius: '10px',
+                                            padding: isMobile ? '0 8px' : '0 12px',
+                                            height: '32px',
+                                            borderRadius: '8px',
                                             fontWeight: 800,
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            gap: '6px',
-                                            fontSize: '0.7rem',
+                                            gap: '5px',
+                                            fontSize: '0.65rem',
                                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                             boxShadow: `0 4px 12px ${primaryColor}33`,
                                         }}
                                     >
-                                        {isAudioActive ? <MicOff size={16} /> : <Mic size={16} />}
+                                        {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
                                         {isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak')}
                                     </button>
                                 </div>
@@ -2265,7 +2277,7 @@ export default function SalaDeEventosContainer({
                                         key={emoji}
                                         onClick={() => sendReaction(emoji)}
                                         style={{
-                                            fontSize: '1.4rem',
+                                            fontSize: '1.2rem',
                                             background: 'none',
                                             border: 'none',
                                             cursor: 'pointer',
@@ -2425,7 +2437,7 @@ export default function SalaDeEventosContainer({
                                     fontSize: '0.7rem'
                                 }}
                             >
-                                <MessageSquare size={16} /> {!isMobile && "Perguntas"}
+                                <MessageSquare size={14} /> {!isMobile && "Perguntas"}
                             </button>
                         </>
                     )}
