@@ -44,10 +44,11 @@ const Whiteboard = forwardRef(({
     const redrawHistoryRef = useRef<() => void>(() => { });
 
     const handlersRef = useRef({
-        clearCanvas: (fromSocket = false) => { },
-        undoAction: (fromSocket = false) => { },
-        drawData: (data: any) => { },
-        redrawHistory: () => { }
+        clearCanvas: (_fromSocket = false) => { },
+        undoAction: (_fromSocket = false) => { },
+        drawData: (_data: any) => { },
+        redrawHistory: () => { },
+        redrawBg: () => { }
     });
     const drawData = useCallback((data: any) => {
         const context = contextRef.current;
@@ -300,8 +301,8 @@ const Whiteboard = forwardRef(({
     }, [formId, isMentor, socket, redrawHistory]);
 
     useEffect(() => {
-        handlersRef.current = { clearCanvas, undoAction, drawData, redrawHistory };
-    }, [clearCanvas, undoAction, drawData, redrawHistory]);
+        handlersRef.current = { clearCanvas, undoAction, drawData, redrawHistory, redrawBg };
+    }, [clearCanvas, undoAction, drawData, redrawHistory, redrawBg]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -339,8 +340,8 @@ const Whiteboard = forwardRef(({
                     context.lineWidth = brushSize;
                     contextRef.current = context;
 
-                    redrawBg();
-                    redrawHistory();
+                    handlersRef.current.redrawBg();
+                    handlersRef.current.redrawHistory();
                 }
             }
         };
@@ -404,7 +405,7 @@ const Whiteboard = forwardRef(({
                 socket.off('live_board:history_replace');
             }
         };
-    }, [socket, formId]); // Only Re-bind if socket or formId changes
+    }, [socket, formId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         redrawBg();
