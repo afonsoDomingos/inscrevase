@@ -311,8 +311,8 @@ export default function SalaDeEventosContainer({
                     });
                 }
 
-                playSound('hand_raised');
-                toast(t('hub.salaDeEventos.handRaisedToast', { name: userData.name }), {
+                playSoundRef.current('hand_raised');
+                toast(tRef.current('hub.salaDeEventos.handRaisedToast', { name: userData.name }), {
                     description: "O participante tem uma pergunta.",
                     action: {
                         label: "Ok",
@@ -344,7 +344,7 @@ export default function SalaDeEventosContainer({
         });
 
         newSocket.on('live_board:audio_data', (payload: any) => {
-            if (!isParticipantAudioMuted) {
+            if (!isParticipantAudioMutedRef.current) {
                 playAudioChunk(payload);
             }
         });
@@ -352,7 +352,7 @@ export default function SalaDeEventosContainer({
         newSocket.on('live_board:reaction', (data: any) => {
             const id = Math.random().toString(36).substr(2, 9);
             setReactions(prev => [...prev, { ...data, id }]);
-            playSound('reaction');
+            playSoundRef.current('reaction');
             setTimeout(() => {
                 setReactions(prev => prev.filter(r => r.id !== id));
             }, 3000);
@@ -510,7 +510,7 @@ export default function SalaDeEventosContainer({
         newSocket.on('live_board:quiz_reveal', ({ correctOption }: any) => {
             setIsQuizRevealed(true);
             setCorrectQuizOption(correctOption);
-            toast(t('hub.salaDeEventos.quizRevealedToast') || "Resposta revelada!");
+            toast(tRef.current('hub.salaDeEventos.quizRevealedToast') || "Resposta revelada!");
         });
 
         newSocket.on('live_board:quiz_end', () => {
@@ -545,7 +545,7 @@ export default function SalaDeEventosContainer({
                 setUnreadCount(prev => prev + 1);
                 // We'll also use this to trigger a small toast or sound if needed
                 if (window.innerWidth > 768) { // Only sound on desktop to avoid mobile spam
-                    playSound('reaction'); // reuse a light sound
+                    playSoundRef.current('reaction'); // reuse a light sound
                 }
             }
 
@@ -560,7 +560,7 @@ export default function SalaDeEventosContainer({
             newSocket.disconnect();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound]);
+    }, [formId, isMentor, userId]); // Removed volatile dependencies to prevent frequent reconnections
 
     const playAudioChunk = async (payload: any) => {
         if (!audioContextRef.current) {

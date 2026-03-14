@@ -43,6 +43,12 @@ const Whiteboard = forwardRef(({
     const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
     const redrawHistoryRef = useRef<() => void>(() => { });
 
+    const handlersRef = useRef({
+        clearCanvas: (fromSocket = false) => { },
+        undoAction: (fromSocket = false) => { },
+        drawData: (data: any) => { },
+        redrawHistory: () => { }
+    });
     const drawData = useCallback((data: any) => {
         const context = contextRef.current;
         if (!context) return;
@@ -259,7 +265,7 @@ const Whiteboard = forwardRef(({
         }
     }, [drawGrid, backgroundImage, isDark]);
 
-    const clearCanvas = useCallback(() => {
+    const clearCanvas = useCallback((shouldEmit = true) => {
         const canvas = canvasRef.current;
         const context = contextRef.current;
         if (!canvas || !context) return;
@@ -270,12 +276,12 @@ const Whiteboard = forwardRef(({
         historyRef.current = [];
         redrawHistory();
 
-        if (isMentor) {
+        if (shouldEmit && isMentor && socket) {
             socket.emit('live_board:action', { formId, action: 'clear' });
         }
     }, [formId, isMentor, socket, redrawHistory]);
 
-    const undoAction = useCallback(() => {
+    const undoAction = useCallback((shouldEmit = true) => {
         const arr = historyRef.current;
         if (arr.length > 0) {
             const lastItem = arr[arr.length - 1];
@@ -288,10 +294,14 @@ const Whiteboard = forwardRef(({
             }
         }
         redrawHistory();
-        if (isMentor) {
+        if (shouldEmit && isMentor && socket) {
             socket.emit('live_board:action', { formId, action: 'undo' });
         }
     }, [formId, isMentor, socket, redrawHistory]);
+
+    useEffect(() => {
+        handlersRef.current = { clearCanvas, undoAction, drawData, redrawHistory };
+    }, [clearCanvas, undoAction, drawData, redrawHistory]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -355,8 +365,8 @@ const Whiteboard = forwardRef(({
                     item.x1 === data.x1 && item.y1 === data.y1
                 )) return;
                 historyRef.current.push(data);
-                drawData(data);
-                if (data.type === 'image') redrawHistory();
+                handlersRef.current.drawData(data);
+                if (data.type === 'image') handlersRef.current.redrawHistory();
             });
 
             socket.on('live_board:laser', (data: any) => {
@@ -366,19 +376,20 @@ const Whiteboard = forwardRef(({
                 showLaser(data.x * (canvas.width / dpr), data.y * (canvas.height / dpr));
             });
 
-            socket.on('live_board:action', (action: string) => {
-                if (action === 'clear') clearCanvas();
-                else if (action === 'undo') undoAction();
+            socket.on('live_board:action', (data: any) => {
+                const action = typeof data === 'string' ? data : data.action;
+                if (action === 'clear') handlersRef.current.clearCanvas(false);
+                else if (action === 'undo') handlersRef.current.undoAction(false);
             });
 
             socket.on('live_board:history', (history: any[]) => {
                 historyRef.current = history;
-                redrawHistory();
+                handlersRef.current.redrawHistory();
             });
 
             socket.on('live_board:history_replace', (history: any[]) => {
                 historyRef.current = history;
-                redrawHistory();
+                handlersRef.current.redrawHistory();
             });
         }
 
@@ -393,7 +404,7 @@ const Whiteboard = forwardRef(({
                 socket.off('live_board:history_replace');
             }
         };
-    }, [socket, isMentor, clearCanvas, drawData, redrawHistory, redrawBg, undoAction, color, brushSize, isDark, formId, backgroundImage]);
+    }, [socket, formId]); // Only Re-bind if socket or formId changes
 
     useEffect(() => {
         redrawBg();
