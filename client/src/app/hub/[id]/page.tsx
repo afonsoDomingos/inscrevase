@@ -795,7 +795,8 @@ function HubContent() {
                                     border: '1px solid #f0f0f0',
                                     textAlign: 'center',
                                     width: '420px',
-                                    maxWidth: '90vw'
+                                    maxWidth: '90vw',
+                                    transform: 'translateY(-50px)'
                                 }}
                             >
                                 <h4 style={{ margin: '0 0 20px', fontSize: '1rem', fontWeight: 900, color: '#111' }}>
