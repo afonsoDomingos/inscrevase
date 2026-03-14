@@ -170,6 +170,7 @@ export default function SalaDeEventosContainer({
 
     // Chat
     const [messages, setMessages] = useState<any[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
     const [chatInput, setChatInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -537,6 +538,17 @@ export default function SalaDeEventosContainer({
 
         newSocket.on('live_board:message', (msg: any) => {
             setMessages(prev => [...prev, msg]);
+
+            // Only increment unread count if sidebar is closed and message is not from ME
+            const isMe = msg.userData?.id === authService.getCurrentUser()?.id;
+            if (!isMe) {
+                setUnreadCount(prev => prev + 1);
+                // We'll also use this to trigger a small toast or sound if needed
+                if (window.innerWidth > 768) { // Only sound on desktop to avoid mobile spam
+                    playSound('reaction'); // reuse a light sound
+                }
+            }
+
             setTimeout(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
             }, 100);
@@ -2415,7 +2427,10 @@ export default function SalaDeEventosContainer({
                                 <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
 
                                 <button
-                                    onClick={() => setIsSidebarOpen(true)}
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        setUnreadCount(0);
+                                    }}
                                     style={{
                                         background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                         color: '#fff',
@@ -2430,10 +2445,39 @@ export default function SalaDeEventosContainer({
                                         justifyContent: 'center',
                                         gap: '4px',
                                         fontSize: '0.65rem',
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        position: 'relative'
                                     }}
                                 >
                                     <MessageSquare size={12} /> {!isMobile && "Chat"}
+                                    <AnimatePresence>
+                                        {unreadCount > 0 && (
+                                            <motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-6px',
+                                                    right: '-6px',
+                                                    background: '#ef4444',
+                                                    color: '#fff',
+                                                    fontSize: '10px',
+                                                    fontWeight: 900,
+                                                    width: '18px',
+                                                    height: '18px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    border: '2px solid #fff',
+                                                    boxShadow: '0 2px 10px rgba(239,68,68,0.4)'
+                                                }}
+                                            >
+                                                {unreadCount}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </button>
                             </div>
                         </>
@@ -2736,7 +2780,10 @@ export default function SalaDeEventosContainer({
                                 )}
 
                                 <button
-                                    onClick={() => setIsSidebarOpen(true)}
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        setUnreadCount(0);
+                                    }}
                                     style={{
                                         background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                         color: '#fff',
@@ -2750,10 +2797,40 @@ export default function SalaDeEventosContainer({
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: '6px',
-                                        fontSize: '0.7rem'
+                                        fontSize: '0.7rem',
+                                        position: 'relative',
+                                        flexShrink: 0
                                     }}
                                 >
                                     <MessageSquare size={14} /> {!isMobile && "Perguntas"}
+                                    <AnimatePresence>
+                                        {unreadCount > 0 && (
+                                            <motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-6px',
+                                                    right: '-6px',
+                                                    background: '#ef4444',
+                                                    color: '#fff',
+                                                    fontSize: '10px',
+                                                    fontWeight: 900,
+                                                    width: '18px',
+                                                    height: '18px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    border: '2px solid #fff',
+                                                    boxShadow: '0 2px 10px rgba(239,68,68,0.4)'
+                                                }}
+                                            >
+                                                {unreadCount}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </button>
                             </div>
                         </>
@@ -2882,10 +2959,10 @@ export default function SalaDeEventosContainer({
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         style={{
                             position: 'absolute',
-                            top: isMobile ? 0 : '80px',
-                            right: isMobile ? 0 : '16px',
-                            width: isMobile ? '100%' : '300px',
-                            height: isMobile ? '100%' : 'calc(100% - 160px)',
+                            top: isMobile ? 0 : '100px',
+                            right: isMobile ? 0 : '20px',
+                            width: isMobile ? '100%' : '260px',
+                            height: isMobile ? '100%' : 'calc(100% - 240px)',
                             background: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(20px)',
                             boxShadow: isMobile ? 'none' : '-20px 0 50px rgba(0,0,0,0.15)',
@@ -2899,7 +2976,7 @@ export default function SalaDeEventosContainer({
                     >
                         {/* Header */}
                         <div style={{
-                            padding: '16px 20px',
+                            padding: '10px 16px',
                             borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -2937,10 +3014,10 @@ export default function SalaDeEventosContainer({
                         {/* Messages Area */}
                         <div style={{
                             flex: 1,
-                            padding: '20px',
+                            padding: '15px',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '20px',
+                            gap: '15px',
                             overflowY: 'auto',
                             scrollBehavior: 'smooth'
                         }}>
@@ -3033,7 +3110,7 @@ export default function SalaDeEventosContainer({
 
                         {/* Input Area */}
                         <div style={{
-                            padding: '16px 20px',
+                            padding: '10px 16px',
                             background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.6)',
                             borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)'
                         }}>
