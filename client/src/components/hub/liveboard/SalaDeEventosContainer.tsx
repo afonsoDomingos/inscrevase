@@ -36,7 +36,10 @@ import {
     Users,
     PenLine,
     Image as ImageIcon,
-    Maximize2
+    Maximize2,
+    Settings,
+    Activity,
+    Music
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -209,6 +212,9 @@ export default function SalaDeEventosContainer({
     const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set());
     const [speakingParticipants, setSpeakingParticipants] = useState<Set<string>>(new Set());
     const [isMutingAll, setIsMutingAll] = useState(false);
+    const [showAudioTest, setShowAudioTest] = useState(false);
+    const [testMicLevel, setTestMicLevel] = useState(0);
+    const [isTestingSpeakers, setIsTestingSpeakers] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
@@ -555,13 +561,22 @@ export default function SalaDeEventosContainer({
         }
 
         try {
-            // Now expecting payload object with { data, sampleRate }
             const { data, sampleRate } = payload;
-            const arrayBuffer = data instanceof ArrayBuffer ? data : (data.buffer || data);
-            const floatData = new Float32Array(arrayBuffer);
+            let floatData: Float32Array;
+
+            if (data instanceof Float32Array) {
+                floatData = data;
+            } else if (data instanceof ArrayBuffer) {
+                floatData = new Float32Array(data);
+            } else {
+                // Probably a Buffer/Uint8Array from Socket.io
+                const buffer = data.buffer || data;
+                const offset = data.byteOffset || 0;
+                const length = data.byteLength || data.length;
+                floatData = new Float32Array(buffer, offset, length / 4);
+            }
 
             const context = audioContextRef.current;
-            // Use the sender's sample rate if provided, fallback to current context
             const buffer = context.createBuffer(1, floatData.length, sampleRate || context.sampleRate);
             buffer.getChannelData(0).set(floatData);
 
@@ -652,6 +667,53 @@ export default function SalaDeEventosContainer({
             toast.error("Erro ao acessar microfone.");
         }
     }, [formId, isMentor, socket, t]);
+
+    const handleTestSpeakers = () => {
+        setIsTestingSpeakers(true);
+        playSound('reaction'); // Reusing the reaction sound for test or we can synthesize a specific one
+        setTimeout(() => {
+            playSound('hand_raised');
+            setTimeout(() => setIsTestingSpeakers(false), 500);
+        }, 500);
+    };
+
+    useEffect(() => {
+        let testMicInterval: any;
+        let testAnalyser: AnalyserNode | null = null;
+        let testStream: MediaStream | null = null;
+
+        if (showAudioTest) {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                testStream = stream;
+                const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+                const source = context.createMediaStreamSource(stream);
+                testAnalyser = context.createAnalyser();
+                testAnalyser.fftSize = 256;
+                source.connect(testAnalyser);
+
+                const dataArray = new Uint8Array(testAnalyser.frequencyBinCount);
+                testMicInterval = setInterval(() => {
+                    if (testAnalyser) {
+                        testAnalyser.getByteFrequencyData(dataArray);
+                        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                        setTestMicLevel(average / 1.28); // normalize to roughly 0-100
+                    }
+                }, 50);
+            }).catch(err => {
+                console.error("Test mic error:", err);
+                toast.error("Erro ao acessar mic para teste.");
+            });
+        } else {
+            setTestMicLevel(0);
+        }
+
+        return () => {
+            clearInterval(testMicInterval);
+            if (testStream) {
+                testStream.getTracks().forEach(t => t.stop());
+            }
+        };
+    }, [showAudioTest]);
 
     const handleStopAudio = useCallback(() => {
         isAudioActiveRef.current = false;
@@ -2112,6 +2174,105 @@ export default function SalaDeEventosContainer({
                                     {!isMobile && (isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak'))}
                                 </button>
 
+                                <div style={{ position: 'relative' }}>
+                                    <button
+                                        onClick={() => setShowAudioTest(!showAudioTest)}
+                                        style={{
+                                            background: showAudioTest ? (isDark ? 'rgba(255,255,255,0.1)' : '#eee') : 'none',
+                                            color: isDark ? '#fff' : '#666',
+                                            border: 'none',
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        title="Testar Som e Microfone"
+                                    >
+                                        <Settings size={14} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {showAudioTest && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '40px',
+                                                    left: '50%',
+                                                    transform: 'translateX(-50%)',
+                                                    background: isDark ? '#1e293b' : '#fff',
+                                                    border: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+                                                    borderRadius: '12px',
+                                                    padding: '12px',
+                                                    width: '180px',
+                                                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                                                    zIndex: 1000,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '10px'
+                                                }}
+                                            >
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: isDark ? '#cbd5e1' : '#64748b' }}>Teste de Áudio</div>
+
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span style={{ fontSize: '0.65rem' }}>Microfone:</span>
+                                                        <Activity size={12} color={testMicLevel > 10 ? '#22c55e' : '#94a3b8'} />
+                                                    </div>
+                                                    <div style={{ height: '6px', background: isDark ? '#334155' : '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                                        <motion.div
+                                                            animate={{ width: `${testMicLevel}%` }}
+                                                            style={{ height: '100%', background: '#22c55e' }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={handleTestSpeakers}
+                                                    style={{
+                                                        background: isTestingSpeakers ? '#f0fdf4' : (isDark ? '#334155' : '#f8fafc'),
+                                                        color: isTestingSpeakers ? '#22c55e' : (isDark ? '#fff' : '#1e293b'),
+                                                        border: 'none',
+                                                        padding: '6px',
+                                                        borderRadius: '6px',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                >
+                                                    <Volume2 size={12} /> Testar Saída (Som)
+                                                </button>
+
+                                                <button
+                                                    onClick={() => setShowAudioTest(false)}
+                                                    style={{
+                                                        background: '#ef4444',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        padding: '6px',
+                                                        borderRadius: '6px',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Fechar
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
                                 {isMentor && (
                                     <button
                                         onClick={() => {
@@ -2298,182 +2459,280 @@ export default function SalaDeEventosContainer({
                                         {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
                                         {isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak')}
                                     </button>
-                                </div>
 
-                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+                                    <div style={{ position: 'relative' }}>
+                                        <button
+                                            onClick={() => setShowAudioTest(!showAudioTest)}
+                                            style={{
+                                                background: showAudioTest ? (isDark ? 'rgba(255,255,255,0.1)' : '#eee') : 'none',
+                                                color: isDark ? '#fff' : '#666',
+                                                border: 'none',
+                                                width: '32px',
+                                                height: '32px',
+                                                borderRadius: '8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            title="Testar Som e Microfone"
+                                        >
+                                            <Settings size={14} />
+                                        </button>
 
-                                {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
+                                        <AnimatePresence>
+                                            {showAudioTest && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        bottom: '40px',
+                                                        left: '50%',
+                                                        transform: 'translateX(-50%)',
+                                                        background: isDark ? '#1e293b' : '#fff',
+                                                        border: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+                                                        borderRadius: '12px',
+                                                        padding: '12px',
+                                                        width: '180px',
+                                                        boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                                                        zIndex: 1000,
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        gap: '10px'
+                                                    }}
+                                                >
+                                                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: isDark ? '#cbd5e1' : '#64748b' }}>Teste de Áudio</div>
+
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span style={{ fontSize: '0.65rem' }}>Microfone:</span>
+                                                            <Activity size={12} color={testMicLevel > 10 ? '#22c55e' : '#94a3b8'} />
+                                                        </div>
+                                                        <div style={{ height: '6px', background: isDark ? '#334155' : '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                                            <motion.div
+                                                                animate={{ width: `${testMicLevel}%` }}
+                                                                style={{ height: '100%', background: '#22c55e' }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={handleTestSpeakers}
+                                                        style={{
+                                                            background: isTestingSpeakers ? '#f0fdf4' : (isDark ? '#334155' : '#f8fafc'),
+                                                            color: isTestingSpeakers ? '#22c55e' : (isDark ? '#fff' : '#1e293b'),
+                                                            border: 'none',
+                                                            padding: '6px',
+                                                            borderRadius: '6px',
+                                                            fontSize: '0.65rem',
+                                                            fontWeight: 700,
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            justifyContent: 'center'
+                                                        }}
+                                                    >
+                                                        <Volume2 size={12} /> Testar Saída (Som)
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => setShowAudioTest(false)}
+                                                        style={{
+                                                            background: '#ef4444',
+                                                            color: '#fff',
+                                                            border: 'none',
+                                                            padding: '6px',
+                                                            borderRadius: '6px',
+                                                            fontSize: '0.65rem',
+                                                            fontWeight: 700,
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        Fechar
+                                                    </button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
+                                    <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
+                                    {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
+                                        <button
+                                            key={emoji}
+                                            onClick={() => sendReaction(emoji)}
+                                            style={{
+                                                fontSize: '1.2rem',
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                padding: '4px',
+                                                transition: 'transform 0.1s'
+                                            }}
+                                            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
+                                            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                        >
+                                            {emoji}
+                                        </button>
+                                    ))}
+
+                                    <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+
                                     <button
-                                        key={emoji}
-                                        onClick={() => sendReaction(emoji)}
+                                        onClick={() => sendReaction('Sim')}
                                         style={{
-                                            fontSize: '1.2rem',
-                                            background: 'none',
+                                            background: '#22c55e',
+                                            color: '#fff',
                                             border: 'none',
+                                            padding: isMobile ? '0 8px' : '0 12px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 900,
+                                            fontSize: '0.7rem',
                                             cursor: 'pointer',
-                                            padding: '4px',
+                                            boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
                                             transition: 'transform 0.1s'
                                         }}
-                                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
+                                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
                                         onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                     >
-                                        {emoji}
+                                        SIM
                                     </button>
-                                ))}
-
-                                <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
-
+                                    <button
+                                        onClick={() => sendReaction('Não')}
+                                        style={{
+                                            background: '#ef4444',
+                                            color: '#fff',
+                                            border: 'none',
+                                            padding: isMobile ? '0 8px' : '0 12px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 900,
+                                            fontSize: '0.7rem',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
+                                            transition: 'transform 0.1s'
+                                        }}
+                                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                                        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                    >
+                                        NÃO
+                                    </button>
+                                    <button
+                                        onClick={() => sendReaction('Entendi!')}
+                                        style={{
+                                            background: primaryColor,
+                                            color: '#fff',
+                                            border: 'none',
+                                            padding: isMobile ? '0 6px' : '0 10px',
+                                            height: isMobile ? '28px' : '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 900,
+                                            fontSize: '0.65rem',
+                                            cursor: 'pointer',
+                                            boxShadow: `0 4px 10px ${primaryColor}4D`,
+                                            transition: 'transform 0.1s'
+                                        }}
+                                        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+                                        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                    >
+                                        ENTENDI
+                                    </button>
+                                </div>
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
                                 <button
-                                    onClick={() => sendReaction('Sim')}
+                                    onClick={handleRaiseHand}
                                     style={{
-                                        background: '#22c55e',
-                                        color: '#fff',
+                                        background: isHandRaised ? '#fef3c7' : '#f0f9ff',
+                                        color: isHandRaised ? '#d97706' : '#0ea5e9',
+                                        border: isHandRaised ? '1.5px solid #fbbf24' : 'none',
+                                        padding: isMobile ? '0 8px' : '0 12px',
+                                        height: isMobile ? '32px' : '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                        fontSize: '0.7rem',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    <Hand size={18} />
+                                    {!isMobile && (isHandRaised ? 'Abaixar Mão' : 'Dúvida')}
+                                </button>
+                                {/* Export Button for participants */}
+                                <button
+                                    onClick={handleExportBoard}
+                                    style={{
+                                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
+                                        color: '#22c55e',
                                         border: 'none',
                                         padding: isMobile ? '0 8px' : '0 12px',
-                                        height: '32px',
+                                        height: isMobile ? '32px' : '36px',
                                         borderRadius: '8px',
-                                        fontWeight: 900,
-                                        fontSize: '0.7rem',
+                                        fontWeight: 800,
                                         cursor: 'pointer',
-                                        boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
-                                        transition: 'transform 0.1s'
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '4px',
+                                        fontSize: '0.65rem'
                                     }}
-                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                    title="Tirar Screenshot do quadro"
                                 >
-                                    SIM
+                                    <Download size={14} /> {!isMobile && "Screenshot"}
                                 </button>
-                                <button
-                                    onClick={() => sendReaction('Não')}
-                                    style={{
-                                        background: '#ef4444',
-                                        color: '#fff',
-                                        border: 'none',
-                                        padding: isMobile ? '0 8px' : '0 12px',
-                                        height: '32px',
-                                        borderRadius: '8px',
-                                        fontWeight: 900,
-                                        fontSize: '0.7rem',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
-                                        transition: 'transform 0.1s'
-                                    }}
-                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                >
-                                    NÃO
-                                </button>
-                                <button
-                                    onClick={() => sendReaction('Entendi!')}
-                                    style={{
-                                        background: primaryColor,
-                                        color: '#fff',
-                                        border: 'none',
-                                        padding: isMobile ? '0 6px' : '0 10px',
+
+                                {/* Drawing permission indicator for participant */}
+                                {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
+                                    <div style={{
+                                        background: 'rgba(14,165,233,0.1)',
+                                        color: '#0ea5e9',
+                                        border: '1px solid rgba(14,165,233,0.3)',
+                                        padding: '0 10px',
                                         height: isMobile ? '28px' : '32px',
                                         borderRadius: '8px',
-                                        fontWeight: 900,
-                                        fontSize: '0.65rem',
+                                        fontWeight: 800,
+                                        fontSize: '0.7rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}>
+                                        <PenLine size={12} /> A Desenhar
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={() => setIsSidebarOpen(true)}
+                                    style={{
+                                        background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
+                                        color: '#fff',
+                                        border: 'none',
+                                        padding: isMobile ? '0 8px' : '0 12px',
+                                        height: isMobile ? '32px' : '32px',
+                                        borderRadius: '8px',
+                                        fontWeight: 800,
                                         cursor: 'pointer',
-                                        boxShadow: `0 4px 10px ${primaryColor}4D`,
-                                        transition: 'transform 0.1s'
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                        fontSize: '0.7rem'
                                     }}
-                                    onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
-                                    onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                 >
-                                    ENTENDI
+                                    <MessageSquare size={14} /> {!isMobile && "Perguntas"}
                                 </button>
                             </div>
-                            <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
-                            <button
-                                onClick={handleRaiseHand}
-                                style={{
-                                    background: isHandRaised ? '#fef3c7' : '#f0f9ff',
-                                    color: isHandRaised ? '#d97706' : '#0ea5e9',
-                                    border: isHandRaised ? '1.5px solid #fbbf24' : 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: isMobile ? '32px' : '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                    fontSize: '0.7rem',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                <Hand size={18} />
-                                {!isMobile && (isHandRaised ? 'Abaixar Mão' : 'Dúvida')}
-                            </button>
-                            {/* Export Button for participants */}
-                            <button
-                                onClick={handleExportBoard}
-                                style={{
-                                    background: isDark ? 'rgba(255,255,255,0.05)' : '#f0fdf4',
-                                    color: '#22c55e',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: isMobile ? '32px' : '36px',
-                                    borderRadius: '8px',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '4px',
-                                    fontSize: '0.65rem'
-                                }}
-                                title="Tirar Screenshot do quadro"
-                            >
-                                <Download size={14} /> {!isMobile && "Screenshot"}
-                            </button>
-
-                            {/* Drawing permission indicator for participant */}
-                            {drawingPermissions.has((window as any).__liveBoardSocketId || '') && (
-                                <div style={{
-                                    background: 'rgba(14,165,233,0.1)',
-                                    color: '#0ea5e9',
-                                    border: '1px solid rgba(14,165,233,0.3)',
-                                    padding: '0 10px',
-                                    height: isMobile ? '28px' : '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 800,
-                                    fontSize: '0.7rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px'
-                                }}>
-                                    <PenLine size={12} /> A Desenhar
-                                </div>
-                            )}
-
-                            <button
-                                onClick={() => setIsSidebarOpen(true)}
-                                style={{
-                                    background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: isMobile ? '0 8px' : '0 12px',
-                                    height: isMobile ? '32px' : '32px',
-                                    borderRadius: '8px',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                    fontSize: '0.7rem'
-                                }}
-                            >
-                                <MessageSquare size={14} /> {!isMobile && "Perguntas"}
-                            </button>
                         </>
                     )}
                 </div>
-            )
-            }
+            )}
 
             {/* ===== Raised Hands Floating Panel (Mentor Only) ===== */}
             <AnimatePresence>
