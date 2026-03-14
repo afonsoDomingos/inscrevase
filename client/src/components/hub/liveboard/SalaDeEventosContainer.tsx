@@ -2440,9 +2440,9 @@ export default function SalaDeEventosContainer({
                     ) : (
                         <>
                             {/* Participant View */}
-                            <div style={{ display: 'flex', gap: '6px', padding: '4px', alignItems: 'center' }}>
-                                {/* Mic is now on the LEFT for better UX */}
-                                <div style={{ position: 'relative', marginRight: '4px' }}>
+                            <div style={{ display: 'flex', gap: '8px', padding: '4px', alignItems: 'center', flexWrap: 'nowrap' }}>
+                                {/* Mic & Settings Group */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                     <button
                                         onClick={() => {
                                             if (isAudioActive) {
@@ -2467,6 +2467,7 @@ export default function SalaDeEventosContainer({
                                             fontSize: '0.65rem',
                                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                             boxShadow: `0 4px 12px ${primaryColor}33`,
+                                            flexShrink: 0
                                         }}
                                     >
                                         {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
@@ -2487,7 +2488,8 @@ export default function SalaDeEventosContainer({
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                transition: 'all 0.2s'
+                                                transition: 'all 0.2s',
+                                                flexShrink: 0
                                             }}
                                             title="Testar Som e Microfone"
                                         >
@@ -2571,20 +2573,24 @@ export default function SalaDeEventosContainer({
                                             )}
                                         </AnimatePresence>
                                     </div>
+                                </div>
 
-                                    <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 2px', flexShrink: 0 }} />
 
+                                {/* Reactions Row */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1px' }}>
                                     {['❤️', '👏', '🔥', '😮', '😂', '💯'].map(emoji => (
                                         <button
                                             key={emoji}
                                             onClick={() => sendReaction(emoji)}
                                             style={{
-                                                fontSize: '1.2rem',
+                                                fontSize: isMobile ? '1rem' : '1.2rem',
                                                 background: 'none',
                                                 border: 'none',
                                                 cursor: 'pointer',
-                                                padding: '4px',
-                                                transition: 'transform 0.1s'
+                                                padding: '2px',
+                                                transition: 'transform 0.1s',
+                                                flexShrink: 0
                                             }}
                                             onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
                                             onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -2592,23 +2598,27 @@ export default function SalaDeEventosContainer({
                                             {emoji}
                                         </button>
                                     ))}
+                                </div>
 
-                                    <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
+                                <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 2px', flexShrink: 0 }} />
 
+                                {/* Quick Answer Buttons */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                     <button
                                         onClick={() => sendReaction('Sim')}
                                         style={{
                                             background: '#22c55e',
                                             color: '#fff',
                                             border: 'none',
-                                            padding: isMobile ? '0 8px' : '0 12px',
-                                            height: '32px',
-                                            borderRadius: '8px',
+                                            padding: isMobile ? '0 6px' : '0 10px',
+                                            height: '28px',
+                                            borderRadius: '6px',
                                             fontWeight: 900,
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.65rem',
                                             cursor: 'pointer',
                                             boxShadow: '0 4px 10px rgba(34,197,94,0.3)',
-                                            transition: 'transform 0.1s'
+                                            transition: 'transform 0.1s',
+                                            flexShrink: 0
                                         }}
                                         onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
                                         onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -2621,14 +2631,15 @@ export default function SalaDeEventosContainer({
                                             background: '#ef4444',
                                             color: '#fff',
                                             border: 'none',
-                                            padding: isMobile ? '0 8px' : '0 12px',
-                                            height: '32px',
-                                            borderRadius: '8px',
+                                            padding: isMobile ? '0 6px' : '0 10px',
+                                            height: '28px',
+                                            borderRadius: '6px',
                                             fontWeight: 900,
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.65rem',
                                             cursor: 'pointer',
                                             boxShadow: '0 4px 10px rgba(239,68,68,0.3)',
-                                            transition: 'transform 0.1s'
+                                            transition: 'transform 0.1s',
+                                            flexShrink: 0
                                         }}
                                         onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
                                         onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -2642,13 +2653,14 @@ export default function SalaDeEventosContainer({
                                             color: '#fff',
                                             border: 'none',
                                             padding: isMobile ? '0 6px' : '0 10px',
-                                            height: isMobile ? '28px' : '32px',
-                                            borderRadius: '8px',
+                                            height: '28px',
+                                            borderRadius: '6px',
                                             fontWeight: 900,
                                             fontSize: '0.65rem',
                                             cursor: 'pointer',
                                             boxShadow: `0 4px 10px ${primaryColor}4D`,
-                                            transition: 'transform 0.1s'
+                                            transition: 'transform 0.1s',
+                                            flexShrink: 0
                                         }}
                                         onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
                                         onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -2656,7 +2668,9 @@ export default function SalaDeEventosContainer({
                                         ENTENDI
                                     </button>
                                 </div>
-                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 8px' }} />
+
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px', flexShrink: 0 }} />
+
                                 <button
                                     onClick={handleRaiseHand}
                                     style={{
