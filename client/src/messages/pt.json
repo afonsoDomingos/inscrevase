@@ -1632,7 +1632,10 @@
             "announcementSent": "Anúncio enviado!",
             "responses": "Respostas",
             "participant": "Participante",
-            "answer": "Resposta"
+            "answer": "Resposta",
+            "noMessages": "Sem mensagens ainda",
+            "startConversation": "Participe da aula enviando a sua primeira pergunta!",
+            "chatTip": "APERTE ENTER PARA ENVIAR"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",

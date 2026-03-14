@@ -1567,7 +1567,10 @@
             "announcementSent": "Announcement sent!",
             "responses": "Responses",
             "participant": "Participant",
-            "answer": "Answer"
+            "answer": "Answer",
+            "noMessages": "No messages yet",
+            "startConversation": "Join the class by sending your first question!",
+            "chatTip": "PRESS ENTER TO SEND"
         },
         "status": {
             "pending": "Pending",
