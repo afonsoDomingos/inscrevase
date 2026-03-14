@@ -461,9 +461,6 @@ export default function SalaDeEventosContainer({
 
         newSocket.on('live_board:announcement', (data: any) => {
             setCurrentAnnouncement(data);
-            if (!isMentor) {
-                toast.info(data.message, { icon: '📢', duration: 5000 });
-            }
         });
 
         newSocket.on('live_board:announcement:clear', () => {
