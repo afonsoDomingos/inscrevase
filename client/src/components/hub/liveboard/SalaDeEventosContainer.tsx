@@ -2872,84 +2872,223 @@ export default function SalaDeEventosContainer({
                 )}
             </AnimatePresence>
 
-            {/* Sidebar Perguntas */}
+            {/* Sidebar Perguntas & Chat */}
             <AnimatePresence>
                 {isSidebarOpen && (
                     <motion.div
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
+                        initial={{ x: '100%', opacity: 0.5 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '100%', opacity: 0.5 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         style={{
                             position: 'absolute',
                             top: 0,
                             right: 0,
-                            width: isMobile ? '100%' : '320px',
+                            width: isMobile ? '100%' : '360px',
                             height: '100%',
-                            background: '#fff',
-                            boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
+                            background: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(20px)',
+                            boxShadow: '-20px 0 50px rgba(0,0,0,0.15)',
                             zIndex: 10000,
                             display: 'flex',
                             flexDirection: 'column',
-                            borderLeft: '1px solid #f0f0f0'
+                            borderLeft: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)'
                         }}
                     >
-                        <div style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#111' }}>Perguntas e Chat</div>
-                            <button onClick={() => setIsSidebarOpen(false)} style={{ background: '#f8f8f8', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', color: '#666' }}><X size={18} /></button>
+                        {/* Header */}
+                        <div style={{
+                            padding: '24px 20px',
+                            borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{
+                                    width: '32px', height: '32px', borderRadius: '10px',
+                                    background: primaryColor + '22', color: primaryColor,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                }}>
+                                    <MessageSquare size={18} />
+                                </div>
+                                <div style={{ fontWeight: 900, fontSize: '1.1rem', color: isDark ? '#fff' : '#111', letterSpacing: '-0.02em' }}>
+                                    {t('hub.salaDeEventos.chatTitle') || "Perguntas e Chat"}
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsSidebarOpen(false)}
+                                style={{
+                                    background: isDark ? 'rgba(255,255,255,0.05)' : '#f5f5f5',
+                                    border: 'none', width: '36px', height: '36px',
+                                    borderRadius: '12px', cursor: 'pointer', color: isDark ? '#aaa' : '#666',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.1)' : '#eee')}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : '#f5f5f5')}
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
-                        <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', overflowY: 'auto' }}>
+
+                        {/* Messages Area */}
+                        <div style={{
+                            flex: 1,
+                            padding: '20px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '20px',
+                            overflowY: 'auto',
+                            scrollBehavior: 'smooth'
+                        }}>
                             {messages.length === 0 ? (
-                                <div style={{ color: '#999', fontSize: '0.9rem', textAlign: 'center', marginTop: '40px' }}>
-                                    <p>Nenhuma pergunta ainda.</p>
-                                    <p style={{ fontSize: '0.8rem', marginTop: '10px' }}>Seja o primeiro a mandar algo!</p>
+                                <div style={{
+                                    flex: 1, display: 'flex', flexDirection: 'column',
+                                    alignItems: 'center', justifyContent: 'center',
+                                    color: isDark ? '#64748b' : '#94a3b8',
+                                    textAlign: 'center', padding: '40px'
+                                }}>
+                                    <div style={{
+                                        width: '80px', height: '80px', borderRadius: '30px',
+                                        background: isDark ? 'rgba(255,255,255,0.03)' : '#f8f9fa',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        marginBottom: '20px', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #f0f0f0'
+                                    }}>
+                                        <MessageSquare size={32} opacity={0.3} />
+                                    </div>
+                                    <p style={{ fontWeight: 800, fontSize: '1rem', margin: '0 0 8px 0', color: isDark ? '#cbd5e1' : '#475569' }}>
+                                        {t('hub.salaDeEventos.noMessages') || "Sem mensagens ainda"}
+                                    </p>
+                                    <p style={{ fontSize: '0.85rem', fontWeight: 500, maxWidth: '200px', lineHeight: 1.5 }}>
+                                        {t('hub.salaDeEventos.startConversation') || "Participe da aula enviando a sua primeira pergunta!"}
+                                    </p>
                                 </div>
                             ) : (
-                                messages.map((msg, i) => (
-                                    <div key={i} style={{ display: 'flex', gap: '12px' }}>
-                                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0' }}>
-                                            <Image src={msg.userData?.photo || msg.userData?.profilePhoto || '/default-avatar.png'} width={30} height={30} alt="" style={{ objectFit: 'cover' }} />
-                                        </div>
-                                        <div>
-                                            <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#111', marginBottom: '2px' }}>{msg.userData?.name || 'Usuário'}</div>
-                                            <div style={{ fontSize: '0.9rem', color: '#444', lineHeight: '1.4', background: '#f8f8f8', padding: '8px 12px', borderRadius: '0 12px 12px 12px' }}>{msg.message}</div>
-                                        </div>
-                                    </div>
-                                ))
+                                messages.map((msg, i) => {
+                                    const isMe = msg.userData?.id === userId;
+                                    return (
+                                        <motion.div
+                                            key={i}
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            style={{
+                                                display: 'flex',
+                                                flexDirection: isMe ? 'row-reverse' : 'row',
+                                                gap: '12px',
+                                                alignItems: 'flex-end',
+                                                marginBottom: '4px'
+                                            }}
+                                        >
+                                            {!isMe && (
+                                                <div style={{
+                                                    width: '32px', height: '32px', borderRadius: '12px',
+                                                    overflow: 'hidden', flexShrink: 0,
+                                                    border: `2px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+                                                    background: '#f1f5f9'
+                                                }}>
+                                                    <Image
+                                                        src={msg.userData?.photo || msg.userData?.profilePhoto || '/default-avatar.png'}
+                                                        width={32} height={32} alt=""
+                                                        style={{ objectFit: 'cover' }}
+                                                    />
+                                                </div>
+                                            )}
+                                            <div style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: isMe ? 'flex-end' : 'flex-start',
+                                                maxWidth: '75%'
+                                            }}>
+                                                {!isMe && (
+                                                    <span style={{
+                                                        fontSize: '0.65rem', fontWeight: 800,
+                                                        color: isDark ? '#94a3b8' : '#64748b',
+                                                        marginBottom: '4px', marginLeft: '4px'
+                                                    }}>
+                                                        {msg.userData?.name || 'Usuário'}
+                                                    </span>
+                                                )}
+                                                <div style={{
+                                                    fontSize: '0.9rem',
+                                                    color: isMe ? '#fff' : (isDark ? '#e2e8f0' : '#1e293b'),
+                                                    lineHeight: '1.5',
+                                                    background: isMe ? primaryColor : (isDark ? '#334155' : '#f1f5f9'),
+                                                    padding: '10px 14px',
+                                                    borderRadius: isMe ? '18px 18px 0 18px' : '18px 18px 18px 0',
+                                                    boxShadow: isMe ? `0 4px 15px ${primaryColor}44` : 'none',
+                                                    fontWeight: 600
+                                                }}>
+                                                    {msg.message}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })
                             )}
                             <div ref={messagesEndRef} />
                         </div>
-                        <div style={{ padding: '20px', borderTop: '1px solid #f0f0f0' }}>
-                            <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '10px' }}>
+
+                        {/* Input Area */}
+                        <div style={{
+                            padding: '24px 20px',
+                            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)',
+                            borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)'
+                        }}>
+                            <form onSubmit={handleSendMessage} style={{ position: 'relative' }}>
                                 <input
                                     type="text"
                                     value={chatInput}
                                     onChange={(e) => setChatInput(e.target.value)}
-                                    placeholder="Escreva algo..."
+                                    placeholder={t('hub.salaDeEventos.chatPlaceholder') || "Escreva uma mensagem..."}
                                     style={{
-                                        flex: 1,
-                                        padding: '12px 16px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #e0e0e0',
+                                        width: '100%',
+                                        padding: '14px 50px 14px 16px',
+                                        borderRadius: '16px',
+                                        border: isDark ? '1px solid #475569' : '1px solid #e2e8f0',
+                                        background: isDark ? '#1e293b' : '#fff',
+                                        color: isDark ? '#fff' : '#1e293b',
                                         fontSize: '0.9rem',
-                                        outline: 'none'
+                                        fontWeight: 600,
+                                        outline: 'none',
+                                        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                        transition: 'all 0.2s'
                                     }}
+                                    onFocus={(e) => (e.target.style.borderColor = primaryColor)}
+                                    onBlur={(e) => (e.target.style.borderColor = isDark ? '#475569' : '#e2e8f0')}
                                 />
                                 <button
                                     type="submit"
                                     disabled={!chatInput.trim()}
                                     style={{
-                                        background: chatInput.trim() ? primaryColor : '#f0f0f0',
-                                        color: chatInput.trim() ? '#fff' : '#ccc',
+                                        position: 'absolute',
+                                        right: '8px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: chatInput.trim() ? primaryColor : 'transparent',
+                                        color: chatInput.trim() ? '#fff' : (isDark ? '#475569' : '#94a3b8'),
                                         border: 'none',
-                                        padding: '0 20px',
+                                        width: '36px',
+                                        height: '36px',
                                         borderRadius: '12px',
-                                        fontWeight: 800,
-                                        cursor: chatInput.trim() ? 'pointer' : 'default'
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: chatInput.trim() ? 'pointer' : 'default',
+                                        transition: 'all 0.2s'
                                     }}
                                 >
-                                    Enviar
+                                    <Send size={18} />
                                 </button>
                             </form>
+                            <div style={{
+                                textAlign: 'center', marginTop: '12px',
+                                fontSize: '0.65rem', fontWeight: 800,
+                                color: isDark ? '#64748b' : '#94a3b8',
+                                letterSpacing: '0.02em'
+                            }}>
+                                {t('hub.salaDeEventos.chatTip') || "APERTE ENTER PARA ENVIAR"}
+                            </div>
                         </div>
                     </motion.div>
                 )}
