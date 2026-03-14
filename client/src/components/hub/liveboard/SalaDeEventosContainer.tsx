@@ -38,8 +38,7 @@ import {
     Image as ImageIcon,
     Maximize2,
     Settings,
-    Activity,
-    Music
+    Activity
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -175,7 +174,6 @@ export default function SalaDeEventosContainer({
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const audioContextRef = useRef<AudioContext | null>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const whiteboardRef = useRef<any>(null);
     const isAudioActiveRef = useRef(false);
 
