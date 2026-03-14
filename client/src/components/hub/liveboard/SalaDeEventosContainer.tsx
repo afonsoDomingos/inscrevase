@@ -2884,7 +2884,7 @@ export default function SalaDeEventosContainer({
                             position: 'absolute',
                             top: 0,
                             right: 0,
-                            width: isMobile ? '100%' : '360px',
+                            width: isMobile ? '100%' : '300px',
                             height: '100%',
                             background: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(20px)',
