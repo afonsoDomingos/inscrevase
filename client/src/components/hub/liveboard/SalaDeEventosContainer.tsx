@@ -176,6 +176,7 @@ export default function SalaDeEventosContainer({
     const audioContextRef = useRef<AudioContext | null>(null);
     const whiteboardRef = useRef<any>(null);
     const isAudioActiveRef = useRef(false);
+    const nextAudioStartTimeRef = useRef(0);
 
     // Quiz State
     const [showQuizCreator, setShowQuizCreator] = useState(false);
@@ -567,7 +568,6 @@ export default function SalaDeEventosContainer({
             } else if (data instanceof ArrayBuffer) {
                 floatData = new Float32Array(data);
             } else {
-                // Probably a Buffer/Uint8Array from Socket.io
                 const buffer = data.buffer || data;
                 const offset = data.byteOffset || 0;
                 const length = data.byteLength || data.length;
@@ -575,13 +575,27 @@ export default function SalaDeEventosContainer({
             }
 
             const context = audioContextRef.current;
-            const buffer = context.createBuffer(1, floatData.length, sampleRate || context.sampleRate);
-            buffer.getChannelData(0).set(floatData);
+            const audioBuffer = context.createBuffer(1, floatData.length, sampleRate || context.sampleRate);
+            audioBuffer.getChannelData(0).set(floatData);
 
             const source = context.createBufferSource();
-            source.buffer = buffer;
+            source.buffer = audioBuffer;
+
+            // Anti-jitter buffering: 
+            // We schedule the start time to be exactly after the last chunk finished.
+            const currentTime = context.currentTime;
+            const spacing = 0.05; // 50ms initial safety buffer to handle network jitter
+
+            if (nextAudioStartTimeRef.current < currentTime) {
+                nextAudioStartTimeRef.current = currentTime + spacing;
+            }
+
             source.connect(context.destination);
-            source.start();
+            source.start(nextAudioStartTimeRef.current);
+
+            // Advance the next start time by the duration of the current chunk
+            nextAudioStartTimeRef.current += audioBuffer.duration;
+
         } catch (e) {
             console.warn("[LiveBoard Audio] Play error:", e);
         }
@@ -629,7 +643,8 @@ export default function SalaDeEventosContainer({
             if (context.state === 'suspended') await context.resume();
 
             const source = context.createMediaStreamSource(stream);
-            const processor = context.createScriptProcessor(4096, 1, 1);
+            // Reduced to 2048 for lower latency, but keeps stability
+            const processor = context.createScriptProcessor(2048, 1, 1);
 
             source.connect(processor);
             processor.connect(context.destination);
