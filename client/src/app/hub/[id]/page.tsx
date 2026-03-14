@@ -788,19 +788,19 @@ function HubContent() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 style={{
                                     background: '#fff',
-                                    padding: '24px',
-                                    borderRadius: '24px',
-                                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                                    padding: '16px',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 15px 35px rgba(0,0,0,0.12)',
                                     display: 'inline-block',
                                     border: '1px solid #f0f0f0',
                                     textAlign: 'left',
-                                    width: '320px'
+                                    width: '280px'
                                 }}
                             >
-                                <h4 style={{ margin: '0 0 15px', fontSize: '0.9rem', fontWeight: 800, color: '#111' }}>
+                                <h4 style={{ margin: '0 0 12px', fontSize: '0.85rem', fontWeight: 900, color: '#111' }}>
                                     {t('hub.salaDeEventos.selectCountdown')}
                                 </h4>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                                     {[5, 10, 30, 60, 300].map(seconds => (
                                         <button
                                             key={seconds}
@@ -821,19 +821,19 @@ function HubContent() {
                                                 }
                                             }}
                                             style={{
-                                                padding: '10px',
-                                                borderRadius: '12px',
-                                                border: '1px solid #f0f0f0',
-                                                background: '#f8f8f8',
-                                                fontSize: '0.8rem',
-                                                fontWeight: 700,
+                                                padding: '8px',
+                                                borderRadius: '10px',
+                                                border: '1px solid #eee',
+                                                background: '#f9f9f9',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 800,
                                                 cursor: 'pointer',
                                                 transition: 'all 0.2s'
                                             }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.background = '#eee')}
-                                            onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f8f8')}
+                                            onMouseEnter={(e) => (e.currentTarget.style.background = '#f0f0f0')}
+                                            onMouseLeave={(e) => (e.currentTarget.style.background = '#f9f9f9')}
                                         >
-                                            {seconds < 60 ? t(`hub.salaDeEventos.seconds_${seconds}`) : t(`hub.salaDeEventos.minute_${seconds / 60}`)}
+                                            {seconds < 60 ? t(`hub.salaDeEventos.seconds_${seconds}`) : t(`hub.salaDeEventos.minutes_${seconds / 60}`)}
                                         </button>
                                     ))}
                                     <button
@@ -852,15 +852,15 @@ function HubContent() {
                                         }}
                                         style={{
                                             gridColumn: 'span 2',
-                                            padding: '10px',
-                                            borderRadius: '12px',
+                                            padding: '8px',
+                                            borderRadius: '10px',
                                             border: 'none',
                                             background: '#111',
                                             color: '#fff',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 800,
+                                            fontSize: '0.75rem',
+                                            fontWeight: 900,
                                             cursor: 'pointer',
-                                            marginTop: '8px'
+                                            marginTop: '6px'
                                         }}
                                     >
                                         {t('hub.salaDeEventos.startNow')}
@@ -871,17 +871,18 @@ function HubContent() {
                                     style={{
                                         display: 'block',
                                         width: '100%',
-                                        marginTop: '15px',
+                                        marginTop: '12px',
                                         background: 'none',
                                         border: 'none',
-                                        fontSize: '0.7rem',
-                                        color: '#888',
+                                        fontSize: '0.65rem',
+                                        color: '#aaa',
                                         cursor: 'pointer',
-                                        fontWeight: 600
+                                        fontWeight: 700
                                     }}
                                 >
                                     Cancelar
                                 </button>
+
                             </motion.div>
                         ) : (
                             <>
@@ -919,42 +920,26 @@ function HubContent() {
 
                     {/* Left Column: Details */}
                     <div style={{ display: 'grid', gap: '35px' }}>
-
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            style={{ background: cardBg, borderRadius: '32px', overflow: 'hidden', boxShadow: isDark ? '0 20px 40px -10px rgba(0,0,0,0.5)' : '0 20px 40px -10px rgba(0,0,0,0.08)', border: cardBorder, position: 'relative' }}
-                        >
-                            <div style={{ position: 'relative', width: '100%', height: '300px' }}>
-                                <Image
-                                    src={form.coverImage || 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}
-                                    alt={form.title}
-                                    fill
-                                    style={{ objectFit: 'cover' }}
-                                    unoptimized={!form.coverImage}
-                                />
-                                <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', padding: '30px', background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)', color: '#fff' }}>
-                                    <div style={{ display: 'flex', gap: '40px' }}>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('submissions.date')}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventTimeLabel') || 'Horário'}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                                                {form.eventTime || (form.eventDate ? new Date(form.eventDate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : t('common.toBeDefined'))}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventModeLabel') || 'Modelo'}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                                                {form.eventType ? t(`events.${form.eventType}`) : (form.location ? t('events.modePresencial') : t('events.modeOnline'))}
-                                            </div>
-                                        </div>
+                        <div style={{ background: cardBg, borderRadius: '24px', padding: '30px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ display: 'flex', gap: '40px', justifyContent: 'space-between' }}>
+                                <div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('submissions.date')}</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventTimeLabel') || 'Horário'}</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                                        {form.eventTime || (form.eventDate ? new Date(form.eventDate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : t('common.toBeDefined'))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventModeLabel') || 'Acesso / Canal'}</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                                        {form.eventType ? t(`events.${form.eventType}`) : (form.location ? t('events.modePresencial') : t('events.modeOnline'))}
                                     </div>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
 
                         {/* Location & Links */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }}>
@@ -1610,19 +1595,20 @@ function HubContent() {
                                     marginTop: '60px',
                                     background: cardBg,
                                     color: textColor,
-                                    padding: '50px',
-                                    borderRadius: '32px',
+                                    padding: '24px',
+                                    borderRadius: '24px',
                                     border: cardBorder,
-                                    boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.5)' : '0 20px 40px rgba(0,0,0,0.05)',
+                                    boxShadow: isDark ? '0 15px 35px rgba(0,0,0,0.3)' : '0 15px 35px rgba(0,0,0,0.03)',
                                     textAlign: 'center'
                                 }}
                             >
-                                <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px', color: '#111' }}>
+                                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '6px', color: '#111' }}>
                                     {t('feedback.eventRating.title')}
                                 </h2>
-                                <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: '30px', maxWidth: '500px', margin: '0 auto 30px' }}>
+                                <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '15px', maxWidth: '300px', margin: '0 auto 15px', lineHeight: 1.4 }}>
                                     {t('feedback.eventRating.subtitle')}
                                 </p>
+
 
                                 {!isRatingSubmitted ? (
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
@@ -1638,11 +1624,12 @@ function HubContent() {
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                                 >
                                                     <Star
-                                                        size={36}
+                                                        size={28}
                                                         fill={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : 'none'}
                                                         color={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : '#ddd'}
                                                         style={{ transition: 'all 0.2s ease' }}
                                                     />
+
                                                 </motion.button>
                                             ))}
                                         </div>
@@ -1673,11 +1660,11 @@ function HubContent() {
                                                 style={{
                                                     background: '#111',
                                                     color: '#fff',
-                                                    padding: '16px 40px',
+                                                    padding: '12px 30px',
                                                     borderRadius: '100px',
                                                     border: 'none',
                                                     fontWeight: 800,
-                                                    fontSize: '1rem',
+                                                    fontSize: '0.9rem',
                                                     cursor: 'pointer',
                                                     marginTop: '10px',
                                                     boxShadow: '0 10px 20px rgba(0,0,0,0.1)'

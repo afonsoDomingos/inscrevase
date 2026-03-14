@@ -1765,23 +1765,25 @@ export default function SalaDeEventosContainer({
             {!isMinimized && (
                 <div style={{
                     position: 'absolute',
-                    bottom: isMobile ? '15px' : '30px',
+                    bottom: isMobile ? '15px' : '25px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    background: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-                    backdropFilter: 'blur(16px)',
-                    padding: '4px 6px',
-                    borderRadius: isMobile ? '12px' : '15px',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                    background: isDark ? 'rgba(20, 20, 20, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(20px)',
+                    padding: '6px 14px',
+                    borderRadius: isMobile ? '12px' : '18px',
+                    boxShadow: '0 12px 45px rgba(0,0,0,0.25)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '1px',
-                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                    gap: isMobile ? '4px' : '8px',
+                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
                     zIndex: 200,
-                    maxWidth: '95vw',
+                    maxWidth: '98vw',
                     overflowX: 'auto',
-                    scrollbarWidth: 'none'
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
                 }}>
+
                     {(isMentor || drawingPermissions.has((window as any).__liveBoardSocketId || '')) ? (
                         <>
                             {/* Colors (Brushes) */}
