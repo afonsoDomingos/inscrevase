@@ -2882,27 +2882,29 @@ export default function SalaDeEventosContainer({
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         style={{
                             position: 'absolute',
-                            top: 0,
-                            right: 0,
+                            top: isMobile ? 0 : '80px',
+                            right: isMobile ? 0 : '16px',
                             width: isMobile ? '100%' : '300px',
-                            height: '100%',
+                            height: isMobile ? '100%' : 'calc(100% - 160px)',
                             background: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(20px)',
-                            boxShadow: '-20px 0 50px rgba(0,0,0,0.15)',
+                            boxShadow: isMobile ? 'none' : '-20px 0 50px rgba(0,0,0,0.15)',
                             zIndex: 10000,
                             display: 'flex',
                             flexDirection: 'column',
-                            borderLeft: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)'
+                            borderRadius: isMobile ? 0 : '24px',
+                            border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                            overflow: 'hidden'
                         }}
                     >
                         {/* Header */}
                         <div style={{
-                            padding: '24px 20px',
+                            padding: '16px 20px',
                             borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)'
+                            background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.6)'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <div style={{
@@ -2912,7 +2914,7 @@ export default function SalaDeEventosContainer({
                                 }}>
                                     <MessageSquare size={18} />
                                 </div>
-                                <div style={{ fontWeight: 900, fontSize: '1.1rem', color: isDark ? '#fff' : '#111', letterSpacing: '-0.02em' }}>
+                                <div style={{ fontWeight: 900, fontSize: '1rem', color: isDark ? '#fff' : '#111', letterSpacing: '-0.02em' }}>
                                     {t('hub.salaDeEventos.chatTitle') || "Perguntas e Chat"}
                                 </div>
                             </div>
@@ -3002,21 +3004,21 @@ export default function SalaDeEventosContainer({
                                             }}>
                                                 {!isMe && (
                                                     <span style={{
-                                                        fontSize: '0.65rem', fontWeight: 800,
+                                                        fontSize: '0.6rem', fontWeight: 800,
                                                         color: isDark ? '#94a3b8' : '#64748b',
-                                                        marginBottom: '4px', marginLeft: '4px'
+                                                        marginBottom: '2px', marginLeft: '4px'
                                                     }}>
                                                         {msg.userData?.name || 'Usuário'}
                                                     </span>
                                                 )}
                                                 <div style={{
-                                                    fontSize: '0.9rem',
+                                                    fontSize: '0.85rem',
                                                     color: isMe ? '#fff' : (isDark ? '#e2e8f0' : '#1e293b'),
-                                                    lineHeight: '1.5',
+                                                    lineHeight: '1.4',
                                                     background: isMe ? primaryColor : (isDark ? '#334155' : '#f1f5f9'),
-                                                    padding: '10px 14px',
-                                                    borderRadius: isMe ? '18px 18px 0 18px' : '18px 18px 18px 0',
-                                                    boxShadow: isMe ? `0 4px 15px ${primaryColor}44` : 'none',
+                                                    padding: '8px 12px',
+                                                    borderRadius: isMe ? '16px 16px 0 16px' : '16px 16px 16px 0',
+                                                    boxShadow: isMe ? `0 4px 12px ${primaryColor}33` : 'none',
                                                     fontWeight: 600
                                                 }}>
                                                     {msg.message}
@@ -3031,8 +3033,8 @@ export default function SalaDeEventosContainer({
 
                         {/* Input Area */}
                         <div style={{
-                            padding: '24px 20px',
-                            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)',
+                            padding: '16px 20px',
+                            background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.6)',
                             borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)'
                         }}>
                             <form onSubmit={handleSendMessage} style={{ position: 'relative' }}>
