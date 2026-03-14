@@ -524,11 +524,12 @@ class LiveBoardService {
         });
 
         // Binary Audio Stream (Fallback/Simple)
-        socket.on('live_board:audio_stream', ({ formId, data }) => {
+        socket.on('live_board:audio_stream', (payload) => {
+            const { formId } = payload;
             const session = this.activeSessions.get(formId);
             if (!session) return;
             // All participants can broadcast audio (mentor or any participant)
-            socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
+            socket.to(`live_board_${formId}`).emit('live_board:audio_data', payload);
         });
 
         // Audio Status (Speaking Indicator)

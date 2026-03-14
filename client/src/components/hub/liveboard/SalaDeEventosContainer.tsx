@@ -174,6 +174,7 @@ export default function SalaDeEventosContainer({
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const whiteboardRef = useRef<any>(null);
+    const isAudioActiveRef = useRef(false);
 
     // Quiz State
     const [showQuizCreator, setShowQuizCreator] = useState(false);
@@ -207,6 +208,7 @@ export default function SalaDeEventosContainer({
     const [showParticipantsPanel, setShowParticipantsPanel] = useState(false);
     const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set());
     const [speakingParticipants, setSpeakingParticipants] = useState<Set<string>>(new Set());
+    const [isMutingAll, setIsMutingAll] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
@@ -335,9 +337,9 @@ export default function SalaDeEventosContainer({
             setParticipants(list);
         });
 
-        newSocket.on('live_board:audio_data', (data: ArrayBuffer) => {
+        newSocket.on('live_board:audio_data', (payload: any) => {
             if (!isParticipantAudioMuted) {
-                playAudioChunk(data);
+                playAudioChunk(payload);
             }
         });
 
@@ -543,7 +545,7 @@ export default function SalaDeEventosContainer({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formId, isMentor, isParticipantAudioMuted, t, userId, playSound]);
 
-    const playAudioChunk = async (data: any) => {
+    const playAudioChunk = async (payload: any) => {
         if (!audioContextRef.current) {
             audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
         }
@@ -553,19 +555,22 @@ export default function SalaDeEventosContainer({
         }
 
         try {
-            // Socket.io binary data can sometimes be a Buffer/Uint8Array instead of a raw ArrayBuffer
-            // decodeAudioData requires an ArrayBuffer.
+            // Now expecting payload object with { data, sampleRate }
+            const { data, sampleRate } = payload;
             const arrayBuffer = data instanceof ArrayBuffer ? data : (data.buffer || data);
+            const floatData = new Float32Array(arrayBuffer);
 
-            const buffer = await audioContextRef.current.decodeAudioData(arrayBuffer.slice(0));
-            const source = audioContextRef.current.createBufferSource();
+            const context = audioContextRef.current;
+            // Use the sender's sample rate if provided, fallback to current context
+            const buffer = context.createBuffer(1, floatData.length, sampleRate || context.sampleRate);
+            buffer.getChannelData(0).set(floatData);
+
+            const source = context.createBufferSource();
             source.buffer = buffer;
-            source.connect(audioContextRef.current.destination);
+            source.connect(context.destination);
             source.start();
         } catch (e) {
-            // We expect some silent errors here if chunks don't have headers, 
-            // but we log it for debugging the "can't hear" issue.
-            console.warn("[LiveBoard Audio] Decode error (possibly missing headers in chunk):", e);
+            console.warn("[LiveBoard Audio] Play error:", e);
         }
     };
 
@@ -589,7 +594,6 @@ export default function SalaDeEventosContainer({
 
     const handleStartAudio = useCallback(async () => {
         try {
-            // Check if mediaDevices is supported
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 toast.error("Seu navegador não suporta gravação de áudio.");
                 return;
@@ -603,24 +607,38 @@ export default function SalaDeEventosContainer({
                 }
             });
 
-            // Detect supported MIME type
-            const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-                ? 'audio/webm;codecs=opus'
-                : (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus') ? 'audio/ogg;codecs=opus' : 'audio/webm');
+            // Using ScriptProcessor (legacy but reliable for small PCM chunks)
+            // Ideally we'd use AudioWorklet, but ScriptProcessor is more drop-in for this container.
+            if (!audioContextRef.current) {
+                audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            }
+            const context = audioContextRef.current;
+            if (context.state === 'suspended') await context.resume();
 
-            const recorder = new MediaRecorder(stream, { mimeType });
+            const source = context.createMediaStreamSource(stream);
+            const processor = context.createScriptProcessor(4096, 1, 1);
 
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0 && socket) {
-                    e.data.arrayBuffer().then(buffer => {
-                        socket.emit('live_board:audio_stream', { formId, data: buffer });
+            source.connect(processor);
+            processor.connect(context.destination);
+
+            processor.onaudioprocess = (e) => {
+                const inputData = e.inputBuffer.getChannelData(0);
+                // Convert to Float32Array to send
+                if (socket && isAudioActiveRef.current) {
+                    socket.emit('live_board:audio_stream', {
+                        formId,
+                        data: inputData.buffer,
+                        sampleRate: context.sampleRate
                     });
                 }
             };
 
-            recorder.start(250); // Send chunks every 250ms
-            mediaRecorderRef.current = recorder;
+            (window as any).__audioStream = stream;
+            (window as any).__audioProcessor = processor;
+            (window as any).__audioSource = source;
+
             setIsAudioActive(true);
+            isAudioActiveRef.current = true;
 
             if (isMentor) {
                 socket?.emit('live_board:mentor_audio_status', { formId, isActive: true });
@@ -631,23 +649,29 @@ export default function SalaDeEventosContainer({
             toast.success(t('hub.salaDeEventos.audioEnabled'));
         } catch (err: any) {
             console.error("Microphone error:", err);
-
-            if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                toast.error("Nenhum microfone foi encontrado. Verifique se ele está conectado.");
-            } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                toast.error("Permissão de microfone negada. Ative-a nas configurações do navegador.");
-            } else {
-                toast.error("Erro ao acessar microfone. Verifique as permissões.");
-            }
+            toast.error("Erro ao acessar microfone.");
         }
     }, [formId, isMentor, socket, t]);
 
     const handleStopAudio = useCallback(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
-            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-            mediaRecorderRef.current = null;
-        }
+        isAudioActiveRef.current = false;
         setIsAudioActive(false);
+
+        if ((window as any).__audioStream) {
+            (window as any).__audioStream.getTracks().forEach((track: any) => track.stop());
+            (window as any).__audioStream = null;
+        }
+
+        if ((window as any).__audioProcessor) {
+            (window as any).__audioProcessor.disconnect();
+            (window as any).__audioProcessor = null;
+        }
+
+        if ((window as any).__audioSource) {
+            (window as any).__audioSource.disconnect();
+            (window as any).__audioSource = null;
+        }
+
         if (isMentor) {
             socket?.emit('live_board:mentor_audio_status', { formId, isActive: false });
         } else {
@@ -2091,29 +2115,35 @@ export default function SalaDeEventosContainer({
                                 {isMentor && (
                                     <button
                                         onClick={() => {
+                                            if (isMutingAll) return;
+                                            setIsMutingAll(true);
                                             socket?.emit('live_board:mute_all', formId);
                                             toast.success('🔇 Todos os microfones foram mutados.');
+                                            setTimeout(() => setIsMutingAll(false), 2000);
                                         }}
+                                        disabled={isMutingAll}
                                         style={{
-                                            background: isDark ? 'rgba(239,68,68,0.15)' : '#fee2e2',
+                                            background: isMutingAll ? '#f0f0f0' : (isDark ? 'rgba(239,68,68,0.15)' : '#fee2e2'),
                                             color: '#ef4444',
                                             border: 'none',
                                             padding: '0 8px',
                                             height: '32px',
                                             borderRadius: '8px',
                                             fontWeight: 800,
-                                            cursor: 'pointer',
+                                            cursor: isMutingAll ? 'default' : 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '4px',
                                             fontSize: '0.65rem',
                                             flexShrink: 0,
-                                            transition: 'all 0.2s'
+                                            transition: 'all 0.2s',
+                                            opacity: isMutingAll ? 0.7 : 1
                                         }}
                                         title="Mutar todos os participantes"
                                     >
-                                        <VolumeX size={14} /> {!isMobile && 'Mutar Todos'}
+                                        {isMutingAll ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><VolumeX size={14} /></motion.div> : <VolumeX size={14} />}
+                                        {!isMobile && (isMutingAll ? 'A Mutar...' : 'Mutar Todos')}
                                     </button>
                                 )}
 
