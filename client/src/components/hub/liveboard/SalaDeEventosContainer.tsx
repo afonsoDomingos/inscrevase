@@ -3079,15 +3079,38 @@ export default function SalaDeEventosContainer({
                                                 alignItems: isMe ? 'flex-end' : 'flex-start',
                                                 maxWidth: '75%'
                                             }}>
-                                                {!isMe && (
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '5px',
+                                                    marginBottom: '3px',
+                                                    marginLeft: isMe ? '0' : '4px',
+                                                    marginRight: isMe ? '4px' : '0'
+                                                }}>
                                                     <span style={{
-                                                        fontSize: '0.6rem', fontWeight: 800,
-                                                        color: isDark ? '#94a3b8' : '#64748b',
-                                                        marginBottom: '2px', marginLeft: '4px'
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 900,
+                                                        color: isMe ? primaryColor : (msg.userData?.role === 'mentor' || msg.userData?.role === 'SuperAdmin' ? primaryColor : (isDark ? '#cbd5e1' : '#475569')),
                                                     }}>
-                                                        {msg.userData?.name || 'Usuário'}
+                                                        {isMe ? (t('hub.salaDeEventos.me') || 'Eu') : (msg.userData?.name || 'Usuário')}
                                                     </span>
-                                                )}
+                                                    {(msg.userData?.role === 'mentor' || msg.userData?.role === 'SuperAdmin') && (
+                                                        <span style={{
+                                                            fontSize: '0.6rem',
+                                                            fontWeight: 900,
+                                                            background: primaryColor,
+                                                            color: '#fff',
+                                                            padding: '0px 5px',
+                                                            borderRadius: '4px',
+                                                            textTransform: 'uppercase',
+                                                            height: '14px',
+                                                            display: 'flex',
+                                                            alignItems: 'center'
+                                                        }}>
+                                                            Mentor
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <div style={{
                                                     fontSize: '0.85rem',
                                                     color: isMe ? '#fff' : (isDark ? '#e2e8f0' : '#1e293b'),
