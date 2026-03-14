@@ -1770,12 +1770,12 @@ export default function SalaDeEventosContainer({
                     transform: 'translateX(-50%)',
                     background: isDark ? 'rgba(20, 20, 20, 0.9)' : 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(20px)',
-                    padding: '6px 14px',
+                    padding: '6px 20px',
                     borderRadius: isMobile ? '12px' : '18px',
                     boxShadow: '0 12px 45px rgba(0,0,0,0.25)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: isMobile ? '4px' : '8px',
+                    gap: isMobile ? '3px' : '5px',
                     border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
                     zIndex: 200,
                     maxWidth: '98vw',
@@ -2314,7 +2314,7 @@ export default function SalaDeEventosContainer({
                                             background: isMutingAll ? '#f0f0f0' : (isDark ? 'rgba(239,68,68,0.15)' : '#fee2e2'),
                                             color: '#ef4444',
                                             border: 'none',
-                                            padding: '0 8px',
+                                            padding: '0 6px',
                                             height: '32px',
                                             borderRadius: '8px',
                                             fontWeight: 800,
@@ -2343,7 +2343,7 @@ export default function SalaDeEventosContainer({
                                                 background: showAnnouncementMenu ? primaryColor : (isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8'),
                                                 color: showAnnouncementMenu ? '#fff' : (isDark ? '#fff' : '#666'),
                                                 border: 'none',
-                                                padding: '0 8px',
+                                                padding: '0 6px',
                                                 height: '32px',
                                                 borderRadius: '8px',
                                                 cursor: 'pointer',
@@ -2385,7 +2385,7 @@ export default function SalaDeEventosContainer({
 
                                         <div style={{ width: '1px', height: '20px', background: isDark ? 'rgba(255,255,255,0.1)' : '#eee', margin: '0 4px' }} />
 
-                                        <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                                        <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
                                             <button
                                                 onClick={() => sendReaction('Sim')}
                                                 style={{
@@ -2426,7 +2426,7 @@ export default function SalaDeEventosContainer({
                                     </div>
                                 )}
 
-                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 2px', flexShrink: 0 }} />
+                                <div style={{ width: '1px', height: '24px', background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0', margin: '0 10px', flexShrink: 0 }} />
 
                                 <button
                                     onClick={() => {
@@ -2437,7 +2437,7 @@ export default function SalaDeEventosContainer({
                                         background: isDark ? 'rgba(255,255,255,0.1)' : '#111',
                                         color: '#fff',
                                         border: 'none',
-                                        padding: '0 8px',
+                                        padding: '0 10px',
                                         height: '32px',
                                         borderRadius: '8px',
                                         fontWeight: 800,
@@ -2448,7 +2448,8 @@ export default function SalaDeEventosContainer({
                                         gap: '4px',
                                         fontSize: '0.65rem',
                                         flexShrink: 0,
-                                        position: 'relative'
+                                        position: 'relative',
+                                        marginRight: '5px'
                                     }}
                                 >
                                     <MessageSquare size={12} /> {!isMobile && "Chat"}

@@ -788,19 +788,20 @@ function HubContent() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 style={{
                                     background: '#fff',
-                                    padding: '16px',
-                                    borderRadius: '20px',
-                                    boxShadow: '0 15px 35px rgba(0,0,0,0.12)',
+                                    padding: '24px',
+                                    borderRadius: '24px',
+                                    boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
                                     display: 'inline-block',
                                     border: '1px solid #f0f0f0',
-                                    textAlign: 'left',
-                                    width: '280px'
+                                    textAlign: 'center',
+                                    width: '420px',
+                                    maxWidth: '90vw'
                                 }}
                             >
-                                <h4 style={{ margin: '0 0 12px', fontSize: '0.85rem', fontWeight: 900, color: '#111' }}>
+                                <h4 style={{ margin: '0 0 20px', fontSize: '1rem', fontWeight: 900, color: '#111' }}>
                                     {t('hub.salaDeEventos.selectCountdown')}
                                 </h4>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
                                     {[5, 10, 30, 60, 300].map(seconds => (
                                         <button
                                             key={seconds}
@@ -821,21 +822,31 @@ function HubContent() {
                                                 }
                                             }}
                                             style={{
-                                                padding: '8px',
-                                                borderRadius: '10px',
+                                                padding: '10px 16px',
+                                                borderRadius: '12px',
                                                 border: '1px solid #eee',
                                                 background: '#f9f9f9',
-                                                fontSize: '0.75rem',
+                                                fontSize: '0.8rem',
                                                 fontWeight: 800,
                                                 cursor: 'pointer',
-                                                transition: 'all 0.2s'
+                                                transition: 'all 0.2s',
+                                                whiteSpace: 'nowrap'
                                             }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.background = '#f0f0f0')}
-                                            onMouseLeave={(e) => (e.currentTarget.style.background = '#f9f9f9')}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = '#111';
+                                                e.currentTarget.style.color = '#fff';
+                                                e.currentTarget.style.borderColor = '#111';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = '#f9f9f9';
+                                                e.currentTarget.style.color = '#111';
+                                                e.currentTarget.style.borderColor = '#eee';
+                                            }}
                                         >
                                             {seconds < 60 ? t(`hub.salaDeEventos.seconds_${seconds}`) : t(`hub.salaDeEventos.minutes_${seconds / 60}`)}
                                         </button>
                                     ))}
+                                    <div style={{ width: '100%', height: '12px' }} />
                                     <button
                                         onClick={() => {
                                             setShowBoardActivationOptions(false);
@@ -851,19 +862,19 @@ function HubContent() {
                                             }
                                         }}
                                         style={{
-                                            gridColumn: 'span 2',
-                                            padding: '8px',
-                                            borderRadius: '10px',
+                                            width: '100%',
+                                            padding: '14px',
+                                            borderRadius: '16px',
                                             border: 'none',
                                             background: '#111',
                                             color: '#fff',
-                                            fontSize: '0.75rem',
+                                            fontSize: '0.9rem',
                                             fontWeight: 900,
                                             cursor: 'pointer',
-                                            marginTop: '6px'
+                                            boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
                                         }}
                                     >
-                                        {t('hub.salaDeEventos.startNow')}
+                                        🚀 {t('hub.salaDeEventos.startNow')}
                                     </button>
                                 </div>
                                 <button
