@@ -44,9 +44,9 @@ const Whiteboard = forwardRef(({
     const redrawHistoryRef = useRef<() => void>(() => { });
 
     const handlersRef = useRef({
-        clearCanvas: (_fromSocket = false) => { },
-        undoAction: (_fromSocket = false) => { },
-        drawData: (_data: any) => { },
+        clearCanvas: (_fromSocket?: boolean) => { },
+        undoAction: (_fromSocket?: boolean) => { },
+        drawData: (_data?: any) => { },
         redrawHistory: () => { },
         redrawBg: () => { }
     });
