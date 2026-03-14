@@ -592,7 +592,34 @@ function HubContent() {
                         {isApproved ? <CheckCircle2 size={16} /> : <Clock size={16} />}
                         {isApproved ? t('events.confirmedStatus') : t('events.processingStatus')}
                     </motion.div>
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-2px', marginBottom: '15px', color: textColor, lineHeight: 1.1, textShadow: isDark ? '0 10px 30px rgba(0,0,0,0.5)' : 'none' }}>{form.title}</h1>
+                    <motion.h1
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        style={{
+                            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+                            fontWeight: 800,
+                            letterSpacing: '-2px',
+                            marginBottom: '15px',
+                            color: textColor,
+                            lineHeight: 1.1,
+                            textShadow: isDark ? '0 10px 30px rgba(0,0,0,0.5)' : 'none'
+                        }}
+                    >
+                        {form.title.split('').map((char, index) => (
+                            <motion.span
+                                key={index}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{
+                                    duration: 0.05,
+                                    delay: index * 0.03
+                                }}
+                            >
+                                {char}
+                            </motion.span>
+                        ))}
+                    </motion.h1>
                     <p style={{ color: secondaryTextColor, fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: isDark ? '0 2px 10px rgba(0,0,0,0.3)' : 'none' }}>{t('hub.exclusiveAccess')}</p>
                 </div>
 
@@ -935,7 +962,7 @@ function HubContent() {
                         <div style={{ background: cardBg, borderRadius: '24px', padding: '30px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)' }}>
                             <div style={{ display: 'flex', gap: '40px', justifyContent: 'space-between' }}>
                                 <div>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('submissions.date')}</div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.submissions.date')}</div>
                                     <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
                                 </div>
                                 <div>
@@ -1022,7 +1049,7 @@ function HubContent() {
                                     background: 'rgba(255, 255, 255, 0.03)',
                                     backdropFilter: 'blur(20px)',
                                     borderRadius: '48px',
-                                    padding: '60px',
+                                    padding: '30px 40px',
                                     color: textColor,
                                     position: 'relative',
                                     overflow: 'hidden',
@@ -1035,8 +1062,8 @@ function HubContent() {
 
                                 <div style={{ position: 'relative', zIndex: 1 }}>
                                     <h2 style={{
-                                        margin: '0 0 30px 0',
-                                        fontSize: '2.5rem',
+                                        margin: '0 0 15px 0',
+                                        fontSize: '2rem',
                                         fontWeight: 800,
                                         fontFamily: 'var(--font-playfair), serif',
                                         background: `linear-gradient(to right, ${textColor}, ${primaryColor}80)`,
@@ -1047,24 +1074,25 @@ function HubContent() {
                                     </h2>
 
                                     <p style={{
-                                        fontSize: '1.25rem',
-                                        lineHeight: '1.8',
+                                        fontSize: '1.1rem',
+                                        lineHeight: '1.6',
                                         whiteSpace: 'pre-wrap',
                                         opacity: 0.9,
                                         fontWeight: 500,
-                                        color: isDark ? '#f4f4f5' : '#333'
+                                        color: isDark ? '#f4f4f5' : '#333',
+                                        marginBottom: '25px'
                                     }}>
                                         {form.welcomeMessage}
                                     </p>
 
                                     <div style={{
-                                        marginTop: '45px',
+                                        marginTop: '0px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '16px',
-                                        padding: '16px 24px',
+                                        gap: '12px',
+                                        padding: '12px 16px',
                                         background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
-                                        borderRadius: '24px',
+                                        borderRadius: '20px',
                                         width: 'fit-content',
                                         border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
                                     }}>
