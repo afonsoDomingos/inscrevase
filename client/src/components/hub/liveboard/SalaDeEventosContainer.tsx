@@ -419,6 +419,13 @@ export default function SalaDeEventosContainer({
             }
         });
 
+        newSocket.on('live_board:mute_all', () => {
+            if (!isMentor) {
+                handleStopAudio();
+                toast.info('🔇 O mentor mutou todos os microfones.', { duration: 4000 });
+            }
+        });
+
         newSocket.on('live_board:timer:start', ({ duration }: any) => {
             setTimerSeconds(duration);
             setIsTimerActive(true);
@@ -2074,6 +2081,35 @@ export default function SalaDeEventosContainer({
                                     {isAudioActive ? <MicOff size={14} /> : <Mic size={14} />}
                                     {!isMobile && (isAudioActive ? t('hub.salaDeEventos.mute') : t('hub.salaDeEventos.speak'))}
                                 </button>
+
+                                {isMentor && (
+                                    <button
+                                        onClick={() => {
+                                            socket?.emit('live_board:mute_all', formId);
+                                            toast.success('🔇 Todos os microfones foram mutados.');
+                                        }}
+                                        style={{
+                                            background: isDark ? 'rgba(239,68,68,0.15)' : '#fee2e2',
+                                            color: '#ef4444',
+                                            border: 'none',
+                                            padding: '0 8px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '4px',
+                                            fontSize: '0.65rem',
+                                            flexShrink: 0,
+                                            transition: 'all 0.2s'
+                                        }}
+                                        title="Mutar todos os participantes"
+                                    >
+                                        <VolumeX size={14} /> {!isMobile && 'Mutar Todos'}
+                                    </button>
+                                )}
 
                                 {isMentor && (
                                     <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>

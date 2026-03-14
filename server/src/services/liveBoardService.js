@@ -415,6 +415,16 @@ class LiveBoardService {
             console.log(`[LiveBoard] Mic permission ${granted ? 'granted' : 'revoked'} for socket ${socketId}`);
         });
 
+        // Mute All Participants (Mentor Only)
+        socket.on('live_board:mute_all', (formId) => {
+            const session = this.activeSessions.get(formId);
+            if (!session || session.mentorId !== userId) return;
+
+            // Broadcast to entire room — clients will self-mute on receiving this
+            socket.to(`live_board_${formId}`).emit('live_board:mute_all');
+            console.log(`[LiveBoard] Mentor muted all participants in form ${formId}`);
+        });
+
         // Mentor Cursor Event
         socket.on('live_board:cursor:move', ({ formId, x, y }) => {
             const session = this.activeSessions.get(formId);
@@ -517,11 +527,8 @@ class LiveBoardService {
         socket.on('live_board:audio_stream', ({ formId, data }) => {
             const session = this.activeSessions.get(formId);
             if (!session) return;
-            const isMentorOrAllowed = session.mentorId === userId ||
-                (session.micPermissions && session.micPermissions.has(socket.id));
-            if (isMentorOrAllowed) {
-                socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
-            }
+            // All participants can broadcast audio (mentor or any participant)
+            socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
         });
 
         // Audio Status (Speaking Indicator)
