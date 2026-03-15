@@ -2052,7 +2052,7 @@ function MentorDashboardContent() {
                                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(255, 215, 0, 0.15)', border: '1px solid rgba(255, 215, 0, 0.3)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#FFD700', marginBottom: '1.5rem' }}>
                                             🛸 Ambiente de Testes
                                         </div>
-                                        <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem' }}>
+                                        <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem', color: '#fff' }}>
                                             Laboratório <span className="gold-text">Sala de Eventos</span>
                                         </h2>
                                         <p style={{ fontSize: '1.1rem', color: '#888', lineHeight: 1.6, marginBottom: '2.5rem' }}>
