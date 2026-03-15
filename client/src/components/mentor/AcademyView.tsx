@@ -1265,6 +1265,6 @@ export default function AcademyView() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div >
+        </div>
     );
 }
