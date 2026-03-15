@@ -308,7 +308,7 @@ export default function SalaDeEventosContainer({
             newSocket.emit('live_board:join', formId);
         });
 
-        newSocket.on('live_board:hand_raised', ({ socketId, userData: _userData }: any) => {
+        newSocket.on('live_board:hand_raised', ({ socketId }: any) => {
             if (isMentor) {
                 if (socketId) {
                     setRaisedHands(prev => {
