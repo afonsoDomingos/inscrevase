@@ -287,6 +287,16 @@ export default function SalaDeEventosContainer({
         }
     }, []);
 
+    const playSoundRef = useRef(playSound);
+    const tRef = useRef(t);
+    const isParticipantAudioMutedRef = useRef(isParticipantAudioMuted);
+
+    useEffect(() => {
+        playSoundRef.current = playSound;
+        tRef.current = t;
+        isParticipantAudioMutedRef.current = isParticipantAudioMuted;
+    }, [playSound, t, isParticipantAudioMuted]);
+
     useEffect(() => {
         const newSocket = io(getSocketUrl(), getSocketOptions());
 
