@@ -1730,7 +1730,7 @@ function MentorDashboardContent() {
                                                             onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
                                                             onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
                                                         >
-                                                            <Monitor size={14} /> Ver Hub
+                                                            <Monitor size={14} /> Página do Inscrito
                                                         </button>
 
                                                         {/* Divider */}
