@@ -914,7 +914,7 @@ function MentorDashboardContent() {
                                 lineHeight: 1.1,
                                 margin: 0
                             }}>
-                                {t('common.hello')}, <span style={{ color: '#fff' }}>{user.name.split(' ')[0]}</span>
+                                {t('common.hello')}, <span style={{ color: '#1a1a1a' }}>{user.name.split(' ')[0]}</span>
                             </h1>
                         </div>
                     </div>
