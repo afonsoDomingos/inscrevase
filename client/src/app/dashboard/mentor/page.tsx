@@ -1631,12 +1631,12 @@ function MentorDashboardContent() {
                             <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none' }}>
                                 <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                                     <colgroup>
-                                        <col style={{ width: '28%' }} />
+                                        <col style={{ width: '18%' }} />
                                         <col style={{ width: '10%' }} />
                                         <col style={{ width: '8%' }} />
                                         <col style={{ width: '10%' }} />
-                                        <col style={{ width: '8%' }} />
-                                        <col style={{ width: '36%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '44%' }} />
                                     </colgroup>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
@@ -1725,14 +1725,14 @@ function MentorDashboardContent() {
                                                         <Eye size={14} color="#B8860B" /> {form.visits || 0}
                                                     </div>
                                                 </td>
-                                                <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', flexWrap: 'nowrap' }}>
-                                                        {/* Primary Actions — always visible with label */}
+                                                <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
+                                                        {/* Primary Actions */}
                                                         <button
                                                             onClick={() => window.open(`/f/${form.slug}`, '_blank')}
                                                             title={t('common.viewPublicForm')}
                                                             style={{
-                                                                display: 'flex', alignItems: 'center', gap: '6px',
+                                                                display: 'flex', alignItems: 'center', gap: '5px',
                                                                 padding: '6px 12px', borderRadius: '8px',
                                                                 background: 'rgba(184,134,11,0.1)', color: '#B8860B',
                                                                 border: '1.5px solid rgba(184,134,11,0.3)',
@@ -1748,7 +1748,7 @@ function MentorDashboardContent() {
                                                             onClick={() => window.open(`/hub/${form.slug}`, '_blank')}
                                                             title={t('common.viewEventHub')}
                                                             style={{
-                                                                display: 'flex', alignItems: 'center', gap: '6px',
+                                                                display: 'flex', alignItems: 'center', gap: '5px',
                                                                 padding: '6px 12px', borderRadius: '8px',
                                                                 background: 'var(--gold-gradient)', color: '#000',
                                                                 border: 'none',
@@ -1763,14 +1763,16 @@ function MentorDashboardContent() {
                                                         </button>
 
                                                         {/* Divider */}
-                                                        <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
+                                                        <div style={{ width: '1px', height: '24px', background: 'var(--border)', margin: '0 4px', flexShrink: 0 }} />
 
                                                         {/* Secondary icon-only actions */}
-                                                        <button onClick={() => setEditModalData({ isOpen: true, form })} title={t('common.editEvent')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}><Pencil size={16} /></button>
-                                                        <button onClick={() => setThemeModalData({ isOpen: true, form })} title={t('common.customizeTheme')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}><Palette size={16} /></button>
-                                                        <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}><Copy size={16} /></button>
-                                                        <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title={t('common.viewSubmissions')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}><Users size={16} /></button>
-                                                        <button onClick={() => handleDeleteForm(form._id)} title={t('common.delete')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}><Trash2 size={16} /></button>
+                                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                                            <button onClick={() => setEditModalData({ isOpen: true, form })} title={t('common.editEvent')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px' }}><Pencil size={18} /></button>
+                                                            <button onClick={() => setThemeModalData({ isOpen: true, form })} title={t('common.customizeTheme')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Palette size={18} /></button>
+                                                            <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Copy size={18} /></button>
+                                                            <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title={t('common.viewSubmissions')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Users size={18} /></button>
+                                                            <button onClick={() => handleDeleteForm(form._id)} title={t('common.delete')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: '4px', borderRadius: '6px' }}><Trash2 size={18} /></button>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
