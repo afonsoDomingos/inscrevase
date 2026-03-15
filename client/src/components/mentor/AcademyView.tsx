@@ -1017,8 +1017,7 @@ export default function AcademyView() {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
-                                }
+                                    ))}
                                 {manageLessons.filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase())).length === 0 && (
                                     <tr>
                                         <td colSpan={5} style={{ padding: '4rem 2rem', textAlign: 'center' }}>
@@ -1037,234 +1036,235 @@ export default function AcademyView() {
                             </tbody>
                         </table>
                     </div>
+                </motion.div>
             )}
 
-                    <AnimatePresence>
-                        {selectedLesson && (
-                            <LessonPlayerModal
-                                lesson={selectedLesson}
-                                onClose={closeLesson}
-                                onComplete={() => {
-                                    setLearnLessons(prev => prev.map(l =>
-                                        l._id === selectedLesson._id ? { ...l, isCompleted: true } : l
-                                    ));
-                                }}
-                            />
-                        )}
-                    </AnimatePresence>
+            <AnimatePresence>
+                {selectedLesson && (
+                    <LessonPlayerModal
+                        lesson={selectedLesson}
+                        onClose={closeLesson}
+                        onComplete={() => {
+                            setLearnLessons(prev => prev.map(l =>
+                                l._id === selectedLesson._id ? { ...l, isCompleted: true } : l
+                            ));
+                        }}
+                    />
+                )}
+            </AnimatePresence>
 
-                    <AnimatePresence>
-                        {showModal && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: '1rem' }}
-                                onClick={closeModal}
-                            >
-                                <motion.div
-                                    initial={{ scale: 0.9, y: 20 }}
-                                    animate={{ scale: 1, y: 0 }}
-                                    exit={{ scale: 0.9, y: 20 }}
-                                    onClick={(e) => e.stopPropagation()}
-                                    style={{ background: 'var(--paper)', borderRadius: '20px', padding: '2rem', maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}
-                                >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                                        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--foreground)' }}>{editingLesson ? 'Editar Aula' : 'Nova Aula'}</h2>
-                                        <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--foreground)' }}><X size={24} /></button>
+            <AnimatePresence>
+                {showModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: '1rem' }}
+                        onClick={closeModal}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ background: 'var(--paper)', borderRadius: '20px', padding: '2rem', maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--foreground)' }}>{editingLesson ? 'Editar Aula' : 'Nova Aula'}</h2>
+                                <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--foreground)' }}><X size={24} /></button>
+                            </div>
+                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--foreground)' }}>Vídeo</label>
+                                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoInputMethod('upload')}
+                                            style={{ flex: 1, padding: '10px', background: videoInputMethod === 'upload' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'upload' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
+                                        >
+                                            📤 Upload
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoInputMethod('url')}
+                                            style={{ flex: 1, padding: '10px', background: videoInputMethod === 'url' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'url' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
+                                        >
+                                            🔗 URL
+                                        </button>
                                     </div>
-                                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                        <div>
-                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--foreground)' }}>Vídeo</label>
-                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setVideoInputMethod('upload')}
-                                                    style={{ flex: 1, padding: '10px', background: videoInputMethod === 'upload' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'upload' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
-                                                >
-                                                    📤 Upload
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setVideoInputMethod('url')}
-                                                    style={{ flex: 1, padding: '10px', background: videoInputMethod === 'url' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'url' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
-                                                >
-                                                    🔗 URL
-                                                </button>
-                                            </div>
-                                            {!formData.videoUrl ? (
-                                                <div style={{ border: '2px dashed var(--border)', borderRadius: '12px', padding: '2rem', textAlign: 'center' }}>
-                                                    {videoInputMethod === 'upload' ? (
-                                                        <input type="file" accept="video/*" onChange={handleVideoUpload} />
-                                                    ) : (
-                                                        <input type="url" placeholder="https://..." value={formData.videoUrl} onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
-                                                    )}
-                                                </div>
+                                    {!formData.videoUrl ? (
+                                        <div style={{ border: '2px dashed var(--border)', borderRadius: '12px', padding: '2rem', textAlign: 'center' }}>
+                                            {videoInputMethod === 'upload' ? (
+                                                <input type="file" accept="video/*" onChange={handleVideoUpload} />
                                             ) : (
-                                                <div style={{ position: 'relative', aspectRatio: '16/9', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
-                                                    <video src={formData.videoUrl} controls style={{ width: '100%', height: '100%' }} />
-                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, videoUrl: '' }))} style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', color: '#fff', padding: '4px' }}><Trash2 size={16} /></button>
-                                                </div>
+                                                <input type="url" placeholder="https://..." value={formData.videoUrl} onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
                                             )}
                                         </div>
-                                        <div>
-                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Título da Aula</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Ex: Como configurar seu primeiro evento"
-                                                value={formData.title}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', transition: 'all 0.2s' }}
-                                                required
-                                            />
+                                    ) : (
+                                        <div style={{ position: 'relative', aspectRatio: '16/9', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
+                                            <video src={formData.videoUrl} controls style={{ width: '100%', height: '100%' }} />
+                                            <button type="button" onClick={() => setFormData(prev => ({ ...prev, videoUrl: '' }))} style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', color: '#fff', padding: '4px' }}><Trash2 size={16} /></button>
                                         </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Título da Aula</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Ex: Como configurar seu primeiro evento"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', transition: 'all 0.2s' }}
+                                        required
+                                    />
+                                </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Descrição</label>
-                                            <textarea
-                                                placeholder="O que os alunos vão aprender nesta aula?"
-                                                value={formData.description}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', minHeight: '100px', fontSize: '1rem', resize: 'vertical' }}
-                                            />
-                                        </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Descrição</label>
+                                    <textarea
+                                        placeholder="O que os alunos vão aprender nesta aula?"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', minHeight: '100px', fontSize: '1rem', resize: 'vertical' }}
+                                    />
+                                </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
-                                            <div>
-                                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Nível / Categoria</label>
-                                                <select
-                                                    value={formData.category}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
-                                                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
-                                                >
-                                                    <option value="basico">🌱 Básico</option>
-                                                    <option value="intermediario">🚀 Intermediário</option>
-                                                    <option value="avancado">⚡ Avançado</option>
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>
-                                                    Público-Alvo
-                                                    <div title="Define quem poderá ver esta aula na academia ou nos eventos" style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
-                                                </label>
-                                                <select
-                                                    value={formData.targetAudience}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
-                                                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
-                                                >
-                                                    <option value="mentors">🎓 Experts (Academia)</option>
-                                                    <option value="participants">👥 Participantes (Eventos)</option>
-                                                    <option value="companies">🏢 Empresas</option>
-                                                    <option value="specialists">⚡ Especialistas</option>
-                                                    <option value="both">🔄 Experts e Participantes</option>
-                                                    <option value="all">🌍 Todos os Públicos</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        {mentorEvents.length > 0 && (
-                                            <div>
-                                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Vincular a Eventos (Opcional)</label>
-                                                <div style={{
-                                                    display: 'grid',
-                                                    gridTemplateColumns: '1fr',
-                                                    gap: '8px',
-                                                    maxHeight: '150px',
-                                                    overflowY: 'auto',
-                                                    padding: '12px',
-                                                    background: 'rgba(0,0,0,0.02)',
-                                                    borderRadius: '12px',
-                                                    border: '1px solid var(--border)'
-                                                }} className="no-scrollbar">
-                                                    {mentorEvents.map(event => (
-                                                        <label key={event._id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', padding: '4px 0' }}>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={formData.associatedEvents?.includes(event._id)}
-                                                                onChange={(e) => {
-                                                                    const checked = e.target.checked;
-                                                                    setFormData(prev => ({
-                                                                        ...prev,
-                                                                        associatedEvents: checked
-                                                                            ? [...(prev.associatedEvents || []), event._id]
-                                                                            : (prev.associatedEvents || []).filter(id => id !== event._id)
-                                                                    }));
-                                                                }}
-                                                                style={{ width: '18px', height: '18px', accentColor: '#D4AF37' }}
-                                                            />
-                                                            <span style={{ color: 'var(--foreground)' }}>{event.title}</span>
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
-                                            <div>
-                                                <p style={{ fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem', margin: 0 }}>Aula Privada / Bloqueada</p>
-                                                <p style={{ fontSize: '0.75rem', color: '#666', margin: '4px 0 0 0' }}>Apenas usuários com acesso podem visualizar</p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => setFormData(prev => ({ ...prev, isLocked: !prev.isLocked }))}
-                                                style={{
-                                                    width: '50px',
-                                                    height: '26px',
-                                                    borderRadius: '15px',
-                                                    background: formData.isLocked ? 'var(--gold-gradient)' : '#ccc',
-                                                    position: 'relative',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.3s'
-                                                }}
-                                            >
-                                                <div style={{
-                                                    width: '20px',
-                                                    height: '20px',
-                                                    borderRadius: '50%',
-                                                    background: '#fff',
-                                                    position: 'absolute',
-                                                    top: '3px',
-                                                    left: formData.isLocked ? '27px' : '3px',
-                                                    transition: 'all 0.3s',
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                                }} />
-                                            </button>
-                                        </div>
-
-                                        <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
-                                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#856404', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <Award size={16} />
-                                                <span><strong>Dica de Expert:</strong> Títulos claros e descrições detalhadas ajudam seus alunos a encontrar o conteúdo mais rápido.</span>
-                                            </p>
-                                        </div>
-
-                                        <button
-                                            type="submit"
-                                            disabled={!formData.videoUrl || !formData.title || isUploading}
-                                            style={{
-                                                marginTop: '1rem',
-                                                padding: '16px',
-                                                background: isUploading ? '#ccc' : 'var(--gold-gradient)',
-                                                color: '#000',
-                                                borderRadius: '12px',
-                                                fontWeight: '900',
-                                                border: 'none',
-                                                fontSize: '1rem',
-                                                cursor: isUploading ? 'not-allowed' : 'pointer',
-                                                textTransform: 'uppercase',
-                                                letterSpacing: '1px',
-                                                boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
-                                            }}
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Nível / Categoria</label>
+                                        <select
+                                            value={formData.category}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
+                                            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
                                         >
-                                            {isUploading ? <><Loader2 className="animate-spin" size={18} /> Enviando Vídeo...</> : (editingLesson ? 'Salvar Alterações' : 'Publicar Aula')}
-                                        </button>
-                                    </form>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div >
-            );
+                                            <option value="basico">🌱 Básico</option>
+                                            <option value="intermediario">🚀 Intermediário</option>
+                                            <option value="avancado">⚡ Avançado</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>
+                                            Público-Alvo
+                                            <div title="Define quem poderá ver esta aula na academia ou nos eventos" style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
+                                        </label>
+                                        <select
+                                            value={formData.targetAudience}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
+                                            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
+                                        >
+                                            <option value="mentors">🎓 Experts (Academia)</option>
+                                            <option value="participants">👥 Participantes (Eventos)</option>
+                                            <option value="companies">🏢 Empresas</option>
+                                            <option value="specialists">⚡ Especialistas</option>
+                                            <option value="both">🔄 Experts e Participantes</option>
+                                            <option value="all">🌍 Todos os Públicos</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {mentorEvents.length > 0 && (
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Vincular a Eventos (Opcional)</label>
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr',
+                                            gap: '8px',
+                                            maxHeight: '150px',
+                                            overflowY: 'auto',
+                                            padding: '12px',
+                                            background: 'rgba(0,0,0,0.02)',
+                                            borderRadius: '12px',
+                                            border: '1px solid var(--border)'
+                                        }} className="no-scrollbar">
+                                            {mentorEvents.map(event => (
+                                                <label key={event._id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', padding: '4px 0' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.associatedEvents?.includes(event._id)}
+                                                        onChange={(e) => {
+                                                            const checked = e.target.checked;
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                associatedEvents: checked
+                                                                    ? [...(prev.associatedEvents || []), event._id]
+                                                                    : (prev.associatedEvents || []).filter(id => id !== event._id)
+                                                            }));
+                                                        }}
+                                                        style={{ width: '18px', height: '18px', accentColor: '#D4AF37' }}
+                                                    />
+                                                    <span style={{ color: 'var(--foreground)' }}>{event.title}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                                    <div>
+                                        <p style={{ fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem', margin: 0 }}>Aula Privada / Bloqueada</p>
+                                        <p style={{ fontSize: '0.75rem', color: '#666', margin: '4px 0 0 0' }}>Apenas usuários com acesso podem visualizar</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, isLocked: !prev.isLocked }))}
+                                        style={{
+                                            width: '50px',
+                                            height: '26px',
+                                            borderRadius: '15px',
+                                            background: formData.isLocked ? 'var(--gold-gradient)' : '#ccc',
+                                            position: 'relative',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s'
+                                        }}
+                                    >
+                                        <div style={{
+                                            width: '20px',
+                                            height: '20px',
+                                            borderRadius: '50%',
+                                            background: '#fff',
+                                            position: 'absolute',
+                                            top: '3px',
+                                            left: formData.isLocked ? '27px' : '3px',
+                                            transition: 'all 0.3s',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                        }} />
+                                    </button>
+                                </div>
+
+                                <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#856404', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Award size={16} />
+                                        <span><strong>Dica de Expert:</strong> Títulos claros e descrições detalhadas ajudam seus alunos a encontrar o conteúdo mais rápido.</span>
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={!formData.videoUrl || !formData.title || isUploading}
+                                    style={{
+                                        marginTop: '1rem',
+                                        padding: '16px',
+                                        background: isUploading ? '#ccc' : 'var(--gold-gradient)',
+                                        color: '#000',
+                                        borderRadius: '12px',
+                                        fontWeight: '900',
+                                        border: 'none',
+                                        fontSize: '1rem',
+                                        cursor: isUploading ? 'not-allowed' : 'pointer',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px',
+                                        boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
+                                    }}
+                                >
+                                    {isUploading ? <><Loader2 className="animate-spin" size={18} /> Enviando Vídeo...</> : (editingLesson ? 'Salvar Alterações' : 'Publicar Aula')}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div >
+    );
 }

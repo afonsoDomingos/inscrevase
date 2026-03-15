@@ -315,7 +315,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                 </Link>
                             ))}
                         </div>
-                    ))}
+                    )})}
                 </nav>
 
                 <button
