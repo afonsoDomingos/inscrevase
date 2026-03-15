@@ -40,6 +40,7 @@ import { marketingService, MarketingRequest } from '@/lib/marketingService';
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AcademyView from '@/components/mentor/AcademyView';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
+import Tooltip from '@/components/common/Tooltip';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -590,121 +591,138 @@ function MentorDashboardContent() {
                         { id: 'liveboard', label: 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
                         { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
+                        <Tooltip content={isSidebarCollapsed ? item.label : ""} position="right">
+                            <button
+                                key={item.id}
+                                id={`mentor-nav-${item.id}`}
+                                onClick={() => {
+                                    if (item.link) {
+                                        router.push(item.link);
+                                    } else if (item.id === 'referral') {
+                                        setIsReferralModalOpen(true);
+                                    } else {
+                                        setActiveTab(item.id as Tab);
+                                        if (isMobile) setIsMobileSidebarOpen(false);
+                                        const params = new URLSearchParams(searchParams.toString());
+                                        params.set('tab', item.id);
+                                        router.push(`?${params.toString()}`, { scroll: false });
+                                    }
+                                }}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                    gap: '12px',
+                                    padding: '0.75rem 1rem',
+                                    width: '100%',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                    color: activeTab === item.id ? '#000' : '#888',
+                                    fontWeight: activeTab === item.id ? 800 : 500,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    textAlign: 'left',
+                                    position: 'relative',
+                                    fontSize: '0.95rem',
+                                    boxShadow: activeTab === item.id ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
+                                }}
+                                onMouseOver={(e) => {
+                                    if (activeTab !== item.id) {
+                                        e.currentTarget.style.background = 'rgba(255, 215, 0, 0.05)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }
+                                }}
+                                onMouseOut={(e) => {
+                                    if (activeTab !== item.id) {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.color = '#888';
+                                    }
+                                }}
+                            >
+                                {activeTab === item.id && (
+                                    <motion.div
+                                        layoutId="active-indicator"
+                                        style={{
+                                            position: 'absolute',
+                                            left: 0,
+                                            width: '4px',
+                                            height: '24px',
+                                            background: '#FFD700',
+                                            borderTopRightRadius: '4px',
+                                            borderBottomRightRadius: '4px'
+                                        }}
+                                    />
+                                )}
+                                <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                {!isSidebarCollapsed && (
+                                    <motion.span
+                                        initial={{ opacity: 0, width: 0 }}
+                                        animate={{ opacity: 1, width: 'auto' }}
+                                        style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}
+                                    >
+                                        {item.label}
+                                    </motion.span>
+                                )}
+                                {!isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 ? (
+                                    <span style={{
+                                        marginLeft: 'auto',
+                                        background: activeTab === item.id ? '#000' : 'var(--gold-gradient)',
+                                        color: activeTab === item.id ? '#FFD700' : '#000',
+                                        fontSize: '0.65rem',
+                                        fontWeight: 900,
+                                        padding: '2px 6px',
+                                        borderRadius: '10px',
+                                        minWidth: '18px',
+                                        textAlign: 'center',
+                                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                    }}>
+                                        {stats.pendingCertificates}
+                                    </span>
+                                ) : null}
+                                {isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '8px',
+                                        right: '8px',
+                                        background: 'var(--gold-gradient)',
+                                        width: '8px',
+                                        height: '8px',
+                                        borderRadius: '50%',
+                                        border: '1.5px solid var(--paper)'
+                                    }} />
+                                )}
+                            </button>
+                        </Tooltip>
+                    ))}
+
+                    <Tooltip content={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""} position="right">
                         <button
-                            key={item.id}
-                            id={`mentor-nav-${item.id}`}
-                            onClick={() => {
-                                if (item.link) {
-                                    router.push(item.link);
-                                } else if (item.id === 'referral') {
-                                    setIsReferralModalOpen(true);
-                                } else {
-                                    setActiveTab(item.id as Tab);
-                                    const params = new URLSearchParams(searchParams.toString());
-                                    params.set('tab', item.id);
-                                    router.push(`?${params.toString()}`, { scroll: false });
-                                }
-                            }}
-                            title={isSidebarCollapsed ? item.label : ''}
+                            onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '12px',
                                 justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                gap: '12px',
+                                padding: '0.75rem 1rem',
                                 width: '100%',
-                                padding: '12px 16px',
-                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                color: activeTab === item.id ? '#000' : '#aaa',
+                                borderRadius: '12px',
                                 border: 'none',
-                                borderRadius: '8px',
+                                background: 'transparent',
+                                color: '#FFD700',
+                                fontWeight: 600,
                                 cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                fontWeight: activeTab === item.id ? 700 : 500,
-                                position: 'relative', // Added for the active indicator
-                                overflow: 'hidden' // Added for the active indicator
+                                transition: 'all 0.3s ease',
+                                textAlign: 'left',
+                                fontSize: '0.95rem'
                             }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                         >
-                            {activeTab === item.id && (
-                                <motion.div
-                                    layoutId="active-indicator"
-                                    style={{
-                                        position: 'absolute',
-                                        left: 0,
-                                        width: '4px',
-                                        height: '24px',
-                                        background: '#FFD700',
-                                        borderTopRightRadius: '4px',
-                                        borderBottomRightRadius: '4px'
-                                    }}
-                                />
-                            )}
-                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
-                            {!isSidebarCollapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0, width: 0 }}
-                                    animate={{ opacity: 1, width: 'auto' }}
-                                    style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}
-                                >
-                                    {item.label}
-                                </motion.span>
-                            )}
-                            {!isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 ? (
-                                <span style={{
-                                    marginLeft: 'auto',
-                                    background: activeTab === item.id ? '#000' : 'var(--gold-gradient)',
-                                    color: activeTab === item.id ? '#FFD700' : '#000',
-                                    fontSize: '0.65rem',
-                                    fontWeight: 900,
-                                    padding: '2px 6px',
-                                    borderRadius: '10px',
-                                    minWidth: '18px',
-                                    textAlign: 'center',
-                                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                                }}>
-                                    {stats.pendingCertificates}
-                                </span>
-                            ) : null}
-                            {isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 && (
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '8px',
-                                    right: '8px',
-                                    background: 'var(--gold-gradient)',
-                                    width: '8px',
-                                    height: '8px',
-                                    borderRadius: '50%',
-                                    border: '1.5px solid var(--paper)'
-                                }} />
-                            )}
+                            <Map size={20} />
+                            {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
                         </button>
-                    ))}
-
-                    <button
-                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
-                        title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                            gap: '12px',
-                            padding: '0.75rem 1rem',
-                            width: '100%',
-                            borderRadius: '12px',
-                            border: 'none',
-                            background: 'transparent',
-                            color: '#FFD700',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            textAlign: 'left',
-                            fontSize: '0.95rem'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
-                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-                    >
-                        <Map size={20} />
-                        {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
-                    </button>
+                    </Tooltip>
 
                     {!isSidebarCollapsed && (
                         <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
@@ -720,76 +738,76 @@ function MentorDashboardContent() {
                 </nav>
 
                 <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <button
-                        id="mentor-support-btn"
-                        onClick={() => setIsSupportOpen(true)}
-                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #FFD700',
-                            borderRadius: '12px',
-                            color: '#FFD700',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            transition: 'all 0.2s',
-                            position: 'relative'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = '#333'}
-                        onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
-                    >
-                        <LifeBuoy size={18} />
-                        {!isSidebarCollapsed && t('dashboard.support')}
-                        {unreadCount > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-5px',
-                                right: '-5px',
-                                background: '#ef4444',
-                                color: '#fff',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
+                    <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
+                        <button
+                            id="mentor-support-btn"
+                            onClick={() => setIsSupportOpen(true)}
+                            style={{
+                                width: '100%',
+                                padding: '0.8rem',
+                                background: '#2a2a2a',
+                                border: '1px solid #FFD700',
+                                borderRadius: '12px',
+                                color: '#FFD700',
+                                cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '0.7rem',
-                                fontWeight: 700,
-                                border: '2px solid #1a1a1a'
-                            }}>
-                                {unreadCount > 9 ? '9+' : unreadCount}
-                            </span>
-                        )}
-                    </button>
+                                gap: '10px',
+                                fontWeight: 600,
+                                transition: 'all 0.2s',
+                                position: 'relative'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#333'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
+                        >
+                            <LifeBuoy size={18} />
+                            {!isSidebarCollapsed && t('dashboard.support')}
+                            {unreadCount > 0 && (
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    background: '#ef4444',
+                                    color: '#fff',
+                                    borderRadius: '50%',
+                                    width: '20px',
+                                    height: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    border: '2px solid #1a1a1a'
+                                }}>
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
+                        </button>
 
 
-                    <button
-                        onClick={() => authService.logout()}
-                        title={isSidebarCollapsed ? t('common.logout') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            color: '#e53e3e',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <LogOut size={18} />
-                        {!isSidebarCollapsed && t('common.logout')}
-                    </button>
+                        <button
+                            onClick={() => authService.logout()}
+                            title={isSidebarCollapsed ? t('common.logout') : ""}
+                            style={{
+                                width: '100%',
+                                padding: '0.8rem',
+                                background: '#2a2a2a',
+                                border: '1px solid #333',
+                                borderRadius: '12px',
+                                color: '#e53e3e',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                fontWeight: 600,
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <LogOut size={18} />
+                            {!isSidebarCollapsed && t('common.logout')}
+                        </button>
                 </div>
             </aside>
 
@@ -1116,66 +1134,67 @@ function MentorDashboardContent() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
-                                <button
-                                    ref={bellButtonRef}
-                                    onClick={(e) => {
-                                        try {
-                                            console.log('🔔 [Bell-Page] click fired, isOpen =', isNotificationsOpen);
-                                            e.stopPropagation();
-                                            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                                            console.log('🔔 [Bell-Page] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
-                                            const newPos = {
-                                                top: rect.bottom + 8,
-                                                right: window.innerWidth - rect.right
-                                            };
-                                            console.log('🔔 [Bell-Page] dropdownPos =', newPos);
-                                            setDropdownPos(newPos);
-                                            setIsNotificationsOpen(prev => {
-                                                console.log('🔔 [Bell-Page] state toggle:', prev, '->', !prev);
-                                                return !prev;
-                                            });
-                                        } catch (err) {
-                                            console.error('🔴 [Bell-Page] onClick error:', err);
-                                        }
-                                    }}
-                                    title={t('dashboard.notifications')}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        width: isMobile ? '36px' : '40px',
-                                        height: isMobile ? '36px' : '40px',
-                                        background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
-                                        border: '1px solid #FFD700',
-                                        borderRadius: '12px',
-                                        color: isNotificationsOpen ? '#000' : 'var(--foreground)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s',
-                                        position: 'relative'
-                                    }}
-                                >
-                                    <Bell size={20} />
-                                    {unreadNotifications > 0 && (
-                                        <span style={{
-                                            position: 'absolute',
-                                            top: '-5px',
-                                            right: '-5px',
-                                            background: '#ef4444',
-                                            color: '#fff',
-                                            width: '20px',
-                                            height: '20px',
-                                            borderRadius: '50%',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 900,
+                                <Tooltip content={t('dashboard.notifications')}>
+                                    <button
+                                        ref={bellButtonRef}
+                                        onClick={(e) => {
+                                            try {
+                                                console.log('🔔 [Bell-Page] click fired, isOpen =', isNotificationsOpen);
+                                                e.stopPropagation();
+                                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                                console.log('🔔 [Bell-Page] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
+                                                const newPos = {
+                                                    top: rect.bottom + 8,
+                                                    right: window.innerWidth - rect.right
+                                                };
+                                                console.log('🔔 [Bell-Page] dropdownPos =', newPos);
+                                                setDropdownPos(newPos);
+                                                setIsNotificationsOpen(prev => {
+                                                    console.log('🔔 [Bell-Page] state toggle:', prev, '->', !prev);
+                                                    return !prev;
+                                                });
+                                            } catch (err) {
+                                                console.error('🔴 [Bell-Page] onClick error:', err);
+                                            }
+                                        }}
+                                        style={{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            border: '2px solid #fff'
-                                        }}>
-                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                        </span>
-                                    )}
-                                </button>
+                                            width: isMobile ? '36px' : '40px',
+                                            height: isMobile ? '36px' : '40px',
+                                            background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
+                                            border: '1px solid #FFD700',
+                                            borderRadius: '12px',
+                                            color: isNotificationsOpen ? '#000' : 'var(--foreground)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s',
+                                            position: 'relative'
+                                        }}
+                                    >
+                                        <Bell size={20} />
+                                        {unreadNotifications > 0 && (
+                                            <span style={{
+                                                position: 'absolute',
+                                                top: '-5px',
+                                                right: '-5px',
+                                                background: '#ef4444',
+                                                color: '#fff',
+                                                borderRadius: '50%',
+                                                width: '18px',
+                                                height: '18px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '0.65rem',
+                                                fontWeight: 800,
+                                                border: '2px solid var(--paper)'
+                                            }}>
+                                                {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                            </span>
+                                        )}
+                                    </button>
+                                </Tooltip>
                             </div>
 
                             {/* Notification dropdown rendered at fixed position, immune to parent overflow */}
@@ -1652,27 +1671,29 @@ function MentorDashboardContent() {
                                         {forms.map((form) => (
                                             <tr key={form._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
                                                 <td style={{ padding: '0.85rem 1rem', maxWidth: 0 }}>
-                                                    <div
-                                                        title={form.title}
-                                                        style={{
-                                                            fontWeight: 700,
-                                                            fontSize: '0.9rem',
-                                                            overflow: 'hidden',
-                                                            whiteSpace: 'nowrap',
-                                                            textOverflow: 'ellipsis'
-                                                        }}
-                                                    >{form.title}</div>
-                                                    <div
-                                                        title={`/${form.slug}`}
-                                                        style={{
-                                                            fontSize: '0.7rem',
-                                                            color: '#999',
-                                                            overflow: 'hidden',
-                                                            whiteSpace: 'nowrap',
-                                                            textOverflow: 'ellipsis',
-                                                            marginTop: '2px'
-                                                        }}
-                                                    >/{form.slug}</div>
+                                                    <Tooltip content={form.title}>
+                                                        <div
+                                                            style={{
+                                                                fontWeight: 700,
+                                                                fontSize: '0.9rem',
+                                                                overflow: 'hidden',
+                                                                whiteSpace: 'nowrap',
+                                                                textOverflow: 'ellipsis'
+                                                            }}
+                                                        >{form.title}</div>
+                                                    </Tooltip>
+                                                    <Tooltip content={`/${form.slug}`}>
+                                                        <div
+                                                            style={{
+                                                                fontSize: '0.7rem',
+                                                                color: '#999',
+                                                                overflow: 'hidden',
+                                                                whiteSpace: 'nowrap',
+                                                                textOverflow: 'ellipsis',
+                                                                marginTop: '2px'
+                                                            }}
+                                                        >/{form.slug}</div>
+                                                    </Tooltip>
                                                 </td>
                                                 <td style={{ padding: '0.85rem 1rem' }}>
                                                     <button
@@ -1728,50 +1749,62 @@ function MentorDashboardContent() {
                                                 <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
                                                         {/* Primary Actions */}
-                                                        <button
-                                                            onClick={() => window.open(`/f/${form.slug}`, '_blank')}
-                                                            title={t('common.viewPublicForm')}
-                                                            style={{
-                                                                display: 'flex', alignItems: 'center', gap: '5px',
-                                                                padding: '6px 12px', borderRadius: '8px',
-                                                                background: 'rgba(184,134,11,0.1)', color: '#B8860B',
-                                                                border: '1.5px solid rgba(184,134,11,0.3)',
-                                                                cursor: 'pointer', fontWeight: 700, fontSize: '0.75rem',
-                                                                whiteSpace: 'nowrap', transition: 'all 0.2s'
-                                                            }}
-                                                            onMouseOver={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                                                            onMouseOut={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                                                        >
-                                                            <ExternalLink size={14} /> Página Pública
-                                                        </button>
-                                                        <button
-                                                            onClick={() => window.open(`/hub/${form.slug}`, '_blank')}
-                                                            title={t('common.viewEventHub')}
-                                                            style={{
-                                                                display: 'flex', alignItems: 'center', gap: '5px',
-                                                                padding: '6px 12px', borderRadius: '8px',
-                                                                background: 'var(--gold-gradient)', color: '#000',
-                                                                border: 'none',
-                                                                cursor: 'pointer', fontWeight: 800, fontSize: '0.75rem',
-                                                                whiteSpace: 'nowrap', transition: 'all 0.2s',
-                                                                boxShadow: '0 2px 8px rgba(212,175,55,0.25)'
-                                                            }}
-                                                            onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
-                                                            onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
-                                                        >
-                                                            <Monitor size={14} /> Página do Inscrito
-                                                        </button>
+                                                        <Tooltip content={t('common.viewPublicForm')}>
+                                                            <button
+                                                                onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                                                                style={{
+                                                                    display: 'flex', alignItems: 'center', gap: '5px',
+                                                                    padding: '6px 12px', borderRadius: '8px',
+                                                                    background: 'rgba(184,134,11,0.1)', color: '#B8860B',
+                                                                    border: '1.5px solid rgba(184,134,11,0.3)',
+                                                                    cursor: 'pointer', fontWeight: 700, fontSize: '0.75rem',
+                                                                    whiteSpace: 'nowrap', transition: 'all 0.2s'
+                                                                }}
+                                                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                                                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                                            >
+                                                                <ExternalLink size={14} /> Página Pública
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip content={t('common.viewEventHub')}>
+                                                            <button
+                                                                onClick={() => window.open(`/hub/${form.slug}`, '_blank')}
+                                                                style={{
+                                                                    display: 'flex', alignItems: 'center', gap: '5px',
+                                                                    padding: '6px 12px', borderRadius: '8px',
+                                                                    background: 'var(--gold-gradient)', color: '#000',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer', fontWeight: 800, fontSize: '0.75rem',
+                                                                    whiteSpace: 'nowrap', transition: 'all 0.2s',
+                                                                    boxShadow: '0 2px 8px rgba(212,175,55,0.25)'
+                                                                }}
+                                                                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
+                                                                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
+                                                            >
+                                                                <Monitor size={14} /> Página do Inscrito
+                                                            </button>
+                                                        </Tooltip>
 
                                                         {/* Divider */}
                                                         <div style={{ width: '1px', height: '24px', background: 'var(--border)', margin: '0 4px', flexShrink: 0 }} />
 
                                                         {/* Secondary icon-only actions */}
                                                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                                            <button onClick={() => setEditModalData({ isOpen: true, form })} title={t('common.editEvent')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px' }}><Pencil size={18} /></button>
-                                                            <button onClick={() => setThemeModalData({ isOpen: true, form })} title={t('common.customizeTheme')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Palette size={18} /></button>
-                                                            <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Copy size={18} /></button>
-                                                            <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title={t('common.viewSubmissions')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Users size={18} /></button>
-                                                            <button onClick={() => handleDeleteForm(form._id)} title={t('common.delete')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: '4px', borderRadius: '6px' }}><Trash2 size={18} /></button>
+                                                            <Tooltip content={t('common.editEvent')}>
+                                                                <button onClick={() => setEditModalData({ isOpen: true, form })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px' }}><Pencil size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.customizeTheme')}>
+                                                                <button onClick={() => setThemeModalData({ isOpen: true, form })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Palette size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.copyLink')}>
+                                                                <button onClick={() => copyToClipboard(form.slug)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Copy size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.viewSubmissions')}>
+                                                                <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Users size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.delete')}>
+                                                                <button onClick={() => handleDeleteForm(form._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: '4px', borderRadius: '6px' }}><Trash2 size={18} /></button>
+                                                            </Tooltip>
                                                         </div>
                                                     </div>
                                                 </td>
